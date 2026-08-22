@@ -1,8 +1,17 @@
 # Token Reconstruction Research
 
-This repository is a clean starting point for research on recovering discrete input tokens from an observed intermediate activation at a declared cut in a transformer.
+This repository began as a neutral starting point for token-reconstruction
+research and now also contains the administrative records used by the
+repository-backed TRR review relay.
 
-The canonical problem statement is [`RESEARCH_GOAL_AND_ACCESS_MODEL.md`](RESEARCH_GOAL_AND_ACCESS_MODEL.md).
+## Authority
+
+[`RESEARCH_CHARTER.md`](RESEARCH_CHARTER.md) is the sole authoritative research
+definition. This README is non-authoritative repository orientation only. It
+does not add to, replace, or independently interpret the charter.
+
+The research summary below is non-authoritative. Consult
+`RESEARCH_CHARTER.md` directly for the research definition.
 
 ## Research objective
 
@@ -51,9 +60,17 @@ Ground truth is opened only after the reconstruction decision and all measured e
 - `resources/` records only public resource identities and provenance.
 - `tests/` checks the access boundary and create-only observation handling.
 
-## Deliberate exclusions
+## Original seed and current state
 
-This seed contains no target activations, source truth, selected evaluation examples, model weights, datasets, trained lenses or adapters, result files, previous conclusions, experiment plans, search spaces, or research handoffs. Public weights and datasets should be fetched from their authoritative sources and pinned when an experiment actually needs them. Keeping those items out prevents old choices or evidence from silently steering a fresh investigation.
+The original neutral seed contained no target activations, source truth,
+selected evaluation examples, model weights, datasets, trained lenses or
+adapters, prior scientific findings, or selected research direction. The
+current tree additionally contains administrative TRR-0000 requests, results,
+delivery evidence, and deterministic bootstrap artifacts.
+
+Those relay records validate orchestration and reproducibility; they are not
+scientific findings and do not select a reconstruction method or research
+direction. Evaluation traces and truth remain outside this repository.
 
 ## Quick checks
 
