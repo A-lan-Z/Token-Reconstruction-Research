@@ -347,7 +347,15 @@
   },
   "revision": {
     "id": "TRR-0000-R1",
-    "packet_id": "TRR-PACKET-REVIEW-TRR-0000-0001",
+    "packet_id": "TRR-PACKET-TRR-0000-REVIEW-R1-20260822-3FFD50BB821C584F",
+    "packet_id_correction": {
+      "revision_id": "TRR-0000-R2",
+      "previous_incorrect_value": "TRR-PACKET-REVIEW-TRR-0000-0001",
+      "corrected_value": "TRR-PACKET-TRR-0000-REVIEW-R1-20260822-3FFD50BB821C584F",
+      "source_path": "coordination/requests/TRR-0000-R1.md",
+      "reason": "The structured revision packet identity must exactly match the single PACKET_ID declared by the committed governing R1 request.",
+      "historical_record_preserved": true
+    },
     "disposition": "REVISE",
     "scientific_assessment": "accepted",
     "scientific_changes_made": false,
@@ -591,6 +599,138 @@
     "editing_deviations": [
       "The Windows workspace apply_patch helper again failed setup refresh. Repository-local git apply was used as the documented fallback.",
       "The first manifest git-apply patch was rejected as corrupt before applying any changes; corrected hunk counts then applied cleanly."
+    ]
+  },
+  "revision_r2": {
+    "id": "TRR-0000-R2",
+    "packet_id": "TRR-PACKET-TRR-0000-REVIEW-R2-20260822-DF7E360144E719F71F3A5DCF",
+    "disposition": "REVISE",
+    "previous_reviewed_head": "073cb6867e4632152f886e655ded505638b4e68d",
+    "scientific_changes_made": false,
+    "smoke_experiments_rerun": false,
+    "revision_evidence_commit": null,
+    "revision_evidence_commit_note": "Populated after the immutable R2 evidence commit to avoid a self-referential commit hash.",
+    "request": {
+      "path": "coordination/requests/TRR-0000-R2.md",
+      "sha256": "c828dc254b41f82739fd86822d808aa0eca331b2917c3a2776bbf15369321077",
+      "bytes": 10826,
+      "begin_marker_present": true,
+      "end_marker_present": true,
+      "capture_note": "The packet arrived across two consecutive chat messages. The first ended mid-line at 'Committed full source-checkout test ou'; the continuation supplied that line in full and the remaining packet. The partial line was replaced by the complete continued line before task work."
+    },
+    "defect_correction": {
+      "field": "revision.packet_id",
+      "old_incorrect_value": "TRR-PACKET-REVIEW-TRR-0000-0001",
+      "corrected_value": "TRR-PACKET-TRR-0000-REVIEW-R1-20260822-3FFD50BB821C584F",
+      "source_path": "coordination/requests/TRR-0000-R1.md",
+      "source_packet_sha256": "0153d9cc5b4294aea567963fd5642051bf836ea473af032df96465df5f87ccef",
+      "history_preserved_at": "revision.packet_id_correction"
+    },
+    "packet_identity_validation": {
+      "command": "python3 -c 'import json, re; from pathlib import Path; request=Path(\"coordination/requests/TRR-0000-R1.md\").read_text(encoding=\"utf-8\"); packet_ids=re.findall(r\"(?m)^PACKET_ID:[ \\t]*(\\S+)[ \\t]*$\", request); assert len(packet_ids) == 1, f\"expected exactly one PACKET_ID, found {len(packet_ids)}\"; manifest=json.loads(Path(\"experiments/TRR-0000/manifest.json\").read_text(encoding=\"utf-8\")); revision=manifest.get(\"revision\"); assert isinstance(revision, dict), \"revision object absent\"; manifest_id=revision.get(\"packet_id\"); assert isinstance(manifest_id, str) and manifest_id, \"revision.packet_id absent\"; assert manifest_id == packet_ids[0], f\"PACKET_ID mismatch: request={packet_ids[0]!r} manifest={manifest_id!r}\"; print(f\"PACKET_ID_VERIFIED={manifest_id}\")' > experiments/TRR-0000/revision-r2/packet-identity-check.txt",
+      "exit_status": 0,
+      "output": "PACKET_ID_VERIFIED=TRR-PACKET-TRR-0000-REVIEW-R1-20260822-3FFD50BB821C584F",
+      "output_path": "experiments/TRR-0000/revision-r2/packet-identity-check.txt",
+      "output_sha256": "5661fd647b72d924e8587ca44f36fbb79d4eb4bb12ccf210e23fc4656b9c30fe",
+      "output_bytes": 75,
+      "failure_contract": "Assertion failure and nonzero exit on absent or duplicated request PACKET_ID, absent revision object or revision.packet_id, or value mismatch."
+    },
+    "tests": [
+      {
+        "command": "python3 -m py_compile scripts/trr0000_smoke.py tests/test_trr0000_smoke.py",
+        "exit_status": 0,
+        "result": "passed"
+      },
+      {
+        "command": "python3 -m pytest -q tests/test_trr0000_smoke.py > experiments/TRR-0000/revision-r2/focused-tests.txt 2>&1",
+        "exit_status": 0,
+        "result": "4 passed in 0.22s",
+        "output_path": "experiments/TRR-0000/revision-r2/focused-tests.txt",
+        "output_sha256": "44178be163015033384cffd8b0f0ec02d28cb6648af3d8dbe3121b41f45ca4aa",
+        "output_bytes": 98
+      },
+      {
+        "command": "env PYTHONPATH=src python3 -m pytest -q > experiments/TRR-0000/revision-r2/full-tests.txt 2>&1",
+        "exit_status": 0,
+        "result": "11 passed in 1.97s",
+        "output_path": "experiments/TRR-0000/revision-r2/full-tests.txt",
+        "output_sha256": "c9b36b477d6bf27d6403df13b2129f712a8aa13a4e6892555cc001644a4e8f6a",
+        "output_bytes": 99
+      }
+    ],
+    "validation_commands": [
+      {
+        "command": "test \"$(wc -c < coordination/validation/TRR-0000-review-nonce.txt)\" -eq 64 && printf '%s  %s\\n' 'eee2b4ac2fd41d6370979a5e313cd609dfa9ac29d3b95e5705a7b303b991a9bf' 'coordination/validation/TRR-0000-review-nonce.txt' | sha256sum --check --status",
+        "exit_status": 0,
+        "result": "nonce is exactly 64 bytes with the required SHA-256"
+      },
+      {
+        "command": "sha256sum coordination/validation/TRR-0000-review-nonce.txt RESEARCH_CHARTER.md",
+        "exit_status": 0,
+        "result": "nonce eee2b4ac2fd41d6370979a5e313cd609dfa9ac29d3b95e5705a7b303b991a9bf; charter ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d"
+      },
+      {
+        "command": "printf '%s  %s\\n%s  %s\\n%s  %s\\n%s  %s\\n' 'd70a04bc6beb70f1ff282a4701fbc4685bdef874aba1165416edbbd45c777c88' 'experiments/TRR-0000/smoke_seed_1729.json' 'd70a04bc6beb70f1ff282a4701fbc4685bdef874aba1165416edbbd45c777c88' 'experiments/TRR-0000/smoke_seed_1729_repeat.json' 'd70a04bc6beb70f1ff282a4701fbc4685bdef874aba1165416edbbd45c777c88' 'experiments/TRR-0000/revision-r1/smoke_seed_1729.json' 'd70a04bc6beb70f1ff282a4701fbc4685bdef874aba1165416edbbd45c777c88' 'experiments/TRR-0000/revision-r1/smoke_seed_1729_repeat.json' | sha256sum --check --status && test \"$(wc -c < experiments/TRR-0000/smoke_seed_1729.json)\" -eq 1060 && test \"$(wc -c < experiments/TRR-0000/smoke_seed_1729_repeat.json)\" -eq 1060 && test \"$(wc -c < experiments/TRR-0000/revision-r1/smoke_seed_1729.json)\" -eq 1060 && test \"$(wc -c < experiments/TRR-0000/revision-r1/smoke_seed_1729_repeat.json)\" -eq 1060",
+        "exit_status": 0,
+        "result": "All original and R1 smoke artifacts are 1060 bytes with SHA-256 d70a04bc6beb70f1ff282a4701fbc4685bdef874aba1165416edbbd45c777c88."
+      },
+      {
+        "command": "git hash-object experiments/TRR-0000/smoke_seed_1729.json experiments/TRR-0000/smoke_seed_1729_repeat.json experiments/TRR-0000/revision-r1/smoke_seed_1729.json experiments/TRR-0000/revision-r1/smoke_seed_1729_repeat.json",
+        "exit_status": 0,
+        "result": "All four Git blobs are ed3612f95e3462c46774b706cf2907b1666308d8."
+      },
+      {
+        "command": "find . -path ./.git -prune -o -name '*.json' -type f -print0 | sort -z | xargs -0 -n1 python3 -m json.tool >/dev/null",
+        "exit_status": 0,
+        "result": "all repository JSON parsed"
+      },
+      {
+        "command": "git diff --cached --check -- . ':(exclude)coordination/requests/TRR-0000.md' ':(exclude)coordination/requests/TRR-0000-R1.md'",
+        "exit_status": 0,
+        "result": "staged whitespace validation passed; only the two byte-verbatim CRLF request packets were excluded"
+      },
+      {
+        "command": "git diff --quiet HEAD -- RESEARCH_CHARTER.md AGENTS.md scripts/trr0000_smoke.py tests/test_trr0000_smoke.py coordination/requests/TRR-0000.md coordination/requests/TRR-0000-R1.md coordination/validation/TRR-0000-review-nonce.txt experiments/TRR-0000/smoke_seed_1729.json experiments/TRR-0000/smoke_seed_1729_repeat.json experiments/TRR-0000/revision-r1/smoke_seed_1729.json experiments/TRR-0000/revision-r1/smoke_seed_1729_repeat.json research/ROADMAP.md research/DECISIONS.md",
+        "exit_status": 0,
+        "result": "Every path required to remain unchanged has no worktree or index difference from reviewed HEAD 073cb6867e4632152f886e655ded505638b4e68d."
+      }
+    ],
+    "preserved_paths": {
+      "required_unchanged": [
+        "coordination/requests/TRR-0000.md",
+        "coordination/requests/TRR-0000-R1.md",
+        "coordination/validation/TRR-0000-review-nonce.txt",
+        "RESEARCH_CHARTER.md",
+        "AGENTS.md",
+        "scripts/trr0000_smoke.py",
+        "tests/test_trr0000_smoke.py",
+        "experiments/TRR-0000/smoke_seed_1729.json",
+        "experiments/TRR-0000/smoke_seed_1729_repeat.json",
+        "experiments/TRR-0000/revision-r1/smoke_seed_1729.json",
+        "experiments/TRR-0000/revision-r1/smoke_seed_1729_repeat.json",
+        "research/ROADMAP.md",
+        "research/DECISIONS.md"
+      ],
+      "verification": "Final changed-file comparison and hash recheck show these paths unchanged."
+    },
+    "artifacts": [
+      {
+        "path": "coordination/requests/TRR-0000-R2.md",
+        "sha256": "c828dc254b41f82739fd86822d808aa0eca331b2917c3a2776bbf15369321077",
+        "bytes": 10826,
+        "role": "complete R2 control packet"
+      },
+      {
+        "path": "experiments/TRR-0000/revision-r2/packet-identity-check.txt",
+        "sha256": "5661fd647b72d924e8587ca44f36fbb79d4eb4bb12ccf210e23fc4656b9c30fe",
+        "bytes": 75,
+        "role": "packet identity consistency-check output"
+      }
+    ],
+    "editing_deviations": [
+      "The workspace apply_patch helper failed at the WSL boundary; repository-local git apply was used.",
+      "The R2 packet arrived in two messages, and the second explicitly completed the first message's truncated final line before continuing through END TRR CONTROL PACKET.",
+      "The initial R2 handoff insertion landed before the last two R1 lines and a later validation insertion split one R2 sentence; both section boundaries were corrected before commit and revalidated."
     ]
   },
   "failures_and_deviations": [
