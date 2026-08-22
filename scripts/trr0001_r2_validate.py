@@ -16,7 +16,7 @@ EXPECTED_HASHES = {
     "RESEARCH_CHARTER.md": "ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d",
     "coordination/requests/TRR-0001-R2.md": "a7baf9ee25604f14535a986357dc56ddc0efa599bb3e0b880ac3fd2aad7bfb7e",
     "research/DUAL_BENCHMARK_PROTOCOL.md": "98380e7298d0720cd9ef12358c651a3fcb419b029703975a87e14a3093ec6d33",
-    "research/dual_benchmark_registry.json": "27f07331289f9bb8f40731683f66548d4fd466263446c849d982bfe4015945ef",
+    "research/dual_benchmark_registry.json": "dfbf5f4c6129f1213337c2b8eabaa6b13c7313ef1b429db4fccf861a0a27038e",
     "experiments/TRR-0001/revision-r2/dual_benchmark_matrix.json": "5594b3a4e3af6e27d28c8f0267f7d71c0d8f3715672a36202909be41e9a0dd66",
 }
 

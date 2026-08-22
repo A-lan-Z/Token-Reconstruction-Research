@@ -163,4 +163,3 @@ def test_score_counts_abstention_as_end_to_end_error() -> None:
     assert metrics["selective_accuracy"] == 2 / 3
     assert metrics["exact_records"] == 0
     assert [row["record_id"] for row in rows] == ["a", "b"]
-

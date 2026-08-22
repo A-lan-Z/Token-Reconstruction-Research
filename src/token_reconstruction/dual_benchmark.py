@@ -414,4 +414,3 @@ def paired_record_differences(
     if not all(math.isfinite(value) for value in differences):
         raise DualBenchmarkError("paired record differences are non-finite")
     return differences
-
