@@ -55,7 +55,7 @@ registered as separate rows if reactivated.
 
 ## Required matrix
 
-Every result must contain these six cells:
+Every result must contain these six base-control cells:
 
 | Method | clean 64x40 | historical 128x128 |
 |---|---:|---:|
@@ -66,6 +66,33 @@ Every result must contain these six cells:
 Adding an active method adds one required cell in each setup. Adding a canonical
 setup adds one required cell for every active method. A task with a missing cell
 is incomplete for overall comparison, even when its available cells succeeded.
+
+### TRR-0002 controlled crossover extension
+
+TRR-0002 adds the following five component combinations at each fixed candidate
+budget 8, 16, 32, and 64, with every resulting method required in both setups:
+
+| Proposal | Selector |
+|---|---|
+| public Alpaca A1 | fixed-budget historical A2 core |
+| public Alpaca A1 | causal public-prefix cosine |
+| residual-affine inverse | fixed-budget historical A2 core |
+| residual-affine inverse | causal public-prefix cosine |
+| round-robin deduplicated A1/residual union | causal public-prefix cosine |
+
+The fixed-budget A2 core uses the historical centered-cosine score,
+`K * softmax(score)[winner]` confidence, threshold 2.0, and suffix abstention.
+The original A1-confidence fast path and progressive 32/128/512 tiers are not
+part of the symmetric factorial selector; they remain represented by the exact
+`strict_bos_adaptive_a1_a2` control.
+
+The causal selector uses the same public prefix and greedy reconstructed prefix,
+but selects the maximum uncentered cosine at every position without abstention.
+
+`research/dual_benchmark_registry.json` is the machine-readable authority for
+the resulting 44 required setup-method cells. The crossover is retrospective;
+any calibrated replacement developed from it must be frozen before fresh blind
+target-update evaluation.
 
 ## Native executions and benchmark-compatible ports
 
