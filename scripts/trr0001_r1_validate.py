@@ -202,7 +202,10 @@ def main() -> int:
     for method in METHODS:
         value = load_json(frozen / method / "access_manifest.json")
         validate_isolation_manifest(value, method=method)
-        if len(value["denial_probes"]) != 7 or value["network"]["default_routes"]:
+        if (
+            len(value["denial_probes"]) != 7
+            or value["network"]["default_route_present"] is not False
+        ):
             raise RuntimeError(f"{method} access-denial evidence changed")
         access[method] = value
     if access[METHODS[0]]["started_utc"] == access[METHODS[1]]["started_utc"]:
