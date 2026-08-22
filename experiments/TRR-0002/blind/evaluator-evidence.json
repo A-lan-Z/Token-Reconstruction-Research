@@ -1,0 +1,120 @@
+{
+  "command": {
+    "argv": [
+      "scripts/trr0002_blind_evaluator.py",
+      "--plan",
+      "experiments/TRR-0002/blind/plan.json",
+      "--public-commitment",
+      "experiments/TRR-0002/blind/selection_commitment.json",
+      "--private-selection",
+      "outputs/TRR-0002/evaluator_selection/private_selection.json",
+      "--target-lora",
+      "outputs/TRR-0001/evaluator_private/target_lora.safetensors",
+      "--public-lens",
+      "/home/alanz/spartan/punim2939/backdoor_lora/ersoy2026/inversion_20260730/out/lens_alpaca.pt",
+      "--calibration",
+      "experiments/TRR-0002/calibration/frozen_calibration.json",
+      "--output-root",
+      "outputs/TRR-0002/blind",
+      "--preregistration-commit",
+      "c270b9c4dc89df7760a8749d6834fc28af56290b"
+    ],
+    "cwd": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research",
+    "environment": {
+      "HF_DATASETS_OFFLINE": "1",
+      "HF_HUB_OFFLINE": "1",
+      "PYTHONPATH": "src"
+    }
+  },
+  "ended_utc": "2026-08-22T17:10:33Z",
+  "exit_status": 0,
+  "peak_memory": {
+    "cuda_peak_allocated_bytes": 2609996800,
+    "cuda_peak_reserved_bytes": 2625634304,
+    "process_max_rss_kib": 3386420
+  },
+  "phases": [
+    {
+      "elapsed_seconds": 0.5668743740025093,
+      "ended_utc": "2026-08-22T17:10:32Z",
+      "exit_status": 0,
+      "phase": "load_pinned_model_and_unavailable_update",
+      "started_utc": "2026-08-22T17:10:32Z"
+    },
+    {
+      "elapsed_seconds": 0.7428263559995685,
+      "ended_utc": "2026-08-22T17:10:33Z",
+      "exit_status": 0,
+      "phase": "generate_unavailable_lora_cut4_observations",
+      "started_utc": "2026-08-22T17:10:32Z"
+    },
+    {
+      "elapsed_seconds": 0.01583834900520742,
+      "ended_utc": "2026-08-22T17:10:33Z",
+      "exit_status": 0,
+      "phase": "copy_exact_public_method_state",
+      "started_utc": "2026-08-22T17:10:33Z"
+    }
+  ],
+  "plan": {
+    "bytes": 6127,
+    "path": "experiments/TRR-0002/blind/plan.json",
+    "sha256": "7e06b74a2e763bc97e957d029be81d6c2a86e816a856808ffd77e996636608c5"
+  },
+  "preregistration_commit": "c270b9c4dc89df7760a8749d6834fc28af56290b",
+  "private_outputs": {
+    "truth": {
+      "bytes": 17740,
+      "path": "evaluator_private/blind_truth.jsonl",
+      "sha256": "43acd2f792e0c4cee99d8d1d125bfa152271b9c5bb0176f5c34aa9aa17183b34"
+    }
+  },
+  "public_commitment": {
+    "bytes": 2638,
+    "path": "experiments/TRR-0002/blind/selection_commitment.json",
+    "sha256": "52643012895248691e9091255bbb91476a7feaac7156616296cca437a28d5545"
+  },
+  "public_interface": {
+    "config": {
+      "bytes": 3146,
+      "path": "reconstructor_input/sanitized_config.json",
+      "sha256": "905509be4bc1a3e1034d5de33fca47aef154ae8e83709fa691fbf1055a11ce9a"
+    },
+    "observation": {
+      "bytes": 10486040,
+      "path": "reconstructor_input/unavailable_target_lora_cut4.safetensors",
+      "sha256": "8a0a8435ff1b80def27766de9d7710c995f8c49f26c8d603a04082086914cfdd"
+    },
+    "observation_index": {
+      "bytes": 3514,
+      "path": "reconstructor_input/observation_index.json",
+      "sha256": "9ec1688c2b023ba9cb6f253a8c39fde0ad39feb0afca1e03bd706f486ad3de25"
+    },
+    "opaque_records": 64,
+    "source_identity_fields": 0,
+    "source_token_or_text_fields": 0
+  },
+  "retained_state": {
+    "calibration": {
+      "bytes": 2940,
+      "path": "experiments/TRR-0002/calibration/frozen_calibration.json",
+      "sha256": "ad1801ec348a61cbcd50bfbc4a991c8deaa503b79f454c7f1d779567042ebf47"
+    },
+    "fresh_adaptation_steps": 0,
+    "fresh_training_steps": 0,
+    "public_lens": {
+      "bytes": 16787653,
+      "path": "/home/alanz/spartan/punim2939/backdoor_lora/ersoy2026/inversion_20260730/out/lens_alpaca.pt",
+      "sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742"
+    },
+    "target_lora": {
+      "bytes": 427584,
+      "path": "outputs/TRR-0001/evaluator_private/target_lora.safetensors",
+      "sha256": "34d92f1e664236bfa1990b10148e8ad52c60b16e72ed0ff4c7eb7da8d15019f6"
+    }
+  },
+  "schema": "token-reconstruction.trr0002-blind-evaluator-evidence.v1",
+  "started_utc": "2026-08-22T17:10:31Z",
+  "status": "FRESH_BLIND_INTERFACE_PREPARED",
+  "task_id": "TRR-0002"
+}

@@ -1,0 +1,56 @@
+{
+  "schema": "token-reconstruction.trr0002-blind-infrastructure-revision.v1",
+  "task_id": "TRR-0002",
+  "revision_id": "TRR-0002-BLIND-INFRA-R1",
+  "created_utc": "2026-08-22T17:13:11Z",
+  "status": "COMMITTED_BEFORE_ISOLATED_RETRY",
+  "truth_opened": false,
+  "original_plan": {
+    "path": "experiments/TRR-0002/blind/plan.json",
+    "sha256": "7e06b74a2e763bc97e957d029be81d6c2a86e816a856808ffd77e996636608c5"
+  },
+  "failed_attempt": {
+    "label": "EXCLUDED_PRE_PREDICTION_INFRASTRUCTURE_FAILURE",
+    "stdout": {
+      "path": "experiments/TRR-0002/blind/excluded-reconstruction-attempt1/reconstructor-output.txt",
+      "sha256": "bbc7a5976fb77d305f5c60617a10ecaf35e5d1aeb67eb24e660bb43e95f1d43e"
+    },
+    "gnu_time": {
+      "path": "experiments/TRR-0002/blind/excluded-reconstruction-attempt1/reconstructor-time.txt",
+      "sha256": "b205835e419d1d716ceee96d2c7054b37f93f211847b66cbdbbdf8344c9403cd"
+    },
+    "access_manifest_sha256": "c1887e4f68a6311d6df0e081e1767f92c042bde02398acde6e4c309dbfa2bca1",
+    "access_boundary_passed": true,
+    "exit_status": 1,
+    "failure": "dynamic import did not register the module in sys.modules before executing a dataclass declaration",
+    "prediction_artifact_created": false,
+    "truth_or_private_selection_read_by_reconstructor": false
+  },
+  "correction": {
+    "scope": "isolated wrapper import plumbing only",
+    "old_reconstructor_sha256": "72954c844159c927b98868320f4a623c913a231655335c24e5d51b66acc388a2",
+    "new_reconstructor_sha256": "8da1401abc7f3b82422f8d1cee5a57681cae38ff89f8fdcc1c6e4b58b09801aa",
+    "exact_change": "import sys and assign sys.modules[spec.name] = module before spec.loader.exec_module(module)",
+    "scientific_method_change": false,
+    "calibration_change": false,
+    "threshold_change": false,
+    "candidate_or_routing_change": false,
+    "observation_or_selection_change": false
+  },
+  "unchanged_method": {
+    "selector_sha256": "257fb647485a31b0c1c009b3fbc492f17a3bfda94058a0f2c5691af987bb36cf",
+    "calibration_sha256": "ad1801ec348a61cbcd50bfbc4a991c8deaa503b79f454c7f1d779567042ebf47",
+    "threshold": 1.2544946670532227,
+    "base_budget": 32,
+    "maximum_budget": 64,
+    "abstention": "none"
+  },
+  "retry_contract": [
+    "commit and push this revision plus corrected wrapper before retry",
+    "export the corrected wrapper and unchanged exact method from that commit",
+    "use the same sanitized input bytes, public model, lens, and frozen calibration",
+    "use a new empty create-only method-output directory",
+    "rerun all access probes",
+    "freeze before any private selection or truth read"
+  ]
+}

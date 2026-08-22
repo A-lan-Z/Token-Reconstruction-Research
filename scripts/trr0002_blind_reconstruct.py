@@ -7,6 +7,7 @@ import argparse
 import importlib.util
 import json
 from pathlib import Path
+import sys
 import time
 from typing import Any
 
@@ -52,6 +53,7 @@ def import_reference(path: Path) -> Any:
     if spec is None or spec.loader is None:
         raise RuntimeError("unable to import frozen public-prefix reference")
     module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     return module
 
