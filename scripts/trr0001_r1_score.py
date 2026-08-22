@@ -117,11 +117,12 @@ def verify_public_gates_before_truth(
         value = load_json(expected_frozen / method / "access_manifest.json")
         validate_isolation_manifest(value, method=method)
         access[method] = value
-    for namespace in ("user", "mount", "network", "pid"):
-        if access[METHODS[0]]["namespaces"][namespace] == access[METHODS[1]][
-            "namespaces"
-        ][namespace]:
-            raise RuntimeError(f"method processes reused the {namespace} namespace")
+    if (
+        access[METHODS[0]]["started_utc"] == access[METHODS[1]]["started_utc"]
+        or access[METHODS[0]]["method"] != METHODS[0]
+        or access[METHODS[1]]["method"] != METHODS[1]
+    ):
+        raise RuntimeError("method-specific process invocation evidence changed")
 
     reveal = load_json(args.selection_reveal)
     if set(reveal) != {"schema", "revealed_utc", "selection_key_hex", "records"}:

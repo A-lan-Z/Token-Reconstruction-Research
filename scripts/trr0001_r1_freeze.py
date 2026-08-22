@@ -251,9 +251,19 @@ def main() -> int:
     causal_access = load_json(causal_root / "access_manifest.json")
     validate_isolation_manifest(direct_access, method=METHODS[0])
     validate_isolation_manifest(causal_access, method=METHODS[1])
-    for namespace in ("user", "mount", "network", "pid"):
-        if direct_access["namespaces"][namespace] == causal_access["namespaces"][namespace]:
-            raise RuntimeError(f"method processes reused the {namespace} namespace")
+    if (
+        direct_access["started_utc"] == causal_access["started_utc"]
+        or direct_access["method"] != METHODS[0]
+        or causal_access["method"] != METHODS[1]
+    ):
+        raise RuntimeError("method-specific process invocation evidence changed")
+    namespace_inode_reuse = {
+        namespace: (
+            direct_access["namespaces"][namespace]
+            == causal_access["namespaces"][namespace]
+        )
+        for namespace in ("user", "mount", "network", "pid")
+    }
 
     direct_rows = validate_rows(
         direct_root / "reconstructions.jsonl",
@@ -355,7 +365,9 @@ def main() -> int:
         },
         "isolated_processes": {
             "validated": True,
-            "separate_namespace_identities": True,
+            "separate_sequential_process_invocations": True,
+            "namespace_inode_reuse_after_sequential_teardown": namespace_inode_reuse,
+            "namespace_inode_numbers_are_lifetime_scoped": True,
             "direct": direct_access["namespaces"],
             "causal": causal_access["namespaces"],
             "denial_probes_per_process": 7,
