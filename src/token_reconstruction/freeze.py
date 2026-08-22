@@ -60,7 +60,15 @@ def freeze_payload(
         _regular_file(path, "frozen artifact")
         relative = _relative(path, repository_root)
         lowered = relative.casefold()
-        if any(fragment in lowered for fragment in ("truth", "oracle", "target_lora")):
+        lowered_parts = tuple(part.casefold() for part in Path(relative).parts)
+        private_target_path = any(
+            part == "evaluator_private" or part.startswith("target_lora")
+            for part in lowered_parts
+        )
+        if (
+            any(fragment in lowered for fragment in ("truth", "oracle"))
+            or private_target_path
+        ):
             raise FreezeError(f"prohibited private artifact in frozen bundle: {relative}")
         entries.append(
             {

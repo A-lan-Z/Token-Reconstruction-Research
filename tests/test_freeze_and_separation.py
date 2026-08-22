@@ -114,3 +114,39 @@ def test_receipt_is_deterministic_for_equal_bytes(tmp_path: Path) -> None:
         receipts.append(payload)
     assert receipts[0] == receipts[1]
     assert json.dumps(receipts[0], sort_keys=True) == json.dumps(receipts[1], sort_keys=True)
+
+
+
+def test_public_unavailable_target_condition_is_not_private_path(
+    tmp_path: Path,
+) -> None:
+    plan, frozen, receipt, _ = _fixture(tmp_path)
+    observation = frozen / "unavailable_target_lora_cut0.safetensors"
+    observation.write_bytes(b"public activation observation")
+    payload = create_freeze_receipt(
+        repository_root=tmp_path,
+        frozen_root=frozen,
+        plan_path=plan,
+        receipt_path=receipt,
+        preregistration_commit=PREREGISTRATION_COMMIT,
+        created_utc="2026-08-22T00:00:00Z",
+    )
+    assert any(
+        entry["path"].endswith("unavailable_target_lora_cut0.safetensors")
+        for entry in payload["entries"]
+    )
+
+
+def test_private_target_lora_path_is_rejected(tmp_path: Path) -> None:
+    plan, frozen, receipt, _ = _fixture(tmp_path)
+    private = frozen / "target_lora.safetensors"
+    private.write_bytes(b"private target")
+    with pytest.raises(FreezeError, match="prohibited private artifact"):
+        create_freeze_receipt(
+            repository_root=tmp_path,
+            frozen_root=frozen,
+            plan_path=plan,
+            receipt_path=receipt,
+            preregistration_commit=PREREGISTRATION_COMMIT,
+            created_utc="2026-08-22T00:00:00Z",
+        )
