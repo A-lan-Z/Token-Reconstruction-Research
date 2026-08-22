@@ -1,0 +1,138 @@
+# Dual-benchmark comparison protocol
+
+Status: mandatory evaluation procedure from TRR-0001-R2 onward.
+
+`RESEARCH_CHARTER.md` remains the sole authoritative research definition. This
+protocol operationalizes its like-for-like evaluation requirement and does not
+ban any charter-permitted method.
+
+## Purpose
+
+Every active reconstruction method must be evaluated in both canonical setups.
+The two setups answer different questions, so a complete matrix is more useful
+than choosing one setup and losing comparability with earlier work.
+
+## Canonical setups
+
+### clean-pile-lora-64x40
+
+- 64 records, 40 tokens per record including the known BOS, and 39 scored tokens
+  per record;
+- pinned Pile-10k records and Llama-3.2-1B-Instruct public surrogate;
+- the unavailable rank-4 target-prefix LoRA condition is primary;
+- cuts 0, 4, and 8 are retained for the direct and causal depth map, with cut 4
+  as the common cross-setup comparison boundary;
+- clean runs use cryptographic selection commitment, sanitized observations,
+  fail-closed reconstruction isolation, output freeze, and truth reveal only
+  after all registered methods have frozen their outputs;
+- no persistent state enters the first evaluated record unless an explicitly
+  registered adapted arm preregisters its permitted earlier-record state.
+
+### historical-finance-strict-bos-128x128
+
+- 128 right-padded Finance-Instruct rows, up to 128 positions each, at the
+  generation-300 target's layer-4 input;
+- exactly one known seed token (BOS); every valid post-BOS token is scored;
+- the pinned public Alpaca affine lens and public Llama layers 0--3 are used by
+  the historical strict-BOS cascade;
+- the exact native historical runner remains the reference execution for that
+  method and setup;
+- this opened source is retrospective evidence. A future fresh replacement must
+  retain the same declared geometry and scoring contract before it can replace
+  the historical setup in this protocol.
+
+## Active method registry
+
+| Method ID | Frozen decision rule | Native setup |
+|---|---|---|
+| `direct_inverse_k16` | public-data affine inverse, full-vocabulary cosine top-16 proposal, choose proposal rank 1 | clean 64x40 |
+| `causal_public_surrogate_k16` | the same frozen top-16 proposals, re-rank with the public prefix and reconstructed prefix, no target-prefix calls | clean 64x40 |
+| `strict_bos_adaptive_a1_a2` | public Alpaca A1 top-512, confidence fast path 0.999, progressive public-prefix A2 tiers 32/128/512, normalized-winner threshold 2.0, then suffix abstention | historical 128x128 |
+
+The word `adaptive` in `strict_bos_adaptive_a1_a2` refers to its per-token tier
+and route selection. Learned online A1 adapters are separate methods and must be
+registered as separate rows if reactivated.
+
+## Required matrix
+
+Every result must contain these six cells:
+
+| Method | clean 64x40 | historical 128x128 |
+|---|---:|---:|
+| direct inverse K16 | required | required |
+| causal public-surrogate K16 | required | required |
+| strict-BOS adaptive A1+A2 | required | required |
+
+Adding an active method adds one required cell in each setup. Adding a canonical
+setup adds one required cell for every active method. A task with a missing cell
+is incomplete for overall comparison, even when its available cells succeeded.
+
+## Native executions and benchmark-compatible ports
+
+An exact native execution uses the method's frozen source, assets, constants,
+and native geometry unchanged.
+
+A benchmark-compatible port may change only:
+
+- tensor packing, padding, or row batching;
+- record identifiers and input/output serialization;
+- loop bounds implied by the benchmark's declared record and sequence geometry;
+- scoring adapters needed to express the common metrics.
+
+A port must not change candidate budgets, thresholds, candidate ordering,
+scoring functions, cache semantics, abstention behavior, inverse or lens state,
+or truth access. Each port must record its differences and pass a semantic check
+against the native implementation on a shared compatible fixture when one
+exists. Reports must label exact and ported executions separately.
+
+If a method genuinely cannot be ported without changing its decision rule, the
+cell records a failed exact attempt and the task remains comparison-incomplete;
+incompatibility is not silently treated as a completed comparison.
+
+## Execution and truth opening
+
+For a fresh confirmatory run:
+
+1. preregister the complete active-method matrix;
+2. commit method identities, fixed assets, constants, seeds, and port hashes;
+3. prepare only charter-permitted observations for each setup;
+4. run and freeze every cell before opening that setup's truth;
+5. verify the freeze and matrix completeness;
+6. reveal truth once, score every frozen cell with the same evaluator, and do
+   not rerun selectively;
+7. preserve failed runs and deviations.
+
+Backfills on already opened records must be labelled retrospective and cannot be
+promoted to fresh confirmatory evidence. They are still required to restore the
+comparison matrix and to test implementations.
+
+## Common reporting
+
+Report within each setup:
+
+- post-BOS end-to-end token accuracy, with abstentions counted incorrect;
+- exact record/row count and rate;
+- coverage and selective accuracy for methods that can abstain;
+- candidate proposal recall when candidate sets exist;
+- candidate simulations, public-model evaluations, runtime phase breakdown,
+  peak memory, and implementation complexity;
+- exact method and port identity, artifact hashes, environment, and failures.
+
+Use paired record-level differences and uncertainty where the records permit it.
+Compare methods within each setup. Across-setup differences measure robustness
+to the setup change; do not pool their tokens or present a single averaged score.
+
+## Claim rule
+
+`better overall`, `best method`, and replacement claims require the complete
+matrix. A method may still be called better on one named setup when that cell is
+valid and the claim is explicitly limited to that setup. Runtime claims use the
+same timing boundary and hardware within a setup.
+
+## TRR-0001-R2 backfill status
+
+TRR-0001-R2 backfills all six existing cells after both source truths were
+already available. These results are retrospective comparability evidence, not
+a new blind confirmation. The clean TRR-0001-R1 direct and causal outputs remain
+the governing blind results for their native cells; R2 reruns test reproducibility
+and add the previously missing ports.
