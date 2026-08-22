@@ -474,10 +474,19 @@ def main() -> int:
                         "correctness": measured["correctness"],
                         "true_in_top16": measured["true_in_top16"],
                         "true_token_ranks": ranks[record_index].tolist(),
-                        "amortized_seconds": (
-                            frozen["direct_amortized_seconds"]
+                        "proposal_amortized_seconds": frozen["direct_amortized_seconds"],
+                        "selection_amortized_seconds": (
+                            0.0
                             if method == "direct_inverse"
                             else frozen["causal_amortized_seconds"]
+                        ),
+                        "amortized_seconds": (
+                            frozen["direct_amortized_seconds"]
+                            + (
+                                0.0
+                                if method == "direct_inverse"
+                                else frozen["causal_amortized_seconds"]
+                            )
                         ),
                     }
                     if method == "causal_public_surrogate_search":
