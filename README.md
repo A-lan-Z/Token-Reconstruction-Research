@@ -2,7 +2,7 @@
 
 This repository is a clean starting point for research on recovering discrete input tokens from an observed intermediate activation at a declared cut in a transformer.
 
-The canonical problem statement is [`RESEARCH_GOAL_AND_ACCESS_MODEL.md`](RESEARCH_GOAL_AND_ACCESS_MODEL.md).
+The canonical problem statement is [`RESEARCH_CHARTER.md`](RESEARCH_CHARTER.md).
 
 ## Research objective
 
