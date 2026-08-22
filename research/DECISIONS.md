@@ -22,6 +22,21 @@ identifier noninterference audit does not turn it into accepted blind evidence.
 These decisions rely only on the fresh R1 access-compliant run and remain scoped
 to its model, data, target update, cuts, sequence geometry, and budget.
 
+TRR-0001-R2 adds the following cross-setup decisions:
+
+- every active method must be evaluated on both registered benchmark setups;
+- causal public-surrogate K16 beats direct inverse K16 on both setups;
+- strict-BOS adaptive A1+A2 wins on the historical finance setup but loses on
+  the clean Pile/LoRA setup, so there is no setup-independent winner;
+- the strict method's clean-setup weakness is primarily abstention/coverage:
+  its top-512 candidate recall is 99.84% and its selective accuracy is 100%,
+  but it covers only 13.26% of scored tokens; and
+- the R2 backfill is retrospective compatibility evidence and does not replace
+  the fresh blind-confirmatory status of the R1 clean run.
+
+These decisions remain scoped to the two registered setups and tested method
+configurations. They do not impose a scientific method ban.
+
 ## Administrative entries
 
 - TRR-0000 bootstraps and validates the repository-backed relay. It selects no
@@ -36,3 +51,6 @@ to its model, data, target update, cuts, sequence geometry, and budget.
   `ACCESS_INTERFACE_NONCOMPLIANT_ORIGINAL_RUN` and requires a fixed-method clean
   confirmatory run. This is a revision of TRR-0001, not a new scientific
   direction, and TRR-0002 remains unauthorized.
+- User-directed revision TRR-0001-R2 establishes the durable dual-benchmark
+  protocol, backfills every existing method across both setups, and leaves
+  TRR-0002 unassigned and unstarted.
