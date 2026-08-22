@@ -68,7 +68,19 @@ def passing_manifest() -> dict:
         },
         "mounts": {
             "mountinfo_sha256": "a" * 64,
-            "entries": ["1 0 0:1 / / ro - tmpfs tmpfs ro"],
+            "entries": [
+                "1 0 0:1 / / ro - tmpfs tmpfs ro",
+                "2 1 0:2 / /code ro - tmpfs tmpfs ro",
+                "3 1 0:3 / /etc ro - tmpfs tmpfs ro",
+                "4 1 0:4 / /input ro - tmpfs tmpfs ro",
+                "5 1 0:5 / /model-repo ro - tmpfs tmpfs ro",
+                "6 1 0:6 / /site-packages ro - tmpfs tmpfs ro",
+                "7 1 0:7 / /usr ro - tmpfs tmpfs ro",
+                "8 7 0:8 / /usr/lib/wsl/lib ro - tmpfs tmpfs ro",
+                "9 1 0:9 / /dev/shm rw - tmpfs tmpfs rw",
+                "10 1 0:10 / /output rw - tmpfs tmpfs rw",
+                "11 1 0:11 / /tmp rw - tmpfs tmpfs rw",
+            ],
             "read_only": [
                 "/",
                 "/code",
@@ -78,7 +90,7 @@ def passing_manifest() -> dict:
                 "/site-packages",
                 "/usr",
             ],
-            "writable": ["/output", "/tmp"],
+            "writable": ["/dev/shm", "/output", "/tmp"],
         },
         "permissions": {
             "root_write_denied": True,

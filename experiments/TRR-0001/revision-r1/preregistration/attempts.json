@@ -21,6 +21,24 @@
       "exit_status": 1,
       "result": "the public-field scanner rejected a benign tokenizer option whose field name contained source_text; no plan was written",
       "resolution": "renamed the public option to add_special_tokens while retaining its false value, preserved attempt evidence, and reran create-only"
+    },
+    {
+      "operation": "native namespace boundary smoke attempt 1 with deliberately absent sanitized config",
+      "exit_status": 1,
+      "result": "the minimal code export omitted access.py and io.py required by the package initializer, so the probe did not start",
+      "resolution": "added those two committed code dependencies to the narrow export and preserved the combined output"
+    },
+    {
+      "operation": "native namespace boundary smoke attempt 2 with deliberately absent sanitized config",
+      "exit_status": 1,
+      "result": "all seven access-denial probes, read-only/writable probes, user/mount/network/PID namespace identity checks, and network-route denial passed; reconstruction then failed at the expected absent sanitized-config gate",
+      "resolution": "accepted as boundary-smoke evidence only, strengthened validation to parse exact mount options, and retained the create-only output outside the clean run"
+    },
+    {
+      "operation": "exact mount-table audit of boundary smoke attempt 2",
+      "exit_status": 1,
+      "result": "the audit found writable nested WSL library mounts below the declared read-only /usr bind",
+      "resolution": "changed the launcher to recursively remount every nested public bind read-only and changed validation to fail on any writable nested public mount"
     }
   ]
 }

@@ -94,10 +94,31 @@ def validate_isolation_manifest(value: Mapping[str, Any], *, method: str) -> Non
     )
     if mounts["read_only"] != ["/", "/code", "/etc", "/input", "/model-repo", "/site-packages", "/usr"]:
         raise IsolationError("read-only mount contract changed")
-    if mounts["writable"] != ["/output", "/tmp"]:
+    if mounts["writable"] != ["/dev/shm", "/output", "/tmp"]:
         raise IsolationError("writable mount contract changed")
     if not isinstance(mounts["entries"], list) or not mounts["entries"]:
         raise IsolationError("exact mount table is absent")
+    mount_options: dict[str, set[str]] = {}
+    for entry in mounts["entries"]:
+        parts = str(entry).split()
+        if len(parts) < 10:
+            raise IsolationError("mount table entry is malformed")
+        target = parts[4]
+        if target in mount_options:
+            raise IsolationError("mount target is duplicated")
+        mount_options[target] = set(parts[5].split(","))
+    for target in mounts["read_only"]:
+        if target not in mount_options or "ro" not in mount_options[target]:
+            raise IsolationError(f"declared read-only mount is not read-only: {target}")
+    for target, options in mount_options.items():
+        if any(
+            prefix != "/" and (target == prefix or target.startswith(prefix + "/"))
+            for prefix in mounts["read_only"]
+        ) and "ro" not in options:
+            raise IsolationError(f"nested public mount is writable: {target}")
+    for target in mounts["writable"]:
+        if target not in mount_options or "rw" not in mount_options[target]:
+            raise IsolationError(f"declared writable mount is not writable: {target}")
 
     permissions = value["permissions"]
     require_exact_keys(

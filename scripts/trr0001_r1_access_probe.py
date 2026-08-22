@@ -149,7 +149,7 @@ def main() -> int:
             "mountinfo_sha256": hashlib.sha256(mountinfo_bytes).hexdigest(),
             "entries": mount_entries,
             "read_only": ["/", "/code", "/etc", "/input", "/model-repo", "/site-packages", "/usr"],
-            "writable": ["/output", "/tmp"],
+            "writable": ["/dev/shm", "/output", "/tmp"],
         },
         "permissions": {
             "root_write_denied": write_probe(Path("/")),

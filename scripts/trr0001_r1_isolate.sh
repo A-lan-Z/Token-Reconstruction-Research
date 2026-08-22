@@ -73,11 +73,16 @@ mkdir -p   "$trr_r1_stage/code"   "$trr_r1_stage/dev/shm"   "$trr_r1_stage/etc" 
 /usr/bin/mount --bind "$trr_r1_stage" "$trr_r1_stage"
 
 bind_read_only() {
+  local -a trr_r1_mount_targets
   local trr_r1_source=$1
   local trr_r1_destination=$2
+  local trr_r1_position
   /usr/bin/mount --rbind "$trr_r1_source" "$trr_r1_destination"
   /usr/bin/mount --make-rslave "$trr_r1_destination"
-  /usr/bin/mount -o remount,bind,ro "$trr_r1_destination"
+  mapfile -t trr_r1_mount_targets < <(/usr/bin/findmnt -Rrn -o TARGET "$trr_r1_destination")
+  for ((trr_r1_position=${#trr_r1_mount_targets[@]} - 1; trr_r1_position >= 0; trr_r1_position--)); do
+    /usr/bin/mount -o remount,bind,ro "${trr_r1_mount_targets[$trr_r1_position]}"
+  done
 }
 
 /usr/bin/mount -t tmpfs -o mode=1777,nosuid,nodev tmpfs "$trr_r1_stage/tmp"
