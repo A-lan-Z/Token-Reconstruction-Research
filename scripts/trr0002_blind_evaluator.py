@@ -47,6 +47,8 @@ TARGET_LORA_SHA256 = "34d92f1e664236bfa1990b10148e8ad52c60b16e72ed0ff4c7eb7da8d1
 LENS_SHA256 = "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742"
 CALIBRATION_SHA256 = "ad1801ec348a61cbcd50bfbc4a991c8deaa503b79f454c7f1d779567042ebf47"
 CALIBRATION_EXECUTION_COMMIT = "bc24a868fdea9a62f2d20081c0d0387cff6e4b4c"
+PUBLIC_COMMITMENT_SCHEMA = "token-reconstruction.trr0002-selection-commitment.v1"
+PRIVATE_SELECTION_SCHEMA = "token-reconstruction.trr0002-private-selection.v1"
 
 
 def parse_args() -> argparse.Namespace:
@@ -73,10 +75,10 @@ def copy_exclusive(source: Path, destination: Path) -> None:
 def private_records(private: dict[str, Any], public: dict[str, Any]) -> list[dict[str, Any]]:
     require_exact_keys(
         private,
-        {"schema", "created_utc", "selection_key_hex", "records"},
+        {"schema", "task_id", "created_utc", "selection_key_hex", "records"},
         label="TRR-0002 private selection",
     )
-    if private["schema"] != PRIVATE_SELECTION_SCHEMA:
+    if private["schema"] != PRIVATE_SELECTION_SCHEMA or private["task_id"] != "TRR-0002":
         raise RuntimeError("private selection schema changed")
     try:
         key = bytes.fromhex(str(private["selection_key_hex"]))
@@ -85,7 +87,8 @@ def private_records(private: dict[str, Any], public: dict[str, Any]) -> list[dic
     records = private["records"]
     if len(key) != 32 or not isinstance(records, list) or len(records) != 64:
         raise RuntimeError("private selection geometry changed")
-    require_opaque_record_order([row.get("record_id") for row in records])
+    if [row.get("record_id") for row in records] != [f"blind-r1-{position:06d}" for position in range(1, 65)]:
+        raise RuntimeError("TRR-0002 opaque record order changed")
     if commitment_digest(key, records) != public["commitment"]:
         raise RuntimeError("private selection does not match its public commitment")
     for row in records:
@@ -138,7 +141,8 @@ def main() -> int:
     ):
         raise RuntimeError("blind preregistration identity changed")
     public = load_json(args.public_commitment)
-    validate_public_commitment(public)
+    if public.get("schema") != PUBLIC_COMMITMENT_SCHEMA or public.get("task_id") != "TRR-0002" or public.get("record_count") != 64 or public.get("source_identity_disclosed") is not False or public.get("selection_key_disclosed") is not False:
+        raise RuntimeError("TRR-0002 public commitment changed")
     records = private_records(load_json(args.private_selection), public)
     if sha256_file(args.target_lora) != TARGET_LORA_SHA256:
         raise RuntimeError("unavailable target LoRA hash changed")

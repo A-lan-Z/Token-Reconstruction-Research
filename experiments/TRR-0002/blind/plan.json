@@ -1,0 +1,134 @@
+{
+  "schema": "token-reconstruction.trr0002-blind-preregistration.v1",
+  "task_id": "TRR-0002",
+  "phase_id": "TRR-0002-FRESH-BLIND-CONFIRMATION",
+  "created_utc": "2026-08-22T17:04:52Z",
+  "status": "COMMITTED_BEFORE_FRESH_BLIND_OBSERVATIONS",
+  "truth_opened": false,
+  "method": {
+    "id": "a1_scale_calibrated_adaptive_causal_k32_to64",
+    "calibration_freeze_commit": "68974c3b23806fa4957f4ba40b7517c721c30e09",
+    "calibration_execution_commit": "bc24a868fdea9a62f2d20081c0d0387cff6e4b4c",
+    "calibration": {
+      "path": "experiments/TRR-0002/calibration/frozen_calibration.json",
+      "sha256": "ad1801ec348a61cbcd50bfbc4a991c8deaa503b79f454c7f1d779567042ebf47",
+      "threshold": 1.2544946670532227,
+      "base_budget": 32,
+      "maximum_budget": 64,
+      "abstention": "none"
+    },
+    "revision_after_this_plan": "forbidden"
+  },
+  "selection": {
+    "public_commitment": {
+      "path": "experiments/TRR-0002/blind/selection_commitment.json",
+      "sha256": "52643012895248691e9091255bbb91476a7feaac7156616296cca437a28d5545",
+      "schema": "token-reconstruction.trr0002-selection-commitment.v1",
+      "commitment": "1f8da8798b3b3e8d9bd19e0fbf176403272a6938a6dad495f42c17bc02a1b679"
+    },
+    "records": 64,
+    "sequence_tokens": 40,
+    "scored_tokens": 2496,
+    "private_key_and_mapping": "evaluator-only until verified prediction freeze",
+    "excluded_unique_records": 352,
+    "excluded_groups": {
+      "original_trr0001": 288,
+      "previous_fresh_trr0001_r1": 64,
+      "public_calibration": 96
+    },
+    "opaque_id_note": "the non-truth opaque labels retain the compatibility prefix blind-r1, while the commitment schema, task, phase, digest, and selected mapping are TRR-0002-specific"
+  },
+  "condition": {
+    "dataset": "NeelNanda/pile-10k@127bfedcd5047750df5ccf3a12979a47bfa0bafa",
+    "target_prefix": "pinned public base embedding plus evaluator-only retained LoRA in decoder layers 0-3",
+    "target_lora": {
+      "path": "outputs/TRR-0001/evaluator_private/target_lora.safetensors",
+      "sha256": "34d92f1e664236bfa1990b10148e8ad52c60b16e72ed0ff4c7eb7da8d15019f6",
+      "available_to_reconstructor": false
+    },
+    "cut_depth": 4,
+    "fresh_training_or_adaptation": 0,
+    "public_model": "meta-llama/Llama-3.2-1B-Instruct@9213176726f574b556790deb65791e0c5aa438b6",
+    "public_a1_lens_sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742"
+  },
+  "access_boundary": {
+    "mechanism": "new user, mount, network, and PID namespaces plus a minimal pivot-root chroot",
+    "read_only_inputs": [
+      "sanitized opaque observations and config",
+      "frozen calibration",
+      "public A1 lens",
+      "minimal exact code export",
+      "pinned public model",
+      "Python runtime and site packages"
+    ],
+    "denied": [
+      "repository workspace",
+      "private selection",
+      "fresh blind truth",
+      "target LoRA",
+      "dataset cache",
+      "canonical new truth",
+      "historical source root",
+      "network route"
+    ],
+    "only_writable_method_path": "empty create-only output directory",
+    "failure_policy": "any mount, permission, schema, artifact hash, access, network, or geometry failure exits nonzero"
+  },
+  "execution_order": {
+    "pre_freeze": [
+      "commit this plan, corrected selection commitment, and exact evaluation infrastructure",
+      "generate evaluator-only observations and truth",
+      "copy only sanitized observations, public lens, and frozen calibration into reconstructor input",
+      "export only exact necessary source files into the code root",
+      "run access probes inside the minimal chroot",
+      "run the frozen method without truth, source, dataset, or target-prefix access",
+      "freeze predictions, K64 candidates, proposal confidence, base and extra selection scores, normalized gap, route, cost, access evidence, sanitized inputs, and exact code hashes"
+    ],
+    "post_freeze": [
+      "verify every frozen byte and file set",
+      "open the evaluator-private key and mapping",
+      "verify the public HMAC commitment and opaque order",
+      "open truth and score without prediction revision"
+    ]
+  },
+  "freeze": {
+    "receipt": "experiments/TRR-0002/blind/freeze_receipt.json",
+    "required_before_private_selection_read": true,
+    "required_before_truth_read": true,
+    "mutation_policy": "all input, output, and code files become read-only after hashing"
+  },
+  "code": {
+    "selector_sha256": "257fb647485a31b0c1c009b3fbc492f17a3bfda94058a0f2c5691af987bb36cf",
+    "selection_sha256": "8d89df6fe2abe7e07bec6e01de8032f7c2622d12ed96044a9b691d0bfcd6d0bd",
+    "evaluator_sha256": "989d54f7028dbfbbb100c4dfea99e3c7925132bdfdd78af14d7d5fbff9c78bee",
+    "reconstructor_sha256": "72954c844159c927b98868320f4a623c913a231655335c24e5d51b66acc388a2",
+    "access_probe_sha256": "576088d5952e7cc1a17efd5b0aba88e49f7a24f445d9d8475ab5872e63610734",
+    "isolation_launcher_sha256": "528cc0c94d79de38c01e0b071b27aa08ce9f8f2a353a3abb5c3fe7730402025c",
+    "freeze_sha256": "dfb56bb78f4e7284503258a7c395e4d59e85b638545667be04a10a8d44d6d7af",
+    "score_sha256": "1ce7b25a809a5d35aaf8e9e64e1177473d8f18ea7e0386919aef5d6b6b4adae3"
+  },
+  "metrics": [
+    "token accuracy excluding BOS",
+    "exact-record rate",
+    "K64 proposal recall",
+    "conditional selector accuracy",
+    "proposal exclusions",
+    "selector errors given inclusion",
+    "expansion rate",
+    "record-bootstrap 95% interval",
+    "proposal, selection, and total compute seconds",
+    "logical and executed candidate simulations",
+    "peak CPU and CUDA memory"
+  ],
+  "new_setup_success": "token accuracy strictly greater than 0.8397",
+  "excluded_attempts": [
+    {
+      "path": "experiments/TRR-0002/blind/excluded-selection-attempt1",
+      "reason": "valid digest but inherited TRR-0001-R1 public metadata; excluded before observation generation"
+    },
+    {
+      "path": "experiments/TRR-0002/blind/excluded-selection-attempt2",
+      "reason": "attempted opaque-ID relabel was rejected by the inherited commitment payload validator; no commitment or private mapping was written"
+    }
+  ]
+}

@@ -27,6 +27,8 @@ from token_reconstruction.experiment_runtime import (
     write_json_exclusive,
 )
 from token_reconstruction.metrics import bootstrap_mean
+PUBLIC_COMMITMENT_SCHEMA = "token-reconstruction.trr0002-selection-commitment.v1"
+PRIVATE_SELECTION_SCHEMA = "token-reconstruction.trr0002-private-selection.v1"
 
 
 def parse_args() -> argparse.Namespace:
@@ -77,9 +79,10 @@ def main() -> int:
     verify_tree(args.code_root, receipt["code_files"])
 
     public = load_json(args.public_commitment)
-    validate_public_commitment(public)
+    if public.get("schema") != PUBLIC_COMMITMENT_SCHEMA or public.get("task_id") != "TRR-0002" or public.get("record_count") != 64 or public.get("source_identity_disclosed") is not False or public.get("selection_key_disclosed") is not False:
+        raise RuntimeError("TRR-0002 public commitment changed")
     private = load_json(args.private_selection)
-    if private.get("schema") != PRIVATE_SELECTION_SCHEMA:
+    if private.get("schema") != PRIVATE_SELECTION_SCHEMA or private.get("task_id") != "TRR-0002":
         raise RuntimeError("private selection schema changed")
     try:
         key = bytes.fromhex(str(private["selection_key_hex"]))
@@ -88,7 +91,8 @@ def main() -> int:
     private_records = private.get("records")
     if len(key) != 32 or not isinstance(private_records, list) or len(private_records) != 64:
         raise RuntimeError("private selection geometry changed")
-    require_opaque_record_order([row["record_id"] for row in private_records])
+    if [row["record_id"] for row in private_records] != [f"blind-r1-{position:06d}" for position in range(1, 65)]:
+        raise RuntimeError("TRR-0002 opaque record order changed")
     if commitment_digest(key, private_records) != public["commitment"]:
         raise RuntimeError("private selection does not open the public commitment")
     truth_rows = read_jsonl(args.truth)

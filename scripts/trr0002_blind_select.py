@@ -12,10 +12,8 @@ from datasets import load_dataset
 from transformers import AutoTokenizer
 
 from token_reconstruction.blind_commitment import (
-    private_selection_document,
-    public_commitment,
+    commitment_digest,
     select_private_records,
-    validate_public_commitment,
 )
 from token_reconstruction.experiment_runtime import (
     DATASET_ID,
@@ -26,6 +24,10 @@ from token_reconstruction.experiment_runtime import (
     utc_now,
     write_json_exclusive,
 )
+
+
+PUBLIC_SCHEMA = "token-reconstruction.trr0002-selection-commitment.v1"
+PRIVATE_SCHEMA = "token-reconstruction.trr0002-private-selection.v1"
 
 
 def parse_args() -> argparse.Namespace:
@@ -111,27 +113,53 @@ def main() -> int:
     )
     created_utc = args.created_utc or utc_now()
     key = secrets.token_bytes(32)
-    selected = select_private_records(
+    selected_legacy = select_private_records(
         key=key,
         dataset_revision=DATASET_REVISION,
         rows=rows,
         excluded_indices=excluded,
     )
+    selected = selected_legacy
     if {int(row["dataset_index"]) for row in selected} & excluded:
         raise RuntimeError("new blind selection overlaps an excluded record")
-    public = public_commitment(
-        key=key,
-        records=selected,
-        dataset_id=DATASET_ID,
-        dataset_revision=DATASET_REVISION,
-        created_utc=created_utc,
-    )
-    validate_public_commitment(public)
-    private = private_selection_document(
-        key=key,
-        records=selected,
-        created_utc=created_utc,
-    )
+    opaque_order = [row["record_id"] for row in selected]
+    expected_order = [f"blind-r1-{position:06d}" for position in range(1, 65)]
+    if opaque_order != expected_order:
+        raise RuntimeError("TRR-0002 opaque record order changed")
+    digest = commitment_digest(key, selected)
+    public = {
+        "schema": PUBLIC_SCHEMA,
+        "task_id": "TRR-0002",
+        "phase_id": "TRR-0002-FRESH-BLIND-CONFIRMATION",
+        "created_utc": created_utc,
+        "scheme": "HMAC-SHA256 over canonical private mapping with an evaluator-private 256-bit key",
+        "commitment": digest,
+        "dataset": {
+            "id": DATASET_ID,
+            "revision": DATASET_REVISION,
+            "split": "train",
+        },
+        "selection_algorithm": "eligible non-excluded rows ordered by HMAC-SHA256 of revision, row number, and text digest; first 64",
+        "eligibility": "at least 39 source tokens; prepend exactly one declared BOS",
+        "disjointness": {
+            "original_trr0001_records": len(original),
+            "previous_fresh_trr0001_r1_records": len(previous),
+            "public_calibration_records": len(calibration),
+            "unique_excluded_records": len(excluded),
+        },
+        "record_count": 64,
+        "opaque_record_order": opaque_order,
+        "source_identity_disclosed": False,
+        "selection_key_disclosed": False,
+        "reveal_gate": "only after calibrated predictions, confidence, route, sanitized configuration, code, and access evidence are frozen and verified",
+    }
+    private = {
+        "schema": PRIVATE_SCHEMA,
+        "task_id": "TRR-0002",
+        "created_utc": created_utc,
+        "selection_key_hex": key.hex(),
+        "records": selected,
+    }
     args.private_selection.parent.mkdir(parents=True, exist_ok=True)
     write_json_exclusive(args.private_selection, private)
     args.private_selection.chmod(0o600)
@@ -140,6 +168,7 @@ def main() -> int:
     print(
         {
             "status": "TRR0002_FRESH_SELECTION_COMMITTED_WITHOUT_SOURCE_DISCLOSURE",
+            "schema": PUBLIC_SCHEMA,
             "records": len(selected),
             "excluded_original": len(original),
             "excluded_previous_fresh": len(previous),

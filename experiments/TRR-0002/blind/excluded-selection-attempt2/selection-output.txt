@@ -1,0 +1,18 @@
+Using the latest cached version of the dataset since NeelNanda/pile-10k couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'default' at /home/alanz/.cache/huggingface/datasets/NeelNanda___pile-10k/default/0.0.0/127bfedcd5047750df5ccf3a12979a47bfa0bafa (last modified on Tue Jul 14 16:04:02 2026).
+Token indices sequence length is longer than the specified maximum sequence length for this model (915641 > 131072). Running this sequence through the model will result in indexing errors
+Traceback (most recent call last):
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/scripts/trr0002_blind_select.py", line 187, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/scripts/trr0002_blind_select.py", line 132, in main
+    digest = commitment_digest(key, selected)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/src/token_reconstruction/blind_commitment.py", line 189, in commitment_digest
+    return hmac.new(key, canonical_bytes(commitment_payload(records)), hashlib.sha256).hexdigest()
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/src/token_reconstruction/blind_commitment.py", line 161, in commitment_payload
+    require_opaque_record_order([row.get("record_id") for row in records], count=len(records))
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/src/token_reconstruction/blind_commitment.py", line 61, in require_opaque_record_order
+    raise BlindProtocolError("opaque record IDs or their order changed")
+token_reconstruction.blind_commitment.BlindProtocolError: opaque record IDs or their order changed
