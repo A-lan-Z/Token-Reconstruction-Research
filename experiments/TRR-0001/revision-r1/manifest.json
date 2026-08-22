@@ -1301,7 +1301,7 @@
     "clean_preregistration": "4169e4444dd99ebdc81a9adbbb9610dd8afc9555",
     "fixed_reconstruction_implementation": "970fdf6c65883bb93878c8458141f1e0bcef3085",
     "original_noninterference_audit_code": "c2145618fff977c0da864b87324f4e7967792246",
-    "r1_scientific_evidence": "PENDING_METADATA_BINDING"
+    "r1_scientific_evidence": "d729e3a614fc3367268eefb4b410b1b5bec4b24c"
   },
   "conclusions": {
     "not_supported": [
@@ -1315,6 +1315,15 @@
       "recoverability decreases with cut depth",
       "proposal recall is the dominant primary bottleneck"
     ]
+  },
+  "delivery": {
+    "branch": "task/TRR-0001",
+    "merge_authorization": "NOT_GRANTED",
+    "merged": false,
+    "next_task_started": false,
+    "previous_reviewed_head": "2a89a578921afc48dc3b54c65a2c39c35c422134",
+    "pull_request": 2,
+    "scientific_evidence_commit": "d729e3a614fc3367268eefb4b410b1b5bec4b24c"
   },
   "freeze_reveal_truth_chronology": {
     "freeze_created_utc": "2026-08-22T13:01:17Z",
@@ -2104,6 +2113,50 @@
     "title": "Repair the blind evaluation and rerun TRR-0001 cleanly"
   },
   "validation": {
+    "changed_file_comparison": {
+      "command": "git diff --name-status 2a89a578921afc48dc3b54c65a2c39c35c422134..d729e3a614fc3367268eefb4b410b1b5bec4b24c",
+      "exit_status": 0,
+      "output": {
+        "bytes": 5041,
+        "path": "experiments/TRR-0001/revision-r1/changed-files-from-reviewed-head.txt",
+        "sha256": "c806fbdf05984bc2fb710cb6a90fbc0ba4122d3b22868a266b8eb3ee197b272e"
+      },
+      "time": {
+        "bytes": 822,
+        "path": "experiments/TRR-0001/revision-r1/changed-files-from-reviewed-head-time.txt",
+        "sha256": "6e4fab033d39a04ce48cb52b67530a460f3c992a73401f87763ba49a9063acbd"
+      }
+    },
+    "final_focused_access_separation_tests": {
+      "command": "env PYTHONPATH=src pytest -q tests/test_trr0001_r1_protocol.py tests/test_trr0001_r1_isolation.py tests/test_freeze_and_separation.py",
+      "exit_status": 0,
+      "output": {
+        "bytes": 99,
+        "path": "experiments/TRR-0001/revision-r1/final-focused-tests-output.txt",
+        "sha256": "34a827123d2183f654609d48e0a243966ffd563ba76e3cd9b738232413b66d4d"
+      },
+      "summary": ".................                                                        [100%]\n17 passed in 1.68s",
+      "time": {
+        "bytes": 866,
+        "path": "experiments/TRR-0001/revision-r1/final-focused-tests-time.txt",
+        "sha256": "8aff32cf7c85a7f4428b434df11c6a058d7dba098334d38fc5301a1401291260"
+      }
+    },
+    "final_full_source_checkout_tests": {
+      "command": "env PYTHONPATH=src pytest -q",
+      "exit_status": 0,
+      "output": {
+        "bytes": 99,
+        "path": "experiments/TRR-0001/revision-r1/final-full-tests-output.txt",
+        "sha256": "754a6810c214a620854f7f3a75e12182b468efaa055250092c2595f43d3b5a15"
+      },
+      "summary": "...................................                                      [100%]\n35 passed in 2.00s",
+      "time": {
+        "bytes": 762,
+        "path": "experiments/TRR-0001/revision-r1/final-full-tests-time.txt",
+        "sha256": "cd1c9d08b07d0f02118175c999466230339a5d552bed6db70c4341af1c4e91f4"
+      }
+    },
     "final_integrity": {
       "exit_status": 0,
       "output": {
@@ -2129,6 +2182,36 @@
         "sha256": "525ed83d90decc0f31e97beef6b43fc7f5a77d01fd1d36059289e8e701a13862"
       },
       "tracked_json_files_parsed_before_this_manifest": 32
+    },
+    "final_source_compilation": {
+      "command": "python3 -m py_compile $(git ls-files '*.py')",
+      "exit_status": 0,
+      "output": {
+        "bytes": 0,
+        "path": "experiments/TRR-0001/revision-r1/final-pycompile-output.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "time": {
+        "bytes": 2194,
+        "path": "experiments/TRR-0001/revision-r1/final-pycompile-time.txt",
+        "sha256": "63ad82b51817421904130c54329acacf797326894520d96a4db5b405171daa66"
+      }
+    },
+    "final_tracked_json_parse": {
+      "command": "python3 -c 'import json,subprocess; from pathlib import Path; raw=subprocess.check_output([\"git\",\"ls-files\",\"-z\",\"*.json\"]); paths=[Path(x.decode()) for x in raw.split(b\"\\0\") if x]; [json.loads(p.read_text()) for p in paths]; print(f\"PASS_TRACKED_JSON {len(paths)}\")'",
+      "exit_status": 0,
+      "files_parsed": 35,
+      "output": {
+        "bytes": 21,
+        "path": "experiments/TRR-0001/revision-r1/final-json-parse-output.txt",
+        "sha256": "0cd116e432bc34e994b20ca173b48e7d8b2254b23dc88445383168bb5f562ded"
+      },
+      "result": "PASS_TRACKED_JSON 35",
+      "time": {
+        "bytes": 985,
+        "path": "experiments/TRR-0001/revision-r1/final-json-parse-time.txt",
+        "sha256": "8146f81a545c57537ac4f6484c0c1ff6eead89a1e398ac29ac7e4af7ff0c6cd0"
+      }
     },
     "focused_access_separation_tests": {
       "exit_status": 0,
@@ -2158,11 +2241,28 @@
         "sha256": "ca5786401f0739e450a6f62ed17bbfa237ca7b8d0867f627bd2618cb5ae8c388"
       }
     },
-    "remaining_delivery_checks": [
-      "parse every final committed JSON file",
-      "validate final patch whitespace excluding only verbatim CRLF packets",
-      "compare changed files from the previous reviewed head to the R1 evidence commit"
-    ],
+    "post_manifest_final_integrity": {
+      "command": "env PYTHONPATH=src python3 scripts/trr0001_r1_validate.py --repository-root . --output experiments/TRR-0001/revision-r1/final_validation_post_manifest.json",
+      "exit_status": 0,
+      "output": {
+        "bytes": 2918,
+        "path": "experiments/TRR-0001/revision-r1/final-validation-post-manifest-output.txt",
+        "sha256": "d395889b0b3e2c72ad926a7dcececdf4c85ad92431595dfd3fd7ac5df6936c70"
+      },
+      "record": {
+        "bytes": 3332,
+        "path": "experiments/TRR-0001/revision-r1/final_validation_post_manifest.json",
+        "sha256": "9efdde2c72dace918b2db31fe09549f1421271802744c274be4e0d0ff2f21f3f"
+      },
+      "result": "PASS_ALL_R1_INTEGRITY_CHECKS",
+      "time": {
+        "bytes": 883,
+        "path": "experiments/TRR-0001/revision-r1/final-validation-post-manifest-time.txt",
+        "sha256": "197ce5e6f01f1cc56ae1a89be4461c62c7e9f55f386bf6e01cc1319b81af1dd4"
+      },
+      "tracked_json_files_parsed": 34
+    },
+    "remaining_delivery_checks": [],
     "source_compilation": {
       "exit_status": 0,
       "output": {
@@ -2174,6 +2274,21 @@
         "bytes": 2157,
         "path": "experiments/TRR-0001/revision-r1/pycompile-time.txt",
         "sha256": "ab1700c6ad9fbf44720c3a901fca3b919fdcf611a10759735056909b311387c8"
+      }
+    },
+    "whitespace": {
+      "command": "git diff --check 2a89a578921afc48dc3b54c65a2c39c35c422134..d729e3a614fc3367268eefb4b410b1b5bec4b24c -- . ':(exclude)coordination/requests/TRR-0001-R1.md'",
+      "excluded_only": "verbatim CRLF R1 request packet",
+      "exit_status": 0,
+      "output": {
+        "bytes": 0,
+        "path": "experiments/TRR-0001/revision-r1/final-whitespace-output.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "time": {
+        "bytes": 871,
+        "path": "experiments/TRR-0001/revision-r1/final-whitespace-time.txt",
+        "sha256": "ce81b33df86902fff0b126fdba85575db89701dc5149adfc3b324a2eefb5c347"
       }
     }
   }
