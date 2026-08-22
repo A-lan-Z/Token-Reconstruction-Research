@@ -5,14 +5,18 @@ by the repository-backed relay.
 
 ## Current scientific priority
 
-TRR-0001 is the active priority: establish a charter-compliant blind
-reconstruction baseline and cut-depth recoverability map. The preregistered
-comparison covers a positionwise direct inverse and a causal public-surrogate
-candidate search at embedding, shallow, and deeper cuts under an
-unavailable-prefix primary condition.
+TRR-0001 remains the active priority while its completed blind baseline and
+cut-depth map await review. At the preregistered 16-candidate budget, causal
+public-surrogate selection produced a supported token-accuracy gain over the
+direct inverse at cuts 4 and 8 in both the unavailable-prefix primary condition
+and matched-public control.
 
-The task will measure proposal recall, conditional ranking, target-surrogate
-mismatch, and causal error propagation before selecting a later direction.
+The measured bottleneck is candidate proposal: conditional causal selection
+was 99.26% at the primary cut, while frozen top-16 recall was 86.46%. The next
+recommended action is therefore to improve public-only proposal recall and map
+its quality-cost frontier while holding the validated causal selector fixed.
+That follow-on is a recommendation only; no next task has been assigned or
+started.
 
 ## Scope note
 

@@ -5,7 +5,17 @@ them. Administrative relay events are kept separate from scientific decisions.
 
 ## Scientific decisions
 
-None.
+- For the exact TRR-0001 model, target update, Pile-10k records, 39-token
+  sequences, cuts, and 16-candidate budget, retain causal public-surrogate
+  selection as the stronger measured baseline at cuts 4 and 8. Paired
+  record-level bootstrap intervals exclude zero in all four non-embedding
+  comparisons.
+- Prioritize stronger charter-compliant candidate proposal for the next
+  proposed experiment. At the primary unavailable-target cut, frozen top-16
+  recall was 86.46% and conditional causal selection accuracy was 99.26%; a
+  teacher-prefix counterfactual improved accuracy by only 0.64 percentage
+  points. This is a scoped evidence-based recommendation, not a permanent
+  method restriction or authorization to begin another task.
 
 ## Administrative entries
 

@@ -1,0 +1,127 @@
+{
+  "bootstrap_draws_per_estimate": 10000,
+  "command": {
+    "argv": [
+      "scripts/trr0001_score.py",
+      "--repository-root",
+      ".",
+      "--receipt",
+      "experiments/TRR-0001/freeze_receipt.json",
+      "--frozen-root",
+      "outputs/TRR-0001/frozen_bundle",
+      "--truth",
+      "outputs/TRR-0001/evaluator_private/blind_truth.jsonl",
+      "--observation-index",
+      "outputs/TRR-0001/reconstructor_public/observation_index.json",
+      "--metrics",
+      "experiments/TRR-0001/metrics.json",
+      "--per-record",
+      "experiments/TRR-0001/per_record_metrics.jsonl",
+      "--diagnostics",
+      "experiments/TRR-0001/diagnostics.json",
+      "--summary-csv",
+      "experiments/TRR-0001/summary.csv",
+      "--plot-svg",
+      "experiments/TRR-0001/accuracy_plot.svg",
+      "--score-evidence",
+      "experiments/TRR-0001/score_evidence.json"
+    ],
+    "cwd": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research",
+    "environment": {
+      "HF_DATASETS_OFFLINE": null,
+      "HF_HUB_OFFLINE": "1",
+      "PYTHONPATH": "src"
+    }
+  },
+  "ended_utc": "2026-08-22T10:12:58Z",
+  "exact_rank_queries": 14976,
+  "exit_status": 0,
+  "outputs": [
+    {
+      "bytes": 24403,
+      "path": "experiments/TRR-0001/metrics.json",
+      "sha256": "d7f8c4e674f2c86041898829d1a1cff48eed9b38a33d2465988242c3e4449f50"
+    },
+    {
+      "bytes": 1020600,
+      "path": "experiments/TRR-0001/per_record_metrics.jsonl",
+      "sha256": "7f7df43a1ea8d6b521d8e4cbb1e2b55d15ed74ca9e2f65e72e85bf57e5073a91"
+    },
+    {
+      "bytes": 56977,
+      "path": "experiments/TRR-0001/diagnostics.json",
+      "sha256": "89469c3ab602b484fd34efc68d41bfa084e91b2eab01af9b15e17118b1c18d38"
+    },
+    {
+      "bytes": 1974,
+      "path": "experiments/TRR-0001/summary.csv",
+      "sha256": "3dfc0d05bed76ee6429f60bb07a296057a6587c441b8c27f36c973d35dbe4dd2"
+    },
+    {
+      "bytes": 5118,
+      "path": "experiments/TRR-0001/accuracy_plot.svg",
+      "sha256": "f91fca5a0f9fd45e969cf41d592e80710331c2ce64966d00e956cf77c9810522"
+    }
+  ],
+  "peak_memory": {
+    "cuda_peak_allocated_bytes": 5362029568,
+    "cuda_peak_reserved_bytes": 5385486336,
+    "process_max_rss_kib": 3640616
+  },
+  "phases": [
+    {
+      "elapsed_seconds": 0.07772770500014303,
+      "ended_utc": "2026-08-22T10:12:45Z",
+      "exit_status": 0,
+      "phase": "verify_freeze_and_open_truth_gate",
+      "started_utc": "2026-08-22T10:12:45Z"
+    },
+    {
+      "elapsed_seconds": 0.00022343099954014178,
+      "ended_utc": "2026-08-22T10:12:45Z",
+      "exit_status": 0,
+      "phase": "read_truth_after_successful_gate",
+      "started_utc": "2026-08-22T10:12:45Z"
+    },
+    {
+      "elapsed_seconds": 1.3932773870001256,
+      "ended_utc": "2026-08-22T10:12:46Z",
+      "exit_status": 0,
+      "phase": "load_public_model_for_post_truth_scoring",
+      "started_utc": "2026-08-22T10:12:45Z"
+    },
+    {
+      "elapsed_seconds": 1.3349574800013215,
+      "ended_utc": "2026-08-22T10:12:48Z",
+      "exit_status": 0,
+      "phase": "compute_exact_full_vocabulary_true_token_ranks",
+      "started_utc": "2026-08-22T10:12:46Z"
+    },
+    {
+      "elapsed_seconds": 9.848018784001397,
+      "ended_utc": "2026-08-22T10:12:58Z",
+      "exit_status": 0,
+      "phase": "teacher_prefix_public_surrogate_counterfactual",
+      "started_utc": "2026-08-22T10:12:48Z"
+    }
+  ],
+  "schema": "token-reconstruction.trr0001-score-evidence.v1",
+  "started_utc": "2026-08-22T10:12:44Z",
+  "task_id": "TRR-0001",
+  "teacher_prefix_candidate_simulations": 239616,
+  "truth": {
+    "bytes": 25462,
+    "path": "outputs/TRR-0001/evaluator_private/blind_truth.jsonl",
+    "sha256": "db0e3f5233550710b091c8a8faa00acab6d582c1e0a74ed4b607b6204f88b115"
+  },
+  "truth_gate": {
+    "entry_count": 7,
+    "passed_before_truth_read": true,
+    "preregistration_commit": "6648b322bcaaa32ed225c962bb874105f2c98d48",
+    "receipt": {
+      "bytes": 2649,
+      "path": "experiments/TRR-0001/freeze_receipt.json",
+      "sha256": "03566801d30c0305fbde5ff193261a87134d8836e311de17dd55cca4ba3137e2"
+    }
+  }
+}

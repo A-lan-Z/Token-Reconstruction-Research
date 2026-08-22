@@ -1,0 +1,80 @@
+{
+  "schema": "token-reconstruction.trr0001-final-validation.v1",
+  "task_id": "TRR-0001",
+  "created_utc": "2026-08-22T10:29:21Z",
+  "source_state": {
+    "status": "AWAITING_CHATGPT_REVIEW",
+    "check_command": "python3 -c \"import json; d=json.load(open('coordination/STATE.json')); assert d['status']=='AWAITING_CHATGPT_REVIEW'; print('state_status='+d['status'])\"",
+    "exit_status": 0
+  },
+  "checks": [
+    {
+      "purpose": "parse every Git-indexed JSON document, including the staged manifest",
+      "command": "git ls-files -z '*.json' | sort -z | xargs -0 -n1 python3 -m json.tool >/dev/null",
+      "json_files": 21,
+      "exit_status": 0,
+      "note": "A second pass after adding this validation record also exited 0."
+    },
+    {
+      "purpose": "staged-patch whitespace validation",
+      "command": "git diff --cached --check -- . ':(exclude)coordination/requests/TRR-0001.md'",
+      "exclusion": "only the verbatim CRLF control packet; it is hash-verified separately",
+      "exit_status": 0
+    },
+    {
+      "purpose": "reverify freeze, rank, separation, request, charter, and metric integrity after the manifest was added",
+      "command": "/usr/bin/time -v -o experiments/TRR-0001/validation-time.txt env PYTHONPATH=src python3 scripts/trr0001_validate.py --repository-root . > experiments/TRR-0001/validation-output.txt 2>&1",
+      "exit_status": 0,
+      "result": {
+        "candidate_rank_consistency_failures": 0,
+        "causal_outputs_outside_frozen_candidates": 0,
+        "charter_sha256": "ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d",
+        "frozen_bytes": 167830696,
+        "frozen_entries": 7,
+        "json_files_parsed": 9,
+        "per_record_metric_rows": 768,
+        "receipt_sha256": "03566801d30c0305fbde5ff193261a87134d8836e311de17dd55cca4ba3137e2",
+        "reconstruction_rows": 384,
+        "request_sha256": "e12296750323ecd8d90955f052f6ca2a1140e2e6452dc3cedadf4cb636daca6e",
+        "scored_tokens_per_arm": 2496,
+        "target_prefix_calls": 0,
+        "truth_records_opened_after_gate": 64
+      }
+    },
+    {
+      "purpose": "compile every Git-indexed Python source file",
+      "command": "/usr/bin/time -v -o experiments/TRR-0001/pycompile-time.txt bash -o pipefail -c \"git ls-files -z '*.py' | xargs -0 python3 -m py_compile\" > experiments/TRR-0001/pycompile-output.txt 2>&1",
+      "exit_status": 0
+    },
+    {
+      "purpose": "focused separation, inverse/update, metrics, public-prefix, and record-selection tests",
+      "command": "/usr/bin/time -v -o experiments/TRR-0001/focused-tests-time.txt env PYTHONPATH=src pytest -q tests/test_freeze_and_separation.py tests/test_inverse_and_target_update.py tests/test_metrics.py tests/test_public_prefix.py tests/test_records.py > experiments/TRR-0001/focused-tests.txt 2>&1",
+      "result": "12 passed in 1.63s",
+      "exit_status": 0
+    },
+    {
+      "purpose": "full source-checkout test suite",
+      "command": "/usr/bin/time -v -o experiments/TRR-0001/full-tests-time.txt env PYTHONPATH=src pytest -q > experiments/TRR-0001/full-tests.txt 2>&1",
+      "result": "21 passed in 1.57s",
+      "exit_status": 0
+    }
+  ],
+  "hashes": {
+    "RESEARCH_CHARTER.md": "ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d",
+    "coordination/requests/TRR-0001.md": "e12296750323ecd8d90955f052f6ca2a1140e2e6452dc3cedadf4cb636daca6e",
+    "experiments/TRR-0001/plan.json": "b498a5db5b14ae8dde19f3ae4f519f86fdf0a67572a8f78747f7921e4f9e7269",
+    "experiments/TRR-0001/freeze_receipt.json": "03566801d30c0305fbde5ff193261a87134d8836e311de17dd55cca4ba3137e2",
+    "experiments/TRR-0001/metrics.json": "d7f8c4e674f2c86041898829d1a1cff48eed9b38a33d2465988242c3e4449f50",
+    "experiments/TRR-0001/manifest.json_before_final_validation_reference": "019a5c35df47c8071cf3792eaa1edad01fe8dbe35af86ba6a93d64ee944bc3a0",
+    "coordination/results/TRR-0001.md": "2cb35dbf1954bc0a0b95ffd11517d835643bdc532d7af769513f6e55666196d3",
+    "experiments/TRR-0001/validation-output.txt": "1dcebcc91b68928292c0cdc7ddb62c7437acf707a1413acd513e687f56423e2b",
+    "experiments/TRR-0001/validation-time.txt": "3b57f767672ca622db80f0e5b884aa37d0e640e18691ccb77bf61075b34c156b"
+  },
+  "staged_paths_before_this_record": 29,
+  "unstaged_changes_before_this_record": false,
+  "changed_file_comparison": {
+    "base": "0f641e5f071dd38331d2e2b7821d40fc74941c2e",
+    "evidence_commit": null,
+    "status": "run after the scientific evidence commit exists and record in the metadata-only commit"
+  }
+}
