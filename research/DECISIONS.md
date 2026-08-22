@@ -5,12 +5,22 @@ them. Administrative relay events are kept separate from scientific decisions.
 
 ## Scientific decisions
 
-None currently accepted from TRR-0001. The original run's apparent causal gain
-and candidate-proposal bottleneck are suspended because its current-record
-source mapping was publicly resolvable and supplied to a reconstructor running
-without a process-level access boundary. They may be reinstated only if supported
-by the fresh TRR-0001-R1 confirmatory run; the original measurements remain
-preserved for comparison and noninterference auditing.
+TRR-0001-R1 supports the following decisions within its exact pinned scope:
+
+- causal public-surrogate selection improves token accuracy over direct
+  inversion at cuts 4 and 8 under the shared candidate budget of 16;
+- recoverability declines from cut 4 to cut 8 for both methods;
+- candidate proposal recall is the dominant primary bottleneck, while causal
+  ranking is nearly perfect conditional on inclusion;
+- exact non-embedding sequence recovery is not established; and
+- this single target update does not establish a general unavailable-prefix
+  mismatch penalty.
+
+The original run remains preserved as
+`ACCESS_INTERFACE_NONCOMPLIANT_ORIGINAL_RUN`. Its successful post-hoc
+identifier noninterference audit does not turn it into accepted blind evidence.
+These decisions rely only on the fresh R1 access-compliant run and remain scoped
+to its model, data, target update, cuts, sequence geometry, and budget.
 
 ## Administrative entries
 

@@ -5,17 +5,19 @@ by the repository-backed relay.
 
 ## Current scientific priority
 
-TRR-0001-R1 is the active priority: re-establish the fixed TRR-0001 direct and
-causal baselines on a fresh blind split using non-resolvable record identities,
-a hiding selection commitment, and a demonstrated fail-closed reconstruction
-process boundary. The original run is retained as
-`ACCESS_INTERFACE_NONCOMPLIANT_ORIGINAL_RUN`; its measurements are descriptive
-but are not an accepted blind-evaluation basis.
+TRR-0001-R1 has completed its fixed-method fresh confirmatory run and is
+awaiting review. Under the exact pinned scope, causal public-surrogate selection
+improved token accuracy over direct inversion at cuts 4 and 8, recovery declined
+with depth, and candidate proposal recall was the dominant primary bottleneck.
+The original run remains
+`ACCESS_INTERFACE_NONCOMPLIANT_ORIGINAL_RUN`; its post-hoc identifier audit
+passed but does not repair its access interface.
 
-No candidate, scoring, inverse, target-update, hyperparameter, cut, or bootstrap
-decision may change in response to the opened original answers. The clean run
-will determine whether any earlier conclusion can be reinstated. No next task
-has been assigned or started.
+If a later packet authorizes new research, the highest-value proposed direction
+is a fresh preregistered study of public-only candidate proposal at multiple
+budgets, holding the validated causal selector fixed and measuring the
+quality/cost frontier across multiple target updates. This is a proposal only.
+TRR-0002 has not been assigned or started.
 
 ## Scope note
 
