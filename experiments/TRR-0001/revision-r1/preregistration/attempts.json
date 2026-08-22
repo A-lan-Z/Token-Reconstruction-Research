@@ -39,6 +39,12 @@
       "exit_status": 1,
       "result": "the audit found writable nested WSL library mounts below the declared read-only /usr bind",
       "resolution": "changed the launcher to recursively remount every nested public bind read-only and changed validation to fail on any writable nested public mount"
+    },
+    {
+      "operation": "native namespace boundary smoke attempt 3 with deliberately absent sanitized config",
+      "exit_status": 1,
+      "result": "all seven access-denial probes, read-only/writable probes, separate user/mount/network/PID namespace checks, route denial, exact permitted mounts, and recursively read-only nested public mounts passed; reconstruction then failed at the expected absent sanitized-config gate",
+      "resolution": "accepted as final boundary-smoke evidence only; the independent exact isolation-manifest validator passed, and the subsequent clean direct and causal processes each received a distinct validated namespace"
     }
   ]
 }

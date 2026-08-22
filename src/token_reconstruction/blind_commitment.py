@@ -244,12 +244,20 @@ def reveal_document(private: Mapping[str, Any], *, revealed_utc: str) -> dict[st
         key = bytes.fromhex(key_hex)
     except ValueError as exc:
         raise BlindProtocolError("selection key is not hexadecimal") from exc
-    commitment_payload(private["records"])
+    full_records = commitment_payload(private["records"])["records"]
+    mapping = [
+        {
+            "record_id": row["record_id"],
+            "dataset_index": row["dataset_index"],
+            "text_sha256": row["text_sha256"],
+        }
+        for row in full_records
+    ]
     return {
         "schema": REVEAL_SCHEMA,
         "revealed_utc": revealed_utc,
         "selection_key_hex": key.hex(),
-        "records": private["records"],
+        "records": mapping,
     }
 
 
@@ -298,12 +306,15 @@ def verify_reveal(
     if len(key) != 32:
         raise BlindProtocolError("revealed selection key length changed")
     records = reveal["records"]
-    payload = commitment_payload(records)
-    if not hmac.compare_digest(
-        hmac.new(key, canonical_bytes(payload), hashlib.sha256).hexdigest(),
-        str(public["commitment"]),
-    ):
-        raise BlindProtocolError("revealed selection does not match commitment")
+    if not isinstance(records, list) or len(records) != 64:
+        raise BlindProtocolError("revealed mapping record count changed")
+    for row in records:
+        require_exact_keys(
+            row,
+            {"record_id", "dataset_index", "text_sha256"},
+            label="revealed mapping record",
+        )
+    require_opaque_record_order([row["record_id"] for row in records])
     if [row["record_id"] for row in records] != public["opaque_record_order"]:
         raise BlindProtocolError("revealed opaque order differs from committed order")
     expected_rows: list[tuple[int, str, list[int]]] = []
@@ -316,8 +327,21 @@ def verify_reveal(
         rows=expected_rows,
         excluded_indices=excluded_indices,
     )
-    if expected != records:
+    expected_mapping = [
+        {
+            "record_id": row["record_id"],
+            "dataset_index": row["dataset_index"],
+            "text_sha256": row["text_sha256"],
+        }
+        for row in expected
+    ]
+    if expected_mapping != records:
         raise BlindProtocolError("revealed mapping is not the committed selection algorithm output")
+    if not hmac.compare_digest(
+        commitment_digest(key, expected),
+        str(public["commitment"]),
+    ):
+        raise BlindProtocolError("revealed selection does not match commitment")
     return {
         "verified": True,
         "commitment": public["commitment"],

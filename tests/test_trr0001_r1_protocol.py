@@ -128,6 +128,7 @@ def test_hiding_commitment_and_post_freeze_reveal_verification() -> None:
         key=key, records=records, created_utc="2026-08-22T00:00:00Z"
     )
     reveal = reveal_document(private, revealed_utc="2026-08-22T01:00:00Z")
+    assert all("token_ids" not in row for row in reveal["records"])
     result = verify_reveal(
         public=public,
         reveal=reveal,
@@ -139,8 +140,8 @@ def test_hiding_commitment_and_post_freeze_reveal_verification() -> None:
     assert result["verified"] is True
     assert result["disjoint_from_original_records"] is True
     tampered = copy.deepcopy(reveal)
-    tampered["records"][0]["token_ids"][1] += 1
-    with pytest.raises(BlindProtocolError, match="commitment"):
+    tampered["records"][0]["dataset_index"] += 1
+    with pytest.raises(BlindProtocolError, match="mapping|commitment"):
         verify_reveal(
             public=public,
             reveal=tampered,
