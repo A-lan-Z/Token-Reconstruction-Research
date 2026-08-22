@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "token-reconstruction-research"
+version = "0.1.0"
+description = "Neutral infrastructure for token reconstruction research under a strict access model"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "safetensors>=0.7",
+    "torch>=2.10",
+    "transformers>=5.3",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.4"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
