@@ -1,0 +1,26 @@
+{
+  "schema": "token-reconstruction.trr0001-r1.preregistration-attempts.v1",
+  "task_id": "TRR-0001",
+  "revision_id": "TRR-0001-R1",
+  "clean_observations_or_reconstructions_created": false,
+  "attempts": [
+    {
+      "operation": "workspace apply_patch for blind_commitment.py",
+      "exit_status": 1,
+      "result": "failed to write through the Windows UNC workspace path",
+      "resolution": "applied the same unified patch with repository-local git apply"
+    },
+    {
+      "command": "HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false PYTHONPATH=src python3 scripts/trr0001_r1_select.py --original-plan experiments/TRR-0001/plan.json --public-commitment experiments/TRR-0001/revision-r1/selection_commitment.json --private-selection outputs/TRR-0001-R1/evaluator_private/fresh_selection_private.json --created-utc 2026-08-22T11:42:41Z",
+      "exit_status": 0,
+      "result": "incomplete initial script revision computed a transient in-memory selection but exited before writing either private or public artifact",
+      "resolution": "completed the create-only write and validation path, preserved empty stdout and GNU-time evidence, and reran with a newly generated key"
+    },
+    {
+      "command": "PYTHONPATH=src python3 scripts/trr0001_r1_preregister.py --repository-root . --original-plan experiments/TRR-0001/plan.json --commitment experiments/TRR-0001/revision-r1/selection_commitment.json --revision-request coordination/requests/TRR-0001-R1.md --plan experiments/TRR-0001/revision-r1/plan.json --clean-output-root outputs/TRR-0001-R1/clean --created-utc 2026-08-22T11:44:51Z",
+      "exit_status": 1,
+      "result": "the public-field scanner rejected a benign tokenizer option whose field name contained source_text; no plan was written",
+      "resolution": "renamed the public option to add_special_tokens while retaining its false value, preserved attempt evidence, and reran create-only"
+    }
+  ]
+}

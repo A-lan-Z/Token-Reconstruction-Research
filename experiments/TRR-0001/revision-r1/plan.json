@@ -1,0 +1,447 @@
+{
+  "accepted_predecessor": {
+    "accepted_head": "b087365766f00432077476bf32a6afdf2e854841",
+    "accepted_head_is_merge_parent": true,
+    "merge_commit": "0f641e5f071dd38331d2e2b7821d40fc74941c2e",
+    "pull_request": 1,
+    "task_id": "TRR-0000"
+  },
+  "access_isolation": {
+    "access_manifest": "frozen before selection reveal or truth opening",
+    "dataset": "dataset package/cache absent from chroot",
+    "denial_probes": [
+      "repository root",
+      "dataset cache and dataset package",
+      "fresh private mapping",
+      "clean truth",
+      "target LoRA",
+      "original truth",
+      "network route"
+    ],
+    "environment": "cleared and replaced with an allowlisted offline environment",
+    "evaluator_private": "private mapping, truth, target LoRA, and evaluator evidence absent",
+    "failure_policy": "any schema, mount, permission, access-probe, or network-probe failure exits nonzero",
+    "mechanism": "unshare user, mount, network, and PID namespaces; minimal chroot; read-only binds for exact code, sanitized input, public inverse state, pinned public model/tokenizer and Python runtime; tmpfs temporary space; one empty writable method output",
+    "network": "new namespace with no interface route; denial probe required",
+    "permissions": "public inputs and runtime read-only; output is the only writable bind",
+    "separate_processes": [
+      "direct_inverse",
+      "causal_public_surrogate_search"
+    ],
+    "workspace": "repository and host workspace absent from chroot"
+  },
+  "artifacts": {
+    "committed_revision_root": "experiments/TRR-0001/revision-r1",
+    "manifest": "experiments/TRR-0001/manifest.json",
+    "result": "coordination/results/TRR-0001.md",
+    "retention": "retain all local raw artifacts through review; commit hashes, byte counts, commands, outputs, statuses, and required compact evidence",
+    "uncommitted_private_root": "outputs/TRR-0001-R1"
+  },
+  "authority": {
+    "path": "RESEARCH_CHARTER.md",
+    "role": "sole_authoritative_research_definition",
+    "sha256": "ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d"
+  },
+  "baseline_families": {
+    "causal_public_surrogate_search": {
+      "cache": "fork public DynamicCache for batched candidates; commit only the winner",
+      "candidate_simulations_per_scored_token": 16,
+      "candidate_source": "the direct inverse's frozen top-16 lists",
+      "commit": "highest cosine score; frozen proposal rank then token-ID ascending tie break",
+      "family": "causal candidate generation and public-surrogate simulation",
+      "prefix": "declared BOS followed only by already committed reconstructed tokens",
+      "score": "one-minus-cosine between the candidate's public-prefix cut activation and the permitted observed activation at that position",
+      "surrogate": "meta-llama/Llama-3.2-1B-Instruct@9213176726f574b556790deb65791e0c5aa438b6",
+      "target_prefix_calls": 0
+    },
+    "common_comparison": {
+      "abstention": "none",
+      "candidate_budget": 16,
+      "cross_record_adaptation": "none",
+      "record_order": "fixed selection order",
+      "records": "same blind records and observations",
+      "stopping": "reconstruct all 39 non-BOS positions"
+    },
+    "direct_inverse": {
+      "candidate_scores": "cosine similarity to every normalized public input embedding",
+      "cut_0": "identity map from observed embedding to normalized public embeddings",
+      "cuts_4_and_8": "independent residual affine 2048-to-2048 maps trained on public-surrogate activations to predict normalized input embeddings",
+      "direct_output": "highest-scoring token with token-ID ascending tie break",
+      "family": "positionwise public-data inverse",
+      "frozen_candidate_budget": 16,
+      "gradient_clip_norm": 1.0,
+      "hyperparameter_selection": "fixed here; no blind or development metric selects a variant",
+      "learning_rate": 0.001,
+      "loss": "mean one-minus-cosine similarity",
+      "optimizer": "AdamW",
+      "position_batch_size": 512,
+      "steps_per_cut": 300,
+      "training_split": "inverse_train",
+      "weight_decay": 0.0
+    }
+  },
+  "claim_scope": {
+    "candidate_budget": 16,
+    "cuts": [
+      0,
+      4,
+      8
+    ],
+    "dataset": "NeelNanda/pile-10k@127bfedcd5047750df5ccf3a12979a47bfa0bafa",
+    "generalization_beyond_scope": "not supported",
+    "methods": [
+      "direct_inverse",
+      "causal_public_surrogate_search"
+    ],
+    "model": "meta-llama/Llama-3.2-1B-Instruct",
+    "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "sequence_tokens": 40,
+    "surrogate": "meta-llama/Llama-3.2-1B-Instruct@9213176726f574b556790deb65791e0c5aa438b6",
+    "target_update": "the exact evaluator-only rank-4 LoRA artifact produced by this plan"
+  },
+  "conditions": {
+    "matched_public_control": {
+      "blind_records": "same 64 records, reconstructed and frozen before shared truth opening",
+      "id": "matched_public",
+      "role": "implementation and target-surrogate mismatch control",
+      "target_prefix": "the pinned public checkpoint without the target update"
+    },
+    "permitted_to_reconstructor": [
+      "boundary activation",
+      "attention mask",
+      "position IDs",
+      "cut depth and non-truth metadata",
+      "pinned public model and tokenizer",
+      "public-data inverse states",
+      "declared BOS token",
+      "already reconstructed prefix"
+    ],
+    "primary": {
+      "id": "unavailable_target_lora",
+      "target_prefix": "base embedding plus target-specific LoRA-modified decoder layers; callable target prefix and LoRA state remain evaluator-only",
+      "unavailable_to_reconstructor": [
+        "target LoRA tensors",
+        "callable target prefix",
+        "source text",
+        "source token IDs except BOS",
+        "correctness feedback"
+      ]
+    }
+  },
+  "cost_accounting": {
+    "causal": "proposal, causal selection, and total runtime separately per arm, record, and scored token",
+    "complexity": "source lines and executable statement counts for method-common and method-specific code",
+    "direct": "proposal and total runtime separately per arm, record, and scored token",
+    "evaluations": "full-vocabulary embedding comparisons and candidate simulations counted exactly",
+    "memory": "pre-method preparation and reset per-method CUDA peaks plus process max RSS",
+    "separation": "direct and causal execute in distinct fresh processes with reset CUDA counters",
+    "training": "zero fresh training/adaptation; exact persisted state bytes and hashes recorded"
+  },
+  "created_utc": "2026-08-22T11:45:25Z",
+  "cut_depths": {
+    "evaluated": [
+      0,
+      4,
+      8
+    ],
+    "primary": 4,
+    "roles": {
+      "0": "embedding-boundary sanity condition",
+      "4": "primary shallow cut aligned with the historical comparator",
+      "8": "deeper stress condition"
+    }
+  },
+  "data": {
+    "blind_records": 64,
+    "blind_scored_tokens": 2496,
+    "padding": "none; only rows with at least 39 source tokens are eligible",
+    "scored_tokens_per_record": 39,
+    "selection": {
+      "commitment_digest": "7f459452a1a42525e18baafd1a8ed5eb1d4993d6c37fe00a6bed401a80e6fe7c",
+      "disjointness": "all original target-update, inverse-train, development, blind, excluded-attempt, and reproducibility records are excluded",
+      "eligibility": "at least 39 source tokens; prepend exactly one declared BOS",
+      "key_or_seed_available_to_reconstructor": false,
+      "kind": "cryptographically_hiding_evaluator_private_selection",
+      "opaque_record_order": [
+        "blind-r1-000001",
+        "blind-r1-000002",
+        "blind-r1-000003",
+        "blind-r1-000004",
+        "blind-r1-000005",
+        "blind-r1-000006",
+        "blind-r1-000007",
+        "blind-r1-000008",
+        "blind-r1-000009",
+        "blind-r1-000010",
+        "blind-r1-000011",
+        "blind-r1-000012",
+        "blind-r1-000013",
+        "blind-r1-000014",
+        "blind-r1-000015",
+        "blind-r1-000016",
+        "blind-r1-000017",
+        "blind-r1-000018",
+        "blind-r1-000019",
+        "blind-r1-000020",
+        "blind-r1-000021",
+        "blind-r1-000022",
+        "blind-r1-000023",
+        "blind-r1-000024",
+        "blind-r1-000025",
+        "blind-r1-000026",
+        "blind-r1-000027",
+        "blind-r1-000028",
+        "blind-r1-000029",
+        "blind-r1-000030",
+        "blind-r1-000031",
+        "blind-r1-000032",
+        "blind-r1-000033",
+        "blind-r1-000034",
+        "blind-r1-000035",
+        "blind-r1-000036",
+        "blind-r1-000037",
+        "blind-r1-000038",
+        "blind-r1-000039",
+        "blind-r1-000040",
+        "blind-r1-000041",
+        "blind-r1-000042",
+        "blind-r1-000043",
+        "blind-r1-000044",
+        "blind-r1-000045",
+        "blind-r1-000046",
+        "blind-r1-000047",
+        "blind-r1-000048",
+        "blind-r1-000049",
+        "blind-r1-000050",
+        "blind-r1-000051",
+        "blind-r1-000052",
+        "blind-r1-000053",
+        "blind-r1-000054",
+        "blind-r1-000055",
+        "blind-r1-000056",
+        "blind-r1-000057",
+        "blind-r1-000058",
+        "blind-r1-000059",
+        "blind-r1-000060",
+        "blind-r1-000061",
+        "blind-r1-000062",
+        "blind-r1-000063",
+        "blind-r1-000064"
+      ],
+      "post_freeze_reveal_required": true,
+      "public_commitment": {
+        "bytes": 2623,
+        "path": "experiments/TRR-0001/revision-r1/selection_commitment.json",
+        "sha256": "633cf3b24efddf22939c3e628d99d3f0e098dfec686ed2ac8b043b49e086efdd"
+      },
+      "record_count": 64,
+      "source_identity_available_to_reconstructor": false
+    },
+    "sequence_tokens_including_bos": 40,
+    "truncation": "first 39 source tokens in tokenizer order"
+  },
+  "deviation_policy": {
+    "blind_truth_retuning": "forbidden",
+    "current_deviations": [
+      {
+        "from_original_run": "source-resolvable IDs and same-workspace interface",
+        "required_revision": "fresh opaque committed split and process-enforced access boundary",
+        "scientific_method_effect": "none"
+      }
+    ],
+    "material_changes": "record what changed, why, decision time, whether pre-truth, and effects on comparability or claim scope"
+  },
+  "execution_order": {
+    "post_freeze_pre_truth": [
+      "reveal selection key and private mapping",
+      "verify HMAC commitment, keyed ordering, eligibility, opaque order, and disjointness",
+      "open clean truth only through the combined freeze, access, and commitment gate"
+    ],
+    "post_truth": [
+      "score frozen direct and causal outputs without revision",
+      "run preregistered diagnostics",
+      "perform the post-hoc original-run opaque-ID noninterference audit"
+    ],
+    "pre_freeze": [
+      "commit this revision plan and public hiding commitment",
+      "generate evaluator-only fresh observations and sanitized reconstruction inputs",
+      "validate strict schemas and verify exact retained state hashes",
+      "export exact reconstruction code and public runtime dependencies",
+      "run access probes and direct method in its isolated process",
+      "run access probes and causal method in its separate isolated process",
+      "freeze sanitized inputs, method outputs, routes, configuration, and access manifests",
+      "verify freeze receipt and isolation evidence"
+    ]
+  },
+  "fixed_method_state": {
+    "inverse_cut4_sha256": "9e2487f85057748130bf87b2aad0a883f3c36dfc052eefd83c0f5c35497a24e3",
+    "inverse_cut8_sha256": "ac8871f1fa0d40664c5d9d94343ef560832477aade3574978a1c6b572df01e80",
+    "target_lora_sha256": "34d92f1e664236bfa1990b10148e8ad52c60b16e72ed0ff4c7eb7da8d15019f6",
+    "training_or_adaptation_in_clean_run": false
+  },
+  "freeze_contract": {
+    "frozen_root": "outputs/TRR-0001-R1/clean/frozen_bundle",
+    "hashes": [
+      "sanitized observation index and reconstruction configuration",
+      "all boundary observation tensors",
+      "direct and causal candidates, scores, predictions, queries, routes, timings, and counters",
+      "isolation identity, mount, permission, environment, and denial-probe manifests"
+    ],
+    "mutation_policy": "create-only files made read-only; any byte, path, schema, or access mismatch fails closed",
+    "receipt_path": "experiments/TRR-0001/revision-r1/freeze_receipt.json",
+    "required_before_reveal": true,
+    "required_before_truth": true
+  },
+  "historical_comparator": {
+    "action": "do not run it as a scientific arm; retain its verified preflight and audit",
+    "reason": "The exact code and public teacher assets are runnable, but the frozen comparator requires a 128x128 source geometry and a three-episode prior-trace adaptation contract. Applying it to the 64x40 Pile/LoRA condition would alter its fixed contract and would not be the exact historical comparator.",
+    "status": "RUNNABLE_BUT_INCOMPATIBLE_WITH_DECLARED_CONDITION"
+  },
+  "metrics": {
+    "primary": "token accuracy excluding BOS and padding at cut 4 in unavailable_target_lora",
+    "required": [
+      "token accuracy excluding BOS and padding",
+      "exact sequence-match rate",
+      "correct prefix length and first-error position",
+      "coverage and selective accuracy",
+      "frozen top-k true-token recall and exact true-token rank",
+      "conditional selection accuracy when truth is in the frozen candidates",
+      "end-to-end runtime per record and scored token",
+      "phase timings including preparation, training, proposal, reconstruction, synchronization, and I/O",
+      "peak CPU and GPU memory",
+      "candidate simulations or equivalent evaluations",
+      "trainable parameter count and persisted state bytes",
+      "implementation-complexity summary"
+    ]
+  },
+  "original_run_disposition": {
+    "accepted_blind_claim": false,
+    "label": "ACCESS_INTERFACE_NONCOMPLIANT_ORIGINAL_RUN",
+    "prohibited_use": "accepted blind confirmatory evidence",
+    "retained_uses": [
+      "descriptive evidence",
+      "debugging evidence",
+      "post-hoc source-identifier noninterference audit"
+    ]
+  },
+  "packet_id": "TRR-PACKET-TRR-0000-ACCEPT-TRR-0001-20260822-EA3A83F35AAD288D502C44D5",
+  "post_truth_diagnostics": {
+    "activation_matching": "frozen chosen and candidate score distributions labeled correct/incorrect after truth",
+    "cut_depth": [
+      0,
+      4,
+      8
+    ],
+    "error_propagation": [
+      "accuracy before and after each record's first frozen output error",
+      "teacher-prefix public-surrogate counterfactual after truth opening"
+    ],
+    "frequency_bins_from_auxiliary_counts": [
+      "unseen",
+      "1-4",
+      "5-19",
+      "20-or-more"
+    ],
+    "output_revision": "forbidden",
+    "position": "physical non-BOS position 1 through 39",
+    "proposal_vs_ranking": "top-16 recall and causal conditional accuracy",
+    "target_surrogate_mismatch": "paired unavailable-target versus matched-public differences",
+    "token_groups": {
+      "numeric": "contains a Unicode decimal digit and all other non-whitespace characters are punctuation",
+      "other": "all remaining scored tokens",
+      "punctuation": "all non-whitespace decoded characters are Unicode punctuation",
+      "whitespace_prefixed": "decoded token begins whitespace or raw token begins \u0120"
+    }
+  },
+  "request": {
+    "bytes": 24375,
+    "path": "coordination/requests/TRR-0001.md",
+    "sha256": "e12296750323ecd8d90955f052f6ca2a1140e2e6452dc3cedadf4cb636daca6e"
+  },
+  "resources": {
+    "dataset": {
+      "id": "NeelNanda/pile-10k",
+      "license": "bigscience-bloom-rail-1.0",
+      "parquet_sha256": "a1a9475a8684ac8f1b17a36eccb2ec49c127edd7aae9beb2f240726972d93f31",
+      "revision": "127bfedcd5047750df5ccf3a12979a47bfa0bafa",
+      "role": "public auxiliary, development, and blind source",
+      "rows": 10000,
+      "split": "train"
+    },
+    "model": {
+      "architecture": "LlamaForCausalLM",
+      "attention_implementation": "sdpa",
+      "dtype": "bfloat16",
+      "hidden_size": 2048,
+      "id": "meta-llama/Llama-3.2-1B-Instruct",
+      "layers": 16,
+      "local_files_only": true,
+      "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "vocabulary_size": 128256
+    },
+    "tokenizer": {
+      "add_special_tokens": false,
+      "bos_insertion": "prepend exactly once after source tokenization",
+      "declared_bos_token_id": 128000,
+      "id": "meta-llama/Llama-3.2-1B-Instruct",
+      "revision": "9213176726f574b556790deb65791e0c5aa438b6"
+    }
+  },
+  "revision": {
+    "packet_id": "TRR-PACKET-TRR-0001-REVIEW-R1-20260822-1E1E1C00AFB4A8BC58B157BB",
+    "previous_reviewed_head": "2a89a578921afc48dc3b54c65a2c39c35c422134",
+    "purpose": "access-compliant clean confirmation with a fresh disjoint split",
+    "request": {
+      "bytes": 26821,
+      "path": "coordination/requests/TRR-0001-R1.md",
+      "sha256": "a86e9342df732291052cc8b69599217140ee7bba81a79351dd70f026a6f2360c"
+    },
+    "revision_id": "TRR-0001-R1",
+    "scientific_method_change": false
+  },
+  "schema": "token-reconstruction.trr0001-r1.preregistration.v1",
+  "seeds": {
+    "fresh_record_selection": "evaluator-private cryptographic 256-bit key; value withheld until post-freeze reveal",
+    "global_execution": 1729,
+    "inverse_training": 1731,
+    "record_bootstrap": 1732,
+    "target_update": 1730
+  },
+  "statistics": {
+    "confidence_interval": "95% percentile bootstrap",
+    "draws": 10000,
+    "effect_sizes": "absolute percentage-point quality differences and multiplicative cost ratios",
+    "improvement_rule": "claim improvement only for supported quality gain at like-for-like budget, supported cost reduction at like-for-like quality, or a reported Pareto improvement; otherwise call the comparison inconclusive",
+    "paired_differences": "causal minus direct within each record, condition, and cut; target minus matched control for mismatch",
+    "seed": 1732,
+    "unit": "record"
+  },
+  "status": "COMMITTED_BEFORE_CLEAN_CONFIRMATORY_OUTPUTS",
+  "target_prefix_update": {
+    "alpha": 8.0,
+    "artifact": {
+      "path": "outputs/TRR-0001/evaluator_private/target_lora.safetensors",
+      "reconstructor_access": false,
+      "reused_without_training": true,
+      "sha256": "34d92f1e664236bfa1990b10148e8ad52c60b16e72ed0ff4c7eb7da8d15019f6"
+    },
+    "base_parameters": "frozen",
+    "batch_records": 8,
+    "decision_time": "fixed by the original preregistration and R1 packet; exact retained artifact reused",
+    "dropout": 0.0,
+    "family": "evaluator-only low-rank public-data adaptation",
+    "gradient_clip_norm": 1.0,
+    "initialization": "A normal std=0.01; B zeros",
+    "learning_rate": 0.001,
+    "modules": "q_proj and v_proj in decoder layers 0,1,2,3",
+    "objective": "next-token cross-entropy on BOS plus first 39 public source tokens",
+    "optimizer": "AdamW",
+    "rank": 4,
+    "scale": 2.0,
+    "steps": 40,
+    "training_split": "target_update_train",
+    "weight_decay": 0.0
+  },
+  "task_id": "TRR-0001",
+  "truth_opened": false
+}
