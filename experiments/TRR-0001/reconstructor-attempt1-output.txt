@@ -1,0 +1,20 @@
+Loading weights:   0%|          | 0/146 [00:00<?, ?it/s]Loading weights: 100%|██████████| 146/146 [00:00<00:00, 1942.73it/s]
+Traceback (most recent call last):
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/scripts/trr0001_reconstruct.py", line 398, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/scripts/trr0001_reconstruct.py", line 279, in main
+    causal_tokens, causal_scores = causal_search(
+                                   ^^^^^^^^^^^^^^
+  File "/home/alanz/.local/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/scripts/trr0001_reconstruct.py", line 146, in causal_search
+    target = observations[:, position + 1, :].to(device).float()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.AcceleratorError: CUDA error: out of memory
+Search for `cudaErrorMemoryAllocation' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
