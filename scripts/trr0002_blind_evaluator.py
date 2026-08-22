@@ -1,0 +1,332 @@
+#!/usr/bin/env python3
+"""Evaluator-only generation of the fresh TRR-0002 blind interface."""
+
+from __future__ import annotations
+
+import argparse
+import json
+from pathlib import Path
+import shutil
+from typing import Any
+
+from safetensors.torch import save_file
+import torch
+from transformers import AutoModelForCausalLM
+
+from token_reconstruction.blind_commitment import (
+    PRIVATE_SELECTION_SCHEMA,
+    commitment_digest,
+    require_exact_keys,
+    require_opaque_record_order,
+    validate_public_commitment,
+)
+from token_reconstruction.experiment_runtime import (
+    BOS_TOKEN_ID,
+    MODEL_ID,
+    MODEL_REVISION,
+    PhaseTimer,
+    command_record,
+    file_record,
+    load_json,
+    peak_memory,
+    require_create_only_directory,
+    seed_everything,
+    sha256_file,
+    utc_now,
+    write_json_exclusive,
+    write_jsonl_exclusive,
+)
+from token_reconstruction.target_update import (
+    TargetLoRAConfig,
+    install_target_lora,
+    load_target_lora,
+)
+
+
+TARGET_LORA_SHA256 = "34d92f1e664236bfa1990b10148e8ad52c60b16e72ed0ff4c7eb7da8d15019f6"
+LENS_SHA256 = "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742"
+CALIBRATION_SHA256 = "ad1801ec348a61cbcd50bfbc4a991c8deaa503b79f454c7f1d779567042ebf47"
+CALIBRATION_EXECUTION_COMMIT = "bc24a868fdea9a62f2d20081c0d0387cff6e4b4c"
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--plan", type=Path, required=True)
+    parser.add_argument("--public-commitment", type=Path, required=True)
+    parser.add_argument("--private-selection", type=Path, required=True)
+    parser.add_argument("--target-lora", type=Path, required=True)
+    parser.add_argument("--public-lens", type=Path, required=True)
+    parser.add_argument("--calibration", type=Path, required=True)
+    parser.add_argument("--output-root", type=Path, required=True)
+    parser.add_argument("--preregistration-commit", required=True)
+    return parser.parse_args()
+
+
+def copy_exclusive(source: Path, destination: Path) -> None:
+    if source.is_symlink() or not source.is_file():
+        raise RuntimeError(f"required retained state is not a regular file: {source}")
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with source.open("rb") as reader, destination.open("xb") as writer:
+        shutil.copyfileobj(reader, writer, length=1024 * 1024)
+
+
+def private_records(private: dict[str, Any], public: dict[str, Any]) -> list[dict[str, Any]]:
+    require_exact_keys(
+        private,
+        {"schema", "created_utc", "selection_key_hex", "records"},
+        label="TRR-0002 private selection",
+    )
+    if private["schema"] != PRIVATE_SELECTION_SCHEMA:
+        raise RuntimeError("private selection schema changed")
+    try:
+        key = bytes.fromhex(str(private["selection_key_hex"]))
+    except ValueError as exc:
+        raise RuntimeError("private selection key is invalid") from exc
+    records = private["records"]
+    if len(key) != 32 or not isinstance(records, list) or len(records) != 64:
+        raise RuntimeError("private selection geometry changed")
+    require_opaque_record_order([row.get("record_id") for row in records])
+    if commitment_digest(key, records) != public["commitment"]:
+        raise RuntimeError("private selection does not match its public commitment")
+    for row in records:
+        require_exact_keys(
+            row,
+            {"record_id", "dataset_index", "text_sha256", "token_ids"},
+            label="TRR-0002 private record",
+        )
+        if len(row["token_ids"]) != 40 or int(row["token_ids"][0]) != BOS_TOKEN_ID:
+            raise RuntimeError("private truth token geometry changed")
+    return records
+
+
+def artifact_entry(path: Path, *, relative_to: Path) -> dict[str, Any]:
+    return {
+        "path": path.relative_to(relative_to).as_posix(),
+        "bytes": path.stat().st_size,
+        "sha256": sha256_file(path),
+    }
+
+
+def load_model() -> torch.nn.Module:
+    if not torch.cuda.is_available():
+        raise RuntimeError("TRR-0002 blind evaluator requires CUDA")
+    model = (
+        AutoModelForCausalLM.from_pretrained(
+            MODEL_ID,
+            revision=MODEL_REVISION,
+            local_files_only=True,
+            dtype=torch.bfloat16,
+            attn_implementation="sdpa",
+        )
+        .to(torch.device("cuda"))
+        .eval()
+    )
+    if model.config.hidden_size != 2048 or model.config.vocab_size != 128256:
+        raise RuntimeError("pinned public model geometry changed")
+    return model
+
+
+def main() -> int:
+    args = parse_args()
+    if len(args.preregistration_commit) != 40:
+        raise RuntimeError("full blind preregistration commit is required")
+    plan = load_json(args.plan)
+    if (
+        plan.get("schema") != "token-reconstruction.trr0002-blind-preregistration.v1"
+        or plan.get("status") != "COMMITTED_BEFORE_FRESH_BLIND_OBSERVATIONS"
+        or plan.get("truth_opened") is not False
+    ):
+        raise RuntimeError("blind preregistration identity changed")
+    public = load_json(args.public_commitment)
+    validate_public_commitment(public)
+    records = private_records(load_json(args.private_selection), public)
+    if sha256_file(args.target_lora) != TARGET_LORA_SHA256:
+        raise RuntimeError("unavailable target LoRA hash changed")
+    if sha256_file(args.public_lens) != LENS_SHA256:
+        raise RuntimeError("public A1 lens hash changed")
+    if sha256_file(args.calibration) != CALIBRATION_SHA256:
+        raise RuntimeError("frozen calibration hash changed")
+    calibration = load_json(args.calibration)
+    if (
+        calibration.get("schema") != "token-reconstruction.trr0002-frozen-calibration.v1"
+        or calibration.get("status") != "FROZEN_BEFORE_FRESH_BLIND_SELECTION"
+        or calibration.get("threshold") != 1.2544946670532227
+        or calibration.get("execution_commit") != CALIBRATION_EXECUTION_COMMIT
+    ):
+        raise RuntimeError("frozen calibration fields changed")
+
+    root = args.output_root.resolve()
+    require_create_only_directory(root)
+    public_root = root / "reconstructor_input"
+    private_root = root / "evaluator_private"
+    public_root.mkdir()
+    private_root.mkdir()
+    started_utc = utc_now()
+    seed_everything(2800)
+    torch.cuda.reset_peak_memory_stats()
+    timer = PhaseTimer()
+    with timer.measure("load_pinned_model_and_unavailable_update"):
+        model = load_model()
+        installed = install_target_lora(model, TargetLoRAConfig())
+        load_target_lora(installed, args.target_lora)
+        model.requires_grad_(False)
+        model.eval()
+    tokens = torch.tensor(
+        [[int(value) for value in row["token_ids"]] for row in records],
+        dtype=torch.long,
+        device=next(model.parameters()).device,
+    )
+    if tuple(tokens.shape) != (64, 40):
+        raise RuntimeError("fresh blind token tensor geometry changed")
+    collected: list[torch.Tensor] = []
+    with timer.measure("generate_unavailable_lora_cut4_observations"):
+        with torch.inference_mode():
+            for start in range(0, 64, 8):
+                output = model(
+                    input_ids=tokens[start : start + 8],
+                    output_hidden_states=True,
+                    use_cache=False,
+                )
+                collected.append(
+                    output.hidden_states[4]
+                    .detach()
+                    .to(device="cpu", dtype=torch.bfloat16)
+                )
+                del output
+    observations = torch.cat(collected, dim=0).contiguous()
+    if tuple(observations.shape) != (64, 40, 2048):
+        raise RuntimeError("fresh blind observation geometry changed")
+    observation_path = public_root / "unavailable_target_lora_cut4.safetensors"
+    save_file(
+        {"activations": observations},
+        observation_path,
+        metadata={
+            "schema": "token-reconstruction.trr0002-blind-observation.v1",
+            "condition": "unavailable_target_lora",
+            "cut_depth": "4",
+            "opaque_records": "true",
+            "source_truth_included": "false",
+        },
+    )
+
+    lens_destination = public_root / "public_a1_lens.pt"
+    calibration_destination = public_root / "frozen_calibration.json"
+    with timer.measure("copy_exact_public_method_state"):
+        copy_exclusive(args.public_lens, lens_destination)
+        copy_exclusive(args.calibration, calibration_destination)
+    observation_index_path = public_root / "observation_index.json"
+    write_json_exclusive(
+        observation_index_path,
+        {
+            "schema": "token-reconstruction.trr0002-blind-observation-index.v1",
+            "records": [{"record_id": row["record_id"]} for row in records],
+            "observation": artifact_entry(observation_path, relative_to=public_root),
+            "source_material_included": False,
+        },
+    )
+    config_path = public_root / "sanitized_config.json"
+    config = {
+        "schema": "token-reconstruction.trr0002-blind-sanitized-config.v1",
+        "task_id": "TRR-0002",
+        "method_id": "a1_scale_calibrated_adaptive_causal_k32_to64",
+        "model": {
+            "id": MODEL_ID,
+            "revision": MODEL_REVISION,
+            "dtype": "bfloat16",
+            "attention_implementation": "sdpa",
+            "prefix_layers": [0, 1, 2, 3],
+        },
+        "record_order": [row["record_id"] for row in records],
+        "geometry": {
+            "records": 64,
+            "sequence_tokens": 40,
+            "scored_tokens_per_record": 39,
+            "hidden_size": 2048,
+            "cut_depth": 4,
+        },
+        "observation_index": artifact_entry(
+            observation_index_path, relative_to=public_root
+        ),
+        "observation": artifact_entry(observation_path, relative_to=public_root),
+        "public_lens": artifact_entry(lens_destination, relative_to=public_root),
+        "calibration": artifact_entry(
+            calibration_destination, relative_to=public_root
+        ),
+        "execution": {
+            "seed": 2801,
+            "base_budget": 32,
+            "maximum_budget": 64,
+            "record_batch_size": 8,
+            "threshold": 1.2544946670532227,
+            "abstention": "none",
+            "stopping": "all 39 scored positions",
+            "target_prefix_calls": 0,
+        },
+        "truth_or_source_inputs": 0,
+        "access_contract": "minimal read-only chroot; no workspace, dataset, unavailable update, truth, private selection, or network",
+    }
+    write_json_exclusive(config_path, config)
+
+    truth_path = private_root / "blind_truth.jsonl"
+    write_jsonl_exclusive(
+        truth_path,
+        (
+            {"record_id": row["record_id"], "token_ids": row["token_ids"]}
+            for row in records
+        ),
+    )
+    evaluator_evidence_path = private_root / "evaluator_evidence.json"
+    write_json_exclusive(
+        evaluator_evidence_path,
+        {
+            "schema": "token-reconstruction.trr0002-blind-evaluator-evidence.v1",
+            "task_id": "TRR-0002",
+            "status": "FRESH_BLIND_INTERFACE_PREPARED",
+            "started_utc": started_utc,
+            "ended_utc": utc_now(),
+            "command": command_record(),
+            "exit_status": 0,
+            "preregistration_commit": args.preregistration_commit,
+            "plan": file_record(args.plan),
+            "public_commitment": file_record(args.public_commitment),
+            "retained_state": {
+                "target_lora": file_record(args.target_lora),
+                "public_lens": file_record(args.public_lens),
+                "calibration": file_record(args.calibration),
+                "fresh_training_steps": 0,
+                "fresh_adaptation_steps": 0,
+            },
+            "public_interface": {
+                "config": file_record(config_path, root=root),
+                "observation_index": file_record(observation_index_path, root=root),
+                "observation": file_record(observation_path, root=root),
+                "source_identity_fields": 0,
+                "source_token_or_text_fields": 0,
+                "opaque_records": 64,
+            },
+            "private_outputs": {"truth": file_record(truth_path, root=root)},
+            "phases": timer.records,
+            "peak_memory": peak_memory(),
+        },
+    )
+    for path in sorted(public_root.rglob("*")):
+        if path.is_file():
+            path.chmod(0o444)
+    print(
+        json.dumps(
+            {
+                "status": "FRESH_BLIND_INTERFACE_PREPARED",
+                "records": 64,
+                "scored_tokens": 2496,
+                "public_config": str(config_path),
+                "source_identity_fields": 0,
+                "fresh_training_steps": 0,
+            },
+            sort_keys=True,
+        )
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
