@@ -145,26 +145,39 @@ def teacher_prefix_counterfactual(
             selected[:, position] = ids.gather(1, choice[:, None]).squeeze(1).cpu()
         return selected
 
-    cache = prefix.new_cache()
-    prefix.run_cached(
-        torch.full((64, 1), BOS_TOKEN_ID, device=device, dtype=torch.long),
-        cache,
-        0,
-    )
-    for position in range(39):
-        ids = candidates[:, position, :].to(device)
-        fork_backend = copy.deepcopy(cache.backend)
-        fork_backend.batch_repeat_interleave(16)
-        fork = PublicPrefixCache(backend=fork_backend, length=cache.length)
-        simulated = prefix.run_cached(ids.reshape(-1, 1), fork, position + 1)
-        simulated = simulated[:, -1, :].reshape(64, 16, -1).float()
-        target = observations[:, position + 1, :].to(device).float()
-        score = F.cosine_similarity(simulated, target[:, None, :], dim=-1)
-        choice = score.argmax(dim=-1)
-        selected[:, position] = ids.gather(1, choice[:, None]).squeeze(1).cpu()
-        true_next = truth_with_bos[:, position + 1].to(device).view(64, 1)
-        prefix.run_cached(true_next, cache, position + 1)
-        del fork, fork_backend, simulated, target, score
+    for record_start in range(0, 64, 16):
+        record_end = min(record_start + 16, 64)
+        records = record_end - record_start
+        cache = prefix.new_cache()
+        prefix.run_cached(
+            torch.full(
+                (records, 1), BOS_TOKEN_ID, device=device, dtype=torch.long
+            ),
+            cache,
+            0,
+        )
+        for position in range(39):
+            ids = candidates[record_start:record_end, position, :].to(device)
+            fork_backend = copy.deepcopy(cache.backend)
+            fork_backend.batch_repeat_interleave(16)
+            fork = PublicPrefixCache(backend=fork_backend, length=cache.length)
+            simulated = prefix.run_cached(ids.reshape(-1, 1), fork, position + 1)
+            simulated = simulated[:, -1, :].reshape(records, 16, -1).float()
+            target = observations[
+                record_start:record_end, position + 1, :
+            ].to(device).float()
+            score = F.cosine_similarity(simulated, target[:, None, :], dim=-1)
+            choice = score.argmax(dim=-1)
+            selected[record_start:record_end, position] = (
+                ids.gather(1, choice[:, None]).squeeze(1).cpu()
+            )
+            true_next = truth_with_bos[
+                record_start:record_end, position + 1
+            ].to(device).view(records, 1)
+            prefix.run_cached(true_next, cache, position + 1)
+            del fork, fork_backend, simulated, target, score
+        del cache
+        torch.cuda.empty_cache()
     return selected
 
 
