@@ -28,6 +28,7 @@ from token_reconstruction.dual_benchmark import (
     score_predictions,
     validate_observations,
 )
+from token_reconstruction.experiment_runtime import seed_everything
 from token_reconstruction.inverse import load_inverse
 from token_reconstruction.metrics import bootstrap_mean
 
@@ -302,6 +303,7 @@ def matrix_cell(
 def main() -> int:
     args = parse_args()
     started_utc = utc_now()
+    seed_everything(1729)
     repository_root = args.repository_root.resolve(strict=True)
     historical_root = args.historical_root.resolve(strict=True)
     prediction_path = args.prediction_artifact
