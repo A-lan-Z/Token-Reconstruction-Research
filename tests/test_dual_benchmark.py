@@ -8,13 +8,14 @@ import torch.nn.functional as F
 
 from token_reconstruction.dual_benchmark import (
     BOS_TOKEN_ID,
-    METHOD_IDS,
+    METHOD_IDS as BASE_METHOD_IDS,
     SETUP_IDS,
     causal_k16,
     propose_k16,
     score_predictions,
     stable_candidate_order,
 )
+from token_reconstruction.component_crossover import METHOD_IDS
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
@@ -86,8 +87,10 @@ def test_registry_is_exact_cartesian_product() -> None:
     protocol = (
         REPOSITORY_ROOT / registry["protocol_path"]
     ).read_text(encoding="utf-8")
-    for identifier in (*SETUP_IDS, *METHOD_IDS):
+    for identifier in (*SETUP_IDS, *BASE_METHOD_IDS):
         assert identifier in protocol
+    assert "44 required setup-method cells" in protocol
+    assert "fixed-budget historical A2 core" in protocol
 
 
 def test_stable_candidate_order_breaks_score_ties_by_token_id() -> None:
