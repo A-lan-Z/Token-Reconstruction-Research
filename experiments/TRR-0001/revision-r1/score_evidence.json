@@ -1,0 +1,157 @@
+{
+  "bootstrap_draws_per_estimate": 10000,
+  "command": {
+    "argv": [
+      "scripts/trr0001_r1_score.py",
+      "--repository-root",
+      ".",
+      "--receipt",
+      "experiments/TRR-0001/revision-r1/freeze_receipt.json",
+      "--frozen-root",
+      "outputs/TRR-0001-R1/clean/frozen_bundle",
+      "--truth",
+      "outputs/TRR-0001-R1/clean/evaluator_private/blind_truth.jsonl",
+      "--selection-reveal",
+      "experiments/TRR-0001/revision-r1/selection_reveal.json",
+      "--selection-verification",
+      "experiments/TRR-0001/revision-r1/selection_verification.json",
+      "--frequency-counts",
+      "outputs/TRR-0001-R1/clean/evaluator_private/auxiliary_frequency_counts.json",
+      "--metrics",
+      "experiments/TRR-0001/revision-r1/metrics.json",
+      "--per-record",
+      "experiments/TRR-0001/revision-r1/per_record_metrics.jsonl",
+      "--diagnostics",
+      "experiments/TRR-0001/revision-r1/diagnostics.json",
+      "--summary-csv",
+      "experiments/TRR-0001/revision-r1/summary.csv",
+      "--plot-svg",
+      "experiments/TRR-0001/revision-r1/accuracy_plot.svg",
+      "--score-evidence",
+      "experiments/TRR-0001/revision-r1/score_evidence.json"
+    ],
+    "cwd": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research",
+    "environment": {
+      "HF_DATASETS_OFFLINE": "1",
+      "HF_HUB_OFFLINE": "1",
+      "PYTHONPATH": "src"
+    }
+  },
+  "ended_utc": "2026-08-22T13:10:03Z",
+  "exact_rank_queries": 14976,
+  "exit_status": 0,
+  "frequency_counts": {
+    "bytes": 60069,
+    "path": "outputs/TRR-0001-R1/clean/evaluator_private/auxiliary_frequency_counts.json",
+    "sha256": "094dc3f46aac262435c393a4989c722005d44b5263cc9311232dfd8aa8eab2dd"
+  },
+  "outputs": [
+    {
+      "bytes": 28333,
+      "path": "experiments/TRR-0001/revision-r1/metrics.json",
+      "sha256": "0ef6f334aa25c202edecd0de88c78d41ef7b0ca2165ca7608f5ac389e5cd7946"
+    },
+    {
+      "bytes": 1011145,
+      "path": "experiments/TRR-0001/revision-r1/per_record_metrics.jsonl",
+      "sha256": "82c8cedd279c5771c90c2b0093219ec4d843d009edea0278e3b44d3ea8ebb6b7"
+    },
+    {
+      "bytes": 56958,
+      "path": "experiments/TRR-0001/revision-r1/diagnostics.json",
+      "sha256": "8d6dd9e41d7a862d5973c0c4dadfbd0961decf0582933ce27c515a29d041016f"
+    },
+    {
+      "bytes": 1952,
+      "path": "experiments/TRR-0001/revision-r1/summary.csv",
+      "sha256": "07dc51355e8c1d4a81fbfbb82f92185932d27486a477fa97be5a2a96d1999461"
+    },
+    {
+      "bytes": 5120,
+      "path": "experiments/TRR-0001/revision-r1/accuracy_plot.svg",
+      "sha256": "066c956852262d0cf28c922eb18a2b10edad7c1be74a744dc44337a87e4fa592"
+    }
+  ],
+  "peak_memory": {
+    "cuda_peak_allocated_bytes": 5362029568,
+    "cuda_peak_reserved_bytes": 5385486336,
+    "process_max_rss_kib": 3700640
+  },
+  "phases": [
+    {
+      "elapsed_seconds": 0.16073446899827104,
+      "ended_utc": "2026-08-22T13:09:46Z",
+      "exit_status": 0,
+      "phase": "verify_freeze_access_and_selection_reveal_gate",
+      "started_utc": "2026-08-22T13:09:46Z"
+    },
+    {
+      "elapsed_seconds": 0.0009609639964764938,
+      "ended_utc": "2026-08-22T13:09:46Z",
+      "exit_status": 0,
+      "phase": "read_truth_after_all_successful_gates",
+      "started_utc": "2026-08-22T13:09:46Z"
+    },
+    {
+      "elapsed_seconds": 3.3771165639991523,
+      "ended_utc": "2026-08-22T13:09:50Z",
+      "exit_status": 0,
+      "phase": "load_public_model_for_post_truth_scoring",
+      "started_utc": "2026-08-22T13:09:46Z"
+    },
+    {
+      "elapsed_seconds": 0.2557611429983808,
+      "ended_utc": "2026-08-22T13:09:50Z",
+      "exit_status": 0,
+      "phase": "verify_opened_truth_against_revealed_dataset_mapping",
+      "started_utc": "2026-08-22T13:09:50Z"
+    },
+    {
+      "elapsed_seconds": 1.517374621998897,
+      "ended_utc": "2026-08-22T13:09:52Z",
+      "exit_status": 0,
+      "phase": "compute_exact_full_vocabulary_true_token_ranks",
+      "started_utc": "2026-08-22T13:09:50Z"
+    },
+    {
+      "elapsed_seconds": 10.549432782001531,
+      "ended_utc": "2026-08-22T13:10:02Z",
+      "exit_status": 0,
+      "phase": "teacher_prefix_public_surrogate_counterfactual",
+      "started_utc": "2026-08-22T13:09:52Z"
+    }
+  ],
+  "revision_id": "TRR-0001-R1",
+  "schema": "token-reconstruction.trr0001-r1-score-evidence.v1",
+  "started_utc": "2026-08-22T13:09:46Z",
+  "task_id": "TRR-0001",
+  "teacher_prefix_candidate_simulations": 239616,
+  "truth": {
+    "bytes": 17775,
+    "path": "outputs/TRR-0001-R1/clean/evaluator_private/blind_truth.jsonl",
+    "sha256": "12ed850575174b6a627895ffabe8d04cd93ef08c637c8059ea07290b4d5c618c"
+  },
+  "truth_gate": {
+    "access_manifests_reverified": true,
+    "entry_count": 22,
+    "opened_truth_matches_revealed_dataset_mapping": true,
+    "passed_before_truth_read": true,
+    "preregistration_commit": "4169e4444dd99ebdc81a9adbbb9610dd8afc9555",
+    "receipt": {
+      "bytes": 5818,
+      "path": "experiments/TRR-0001/revision-r1/freeze_receipt.json",
+      "sha256": "72792c734b4ca89f7afe660d2cd2da1d61dd49342901a5a527a85576ec3b4845"
+    },
+    "selection_mapping_revealed_before_truth": true,
+    "selection_reveal": {
+      "bytes": 10971,
+      "path": "experiments/TRR-0001/revision-r1/selection_reveal.json",
+      "sha256": "d96cae6d6c9beb29d99be34ecb597f4986f9e107212657f4ad98268676251b41"
+    },
+    "selection_verification": {
+      "bytes": 2233,
+      "path": "experiments/TRR-0001/revision-r1/selection_verification.json",
+      "sha256": "57759a2f662ba85c6877006afb4e12019a5bad3cbf6ac6cacd05ff8c9b4922e3"
+    }
+  }
+}

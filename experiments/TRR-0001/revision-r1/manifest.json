@@ -1,0 +1,2295 @@
+{
+  "access_isolation": {
+    "contract": {
+      "access_manifest": "frozen before selection reveal or truth opening",
+      "dataset": "dataset package/cache absent from chroot",
+      "denial_probes": [
+        "repository root",
+        "dataset cache and dataset package",
+        "fresh private mapping",
+        "clean truth",
+        "target LoRA",
+        "original truth",
+        "network route"
+      ],
+      "environment": "cleared and replaced with an allowlisted offline environment",
+      "evaluator_private": "private mapping, truth, target LoRA, and evaluator evidence absent",
+      "failure_policy": "any schema, mount, permission, access-probe, or network-probe failure exits nonzero",
+      "mechanism": "unshare user, mount, network, and PID namespaces; minimal chroot; read-only binds for exact code, sanitized input, public inverse state, pinned public model/tokenizer and Python runtime; tmpfs temporary space; one empty writable method output",
+      "network": "new namespace with no interface route; denial probe required",
+      "permissions": "public inputs and runtime read-only; output is the only writable bind",
+      "separate_processes": [
+        "direct_inverse",
+        "causal_public_surrogate_search"
+      ],
+      "workspace": "repository and host workspace absent from chroot"
+    },
+    "namespace_inode_note": "Linux reused lifetime-scoped namespace inode numbers after the first process exited; no simultaneous distinct-inode claim is made.",
+    "processes": {
+      "causal_public_surrogate_search": {
+        "cost": {
+          "candidate_simulations": 239616,
+          "embedding_comparisons": 1920761856,
+          "end_to_end_arm_seconds": 10.320161847001145,
+          "implementation_complexity": {
+            "common": {
+              "propose_candidates": {
+                "ast_statements": 8,
+                "source_lines": 24
+              },
+              "stable_candidate_order": {
+                "ast_statements": 9,
+                "source_lines": 17
+              }
+            },
+            "dependencies": {
+              "inverse.py": {
+                "sha256": "083fd8cf8cf7dad2c8107db0c3929e67c58fc37389c07ea70c1ad82dcac5f740",
+                "source_lines": 166
+              },
+              "public_prefix.py": {
+                "sha256": "99083a1721e3da74ccbd6cd4556d3634e8cd772d73eb6561e949958559cd25bb",
+                "source_lines": 197
+              }
+            },
+            "method_specific": {
+              "causal_search": {
+                "ast_statements": 42,
+                "source_lines": 58
+              }
+            }
+          },
+          "memory": {
+            "method_peak_after_cuda_reset": {
+              "cuda_peak_allocated_bytes": 4071908352,
+              "cuda_peak_reserved_bytes": 5368709120,
+              "process_max_rss_kib": 3386252
+            },
+            "preparation_peak": {
+              "cuda_peak_allocated_bytes": 5362029568,
+              "cuda_peak_reserved_bytes": 5368709120,
+              "process_max_rss_kib": 3386252
+            },
+            "process_max_rss_kib_is_process_specific": true
+          },
+          "method_compute_seconds": 10.32912037999995,
+          "method_compute_seconds_per_record_arm": 0.026898750989583203,
+          "method_compute_seconds_per_scored_token": 0.0006897115638354667,
+          "persisted_method_state_bytes": 33571376,
+          "proposal_seconds": 1.2765542220040516,
+          "public_surrogate_model_loads": 1,
+          "selection_seconds": 8.898508502996265,
+          "target_prefix_calls": 0
+        },
+        "denial_probes": [
+          {
+            "name": "repository_workspace",
+            "observed": "absent",
+            "passed": true,
+            "target": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research"
+          },
+          {
+            "name": "fresh_private_mapping",
+            "observed": "absent",
+            "passed": true,
+            "target": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0001-R1/evaluator_private/fresh_selection_private.json"
+          },
+          {
+            "name": "clean_truth",
+            "observed": "absent",
+            "passed": true,
+            "target": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0001-R1/clean/evaluator_private/blind_truth.jsonl"
+          },
+          {
+            "name": "original_truth",
+            "observed": "absent",
+            "passed": true,
+            "target": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0001/evaluator_private/blind_truth.jsonl"
+          },
+          {
+            "name": "target_lora",
+            "observed": "absent",
+            "passed": true,
+            "target": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0001/evaluator_private/target_lora.safetensors"
+          },
+          {
+            "name": "dataset_cache",
+            "observed": "absent",
+            "passed": true,
+            "target": "/home/alanz/.cache/huggingface/datasets"
+          },
+          {
+            "name": "network_ipv4",
+            "observed": "connect_errno=101;default_route=False",
+            "passed": true,
+            "target": "1.1.1.1:53"
+          }
+        ],
+        "ended_utc": "2026-08-22T12:07:20Z",
+        "environment": {
+          "keys": [
+            "CUBLAS_WORKSPACE_CONFIG",
+            "HF_HOME",
+            "HF_HUB_OFFLINE",
+            "HOME",
+            "LANG",
+            "LD_LIBRARY_PATH",
+            "PATH",
+            "PYTHONNOUSERSITE",
+            "PYTHONPATH",
+            "TOKENIZERS_PARALLELISM",
+            "TRANSFORMERS_OFFLINE"
+          ],
+          "values": {
+            "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+            "HF_HOME": "/tmp/hf",
+            "HF_HUB_OFFLINE": "1",
+            "HOME": "/tmp/home",
+            "LANG": "C.UTF-8",
+            "LD_LIBRARY_PATH": "/site-packages/torch/lib:/usr/lib/wsl/lib",
+            "PATH": "/usr/bin:/usr/sbin",
+            "PYTHONNOUSERSITE": "1",
+            "PYTHONPATH": "/code/src:/site-packages",
+            "TOKENIZERS_PARALLELISM": "false",
+            "TRANSFORMERS_OFFLINE": "1"
+          }
+        },
+        "exit_status": 0,
+        "fresh_adaptation_steps": 0,
+        "fresh_training_steps": 0,
+        "identity": {
+          "gid": 0,
+          "gid_map": "0       1000          1",
+          "hostname": "PC",
+          "pid": 67,
+          "uid": 0,
+          "uid_map": "0       1000          1"
+        },
+        "inner_command": {
+          "argv": [
+            "/code/scripts/trr0001_r1_reconstruct.py",
+            "--config",
+            "/input/sanitized_config.json",
+            "--input-root",
+            "/input",
+            "--model-path",
+            "/model-repo/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+            "--output-directory",
+            "/output",
+            "--method",
+            "causal_public_surrogate_search",
+            "--access-manifest",
+            "/output/access_manifest.json"
+          ],
+          "cwd": "/",
+          "environment": {
+            "HF_DATASETS_OFFLINE": null,
+            "HF_HUB_OFFLINE": "1",
+            "PYTHONPATH": "/code/src:/site-packages"
+          }
+        },
+        "manifest": {
+          "bytes": 6388,
+          "path": "outputs/TRR-0001-R1/clean/frozen_bundle/causal_public_surrogate_search/access_manifest.json",
+          "sha256": "543d4ea5da037e59fafb5343eeec41d99e971e6b6903abbf8c1224e3bb7af59a"
+        },
+        "mounts": {
+          "mountinfo_sha256": "7098a4d816927853d520f46dc0118c8fec36a4491660191660d6941ff8786eeb",
+          "read_only": [
+            "/",
+            "/code",
+            "/etc",
+            "/input",
+            "/model-repo",
+            "/site-packages",
+            "/usr"
+          ],
+          "writable": [
+            "/dev/shm",
+            "/output",
+            "/tmp"
+          ]
+        },
+        "namespaces": {
+          "mount": "mnt:[4026532875]",
+          "network": "net:[4026532877]",
+          "pid": "pid:[4026532876]",
+          "user": "user:[4026532874]"
+        },
+        "network": {
+          "connect_errno": 101,
+          "default_route_present": false,
+          "interfaces": [
+            "lo"
+          ],
+          "passed": true
+        },
+        "outer_command": "env bash scripts/trr0001_r1_isolate.sh causal_public_surrogate_search outputs/TRR-0001-R1/clean/reconstructor_input outputs/TRR-0001-R1/reconstructor_code_970fdf6c65883bb93878c8458141f1e0bcef3085 /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct /home/alanz/.local/lib/python3.12/site-packages outputs/TRR-0001-R1/clean/causal_public_surrogate_search",
+        "result": "PASS_FAIL_CLOSED_ACCESS_BOUNDARY",
+        "started_utc": "2026-08-22T12:07:20Z"
+      },
+      "direct_inverse": {
+        "cost": {
+          "candidate_simulations": 0,
+          "embedding_comparisons": 1920761856,
+          "end_to_end_arm_seconds": 1.4274399199966865,
+          "implementation_complexity": {
+            "common": {
+              "propose_candidates": {
+                "ast_statements": 8,
+                "source_lines": 24
+              },
+              "stable_candidate_order": {
+                "ast_statements": 9,
+                "source_lines": 17
+              }
+            },
+            "dependencies": {
+              "inverse.py": {
+                "sha256": "083fd8cf8cf7dad2c8107db0c3929e67c58fc37389c07ea70c1ad82dcac5f740",
+                "source_lines": 166
+              },
+              "public_prefix.py": {
+                "sha256": "99083a1721e3da74ccbd6cd4556d3634e8cd772d73eb6561e949958559cd25bb",
+                "source_lines": 197
+              }
+            },
+            "method_specific": {
+              "direct_top1_selection": {
+                "ast_statements": 1,
+                "source_lines": 1
+              }
+            }
+          },
+          "memory": {
+            "method_peak_after_cuda_reset": {
+              "cuda_peak_allocated_bytes": 3688399872,
+              "cuda_peak_reserved_bytes": 5368709120,
+              "process_max_rss_kib": 3386292
+            },
+            "preparation_peak": {
+              "cuda_peak_allocated_bytes": 5362029568,
+              "cuda_peak_reserved_bytes": 5368709120,
+              "process_max_rss_kib": 3386292
+            },
+            "process_max_rss_kib_is_process_specific": true
+          },
+          "method_compute_seconds": 1.4364785969992226,
+          "method_compute_seconds_per_record_arm": 0.0037408296796854756,
+          "method_compute_seconds_per_scored_token": 9.591870973552502e-05,
+          "persisted_method_state_bytes": 33571376,
+          "proposal_seconds": 1.2781948859992553,
+          "public_surrogate_model_loads": 1,
+          "selection_seconds": 0.0,
+          "target_prefix_calls": 0
+        },
+        "denial_probes": [
+          {
+            "name": "repository_workspace",
+            "observed": "absent",
+            "passed": true,
+            "target": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research"
+          },
+          {
+            "name": "fresh_private_mapping",
+            "observed": "absent",
+            "passed": true,
+            "target": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0001-R1/evaluator_private/fresh_selection_private.json"
+          },
+          {
+            "name": "clean_truth",
+            "observed": "absent",
+            "passed": true,
+            "target": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0001-R1/clean/evaluator_private/blind_truth.jsonl"
+          },
+          {
+            "name": "original_truth",
+            "observed": "absent",
+            "passed": true,
+            "target": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0001/evaluator_private/blind_truth.jsonl"
+          },
+          {
+            "name": "target_lora",
+            "observed": "absent",
+            "passed": true,
+            "target": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0001/evaluator_private/target_lora.safetensors"
+          },
+          {
+            "name": "dataset_cache",
+            "observed": "absent",
+            "passed": true,
+            "target": "/home/alanz/.cache/huggingface/datasets"
+          },
+          {
+            "name": "network_ipv4",
+            "observed": "connect_errno=101;default_route=False",
+            "passed": true,
+            "target": "1.1.1.1:53"
+          }
+        ],
+        "ended_utc": "2026-08-22T12:06:35Z",
+        "environment": {
+          "keys": [
+            "CUBLAS_WORKSPACE_CONFIG",
+            "HF_HOME",
+            "HF_HUB_OFFLINE",
+            "HOME",
+            "LANG",
+            "LD_LIBRARY_PATH",
+            "PATH",
+            "PYTHONNOUSERSITE",
+            "PYTHONPATH",
+            "TOKENIZERS_PARALLELISM",
+            "TRANSFORMERS_OFFLINE"
+          ],
+          "values": {
+            "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+            "HF_HOME": "/tmp/hf",
+            "HF_HUB_OFFLINE": "1",
+            "HOME": "/tmp/home",
+            "LANG": "C.UTF-8",
+            "LD_LIBRARY_PATH": "/site-packages/torch/lib:/usr/lib/wsl/lib",
+            "PATH": "/usr/bin:/usr/sbin",
+            "PYTHONNOUSERSITE": "1",
+            "PYTHONPATH": "/code/src:/site-packages",
+            "TOKENIZERS_PARALLELISM": "false",
+            "TRANSFORMERS_OFFLINE": "1"
+          }
+        },
+        "exit_status": 0,
+        "fresh_adaptation_steps": 0,
+        "fresh_training_steps": 0,
+        "identity": {
+          "gid": 0,
+          "gid_map": "0       1000          1",
+          "hostname": "PC",
+          "pid": 67,
+          "uid": 0,
+          "uid_map": "0       1000          1"
+        },
+        "inner_command": {
+          "argv": [
+            "/code/scripts/trr0001_r1_reconstruct.py",
+            "--config",
+            "/input/sanitized_config.json",
+            "--input-root",
+            "/input",
+            "--model-path",
+            "/model-repo/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+            "--output-directory",
+            "/output",
+            "--method",
+            "direct_inverse",
+            "--access-manifest",
+            "/output/access_manifest.json"
+          ],
+          "cwd": "/",
+          "environment": {
+            "HF_DATASETS_OFFLINE": null,
+            "HF_HUB_OFFLINE": "1",
+            "PYTHONPATH": "/code/src:/site-packages"
+          }
+        },
+        "manifest": {
+          "bytes": 6340,
+          "path": "outputs/TRR-0001-R1/clean/frozen_bundle/direct_inverse/access_manifest.json",
+          "sha256": "7caa4dbfe46dd532d4aa89e7d8ba105d3209698d7d5b2385059208e1c6995745"
+        },
+        "mounts": {
+          "mountinfo_sha256": "428ac3591c5cf5c933eb76c279184d0660204c6ee80acc7f1eab6d41859f802b",
+          "read_only": [
+            "/",
+            "/code",
+            "/etc",
+            "/input",
+            "/model-repo",
+            "/site-packages",
+            "/usr"
+          ],
+          "writable": [
+            "/dev/shm",
+            "/output",
+            "/tmp"
+          ]
+        },
+        "namespaces": {
+          "mount": "mnt:[4026532875]",
+          "network": "net:[4026532877]",
+          "pid": "pid:[4026532876]",
+          "user": "user:[4026532874]"
+        },
+        "network": {
+          "connect_errno": 101,
+          "default_route_present": false,
+          "interfaces": [
+            "lo"
+          ],
+          "passed": true
+        },
+        "outer_command": "env bash scripts/trr0001_r1_isolate.sh direct_inverse outputs/TRR-0001-R1/clean/reconstructor_input outputs/TRR-0001-R1/reconstructor_code_970fdf6c65883bb93878c8458141f1e0bcef3085 /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct /home/alanz/.local/lib/python3.12/site-packages outputs/TRR-0001-R1/clean/direct_inverse",
+        "result": "PASS_FAIL_CLOSED_ACCESS_BOUNDARY",
+        "started_utc": "2026-08-22T12:06:35Z"
+      }
+    },
+    "public_source_resolving_fields": 0,
+    "separate_sequential_processes": true,
+    "target_prefix_calls": 0
+  },
+  "artifacts": {
+    "committed_revision_files": [
+      {
+        "bytes": 5120,
+        "path": "experiments/TRR-0001/revision-r1/accuracy_plot.svg",
+        "sha256": "066c956852262d0cf28c922eb18a2b10edad7c1be74a744dc44337a87e4fa592"
+      },
+      {
+        "bytes": 484,
+        "path": "experiments/TRR-0001/revision-r1/causal-output.txt",
+        "sha256": "68790b53d74ba23ed77d9933388027a4c7c2789ee1b087a225d1f8334bd138e3"
+      },
+      {
+        "bytes": 1117,
+        "path": "experiments/TRR-0001/revision-r1/causal-time.txt",
+        "sha256": "5cb5d3f63c3eaf58eef89cf9f89ce53048441a51c624823faa009f03dbf11511"
+      },
+      {
+        "bytes": 56958,
+        "path": "experiments/TRR-0001/revision-r1/diagnostics.json",
+        "sha256": "8d6dd9e41d7a862d5973c0c4dadfbd0961decf0582933ce27c515a29d041016f"
+      },
+      {
+        "bytes": 453,
+        "path": "experiments/TRR-0001/revision-r1/direct-output.txt",
+        "sha256": "1dea9d4e7bc643e98bd846aff5541185feaddc477ce43fbea1afdf78d75b0d51"
+      },
+      {
+        "bytes": 1083,
+        "path": "experiments/TRR-0001/revision-r1/direct-time.txt",
+        "sha256": "a5417b15a2f1aa2bec836b83c38549e155b7617793ad52ad129113ba51af3f44"
+      },
+      {
+        "bytes": 299,
+        "path": "experiments/TRR-0001/revision-r1/evaluator-output.txt",
+        "sha256": "cebe5d8e98a92e14495ae78a2f73ddde051faae936038e9e4dd3475cc7a326f1"
+      },
+      {
+        "bytes": 1473,
+        "path": "experiments/TRR-0001/revision-r1/evaluator-time.txt",
+        "sha256": "0b74a1f9f3e2a5b09aeac6287d7c7ecf8cd4b011c8e483cdce3a655c2d912a23"
+      },
+      {
+        "bytes": 450,
+        "path": "experiments/TRR-0001/revision-r1/final-validation-attempt1-output.txt",
+        "sha256": "fc7f903aad38f1128d3e5830b30b7b00d9cfd893eeff8b15ed6aa5dece00b52c"
+      },
+      {
+        "bytes": 907,
+        "path": "experiments/TRR-0001/revision-r1/final-validation-attempt1-time.txt",
+        "sha256": "3ff098ce7d0adff10a42b59d41292e94c06c6ed477f1d401e7aba931648ba5fe"
+      },
+      {
+        "bytes": 518,
+        "path": "experiments/TRR-0001/revision-r1/final-validation-attempt2-output.txt",
+        "sha256": "cb7f48a939dfc3bb2beaf763a39fe23e2c96bae6c313271569948f677447a15a"
+      },
+      {
+        "bytes": 911,
+        "path": "experiments/TRR-0001/revision-r1/final-validation-attempt2-time.txt",
+        "sha256": "14591249096bdb73c903faaecc0aba1c35dd58e90c65e01e190fd26e912ae283"
+      },
+      {
+        "bytes": 2904,
+        "path": "experiments/TRR-0001/revision-r1/final-validation-output.txt",
+        "sha256": "152c2be646fdb540a5389d2cadaf6c7f6c92f021de013a9c8b3c14c1efecccd8"
+      },
+      {
+        "bytes": 869,
+        "path": "experiments/TRR-0001/revision-r1/final-validation-time.txt",
+        "sha256": "525ed83d90decc0f31e97beef6b43fc7f5a77d01fd1d36059289e8e701a13862"
+      },
+      {
+        "bytes": 3318,
+        "path": "experiments/TRR-0001/revision-r1/final_validation.json",
+        "sha256": "7a6ed805ef7fd8ddb6dc3d9bafe04c91ec589b276d97eda8715695d95e9480ff"
+      },
+      {
+        "bytes": 99,
+        "path": "experiments/TRR-0001/revision-r1/focused-tests-output.txt",
+        "sha256": "00fc6ec325e48a1003592ec6c8f88d6579bf270464a1d2fcefbdcb2ef2352e0b"
+      },
+      {
+        "bytes": 866,
+        "path": "experiments/TRR-0001/revision-r1/focused-tests-time.txt",
+        "sha256": "63aa417fa96bdaafd10b8bc8df71968cefcffa55ee0fdb9c580a0bb849513b09"
+      },
+      {
+        "bytes": 464,
+        "path": "experiments/TRR-0001/revision-r1/freeze-attempt1-output.txt",
+        "sha256": "61c79828fc9865590981b089c83a9183b8a32b7e68142ec6838f52cd1821944f"
+      },
+      {
+        "bytes": 1557,
+        "path": "experiments/TRR-0001/revision-r1/freeze-attempt1-time.txt",
+        "sha256": "32397e5e60d809fcccb8ce03a42be1149f3d2b6db57bbe062175df8bb315b61b"
+      },
+      {
+        "bytes": 1020,
+        "path": "experiments/TRR-0001/revision-r1/freeze-attempt2-output.txt",
+        "sha256": "722ac6c3d04ee3a51f27d0a1360c519aace1e710b9a41ff4a115af479dd7a49e"
+      },
+      {
+        "bytes": 1562,
+        "path": "experiments/TRR-0001/revision-r1/freeze-attempt2-time.txt",
+        "sha256": "0f014941f25fae1184e2458316a38613efb75550247dcca600667cc332e66f02"
+      },
+      {
+        "bytes": 236,
+        "path": "experiments/TRR-0001/revision-r1/freeze-output.txt",
+        "sha256": "c9e4179843db5c3db3325aab7b2530259a6f3c41be6d1d672f2641b1c5c93b74"
+      },
+      {
+        "bytes": 1524,
+        "path": "experiments/TRR-0001/revision-r1/freeze-time.txt",
+        "sha256": "98d4f79adc899eecead529b1489107b3548635af41f1ea612637586dc93bb652"
+      },
+      {
+        "bytes": 535,
+        "path": "experiments/TRR-0001/revision-r1/freeze-verification.txt",
+        "sha256": "9ef491b7ba8b98bcae0c77d268d35499ba1f05665d6db183234476c630e60aab"
+      },
+      {
+        "bytes": 5818,
+        "path": "experiments/TRR-0001/revision-r1/freeze_receipt.json",
+        "sha256": "72792c734b4ca89f7afe660d2cd2da1d61dd49342901a5a527a85576ec3b4845"
+      },
+      {
+        "bytes": 99,
+        "path": "experiments/TRR-0001/revision-r1/full-tests-output.txt",
+        "sha256": "cd1156417181f13f0fe41d15b78300545a2659a7c579b825aaa4f5bf7dc763d8"
+      },
+      {
+        "bytes": 761,
+        "path": "experiments/TRR-0001/revision-r1/full-tests-time.txt",
+        "sha256": "ca5786401f0739e450a6f62ed17bbfa237ca7b8d0867f627bd2618cb5ae8c388"
+      },
+      {
+        "bytes": 28333,
+        "path": "experiments/TRR-0001/revision-r1/metrics.json",
+        "sha256": "0ef6f334aa25c202edecd0de88c78d41ef7b0ca2165ca7608f5ac389e5cd7946"
+      },
+      {
+        "bytes": 127,
+        "path": "experiments/TRR-0001/revision-r1/noninterference-compare-output.txt",
+        "sha256": "1bd3f5080a34175910ce1918a88bd790aab57a4644543650a0a047236dced807"
+      },
+      {
+        "bytes": 1193,
+        "path": "experiments/TRR-0001/revision-r1/noninterference-compare-time.txt",
+        "sha256": "7b14b3293ec1f0da7284454d360af3deb9d93becce0d1688a8a666073cfad230"
+      },
+      {
+        "bytes": 198,
+        "path": "experiments/TRR-0001/revision-r1/noninterference-prepare-output.txt",
+        "sha256": "82eb24e90780ced627bed94d4b5a98a0f38d2cb1a9d8d835fb291830288492d2"
+      },
+      {
+        "bytes": 1203,
+        "path": "experiments/TRR-0001/revision-r1/noninterference-prepare-time.txt",
+        "sha256": "a7d6645a89e60450c56f17895e9a79c6fad84ed2d6b4d2db556f26d2ac4b7aa7"
+      },
+      {
+        "bytes": 509,
+        "path": "experiments/TRR-0001/revision-r1/noninterference-rerun-output.txt",
+        "sha256": "fe49d7cafa623e311ebf6c626f375b5be8f1f3762a12493ef8bb3fbc47a92c4a"
+      },
+      {
+        "bytes": 1292,
+        "path": "experiments/TRR-0001/revision-r1/noninterference-rerun-time.txt",
+        "sha256": "7d56dfad9ec7ad0c2d1f415e1a818754ab290e60c6a9cea72f43f26ae7b3a8d0"
+      },
+      {
+        "bytes": 140126,
+        "path": "experiments/TRR-0001/revision-r1/original_noninterference_audit.json",
+        "sha256": "11612e8b35759b7325ee365bd1b8b44f51faefbe79a8306005430a4eb8801602"
+      },
+      {
+        "bytes": 13818,
+        "path": "experiments/TRR-0001/revision-r1/original_noninterference_preparation.json",
+        "sha256": "f1042445a2df53995efe450eaf1a1b0eb5db828a1488465152824154f23b481e"
+      },
+      {
+        "bytes": 1011145,
+        "path": "experiments/TRR-0001/revision-r1/per_record_metrics.jsonl",
+        "sha256": "82c8cedd279c5771c90c2b0093219ec4d843d009edea0278e3b44d3ea8ebb6b7"
+      },
+      {
+        "bytes": 18970,
+        "path": "experiments/TRR-0001/revision-r1/plan.json",
+        "sha256": "59944cb1e01ec2e88e04109e46db0088eece74500fe599eb6a62ead038b6fe14"
+      },
+      {
+        "bytes": 3972,
+        "path": "experiments/TRR-0001/revision-r1/preregistration/attempts.json",
+        "sha256": "d9609450a8aa529dcc641696796e715cc3f7557b4786d35a869a973a90787402"
+      },
+      {
+        "bytes": 1815,
+        "path": "experiments/TRR-0001/revision-r1/preregistration/isolation-boundary-smoke-attempt2.txt",
+        "sha256": "f8bfdc78344c51ce1c78e66ae69340bcf8e1fef01d0e377086c881f90d55aa87"
+      },
+      {
+        "bytes": 1813,
+        "path": "experiments/TRR-0001/revision-r1/preregistration/isolation-boundary-smoke-attempt3.txt",
+        "sha256": "d085493d4c3bb42e7997f9040dcae845ad5d07053cf09f319646349e992ff5c1"
+      },
+      {
+        "bytes": 1483,
+        "path": "experiments/TRR-0001/revision-r1/preregistration/isolation-boundary-smoke.txt",
+        "sha256": "1ea5cc89585943408a6972ccbfb293c82e936e02dea7018c4924b4caf917e87f"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/TRR-0001/revision-r1/preregistration/plan-attempt1-output.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 1150,
+        "path": "experiments/TRR-0001/revision-r1/preregistration/plan-attempt1-time.txt",
+        "sha256": "592737fd51fe85158b9abd8f4df90078455fc7d575cdb322ad02c69729433f8d"
+      },
+      {
+        "bytes": 228,
+        "path": "experiments/TRR-0001/revision-r1/preregistration/plan-output.txt",
+        "sha256": "6f28e9bb9433f288cb8d4c8a848facc67f8f76910747670b8587686efe54ce46"
+      },
+      {
+        "bytes": 1109,
+        "path": "experiments/TRR-0001/revision-r1/preregistration/plan-time.txt",
+        "sha256": "3a189ae47f60f6cda8f98d240f600d90109ff768ab37676e76fdc59a003b4d03"
+      },
+      {
+        "bytes": 1221,
+        "path": "experiments/TRR-0001/revision-r1/preregistration/precommit-validation-time.txt",
+        "sha256": "843119094ae5bec909686296b1650fdaa75774dacf32ffc4bc662ffba6578d33"
+      },
+      {
+        "bytes": 80,
+        "path": "experiments/TRR-0001/revision-r1/preregistration/precommit-validation.txt",
+        "sha256": "e9dbdc8fb92dff58c13e1fb9c4621ac4297ae338d239d081487e73a4b094cdba"
+      },
+      {
+        "bytes": 797,
+        "path": "experiments/TRR-0001/revision-r1/preregistration/protocol-tests-time.txt",
+        "sha256": "1ff9aba15128fcc1a7454642ee5ad0f0526e3907f06b5c140f1eb26eefff2760"
+      },
+      {
+        "bytes": 98,
+        "path": "experiments/TRR-0001/revision-r1/preregistration/protocol-tests.txt",
+        "sha256": "b59be68fb6adfb7d9fc7d91fadce2bc4dfc5c56c4256d1f498efef44320e1fa0"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/TRR-0001/revision-r1/preregistration/selection-attempt1-output.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 1126,
+        "path": "experiments/TRR-0001/revision-r1/preregistration/selection-attempt1-time.txt",
+        "sha256": "3d30d663f735d1df84b7571b2180f5d0d0835c660c03bb5a5911d5e915a6a4fa"
+      },
+      {
+        "bytes": 233,
+        "path": "experiments/TRR-0001/revision-r1/preregistration/selection-output.txt",
+        "sha256": "d8d118dd41030513fb70d8a7ad2ac8b904e48a6b7d84d98417113796d2125bb0"
+      },
+      {
+        "bytes": 1132,
+        "path": "experiments/TRR-0001/revision-r1/preregistration/selection-time.txt",
+        "sha256": "e47dfb55a1ba9fbc5e83a390e5eed972b70db07e0e9119df781cfb6da9dc04ac"
+      },
+      {
+        "bytes": 0,
+        "path": "experiments/TRR-0001/revision-r1/pycompile-output.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 2157,
+        "path": "experiments/TRR-0001/revision-r1/pycompile-time.txt",
+        "sha256": "ab1700c6ad9fbf44720c3a901fca3b919fdcf611a10759735056909b311387c8"
+      },
+      {
+        "bytes": 747,
+        "path": "experiments/TRR-0001/revision-r1/reveal-output.txt",
+        "sha256": "7051e4680e56aecfbe84a1ed9d4973dd0008b1f68fbe65029866e81efde2c401"
+      },
+      {
+        "bytes": 1355,
+        "path": "experiments/TRR-0001/revision-r1/reveal-time.txt",
+        "sha256": "71cc7fbebd32fff6ef1b5e691bb4c87ea45806dd9ee34850a3b054e94c126fad"
+      },
+      {
+        "bytes": 179,
+        "path": "experiments/TRR-0001/revision-r1/reveal-verification.txt",
+        "sha256": "2239b5bd1cbbf693065442d7ffecab9ce9cfe6ce5a9fc73c221f4514f13beb63"
+      },
+      {
+        "bytes": 813,
+        "path": "experiments/TRR-0001/revision-r1/score-output.txt",
+        "sha256": "b946e45ad59be3505b1a1a944e81ce0852ae924174d103594f80304be9c699db"
+      },
+      {
+        "bytes": 1761,
+        "path": "experiments/TRR-0001/revision-r1/score-time.txt",
+        "sha256": "d9c28f4ae27119542c3f491a773de1e9f32ef40278a135988e114b66a4412e79"
+      },
+      {
+        "bytes": 5556,
+        "path": "experiments/TRR-0001/revision-r1/score_evidence.json",
+        "sha256": "f95d032fa94487f085dbb6e0e3b6c5cdf621e6f8d28f2381caed1d16cf417a27"
+      },
+      {
+        "bytes": 2623,
+        "path": "experiments/TRR-0001/revision-r1/selection_commitment.json",
+        "sha256": "633cf3b24efddf22939c3e628d99d3f0e098dfec686ed2ac8b043b49e086efdd"
+      },
+      {
+        "bytes": 10971,
+        "path": "experiments/TRR-0001/revision-r1/selection_reveal.json",
+        "sha256": "d96cae6d6c9beb29d99be34ecb597f4986f9e107212657f4ad98268676251b41"
+      },
+      {
+        "bytes": 2233,
+        "path": "experiments/TRR-0001/revision-r1/selection_verification.json",
+        "sha256": "57759a2f662ba85c6877006afb4e12019a5bad3cbf6ac6cacd05ff8c9b4922e3"
+      },
+      {
+        "bytes": 1952,
+        "path": "experiments/TRR-0001/revision-r1/summary.csv",
+        "sha256": "07dc51355e8c1d4a81fbfbb82f92185932d27486a477fa97be5a2a96d1999461"
+      }
+    ],
+    "local_raw_artifacts": {
+      "blind_truth": {
+        "bytes": 17775,
+        "path": "outputs/TRR-0001-R1/clean/evaluator_private/blind_truth.jsonl",
+        "sha256": "12ed850575174b6a627895ffabe8d04cd93ef08c637c8059ea07290b4d5c618c"
+      },
+      "evaluator_evidence": {
+        "bytes": 6818,
+        "path": "outputs/TRR-0001-R1/clean/evaluator_private/evaluator_evidence.json",
+        "sha256": "59e52fd470b833b791b7cf565c03ee7652be163790c6a204d0f1c9187458967c"
+      },
+      "frequency_counts": {
+        "bytes": 60069,
+        "path": "outputs/TRR-0001-R1/clean/evaluator_private/auxiliary_frequency_counts.json",
+        "sha256": "094dc3f46aac262435c393a4989c722005d44b5263cc9311232dfd8aa8eab2dd"
+      },
+      "frozen_entries": [
+        {
+          "bytes": 6388,
+          "path": "outputs/TRR-0001-R1/clean/frozen_bundle/causal_public_surrogate_search/access_manifest.json",
+          "sha256": "543d4ea5da037e59fafb5343eeec41d99e971e6b6903abbf8c1224e3bb7af59a"
+        },
+        {
+          "bytes": 122684136,
+          "path": "outputs/TRR-0001-R1/clean/frozen_bundle/causal_public_surrogate_search/queries.safetensors",
+          "sha256": "59a79b9c328b8cd1ddd6bc1ff6bb197b436e5ad65c30a2e7061eb98201fb7d8b"
+        },
+        {
+          "bytes": 11448996,
+          "path": "outputs/TRR-0001-R1/clean/frozen_bundle/causal_public_surrogate_search/reconstructions.jsonl",
+          "sha256": "94727edea29cb3423d49b6262b7e8280c30e2178fc268b2c9845bf942f59afb1"
+        },
+        {
+          "bytes": 8712,
+          "path": "outputs/TRR-0001-R1/clean/frozen_bundle/causal_public_surrogate_search/reconstructor_evidence.json",
+          "sha256": "0241ae67443ee3656ba6e00957e812f0df821486fe4f1520ce5cdbe9e303c3ec"
+        },
+        {
+          "bytes": 4187,
+          "path": "outputs/TRR-0001-R1/clean/frozen_bundle/causal_public_surrogate_search/route.json",
+          "sha256": "8de105e42355a49b476242bafc13ecd0b8c9df1db012ba342c407070f5baad19"
+        },
+        {
+          "bytes": 6340,
+          "path": "outputs/TRR-0001-R1/clean/frozen_bundle/direct_inverse/access_manifest.json",
+          "sha256": "7caa4dbfe46dd532d4aa89e7d8ba105d3209698d7d5b2385059208e1c6995745"
+        },
+        {
+          "bytes": 122684120,
+          "path": "outputs/TRR-0001-R1/clean/frozen_bundle/direct_inverse/queries.safetensors",
+          "sha256": "81895ad5c269c2b95d53f746ea089828669b383d88e59945d4c201cb33f5ce17"
+        },
+        {
+          "bytes": 11507315,
+          "path": "outputs/TRR-0001-R1/clean/frozen_bundle/direct_inverse/reconstructions.jsonl",
+          "sha256": "e57e7f652ffb2837e06cb6ce9f4e0a444904e45051233b36e1c7b3af964b7df7"
+        },
+        {
+          "bytes": 8375,
+          "path": "outputs/TRR-0001-R1/clean/frozen_bundle/direct_inverse/reconstructor_evidence.json",
+          "sha256": "d3d98fdc20bc377ac6456ae349d2830592a39630f4473ae5111f27124fbae8b8"
+        },
+        {
+          "bytes": 4171,
+          "path": "outputs/TRR-0001-R1/clean/frozen_bundle/direct_inverse/route.json",
+          "sha256": "c28d0c2accaa4c6ae096c735dd1d57b1daa51996bde026066e0c555b9824ca7a"
+        },
+        {
+          "bytes": 4352,
+          "path": "outputs/TRR-0001-R1/clean/frozen_bundle/prefreeze_validation.json",
+          "sha256": "faa9b16c7652cdbd0c39b25059e173dfaf022a09840c8358c4293ee95e50beae"
+        },
+        {
+          "bytes": 16785688,
+          "path": "outputs/TRR-0001-R1/clean/frozen_bundle/reconstructor_input/inverses/cut4.safetensors",
+          "sha256": "9e2487f85057748130bf87b2aad0a883f3c36dfc052eefd83c0f5c35497a24e3"
+        },
+        {
+          "bytes": 16785688,
+          "path": "outputs/TRR-0001-R1/clean/frozen_bundle/reconstructor_input/inverses/cut8.safetensors",
+          "sha256": "ac8871f1fa0d40664c5d9d94343ef560832477aade3574978a1c6b572df01e80"
+        },
+        {
+          "bytes": 4852,
+          "path": "outputs/TRR-0001-R1/clean/frozen_bundle/reconstructor_input/observation_index.json",
+          "sha256": "9fbc40138f99eb2d785451a51701b1f50c338b5311f7c8bb808952001a1f7caa"
+        },
+        {
+          "bytes": 10486040,
+          "path": "outputs/TRR-0001-R1/clean/frozen_bundle/reconstructor_input/observations/matched_public_cut0.safetensors",
+          "sha256": "2f9014a4518eb94d7003c53802f8a36f1170d488cb3c7db6d1922d48284f944c"
+        },
+        {
+          "bytes": 10486040,
+          "path": "outputs/TRR-0001-R1/clean/frozen_bundle/reconstructor_input/observations/matched_public_cut4.safetensors",
+          "sha256": "4876c3126e20846b2fe67b5579a853fc9948ac762053bcc8389b07a9d38fc2fd"
+        },
+        {
+          "bytes": 10486040,
+          "path": "outputs/TRR-0001-R1/clean/frozen_bundle/reconstructor_input/observations/matched_public_cut8.safetensors",
+          "sha256": "5b611719525d1c26351addbedb53f38bd8bd7452cff86a2344500802350026ac"
+        },
+        {
+          "bytes": 10486048,
+          "path": "outputs/TRR-0001-R1/clean/frozen_bundle/reconstructor_input/observations/unavailable_target_lora_cut0.safetensors",
+          "sha256": "12eb937350680360b9e0322def7d207d810f7c4ee757d5e7ae14c4218037c4d7"
+        },
+        {
+          "bytes": 10486048,
+          "path": "outputs/TRR-0001-R1/clean/frozen_bundle/reconstructor_input/observations/unavailable_target_lora_cut4.safetensors",
+          "sha256": "0ff408b4064ba2b8c1f6ec772aec89bdc5103dd6af1e4632034eab64083c71ab"
+        },
+        {
+          "bytes": 10486048,
+          "path": "outputs/TRR-0001-R1/clean/frozen_bundle/reconstructor_input/observations/unavailable_target_lora_cut8.safetensors",
+          "sha256": "40e59070991694e32a2354b0481c1d6483605735a3dff82ff6783bfdbeaa8464"
+        },
+        {
+          "bytes": 3065,
+          "path": "outputs/TRR-0001-R1/clean/frozen_bundle/reconstructor_input/sanitized_config.json",
+          "sha256": "86ce0db508d1ffa7d9fa8481a635227f1d4a492cb886bc1071283504895458f5"
+        },
+        {
+          "bytes": 9597,
+          "path": "outputs/TRR-0001-R1/clean/frozen_bundle/runtime_identity.json",
+          "sha256": "967eecc336df800d8da27c710acfccb5a4210f9e2956b901f1a457341beb4de8"
+        }
+      ],
+      "private_selection": {
+        "bytes": 48010,
+        "path": "outputs/TRR-0001-R1/evaluator_private/fresh_selection_private.json",
+        "sha256": "7d6a225aa0b1cad96900ee9ff6b2e9b2eadb595b8a28c87ce002f85c4b163d7d"
+      },
+      "retention": "local raw artifacts retained at the recorded paths; frozen entries are read-only"
+    }
+  },
+  "attempts_and_deviations": {
+    "final_validation_attempt_1": {
+      "output": {
+        "bytes": 450,
+        "path": "experiments/TRR-0001/revision-r1/final-validation-attempt1-output.txt",
+        "sha256": "fc7f903aad38f1128d3e5830b30b7b00d9cfd893eeff8b15ed6aa5dece00b52c"
+      },
+      "result": "caught a documentation-only preregistration plan hash transcription error",
+      "time": {
+        "bytes": 907,
+        "path": "experiments/TRR-0001/revision-r1/final-validation-attempt1-time.txt",
+        "sha256": "3ff098ce7d0adff10a42b59d41292e94c06c6ed477f1d401e7aba931648ba5fe"
+      }
+    },
+    "final_validation_attempt_2": {
+      "output": {
+        "bytes": 518,
+        "path": "experiments/TRR-0001/revision-r1/final-validation-attempt2-output.txt",
+        "sha256": "cb7f48a939dfc3bb2beaf763a39fe23e2c96bae6c313271569948f677447a15a"
+      },
+      "result": "caught a validator-only isolation JSON field-name mismatch",
+      "time": {
+        "bytes": 911,
+        "path": "experiments/TRR-0001/revision-r1/final-validation-attempt2-time.txt",
+        "sha256": "14591249096bdb73c903faaecc0aba1c35dd58e90c65e01e190fd26e912ae283"
+      }
+    },
+    "freeze_attempt_1": {
+      "output": {
+        "bytes": 464,
+        "path": "experiments/TRR-0001/revision-r1/freeze-attempt1-output.txt",
+        "sha256": "61c79828fc9865590981b089c83a9183b8a32b7e68142ec6838f52cd1821944f"
+      },
+      "result": "failed before frozen root or receipt due to an invalid namespace-inode reuse assertion",
+      "time": {
+        "bytes": 1557,
+        "path": "experiments/TRR-0001/revision-r1/freeze-attempt1-time.txt",
+        "sha256": "32397e5e60d809fcccb8ce03a42be1149f3d2b6db57bbe062175df8bb315b61b"
+      }
+    },
+    "freeze_attempt_2": {
+      "output": {
+        "bytes": 1020,
+        "path": "experiments/TRR-0001/revision-r1/freeze-attempt2-output.txt",
+        "sha256": "722ac6c3d04ee3a51f27d0a1360c519aace1e710b9a41ff4a115af479dd7a49e"
+      },
+      "result": "false-positive private-path rejection; no receipt; incomplete bundle retained separately",
+      "retained_path": "outputs/TRR-0001-R1/failed_freeze_attempt2_frozen_bundle",
+      "time": {
+        "bytes": 1562,
+        "path": "experiments/TRR-0001/revision-r1/freeze-attempt2-time.txt",
+        "sha256": "0f014941f25fae1184e2458316a38613efb75550247dcca600667cc332e66f02"
+      }
+    },
+    "preregistration_and_boundary": {
+      "attempts": [
+        {
+          "exit_status": 1,
+          "operation": "workspace apply_patch for blind_commitment.py",
+          "resolution": "applied the same unified patch with repository-local git apply",
+          "result": "failed to write through the Windows UNC workspace path"
+        },
+        {
+          "command": "HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false PYTHONPATH=src python3 scripts/trr0001_r1_select.py --original-plan experiments/TRR-0001/plan.json --public-commitment experiments/TRR-0001/revision-r1/selection_commitment.json --private-selection outputs/TRR-0001-R1/evaluator_private/fresh_selection_private.json --created-utc 2026-08-22T11:42:41Z",
+          "exit_status": 0,
+          "resolution": "completed the create-only write and validation path, preserved empty stdout and GNU-time evidence, and reran with a newly generated key",
+          "result": "incomplete initial script revision computed a transient in-memory selection but exited before writing either private or public artifact"
+        },
+        {
+          "command": "PYTHONPATH=src python3 scripts/trr0001_r1_preregister.py --repository-root . --original-plan experiments/TRR-0001/plan.json --commitment experiments/TRR-0001/revision-r1/selection_commitment.json --revision-request coordination/requests/TRR-0001-R1.md --plan experiments/TRR-0001/revision-r1/plan.json --clean-output-root outputs/TRR-0001-R1/clean --created-utc 2026-08-22T11:44:51Z",
+          "exit_status": 1,
+          "resolution": "renamed the public option to add_special_tokens while retaining its false value, preserved attempt evidence, and reran create-only",
+          "result": "the public-field scanner rejected a benign tokenizer option whose field name contained source_text; no plan was written"
+        },
+        {
+          "exit_status": 1,
+          "operation": "native namespace boundary smoke attempt 1 with deliberately absent sanitized config",
+          "resolution": "added those two committed code dependencies to the narrow export and preserved the combined output",
+          "result": "the minimal code export omitted access.py and io.py required by the package initializer, so the probe did not start"
+        },
+        {
+          "exit_status": 1,
+          "operation": "native namespace boundary smoke attempt 2 with deliberately absent sanitized config",
+          "resolution": "accepted as boundary-smoke evidence only, strengthened validation to parse exact mount options, and retained the create-only output outside the clean run",
+          "result": "all seven access-denial probes, read-only/writable probes, user/mount/network/PID namespace identity checks, and network-route denial passed; reconstruction then failed at the expected absent sanitized-config gate"
+        },
+        {
+          "exit_status": 1,
+          "operation": "exact mount-table audit of boundary smoke attempt 2",
+          "resolution": "changed the launcher to recursively remount every nested public bind read-only and changed validation to fail on any writable nested public mount",
+          "result": "the audit found writable nested WSL library mounts below the declared read-only /usr bind"
+        },
+        {
+          "exit_status": 1,
+          "operation": "native namespace boundary smoke attempt 3 with deliberately absent sanitized config",
+          "resolution": "accepted as final boundary-smoke evidence only; the independent exact isolation-manifest validator passed, and the subsequent clean direct and causal processes each received a distinct validated namespace",
+          "result": "all seven access-denial probes, read-only/writable probes, separate user/mount/network/PID namespace checks, route denial, exact permitted mounts, and recursively read-only nested public mounts passed; reconstruction then failed at the expected absent sanitized-config gate"
+        }
+      ],
+      "clean_observations_or_reconstructions_created": false,
+      "revision_id": "TRR-0001-R1",
+      "schema": "token-reconstruction.trr0001-r1.preregistration-attempts.v1",
+      "task_id": "TRR-0001"
+    }
+  },
+  "authority": {
+    "charter": {
+      "bytes": 3693,
+      "path": "RESEARCH_CHARTER.md",
+      "sha256": "ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d"
+    },
+    "charter_expected_sha256": "ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d",
+    "disposition": "REVISE",
+    "packet_id": "TRR-PACKET-TRR-0001-REVIEW-R1-20260822-1E1E1C00AFB4A8BC58B157BB",
+    "previous_reviewed_head": "2a89a578921afc48dc3b54c65a2c39c35c422134",
+    "request": {
+      "bytes": 26821,
+      "path": "coordination/requests/TRR-0001-R1.md",
+      "sha256": "a86e9342df732291052cc8b69599217140ee7bba81a79351dd70f026a6f2360c"
+    },
+    "request_line_endings": "CRLF"
+  },
+  "clean_preregistration": {
+    "baseline_families": {
+      "causal_public_surrogate_search": {
+        "cache": "fork public DynamicCache for batched candidates; commit only the winner",
+        "candidate_simulations_per_scored_token": 16,
+        "candidate_source": "the direct inverse's frozen top-16 lists",
+        "commit": "highest cosine score; frozen proposal rank then token-ID ascending tie break",
+        "family": "causal candidate generation and public-surrogate simulation",
+        "prefix": "declared BOS followed only by already committed reconstructed tokens",
+        "score": "one-minus-cosine between the candidate's public-prefix cut activation and the permitted observed activation at that position",
+        "surrogate": "meta-llama/Llama-3.2-1B-Instruct@9213176726f574b556790deb65791e0c5aa438b6",
+        "target_prefix_calls": 0
+      },
+      "common_comparison": {
+        "abstention": "none",
+        "candidate_budget": 16,
+        "cross_record_adaptation": "none",
+        "record_order": "fixed selection order",
+        "records": "same blind records and observations",
+        "stopping": "reconstruct all 39 non-BOS positions"
+      },
+      "direct_inverse": {
+        "candidate_scores": "cosine similarity to every normalized public input embedding",
+        "cut_0": "identity map from observed embedding to normalized public embeddings",
+        "cuts_4_and_8": "independent residual affine 2048-to-2048 maps trained on public-surrogate activations to predict normalized input embeddings",
+        "direct_output": "highest-scoring token with token-ID ascending tie break",
+        "family": "positionwise public-data inverse",
+        "frozen_candidate_budget": 16,
+        "gradient_clip_norm": 1.0,
+        "hyperparameter_selection": "fixed here; no blind or development metric selects a variant",
+        "learning_rate": 0.001,
+        "loss": "mean one-minus-cosine similarity",
+        "optimizer": "AdamW",
+        "position_batch_size": 512,
+        "steps_per_cut": 300,
+        "training_split": "inverse_train",
+        "weight_decay": 0.0
+      }
+    },
+    "claim_scope": {
+      "candidate_budget": 16,
+      "cuts": [
+        0,
+        4,
+        8
+      ],
+      "dataset": "NeelNanda/pile-10k@127bfedcd5047750df5ccf3a12979a47bfa0bafa",
+      "generalization_beyond_scope": "not supported",
+      "methods": [
+        "direct_inverse",
+        "causal_public_surrogate_search"
+      ],
+      "model": "meta-llama/Llama-3.2-1B-Instruct",
+      "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "sequence_tokens": 40,
+      "surrogate": "meta-llama/Llama-3.2-1B-Instruct@9213176726f574b556790deb65791e0c5aa438b6",
+      "target_update": "the exact evaluator-only rank-4 LoRA artifact produced by this plan"
+    },
+    "conditions": {
+      "matched_public_control": {
+        "blind_records": "same 64 records, reconstructed and frozen before shared truth opening",
+        "id": "matched_public",
+        "role": "implementation and target-surrogate mismatch control",
+        "target_prefix": "the pinned public checkpoint without the target update"
+      },
+      "permitted_to_reconstructor": [
+        "boundary activation",
+        "attention mask",
+        "position IDs",
+        "cut depth and non-truth metadata",
+        "pinned public model and tokenizer",
+        "public-data inverse states",
+        "declared BOS token",
+        "already reconstructed prefix"
+      ],
+      "primary": {
+        "id": "unavailable_target_lora",
+        "target_prefix": "base embedding plus target-specific LoRA-modified decoder layers; callable target prefix and LoRA state remain evaluator-only",
+        "unavailable_to_reconstructor": [
+          "target LoRA tensors",
+          "callable target prefix",
+          "source text",
+          "source token IDs except BOS",
+          "correctness feedback"
+        ]
+      }
+    },
+    "cuts": {
+      "evaluated": [
+        0,
+        4,
+        8
+      ],
+      "primary": 4,
+      "roles": {
+        "0": "embedding-boundary sanity condition",
+        "4": "primary shallow cut aligned with the historical comparator",
+        "8": "deeper stress condition"
+      }
+    },
+    "data": {
+      "blind_records": 64,
+      "blind_scored_tokens": 2496,
+      "padding": "none; only rows with at least 39 source tokens are eligible",
+      "scored_tokens_per_record": 39,
+      "selection": {
+        "commitment_digest": "7f459452a1a42525e18baafd1a8ed5eb1d4993d6c37fe00a6bed401a80e6fe7c",
+        "disjointness": "all original target-update, inverse-train, development, blind, excluded-attempt, and reproducibility records are excluded",
+        "eligibility": "at least 39 source tokens; prepend exactly one declared BOS",
+        "key_or_seed_available_to_reconstructor": false,
+        "kind": "cryptographically_hiding_evaluator_private_selection",
+        "opaque_record_order": [
+          "blind-r1-000001",
+          "blind-r1-000002",
+          "blind-r1-000003",
+          "blind-r1-000004",
+          "blind-r1-000005",
+          "blind-r1-000006",
+          "blind-r1-000007",
+          "blind-r1-000008",
+          "blind-r1-000009",
+          "blind-r1-000010",
+          "blind-r1-000011",
+          "blind-r1-000012",
+          "blind-r1-000013",
+          "blind-r1-000014",
+          "blind-r1-000015",
+          "blind-r1-000016",
+          "blind-r1-000017",
+          "blind-r1-000018",
+          "blind-r1-000019",
+          "blind-r1-000020",
+          "blind-r1-000021",
+          "blind-r1-000022",
+          "blind-r1-000023",
+          "blind-r1-000024",
+          "blind-r1-000025",
+          "blind-r1-000026",
+          "blind-r1-000027",
+          "blind-r1-000028",
+          "blind-r1-000029",
+          "blind-r1-000030",
+          "blind-r1-000031",
+          "blind-r1-000032",
+          "blind-r1-000033",
+          "blind-r1-000034",
+          "blind-r1-000035",
+          "blind-r1-000036",
+          "blind-r1-000037",
+          "blind-r1-000038",
+          "blind-r1-000039",
+          "blind-r1-000040",
+          "blind-r1-000041",
+          "blind-r1-000042",
+          "blind-r1-000043",
+          "blind-r1-000044",
+          "blind-r1-000045",
+          "blind-r1-000046",
+          "blind-r1-000047",
+          "blind-r1-000048",
+          "blind-r1-000049",
+          "blind-r1-000050",
+          "blind-r1-000051",
+          "blind-r1-000052",
+          "blind-r1-000053",
+          "blind-r1-000054",
+          "blind-r1-000055",
+          "blind-r1-000056",
+          "blind-r1-000057",
+          "blind-r1-000058",
+          "blind-r1-000059",
+          "blind-r1-000060",
+          "blind-r1-000061",
+          "blind-r1-000062",
+          "blind-r1-000063",
+          "blind-r1-000064"
+        ],
+        "post_freeze_reveal_required": true,
+        "public_commitment": {
+          "bytes": 2623,
+          "path": "experiments/TRR-0001/revision-r1/selection_commitment.json",
+          "sha256": "633cf3b24efddf22939c3e628d99d3f0e098dfec686ed2ac8b043b49e086efdd"
+        },
+        "record_count": 64,
+        "source_identity_available_to_reconstructor": false
+      },
+      "sequence_tokens_including_bos": 40,
+      "truncation": "first 39 source tokens in tokenizer order"
+    },
+    "fixed_method_state": {
+      "inverse_cut4_sha256": "9e2487f85057748130bf87b2aad0a883f3c36dfc052eefd83c0f5c35497a24e3",
+      "inverse_cut8_sha256": "ac8871f1fa0d40664c5d9d94343ef560832477aade3574978a1c6b572df01e80",
+      "target_lora_sha256": "34d92f1e664236bfa1990b10148e8ad52c60b16e72ed0ff4c7eb7da8d15019f6",
+      "training_or_adaptation_in_clean_run": false
+    },
+    "metrics": {
+      "primary": "token accuracy excluding BOS and padding at cut 4 in unavailable_target_lora",
+      "required": [
+        "token accuracy excluding BOS and padding",
+        "exact sequence-match rate",
+        "correct prefix length and first-error position",
+        "coverage and selective accuracy",
+        "frozen top-k true-token recall and exact true-token rank",
+        "conditional selection accuracy when truth is in the frozen candidates",
+        "end-to-end runtime per record and scored token",
+        "phase timings including preparation, training, proposal, reconstruction, synchronization, and I/O",
+        "peak CPU and GPU memory",
+        "candidate simulations or equivalent evaluations",
+        "trainable parameter count and persisted state bytes",
+        "implementation-complexity summary"
+      ]
+    },
+    "plan": {
+      "bytes": 18970,
+      "path": "experiments/TRR-0001/revision-r1/plan.json",
+      "sha256": "59944cb1e01ec2e88e04109e46db0088eece74500fe599eb6a62ead038b6fe14"
+    },
+    "resources": {
+      "dataset": {
+        "id": "NeelNanda/pile-10k",
+        "license": "bigscience-bloom-rail-1.0",
+        "parquet_sha256": "a1a9475a8684ac8f1b17a36eccb2ec49c127edd7aae9beb2f240726972d93f31",
+        "revision": "127bfedcd5047750df5ccf3a12979a47bfa0bafa",
+        "role": "public auxiliary, development, and blind source",
+        "rows": 10000,
+        "split": "train"
+      },
+      "model": {
+        "architecture": "LlamaForCausalLM",
+        "attention_implementation": "sdpa",
+        "dtype": "bfloat16",
+        "hidden_size": 2048,
+        "id": "meta-llama/Llama-3.2-1B-Instruct",
+        "layers": 16,
+        "local_files_only": true,
+        "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+        "vocabulary_size": 128256
+      },
+      "tokenizer": {
+        "add_special_tokens": false,
+        "bos_insertion": "prepend exactly once after source tokenization",
+        "declared_bos_token_id": 128000,
+        "id": "meta-llama/Llama-3.2-1B-Instruct",
+        "revision": "9213176726f574b556790deb65791e0c5aa438b6"
+      }
+    },
+    "statistics": {
+      "confidence_interval": "95% percentile bootstrap",
+      "draws": 10000,
+      "effect_sizes": "absolute percentage-point quality differences and multiplicative cost ratios",
+      "improvement_rule": "claim improvement only for supported quality gain at like-for-like budget, supported cost reduction at like-for-like quality, or a reported Pareto improvement; otherwise call the comparison inconclusive",
+      "paired_differences": "causal minus direct within each record, condition, and cut; target minus matched control for mismatch",
+      "seed": 1732,
+      "unit": "record"
+    }
+  },
+  "commands": {
+    "causal": "env bash scripts/trr0001_r1_isolate.sh causal_public_surrogate_search outputs/TRR-0001-R1/clean/reconstructor_input outputs/TRR-0001-R1/reconstructor_code_970fdf6c65883bb93878c8458141f1e0bcef3085 /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct /home/alanz/.local/lib/python3.12/site-packages outputs/TRR-0001-R1/clean/causal_public_surrogate_search",
+    "direct": "env bash scripts/trr0001_r1_isolate.sh direct_inverse outputs/TRR-0001-R1/clean/reconstructor_input outputs/TRR-0001-R1/reconstructor_code_970fdf6c65883bb93878c8458141f1e0bcef3085 /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct /home/alanz/.local/lib/python3.12/site-packages outputs/TRR-0001-R1/clean/direct_inverse",
+    "evaluator": "env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false CUBLAS_WORKSPACE_CONFIG=:4096:8 PYTHONPATH=src python3 scripts/trr0001_r1_evaluator.py --plan experiments/TRR-0001/revision-r1/plan.json --public-commitment experiments/TRR-0001/revision-r1/selection_commitment.json --private-selection outputs/TRR-0001-R1/evaluator_private/fresh_selection_private.json --target-lora outputs/TRR-0001/evaluator_private/target_lora.safetensors --inverse-directory outputs/TRR-0001/reconstructor_public/inverses --frequency-counts outputs/TRR-0001/reconstructor_public/auxiliary_frequency_counts.json --output-root outputs/TRR-0001-R1/clean --preregistration-commit 4169e4444dd99ebdc81a9adbbb9610dd8afc9555",
+    "final-validation": "env PYTHONPATH=src python3 scripts/trr0001_r1_validate.py --repository-root . --output experiments/TRR-0001/revision-r1/final_validation.json",
+    "focused-tests": "env PYTHONPATH=src pytest -q tests/test_trr0001_r1_protocol.py tests/test_trr0001_r1_isolation.py tests/test_freeze_and_separation.py",
+    "freeze": "env PYTHONPATH=src python3 scripts/trr0001_r1_freeze.py --repository-root . --plan experiments/TRR-0001/revision-r1/plan.json --public-input outputs/TRR-0001-R1/clean/reconstructor_input --direct-output outputs/TRR-0001-R1/clean/direct_inverse --causal-output outputs/TRR-0001-R1/clean/causal_public_surrogate_search --code-root outputs/TRR-0001-R1/reconstructor_code_970fdf6c65883bb93878c8458141f1e0bcef3085 --model-repository /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct --implementation-commit 970fdf6c65883bb93878c8458141f1e0bcef3085 --preregistration-commit 4169e4444dd99ebdc81a9adbbb9610dd8afc9555 --frozen-root outputs/TRR-0001-R1/clean/frozen_bundle --receipt experiments/TRR-0001/revision-r1/freeze_receipt.json --created-utc 2026-08-22T13:01:17Z",
+    "full-tests": "env PYTHONPATH=src pytest -q",
+    "noninterference-compare": "env PYTHONPATH=src python3 scripts/trr0001_r1_noninterference_audit.py compare --repository-root . --preparation experiments/TRR-0001/revision-r1/original_noninterference_preparation.json --original-frozen-root outputs/TRR-0001/frozen_bundle --audit-output-root outputs/TRR-0001-R1/original_noninterference_audit/reconstruction --evidence experiments/TRR-0001/revision-r1/original_noninterference_audit.json --audit-code-commit c2145618fff977c0da864b87324f4e7967792246",
+    "noninterference-prepare": "env PYTHONPATH=src python3 scripts/trr0001_r1_noninterference_audit.py prepare --repository-root . --original-index outputs/TRR-0001/reconstructor_public/observation_index.json --original-frozen-root outputs/TRR-0001/frozen_bundle --audit-index outputs/TRR-0001-R1/original_noninterference_audit/input/observation_index.json --evidence experiments/TRR-0001/revision-r1/original_noninterference_preparation.json --audit-code-commit c2145618fff977c0da864b87324f4e7967792246",
+    "noninterference-rerun": "env HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false CUBLAS_WORKSPACE_CONFIG=:4096:8 PYTHONPATH=src python3 scripts/trr0001_reconstruct.py --observation-index outputs/TRR-0001-R1/original_noninterference_audit/input/observation_index.json --inverse-directory outputs/TRR-0001/reconstructor_public/inverses --plan experiments/TRR-0001/plan.json --output-directory outputs/TRR-0001-R1/original_noninterference_audit/reconstruction --model-id meta-llama/Llama-3.2-1B-Instruct --model-revision 9213176726f574b556790deb65791e0c5aa438b6",
+    "pycompile": "python3 -m py_compile reference/strict_bos/preflight_wavefront.py reference/strict_bos/round001_teacher.py reference/strict_bos/round003_wavefront.py scripts/trr0000_smoke.py scripts/trr0001_evaluator.py scripts/trr0001_freeze.py scripts/trr0001_preregister.py scripts/trr0001_r1_access_probe.py scripts/trr0001_r1_evaluator.py scripts/trr0001_r1_freeze.py scripts/trr0001_r1_noninterference_audit.py scripts/trr0001_r1_preregister.py scripts/trr0001_r1_reconstruct.py scripts/trr0001_r1_reveal.py scripts/trr0001_r1_score.py scripts/trr0001_r1_select.py scripts/trr0001_r1_validate.py scripts/trr0001_reconstruct.py scripts/trr0001_score.py scripts/trr0001_validate.py src/token_reconstruction/__init__.py src/token_reconstruction/access.py src/token_reconstruction/blind_commitment.py src/token_reconstruction/experiment_runtime.py src/token_reconstruction/freeze.py src/token_reconstruction/inverse.py src/token_reconstruction/io.py src/token_reconstruction/isolation.py src/token_reconstruction/metrics.py src/token_reconstruction/public_prefix.py src/token_reconstruction/records.py src/token_reconstruction/separation.py src/token_reconstruction/target_update.py tests/test_access.py tests/test_freeze_and_separation.py tests/test_inverse_and_target_update.py tests/test_metrics.py tests/test_public_prefix.py tests/test_records.py tests/test_trr0000_smoke.py tests/test_trr0001_r1_isolation.py tests/test_trr0001_r1_protocol.py",
+    "reveal": "env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false PYTHONPATH=src python3 scripts/trr0001_r1_reveal.py --repository-root . --receipt experiments/TRR-0001/revision-r1/freeze_receipt.json --public-commitment experiments/TRR-0001/revision-r1/selection_commitment.json --private-selection outputs/TRR-0001-R1/evaluator_private/fresh_selection_private.json --original-plan experiments/TRR-0001/plan.json --reveal experiments/TRR-0001/revision-r1/selection_reveal.json --verification experiments/TRR-0001/revision-r1/selection_verification.json --revealed-utc 2026-08-22T13:06:25Z",
+    "score": "env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false CUBLAS_WORKSPACE_CONFIG=:4096:8 PYTHONPATH=src python3 scripts/trr0001_r1_score.py --repository-root . --receipt experiments/TRR-0001/revision-r1/freeze_receipt.json --frozen-root outputs/TRR-0001-R1/clean/frozen_bundle --truth outputs/TRR-0001-R1/clean/evaluator_private/blind_truth.jsonl --selection-reveal experiments/TRR-0001/revision-r1/selection_reveal.json --selection-verification experiments/TRR-0001/revision-r1/selection_verification.json --frequency-counts outputs/TRR-0001-R1/clean/evaluator_private/auxiliary_frequency_counts.json --metrics experiments/TRR-0001/revision-r1/metrics.json --per-record experiments/TRR-0001/revision-r1/per_record_metrics.jsonl --diagnostics experiments/TRR-0001/revision-r1/diagnostics.json --summary-csv experiments/TRR-0001/revision-r1/summary.csv --plot-svg experiments/TRR-0001/revision-r1/accuracy_plot.svg --score-evidence experiments/TRR-0001/revision-r1/score_evidence.json"
+  },
+  "commits": {
+    "clean_preregistration": "4169e4444dd99ebdc81a9adbbb9610dd8afc9555",
+    "fixed_reconstruction_implementation": "970fdf6c65883bb93878c8458141f1e0bcef3085",
+    "original_noninterference_audit_code": "c2145618fff977c0da864b87324f4e7967792246",
+    "r1_scientific_evidence": "d729e3a614fc3367268eefb4b410b1b5bec4b24c"
+  },
+  "conclusions": {
+    "not_supported": [
+      "reliable exact non-embedding sequence recovery",
+      "a general target-prefix mismatch degradation",
+      "generalization beyond the pinned model, dataset, target update, cuts, and candidate budget"
+    ],
+    "recommended_next_action": "A future fresh study may test public-only proposal recall and the budget/quality/cost frontier; it is proposed only and is not authorized or started.",
+    "supported": [
+      "causal public-surrogate selection improves token accuracy over direct inversion at cuts 4 and 8 in the pinned clean condition",
+      "recoverability decreases with cut depth",
+      "proposal recall is the dominant primary bottleneck"
+    ]
+  },
+  "delivery": {
+    "branch": "task/TRR-0001",
+    "merge_authorization": "NOT_GRANTED",
+    "merged": false,
+    "next_task_started": false,
+    "previous_reviewed_head": "2a89a578921afc48dc3b54c65a2c39c35c422134",
+    "pull_request": 2,
+    "scientific_evidence_commit": "d729e3a614fc3367268eefb4b410b1b5bec4b24c"
+  },
+  "freeze_reveal_truth_chronology": {
+    "freeze_created_utc": "2026-08-22T13:01:17Z",
+    "freeze_receipt": {
+      "bytes": 5818,
+      "path": "experiments/TRR-0001/revision-r1/freeze_receipt.json",
+      "sha256": "72792c734b4ca89f7afe660d2cd2da1d61dd49342901a5a527a85576ec3b4845"
+    },
+    "freeze_verification": {
+      "bytes": 535,
+      "path": "experiments/TRR-0001/revision-r1/freeze-verification.txt",
+      "sha256": "9ef491b7ba8b98bcae0c77d268d35499ba1f05665d6db183234476c630e60aab"
+    },
+    "frozen_bytes": 364872246,
+    "frozen_entries": 22,
+    "frozen_outputs_revised_after_receipt": false,
+    "frozen_root": "outputs/TRR-0001-R1/clean/frozen_bundle",
+    "reveal_created_utc": "2026-08-22T13:06:25Z",
+    "runtime_identity_sha256": "e79d072a2d1c5653bce661cc6051dc495e8b22ac4d6c04fe1b5a8b7461273985",
+    "score_ended_utc": "2026-08-22T13:10:03Z",
+    "score_started_utc": "2026-08-22T13:09:46Z",
+    "selection_revealed_at_freeze": false,
+    "truth_gate": {
+      "access_manifests_reverified": true,
+      "entry_count": 22,
+      "opened_truth_matches_revealed_dataset_mapping": true,
+      "passed_before_truth_read": true,
+      "preregistration_commit": "4169e4444dd99ebdc81a9adbbb9610dd8afc9555",
+      "receipt": {
+        "bytes": 5818,
+        "path": "experiments/TRR-0001/revision-r1/freeze_receipt.json",
+        "sha256": "72792c734b4ca89f7afe660d2cd2da1d61dd49342901a5a527a85576ec3b4845"
+      },
+      "selection_mapping_revealed_before_truth": true,
+      "selection_reveal": {
+        "bytes": 10971,
+        "path": "experiments/TRR-0001/revision-r1/selection_reveal.json",
+        "sha256": "d96cae6d6c9beb29d99be34ecb597f4986f9e107212657f4ad98268676251b41"
+      },
+      "selection_verification": {
+        "bytes": 2233,
+        "path": "experiments/TRR-0001/revision-r1/selection_verification.json",
+        "sha256": "57759a2f662ba85c6877006afb4e12019a5bad3cbf6ac6cacd05ff8c9b4922e3"
+      }
+    },
+    "truth_opened_at_freeze": false
+  },
+  "measurements": {
+    "accuracy_plot": {
+      "bytes": 5120,
+      "path": "experiments/TRR-0001/revision-r1/accuracy_plot.svg",
+      "sha256": "066c956852262d0cf28c922eb18a2b10edad7c1be74a744dc44337a87e4fa592"
+    },
+    "claim_scope": "Pinned Llama-3.2-1B-Instruct, Pile-10k, one rank-4 target LoRA, cuts 0/4/8, candidate budget 16; no broader generalization.",
+    "diagnostics": {
+      "bytes": 56958,
+      "path": "experiments/TRR-0001/revision-r1/diagnostics.json",
+      "sha256": "8d6dd9e41d7a862d5973c0c4dadfbd0961decf0582933ce27c515a29d041016f"
+    },
+    "method_specific_cost": {
+      "candidate_budget": 16,
+      "cost_accounting": "Each method reports its own proposal, selection, total compute, memory, evaluation counts, persisted state, and implementation complexity; causal cost includes proposal plus selection.",
+      "frozen_bundle_bytes": 364872246,
+      "methods": {
+        "causal_public_surrogate_search": {
+          "candidate_simulations": 239616,
+          "embedding_comparisons": 1920761856,
+          "end_to_end_arm_seconds": 10.320161847001145,
+          "implementation_complexity": {
+            "common": {
+              "propose_candidates": {
+                "ast_statements": 8,
+                "source_lines": 24
+              },
+              "stable_candidate_order": {
+                "ast_statements": 9,
+                "source_lines": 17
+              }
+            },
+            "dependencies": {
+              "inverse.py": {
+                "sha256": "083fd8cf8cf7dad2c8107db0c3929e67c58fc37389c07ea70c1ad82dcac5f740",
+                "source_lines": 166
+              },
+              "public_prefix.py": {
+                "sha256": "99083a1721e3da74ccbd6cd4556d3634e8cd772d73eb6561e949958559cd25bb",
+                "source_lines": 197
+              }
+            },
+            "method_specific": {
+              "causal_search": {
+                "ast_statements": 42,
+                "source_lines": 58
+              }
+            }
+          },
+          "memory": {
+            "method_peak_after_cuda_reset": {
+              "cuda_peak_allocated_bytes": 4071908352,
+              "cuda_peak_reserved_bytes": 5368709120,
+              "process_max_rss_kib": 3386252
+            },
+            "preparation_peak": {
+              "cuda_peak_allocated_bytes": 5362029568,
+              "cuda_peak_reserved_bytes": 5368709120,
+              "process_max_rss_kib": 3386252
+            },
+            "process_max_rss_kib_is_process_specific": true
+          },
+          "method_compute_seconds": 10.32912037999995,
+          "method_compute_seconds_per_record_arm": 0.026898750989583203,
+          "method_compute_seconds_per_scored_token": 0.0006897115638354667,
+          "persisted_method_state_bytes": 33571376,
+          "proposal_seconds": 1.2765542220040516,
+          "public_surrogate_model_loads": 1,
+          "selection_seconds": 8.898508502996265,
+          "target_prefix_calls": 0
+        },
+        "direct_inverse": {
+          "candidate_simulations": 0,
+          "embedding_comparisons": 1920761856,
+          "end_to_end_arm_seconds": 1.4274399199966865,
+          "implementation_complexity": {
+            "common": {
+              "propose_candidates": {
+                "ast_statements": 8,
+                "source_lines": 24
+              },
+              "stable_candidate_order": {
+                "ast_statements": 9,
+                "source_lines": 17
+              }
+            },
+            "dependencies": {
+              "inverse.py": {
+                "sha256": "083fd8cf8cf7dad2c8107db0c3929e67c58fc37389c07ea70c1ad82dcac5f740",
+                "source_lines": 166
+              },
+              "public_prefix.py": {
+                "sha256": "99083a1721e3da74ccbd6cd4556d3634e8cd772d73eb6561e949958559cd25bb",
+                "source_lines": 197
+              }
+            },
+            "method_specific": {
+              "direct_top1_selection": {
+                "ast_statements": 1,
+                "source_lines": 1
+              }
+            }
+          },
+          "memory": {
+            "method_peak_after_cuda_reset": {
+              "cuda_peak_allocated_bytes": 3688399872,
+              "cuda_peak_reserved_bytes": 5368709120,
+              "process_max_rss_kib": 3386292
+            },
+            "preparation_peak": {
+              "cuda_peak_allocated_bytes": 5362029568,
+              "cuda_peak_reserved_bytes": 5368709120,
+              "process_max_rss_kib": 3386292
+            },
+            "process_max_rss_kib_is_process_specific": true
+          },
+          "method_compute_seconds": 1.4364785969992226,
+          "method_compute_seconds_per_record_arm": 0.0037408296796854756,
+          "method_compute_seconds_per_scored_token": 9.591870973552502e-05,
+          "persisted_method_state_bytes": 33571376,
+          "proposal_seconds": 1.2781948859992553,
+          "public_surrogate_model_loads": 1,
+          "selection_seconds": 0.0,
+          "target_prefix_calls": 0
+        }
+      },
+      "scoring_peak_memory": {
+        "cuda_peak_allocated_bytes": 5362029568,
+        "cuda_peak_reserved_bytes": 5385486336,
+        "process_max_rss_kib": 3700640
+      },
+      "target_prefix_calls": 0
+    },
+    "metrics": {
+      "bytes": 28333,
+      "path": "experiments/TRR-0001/revision-r1/metrics.json",
+      "sha256": "0ef6f334aa25c202edecd0de88c78d41ef7b0ca2165ca7608f5ac389e5cd7946"
+    },
+    "paired_method_comparisons": [
+      {
+        "ci95_percentile": [
+          0.0,
+          0.0
+        ],
+        "condition": "matched_public",
+        "cut_depth": 0,
+        "disposition": "inconclusive",
+        "draws": 10000,
+        "estimate": 0.0,
+        "seed": 1732,
+        "type": "causal_minus_direct",
+        "unit": "record"
+      },
+      {
+        "ci95_percentile": [
+          0.16987179487179488,
+          0.21233974358974358
+        ],
+        "condition": "matched_public",
+        "cut_depth": 4,
+        "disposition": "causal_supported_improvement",
+        "draws": 10000,
+        "estimate": 0.19030448717948717,
+        "seed": 1732,
+        "type": "causal_minus_direct",
+        "unit": "record"
+      },
+      {
+        "ci95_percentile": [
+          0.15424679487179488,
+          0.20953525641025642
+        ],
+        "condition": "matched_public",
+        "cut_depth": 8,
+        "disposition": "causal_supported_improvement",
+        "draws": 10000,
+        "estimate": 0.18229166666666669,
+        "seed": 1732,
+        "type": "causal_minus_direct",
+        "unit": "record"
+      },
+      {
+        "ci95_percentile": [
+          0.0,
+          0.0
+        ],
+        "condition": "unavailable_target_lora",
+        "cut_depth": 0,
+        "disposition": "inconclusive",
+        "draws": 10000,
+        "estimate": 0.0,
+        "seed": 1732,
+        "type": "causal_minus_direct",
+        "unit": "record"
+      },
+      {
+        "ci95_percentile": [
+          0.17187499999999997,
+          0.21434294871794868
+        ],
+        "condition": "unavailable_target_lora",
+        "cut_depth": 4,
+        "disposition": "causal_supported_improvement",
+        "draws": 10000,
+        "estimate": 0.19270833333333331,
+        "seed": 1732,
+        "type": "causal_minus_direct",
+        "unit": "record"
+      },
+      {
+        "ci95_percentile": [
+          0.15104166666666669,
+          0.20192307692307693
+        ],
+        "condition": "unavailable_target_lora",
+        "cut_depth": 8,
+        "disposition": "causal_supported_improvement",
+        "draws": 10000,
+        "estimate": 0.17628205128205127,
+        "seed": 1732,
+        "type": "causal_minus_direct",
+        "unit": "record"
+      }
+    ],
+    "paired_target_surrogate_mismatch": [
+      {
+        "ci95_percentile": [
+          0.0,
+          0.0
+        ],
+        "cut_depth": 0,
+        "draws": 10000,
+        "estimate": 0.0,
+        "method": "direct_inverse",
+        "seed": 1732,
+        "type": "unavailable_target_minus_matched_public",
+        "unit": "record"
+      },
+      {
+        "ci95_percentile": [
+          0.0,
+          0.0
+        ],
+        "cut_depth": 0,
+        "draws": 10000,
+        "estimate": 0.0,
+        "method": "causal_public_surrogate_search",
+        "seed": 1732,
+        "type": "unavailable_target_minus_matched_public",
+        "unit": "record"
+      },
+      {
+        "ci95_percentile": [
+          0.00681089743589743,
+          0.029256810897435766
+        ],
+        "cut_depth": 4,
+        "draws": 10000,
+        "estimate": 0.018028846153846156,
+        "method": "direct_inverse",
+        "seed": 1732,
+        "type": "unavailable_target_minus_matched_public",
+        "unit": "record"
+      },
+      {
+        "ci95_percentile": [
+          0.00881410256410256,
+          0.03205128205128205
+        ],
+        "cut_depth": 4,
+        "draws": 10000,
+        "estimate": 0.020432692307692304,
+        "method": "causal_public_surrogate_search",
+        "seed": 1732,
+        "type": "unavailable_target_minus_matched_public",
+        "unit": "record"
+      },
+      {
+        "ci95_percentile": [
+          8.673617379884035e-19,
+          0.01642628205128206
+        ],
+        "cut_depth": 8,
+        "draws": 10000,
+        "estimate": 0.008012820512820516,
+        "method": "direct_inverse",
+        "seed": 1732,
+        "type": "unavailable_target_minus_matched_public",
+        "unit": "record"
+      },
+      {
+        "ci95_percentile": [
+          -0.013221153846153843,
+          0.01722756410256411
+        ],
+        "cut_depth": 8,
+        "draws": 10000,
+        "estimate": 0.0020032051282051376,
+        "method": "causal_public_surrogate_search",
+        "seed": 1732,
+        "type": "unavailable_target_minus_matched_public",
+        "unit": "record"
+      }
+    ],
+    "per_record_metrics": {
+      "bytes": 1011145,
+      "path": "experiments/TRR-0001/revision-r1/per_record_metrics.jsonl",
+      "sha256": "82c8cedd279c5771c90c2b0093219ec4d843d009edea0278e3b44d3ea8ebb6b7"
+    },
+    "primary": {
+      "causal_minus_direct": {
+        "ci95_percentile": [
+          0.17187499999999997,
+          0.21434294871794868
+        ],
+        "condition": "unavailable_target_lora",
+        "cut_depth": 4,
+        "disposition": "causal_supported_improvement",
+        "draws": 10000,
+        "estimate": 0.19270833333333331,
+        "seed": 1732,
+        "type": "causal_minus_direct",
+        "unit": "record"
+      },
+      "causal_public_surrogate_search": 0.8397435897435898,
+      "condition": "unavailable_target_lora",
+      "cut_depth": 4,
+      "direct_inverse": 0.6470352564102564,
+      "metric": "token_accuracy_excluding_bos"
+    },
+    "records": 64,
+    "scored_tokens_per_arm": 2496,
+    "summary_csv": {
+      "bytes": 1952,
+      "path": "experiments/TRR-0001/revision-r1/summary.csv",
+      "sha256": "07dc51355e8c1d4a81fbfbb82f92185932d27486a477fa97be5a2a96d1999461"
+    }
+  },
+  "original_run": {
+    "accepted_blind_claim_basis": false,
+    "artifacts_preserved": true,
+    "disposition": "ACCESS_INTERFACE_NONCOMPLIANT_ORIGINAL_RUN",
+    "permitted_uses": [
+      "descriptive evidence",
+      "implementation debugging",
+      "post-hoc source-identifier noninterference audit",
+      "comparison with the clean confirmatory run"
+    ]
+  },
+  "posthoc_original_noninterference_audit": {
+    "audit": {
+      "bytes": 140126,
+      "path": "experiments/TRR-0001/revision-r1/original_noninterference_audit.json",
+      "sha256": "11612e8b35759b7325ee365bd1b8b44f51faefbe79a8306005430a4eb8801602"
+    },
+    "audit_code_commit": "c2145618fff977c0da864b87324f4e7967792246",
+    "comparisons": {
+      "candidate_ids_identical": true,
+      "candidate_lists": 14976,
+      "candidate_scores_identical": true,
+      "candidate_values": 239616,
+      "causal_predictions_identical": true,
+      "direct_predictions_identical": true,
+      "method_state_identical": true,
+      "operation_counts_identical": true,
+      "queries_bit_identical": true,
+      "routing_identical_except_declared_identifier_substitution": true,
+      "rows": 384,
+      "stopping_identical": true,
+      "truth_or_correctness_inputs": 0
+    },
+    "held_fixed": {
+      "activation_observations": [
+        {
+          "bytes": 10486000,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0001/reconstructor_public/observations/matched_public_cut0.safetensors",
+          "sha256": "76df7e87fefc6dc7a39e5368e0164e6e89b04682411a31d5bc6c83e390451db3"
+        },
+        {
+          "bytes": 10486000,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0001/reconstructor_public/observations/matched_public_cut4.safetensors",
+          "sha256": "228add9be69c5541a46da304dfcad22b2a0820c5f9e385ec26ba1bbe4cd232a6"
+        },
+        {
+          "bytes": 10486000,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0001/reconstructor_public/observations/matched_public_cut8.safetensors",
+          "sha256": "1e645b3cb2501ee1c0f997b80f119f8c65aa96c26cd6c9234164135cd14901e3"
+        },
+        {
+          "bytes": 10486008,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0001/reconstructor_public/observations/unavailable_target_lora_cut0.safetensors",
+          "sha256": "b15995d20e1980765cf80f51713b3ccee829b94d4f77c18a4ab79e491490a66f"
+        },
+        {
+          "bytes": 10486008,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0001/reconstructor_public/observations/unavailable_target_lora_cut4.safetensors",
+          "sha256": "aeee2377b8ad3012817c12f155c18ba1e7bfc761a8548bc9f9d23a5d19317ec7"
+        },
+        {
+          "bytes": 10486008,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0001/reconstructor_public/observations/unavailable_target_lora_cut8.safetensors",
+          "sha256": "deef5dfe1dc713a8565187da4ceb2e5deeba3c3953a528d3dbdb91f3c6795c7f"
+        }
+      ],
+      "original_frozen_files_before_rerun": {
+        "evidence": {
+          "bytes": 4691,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0001/frozen_bundle/reconstructor_evidence.json",
+          "sha256": "c14d788d8c138780704eb6eb98c6699db4d4a39aaf4fb7c4e26cea3c7b060842"
+        },
+        "queries": {
+          "bytes": 122684088,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0001/frozen_bundle/queries.safetensors",
+          "sha256": "75be5707cfd7378459c97bc78987120b99058fe2083783e7fc60d8ed275b015b"
+        },
+        "reconstructions": {
+          "bytes": 11504931,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0001/frozen_bundle/reconstructions.jsonl",
+          "sha256": "2cbeb3358ddf1064bc417eb91905f577ab748520ca1705f9278b151f8c6e285a"
+        },
+        "route": {
+          "bytes": 5541,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0001/frozen_bundle/route.json",
+          "sha256": "a9574f4533217dd349b21c8d8e980db403cdc5acdc65671b7fa191627f615ccb"
+        }
+      }
+    },
+    "identifier_substitution": {
+      "fields_replaced": [
+        "record_id",
+        "dataset_index",
+        "text_sha256"
+      ],
+      "mapping": [
+        {
+          "opaque_record_id": "original-audit-opaque-000001",
+          "original_record_id": "pile10k-06158-3690dc88b3962689"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000002",
+          "original_record_id": "pile10k-04843-d360bed77faf0543"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000003",
+          "original_record_id": "pile10k-07718-c7c736b6969ff9e4"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000004",
+          "original_record_id": "pile10k-04083-f57fbf00b5c980d4"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000005",
+          "original_record_id": "pile10k-05423-b7ab55c7e3e20398"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000006",
+          "original_record_id": "pile10k-08431-8021eb6932611cf9"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000007",
+          "original_record_id": "pile10k-01914-eea25b0fe1c3d80d"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000008",
+          "original_record_id": "pile10k-05785-e9bfb2c467dd349c"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000009",
+          "original_record_id": "pile10k-09356-2fca63051203b799"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000010",
+          "original_record_id": "pile10k-00529-bacd629186476124"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000011",
+          "original_record_id": "pile10k-00885-bd32e1b377edac40"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000012",
+          "original_record_id": "pile10k-00035-797105e67382916f"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000013",
+          "original_record_id": "pile10k-02905-9ca1558bd701c6b1"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000014",
+          "original_record_id": "pile10k-01533-8c017eceaeda09c2"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000015",
+          "original_record_id": "pile10k-05514-fe9a2adc97a92cb8"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000016",
+          "original_record_id": "pile10k-04027-4542d8756a05d87a"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000017",
+          "original_record_id": "pile10k-01494-025f9a8bff198a51"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000018",
+          "original_record_id": "pile10k-07335-1e40bc874ca5a1a2"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000019",
+          "original_record_id": "pile10k-08114-afd12796a90acc96"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000020",
+          "original_record_id": "pile10k-03061-365c0676273bd7e9"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000021",
+          "original_record_id": "pile10k-00663-a4ea88d661a304a0"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000022",
+          "original_record_id": "pile10k-01784-68e9f98beae788da"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000023",
+          "original_record_id": "pile10k-01904-93160d64858cba6f"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000024",
+          "original_record_id": "pile10k-07305-6fb8503cb2be4226"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000025",
+          "original_record_id": "pile10k-09459-7e33b1a2cfe3d84d"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000026",
+          "original_record_id": "pile10k-04004-3d6550b3bf9d9a7a"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000027",
+          "original_record_id": "pile10k-05233-ab77f37ef5f3ec4a"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000028",
+          "original_record_id": "pile10k-04707-fd9126a0c72ad43a"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000029",
+          "original_record_id": "pile10k-09379-2a317b8825631917"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000030",
+          "original_record_id": "pile10k-01061-be27f1784686741d"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000031",
+          "original_record_id": "pile10k-00079-8a95157d927bbfde"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000032",
+          "original_record_id": "pile10k-00440-72598536a9e82340"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000033",
+          "original_record_id": "pile10k-05718-f83a676d941fbfaf"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000034",
+          "original_record_id": "pile10k-09997-3176bd5c2ed9b20a"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000035",
+          "original_record_id": "pile10k-07798-f0d76e6fc80d6926"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000036",
+          "original_record_id": "pile10k-04173-8ac1072954c6d959"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000037",
+          "original_record_id": "pile10k-09473-2e48b0db563fb56d"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000038",
+          "original_record_id": "pile10k-01101-f2bf41b1f685b83a"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000039",
+          "original_record_id": "pile10k-02003-57136a6f03bd8de6"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000040",
+          "original_record_id": "pile10k-09993-1a590d5edb8f005f"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000041",
+          "original_record_id": "pile10k-02235-e4a45ab7b89f5f67"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000042",
+          "original_record_id": "pile10k-06377-ea2f29fa3d86d03c"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000043",
+          "original_record_id": "pile10k-03695-0e26feb4ca903502"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000044",
+          "original_record_id": "pile10k-06037-43b4a33454ad976c"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000045",
+          "original_record_id": "pile10k-06707-e468573615c9e90d"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000046",
+          "original_record_id": "pile10k-02303-b15b7edee61eede5"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000047",
+          "original_record_id": "pile10k-00467-1501322c04443da4"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000048",
+          "original_record_id": "pile10k-07520-a2df68f3fd881aeb"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000049",
+          "original_record_id": "pile10k-01326-ab50bdb68baac0e8"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000050",
+          "original_record_id": "pile10k-09630-aa4dd391d53ba5cf"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000051",
+          "original_record_id": "pile10k-05649-4e0eb8ff0e5d718f"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000052",
+          "original_record_id": "pile10k-08911-2a4da96a2ce83d64"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000053",
+          "original_record_id": "pile10k-03967-42e1c4c3238343bb"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000054",
+          "original_record_id": "pile10k-02997-80c23c770fd2fb43"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000055",
+          "original_record_id": "pile10k-01409-c1e38162290312d7"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000056",
+          "original_record_id": "pile10k-03077-44134373f7770212"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000057",
+          "original_record_id": "pile10k-00115-3f2067336bcc9d77"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000058",
+          "original_record_id": "pile10k-07524-be334eb2b421bce6"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000059",
+          "original_record_id": "pile10k-06969-10dd39cc49157e62"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000060",
+          "original_record_id": "pile10k-09202-1e9c998f8aef7bed"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000061",
+          "original_record_id": "pile10k-03084-07454882e3ba2cbd"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000062",
+          "original_record_id": "pile10k-03306-b8f80bf694835c48"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000063",
+          "original_record_id": "pile10k-01120-85224998a110f862"
+        },
+        {
+          "opaque_record_id": "original-audit-opaque-000064",
+          "original_record_id": "pile10k-08685-ed199a4d3283b461"
+        }
+      ],
+      "records": 64,
+      "source_identifiers_retained_in_audit_index": 0
+    },
+    "interpretation": "Replacing every original record ID, dataset row number, and text fingerprint with opaque sentinels did not change any candidate, score, prediction, query, route, stopping decision, method state, or operation count. This post-hoc result does not repair or replace the fresh clean blind R1 run.",
+    "kind": "post-hoc noninterference audit; not confirmatory evidence",
+    "preparation": {
+      "bytes": 13818,
+      "path": "experiments/TRR-0001/revision-r1/original_noninterference_preparation.json",
+      "sha256": "f1042445a2df53995efe450eaf1a1b0eb5db828a1488465152824154f23b481e"
+    },
+    "repairs_original_access_interface": false,
+    "result": "PASS_ORIGINAL_IDENTIFIER_NONINTERFERENCE"
+  },
+  "schema": "token-reconstruction.trr0001-r1-manifest.v1",
+  "selection_protocol": {
+    "commitment_digest": "7f459452a1a42525e18baafd1a8ed5eb1d4993d6c37fe00a6bed401a80e6fe7c",
+    "disjoint_from_original_records": true,
+    "post_freeze_reveal": {
+      "bytes": 10971,
+      "path": "experiments/TRR-0001/revision-r1/selection_reveal.json",
+      "sha256": "d96cae6d6c9beb29d99be34ecb597f4986f9e107212657f4ad98268676251b41"
+    },
+    "pre_freeze_selection_key_disclosed": false,
+    "pre_freeze_source_identity_disclosed": false,
+    "public_commitment": {
+      "bytes": 2623,
+      "path": "experiments/TRR-0001/revision-r1/selection_commitment.json",
+      "sha256": "633cf3b24efddf22939c3e628d99d3f0e098dfec686ed2ac8b043b49e086efdd"
+    },
+    "result": "PASS_SELECTION_REVEALED_AFTER_VERIFIED_FREEZE",
+    "reveal_verification": {
+      "bytes": 2233,
+      "path": "experiments/TRR-0001/revision-r1/selection_verification.json",
+      "sha256": "57759a2f662ba85c6877006afb4e12019a5bad3cbf6ac6cacd05ff8c9b4922e3"
+    },
+    "revealed_records": 64,
+    "token_ids_disclosed_in_mapping_reveal": false,
+    "truth_sidecar_read_during_reveal": false
+  },
+  "task": {
+    "branch": "task/TRR-0001",
+    "id": "TRR-0001",
+    "merge_authorization": "NOT_GRANTED",
+    "merged": false,
+    "next_task_started": false,
+    "pull_request": 2,
+    "revision_id": "TRR-0001-R1",
+    "status": "AWAITING_CHATGPT_REVIEW",
+    "title": "Repair the blind evaluation and rerun TRR-0001 cleanly"
+  },
+  "validation": {
+    "changed_file_comparison": {
+      "command": "git diff --name-status 2a89a578921afc48dc3b54c65a2c39c35c422134..d729e3a614fc3367268eefb4b410b1b5bec4b24c",
+      "exit_status": 0,
+      "output": {
+        "bytes": 5041,
+        "path": "experiments/TRR-0001/revision-r1/changed-files-from-reviewed-head.txt",
+        "sha256": "c806fbdf05984bc2fb710cb6a90fbc0ba4122d3b22868a266b8eb3ee197b272e"
+      },
+      "time": {
+        "bytes": 822,
+        "path": "experiments/TRR-0001/revision-r1/changed-files-from-reviewed-head-time.txt",
+        "sha256": "6e4fab033d39a04ce48cb52b67530a460f3c992a73401f87763ba49a9063acbd"
+      }
+    },
+    "final_focused_access_separation_tests": {
+      "command": "env PYTHONPATH=src pytest -q tests/test_trr0001_r1_protocol.py tests/test_trr0001_r1_isolation.py tests/test_freeze_and_separation.py",
+      "exit_status": 0,
+      "output": {
+        "bytes": 99,
+        "path": "experiments/TRR-0001/revision-r1/final-focused-tests-output.txt",
+        "sha256": "34a827123d2183f654609d48e0a243966ffd563ba76e3cd9b738232413b66d4d"
+      },
+      "summary": ".................                                                        [100%]\n17 passed in 1.68s",
+      "time": {
+        "bytes": 866,
+        "path": "experiments/TRR-0001/revision-r1/final-focused-tests-time.txt",
+        "sha256": "8aff32cf7c85a7f4428b434df11c6a058d7dba098334d38fc5301a1401291260"
+      }
+    },
+    "final_full_source_checkout_tests": {
+      "command": "env PYTHONPATH=src pytest -q",
+      "exit_status": 0,
+      "output": {
+        "bytes": 99,
+        "path": "experiments/TRR-0001/revision-r1/final-full-tests-output.txt",
+        "sha256": "754a6810c214a620854f7f3a75e12182b468efaa055250092c2595f43d3b5a15"
+      },
+      "summary": "...................................                                      [100%]\n35 passed in 2.00s",
+      "time": {
+        "bytes": 762,
+        "path": "experiments/TRR-0001/revision-r1/final-full-tests-time.txt",
+        "sha256": "cd1c9d08b07d0f02118175c999466230339a5d552bed6db70c4341af1c4e91f4"
+      }
+    },
+    "final_integrity": {
+      "exit_status": 0,
+      "output": {
+        "bytes": 2904,
+        "path": "experiments/TRR-0001/revision-r1/final-validation-output.txt",
+        "sha256": "152c2be646fdb540a5389d2cadaf6c7f6c92f021de013a9c8b3c14c1efecccd8"
+      },
+      "record": {
+        "bytes": 3318,
+        "path": "experiments/TRR-0001/revision-r1/final_validation.json",
+        "sha256": "7a6ed805ef7fd8ddb6dc3d9bafe04c91ec589b276d97eda8715695d95e9480ff"
+      },
+      "result": "PASS_ALL_R1_INTEGRITY_CHECKS",
+      "row_counts": {
+        "causal_rows": 384,
+        "direct_rows": 384,
+        "metric_inconsistencies": 0,
+        "metric_rows": 768
+      },
+      "time": {
+        "bytes": 869,
+        "path": "experiments/TRR-0001/revision-r1/final-validation-time.txt",
+        "sha256": "525ed83d90decc0f31e97beef6b43fc7f5a77d01fd1d36059289e8e701a13862"
+      },
+      "tracked_json_files_parsed_before_this_manifest": 32
+    },
+    "final_source_compilation": {
+      "command": "python3 -m py_compile $(git ls-files '*.py')",
+      "exit_status": 0,
+      "output": {
+        "bytes": 0,
+        "path": "experiments/TRR-0001/revision-r1/final-pycompile-output.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "time": {
+        "bytes": 2194,
+        "path": "experiments/TRR-0001/revision-r1/final-pycompile-time.txt",
+        "sha256": "63ad82b51817421904130c54329acacf797326894520d96a4db5b405171daa66"
+      }
+    },
+    "final_tracked_json_parse": {
+      "command": "python3 -c 'import json,subprocess; from pathlib import Path; raw=subprocess.check_output([\"git\",\"ls-files\",\"-z\",\"*.json\"]); paths=[Path(x.decode()) for x in raw.split(b\"\\0\") if x]; [json.loads(p.read_text()) for p in paths]; print(f\"PASS_TRACKED_JSON {len(paths)}\")'",
+      "exit_status": 0,
+      "files_parsed": 35,
+      "output": {
+        "bytes": 21,
+        "path": "experiments/TRR-0001/revision-r1/final-json-parse-output.txt",
+        "sha256": "0cd116e432bc34e994b20ca173b48e7d8b2254b23dc88445383168bb5f562ded"
+      },
+      "result": "PASS_TRACKED_JSON 35",
+      "time": {
+        "bytes": 985,
+        "path": "experiments/TRR-0001/revision-r1/final-json-parse-time.txt",
+        "sha256": "8146f81a545c57537ac4f6484c0c1ff6eead89a1e398ac29ac7e4af7ff0c6cd0"
+      }
+    },
+    "focused_access_separation_tests": {
+      "exit_status": 0,
+      "output": {
+        "bytes": 99,
+        "path": "experiments/TRR-0001/revision-r1/focused-tests-output.txt",
+        "sha256": "00fc6ec325e48a1003592ec6c8f88d6579bf270464a1d2fcefbdcb2ef2352e0b"
+      },
+      "summary": ".................                                                        [100%]\n17 passed in 1.74s",
+      "time": {
+        "bytes": 866,
+        "path": "experiments/TRR-0001/revision-r1/focused-tests-time.txt",
+        "sha256": "63aa417fa96bdaafd10b8bc8df71968cefcffa55ee0fdb9c580a0bb849513b09"
+      }
+    },
+    "full_source_checkout_tests": {
+      "exit_status": 0,
+      "output": {
+        "bytes": 99,
+        "path": "experiments/TRR-0001/revision-r1/full-tests-output.txt",
+        "sha256": "cd1156417181f13f0fe41d15b78300545a2659a7c579b825aaa4f5bf7dc763d8"
+      },
+      "summary": "...................................                                      [100%]\n35 passed in 2.09s",
+      "time": {
+        "bytes": 761,
+        "path": "experiments/TRR-0001/revision-r1/full-tests-time.txt",
+        "sha256": "ca5786401f0739e450a6f62ed17bbfa237ca7b8d0867f627bd2618cb5ae8c388"
+      }
+    },
+    "post_manifest_final_integrity": {
+      "command": "env PYTHONPATH=src python3 scripts/trr0001_r1_validate.py --repository-root . --output experiments/TRR-0001/revision-r1/final_validation_post_manifest.json",
+      "exit_status": 0,
+      "output": {
+        "bytes": 2918,
+        "path": "experiments/TRR-0001/revision-r1/final-validation-post-manifest-output.txt",
+        "sha256": "d395889b0b3e2c72ad926a7dcececdf4c85ad92431595dfd3fd7ac5df6936c70"
+      },
+      "record": {
+        "bytes": 3332,
+        "path": "experiments/TRR-0001/revision-r1/final_validation_post_manifest.json",
+        "sha256": "9efdde2c72dace918b2db31fe09549f1421271802744c274be4e0d0ff2f21f3f"
+      },
+      "result": "PASS_ALL_R1_INTEGRITY_CHECKS",
+      "time": {
+        "bytes": 883,
+        "path": "experiments/TRR-0001/revision-r1/final-validation-post-manifest-time.txt",
+        "sha256": "197ce5e6f01f1cc56ae1a89be4461c62c7e9f55f386bf6e01cc1319b81af1dd4"
+      },
+      "tracked_json_files_parsed": 34
+    },
+    "remaining_delivery_checks": [],
+    "source_compilation": {
+      "exit_status": 0,
+      "output": {
+        "bytes": 0,
+        "path": "experiments/TRR-0001/revision-r1/pycompile-output.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "time": {
+        "bytes": 2157,
+        "path": "experiments/TRR-0001/revision-r1/pycompile-time.txt",
+        "sha256": "ab1700c6ad9fbf44720c3a901fca3b919fdcf611a10759735056909b311387c8"
+      }
+    },
+    "whitespace": {
+      "command": "git diff --check 2a89a578921afc48dc3b54c65a2c39c35c422134..d729e3a614fc3367268eefb4b410b1b5bec4b24c -- . ':(exclude)coordination/requests/TRR-0001-R1.md'",
+      "excluded_only": "verbatim CRLF R1 request packet",
+      "exit_status": 0,
+      "output": {
+        "bytes": 0,
+        "path": "experiments/TRR-0001/revision-r1/final-whitespace-output.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "time": {
+        "bytes": 871,
+        "path": "experiments/TRR-0001/revision-r1/final-whitespace-time.txt",
+        "sha256": "ce81b33df86902fff0b126fdba85575db89701dc5149adfc3b324a2eefb5c347"
+      }
+    }
+  }
+}

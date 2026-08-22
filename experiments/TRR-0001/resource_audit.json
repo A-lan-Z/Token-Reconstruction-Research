@@ -1,0 +1,148 @@
+{
+  "created_utc": "2026-08-22T08:47:23Z",
+  "dataset": {
+    "arrow_cache_sha256": "77ddf02e2a69373a944bc8bc8ac8f7b9926f5c62203d727341a24d709bf81113",
+    "features": [
+      "text",
+      "meta"
+    ],
+    "id": "NeelNanda/pile-10k",
+    "license": "bigscience-bloom-rail-1.0",
+    "parquet_bytes": 33262901,
+    "parquet_path": "/home/alanz/.cache/huggingface/hub/datasets--NeelNanda--pile-10k/snapshots/127bfedcd5047750df5ccf3a12979a47bfa0bafa/data/train-00000-of-00001-4746b8785c874cc7.parquet",
+    "parquet_sha256": "a1a9475a8684ac8f1b17a36eccb2ec49c127edd7aae9beb2f240726972d93f31",
+    "revision": "127bfedcd5047750df5ccf3a12979a47bfa0bafa",
+    "rows": 10000,
+    "snapshot_path": "/home/alanz/.cache/huggingface/hub/datasets--NeelNanda--pile-10k/snapshots/127bfedcd5047750df5ccf3a12979a47bfa0bafa",
+    "status": "AVAILABLE_AND_LOADABLE_OFFLINE"
+  },
+  "environment": {
+    "datasets": "4.8.3",
+    "gpu": "NVIDIA GeForce RTX 5080",
+    "gpu_driver": "610.88",
+    "gpu_total_memory_mib": 16303,
+    "numpy": "1.26.4",
+    "pytest": "8.4.2",
+    "python": "3.12.3",
+    "safetensors": "0.7.0",
+    "torch": "2.10.0+cu128",
+    "torch_cuda": "12.8",
+    "transformers": "5.3.0"
+  },
+  "historical_comparator": {
+    "decision": "retain audit and preflight; do not include as a scientific comparison arm",
+    "exact_public_assets": {
+      "lens": {
+        "bytes": 16787653,
+        "path": "/home/alanz/spartan/punim2939/backdoor_lora/ersoy2026/inversion_20260730/out/lens_alpaca.pt",
+        "sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742"
+      },
+      "model": "meta-llama/Llama-3.2-1B-Instruct@9213176726f574b556790deb65791e0c5aa438b6",
+      "teacher_identity": {
+        "bytes": 1247,
+        "path": "/home/alanz/spartan/punim2939/backdoor_lora/ersoy2026/research/adaptive_a1_a2_strict_bos_20260817_goal_01a00b08/audit/AUDIT-0004-public-teacher-identity-v2.json",
+        "sha256": "fd457c6e33f18b9341f9699ebcd204aa5994423cef373affb99bcbdf9c621061"
+      }
+    },
+    "historical_private_assets": {
+      "boundary": {
+        "bytes": 10079438000,
+        "expected_sha256_from_historical_protocol": "c2db96da30f8792bdcff2b5b8987faa56de1123241e6f3e2953b3c5223994aaa",
+        "path": "/mnt/c/Backdoor_LoRA/Stage2Trace/20260810/trace_staging/chunk_000051_000100/boundary.safetensors",
+        "verification": "existence and exact byte count checked; content not opened"
+      },
+      "truth_sidecar": {
+        "bytes": 6554392,
+        "expected_sha256_from_historical_protocol": "a47ace7fed712551e41bb2b3b767122686154ff40ea44e72bdf509540ebe6736",
+        "path": "/mnt/c/Backdoor_LoRA/Stage2Trace/20260810/trace_staging/chunk_000051_000100/oracle_tokens.safetensors",
+        "verification": "existence and exact byte count checked; content not opened"
+      }
+    },
+    "incompatibility": [
+      "fixed 128x128 source geometry versus TRR-0001's 64 records of 40 tokens",
+      "fixed three-episode completed-record adapter schedule tied to historical source indices",
+      "historical target traces and target-prefix construction differ from the declared Pile/LoRA primary condition",
+      "changing those contracts would no longer run the exact frozen comparator"
+    ],
+    "public_teacher_identity_check": {
+      "command": "HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 CUBLAS_WORKSPACE_CONFIG=:4096:8 python3 -c '<load reference/strict_bos round001_teacher.load_public_teacher with pinned spec, lens, and AUDIT-0004 identity>'",
+      "elapsed_seconds": 6.52,
+      "exit_status": 0,
+      "max_rss_kib": 3370776,
+      "output": [
+        "STRICT_BOS_PUBLIC_TEACHER_IDENTITY=VERIFIED",
+        "PREFIX_SHA256=3c897c5ad27073c85496ca24a4a11f2c37de1e5695f65535d7ceeb68e3f1c9ba",
+        "LENS_STATE_SHA256=98cd91c2dc4c5d8ac5a827672c027b7e6dad0d1acb3c45e387d118c9ad2ead04"
+      ]
+    },
+    "status": "RUNNABLE_BUT_INCOMPATIBLE_WITH_DECLARED_CONDITION",
+    "synthetic_preflight": {
+      "checks_passed": true,
+      "command": "python3 reference/strict_bos/preflight_wavefront.py --output /tmp/trr0001-strict-bos-preflight.json",
+      "elapsed_seconds": 1.18,
+      "exit_status": 0,
+      "max_rss_kib": 1033776,
+      "output_bytes": 1628,
+      "output_sha256": "9ff64cac95efd0f39779a7eac53db3e582cca1c002d577ac28a8c16127e99947"
+    }
+  },
+  "merge_evidence": {
+    "accepted_head_ancestor_check": {
+      "command": "git merge-base --is-ancestor b087365766f00432077476bf32a6afdf2e854841 refs/remotes/origin/main",
+      "exit_status": 0
+    },
+    "exit_status": 0,
+    "merge_commit": "0f641e5f071dd38331d2e2b7821d40fc74941c2e",
+    "merged": true,
+    "merged_at_utc": "2026-08-22T08:26:27Z",
+    "operation": "GitHub REST PUT /repos/A-lan-Z/Token-Reconstruction-Research/pulls/1/merge",
+    "payload": {
+      "commit_message": "[TRR-0000] Bootstrap and validate research relay",
+      "commit_title": "Merge pull request #1 from A-lan-Z/task/TRR-0000",
+      "merge_method": "merge",
+      "sha": "b087365766f00432077476bf32a6afdf2e854841"
+    },
+    "pull_request_state": "MERGED"
+  },
+  "primary_model": {
+    "files": {
+      "config.json": {
+        "bytes": 877,
+        "sha256": "2febf68cea25bf4611be02b7536f2488a5ba523bb1134986e3610152abe74fdb"
+      },
+      "generation_config.json": {
+        "bytes": 189,
+        "sha256": "88effbb63300dbbc7390143fbbdd9d9fa50587b37e8bfd16c8c90d4970a74a36"
+      },
+      "model.safetensors": {
+        "bytes": 2471645608,
+        "sha256": "1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f"
+      },
+      "special_tokens_map.json": {
+        "bytes": 296,
+        "sha256": "6f38c73729248f6c127296386e3cdde96e254636cc58b4169d3fd32328d9a8ec"
+      },
+      "tokenizer.json": {
+        "bytes": 9085657,
+        "sha256": "79e3e522635f3171300913bb421464a87de6222182a0570b9b2ccba2a964b2b4"
+      },
+      "tokenizer_config.json": {
+        "bytes": 54528,
+        "sha256": "9823dcfdc1121869029da45192238e85cf44f0b232a6d9dc20e4fe6f4242a14e"
+      }
+    },
+    "id": "meta-llama/Llama-3.2-1B-Instruct",
+    "observed": {
+      "bos_token_id": 128000,
+      "hidden_size": 2048,
+      "layers": 16,
+      "tokenizer_size": 128256,
+      "vocabulary_size": 128256
+    },
+    "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "snapshot_path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+    "status": "AVAILABLE_AND_LOADABLE_OFFLINE"
+  },
+  "schema": "token-reconstruction.trr0001.resource-audit.v1",
+  "task_id": "TRR-0001"
+}

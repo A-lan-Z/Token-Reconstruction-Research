@@ -68,6 +68,20 @@ For every claimed run, record as applicable:
 Follow the access and truth-opening requirements in `RESEARCH_CHARTER.md`
 exactly. Do not introduce additional ones.
 
+## Dual-benchmark comparability
+
+Follow `research/DUAL_BENCHMARK_PROTOCOL.md` for every reconstruction-method
+evaluation. A method is not comparison-complete until every active method has
+been run in both canonical benchmark setups and the full method-by-benchmark
+matrix has been reported.
+
+Register new active methods before execution. Preserve each method's decision
+rule and fixed constants. When only geometry or input/output adaptation is
+needed, label the result as a benchmark-compatible port and record the exact
+differences from the native implementation. Do not silently substitute a port
+for an exact native run, pool scores across setups, or call a partial matrix a
+comparable overall result.
+
 ## Handoff
 
 Write the human-readable result to:
