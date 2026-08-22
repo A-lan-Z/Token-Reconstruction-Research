@@ -1,0 +1,361 @@
+{
+  "schema": "token-reconstruction.trr0001-r2-manifest.v1",
+  "task": {
+    "id": "TRR-0001",
+    "revision_id": "TRR-0001-R2",
+    "title": "Require dual-benchmark comparability and backfill every existing method",
+    "status": "AWAITING_CHATGPT_REVIEW",
+    "next_task_started": false
+  },
+  "authority": {
+    "charter_path": "RESEARCH_CHARTER.md",
+    "charter_sha256": "ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d",
+    "scientific_change": false
+  },
+  "request": {
+    "path": "coordination/requests/TRR-0001-R2.md",
+    "bytes": 267,
+    "sha256": "a7baf9ee25604f14535a986357dc56ddc0efa599bb3e0b880ac3fd2aad7bfb7e",
+    "origin": "verbatim user direction"
+  },
+  "repository": {
+    "branch": "task/TRR-0001",
+    "pull_request": 2,
+    "previous_reviewed_head": "1f22e7cfb8d5e25d55ad71fa695beea58463d970",
+    "protocol_commit": "ba5b47b0d96f963d3927ced59fe605fd999f8b3d",
+    "batch_semantics_commit": "f5395ff89c7d9ea4c61e5d8b503563ec2dad0306",
+    "execution_code_commit": "cccb968b8276f5ad8f148f5853690295974a44c7",
+    "initial_matrix_evidence_commit": "3b33c5f41f37c3d6bb003e760a74a4502aeb8f19",
+    "normalized_r2_evidence_commit": "773d18cb0f77b3bdf79f1c40bdfe364da7cc473a",
+    "result_path": "coordination/results/TRR-0001.md",
+    "aggregate_manifest_path": "experiments/TRR-0001/manifest.json"
+  },
+  "protocol": {
+    "human_readable": {
+      "path": "research/DUAL_BENCHMARK_PROTOCOL.md",
+      "bytes": 6464,
+      "sha256": "98380e7298d0720cd9ef12358c651a3fcb419b029703975a87e14a3093ec6d33"
+    },
+    "registry": {
+      "path": "research/dual_benchmark_registry.json",
+      "bytes": 1808,
+      "sha256": "dfbf5f4c6129f1213337c2b8eabaa6b13c7313ef1b429db4fccf861a0a27038e"
+    },
+    "enforcement": [
+      "required_cells equals setups x methods",
+      "a missing cell is comparison-incomplete",
+      "native and benchmark-compatible port executions are labelled separately",
+      "cross-setup token pooling is forbidden",
+      "fresh runs freeze every registered cell before truth opening"
+    ]
+  },
+  "truth_status": {
+    "classification": "RETROSPECTIVE_COMPLETE_MATRIX",
+    "reason": "Both setup truths had already been opened before R2.",
+    "clean_native_evidence": "R1 direct and causal frozen blind outputs remain governing.",
+    "prediction_freeze_before_runner_truth_load": true,
+    "claim_limit": "comparability and transfer evidence, not a fresh blind confirmation"
+  },
+  "matrix": {
+    "complete": true,
+    "setup_ids": [
+      "clean-pile-lora-64x40",
+      "historical-finance-strict-bos-128x128"
+    ],
+    "method_ids": [
+      "direct_inverse_k16",
+      "causal_public_surrogate_k16",
+      "strict_bos_adaptive_a1_a2"
+    ],
+    "required_cells": 6,
+    "populated_cells": 6,
+    "output": {
+      "path": "experiments/TRR-0001/revision-r2/dual_benchmark_matrix.json",
+      "bytes": 251501,
+      "sha256": "5594b3a4e3af6e27d28c8f0267f7d71c0d8f3715672a36202909be41e9a0dd66"
+    }
+  },
+  "execution": {
+    "global_seed": 1729,
+    "bootstrap_draws": 10000,
+    "bootstrap_seeds": {
+      "causal_minus_direct": 2401,
+      "strict_minus_direct": 2402,
+      "strict_minus_causal": 2403
+    },
+    "environment": {
+      "python": "3.12.3",
+      "torch": "2.10.0+cu128",
+      "torch_cuda": "12.8",
+      "transformers": "5.3.0",
+      "device": "NVIDIA GeForce RTX 5080",
+      "device_total_memory_bytes": 17094475776
+    },
+    "cost_scope": {
+      "timing_session": "single R2 backfill process",
+      "cuda_synchronized_at_boundaries": true,
+      "model_load_excluded": true,
+      "file_io_excluded": true,
+      "peak_cuda_memory_allocated_bytes": 3963238912,
+      "training_or_adaptation": false,
+      "target_model_calls": 0
+    },
+    "historical_native_command": "env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TOKENIZERS_PARALLELISM=false PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True python3 ersoy2026/scripts/run_bos_only_adaptive_wavefront_gate_20260816.py --row-serial-passes 1 --wavefront-passes 1 --direct-passes 1 --output /tmp/trr_dual_old_exact.json",
+    "matrix_command": "/usr/bin/time -v -o experiments/TRR-0001/revision-r2/dual-benchmark-time.txt env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false CUBLAS_WORKSPACE_CONFIG=:4096:8 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True PYTHONPATH=src python3 scripts/trr0001_r2_dual_benchmark.py --repository-root . --historical-root /home/alanz/spartan/punim2939/backdoor_lora/ersoy2026 --new-input-root outputs/TRR-0001-R1/clean/frozen_bundle/reconstructor_input --new-truth-jsonl outputs/TRR-0001-R1/clean/evaluator_private/blind_truth.jsonl --r1-direct-jsonl outputs/TRR-0001-R1/clean/frozen_bundle/direct_inverse/reconstructions.jsonl --r1-causal-jsonl outputs/TRR-0001-R1/clean/frozen_bundle/causal_public_surrogate_search/reconstructions.jsonl --old-native-json experiments/TRR-0001/revision-r2/historical_native_rerun.json --prediction-artifact outputs/TRR-0001-R2/dual-benchmark/predictions.safetensors --output experiments/TRR-0001/revision-r2/dual_benchmark_matrix.json",
+    "started_utc": "2026-08-22T14:52:53.262516Z",
+    "ended_utc": "2026-08-22T14:54:42.914622Z",
+    "wall_seconds": 112.23,
+    "exit_status": 0
+  },
+  "metrics": {
+    "clean-pile-lora-64x40": {
+      "scored_tokens": 2496,
+      "direct_inverse_k16": {
+        "correct_tokens": 1615,
+        "token_accuracy": 0.6470352564102564,
+        "coverage": 1,
+        "selective_accuracy": 0.6470352564102564,
+        "candidate_recall": 0.8465544871794872,
+        "exact_records": 0,
+        "records": 64,
+        "compute_seconds": 0.2819891479994112,
+        "candidate_simulations": 0
+      },
+      "causal_public_surrogate_k16": {
+        "correct_tokens": 2096,
+        "token_accuracy": 0.8397435897435898,
+        "coverage": 1,
+        "selective_accuracy": 0.8397435897435898,
+        "candidate_recall": 0.8465544871794872,
+        "exact_records": 0,
+        "records": 64,
+        "compute_seconds": 2.3142843050009105,
+        "candidate_simulations": 39936
+      },
+      "strict_bos_adaptive_a1_a2": {
+        "correct_tokens": 331,
+        "token_accuracy": 0.1326121794871795,
+        "coverage": 0.1326121794871795,
+        "selective_accuracy": 1,
+        "candidate_recall": 0.9983974358974359,
+        "exact_records": 0,
+        "records": 64,
+        "compute_seconds": 4.677883145002852,
+        "candidate_simulations": 60384
+      }
+    },
+    "historical-finance-strict-bos-128x128": {
+      "scored_tokens": 13990,
+      "direct_inverse_k16": {
+        "correct_tokens": 8534,
+        "token_accuracy": 0.6100071479628306,
+        "coverage": 1,
+        "selective_accuracy": 0.6100071479628306,
+        "candidate_recall": 0.8164403145103646,
+        "exact_records": 0,
+        "records": 128,
+        "compute_seconds": 1.2505506519992196,
+        "candidate_simulations": 0
+      },
+      "causal_public_surrogate_k16": {
+        "correct_tokens": 11349,
+        "token_accuracy": 0.8112223016440314,
+        "coverage": 1,
+        "selective_accuracy": 0.8112223016440314,
+        "candidate_recall": 0.8164403145103646,
+        "exact_records": 0,
+        "records": 128,
+        "compute_seconds": 18.814573784999084,
+        "candidate_simulations": 223840
+      },
+      "strict_bos_adaptive_a1_a2": {
+        "correct_tokens": 13741,
+        "token_accuracy": 0.9822015725518227,
+        "coverage": 0.9824160114367405,
+        "selective_accuracy": 0.9997817229336438,
+        "candidate_recall": 0.9992852037169406,
+        "exact_records": 122,
+        "records": 128,
+        "compute_seconds": 78.56432278199645,
+        "candidate_simulations": 276896
+      }
+    }
+  },
+  "paired_record_bootstrap": {
+    "clean-pile-lora-64x40": {
+      "causal_minus_direct": {
+        "estimate": 0.19270833333333331,
+        "ci95_percentile": [
+          0.171875,
+          0.2143429487179487
+        ]
+      },
+      "strict_minus_causal": {
+        "estimate": -0.7071314102564101,
+        "ci95_percentile": [
+          -0.7516025641025641,
+          -0.6586538461538461
+        ]
+      }
+    },
+    "historical-finance-strict-bos-128x128": {
+      "causal_minus_direct": {
+        "estimate": 0.2006793309690478,
+        "ci95_percentile": [
+          0.19189868564224918,
+          0.20992162850303922
+        ]
+      },
+      "strict_minus_causal": {
+        "estimate": 0.18038494080324466,
+        "ci95_percentile": [
+          0.16667662899861463,
+          0.19430291557885096
+        ]
+      }
+    }
+  },
+  "semantic_checks": {
+    "clean_native_prediction_reproduction": {
+      "direct_prediction_mismatches": 0,
+      "causal_prediction_mismatches": 0,
+      "compared_predictions_per_method": 2560
+    },
+    "historical_strict_native_aggregate_reproduction": {
+      "scored_tokens": true,
+      "covered_tokens": true,
+      "correct_tokens": true,
+      "token_accuracy": true,
+      "selective_accuracy": true,
+      "exact_records": true,
+      "candidate_simulations": true
+    }
+  },
+  "artifacts": {
+    "prediction_freeze": {
+      "path": "outputs/TRR-0001-R2/dual-benchmark/predictions.safetensors",
+      "retention": "external_uncommitted",
+      "bytes": 40257376,
+      "sha256": "fd35ee3dbddbe38d8d6a3d5877911cef532b53a61ecd1c685569bd13c4f8f65d"
+    },
+    "historical_native_rerun": {
+      "path": "experiments/TRR-0001/revision-r2/historical_native_rerun.json",
+      "retention": "committed",
+      "bytes": 15098,
+      "sha256": "0b817b80839a7fa5b67002484d0bfe34f58e25d1d913f93c0cd85d4c63540084"
+    },
+    "matrix_output": {
+      "path": "experiments/TRR-0001/revision-r2/dual-benchmark-output.txt",
+      "retention": "committed",
+      "bytes": 1137,
+      "sha256": "42c9d3a2d7f09eedcaf44e3eac2277181479fbd9751818f8bad41090eaf006df"
+    },
+    "matrix_time": {
+      "path": "experiments/TRR-0001/revision-r2/dual-benchmark-time.txt",
+      "retention": "committed",
+      "bytes": 1661,
+      "sha256": "52b850a94fb1d5b23b0b45af39a090245068ddc4f9e46859478ebee76c4a4d09"
+    },
+    "matrix_validation": {
+      "path": "experiments/TRR-0001/revision-r2/matrix-validation.json",
+      "retention": "committed",
+      "bytes": 3729,
+      "sha256": "17f7068d723aea799cf9e2cf191e579b0370e5428d4fd95cfa851b14ac8a6d37d"
+    }
+  },
+  "failed_and_corrected_attempts": [
+    {
+      "id": "R2-matrix-attempt-1",
+      "reason": "Record-serial causal execution changed close floating-point decisions.",
+      "result": "direct exact; clean causal 27 prediction mismatches; exit 1",
+      "output_path": "experiments/TRR-0001/revision-r2/attempt1-dual-benchmark-output.txt",
+      "prediction_path": "outputs/TRR-0001-R2/dual-benchmark/attempt1-predictions.safetensors",
+      "prediction_sha256": "a51ccb3b701be5b928ee92c490668915b7cd17b8321fd0bdadb9975844d9d529"
+    },
+    {
+      "id": "R2-matrix-attempt-2",
+      "reason": "Native 16-record batching restored without the R1 math-SDPA deterministic settings.",
+      "result": "direct exact; clean causal 22 prediction mismatches; exit 1",
+      "output_path": "experiments/TRR-0001/revision-r2/attempt2-dual-benchmark-output.txt",
+      "prediction_path": "outputs/TRR-0001-R2/dual-benchmark/attempt2-predictions.safetensors",
+      "prediction_sha256": "94e4fe2d18fc9d57fec9ed154e44889b42fc4eb9c6ed24c31f461805053ceb76"
+    },
+    {
+      "id": "R2-validation-attempt-3",
+      "reason": "Source-checkout PYTHONPATH was omitted.",
+      "result": "focused and full pytest collection exited 2; corrected commands passed",
+      "output_paths": [
+        "experiments/TRR-0001/revision-r2/attempt3-focused-tests-output.txt",
+        "experiments/TRR-0001/revision-r2/attempt3-full-tests-output.txt"
+      ]
+    },
+    {
+      "id": "R2-whitespace-attempt-4",
+      "reason": "Four added files had one extra blank line at EOF.",
+      "result": "git diff --check exited 2; blank lines removed; tests and validator rerun",
+      "output_path": "experiments/TRR-0001/revision-r2/attempt4-whitespace-output.txt"
+    },
+    {
+      "id": "R2-validation-attempt-5",
+      "reason": "A mistyped non-existent full commit suffix was used in the first post-normalization range.",
+      "result": "git exited 128; rerun with git rev-parse output passed",
+      "output_paths": [
+        "experiments/TRR-0001/revision-r2/attempt5-whitespace-output.txt",
+        "experiments/TRR-0001/revision-r2/attempt5-changed-files-output.txt"
+      ]
+    }
+  ],
+  "conclusions": {
+    "stable_cross_setup_result": "causal_public_surrogate_k16 beats direct_inverse_k16 in both setups",
+    "clean_setup_winner": "causal_public_surrogate_k16",
+    "historical_setup_winner": "strict_bos_adaptive_a1_a2",
+    "setup_independent_winner": null,
+    "strict_clean_diagnostic": "top-512 recall 99.84% and selective accuracy 100%, but coverage only 13.26%",
+    "replacement_disposition": "no overall replacement; require both setups for future claims"
+  },
+  "validation": {
+    "matrix_consistency": {
+      "command": "python3 scripts/trr0001_r2_validate.py --repository-root . --prediction-artifact outputs/TRR-0001-R2/dual-benchmark/predictions.safetensors --output experiments/TRR-0001/revision-r2/matrix-validation.json",
+      "status": "PASS_ALL_R2_MATRIX_CHECKS",
+      "exit_status": 0
+    },
+    "source_compilation": {
+      "command": "/usr/bin/time -v -o experiments/TRR-0001/revision-r2/post-whitespace-pycompile-time.txt bash -c \"git ls-files --cached --others --exclude-standard '*.py' -z | xargs -0 python3 -m py_compile\"",
+      "exit_status": 0
+    },
+    "focused_tests": {
+      "command": "/usr/bin/time -v -o experiments/TRR-0001/revision-r2/post-whitespace-focused-tests-time.txt env PYTHONPATH=src python3 -m pytest -q tests/test_dual_benchmark.py tests/test_inverse_and_target_update.py tests/test_public_prefix.py tests/test_metrics.py tests/test_records.py",
+      "result": "13 passed in 1.63s",
+      "exit_status": 0
+    },
+    "full_tests": {
+      "command": "/usr/bin/time -v -o experiments/TRR-0001/revision-r2/post-whitespace-full-tests-time.txt env PYTHONPATH=src python3 -m pytest -q",
+      "result": "39 passed in 1.77s",
+      "exit_status": 0
+    },
+    "pre_manifest_json_parse": {
+      "command": "python3 -c \"import json,subprocess; files=subprocess.check_output(['git','ls-files','--cached','--others','--exclude-standard','*.json'], text=True).splitlines(); [json.load(open(path, encoding='utf-8')) for path in files]\"",
+      "parsed_files": 39,
+      "exit_status": 0
+    },
+    "whitespace": {
+      "command": "git diff --check 1f22e7cfb8d5e25d55ad71fa695beea58463d970..773d18cb0f77b3bdf79f1c40bdfe364da7cc473a -- . ':(exclude)coordination/requests/TRR-0001-R2.md'",
+      "exclusion": "only the verbatim R2 user-direction file",
+      "output_path": "experiments/TRR-0001/revision-r2/whitespace-output.txt",
+      "exit_status": 0
+    },
+    "changed_file_comparison": {
+      "command": "git diff --name-status 1f22e7cfb8d5e25d55ad71fa695beea58463d970..773d18cb0f77b3bdf79f1c40bdfe364da7cc473a",
+      "output_path": "experiments/TRR-0001/revision-r2/changed-files-output.txt",
+      "changed_paths": 44,
+      "exit_status": 0
+    },
+    "final_json_parse": {
+      "command": "/usr/bin/time -v -o experiments/TRR-0001/revision-r2/final-json-parse-time.txt python3 -c \"import json,subprocess; files=subprocess.check_output(['git','ls-files','--cached','--others','--exclude-standard','*.json'], text=True).splitlines(); [json.load(open(path, encoding='utf-8')) for path in files]\" > experiments/TRR-0001/revision-r2/final-json-parse-output.txt 2>&1",
+      "parsed_files": 40,
+      "output_path": "experiments/TRR-0001/revision-r2/final-json-parse-output.txt",
+      "status": "PASS",
+      "exit_status": 0
+    }
+  }
+}
