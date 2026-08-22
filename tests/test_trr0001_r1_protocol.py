@@ -191,4 +191,3 @@ def test_selection_is_keyed_deterministic_and_excludes_declared_rows() -> None:
     assert len(records) == 64
     assert {row["dataset_index"] for row in records}.isdisjoint({1, 3, 5})
     assert [row["record_id"] for row in records] == opaque_record_ids()
-
