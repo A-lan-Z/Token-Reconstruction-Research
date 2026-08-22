@@ -134,7 +134,7 @@ def _repeat_cache(cache: Any, repeats: int) -> Any:
 
 
 @torch.inference_mode()
-def causal_k16(
+def causal_k16_record_serial(
     *,
     observations: torch.Tensor,
     attention_mask: torch.Tensor,
@@ -202,6 +202,109 @@ def causal_k16(
             )
             simulations += 16
             del candidate_cache, simulated, scores
+        del cache
+    if device.type == "cuda":
+        torch.cuda.synchronize(device)
+    elapsed = time.perf_counter() - started
+    return predictions, selection_scores, elapsed, simulations
+
+
+@torch.inference_mode()
+def causal_k16(
+    *,
+    observations: torch.Tensor,
+    attention_mask: torch.Tensor,
+    position_ids: torch.Tensor,
+    candidates: torch.Tensor,
+    precut: torch.nn.Module,
+    device: torch.device,
+    record_batch_size: int = 16,
+) -> tuple[torch.Tensor, torch.Tensor, float, int]:
+    """Run K16 causally while preserving the native 16-record batch geometry."""
+
+    validate_observations(observations, attention_mask, position_ids)
+    if candidates.shape != (*attention_mask.shape, 16):
+        raise DualBenchmarkError("causal K16 candidate geometry changed")
+    if record_batch_size != 16:
+        raise DualBenchmarkError("causal K16 record batch size must remain 16")
+    predictions = torch.full(attention_mask.shape, INVALID_TOKEN_ID, dtype=torch.long)
+    predictions[:, 0] = BOS_TOKEN_ID
+    selection_scores = torch.full(
+        candidates.shape,
+        float("-inf"),
+        dtype=torch.float32,
+    )
+    simulations = 0
+    if device.type == "cuda":
+        torch.cuda.synchronize(device)
+    started = time.perf_counter()
+    for record_start in range(0, observations.shape[0], record_batch_size):
+        record_end = min(record_start + record_batch_size, observations.shape[0])
+        record_count = record_end - record_start
+        batch_mask_cpu = attention_mask[record_start:record_end].to(torch.bool)
+        maximum_length = int(batch_mask_cpu.sum(dim=1).max().item())
+        cache = precut.new_cache()
+        precut.run_cached(
+            torch.full(
+                (record_count, 1),
+                BOS_TOKEN_ID,
+                dtype=torch.long,
+                device=device,
+            ),
+            cache,
+            0,
+        )
+        for physical_position in range(1, maximum_length):
+            active_cpu = batch_mask_cpu[:, physical_position]
+            if not active_cpu.any().item():
+                raise DualBenchmarkError("right-padded batch has an interior gap")
+            active = active_cpu.to(device)
+            ids = candidates[
+                record_start:record_end,
+                physical_position,
+            ].to(device=device, dtype=torch.long)
+            if ids[active].shape[1:] != (16,) or ids[active].lt(0).any().item():
+                raise DualBenchmarkError("causal K16 received an invalid proposal row")
+            ids = ids.clone()
+            ids[~active] = BOS_TOKEN_ID
+            candidate_cache = _repeat_cache(cache, 16)
+            simulated = precut.run_cached(
+                ids.reshape(-1, 1),
+                candidate_cache,
+                physical_position,
+            )[:, -1].reshape(record_count, 16, -1).float()
+            target = observations[
+                record_start:record_end,
+                physical_position,
+            ].to(device).float()
+            scores = F.cosine_similarity(
+                simulated,
+                target[:, None, :],
+                dim=-1,
+            )
+            if not torch.isfinite(scores).all().item():
+                raise DualBenchmarkError("causal K16 scores are non-finite")
+            choice = scores.argmax(dim=-1)
+            chosen = ids.gather(1, choice[:, None]).squeeze(1)
+            chosen[~active] = BOS_TOKEN_ID
+
+            prediction_view = predictions[
+                record_start:record_end,
+                physical_position,
+            ]
+            prediction_view[active_cpu] = chosen[active].cpu()
+            score_view = selection_scores[
+                record_start:record_end,
+                physical_position,
+            ]
+            score_view[active_cpu] = scores[active].cpu()
+            precut.run_cached(
+                chosen.view(-1, 1),
+                cache,
+                physical_position,
+            )
+            simulations += int(active_cpu.sum().item()) * 16
+            del candidate_cache, simulated, target, scores
         del cache
     if device.type == "cuda":
         torch.cuda.synchronize(device)

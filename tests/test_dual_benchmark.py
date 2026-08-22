@@ -45,7 +45,10 @@ class FakePrecut(torch.nn.Module):
         start_pos: int,
     ) -> torch.Tensor:
         assert cache.length == start_pos
-        assert input_ids.shape[0] == cache.batch
+        if cache.length == 0:
+            cache.batch = input_ids.shape[0]
+        else:
+            assert input_ids.shape[0] == cache.batch
         hidden = torch.zeros(
             (*input_ids.shape, 2048),
             dtype=torch.float32,
