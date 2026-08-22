@@ -5044,44 +5044,221 @@
     }
   },
   "revision_r1": {
-    "blocking_defects": [
-      "pre-freeze committed blind mapping deterministically identified exact public dataset rows and source text",
-      "truth-resolvable dataset_index and text_sha256 fields were passed to the reconstructor in both plan and observation index",
-      "reconstructor shared the evaluator workspace and user context without a process-level boundary denying private files"
-    ],
     "clean_confirmatory_run": {
-      "fixed_method": true,
-      "fresh_records_required": 64,
+      "cost": {
+        "causal_public_surrogate_search": {
+          "candidate_simulations": 239616,
+          "embedding_comparisons": 1920761856,
+          "end_to_end_arm_seconds": 10.320161847001145,
+          "implementation_complexity": {
+            "common": {
+              "propose_candidates": {
+                "ast_statements": 8,
+                "source_lines": 24
+              },
+              "stable_candidate_order": {
+                "ast_statements": 9,
+                "source_lines": 17
+              }
+            },
+            "dependencies": {
+              "inverse.py": {
+                "sha256": "083fd8cf8cf7dad2c8107db0c3929e67c58fc37389c07ea70c1ad82dcac5f740",
+                "source_lines": 166
+              },
+              "public_prefix.py": {
+                "sha256": "99083a1721e3da74ccbd6cd4556d3634e8cd772d73eb6561e949958559cd25bb",
+                "source_lines": 197
+              }
+            },
+            "method_specific": {
+              "causal_search": {
+                "ast_statements": 42,
+                "source_lines": 58
+              }
+            }
+          },
+          "memory": {
+            "method_peak_after_cuda_reset": {
+              "cuda_peak_allocated_bytes": 4071908352,
+              "cuda_peak_reserved_bytes": 5368709120,
+              "process_max_rss_kib": 3386252
+            },
+            "preparation_peak": {
+              "cuda_peak_allocated_bytes": 5362029568,
+              "cuda_peak_reserved_bytes": 5368709120,
+              "process_max_rss_kib": 3386252
+            },
+            "process_max_rss_kib_is_process_specific": true
+          },
+          "method_compute_seconds": 10.32912037999995,
+          "method_compute_seconds_per_record_arm": 0.026898750989583203,
+          "method_compute_seconds_per_scored_token": 0.0006897115638354667,
+          "persisted_method_state_bytes": 33571376,
+          "proposal_seconds": 1.2765542220040516,
+          "public_surrogate_model_loads": 1,
+          "selection_seconds": 8.898508502996265,
+          "target_prefix_calls": 0
+        },
+        "direct_inverse": {
+          "candidate_simulations": 0,
+          "embedding_comparisons": 1920761856,
+          "end_to_end_arm_seconds": 1.4274399199966865,
+          "implementation_complexity": {
+            "common": {
+              "propose_candidates": {
+                "ast_statements": 8,
+                "source_lines": 24
+              },
+              "stable_candidate_order": {
+                "ast_statements": 9,
+                "source_lines": 17
+              }
+            },
+            "dependencies": {
+              "inverse.py": {
+                "sha256": "083fd8cf8cf7dad2c8107db0c3929e67c58fc37389c07ea70c1ad82dcac5f740",
+                "source_lines": 166
+              },
+              "public_prefix.py": {
+                "sha256": "99083a1721e3da74ccbd6cd4556d3634e8cd772d73eb6561e949958559cd25bb",
+                "source_lines": 197
+              }
+            },
+            "method_specific": {
+              "direct_top1_selection": {
+                "ast_statements": 1,
+                "source_lines": 1
+              }
+            }
+          },
+          "memory": {
+            "method_peak_after_cuda_reset": {
+              "cuda_peak_allocated_bytes": 3688399872,
+              "cuda_peak_reserved_bytes": 5368709120,
+              "process_max_rss_kib": 3386292
+            },
+            "preparation_peak": {
+              "cuda_peak_allocated_bytes": 5362029568,
+              "cuda_peak_reserved_bytes": 5368709120,
+              "process_max_rss_kib": 3386292
+            },
+            "process_max_rss_kib_is_process_specific": true
+          },
+          "method_compute_seconds": 1.4364785969992226,
+          "method_compute_seconds_per_record_arm": 0.0037408296796854756,
+          "method_compute_seconds_per_scored_token": 9.591870973552502e-05,
+          "persisted_method_state_bytes": 33571376,
+          "proposal_seconds": 1.2781948859992553,
+          "public_surrogate_model_loads": 1,
+          "selection_seconds": 0.0,
+          "target_prefix_calls": 0
+        }
+      },
+      "fresh_records": 64,
       "next_task_started": false,
-      "scored_tokens_per_arm_required": 2496,
-      "status": "PENDING_PREREGISTRATION"
+      "primary": {
+        "causal_minus_direct": {
+          "ci95_percentile": [
+            0.17187499999999997,
+            0.21434294871794868
+          ],
+          "condition": "unavailable_target_lora",
+          "cut_depth": 4,
+          "disposition": "causal_supported_improvement",
+          "draws": 10000,
+          "estimate": 0.19270833333333331,
+          "seed": 1732,
+          "type": "causal_minus_direct",
+          "unit": "record"
+        },
+        "causal_public_surrogate_search": 0.8397435897435898,
+        "condition": "unavailable_target_lora",
+        "cut_depth": 4,
+        "direct_inverse": 0.6470352564102564,
+        "metric": "token_accuracy_excluding_bos"
+      },
+      "scored_tokens_per_arm": 2496,
+      "status": "COMPLETE"
+    },
+    "clean_preregistration_commit": "4169e4444dd99ebdc81a9adbbb9610dd8afc9555",
+    "dedicated_manifest": {
+      "bytes": 94564,
+      "path": "experiments/TRR-0001/revision-r1/manifest.json",
+      "sha256": "b09fc9e9f28759cab0804e96b71f92faae787bcca15842e83f0843bbe44039d9"
     },
     "disposition": "REVISE",
+    "freeze_receipt": {
+      "bytes": 5818,
+      "path": "experiments/TRR-0001/revision-r1/freeze_receipt.json",
+      "sha256": "72792c734b4ca89f7afe660d2cd2da1d61dd49342901a5a527a85576ec3b4845"
+    },
     "id": "TRR-0001-R1",
+    "implementation_commit": "970fdf6c65883bb93878c8458141f1e0bcef3085",
+    "isolation": {
+      "denial_probes_per_process": 7,
+      "manifests": {
+        "causal_public_surrogate_search": {
+          "bytes": 6388,
+          "path": "outputs/TRR-0001-R1/clean/frozen_bundle/causal_public_surrogate_search/access_manifest.json",
+          "sha256": "543d4ea5da037e59fafb5343eeec41d99e971e6b6903abbf8c1224e3bb7af59a"
+        },
+        "direct_inverse": {
+          "bytes": 6340,
+          "path": "outputs/TRR-0001-R1/clean/frozen_bundle/direct_inverse/access_manifest.json",
+          "sha256": "7caa4dbfe46dd532d4aa89e7d8ba105d3209698d7d5b2385059208e1c6995745"
+        }
+      },
+      "network_default_routes": 0,
+      "result": "PASS_FAIL_CLOSED_ACCESS_BOUNDARY"
+    },
     "merge_authorization": "NOT_GRANTED",
+    "original_noninterference_audit": {
+      "code_commit": "c2145618fff977c0da864b87324f4e7967792246",
+      "record": {
+        "bytes": 140126,
+        "path": "experiments/TRR-0001/revision-r1/original_noninterference_audit.json",
+        "sha256": "11612e8b35759b7325ee365bd1b8b44f51faefbe79a8306005430a4eb8801602"
+      },
+      "repairs_original_access_interface": false,
+      "result": "PASS_ORIGINAL_IDENTIFIER_NONINTERFERENCE"
+    },
     "original_run": {
       "accepted_blind_claim_basis": false,
       "artifacts_preserved": true,
       "disposition": "ACCESS_INTERFACE_NONCOMPLIANT_ORIGINAL_RUN",
       "permitted_uses": [
+        "descriptive evidence",
         "implementation debugging",
-        "post-hoc noninterference audit",
-        "comparison with the clean confirmatory run",
-        "provenance preservation"
+        "post-hoc source-identifier noninterference audit",
+        "comparison with the clean confirmatory run"
       ]
     },
     "packet_id": "TRR-PACKET-TRR-0001-REVIEW-R1-20260822-1E1E1C00AFB4A8BC58B157BB",
+    "r1_scientific_evidence_commit": "PENDING_METADATA_BINDING",
     "request": {
       "bytes": 26821,
-      "line_endings": "CRLF",
       "path": "coordination/requests/TRR-0001-R1.md",
-      "saved_verbatim": true,
-      "sha256": "a86e9342df732291052cc8b69599217140ee7bba81a79351dd70f026a6f2360c",
-      "source": "https://pastebin.com/xnGP8HVx"
+      "sha256": "a86e9342df732291052cc8b69599217140ee7bba81a79351dd70f026a6f2360c"
     },
     "reviewed_head": "2a89a578921afc48dc3b54c65a2c39c35c422134",
     "reviewed_pull_request": 2,
-    "status": "IN_PROGRESS"
+    "selection_commitment": {
+      "bytes": 2623,
+      "path": "experiments/TRR-0001/revision-r1/selection_commitment.json",
+      "sha256": "633cf3b24efddf22939c3e628d99d3f0e098dfec686ed2ac8b043b49e086efdd"
+    },
+    "selection_reveal": {
+      "bytes": 10971,
+      "path": "experiments/TRR-0001/revision-r1/selection_reveal.json",
+      "sha256": "d96cae6d6c9beb29d99be34ecb597f4986f9e107212657f4ad98268676251b41"
+    },
+    "status": "AWAITING_CHATGPT_REVIEW",
+    "validation": {
+      "final_integrity": "PASS_ALL_R1_INTEGRITY_CHECKS",
+      "focused_tests": ".................                                                        [100%]\n17 passed in 1.74s",
+      "full_tests": "...................................                                      [100%]\n35 passed in 2.09s"
+    }
   },
   "schema": "token-reconstruction.trr0001-manifest.v1",
   "seeds": {
@@ -5095,7 +5272,7 @@
     "id": "TRR-0001",
     "next_task_started": false,
     "packet_id": "TRR-PACKET-TRR-0000-ACCEPT-TRR-0001-20260822-EA3A83F35AAD288D502C44D5",
-    "status": "revision_r1_in_progress",
+    "status": "revision_r1_awaiting_review",
     "title": "Establish a charter-compliant blind reconstruction baseline and cut-depth recoverability map",
     "truth_separated": true,
     "type": "SUBSTANTIVE_RESEARCH"
