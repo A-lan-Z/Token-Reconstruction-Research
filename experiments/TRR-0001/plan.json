@@ -1,0 +1,2075 @@
+{
+  "accepted_predecessor": {
+    "accepted_head": "b087365766f00432077476bf32a6afdf2e854841",
+    "accepted_head_is_merge_parent": true,
+    "merge_commit": "0f641e5f071dd38331d2e2b7821d40fc74941c2e",
+    "pull_request": 1,
+    "task_id": "TRR-0000"
+  },
+  "artifacts": {
+    "committed": {
+      "freeze_receipt": "experiments/TRR-0001/freeze_receipt.json",
+      "manifest": "experiments/TRR-0001/manifest.json",
+      "metrics": "experiments/TRR-0001/metrics.json",
+      "per_record": "experiments/TRR-0001/per_record_metrics.jsonl",
+      "plan": "experiments/TRR-0001/plan.json",
+      "resource_audit": "experiments/TRR-0001/resource_audit.json",
+      "result": "coordination/results/TRR-0001.md"
+    },
+    "retention": "retain locally through review; record paths, byte counts, and SHA-256",
+    "uncommitted_private_root": "outputs/TRR-0001"
+  },
+  "authority": {
+    "path": "RESEARCH_CHARTER.md",
+    "role": "sole_authoritative_research_definition",
+    "sha256": "ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d"
+  },
+  "baseline_families": {
+    "causal_public_surrogate_search": {
+      "cache": "fork public DynamicCache for batched candidates; commit only the winner",
+      "candidate_simulations_per_scored_token": 16,
+      "candidate_source": "the direct inverse's frozen top-16 lists",
+      "commit": "lowest score; proposal rank then token-ID ascending tie break",
+      "family": "causal candidate generation and public-surrogate simulation",
+      "prefix": "declared BOS followed only by already committed reconstructed tokens",
+      "score": "one-minus-cosine between the candidate's public-prefix cut activation and the permitted observed activation at that position",
+      "surrogate": "meta-llama/Llama-3.2-1B-Instruct@9213176726f574b556790deb65791e0c5aa438b6",
+      "target_prefix_calls": 0
+    },
+    "common_comparison": {
+      "abstention": "none",
+      "candidate_budget": 16,
+      "cross_record_adaptation": "none",
+      "record_order": "fixed selection order",
+      "records": "same blind records and observations",
+      "stopping": "reconstruct all 39 non-BOS positions"
+    },
+    "direct_inverse": {
+      "candidate_scores": "cosine similarity to every normalized public input embedding",
+      "cut_0": "identity map from observed embedding to normalized public embeddings",
+      "cuts_4_and_8": "independent residual affine 2048-to-2048 maps trained on public-surrogate activations to predict normalized input embeddings",
+      "direct_output": "highest-scoring token with token-ID ascending tie break",
+      "family": "positionwise public-data inverse",
+      "frozen_candidate_budget": 16,
+      "gradient_clip_norm": 1.0,
+      "hyperparameter_selection": "fixed here; no blind or development metric selects a variant",
+      "learning_rate": 0.001,
+      "loss": "mean one-minus-cosine similarity",
+      "optimizer": "AdamW",
+      "position_batch_size": 512,
+      "steps_per_cut": 300,
+      "training_split": "inverse_train",
+      "weight_decay": 0.0
+    }
+  },
+  "claim_scope": {
+    "candidate_budget": 16,
+    "cuts": [
+      0,
+      4,
+      8
+    ],
+    "dataset": "NeelNanda/pile-10k@127bfedcd5047750df5ccf3a12979a47bfa0bafa",
+    "generalization_beyond_scope": "not supported",
+    "methods": [
+      "direct_inverse",
+      "causal_public_surrogate_search"
+    ],
+    "model": "meta-llama/Llama-3.2-1B-Instruct",
+    "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "sequence_tokens": 40,
+    "surrogate": "meta-llama/Llama-3.2-1B-Instruct@9213176726f574b556790deb65791e0c5aa438b6",
+    "target_update": "the exact evaluator-only rank-4 LoRA artifact produced by this plan"
+  },
+  "conditions": {
+    "matched_public_control": {
+      "blind_records": "same 64 records, reconstructed and frozen before shared truth opening",
+      "id": "matched_public",
+      "role": "implementation and target-surrogate mismatch control",
+      "target_prefix": "the pinned public checkpoint without the target update"
+    },
+    "permitted_to_reconstructor": [
+      "boundary activation",
+      "attention mask",
+      "position IDs",
+      "cut depth and non-truth metadata",
+      "pinned public model and tokenizer",
+      "public-data inverse states",
+      "declared BOS token",
+      "already reconstructed prefix"
+    ],
+    "primary": {
+      "id": "unavailable_target_lora",
+      "target_prefix": "base embedding plus target-specific LoRA-modified decoder layers; callable target prefix and LoRA state remain evaluator-only",
+      "unavailable_to_reconstructor": [
+        "target LoRA tensors",
+        "callable target prefix",
+        "source text",
+        "source token IDs except BOS",
+        "correctness feedback"
+      ]
+    }
+  },
+  "cost_accounting": {
+    "memory": "torch peak allocated/reserved and process max RSS",
+    "model_evaluations": "candidate simulations counted exactly; training steps and token examples separate",
+    "persisted_state": "byte counts and SHA-256 for inverse and evaluator-only LoRA state",
+    "timers": "CUDA-synchronized perf_counter intervals plus UTC phase timestamps"
+  },
+  "created_utc": "2026-08-22T08:47:23Z",
+  "cut_depths": {
+    "evaluated": [
+      0,
+      4,
+      8
+    ],
+    "primary": 4,
+    "roles": {
+      "0": "embedding-boundary sanity condition",
+      "4": "primary shallow cut aligned with the historical comparator",
+      "8": "deeper stress condition"
+    }
+  },
+  "data": {
+    "blind_records": 64,
+    "blind_scored_tokens": 2496,
+    "padding": "none; only rows with at least 39 source tokens are eligible",
+    "scored_tokens_per_record": 39,
+    "selection": {
+      "disjoint": true,
+      "eligibility": "tokenized source length >= 39 with add_special_tokens=false",
+      "ordering": "ascending SHA-256 of 'TRR-0001|<dataset_revision>|row:<zero_based_index>|seed:20260822'; text content is not part of the ordering key",
+      "record_order": "the same ascending selection-key order within each split",
+      "split_order": [
+        "target_update_train",
+        "inverse_train",
+        "development",
+        "blind_evaluation"
+      ],
+      "splits": {
+        "blind_evaluation": {
+          "count": 64,
+          "record_ids_sha256": "13ca2deb1ef360af33d2e405dbbf018c54d7560327e560eda7445ae6989410a3",
+          "records": [
+            {
+              "index": 6158,
+              "record_id": "pile10k-06158-3690dc88b3962689",
+              "selection_key": "062f20b3affa55e4deddd8714a89375cc05d0d6ffe247439129476c2934e6ec2",
+              "text_sha256": "3690dc88b39626899264a46b788206065fba06ceb5c44f225d7a7e8753ab7a40"
+            },
+            {
+              "index": 4843,
+              "record_id": "pile10k-04843-d360bed77faf0543",
+              "selection_key": "0632556f8fa3919247b4b7cc33ce89f32b212ff43a5ed1acdeeede0b89f29f22",
+              "text_sha256": "d360bed77faf0543f7aecfae424fcec334566046cf301e77bf75773372ad73dc"
+            },
+            {
+              "index": 7718,
+              "record_id": "pile10k-07718-c7c736b6969ff9e4",
+              "selection_key": "0644ca8a61a0209dd0a12cf55e42a23465f8d932fce3ff90b74210d6badd89a9",
+              "text_sha256": "c7c736b6969ff9e44398b25ae60496ab843e52f3de39009518bfb00bebebf491"
+            },
+            {
+              "index": 4083,
+              "record_id": "pile10k-04083-f57fbf00b5c980d4",
+              "selection_key": "0647104997b5c4988a8d5f13c267135b215e8795a8893ea3e28dc094ff893a8e",
+              "text_sha256": "f57fbf00b5c980d452420beb226e187fbd1a18dd4de489bf5fcb26cd31b6da12"
+            },
+            {
+              "index": 5423,
+              "record_id": "pile10k-05423-b7ab55c7e3e20398",
+              "selection_key": "064b9a9283ae9c6278e850f142ffb27bfbb47aba5d2fc789eb3a4df14f7fd942",
+              "text_sha256": "b7ab55c7e3e203987b16d4595636058fd9968d9cdc373f8e99fcfd03a92e1768"
+            },
+            {
+              "index": 8431,
+              "record_id": "pile10k-08431-8021eb6932611cf9",
+              "selection_key": "065467421e75927ca7676640647dd23082fe632db1d43bdbe65f42ce4d09913a",
+              "text_sha256": "8021eb6932611cf9730e5f92fa2bd269544f2bcc9f66573ba3dd895b27cfd03e"
+            },
+            {
+              "index": 1914,
+              "record_id": "pile10k-01914-eea25b0fe1c3d80d",
+              "selection_key": "065ae09d6823e1aa0e177b779beb690dc273989c6e229a913338c287f9cb2a1b",
+              "text_sha256": "eea25b0fe1c3d80df55cd763749a56cb8efcd816608ca4e43e1dc4bfef4ee142"
+            },
+            {
+              "index": 5785,
+              "record_id": "pile10k-05785-e9bfb2c467dd349c",
+              "selection_key": "065c2d12ea7f95f05a99f5fc23d07edf1743ca4ecf66a2d4b805fac4e0d494b7",
+              "text_sha256": "e9bfb2c467dd349c21b8ddb704bb386f79abff6c43be5ff5b45949d92e4d06d2"
+            },
+            {
+              "index": 9356,
+              "record_id": "pile10k-09356-2fca63051203b799",
+              "selection_key": "0664c89b551e4c0215369b3d7825ea74ed9d041beaf1667d23562bcd2bb4470d",
+              "text_sha256": "2fca63051203b7994397562d3974c6a086041c8f6a3af6b4b58c896b294563af"
+            },
+            {
+              "index": 529,
+              "record_id": "pile10k-00529-bacd629186476124",
+              "selection_key": "066877865acb8113e43cb1ebea091e53a5b75617995179a635781feacadd5c0c",
+              "text_sha256": "bacd6291864761246667022644b9cc4cdec2f3d3618d0ee4c75cce93d26a87d3"
+            },
+            {
+              "index": 885,
+              "record_id": "pile10k-00885-bd32e1b377edac40",
+              "selection_key": "06727cdfcb84e6d6a0ef503d0af5f72535a0170572419b3b90f1a4227182729a",
+              "text_sha256": "bd32e1b377edac40e863d4d6074d6f513727772261ab00df0091db73ad638455"
+            },
+            {
+              "index": 35,
+              "record_id": "pile10k-00035-797105e67382916f",
+              "selection_key": "067ed856db8d5e2e8db4d0b39824471254893594015432f3c680feabaa9b9d97",
+              "text_sha256": "797105e67382916f85b29b546aec89ca2b812b82f91d9f9f6f82b6a0dd4b0160"
+            },
+            {
+              "index": 2905,
+              "record_id": "pile10k-02905-9ca1558bd701c6b1",
+              "selection_key": "0682a5dccd01ccb687ffb72f100f3863aa463b77131e1af4e3fb73025f3bd9d1",
+              "text_sha256": "9ca1558bd701c6b1de7083b757b995e279d9edd68f191c39a4d8e50003910721"
+            },
+            {
+              "index": 1533,
+              "record_id": "pile10k-01533-8c017eceaeda09c2",
+              "selection_key": "06880d22ae4f37a8f6244de5108615fb580635bcc16ca9c4db0eb4c8385af989",
+              "text_sha256": "8c017eceaeda09c2af9d9495d608e64cb36279c9a58c7ab5fc70d1b4fe7c9a3c"
+            },
+            {
+              "index": 5514,
+              "record_id": "pile10k-05514-fe9a2adc97a92cb8",
+              "selection_key": "0689eaa73b9fa37721f6a951eddb6f873ea9d20d6b691b219a78cd9aa9516f16",
+              "text_sha256": "fe9a2adc97a92cb8b1e52a7dca0eb81d559439ebdf80ad8f7a781d633ea411a9"
+            },
+            {
+              "index": 4027,
+              "record_id": "pile10k-04027-4542d8756a05d87a",
+              "selection_key": "069cb9a8473989a9c28cb89290ef411bc83512822cd71521c028445e8437f53c",
+              "text_sha256": "4542d8756a05d87ac78a4f9ed967a1d2192dc19e56b63e761230b2b5b3ae2cfa"
+            },
+            {
+              "index": 1494,
+              "record_id": "pile10k-01494-025f9a8bff198a51",
+              "selection_key": "06b5f553ab7ba35c24bba1781d94b5530ecbcfedd7f58d2c67414460554b4771",
+              "text_sha256": "025f9a8bff198a516a583d1e5153eea5cd83388cfe3f5c2498192b9e51562a47"
+            },
+            {
+              "index": 7335,
+              "record_id": "pile10k-07335-1e40bc874ca5a1a2",
+              "selection_key": "06bee7fe4bb83d44d144dca03fb935a2470bf6503ae50b0eb8976154ff7a6a85",
+              "text_sha256": "1e40bc874ca5a1a24658e2f726345688d28ae964a4869a9afc8098c2e83fe28e"
+            },
+            {
+              "index": 8114,
+              "record_id": "pile10k-08114-afd12796a90acc96",
+              "selection_key": "06c88dbf6c178c99b551781fd617772f8b51ea83c951dcc07f1816bd55ef6521",
+              "text_sha256": "afd12796a90acc96cbe271d854e23cc95bad2361a03241ef6e2ae0f8b15e59b3"
+            },
+            {
+              "index": 3061,
+              "record_id": "pile10k-03061-365c0676273bd7e9",
+              "selection_key": "06d9e288998bbd13abd99d8a6767ab6c3385ca81ec46223583d0a88d5a5c8de1",
+              "text_sha256": "365c0676273bd7e9aba9e36a76c0a31416904a053aa7e6fae7beab6a3f01acee"
+            },
+            {
+              "index": 663,
+              "record_id": "pile10k-00663-a4ea88d661a304a0",
+              "selection_key": "06da84da4f08b23c14d61ccd85bbafb92cbd188e81e62d9d2bf47a8988c646f9",
+              "text_sha256": "a4ea88d661a304a0e0e976f265d6efd29023ec0ddef61e806e1f2341719165dc"
+            },
+            {
+              "index": 1784,
+              "record_id": "pile10k-01784-68e9f98beae788da",
+              "selection_key": "06f86d9f4602e7e8ffc074a1316de4dccf7b3a423dadc3fcf851bb9833dce4a7",
+              "text_sha256": "68e9f98beae788da37363642c4f66ac0a0dbda7b7714b87ba988df8b93e330a2"
+            },
+            {
+              "index": 1904,
+              "record_id": "pile10k-01904-93160d64858cba6f",
+              "selection_key": "06fa68d9b7904f33cd3effb9175c3c8347fc2811abd8bf5dae47696b68347375",
+              "text_sha256": "93160d64858cba6f1a09883e0ace7d69d06f5be2ff68ecb690e90bb750505db2"
+            },
+            {
+              "index": 7305,
+              "record_id": "pile10k-07305-6fb8503cb2be4226",
+              "selection_key": "06fc8710e83a210c1303f7c2157791584a3ffc90c264d5afcd15f4c77b7c2f59",
+              "text_sha256": "6fb8503cb2be4226c16754858131cd49b734814628e942ed4632d91038a3d941"
+            },
+            {
+              "index": 9459,
+              "record_id": "pile10k-09459-7e33b1a2cfe3d84d",
+              "selection_key": "0707e37fd780449ba1cc7cf831c8e0555b3c34df1f1770e48b6f438d4e77e45a",
+              "text_sha256": "7e33b1a2cfe3d84dd0c913f7820e078b2e23280390b289159ae870f2ec83751e"
+            },
+            {
+              "index": 4004,
+              "record_id": "pile10k-04004-3d6550b3bf9d9a7a",
+              "selection_key": "0709b5feebfa9659ac49e6a598378394670de2ce4afa6b483b1bca742bc7fd11",
+              "text_sha256": "3d6550b3bf9d9a7a8ce54f3889ceeb5a021479a952713a60c04a7df2e4464279"
+            },
+            {
+              "index": 5233,
+              "record_id": "pile10k-05233-ab77f37ef5f3ec4a",
+              "selection_key": "070b99503c70f82e03b70c0c5db51d9903d83d860987a1e3500a218d7afab607",
+              "text_sha256": "ab77f37ef5f3ec4a6502c58e73b1a9eca015372bb38636716568cae1133d1c7a"
+            },
+            {
+              "index": 4707,
+              "record_id": "pile10k-04707-fd9126a0c72ad43a",
+              "selection_key": "070e6985616f205626e8c2ee068ee6b43da7b8d765458aca5c039fd0d37aeef0",
+              "text_sha256": "fd9126a0c72ad43a99b9163add7825d852145acfa50f85acfc92c19c793eb092"
+            },
+            {
+              "index": 9379,
+              "record_id": "pile10k-09379-2a317b8825631917",
+              "selection_key": "070ecb9f7e91224ceead88bf9eb8915458a8b859c0f35912076a17dad4b42fcb",
+              "text_sha256": "2a317b88256319172d86b46682601cc675c06d3930d21e8ceb4e6ddcddfc6885"
+            },
+            {
+              "index": 1061,
+              "record_id": "pile10k-01061-be27f1784686741d",
+              "selection_key": "070f382d0309b857956ab92b4a249f40d3dee8725cb21926fbcb9f2fd050686a",
+              "text_sha256": "be27f1784686741d368e0acc22b0e97bacd66151c1cdd667a26e26b3bdffb772"
+            },
+            {
+              "index": 79,
+              "record_id": "pile10k-00079-8a95157d927bbfde",
+              "selection_key": "071469f7a063103bb65ef5ed269b961fc10ffbb29b1d3d9f697624acfb56b4a2",
+              "text_sha256": "8a95157d927bbfde5e680091c8768e0db65d197a37922d0d5fcfcb68bb628034"
+            },
+            {
+              "index": 440,
+              "record_id": "pile10k-00440-72598536a9e82340",
+              "selection_key": "0719c1b98b93be0545f9a76ee3aebaed0b2e2530413109f09e869dd0a6de366d",
+              "text_sha256": "72598536a9e8234040ffd90f9956e6ae823f863d64cb2d7b174e4b1885914132"
+            },
+            {
+              "index": 5718,
+              "record_id": "pile10k-05718-f83a676d941fbfaf",
+              "selection_key": "071b88c932b1a2b2f2bed809c8cdb4a5f328e82ebad8c9b2ebdcb49087c6114d",
+              "text_sha256": "f83a676d941fbfafd642cf39bcad2313f2182c7b886cba9c7aabbc4f87f58864"
+            },
+            {
+              "index": 9997,
+              "record_id": "pile10k-09997-3176bd5c2ed9b20a",
+              "selection_key": "072a2cdb0eca97fdb4d1602af88f6eaec7460f171aff5f1fb358cfb8c2e9be55",
+              "text_sha256": "3176bd5c2ed9b20abc1774dae1070540b29bbc56efc89c69eebb0b4d2e3415f6"
+            },
+            {
+              "index": 7798,
+              "record_id": "pile10k-07798-f0d76e6fc80d6926",
+              "selection_key": "072d68655b1afaaa461faee73f30c2512ddfec7f39ee6ab9420c1fcebe246fa2",
+              "text_sha256": "f0d76e6fc80d6926bc9a00d836aeda5ac5aa08441b0063e5c77bde74d6af6c6b"
+            },
+            {
+              "index": 4173,
+              "record_id": "pile10k-04173-8ac1072954c6d959",
+              "selection_key": "07385c599cff8fd9aca73284488396ad4ad58a4bc12965dab7cff23f59537f00",
+              "text_sha256": "8ac1072954c6d959f8326ecca2a040fc52d0317137dd14c910245039c3512545"
+            },
+            {
+              "index": 9473,
+              "record_id": "pile10k-09473-2e48b0db563fb56d",
+              "selection_key": "073fde114e63f1d0e2c97bcbfaa317e4babf48718266976e5bf7af95261e12be",
+              "text_sha256": "2e48b0db563fb56d5c460b22668e6c37b7b76f81adf866d614e220db3f79ecf1"
+            },
+            {
+              "index": 1101,
+              "record_id": "pile10k-01101-f2bf41b1f685b83a",
+              "selection_key": "074a453d1fb0b24c61629739d5c1ff5e0047e7ffbcdaff0dd79590980c216092",
+              "text_sha256": "f2bf41b1f685b83a530596cb40de522b0cc1ed6896b1a1029185387e3411d12e"
+            },
+            {
+              "index": 2003,
+              "record_id": "pile10k-02003-57136a6f03bd8de6",
+              "selection_key": "074e23c557d0130a41db0b0293d7c59e0365a179140de92f2235a7e92d952e60",
+              "text_sha256": "57136a6f03bd8de696f019219e66414973c92ac34f92dbefd6fe188c91a0f1ef"
+            },
+            {
+              "index": 9993,
+              "record_id": "pile10k-09993-1a590d5edb8f005f",
+              "selection_key": "07582e3b74bbed90e56a9ec0cd9ae06f5b894adb1fd013ea8883b104bbcfcd0e",
+              "text_sha256": "1a590d5edb8f005f281966781f00d8a5a68962275180e651933f1b8b5b599fb6"
+            },
+            {
+              "index": 2235,
+              "record_id": "pile10k-02235-e4a45ab7b89f5f67",
+              "selection_key": "077692320e113a51031cb4bd40c2cd89ff0e92d9c118c87577848e6c5d86c75e",
+              "text_sha256": "e4a45ab7b89f5f67ed1b6a20223fc725c9bdd0c000bcc3526d4cb1e28611ead0"
+            },
+            {
+              "index": 6377,
+              "record_id": "pile10k-06377-ea2f29fa3d86d03c",
+              "selection_key": "077edae76029fbdabe919d7e96237928b9b1149ef16341b845d9ef9b0befc38c",
+              "text_sha256": "ea2f29fa3d86d03c609c88151fa8f84a463377e9ee4e03241562916119118f9a"
+            },
+            {
+              "index": 3695,
+              "record_id": "pile10k-03695-0e26feb4ca903502",
+              "selection_key": "0780e63df2101870cef40bca36c89f962372b9aa1bed627431b301799560f7e7",
+              "text_sha256": "0e26feb4ca903502d2294a9c738d6a139ada1cdaebcade7018143940577a6320"
+            },
+            {
+              "index": 6037,
+              "record_id": "pile10k-06037-43b4a33454ad976c",
+              "selection_key": "0783dea159b77e7b6ececb8c6abe3229e423d6a0ba11e2ed7b60a8f108fe5c23",
+              "text_sha256": "43b4a33454ad976c70ba8683763bc89294f5147c1228932a6d0a416e0f631011"
+            },
+            {
+              "index": 6707,
+              "record_id": "pile10k-06707-e468573615c9e90d",
+              "selection_key": "07858d4869d2a7ee6000a09f7ad412894e4a9025a69bfe9c54394f2e66e22d49",
+              "text_sha256": "e468573615c9e90d3140263caa6962c454f38c126e406aa829ce20177bfcb1a6"
+            },
+            {
+              "index": 2303,
+              "record_id": "pile10k-02303-b15b7edee61eede5",
+              "selection_key": "078befdbd16ae4f295cdad9bb36e0aea090f32be768b4824d0a6b61b1c3ada36",
+              "text_sha256": "b15b7edee61eede53ef68160bc98b18d34f432d779edac4f1670de18834c6f33"
+            },
+            {
+              "index": 467,
+              "record_id": "pile10k-00467-1501322c04443da4",
+              "selection_key": "0791b02d3f5898b32813d276e3d7be17af650751e11dc2694b21ee22321dd447",
+              "text_sha256": "1501322c04443da43b1570051649984393d115e3e3ddf36ae381f6d7249371fe"
+            },
+            {
+              "index": 7520,
+              "record_id": "pile10k-07520-a2df68f3fd881aeb",
+              "selection_key": "079226f0a5e0cd9f2215e3365a16929c77a21c98e73092cf4300641e004299f2",
+              "text_sha256": "a2df68f3fd881aebfc53e89021fca000870dd7888aaf366c8ba94f43abacbc09"
+            },
+            {
+              "index": 1326,
+              "record_id": "pile10k-01326-ab50bdb68baac0e8",
+              "selection_key": "07946ffc290e23194a50c6a6dc04f45f91bf2aabeb4eefecccbad1599df998b9",
+              "text_sha256": "ab50bdb68baac0e8f4b539c87d162096a1a8f83f3c3c88ef50d23689b2a1db27"
+            },
+            {
+              "index": 9630,
+              "record_id": "pile10k-09630-aa4dd391d53ba5cf",
+              "selection_key": "07a6a9da47c5d9114dc4bd4b43483ed307707bec11f5f62555fde224b6120bee",
+              "text_sha256": "aa4dd391d53ba5cfaba734196218f8e5e2f0f3004e93238388f434ede13fd61f"
+            },
+            {
+              "index": 5649,
+              "record_id": "pile10k-05649-4e0eb8ff0e5d718f",
+              "selection_key": "07aeb87b49d2f759cc87135363b9e251b5818b16abd4b20901df393f7ac1bcee",
+              "text_sha256": "4e0eb8ff0e5d718fc558a2cef5050c76843c9f749e6b1a13b0687ff539ae53ca"
+            },
+            {
+              "index": 8911,
+              "record_id": "pile10k-08911-2a4da96a2ce83d64",
+              "selection_key": "07d3e6f7dd8fefa685e1dd679ac8b8f0647dd4af9a2835fc158a4ddda1502c74",
+              "text_sha256": "2a4da96a2ce83d64acbab23d8002e067dcbf4d745c0930728d647583f8d0c729"
+            },
+            {
+              "index": 3967,
+              "record_id": "pile10k-03967-42e1c4c3238343bb",
+              "selection_key": "07d4374161b7b9bc81ff6444381c7076d3c007f2bf5916979cd0da554be1bea8",
+              "text_sha256": "42e1c4c3238343bb4a1d326fed68d912cba1b2c621139ecfc74c3cf4a30a5f89"
+            },
+            {
+              "index": 2997,
+              "record_id": "pile10k-02997-80c23c770fd2fb43",
+              "selection_key": "07eeee47f7c61aef7ca60ec1d4ed5f482b35ee14f43b88dd336aeeb3dc6f9690",
+              "text_sha256": "80c23c770fd2fb436302a9dd02d2892bef292ded3ec152ef1f624bd39a9e785e"
+            },
+            {
+              "index": 1409,
+              "record_id": "pile10k-01409-c1e38162290312d7",
+              "selection_key": "07f0469675192b1423fe0879ee7db76bdf6a64aab1456dbc08a43561213f027a",
+              "text_sha256": "c1e38162290312d775725412c988c93a03a7463a03f14e7bc46c4d417e5787ea"
+            },
+            {
+              "index": 3077,
+              "record_id": "pile10k-03077-44134373f7770212",
+              "selection_key": "07f4d9362eaee32f17257a4c99a9108003a21ffa58f295f40ca5fe90441b4be4",
+              "text_sha256": "44134373f77702127f83ab564ded8db94f4e0a3c710ce338d2c21bfdd7807443"
+            },
+            {
+              "index": 115,
+              "record_id": "pile10k-00115-3f2067336bcc9d77",
+              "selection_key": "07f4fa705897f30419f18e1d33f2765b9c7df0e2669f8917db0f3e83a7c3d51b",
+              "text_sha256": "3f2067336bcc9d773c1ad3a07bd1d11c5c7213df94b3efe4c3880a24d6f555ff"
+            },
+            {
+              "index": 7524,
+              "record_id": "pile10k-07524-be334eb2b421bce6",
+              "selection_key": "07fd15f2272bfe55e8468111d61b94583da6ad96674ae96796c4f26c758a05f9",
+              "text_sha256": "be334eb2b421bce65d65d40753c1d90b75f7ee0d35b8e03e328675a11990da02"
+            },
+            {
+              "index": 6969,
+              "record_id": "pile10k-06969-10dd39cc49157e62",
+              "selection_key": "0806f4aaec3dbf4e52029dfa0a446fc1d20d08e4f0e44e3698f6854f998b912e",
+              "text_sha256": "10dd39cc49157e629a595d7861c371e9ee4d115dceb5ff0dd61a9e26ecac39a3"
+            },
+            {
+              "index": 9202,
+              "record_id": "pile10k-09202-1e9c998f8aef7bed",
+              "selection_key": "080aa5146c8e6496297ac038fcc31a42937299acb422aac0808634b5a37e5ddd",
+              "text_sha256": "1e9c998f8aef7beda3668245263c59934116b331712b3d1fac9358f04668158f"
+            },
+            {
+              "index": 3084,
+              "record_id": "pile10k-03084-07454882e3ba2cbd",
+              "selection_key": "0818f12972f22d585b1860c86123ac3cb73313c40b731314b83714e49e51ac48",
+              "text_sha256": "07454882e3ba2cbd66075d721e9a8c46b9be724e3cc222b98ef3a305c35eb77d"
+            },
+            {
+              "index": 3306,
+              "record_id": "pile10k-03306-b8f80bf694835c48",
+              "selection_key": "081b6d516ffab61436de531c90ce36a376b6df8aa563e32ad2b8e2935eb8e25c",
+              "text_sha256": "b8f80bf694835c4805136a2ac81909eed1e1ee94a66904e8d60fd6dbf8249bf6"
+            },
+            {
+              "index": 1120,
+              "record_id": "pile10k-01120-85224998a110f862",
+              "selection_key": "083046cb67f943fbdee474290f14eea0444d39a4117626182ab048c3ac61d2e9",
+              "text_sha256": "85224998a110f862d26c26685d32d3476b699ee03a514b92d34d7f9797976c80"
+            },
+            {
+              "index": 8685,
+              "record_id": "pile10k-08685-ed199a4d3283b461",
+              "selection_key": "08338bd6b6ef0a66f040f510562e35bdaaad07c3d5fdd962c7114148a72bb81a",
+              "text_sha256": "ed199a4d3283b4617b7dfe95f3516aa834db1fd86c02d0f1231104700b3ca13f"
+            }
+          ]
+        },
+        "development": {
+          "count": 32,
+          "record_ids_sha256": "ad2e3f552959bac0b55ba000805f7a482fa46b284661143e17d590c948daef68",
+          "records": [
+            {
+              "index": 8566,
+              "record_id": "pile10k-08566-a47ac075f46c39b9",
+              "selection_key": "05713cae4f021f0b152ed2b7be5e7bd3e481522524fe60732d79b3e6d537c4f9",
+              "text_sha256": "a47ac075f46c39b9645b5604f138afc71de43b8237ef27cf3c61af7148f1be47"
+            },
+            {
+              "index": 5128,
+              "record_id": "pile10k-05128-2aef78ac5e4dec9d",
+              "selection_key": "0574b53547e357807987e27ba4497870110bf4a1e58a0f531683163684faf043",
+              "text_sha256": "2aef78ac5e4dec9d26b572c978a94e62afa9dc978d9c710423de455ae8265937"
+            },
+            {
+              "index": 6077,
+              "record_id": "pile10k-06077-61a05374f5e6868b",
+              "selection_key": "05756f5630ed019a8feaede3bfc546cbba5702a784fc79e863396752ed7a638c",
+              "text_sha256": "61a05374f5e6868bf39f093ef015c0782b77345845173eb5fd97f7d8edcda574"
+            },
+            {
+              "index": 2616,
+              "record_id": "pile10k-02616-2a93192f47118768",
+              "selection_key": "0577cc05393817612b14d502dd121754796e8167c854cb81af293e9720d003c3",
+              "text_sha256": "2a93192f471187681111de9db71ed430c3614342b7bbd037b800b3c786274744"
+            },
+            {
+              "index": 5875,
+              "record_id": "pile10k-05875-e1b8be51160e0453",
+              "selection_key": "057ad937b19d2c0039a61aa3a0ba275ab2e899a1803afe97c640f2a930994e7b",
+              "text_sha256": "e1b8be51160e04535ff2ec38ab837468a81d099756d3b768706b9852b8448946"
+            },
+            {
+              "index": 4234,
+              "record_id": "pile10k-04234-ab0ede8650fcd69c",
+              "selection_key": "057b0f160ec376134530fefc1afa411c07b3557d7609e1e5fcb5c62b63555591",
+              "text_sha256": "ab0ede8650fcd69c0821d82f1e759eeaccc9e6742a2e0edbc48c6fc7dc5f038e"
+            },
+            {
+              "index": 6874,
+              "record_id": "pile10k-06874-1af2ca27a2153608",
+              "selection_key": "057c34b5ced733bdc788041b0b1262e00ebdc339dd3dee96dd08016d0033fe8d",
+              "text_sha256": "1af2ca27a21536089f804cef744d58e39c337a963ed658985606947b52690590"
+            },
+            {
+              "index": 9259,
+              "record_id": "pile10k-09259-ee87dcb5e0f3713c",
+              "selection_key": "058817f55644edc557aacb00971d15e5be56af00595f06cd8863ce81b145a455",
+              "text_sha256": "ee87dcb5e0f3713c75c2b6e8058cd79a7845fa2df4421ed3eb8987e52e42fb0f"
+            },
+            {
+              "index": 3704,
+              "record_id": "pile10k-03704-196fb68f1e8c8f4d",
+              "selection_key": "0594068c97248c16dbb7a8e39ca7c128eaee9228891037f44b93ae2ddd9b4e1b",
+              "text_sha256": "196fb68f1e8c8f4da613aa0a0e4ca463e04410da2f31217b753e9a8c97f0267b"
+            },
+            {
+              "index": 1147,
+              "record_id": "pile10k-01147-3cabb537de0307a4",
+              "selection_key": "05a1a326446fd00ce69951403d2094d6b04c4fa2fcc1a8851c23dbf7c111a573",
+              "text_sha256": "3cabb537de0307a47dabe07cf9fab821ca6e60a28a2111e98827039b50e0c208"
+            },
+            {
+              "index": 4180,
+              "record_id": "pile10k-04180-4430d549ecb1f67b",
+              "selection_key": "05a7da2644ccdbebb8a5985f1083b598a3e72a2744399d3c60ecf56a3515ec5b",
+              "text_sha256": "4430d549ecb1f67b1a680f342e5381bf528820506b0577c9fda7afa196dab94e"
+            },
+            {
+              "index": 9265,
+              "record_id": "pile10k-09265-665817fbc28d6ff1",
+              "selection_key": "05ab678acd7cb8ef12973d75bdfcc6029d1e95c120ddbdc0d633939586bd33d1",
+              "text_sha256": "665817fbc28d6ff1edb10b5722f00c5223495a8c02c81bcdbf6922a3e8b4e3e3"
+            },
+            {
+              "index": 3696,
+              "record_id": "pile10k-03696-25c6b18ad9bd96b7",
+              "selection_key": "05b65794aba7ba944f783c2e7b186fbc489ce4636380007705a8cb26182924d9",
+              "text_sha256": "25c6b18ad9bd96b781e2300a7b358b373887e7e0b09ba6bc0e821628491ea392"
+            },
+            {
+              "index": 1684,
+              "record_id": "pile10k-01684-719ed75439afac14",
+              "selection_key": "05bd6fdc771474ddac7e246e431529f4229a235657e2f9b7e0565a6677c7dbff",
+              "text_sha256": "719ed75439afac14bf23744281eacc98ff5ef6366bd35e68a540588d3f3338fb"
+            },
+            {
+              "index": 5582,
+              "record_id": "pile10k-05582-47de2a59e5fa098a",
+              "selection_key": "05c24e17b678068d0357e3d2822a7b244ead9b04bbf2a9135c07ddca10d26149",
+              "text_sha256": "47de2a59e5fa098a543b71262bc16d77cdabb5fd6814c589d7864461b73a2b1f"
+            },
+            {
+              "index": 6151,
+              "record_id": "pile10k-06151-401b7991a508f3ec",
+              "selection_key": "05c5f82c1357b8717428d1468500fc089dc895bf6dd2ceee4e35ac3a2152337c",
+              "text_sha256": "401b7991a508f3ec01c6835eecd8e0a1931cc9c7ba7eb9494382a62e5cb183c9"
+            },
+            {
+              "index": 1135,
+              "record_id": "pile10k-01135-d78d5a658f6c9fd0",
+              "selection_key": "05c78465259ef7ddbdaeb01018d15aea3694f254ff0c10da3a812f439b9777c5",
+              "text_sha256": "d78d5a658f6c9fd04d15593fc1c81bab57089a1ba402e53ace7aa1f2778504ef"
+            },
+            {
+              "index": 1209,
+              "record_id": "pile10k-01209-76629620726a951e",
+              "selection_key": "05cbff988bf97355dfe7799462ea97aaec0bcfadbf27524c16003e44716e6d55",
+              "text_sha256": "76629620726a951efe95ddf213ad892c3e57c103832e7cb642c5b528cc04d470"
+            },
+            {
+              "index": 3822,
+              "record_id": "pile10k-03822-895542a8f751a604",
+              "selection_key": "05d0c6d1d0735d55e657d60124cd0f35d897b5ecb28905e08d4c9f5d19731ac5",
+              "text_sha256": "895542a8f751a6042c8284c362dc717e288a04472199df0f241394a78f8febfc"
+            },
+            {
+              "index": 3063,
+              "record_id": "pile10k-03063-ad82c49263db1ed3",
+              "selection_key": "05d2793c1411522b9a6e8b4157b0bbc5212034d6b94ff43f0badbb73eb64dc46",
+              "text_sha256": "ad82c49263db1ed343cd351442918352233669494b6e7de7b99a9226920bb5c4"
+            },
+            {
+              "index": 3888,
+              "record_id": "pile10k-03888-7a75c0058e70aff0",
+              "selection_key": "05d2ccf5851b2cb5e15e41090519638aff4c1353c0e5f2a6326382e47d4d2064",
+              "text_sha256": "7a75c0058e70aff0e61a5b21a4a1dc334f612a5c4d3d808d3302448192d37f99"
+            },
+            {
+              "index": 8124,
+              "record_id": "pile10k-08124-880267c79bd11e36",
+              "selection_key": "05d538b37a938e4ade2b7f66f4433aca29860471207e4227641ec7b03768d2f9",
+              "text_sha256": "880267c79bd11e36462a7060f1835586505b35ca4075681ea91197d48c20729a"
+            },
+            {
+              "index": 7080,
+              "record_id": "pile10k-07080-20db73413922f84f",
+              "selection_key": "05d7bbbffe192972febefd2bacba27ba7d1797a3d532f3f51861655d4af72f6d",
+              "text_sha256": "20db73413922f84f4c2336f78babbb1d9884340e3d3e6072c891db29d801bc66"
+            },
+            {
+              "index": 5403,
+              "record_id": "pile10k-05403-a41ab559b95640a0",
+              "selection_key": "05d7cc8277a4c2a8c440d893884892a3175a2efac5456c0ecdd92277a7f94537",
+              "text_sha256": "a41ab559b95640a0fdc46af1fce09366bd54e3ce1a9a3b91c62aea82bf6ea8ba"
+            },
+            {
+              "index": 2713,
+              "record_id": "pile10k-02713-ab0e1382f10a2023",
+              "selection_key": "05dec46edcdadb965c5b5e9474ab4a4c340541f39544034370c393f750f29ef4",
+              "text_sha256": "ab0e1382f10a2023e6209c7751ae685fb7fcd71836904b1298d8aba10347e9cc"
+            },
+            {
+              "index": 2406,
+              "record_id": "pile10k-02406-7c0d5a47d4213bab",
+              "selection_key": "05e0392c315b153dcc8687a9008507fe56c4da2251d8e52707fbd30fe7d1fa21",
+              "text_sha256": "7c0d5a47d4213bab0d30b51ca45c78b282c1f1bdb066a9ab01eeaef06ac5357b"
+            },
+            {
+              "index": 6002,
+              "record_id": "pile10k-06002-268ccf5aa064ff1d",
+              "selection_key": "05f06c99e8fe959f139daa6fdcf65284d2d643f4eb66628b18926f43f23aea8e",
+              "text_sha256": "268ccf5aa064ff1d0ffcece0c12ee26f3545e3e1d01df76815fcbdf2b210c697"
+            },
+            {
+              "index": 9454,
+              "record_id": "pile10k-09454-5302927b82fca808",
+              "selection_key": "05f11e437734f7b73eceaf65c5c80d231f9358b11ec6b6530ee9f5b30ac0c83c",
+              "text_sha256": "5302927b82fca80817670b77e415fa1a418d06f184bcd7d9d0d8090bb01e8a2d"
+            },
+            {
+              "index": 5767,
+              "record_id": "pile10k-05767-1d9da1e2b56fd5c3",
+              "selection_key": "0600aaa36e805b1bb8d254b4b25b4d1a2a36cfbc8fde036fc5b7dfe47bd097a9",
+              "text_sha256": "1d9da1e2b56fd5c364c9fb05f107632c73d89eac01783efda2ed35d92630fbff"
+            },
+            {
+              "index": 776,
+              "record_id": "pile10k-00776-47e2e3c5766c1dfc",
+              "selection_key": "061c1a0da67f342c9db3cc5d82ae699ee82a3a475045472b0bd3bf6ca2557b17",
+              "text_sha256": "47e2e3c5766c1dfc8bac9454afb894b01142b81cf38f2c8ed181435c4e53e6c8"
+            },
+            {
+              "index": 4866,
+              "record_id": "pile10k-04866-f8db91253ac291fa",
+              "selection_key": "061d2abbbf3cad5d51eb7ddbd33bf0c4fff5fd8ef6ecd287c8a9be8eadc181cb",
+              "text_sha256": "f8db91253ac291fa6c8ae5d771a2a310dbe5691229cc761bf484c55fa7554170"
+            },
+            {
+              "index": 3011,
+              "record_id": "pile10k-03011-ffc6bb6a609adb59",
+              "selection_key": "062325be3e7b3f8cdf6ff4d91b9796f0819539b773304f8408d72df202f9218b",
+              "text_sha256": "ffc6bb6a609adb59279553fdcb078c654bb20d4ab836934fd9295d2ecbf5d571"
+            }
+          ]
+        },
+        "inverse_train": {
+          "count": 128,
+          "record_ids_sha256": "84cd3c746a20ccb967887517bfdf72a9b80804a57e3e369b83acec7076122040",
+          "records": [
+            {
+              "index": 6894,
+              "record_id": "pile10k-06894-0f1a1f2143b146ff",
+              "selection_key": "01cb504813a55ffd3cd8587ae5e50826db653c76a43940848e1546327bb1910e",
+              "text_sha256": "0f1a1f2143b146ff3c02e154182c9b173726d932cc2d504d32d13dd31c2eba5d"
+            },
+            {
+              "index": 1002,
+              "record_id": "pile10k-01002-9cb4ffce108b4f29",
+              "selection_key": "01e5d88cc70fe22d0db118a7ab84277ccf5fcb1204e834dcb033c2421321afee",
+              "text_sha256": "9cb4ffce108b4f2995ad70dc58d12a1cad7441e671e560270349b8ab07f47703"
+            },
+            {
+              "index": 8384,
+              "record_id": "pile10k-08384-65901bc567b6a3ec",
+              "selection_key": "01f2a97f444a573e8292d51ba7d827fd2a7539af23641d991962a394db9599f2",
+              "text_sha256": "65901bc567b6a3ecd6f848b0027ad47bd59b384a4fe249c6487c3dd7886432db"
+            },
+            {
+              "index": 8011,
+              "record_id": "pile10k-08011-9923d9dc29be04dc",
+              "selection_key": "01fa633a725dc433a33bd7555a3c843e1fe6aaa0d7d164ad873a0d5f2a85d66a",
+              "text_sha256": "9923d9dc29be04dc5a9b0962ae59698433986d015dfded40f90dfadfff4b9541"
+            },
+            {
+              "index": 937,
+              "record_id": "pile10k-00937-a308b74c1c5d67ce",
+              "selection_key": "020cbd4e21cd7d329e408923a3181ebdf54c8bafa6f478316301f4524aad9e27",
+              "text_sha256": "a308b74c1c5d67ce685f2e37b54e7bad095054a89a7ce602c51842cb02d0bb26"
+            },
+            {
+              "index": 3970,
+              "record_id": "pile10k-03970-c5c6ea30eb031feb",
+              "selection_key": "021193e10460e95eab384c696d10270fcb6f8d116a10c5d267f65e03342406c5",
+              "text_sha256": "c5c6ea30eb031febf57abcad525ec6e656981c74a9228086cb3cbbbd8f33a28d"
+            },
+            {
+              "index": 7310,
+              "record_id": "pile10k-07310-f206256ae0529c58",
+              "selection_key": "021b9b996ed7f31add3b301366bb5e1339f314ff157c2a2e3d020e35cb381ccc",
+              "text_sha256": "f206256ae0529c5839b31666027ca9268ec319f8f7c307f47820d2f30d38acb0"
+            },
+            {
+              "index": 4163,
+              "record_id": "pile10k-04163-ce96f50927058332",
+              "selection_key": "021bdb08f38bbcca12088f2b941c44bf3405a320775492d8a88c6b93083091aa",
+              "text_sha256": "ce96f50927058332ef27063357cebe7158b12def3b1d43a64ac17f570f6ce7d7"
+            },
+            {
+              "index": 6527,
+              "record_id": "pile10k-06527-1dc4efad66e2dfea",
+              "selection_key": "021ccb5b01cf3d2a69f11dea3ca73312f2b5c93412248e9c1833d7c60ae1e00f",
+              "text_sha256": "1dc4efad66e2dfea0d90cc8bb8bda46d7bf611ac78459fc3ceca6bedec1c0917"
+            },
+            {
+              "index": 7391,
+              "record_id": "pile10k-07391-97b22ce5c9860fa0",
+              "selection_key": "02294c9a0f325db409fb8b9d5b771788bc9c2635ea510e068f2479fa9db66a75",
+              "text_sha256": "97b22ce5c9860fa0d0f7bf0006b004e514c1d6aa75775dd58ca24a3fc5b0702b"
+            },
+            {
+              "index": 3180,
+              "record_id": "pile10k-03180-476aaea6585276e6",
+              "selection_key": "023fc9b029e4bd945c18f3cb7229ce1d67c5640cd12f65a6769fb5bdcc7f5e21",
+              "text_sha256": "476aaea6585276e6dcea4fe29ee1125471d725c24f0570c41e3d2a12fe755ee7"
+            },
+            {
+              "index": 878,
+              "record_id": "pile10k-00878-27f725bbc0fbb081",
+              "selection_key": "0240f63389ad622abc1f2271635d57bc020f9dce94c6ff6b94a39082488f0e3e",
+              "text_sha256": "27f725bbc0fbb081ca03dcf2389421380da020185a230b3542c8a5ffa455eccf"
+            },
+            {
+              "index": 4242,
+              "record_id": "pile10k-04242-38c62737dfc65060",
+              "selection_key": "02471f24d3f18d36b94860f77752399397d20651f993d2642a785e533514c21f",
+              "text_sha256": "38c62737dfc65060f91a3b1013061a8d4bcaa2d497067e8882714bcfbb9d6daf"
+            },
+            {
+              "index": 6085,
+              "record_id": "pile10k-06085-6b4cc37f6a5c97b5",
+              "selection_key": "0247aa82199ca97843caa6e39d6681e4ea35b950691dc7c5c1d778c481213060",
+              "text_sha256": "6b4cc37f6a5c97b52724bba65a199d06fda2c33f417e0f031bcd20dd2464006d"
+            },
+            {
+              "index": 8973,
+              "record_id": "pile10k-08973-0c08428b6e3f8911",
+              "selection_key": "025834a1a414c59ee64e9e5f8d1652345b21e9354c7dcef18d48657b828751d2",
+              "text_sha256": "0c08428b6e3f8911365c20577e0083ae475a6ef103d11dedb913cc090de86de0"
+            },
+            {
+              "index": 1306,
+              "record_id": "pile10k-01306-6ff3a6cc27f31157",
+              "selection_key": "025d57aa0c02a1bb7b3a8ab70c2e157b1708c09ae52d4e29ecc322be2a0fc0f5",
+              "text_sha256": "6ff3a6cc27f31157beab598fefcdba35ab33902a0a0dc7a573b2d7a9a0097c40"
+            },
+            {
+              "index": 9564,
+              "record_id": "pile10k-09564-6b1ca12b2ddcb1dc",
+              "selection_key": "025dcdcc0793cc590e46ce3a3e02b97206d80ea8cadf8538700f41a14153bf76",
+              "text_sha256": "6b1ca12b2ddcb1dc19a9ee8d5909d3b3cdc2bce0e099e257e2ceefd8504eec70"
+            },
+            {
+              "index": 7574,
+              "record_id": "pile10k-07574-4098da2f364355e2",
+              "selection_key": "0261c373a76e14b39d06a0b3503f5c2d82c63fbce9b02a5e197b6ece0754da8c",
+              "text_sha256": "4098da2f364355e2830baa3a8620556e378a93ba40fc38bd22c29af9ff46de8c"
+            },
+            {
+              "index": 4186,
+              "record_id": "pile10k-04186-96dd1ada4d6acead",
+              "selection_key": "026c6a3233117078a73f0fc0b0b045714e7f61480f589d6404b42d226526e2dc",
+              "text_sha256": "96dd1ada4d6acead10a87742fb8675aa17099ae4473a9b0f8236f5f930359a0b"
+            },
+            {
+              "index": 9448,
+              "record_id": "pile10k-09448-c824b3bba3c2c85d",
+              "selection_key": "0275afffc412eebd2226a4aeac23cea13bcda1adba21a84bc66174cfcb5031cd",
+              "text_sha256": "c824b3bba3c2c85d4e7d6bd15454fd8a15d75d9193b0037ca876c962fe3cfd24"
+            },
+            {
+              "index": 4443,
+              "record_id": "pile10k-04443-42f5c2c6231e9556",
+              "selection_key": "0276939c7ba182a53a694e8b02babce4995a4a6e0fb77f9922a750513cc40415",
+              "text_sha256": "42f5c2c6231e9556ce86dae4f822737fee74e35acf87f61e112175d4b4d58e49"
+            },
+            {
+              "index": 4815,
+              "record_id": "pile10k-04815-a2235735961ab218",
+              "selection_key": "0276dcea385ee64c65bd6e23add8d95bc03477e6486fb4dace3d1dab5fa4ec34",
+              "text_sha256": "a2235735961ab218ec5202a8acabfe3dee764fe572c32cf6d10efb9ce383fe96"
+            },
+            {
+              "index": 4415,
+              "record_id": "pile10k-04415-c6ec61c7e3c512ce",
+              "selection_key": "027cb3fa17af821d9707c39a4fadcc57c1193576c9b796f3f155d4160ccee303",
+              "text_sha256": "c6ec61c7e3c512cea60b1b060dfb21526ef37ba6351ac12fcfe0962eea304ff5"
+            },
+            {
+              "index": 4851,
+              "record_id": "pile10k-04851-00a9f3052661f366",
+              "selection_key": "0283fb3352952407cf784740133d3774f78fc6ecb13b1448214fb8f611438381",
+              "text_sha256": "00a9f3052661f3669b5da12b837ada21651b8a95b362a47d2e4cd20f11b62702"
+            },
+            {
+              "index": 6683,
+              "record_id": "pile10k-06683-168486140a124a91",
+              "selection_key": "0287694a8d78783f51acb428b55c10b9943cb9eab979d02a7ef2b63af8c5523f",
+              "text_sha256": "168486140a124a91a29ed0dbc8bb169602314cff0f23dd21628271ccddd74623"
+            },
+            {
+              "index": 334,
+              "record_id": "pile10k-00334-d68883cfaa685eee",
+              "selection_key": "029929f20e87a86710c848b06d71ec068871d8a5831cf71255d816d71ffa5817",
+              "text_sha256": "d68883cfaa685eee91361190810f962d8c8e1ea47d6370398e994a28603835c0"
+            },
+            {
+              "index": 1479,
+              "record_id": "pile10k-01479-2fb6f1227ca8c188",
+              "selection_key": "02a08c855578533179354ea1ae3bde93bcc54d3c567ed86b29f4756f9187d77e",
+              "text_sha256": "2fb6f1227ca8c188c6d67a8b25ed8e0be488c16a4b69418d27d9f70e078889ac"
+            },
+            {
+              "index": 1977,
+              "record_id": "pile10k-01977-87c85cda6197a2c0",
+              "selection_key": "02af2d817a65782829b8b79824e953ec5ce51d2cbdf83399a97c3016f95077b1",
+              "text_sha256": "87c85cda6197a2c0cc4bd1f9851648e818a76d5ea25903f6f5754f14fc48dd47"
+            },
+            {
+              "index": 1079,
+              "record_id": "pile10k-01079-a011ca93bb5500cd",
+              "selection_key": "02d0e79cf3505ce0010b8e8f8f6b131911b16d328a9d3127b9713f7c52b14325",
+              "text_sha256": "a011ca93bb5500cdf8988186ec043430e87787dd06e78ff53d76e1e34a4acbb7"
+            },
+            {
+              "index": 7904,
+              "record_id": "pile10k-07904-ec861e72a0188818",
+              "selection_key": "02d2e018dca0c6ce399dc51187345f81d967d01ee898a55121d0770cb3b5a946",
+              "text_sha256": "ec861e72a018881803dfa73a46c7cc4832682ae7fa8c7c10e3b0954fdd23183a"
+            },
+            {
+              "index": 2549,
+              "record_id": "pile10k-02549-21baff7042d2d714",
+              "selection_key": "02d38aef1812f518afc325ed4a3407215d78c01eb9a1a4acfbb4c2b303fbc664",
+              "text_sha256": "21baff7042d2d7142878281dc24cb6529b0e34e559ff01f4a2229ffc126e20b7"
+            },
+            {
+              "index": 3277,
+              "record_id": "pile10k-03277-709f6679671beada",
+              "selection_key": "02dd2c24682516418c16789ea3ee5576565bd39fc95230430f8a05bb850eb5d7",
+              "text_sha256": "709f6679671beadae3c06951172ac479de538089d10b875320c14848b4c93dfa"
+            },
+            {
+              "index": 8014,
+              "record_id": "pile10k-08014-31256f2b5fc10ba6",
+              "selection_key": "02e0e06a80f6b941ac7063df9d47f1d82c20e89a514d5fe9f4a1e62776ffb5bd",
+              "text_sha256": "31256f2b5fc10ba6055e157694b7349af716f7e0c5785349172e6b5a94975f54"
+            },
+            {
+              "index": 6435,
+              "record_id": "pile10k-06435-0669de3374339e8b",
+              "selection_key": "02f0d14e1ec27194ac6a02c8fb82ebac3370a23ece267259b0a01c46f6412a8f",
+              "text_sha256": "0669de3374339e8b6dd4b8f77be214980af4e95439e081d74f693b8cf0ca0d1d"
+            },
+            {
+              "index": 178,
+              "record_id": "pile10k-00178-68ca170770aacaf6",
+              "selection_key": "031eb6fff6dad901ece86fd66a584c87cf08daca0844cd1e52337529f67333e8",
+              "text_sha256": "68ca170770aacaf6390d4ba1527bb8f6833f484248f3da8e7d2ffa5bafd014b1"
+            },
+            {
+              "index": 3533,
+              "record_id": "pile10k-03533-295ff44659999490",
+              "selection_key": "03241f18b8079a1dbe7fa0a5a314f165fe2f16c9e2ebcd9dffdf300aa8383025",
+              "text_sha256": "295ff446599994905e3cebafd46ce1ac6c5b9b162d1e44836bfd79dca157b25d"
+            },
+            {
+              "index": 764,
+              "record_id": "pile10k-00764-04c91593eef17bf9",
+              "selection_key": "0325822ff194c1fdc1514dd6290eb6826cc73efc52fea97ddddf1da84e55b9a4",
+              "text_sha256": "04c91593eef17bf927ce884b4a7ceed9bfcffc06d8359d7029d84674ca4e2c25"
+            },
+            {
+              "index": 6135,
+              "record_id": "pile10k-06135-03f1f99f1c1722d5",
+              "selection_key": "032b2a39b91ef02a60bd4a97f7caea7d8b54155582ef04c953e91c64bb3c9c69",
+              "text_sha256": "03f1f99f1c1722d591ab59fa47f6452833aab69e30be50de76e2d3a32d92f15e"
+            },
+            {
+              "index": 2595,
+              "record_id": "pile10k-02595-51b833c0027a9880",
+              "selection_key": "032d6aaeae004d58263052a5f1d1fe1f77114023deb20c75264e40fc8a97c970",
+              "text_sha256": "51b833c0027a9880a8deaf84d0c0f7104b2de13d0ecf781827048a822ebd1cae"
+            },
+            {
+              "index": 6168,
+              "record_id": "pile10k-06168-2890a594b6514fbd",
+              "selection_key": "033861957120bdf60370ba40f6937753c72e696649feec9b8feb25b433b8b15f",
+              "text_sha256": "2890a594b6514fbd110bc80ad0ed1f906bf77e0b1422750513df8cc08d3b25ee"
+            },
+            {
+              "index": 259,
+              "record_id": "pile10k-00259-450c430d4d1015aa",
+              "selection_key": "033b66c98146600cf40c2b3d0be10efbf5883c4c05ba1e72f6bd85f9501246a7",
+              "text_sha256": "450c430d4d1015aa895e242704091b27a4b742734ae0bb522810da509c4ba139"
+            },
+            {
+              "index": 546,
+              "record_id": "pile10k-00546-9289ec833e65d30a",
+              "selection_key": "033dc75f0a253bccd7d3f846b06cb8ce83f27e01c99b6f72cb8a04a8acde5554",
+              "text_sha256": "9289ec833e65d30abc55aee4b73234b58e17dd358065701b0ca13ecc7bf1cadf"
+            },
+            {
+              "index": 7509,
+              "record_id": "pile10k-07509-7bd8328f9876e6a4",
+              "selection_key": "0340d74a2a2cefb74e4881e1f5953876869ac1b1d29cf7e634af8de8be55e1db",
+              "text_sha256": "7bd8328f9876e6a4fe7633fe0f315b89d4fef8fe21affd61d51e25dd4fcf9716"
+            },
+            {
+              "index": 984,
+              "record_id": "pile10k-00984-3e35b49edcaf2d28",
+              "selection_key": "034490c87f0d00c299a438765e0bae49780f79c0c797bad174a3da8618a228f0",
+              "text_sha256": "3e35b49edcaf2d28231038d190139fb932755737db85b381a26ab42bb70d6c17"
+            },
+            {
+              "index": 6284,
+              "record_id": "pile10k-06284-d493809801457940",
+              "selection_key": "0346c76ca8e02a3eba9398260ed2da0491a6ba9b5420d66c92ee4fa90868b6a0",
+              "text_sha256": "d49380980145794088e9a381f5836d26c59c4af541ea12661f7478fbb4e23d5f"
+            },
+            {
+              "index": 3076,
+              "record_id": "pile10k-03076-8bbf0ad033788d14",
+              "selection_key": "034c7d0fa1a974c18f69ebb446cac91f83120325924990163dfe43f50cdd3f21",
+              "text_sha256": "8bbf0ad033788d1471300accbcea672f527c16d8159ad605b2d6e47e2578b2c0"
+            },
+            {
+              "index": 7102,
+              "record_id": "pile10k-07102-7195ab6ca666add0",
+              "selection_key": "034d104b16165a972796a312788d0707f6f441833061b75315eebd6d2d5e7fa3",
+              "text_sha256": "7195ab6ca666add07132aadc7211bcdbf75957848e95004a0d7e85d0b2ff008b"
+            },
+            {
+              "index": 8618,
+              "record_id": "pile10k-08618-209867c171702221",
+              "selection_key": "034f5c71db089e2df184af80603c06db55f9e0336172957c76479cd7026c0eb0",
+              "text_sha256": "209867c171702221d2ca2fa755f505cbc24f1ec1aefd875fa74030b9aa58c79b"
+            },
+            {
+              "index": 9709,
+              "record_id": "pile10k-09709-4c4424ac83bd264f",
+              "selection_key": "0357b247c8a8141a380cc7fc59297682b5eae408ea7098031424611a91711267",
+              "text_sha256": "4c4424ac83bd264f913270442bf8d6c80624e5a649783787a50dcaf53b1cb0d2"
+            },
+            {
+              "index": 8682,
+              "record_id": "pile10k-08682-ab16a9b072c77bc5",
+              "selection_key": "035ba65337824bf3da28c2a88031a6604d0b7158c2641d4527f4073386fb5d5f",
+              "text_sha256": "ab16a9b072c77bc58e0e9ec535dc08bec41de2335ab95ed5a1a19a313d6f46d9"
+            },
+            {
+              "index": 517,
+              "record_id": "pile10k-00517-eb4dff6e030874ca",
+              "selection_key": "035cb71e89d3187a971337972d4fdc142b05722e27cb0a394e2841cc2a70870e",
+              "text_sha256": "eb4dff6e030874ca835130f21bdddd019d3bd635bfb302ecb552777b51f5c96c"
+            },
+            {
+              "index": 2196,
+              "record_id": "pile10k-02196-e18b696378365b6d",
+              "selection_key": "0371b950d67dcf5469680ef896fcc144be598413df13eb6eeedbfca2ea1ffc3e",
+              "text_sha256": "e18b696378365b6d82054ba8c413d766a2c98490af4965c36988f71e69873fdf"
+            },
+            {
+              "index": 4770,
+              "record_id": "pile10k-04770-99fdfc96a2c6168d",
+              "selection_key": "0374d5bd18be79e74a94242f513aa9bc3c254f8597c33d4bcffed73f35e9641a",
+              "text_sha256": "99fdfc96a2c6168dd00ee111e7116855f654818b12d4012931f4d956e1a102c9"
+            },
+            {
+              "index": 2886,
+              "record_id": "pile10k-02886-3241425349215ad0",
+              "selection_key": "0376a87c934843d318b5f18b6290a3a6946171fde8940160d17938a78adfba1f",
+              "text_sha256": "3241425349215ad0eae04feaab3a7d154445896d49c9434f298dbfed34d0446e"
+            },
+            {
+              "index": 5110,
+              "record_id": "pile10k-05110-4ebebc2a5044cd41",
+              "selection_key": "03975dbf9d0bc17e13945f42820ae58ddfdf2d018d41d0e280c784c7e9db86f0",
+              "text_sha256": "4ebebc2a5044cd41eafbbb701ce4a28e3104f071dcbd15f3b32785fab718de07"
+            },
+            {
+              "index": 9225,
+              "record_id": "pile10k-09225-3538c88b9e07038a",
+              "selection_key": "03a1e7bb9a4634efb3b5e56a77674055b05c0ba298d79df7d8042c46cf5bc32a",
+              "text_sha256": "3538c88b9e07038aa728d3f2dee3ea176b6e92732c9866af2db9b3edb564be02"
+            },
+            {
+              "index": 9574,
+              "record_id": "pile10k-09574-f97e7141c9af8394",
+              "selection_key": "03ac01cccd99397cb8f5fb21c313707b1a45dad8907ae5070c57cb94d051799e",
+              "text_sha256": "f97e7141c9af8394cbfaa19ba256d916a76e11b0946c95db897cd7b6c694ba4a"
+            },
+            {
+              "index": 4908,
+              "record_id": "pile10k-04908-771f2cff3155077c",
+              "selection_key": "03bba03ddc7161d2e580e88217b859329280579b2f49c6b72a0730b4678e5460",
+              "text_sha256": "771f2cff3155077c739cffdea4026059a0f8ffefe3644596dd6eb0bc584c2a56"
+            },
+            {
+              "index": 1151,
+              "record_id": "pile10k-01151-9391dcd76a364689",
+              "selection_key": "03c3962f8f1ee3530c75d390b250ac147d618ebdfda01dac59be3968889e6c24",
+              "text_sha256": "9391dcd76a36468924b80d2f7a89d14dae29fd2bf82c2ee726462212b280cf12"
+            },
+            {
+              "index": 4633,
+              "record_id": "pile10k-04633-4e83ad6d995b1f08",
+              "selection_key": "03c54e8a1e5c430f94239681a5eb533a45770712335889eccbd70cce7677a692",
+              "text_sha256": "4e83ad6d995b1f08e37d1d734082b6d31b1ae94c3b32d88eaf98981cce8bd731"
+            },
+            {
+              "index": 1748,
+              "record_id": "pile10k-01748-58a3dc6fbcd9a357",
+              "selection_key": "03c5df8b8f23b92e85b751f72e6884b75a0fdc6827e3dba6ecc52112469415c1",
+              "text_sha256": "58a3dc6fbcd9a35734a24c59f50d828e94bb6d8e0f8588a3d4aada6d381fac67"
+            },
+            {
+              "index": 6484,
+              "record_id": "pile10k-06484-a5c601b2b73cad70",
+              "selection_key": "03cf68796bcbecf3eaa9f4d918caaf45b0b2077e879fa443352a50770e4b37a9",
+              "text_sha256": "a5c601b2b73cad70176d476f55688d2ecb1e323b4e35c415d31fdeaa55670e93"
+            },
+            {
+              "index": 3900,
+              "record_id": "pile10k-03900-b15de7e27789066c",
+              "selection_key": "03d1a480fe63171bc247c3420a159b080489dabc8f8a1c7cfd84c63082b355b6",
+              "text_sha256": "b15de7e27789066cc40f3191a707305937df975f89e00113c1cb40621e152bef"
+            },
+            {
+              "index": 9319,
+              "record_id": "pile10k-09319-9e37ae67844f1bba",
+              "selection_key": "03d424ba3e5a66d7760e32757a9a80214cb38e4cef5260d5b347a88b05cec604",
+              "text_sha256": "9e37ae67844f1bbabf0f1083e51f25bbabaa1126f91d3d7edaf55c5c88262d08"
+            },
+            {
+              "index": 6886,
+              "record_id": "pile10k-06886-126277d5d1157d29",
+              "selection_key": "03d5cdc2c317055a71a7491ac7dc5a57a24d6a69c42e5a7c4e843c100dce647c",
+              "text_sha256": "126277d5d1157d298b3ec9d27d3440718c064c4c952e8d064167bbbc8a611ff6"
+            },
+            {
+              "index": 9848,
+              "record_id": "pile10k-09848-df5970919e59063d",
+              "selection_key": "03d6e348b5259aaf9331d1c6b9197d7bcee4a9b1b6515b1bbc666af4c7232ffa",
+              "text_sha256": "df5970919e59063d75ccc27b22fb8f3b0757ca0513b8d7fcf9718c0f1fa96d5b"
+            },
+            {
+              "index": 4267,
+              "record_id": "pile10k-04267-04db6593e4df59d5",
+              "selection_key": "03dc2958cade28b8b66da4917abf6d25655c3cd2a8c5fe756803249ecf12a14e",
+              "text_sha256": "04db6593e4df59d5c696bdd5ba4e5bdec91e221a5819c3f68e43fe020e8c79ae"
+            },
+            {
+              "index": 7789,
+              "record_id": "pile10k-07789-ad5967df7a2c53a2",
+              "selection_key": "03f4950a9405cd76e3c3bdf2500f3478955497300573fe333c4c131f38297082",
+              "text_sha256": "ad5967df7a2c53a27555e30853eef61b05ce54d9af63052512f6a251936b1686"
+            },
+            {
+              "index": 9058,
+              "record_id": "pile10k-09058-4f0fc55cad0aab37",
+              "selection_key": "03fd693a3cd2e1fa042be5fbb174f431a3977ec3c4f142443ea4ae81c10ba430",
+              "text_sha256": "4f0fc55cad0aab37bf706f3a80cb815d71767c72de099ec8dd1cd4d83c71f876"
+            },
+            {
+              "index": 4648,
+              "record_id": "pile10k-04648-7f72992d4a364dfb",
+              "selection_key": "0409af08c25ee5a507d4dc5f557e0603d918b7fc30f5c9718a6c26c50d38a8f1",
+              "text_sha256": "7f72992d4a364dfb55d57862b2eada3bdfc4fdf7ba9528466453e3f885bf9d12"
+            },
+            {
+              "index": 4282,
+              "record_id": "pile10k-04282-6ff1e66ad8009d58",
+              "selection_key": "040a8690629b48a017eb5999f00a3ffede532da2dac77a9fd5713039b94c470c",
+              "text_sha256": "6ff1e66ad8009d58ac928fa26a92790a4955eea1c829a13e9f2e7db2d518489e"
+            },
+            {
+              "index": 9786,
+              "record_id": "pile10k-09786-085b941b610edb17",
+              "selection_key": "0412c9ae49c0786bca8f7f7c49af3a1a029f5d6a92459bec544f172ad66137be",
+              "text_sha256": "085b941b610edb17c1fa1ef3f0c40098f816c7c6baa2aeeceb5fc3afefa513d2"
+            },
+            {
+              "index": 4913,
+              "record_id": "pile10k-04913-de70779523037012",
+              "selection_key": "0413f12e8942fa10a1cbac9cc5fdde57e8f1f344af1e97eff9119482dd1a62c5",
+              "text_sha256": "de707795230370129ff7ca8a0785e24903a4baf8f6006c8fbf91d99d948fd386"
+            },
+            {
+              "index": 1496,
+              "record_id": "pile10k-01496-35c64c88093985b4",
+              "selection_key": "041487da73580d27d22d41fa829f90c448ffa9c6dff5a3596ae8bd7f46f8cb9b",
+              "text_sha256": "35c64c88093985b4331e0843c89e2451f0573b7110fde760cd3db32a078f9e6d"
+            },
+            {
+              "index": 4604,
+              "record_id": "pile10k-04604-0ac951fa96c78350",
+              "selection_key": "041a0bbda35404eb6c614f3232ec587662669c1bef17f581e73b311059c43b1c",
+              "text_sha256": "0ac951fa96c78350392c4b5ab13e583d6164f5b343ceac2e1238a11ba46cb039"
+            },
+            {
+              "index": 1395,
+              "record_id": "pile10k-01395-fd1078c0ddf87344",
+              "selection_key": "0422c7ab425c6f76ebf9c7dc1dd0d9fb421427236170573f3981ec9ad74aabe7",
+              "text_sha256": "fd1078c0ddf87344e2f4a1bb21e7a04aff5c038629fbcca0d525151f5b585ed8"
+            },
+            {
+              "index": 5471,
+              "record_id": "pile10k-05471-e8153f418f98bf9b",
+              "selection_key": "042a257661fcd26f6ecef2a54fdb4a67cfc85ba3414a3d2727b3a14989d35325",
+              "text_sha256": "e8153f418f98bf9b6494917891a4edafd45beb7572781733da0dee0720c1fc65"
+            },
+            {
+              "index": 5410,
+              "record_id": "pile10k-05410-a67c2cda521e6c07",
+              "selection_key": "042cc7ca627835358ff33efb64f95bb53041328e18088b6ec605d366ed4413e6",
+              "text_sha256": "a67c2cda521e6c07be90693569c825112e172524b860e123a4bb3720395e5f13"
+            },
+            {
+              "index": 6943,
+              "record_id": "pile10k-06943-f6212d7575d77da1",
+              "selection_key": "042d6f2acb18b7383233c8f3ccdb30412046375cf14b126e37aa15862b6b2a0a",
+              "text_sha256": "f6212d7575d77da1bfcbafcb82e1c8e782649380c3d5b04b31ec4f68b86231a7"
+            },
+            {
+              "index": 6415,
+              "record_id": "pile10k-06415-67f97db63321783d",
+              "selection_key": "043002564505ac32c61c0154244547ec28c4809c92eb689cad08da2417193b2e",
+              "text_sha256": "67f97db63321783d43bfeee52a2e7a4268be41963a5523287737d503efdebec8"
+            },
+            {
+              "index": 8690,
+              "record_id": "pile10k-08690-23c2f3a9e3da4c20",
+              "selection_key": "04345a3a06622a4daa01c9745a32e5198c16fcb4535c4c4cb33c2be138a97b0e",
+              "text_sha256": "23c2f3a9e3da4c2034fd042863d8cb96624dce2b72618b6d0949af5bcaf60316"
+            },
+            {
+              "index": 1213,
+              "record_id": "pile10k-01213-13fb38a4aaeb493d",
+              "selection_key": "0437140dab0872ad10ea8c5a1e80203578a1db5b24df6dd23707569f18bd1194",
+              "text_sha256": "13fb38a4aaeb493def255957d42005bc0f77549bcd8f9156feb5549d346e66a2"
+            },
+            {
+              "index": 5,
+              "record_id": "pile10k-00005-e365ea0ef34cb339",
+              "selection_key": "0450dc951072bf30cd92759df90905c5a38ff94febfdf3aef9e3fbde35eb5fc9",
+              "text_sha256": "e365ea0ef34cb3398d66da043e17fb9a4704f716b6bb1a01c99aac79c2e7765a"
+            },
+            {
+              "index": 2012,
+              "record_id": "pile10k-02012-2942fd959ac855f2",
+              "selection_key": "0465500921dd1602d3308f69598fd7815ff6d6cce2b0686990124c223e93f0c5",
+              "text_sha256": "2942fd959ac855f23a937ea76cee5a8b98d36a87fe63370492370ea0ac4af8be"
+            },
+            {
+              "index": 5133,
+              "record_id": "pile10k-05133-b73d336c9d9065b5",
+              "selection_key": "04669bc4d84ba899a7667e752a08ed2f18b7bbd310f6dd7f62ec27503f6e92ef",
+              "text_sha256": "b73d336c9d9065b59270da43d9e67b8932912952a35567dd92264cbabd24c4fc"
+            },
+            {
+              "index": 6696,
+              "record_id": "pile10k-06696-23abdd17b0ace292",
+              "selection_key": "0466ca8a93626259dd016083c0ea89018127dca683cdcb2ff299d603f9d24bdf",
+              "text_sha256": "23abdd17b0ace29254473038354eec95cfba96978c95c5f47b4c4bcf5f768b75"
+            },
+            {
+              "index": 2679,
+              "record_id": "pile10k-02679-ad705d5c3145d7b8",
+              "selection_key": "046995ce00de1437959835d9013af7f72a99c71fd67a4c77893422797f5a9eca",
+              "text_sha256": "ad705d5c3145d7b8d5799b1c7ad0301c17036103c3284451dc53b910ef609d08"
+            },
+            {
+              "index": 6769,
+              "record_id": "pile10k-06769-5fc6d22328ca8ce9",
+              "selection_key": "046e03ef9126ba882c494165ae7826a89d2e5c705691a5e6f143a4f6abd3403a",
+              "text_sha256": "5fc6d22328ca8ce9d090b93100a2559c4cf761884a3a8e22a51093aef325fcc8"
+            },
+            {
+              "index": 205,
+              "record_id": "pile10k-00205-05739a8d936ac15d",
+              "selection_key": "047ce4e3052052e89bbbe18231c79673e3e2491c5f230dcc587d98e3c80566ff",
+              "text_sha256": "05739a8d936ac15d48c736b8168ff2f6be95eb3fa34039eb00425f8dd5475f82"
+            },
+            {
+              "index": 1709,
+              "record_id": "pile10k-01709-406980a0a515e90b",
+              "selection_key": "049404e910dd706eeab27602251e07c303d0c4dde82a7c9e05430ce904ae7b94",
+              "text_sha256": "406980a0a515e90b1d4a62bae3ff9fe86ab2d79a7f39bb8f2c7780e06fd89107"
+            },
+            {
+              "index": 1261,
+              "record_id": "pile10k-01261-f77f2d7aab32c6f4",
+              "selection_key": "049b6b0ddd3cb1f730275bbeb06a614f8038ebd40640e986840add574dc4c372",
+              "text_sha256": "f77f2d7aab32c6f43dc52ce98f75ad6c3419bad1e3360c404fd5b356d58b6da7"
+            },
+            {
+              "index": 9840,
+              "record_id": "pile10k-09840-947ceb6eab5df856",
+              "selection_key": "049d4c9c043f42de639eadf6c7d33091c49e956e0cd9ba439c6ff3086edeeb07",
+              "text_sha256": "947ceb6eab5df856b91c2f0f4ef77ae4bc5ca788faf663ae3606349c2ce3be79"
+            },
+            {
+              "index": 6750,
+              "record_id": "pile10k-06750-6418cb32fd1da758",
+              "selection_key": "04a055d135823085cb26393843732afa090dad63c4df77731b4f305ce3f50b65",
+              "text_sha256": "6418cb32fd1da758608159ae2f61586ff4ca6bcfebe50491108cea07e1bc1473"
+            },
+            {
+              "index": 3407,
+              "record_id": "pile10k-03407-d8c3769beebbfe91",
+              "selection_key": "04a1c0dfa094be2d2f7fe8244b9539ac687e58ef4dd296dc5755685800775472",
+              "text_sha256": "d8c3769beebbfe911bd1f78344d9d1b4cd72d9007ab36819b351e8b11045d16e"
+            },
+            {
+              "index": 2405,
+              "record_id": "pile10k-02405-65363ae7e66e40c0",
+              "selection_key": "04b4e4734603b5317332d4b0ff81d56a2524237d994fcccf480946a7f2b3c9f9",
+              "text_sha256": "65363ae7e66e40c009e4dd17ef76d9ae2897f1c94487ffe5a5e2f9fa248b9982"
+            },
+            {
+              "index": 5696,
+              "record_id": "pile10k-05696-6f6d4fe32514c03c",
+              "selection_key": "04bb01bb90df376654572136544f341bddf0327bbbc60e4d66d1b3301bc246e2",
+              "text_sha256": "6f6d4fe32514c03c75ee7feb433d6a15b3cb86a05233dbda89deb5c18ac115b1"
+            },
+            {
+              "index": 6350,
+              "record_id": "pile10k-06350-c8de50282124bb4e",
+              "selection_key": "04bb2c0424671fcaf98ec39fa2c2b45a8e9c014993d747fa108dbc5ec88bc78d",
+              "text_sha256": "c8de50282124bb4eb6aa6d071514a2d3a1f670bc3922268f716e5375d625c0a3"
+            },
+            {
+              "index": 5149,
+              "record_id": "pile10k-05149-9103c6138a3ed4ad",
+              "selection_key": "04ca13e1e5c9073083814bd24a3ba7b6b1addd011325ca1bda265d2e8c0a9f5f",
+              "text_sha256": "9103c6138a3ed4ade19596358aee3edea177c881566df19d81c7aae1ef131b51"
+            },
+            {
+              "index": 870,
+              "record_id": "pile10k-00870-4f493d941ebe0bfd",
+              "selection_key": "04cb9c789c1751e78e7e275bfa50e96cce113c82e7595d02e0303e6b9d470aee",
+              "text_sha256": "4f493d941ebe0bfdf2564edc5e31997bd7390d79d0f6e54f24d7afdb3a48bb1f"
+            },
+            {
+              "index": 7157,
+              "record_id": "pile10k-07157-b2351c43c305396c",
+              "selection_key": "04d20d1f7d6574d10c78f9ffcf467875301a298c0c06d9adbf2608d44496015a",
+              "text_sha256": "b2351c43c305396c709fb1715f5413b8b4c236a71c93d16cda8c521d531e058b"
+            },
+            {
+              "index": 682,
+              "record_id": "pile10k-00682-96bdcfd4da1bae8c",
+              "selection_key": "04d34a701e8ad7978a4ac462433d0f220d769646e1ae2da0121aa88a823cd21f",
+              "text_sha256": "96bdcfd4da1bae8cf40111b25a25e8c55835b2519acf92dc61c4da40aa2c28ea"
+            },
+            {
+              "index": 9076,
+              "record_id": "pile10k-09076-9e4f78ecc00bb60b",
+              "selection_key": "04d89df837a18d01d627dacb346a7cecb6fedf93167e6628bbdc0344bfed15f4",
+              "text_sha256": "9e4f78ecc00bb60bf2d1d287c780df5761b461374c08434554398402033dd332"
+            },
+            {
+              "index": 9735,
+              "record_id": "pile10k-09735-102c5c3ee272d13a",
+              "selection_key": "04db56ebd62d97b8b2c33564bf85232d79aab1f130f1964ed54fb8ae000544db",
+              "text_sha256": "102c5c3ee272d13ad51b35daabd5e7f5de55770c6548b0d69cd46b2ea8c414bc"
+            },
+            {
+              "index": 6880,
+              "record_id": "pile10k-06880-a650f238f0c564e6",
+              "selection_key": "04de0fe7e9fc553d66050270444fd047a4722df39977aa3bb0b3347d8d084ef9",
+              "text_sha256": "a650f238f0c564e6918303e5931b69d3f22e0142800245da1fbf8310ec6f3cc2"
+            },
+            {
+              "index": 4410,
+              "record_id": "pile10k-04410-a05e69e168ca8bed",
+              "selection_key": "04e42b6c39b7a04027eec1d7c0073c5089db84c56bd4116b24586b3f9b3a9780",
+              "text_sha256": "a05e69e168ca8bedea32a6ba5f373f0643bc51cc720ad96425ec5fca21e395c4"
+            },
+            {
+              "index": 6444,
+              "record_id": "pile10k-06444-a50976437981f834",
+              "selection_key": "04eb2bdecca831b7be590653bc43dc8e3917a387e8f7fe84af9af2d533f7a1f3",
+              "text_sha256": "a50976437981f83401f3693e5ef195f94e53ebab391c00dc8246c2bfebe58924"
+            },
+            {
+              "index": 6603,
+              "record_id": "pile10k-06603-591aa4d01d1ba351",
+              "selection_key": "04eddda6d32e07ecde0be3306523bb158a5c2a1e0c70ea24333c96b3a7e3e4aa",
+              "text_sha256": "591aa4d01d1ba351ae4430d3b4c9628f57d34f5d5bee305b3a892d2212b4ab11"
+            },
+            {
+              "index": 2017,
+              "record_id": "pile10k-02017-35e141f2c6cfbecc",
+              "selection_key": "04ede116a0a0b04bdf722b3588522290cdabf0a928e638399595b8af34d6bffb",
+              "text_sha256": "35e141f2c6cfbeccb26d65b462cb579292b16d626da7d94d6956a6d14d548089"
+            },
+            {
+              "index": 867,
+              "record_id": "pile10k-00867-e1efcea7a6ecfd34",
+              "selection_key": "04ef7380bcdcda37fe9002b9f807a7e69c33a789857fdb09e3cf017807814271",
+              "text_sha256": "e1efcea7a6ecfd34aa58a95a05b5574527c0e62f0de326b3e3db13ed300eb5c3"
+            },
+            {
+              "index": 1705,
+              "record_id": "pile10k-01705-296255e0760f8227",
+              "selection_key": "04f47968c16a7b7459ca1824e6ad06beec7990792c9fa53aaa236a6a7de22787",
+              "text_sha256": "296255e0760f8227322063e30d111949b6c8db80bfcf5853a5462b133a1f210d"
+            },
+            {
+              "index": 53,
+              "record_id": "pile10k-00053-60387ac45f648cd9",
+              "selection_key": "050041c7e89169957fb0c19816e199eab93cbed7b898af9f5b52d137cf52206c",
+              "text_sha256": "60387ac45f648cd98cb107de541f74a28c2041050061c61790f1316a2b3759d7"
+            },
+            {
+              "index": 8725,
+              "record_id": "pile10k-08725-11c631293bd46930",
+              "selection_key": "050e7cf7520cdd5c34a978f54314a9783e59f95cb1ccd87a674d2fe1cceb8ca0",
+              "text_sha256": "11c631293bd46930980ff7b47a9796b640d60f02efe1871188aba995cb51656e"
+            },
+            {
+              "index": 5080,
+              "record_id": "pile10k-05080-7e12474b0eae13a4",
+              "selection_key": "051085c4f830b77ebf5cb123b87ba149490f6fb98df0f3898de08c42e855150a",
+              "text_sha256": "7e12474b0eae13a4812731975a35ecda11b90293b042e56b99d366e6914ba6af"
+            },
+            {
+              "index": 652,
+              "record_id": "pile10k-00652-d7adb115652c1487",
+              "selection_key": "051bbdea20535bee04373822420040f72f99f3a123fd1c42b315f85204e1409c",
+              "text_sha256": "d7adb115652c1487faecdc7b75806626aa2c4b1dc0acf784f3df6f2bff5e1f78"
+            },
+            {
+              "index": 3866,
+              "record_id": "pile10k-03866-97fa01fd85742671",
+              "selection_key": "0530b72ed7dcf143be8bb1bf397f46eaed49c2de4ec45c8eba6efcf7c11ff5e6",
+              "text_sha256": "97fa01fd85742671b6eb476f4825d3aa4c33f2a9f33a258be661a9e4f13caf24"
+            },
+            {
+              "index": 8640,
+              "record_id": "pile10k-08640-4c50c94a7f8b7b62",
+              "selection_key": "0530dd94cc07a61843017dd371e861782d44530256666e6eef74204549efa1b1",
+              "text_sha256": "4c50c94a7f8b7b627e77d2756782a9550838953a84361be762644acb4b579103"
+            },
+            {
+              "index": 5519,
+              "record_id": "pile10k-05519-da88fd37b712ac1f",
+              "selection_key": "0531099ca44356b752c05dbd98dd9a9f9078855c0efbaa963229637dc5455308",
+              "text_sha256": "da88fd37b712ac1f86488e613112757ebbd07f86c650809b8c9e351c1e3d456d"
+            },
+            {
+              "index": 8619,
+              "record_id": "pile10k-08619-15c3ebc9035155d5",
+              "selection_key": "05325c362369bbf5e43e62a8e53141900def52dbd8563c5a20f0adda6abbc1d4",
+              "text_sha256": "15c3ebc9035155d53665286524e2fd7eb9e0ae57f2553b738df5f5c3ff578cf5"
+            },
+            {
+              "index": 8811,
+              "record_id": "pile10k-08811-f67b7a929942417e",
+              "selection_key": "05454993a0226d90e6905afac611610ea949ea60de481a7afcacb4a4eb79e84f",
+              "text_sha256": "f67b7a929942417e2b7ea46f88950ec17e5f95afc80a9964ff47a53c71005cc3"
+            },
+            {
+              "index": 3342,
+              "record_id": "pile10k-03342-b16274e0f409e8ad",
+              "selection_key": "054955634d486f3524844ec9cc26682faa635e9b64bd156678aee2bcdb93e4ed",
+              "text_sha256": "b16274e0f409e8ad5b61cce43061b4b2605e29de8434670ec9584d9f203631aa"
+            },
+            {
+              "index": 4692,
+              "record_id": "pile10k-04692-d267efff0107a8e9",
+              "selection_key": "054f85b87bdcec8cf4a5ff9ed33dcee15914cc10653f491a7c2bf8938e16d0a5",
+              "text_sha256": "d267efff0107a8e958da0fe3aeefbe991364f2907b1560ae43e5132918189b37"
+            },
+            {
+              "index": 3300,
+              "record_id": "pile10k-03300-9e7c8946eb14035f",
+              "selection_key": "05536807ade5f8627df9f5d9d95eedba25db899323e1c7b2ae4e762bf1a97096",
+              "text_sha256": "9e7c8946eb14035fea04707c309b051277b758ec56963afcb387a729b9a6b9da"
+            },
+            {
+              "index": 6144,
+              "record_id": "pile10k-06144-66ce9d35670726fa",
+              "selection_key": "055cfa27a307b0157b5c9f365a85467905dda765dec47c97bdb61a748b29fc85",
+              "text_sha256": "66ce9d35670726fa73b7b9201ab9848e7e586926c851f556829fccf8410b8a63"
+            },
+            {
+              "index": 6988,
+              "record_id": "pile10k-06988-517adc601d261e1c",
+              "selection_key": "055e912d3867cabe8a7ef3968e447eba9fe244afc264794d9cdea594ae1458a3",
+              "text_sha256": "517adc601d261e1c450330e14c21122188517191f715a456c72a0cd610f11b83"
+            },
+            {
+              "index": 8301,
+              "record_id": "pile10k-08301-2df48b83aa9e542b",
+              "selection_key": "0561690d4e8dc494a670251d890aaecf6f5a4d12c2232ddc681653b241357168",
+              "text_sha256": "2df48b83aa9e542bb96908e8aead455072dd834b9a87c7c59c90b8fa133eb929"
+            },
+            {
+              "index": 2308,
+              "record_id": "pile10k-02308-cf0c882d6fff8bca",
+              "selection_key": "0569bf3fda5a3e4f643676ce222629362767f3bb19f76ca918aae5af385d74d7",
+              "text_sha256": "cf0c882d6fff8bca6271c06b9568d7a451d816932e2fb3d6156ae1285f9e0502"
+            },
+            {
+              "index": 9495,
+              "record_id": "pile10k-09495-a5c7e9f089ceb031",
+              "selection_key": "056bd73ed1caa0448c811960cb87be31af4385f19e22cbc66436e1c3922554bf",
+              "text_sha256": "a5c7e9f089ceb0313420c91d525d63af2fcb4c7ee635ac63fa5250240ce95f0b"
+            },
+            {
+              "index": 1976,
+              "record_id": "pile10k-01976-1c357bb2934c053b",
+              "selection_key": "056f754dba80cd6cde9e101330eaa6100eeefa5c98e956e54953b1aa63ef49a8",
+              "text_sha256": "1c357bb2934c053b6c0f4e7caf11c4876d8a465dd9fcfd288c6a90ff4458f37e"
+            }
+          ]
+        },
+        "target_update_train": {
+          "count": 64,
+          "record_ids_sha256": "aebbe5776e96fc0854ae906ccb46520cb9554b999f960e5a3e4d02dda33ac533",
+          "records": [
+            {
+              "index": 7941,
+              "record_id": "pile10k-07941-7378b486740156db",
+              "selection_key": "000baee155bcb76977cb69c14746f1c07da27e8fb48fb599c480999567eefe00",
+              "text_sha256": "7378b486740156dbe1f125b83a78a4923f091c15bb9abf6fd9b98ece36593876"
+            },
+            {
+              "index": 9485,
+              "record_id": "pile10k-09485-6937b84d3feaea28",
+              "selection_key": "00106b9635c41050d5f966317f5df5e86860beba69d2a9cd3363f99a3db778ea",
+              "text_sha256": "6937b84d3feaea2856d3c19e105c1738c12a5adee5711a4602a5de325fb118e0"
+            },
+            {
+              "index": 4732,
+              "record_id": "pile10k-04732-8467f0974e0397fc",
+              "selection_key": "0012fe33a8d5884ead69c13e5fc3842269690bebad96d5497a74cf5187291638",
+              "text_sha256": "8467f0974e0397fcfd4dea1eb7f6b85cddb0f1f43010cc295099190895a58906"
+            },
+            {
+              "index": 6993,
+              "record_id": "pile10k-06993-8c48b5823d29ce35",
+              "selection_key": "00204d88900bff16637b853cfffc53133e2b0f0879bda7c0cf8aa4915df4b9a7",
+              "text_sha256": "8c48b5823d29ce359bb522a3d1141e164eb464c4e3717119879531ec17c5a412"
+            },
+            {
+              "index": 7448,
+              "record_id": "pile10k-07448-38dcbf60a05ac0ea",
+              "selection_key": "002cc8c7b831bd7a1b92cb3ced341468217992557f43b460b2a799f27d0aa577",
+              "text_sha256": "38dcbf60a05ac0ea2a8e0408692f037e20fd3c6d7ab8d5d3275b58a056584cff"
+            },
+            {
+              "index": 6564,
+              "record_id": "pile10k-06564-a38e8d44c07960c2",
+              "selection_key": "002f3a50ad5f92c1fdeda0741d665b5a245babf1d7d34745d712aee7a2ce7263",
+              "text_sha256": "a38e8d44c07960c2d9e474940b1b5255d8b185c1c7bee63921563cb7cf321662"
+            },
+            {
+              "index": 4920,
+              "record_id": "pile10k-04920-3a9c8d1e0b50e3da",
+              "selection_key": "0039a7f3fd170f2c213b34741cc1f40d6967b4475a3e132eb8581b209bfbe6a1",
+              "text_sha256": "3a9c8d1e0b50e3dadcc09d4e838a12dc09fc284f8cab3215916632167108664c"
+            },
+            {
+              "index": 2165,
+              "record_id": "pile10k-02165-e9f0d4b4b6ef2921",
+              "selection_key": "0042046bc876a7b84cb1734fcb8e902309b3626d0e189e58d17c1468d35c7318",
+              "text_sha256": "e9f0d4b4b6ef292150b0d728eb5f0420b714c2acd9ebaa572b584cdd5197b5f2"
+            },
+            {
+              "index": 2432,
+              "record_id": "pile10k-02432-62ae342223fc24af",
+              "selection_key": "0045e37d7c85b469a063833314294f35e16b75cad13d4ad9e160c63015983094",
+              "text_sha256": "62ae342223fc24af43b88fe36f6e1db43613356a546333faee22a3e837fc3091"
+            },
+            {
+              "index": 6719,
+              "record_id": "pile10k-06719-5a53f9ecfb85f176",
+              "selection_key": "00586a39064f9a3314aba95fc7f99b161de4ba5cf45a1a4ffe3b6330661b5fae",
+              "text_sha256": "5a53f9ecfb85f176445303b2b1a76c3a262e9c4840db3e6ba24fd9fcb48c8457"
+            },
+            {
+              "index": 4653,
+              "record_id": "pile10k-04653-329199f086f7aad7",
+              "selection_key": "005dbd4adab913a7e5ef94fb390a4328ecfff944a85e4b98fbcba9cf63dffc4f",
+              "text_sha256": "329199f086f7aad75681b072d8b2458893a2829d4184d122d7bd0679a7176452"
+            },
+            {
+              "index": 4541,
+              "record_id": "pile10k-04541-3c4a9fc9cb5f821d",
+              "selection_key": "00667d9f5f77aa5a1fd820003221ed9f9493fb3ce70e89eeda2b086c88d71e0d",
+              "text_sha256": "3c4a9fc9cb5f821d3d95bc3e070dd6eed0828667eaa45d3d4307ebc5d6ab3ef9"
+            },
+            {
+              "index": 672,
+              "record_id": "pile10k-00672-bfbc80e9aec7aaf8",
+              "selection_key": "006e97345179977ff6e3e807aa1bdc1729edfb0cb6f7fcfeedfac1b9754d719f",
+              "text_sha256": "bfbc80e9aec7aaf8e65eb95dff3fbcde72688086c7f31ca3bafa838388517275"
+            },
+            {
+              "index": 5826,
+              "record_id": "pile10k-05826-7b6b782a61497e4b",
+              "selection_key": "006fad947d794d59b868b9c5e0a4f074fe3563995eaae287f602510ab8be3790",
+              "text_sha256": "7b6b782a61497e4b73d992aeddb6aa89c307605a51781a3fe953a5cf7b98d490"
+            },
+            {
+              "index": 6105,
+              "record_id": "pile10k-06105-1957240d4ea431f0",
+              "selection_key": "007b1ea96f7b00a7e0f4ed620580d4b4142f3a73108f7bb0f9410d2c9925d3ec",
+              "text_sha256": "1957240d4ea431f08d3536e4070b25d9c62e331f3c62feca4c60147c73620241"
+            },
+            {
+              "index": 6364,
+              "record_id": "pile10k-06364-1e16ccd361b63527",
+              "selection_key": "009b5a812deee8c54d9bd732aa2f6b9d6af13005dcee2ce42fad53e73d4694f0",
+              "text_sha256": "1e16ccd361b63527eda9c88b7b7d24b2a7d675841e8ca8514caa8b4a880bc2f8"
+            },
+            {
+              "index": 4918,
+              "record_id": "pile10k-04918-cca42ff8bdab7333",
+              "selection_key": "009f093094996551c0cfcf6cdcb4c6ffe89efe0e9f1c92c4173a4c6653421537",
+              "text_sha256": "cca42ff8bdab73334d8f42f3f5dd9dc47582ee3322a01563b3c1e6fa9ab47108"
+            },
+            {
+              "index": 3325,
+              "record_id": "pile10k-03325-29c6074fa662053e",
+              "selection_key": "00a3c2e812acbb525d8c4ab7cabe43a0b26bc8dd4fcd68a272619b89ba54e4d9",
+              "text_sha256": "29c6074fa662053e5dc808b656f0150bbdcb8c3245264b240d719d37557bba44"
+            },
+            {
+              "index": 6942,
+              "record_id": "pile10k-06942-4846f0b195cc4da5",
+              "selection_key": "00ae22a1d9e88c7476d4d91031d6059a226f666a95cf2cbf36170e281cfb078d",
+              "text_sha256": "4846f0b195cc4da51a3abe990f1e61dce90b21a19655adbb90c18955d46df7d3"
+            },
+            {
+              "index": 8910,
+              "record_id": "pile10k-08910-46ae6f9a9e98731b",
+              "selection_key": "00b45e5f8b48b2e1aa51cb4af269b531bdcf59e432991d0891d3c7cb32e1d0a1",
+              "text_sha256": "46ae6f9a9e98731ba60247e49ac1c5615afb8676b06ed1cac291f10ea886caf6"
+            },
+            {
+              "index": 176,
+              "record_id": "pile10k-00176-60a66e4bc194d7e1",
+              "selection_key": "00b90d7ef839de38515002cadceb3a110daa8fff7cf9d040371defc15199190c",
+              "text_sha256": "60a66e4bc194d7e15931723f54318b380b5a6415373f61abb1126ed486a6e3ad"
+            },
+            {
+              "index": 5891,
+              "record_id": "pile10k-05891-04324912a28dbc5d",
+              "selection_key": "00c603e896b2d15e0dc4797523e62f4587a146697244f4dece0f884738cb6510",
+              "text_sha256": "04324912a28dbc5df69e72f8ab8e84816767bb012ce9ca8331e8d607f36896e0"
+            },
+            {
+              "index": 2818,
+              "record_id": "pile10k-02818-086ca3ff56cd562d",
+              "selection_key": "00c9e3abdec864390518456bb8649249894395472b821345175c95fb61b938f1",
+              "text_sha256": "086ca3ff56cd562d4172bd8abf66ec0f8eeaf49ce4dfca6f2f4a1741032c78ed"
+            },
+            {
+              "index": 9606,
+              "record_id": "pile10k-09606-b4632c5da1d77062",
+              "selection_key": "00cf442684f57739b74dd33da012e5f4aa6cdc9da306a255a440a56d6274b863",
+              "text_sha256": "b4632c5da1d77062c9b43cd64f5af9bac24bf3f70956cf93588cfdfb64348f85"
+            },
+            {
+              "index": 5139,
+              "record_id": "pile10k-05139-f9487cd182500e04",
+              "selection_key": "00cfcc44bec58a897bdce50486f219ae23335d91dcbc3779935ca3a0ae755ef6",
+              "text_sha256": "f9487cd182500e045d050c00250c9fe7bab9b25ad9cc21892e3c19e12b478805"
+            },
+            {
+              "index": 559,
+              "record_id": "pile10k-00559-27df854ccff4ffde",
+              "selection_key": "00d16e50bc9586f07409f5cff9b8afaf2fb23ea26d0732d90163c274dec14f36",
+              "text_sha256": "27df854ccff4ffdede6209ce24f5e5b6f9e822b40d5cb1048d734a5a726164f2"
+            },
+            {
+              "index": 6304,
+              "record_id": "pile10k-06304-e0eea12183f6e82b",
+              "selection_key": "00df0eab97ee5113f910dd5640175ed31e9c473a51919f7218b11292c19190a7",
+              "text_sha256": "e0eea12183f6e82b231c21da76768874c3dfc7961d16079cf6d9fe1fe4d9a23f"
+            },
+            {
+              "index": 2916,
+              "record_id": "pile10k-02916-57231210718b64f8",
+              "selection_key": "00eb3d01abdb690389d08f93af13e5731dc9dc09845f860a7ce964e5c0947d04",
+              "text_sha256": "57231210718b64f8f9eebc821f7e0a4a8a17a7dcee4b53e4eccbf4337953412e"
+            },
+            {
+              "index": 4656,
+              "record_id": "pile10k-04656-da756f61a7cd5da8",
+              "selection_key": "00f7616e963a9416caf91d83506e39752babd3cfacc2e1652f46ce4fe2d4a770",
+              "text_sha256": "da756f61a7cd5da89aa3ddacea8fda7df4f47dc345536a6b86bfddb6be81ed6a"
+            },
+            {
+              "index": 1246,
+              "record_id": "pile10k-01246-c47556633d0fe2f4",
+              "selection_key": "0110c3f100c2b8ad19ffedc640eb44f8a41e8819952f71c398b7f3fc695ac7a6",
+              "text_sha256": "c47556633d0fe2f48bd73c5f2e9285805019498f9072252a3f1c7786be494e74"
+            },
+            {
+              "index": 5547,
+              "record_id": "pile10k-05547-22346bcbadbec903",
+              "selection_key": "01120fd0537a94ac2c1139b971c3bf9f4de2abae2ce4112a8be60d12e2d49a1f",
+              "text_sha256": "22346bcbadbec903e9d8f7f7e60d6d6a96b50aa6b39644fceaa2978a201c1aa3"
+            },
+            {
+              "index": 9541,
+              "record_id": "pile10k-09541-715c725bc811fc22",
+              "selection_key": "011235fa22eb7d91329429ff7d1a1cac27c4894a61b5dc328244b06b130d670c",
+              "text_sha256": "715c725bc811fc2259b3d64c1c4367e8fa7fa0849cab677b657452e30bfff395"
+            },
+            {
+              "index": 7394,
+              "record_id": "pile10k-07394-682dfe61372d0cf6",
+              "selection_key": "0118ed620620e0f2cc95f19b3783268a17f9ef7c662fe6a88b470b27a9d8ca82",
+              "text_sha256": "682dfe61372d0cf6f83c25420046da0cf29c76be2437db82fed673b72753b9f8"
+            },
+            {
+              "index": 1589,
+              "record_id": "pile10k-01589-c72ef1b16d7aff59",
+              "selection_key": "011936baf3e549c0fada8b7377da7706b414910fcfc2c1de025d4aa4636395e0",
+              "text_sha256": "c72ef1b16d7aff59942bf19c99cb8692311f0d51af9e48b7368647434113b714"
+            },
+            {
+              "index": 1429,
+              "record_id": "pile10k-01429-d0f863589c374491",
+              "selection_key": "011b44c5e0a718d97e1299edc21a720bc8508ddcaf37fd2912774d60abdc679c",
+              "text_sha256": "d0f863589c374491091a7802eebe790195afb652e1f92b630c9f6872a778b7a6"
+            },
+            {
+              "index": 692,
+              "record_id": "pile10k-00692-1c66f46e27ebc658",
+              "selection_key": "0125425134001e66a187b918f7452cfb78915f15665c88d252e746cec9186aa9",
+              "text_sha256": "1c66f46e27ebc6584098dff8d294b826996e50cc4bebc17a9098934494598a48"
+            },
+            {
+              "index": 3962,
+              "record_id": "pile10k-03962-bdef6990a42f41f7",
+              "selection_key": "0125664651094e8eb92cd170d917edf6eb9c4ac1ce1427e836e2928dfd580b64",
+              "text_sha256": "bdef6990a42f41f79f9ab832ac0b58169a95cf449e44b9ebb11f32d142539485"
+            },
+            {
+              "index": 3326,
+              "record_id": "pile10k-03326-c239a9716f556780",
+              "selection_key": "013b9da2bf20ae7fe82d87ddeeab09e86f9e9071c0cb42703ed2d9488fd4489d",
+              "text_sha256": "c239a9716f5567801dd4bd940ab037cbccb169a45922fc3df87d16f81b4ee86f"
+            },
+            {
+              "index": 9597,
+              "record_id": "pile10k-09597-7a4ab7e1d077e683",
+              "selection_key": "013d45a620a966df8b04bd2b73db11a41880eec0961d3dc9cca7adc7d55be741",
+              "text_sha256": "7a4ab7e1d077e68341c47296acbb6a702497e536c993c85fab8e8439e62892fe"
+            },
+            {
+              "index": 7430,
+              "record_id": "pile10k-07430-b1c062b719ee238e",
+              "selection_key": "013f4bbc19c2ecfe16ab01897f820d54032e7c92f551d1a9c5a17fade2eda6c1",
+              "text_sha256": "b1c062b719ee238e77dd8c71482a32170dfc863ce104d08179847c66dfb55322"
+            },
+            {
+              "index": 2875,
+              "record_id": "pile10k-02875-ee0913d5b16550d6",
+              "selection_key": "01419185fbab6c247f94d924e327d7bf7690ff2fe2736361728dbd984f14291b",
+              "text_sha256": "ee0913d5b16550d66a402a7c23103e33d9d538e268f9b66c1b730589e0c828bf"
+            },
+            {
+              "index": 3510,
+              "record_id": "pile10k-03510-5b14eacece241eee",
+              "selection_key": "0144e3e9a5643a19c108241832bfe789e71611f8e0f93b01ad8303fe70ab2f08",
+              "text_sha256": "5b14eacece241eeee23a9783c5b98992654768047db30fd4a641320139969868"
+            },
+            {
+              "index": 8131,
+              "record_id": "pile10k-08131-eb3b4284f4d12dd1",
+              "selection_key": "014ea73b45a7e32069634b5f04b32474bd07f6a20921c002c1e5f388c48e137d",
+              "text_sha256": "eb3b4284f4d12dd18e45eee920e62fc1f8d5bebfa90672e1ae37861123cfce73"
+            },
+            {
+              "index": 4064,
+              "record_id": "pile10k-04064-e371fe89704bd277",
+              "selection_key": "01537ef2d54e65ff1289dbf3bdcfdb0a36a552bd7263a95cd3521b673d49b1c2",
+              "text_sha256": "e371fe89704bd277f23e57879a4d8b3826a990b4d96e224348383c2451b249c8"
+            },
+            {
+              "index": 2606,
+              "record_id": "pile10k-02606-312f22ac4a15b466",
+              "selection_key": "0154d24b151e6f1d94f25386eac382e31b2d168c2738ed49c3e588180d1f60af",
+              "text_sha256": "312f22ac4a15b4664653bab0884d1b4085e362b97fe4506a10c69969fb967917"
+            },
+            {
+              "index": 7923,
+              "record_id": "pile10k-07923-a9edb666cbe87cdd",
+              "selection_key": "0155f9ab682c71c854474df8810ea2a588196a5a000c925b86ca976e342e89f7",
+              "text_sha256": "a9edb666cbe87cddeb7e720d2dafd60e4227f058936247d646c2c4d4f8052e14"
+            },
+            {
+              "index": 4085,
+              "record_id": "pile10k-04085-88704af3e2732673",
+              "selection_key": "015d36c7e79a5ecd17cb928b2f5d77c85aea999e1021b8b51be055d7e24d1d64",
+              "text_sha256": "88704af3e2732673840180f9008cb6ddd5ffc8252eca786ba8905ed37e27fe5e"
+            },
+            {
+              "index": 7913,
+              "record_id": "pile10k-07913-ba1c9f9fcd245bf7",
+              "selection_key": "0163c58f460e99174418e98622d2f027399a27746c3b5ac284b77aaa8db8b0ef",
+              "text_sha256": "ba1c9f9fcd245bf7afa29aa02301905cea53f67ca74679cd6d3e668706327668"
+            },
+            {
+              "index": 9736,
+              "record_id": "pile10k-09736-213de8979bbc5b40",
+              "selection_key": "0164483333ed4532429ffc5a17f8491b0f4b057300fa8a40cfa75b9a77d79447",
+              "text_sha256": "213de8979bbc5b40bbbea1694575d3657ce39ddd4cef1ab859f1c1d4f7c07204"
+            },
+            {
+              "index": 6187,
+              "record_id": "pile10k-06187-71393e73fcb1656e",
+              "selection_key": "01726d0b9862b9ea548e8f456059f596e51f8fd7e48caa77321404756e2487a5",
+              "text_sha256": "71393e73fcb1656e93bb62164eaae6ef36f54f79cd96c134a6238cf98652e038"
+            },
+            {
+              "index": 7446,
+              "record_id": "pile10k-07446-483fd9bf0d71cf70",
+              "selection_key": "01784789c5a522530a0930874f3e0a1ab01c45d8c336fe1369b48765935a10f7",
+              "text_sha256": "483fd9bf0d71cf70d808cca2e8cc1548577f024e7bef2fb9dbcb7ee683e28da7"
+            },
+            {
+              "index": 125,
+              "record_id": "pile10k-00125-34c26429ae9804f4",
+              "selection_key": "017e782d6809a2c35d8101d4f522281765f54dd91572b31fd483146427e4586c",
+              "text_sha256": "34c26429ae9804f4d726bf7fbe93054ab80d252711858a9844d40000728a8405"
+            },
+            {
+              "index": 173,
+              "record_id": "pile10k-00173-bd7a0f607b908c50",
+              "selection_key": "0187ffd4c74753384c3e784b219fdc49b568c0eabe9e56aad90d9a916da71bc9",
+              "text_sha256": "bd7a0f607b908c5099ff84b11bee8f2ce12a1e7b97662873b2c83caeeffe8621"
+            },
+            {
+              "index": 3929,
+              "record_id": "pile10k-03929-1cd42319bc3ed97e",
+              "selection_key": "0192e27c9b08706e3b2465d9a91096ecab58d3281a98095d5d342e850bdda471",
+              "text_sha256": "1cd42319bc3ed97e95d1562aa001ce05c23f5a44d4b3a0e9f6b35694fe170b96"
+            },
+            {
+              "index": 3815,
+              "record_id": "pile10k-03815-6c6e25205d1a67c8",
+              "selection_key": "01998917af070459bf057b8c38a7bf671c87dbf6597a4c2f9a59e98ac0626436",
+              "text_sha256": "6c6e25205d1a67c824b1ce072fe6ff141ecffdde75e6706d9a46ff91f7d46309"
+            },
+            {
+              "index": 2299,
+              "record_id": "pile10k-02299-d68098be01a75ae0",
+              "selection_key": "0199d554b9d1be74edf3efc77e98927e1efe1a791edc252ad4bda56051b01d91",
+              "text_sha256": "d68098be01a75ae05aa8e6f6304c0c344e45f4ef0e8a24a25f3685a32a8d5465"
+            },
+            {
+              "index": 7843,
+              "record_id": "pile10k-07843-a9e0e443a7a75745",
+              "selection_key": "019a5bfe74ea19fd1b1f882382028a3bfd5c009dafff8bb3e95864d2f6c61308",
+              "text_sha256": "a9e0e443a7a757451cf32fec5407959d97d145e21e581011b3a2da216ef0b760"
+            },
+            {
+              "index": 7931,
+              "record_id": "pile10k-07931-131e8f995d3e4d3d",
+              "selection_key": "019e69d892ac19fa426369d4373e4b6b02431f37c6a9747a27ce15a18b2bce51",
+              "text_sha256": "131e8f995d3e4d3dba7c14a6bb0276470227cd6a8385f5c56d94502b7c657fcf"
+            },
+            {
+              "index": 3954,
+              "record_id": "pile10k-03954-7486818ccbe8928a",
+              "selection_key": "01b20590ec63d90ffd1e8e2d9b6298cac6da9354873230564409d4a955f82097",
+              "text_sha256": "7486818ccbe8928adaacf9eeb687590faa90e72a3aa323c382eae5cf13bfee0b"
+            },
+            {
+              "index": 4177,
+              "record_id": "pile10k-04177-d598df62747767e0",
+              "selection_key": "01b40dfc185b1111c32862fd3a5b70c135bfd29a2df26ecb55a67b0585bf1d94",
+              "text_sha256": "d598df62747767e0e05b84366c867c89375624761be25b8a27fbf9c03c3b68de"
+            },
+            {
+              "index": 7251,
+              "record_id": "pile10k-07251-c65aae929fb71f18",
+              "selection_key": "01b6613fcbccaea93e07fae3f6f93048d8ce557f27ec9af070eabafca96a5475",
+              "text_sha256": "c65aae929fb71f181da3d3e44163142e960d487409db3d71eee686c7e29f6a24"
+            },
+            {
+              "index": 7324,
+              "record_id": "pile10k-07324-7c9974e3a62b35cf",
+              "selection_key": "01bbbeb6555482cd12caf8d3b0dad130966b236ca763a7a9fa526347d33626ee",
+              "text_sha256": "7c9974e3a62b35cfd45853f15295e5741d786372b80b6275b611d4106001943d"
+            },
+            {
+              "index": 9844,
+              "record_id": "pile10k-09844-c7993af3cfd40dae",
+              "selection_key": "01c8fae0df0e2e4c0af525ac66dea8d96f77a2f2ddda4cc6c8ed14785c8f0abc",
+              "text_sha256": "c7993af3cfd40dae93f8809283431b784c5fc10f8bd6c6857b164b7a7f00884e"
+            },
+            {
+              "index": 2939,
+              "record_id": "pile10k-02939-2d25fc43a28f1413",
+              "selection_key": "01c9ebf9f633013cad98eb7da923de310e18bc1cbb8c308141f8dae46e5b8cac",
+              "text_sha256": "2d25fc43a28f141305e921bb9b2dbe1f6a002e0c7363b3dbd8e8db261d460c03"
+            }
+          ]
+        }
+      }
+    },
+    "sequence_tokens_including_bos": 40,
+    "truncation": "first 39 source tokens in tokenizer order"
+  },
+  "deviation_policy": {
+    "blind_truth_retuning": "forbidden",
+    "current_deviations": [],
+    "material_changes": "record what changed, why, decision time, whether pre-truth, and effects on comparability or claim scope"
+  },
+  "execution_order": {
+    "post_truth": [
+      "score frozen outputs",
+      "compute exact proposal ranks from frozen query vectors",
+      "run preregistered teacher-prefix counterfactual diagnostics without revising outputs",
+      "bootstrap records and produce tables/plots"
+    ],
+    "pre_truth": [
+      "train target update on target_update_train",
+      "train inverse states on inverse_train using only the public surrogate",
+      "generate evaluator-only target and matched-public observations",
+      "run both baseline families for conditions matched_public then unavailable_target_lora",
+      "run cuts 0,4,8 and records in fixed order",
+      "freeze outputs, candidates, queries, state, configuration, order, and timings",
+      "create and verify the immutable freeze receipt"
+    ],
+    "truth_open": "only after the freeze receipt verifies every declared hash"
+  },
+  "freeze_contract": {
+    "determinism": "canonical JSON, sorted paths, SHA-256, explicit freeze timestamp",
+    "hashes": [
+      "reconstructed token outputs",
+      "candidate IDs and scores",
+      "frozen inverse query vectors",
+      "method state",
+      "record order",
+      "configuration",
+      "routing and stopping decisions",
+      "timing records"
+    ],
+    "mutation_policy": "create-only outputs made read-only; any hash mismatch fails closed",
+    "receipt_path": "experiments/TRR-0001/freeze_receipt.json",
+    "truth_gate": "scoring refuses to open truth until receipt verification succeeds"
+  },
+  "historical_comparator": {
+    "action": "do not run it as a scientific arm; retain its verified preflight and audit",
+    "reason": "The exact code and public teacher assets are runnable, but the frozen comparator requires a 128x128 source geometry and a three-episode prior-trace adaptation contract. Applying it to the 64x40 Pile/LoRA condition would alter its fixed contract and would not be the exact historical comparator.",
+    "status": "RUNNABLE_BUT_INCOMPATIBLE_WITH_DECLARED_CONDITION"
+  },
+  "metrics": {
+    "primary": "token accuracy excluding BOS and padding at cut 4 in unavailable_target_lora",
+    "required": [
+      "token accuracy excluding BOS and padding",
+      "exact sequence-match rate",
+      "correct prefix length and first-error position",
+      "coverage and selective accuracy",
+      "frozen top-k true-token recall and exact true-token rank",
+      "conditional selection accuracy when truth is in the frozen candidates",
+      "end-to-end runtime per record and scored token",
+      "phase timings including preparation, training, proposal, reconstruction, synchronization, and I/O",
+      "peak CPU and GPU memory",
+      "candidate simulations or equivalent evaluations",
+      "trainable parameter count and persisted state bytes",
+      "implementation-complexity summary"
+    ]
+  },
+  "packet_id": "TRR-PACKET-TRR-0000-ACCEPT-TRR-0001-20260822-EA3A83F35AAD288D502C44D5",
+  "post_truth_diagnostics": {
+    "activation_matching": "frozen chosen and candidate score distributions labeled correct/incorrect after truth",
+    "cut_depth": [
+      0,
+      4,
+      8
+    ],
+    "error_propagation": [
+      "accuracy before and after each record's first frozen output error",
+      "teacher-prefix public-surrogate counterfactual after truth opening"
+    ],
+    "frequency_bins_from_auxiliary_counts": [
+      "unseen",
+      "1-4",
+      "5-19",
+      "20-or-more"
+    ],
+    "output_revision": "forbidden",
+    "position": "physical non-BOS position 1 through 39",
+    "proposal_vs_ranking": "top-16 recall and causal conditional accuracy",
+    "target_surrogate_mismatch": "paired unavailable-target versus matched-public differences",
+    "token_groups": {
+      "numeric": "contains a Unicode decimal digit and all other non-whitespace characters are punctuation",
+      "other": "all remaining scored tokens",
+      "punctuation": "all non-whitespace decoded characters are Unicode punctuation",
+      "whitespace_prefixed": "decoded token begins whitespace or raw token begins \u0120"
+    }
+  },
+  "request": {
+    "bytes": 24375,
+    "path": "coordination/requests/TRR-0001.md",
+    "sha256": "e12296750323ecd8d90955f052f6ca2a1140e2e6452dc3cedadf4cb636daca6e"
+  },
+  "resources": {
+    "dataset": {
+      "id": "NeelNanda/pile-10k",
+      "license": "bigscience-bloom-rail-1.0",
+      "parquet_sha256": "a1a9475a8684ac8f1b17a36eccb2ec49c127edd7aae9beb2f240726972d93f31",
+      "revision": "127bfedcd5047750df5ccf3a12979a47bfa0bafa",
+      "role": "public auxiliary, development, and blind source",
+      "rows": 10000,
+      "split": "train"
+    },
+    "model": {
+      "architecture": "LlamaForCausalLM",
+      "attention_implementation": "sdpa",
+      "dtype": "bfloat16",
+      "hidden_size": 2048,
+      "id": "meta-llama/Llama-3.2-1B-Instruct",
+      "layers": 16,
+      "local_files_only": true,
+      "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "vocabulary_size": 128256
+    },
+    "tokenizer": {
+      "add_special_tokens_for_source_text": false,
+      "bos_insertion": "prepend exactly once after source tokenization",
+      "declared_bos_token_id": 128000,
+      "id": "meta-llama/Llama-3.2-1B-Instruct",
+      "revision": "9213176726f574b556790deb65791e0c5aa438b6"
+    }
+  },
+  "schema": "token-reconstruction.trr0001.preregistration.v1",
+  "seeds": {
+    "global_execution": 1729,
+    "inverse_training": 1731,
+    "record_bootstrap": 1732,
+    "record_selection": 20260822,
+    "target_update": 1730
+  },
+  "statistics": {
+    "confidence_interval": "95% percentile bootstrap",
+    "draws": 10000,
+    "effect_sizes": "absolute percentage-point quality differences and multiplicative cost ratios",
+    "improvement_rule": "claim improvement only for supported quality gain at like-for-like budget, supported cost reduction at like-for-like quality, or a reported Pareto improvement; otherwise call the comparison inconclusive",
+    "paired_differences": "causal minus direct within each record, condition, and cut; target minus matched control for mismatch",
+    "seed": 1732,
+    "unit": "record"
+  },
+  "status": "COMMITTED_BEFORE_BLIND_TRUTH",
+  "target_prefix_update": {
+    "alpha": 8.0,
+    "artifact": {
+      "committed": false,
+      "path": "outputs/TRR-0001/evaluator_private/target_lora.safetensors",
+      "reconstructor_access": false
+    },
+    "base_parameters": "frozen",
+    "batch_records": 8,
+    "decision_time": "preregistered before any blind target observation or truth exists",
+    "dropout": 0.0,
+    "family": "evaluator-only low-rank public-data adaptation",
+    "gradient_clip_norm": 1.0,
+    "initialization": "A normal std=0.01; B zeros",
+    "learning_rate": 0.001,
+    "modules": "q_proj and v_proj in decoder layers 0,1,2,3",
+    "objective": "next-token cross-entropy on BOS plus first 39 public source tokens",
+    "optimizer": "AdamW",
+    "rank": 4,
+    "scale": 2.0,
+    "steps": 40,
+    "training_split": "target_update_train",
+    "weight_decay": 0.0
+  },
+  "task_id": "TRR-0001",
+  "truth_opened": false
+}
