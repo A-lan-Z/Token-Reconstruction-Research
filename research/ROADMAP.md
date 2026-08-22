@@ -5,19 +5,21 @@ by the repository-backed relay.
 
 ## Current scientific priority
 
-TRR-0001-R2 has completed the required 3-method by 2-setup comparison matrix
-and is awaiting review. Causal public-surrogate K16 is the strongest tested
-method on the clean 64x40 Pile/LoRA setup; strict-BOS adaptive A1+A2 is the
-strongest tested method on the historical 128x128 finance setup. Because the
-winner changes with the setup, no method is currently accepted as the overall
-replacement for the others.
+TRR-0002 has completed the controlled 44-cell component crossover, public-only
+confidence calibration, a fresh isolated blind confirmation, and the calibrated
+method's two canonical cells. The frozen calibrated A1/causal method achieved
+98.72% on the fresh blind 64x40 Pile/LoRA replicate, 99.16% on the canonical
+clean setup, and 99.21% on the historical finance setup. It therefore satisfies
+the preregistered simultaneous success rule and replaces historical strict A1+A2
+as the current robust default. Always-K64 A1/causal remains the highest-accuracy
+tested variant at greater cost.
 
 All future method comparisons must populate both registered setups under
 `research/DUAL_BENCHMARK_PROTOCOL.md`. A partial matrix is comparison-incomplete
-and cannot support an overall-best claim. The highest-value proposed scientific
-direction is to improve cross-setup robustness, especially strict-BOS routing
-and coverage on the clean setup, while preserving its historical precision.
-TRR-0002 has not been assigned or started.
+and cannot support an overall-best claim. The active registry now contains 23
+methods and 46 required canonical cells. The highest-value next work is to
+improve A1 proposal recall beyond rank 64 or reduce adaptive causal cost while
+holding the frozen blind protocol and dual-setup coverage fixed.
 
 ## Prior R1 priority (superseded by the dual-benchmark requirement)
 
@@ -32,8 +34,8 @@ passed but does not repair its access interface.
 If a later packet authorizes new research, the highest-value proposed direction
 is a fresh preregistered study of public-only candidate proposal at multiple
 budgets, holding the validated causal selector fixed and measuring the
-quality/cost frontier across multiple target updates. This is a proposal only.
-TRR-0002 has not been assigned or started.
+quality/cost frontier across multiple target updates. That proposal was
+superseded by the completed TRR-0002 controlled crossover and calibration study.
 
 ## Scope note
 

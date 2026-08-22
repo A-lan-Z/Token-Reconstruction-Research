@@ -48,6 +48,7 @@ than choosing one setup and losing comparability with earlier work.
 | `direct_inverse_k16` | public-data affine inverse, full-vocabulary cosine top-16 proposal, choose proposal rank 1 | clean 64x40 |
 | `causal_public_surrogate_k16` | the same frozen top-16 proposals, re-rank with the public prefix and reconstructed prefix, no target-prefix calls | clean 64x40 |
 | `strict_bos_adaptive_a1_a2` | public Alpaca A1 top-512, confidence fast path 0.999, progressive public-prefix A2 tiers 32/128/512, normalized-winner threshold 2.0, then suffix abstention | historical 128x128 |
+| `a1_scale_calibrated_adaptive_causal_k32_to64` | public A1 top-64; causally score K32; expand to K64 when the frozen scale-normalized top-two gap is at or below 1.2544946670532227; never abstain | dual-setup successor |
 
 The word `adaptive` in `strict_bos_adaptive_a1_a2` refers to its per-token tier
 and route selection. Learned online A1 adapters are separate methods and must be
@@ -89,10 +90,27 @@ part of the symmetric factorial selector; they remain represented by the exact
 The causal selector uses the same public prefix and greedy reconstructed prefix,
 but selects the maximum uncentered cosine at every position without abstention.
 
-`research/dual_benchmark_registry.json` is the machine-readable authority for
-the resulting 44 required setup-method cells. The crossover is retrospective;
-any calibrated replacement developed from it must be frozen before fresh blind
-target-update evaluation.
+The crossover's frozen v2 registry is preserved at
+`experiments/TRR-0002/preregistration/dual_benchmark_registry.v2.json` and
+contains its 44 required setup-method cells. The active v3 registry adds the
+calibrated successor, producing 46 required cells. The crossover is
+retrospective; the calibrated successor was fitted only on public development
+updates, frozen, and then evaluated in a fresh isolated blind target-update run.
+
+### TRR-0002 calibrated successor
+
+The calibrated successor replaces the historical A2 raw confidence threshold
+and suffix abstention. Its confidence is the K32 causal top-two score gap divided
+by the RMS deviation of all 32 scores. This statistic is invariant to a common
+score shift or positive rescaling. Positions at or below the frozen public-only
+threshold expand to ranks 33--64; every position emits a token.
+
+The method must remain byte-identical across both canonical setup cells. A fresh
+clean confirmation may use a new cryptographically hidden, disjoint 64x40 split,
+but that replicate supplements rather than deletes the canonical clean cell.
+TRR-0002 froze the method before the new split existed and confirmed 98.72% on
+the fresh blind replicate, 99.16% on the canonical clean setup, and 99.21% on
+the historical setup.
 
 ## Native executions and benchmark-compatible ports
 
@@ -163,3 +181,11 @@ already available. These results are retrospective comparability evidence, not
 a new blind confirmation. The clean TRR-0001-R1 direct and causal outputs remain
 the governing blind results for their native cells; R2 reruns test reproducibility
 and add the previously missing ports.
+
+## TRR-0002 status
+
+TRR-0002 completed all 44 preregistered crossover cells and the two additional
+calibrated-method canonical cells. Its fresh clean confirmation was isolated and
+frozen before truth reveal. The active registry therefore contains 23 methods
+and 46 canonical setup-method cells; future active methods must likewise add one
+cell per canonical setup.

@@ -1,0 +1,29 @@
+TRR-0002 final repository validation
+completed_utc: 2026-08-22T17:39:32Z
+
+COMMAND: env PYTHONPATH=src python3 -m pytest -q
+OUTPUT: 47 passed in 2.94s
+EXIT_STATUS: 0
+
+COMMAND: python3 -c "compile all Python under scripts, src, tests; parse all repository JSON"
+OUTPUT: py_compile=PASS json_parse=PASS json_files=125
+EXIT_STATUS: 0
+
+COMMAND: git diff --check
+OUTPUT: (empty)
+EXIT_STATUS: 0
+
+COMMAND: verify research/dual_benchmark_registry.json Cartesian product
+OUTPUT: schema=token-reconstruction.dual-benchmark-registry.v3 methods=23 setups=2 cells=46 registry_cartesian=PASS
+EXIT_STATUS: 0
+
+COMMAND: sha256sum RESEARCH_CHARTER.md experiments/TRR-0002/crossover/result.json experiments/TRR-0002/calibration/frozen_calibration.json experiments/TRR-0002/blind/fresh-blind-result.json experiments/TRR-0002/blind/predictions.safetensors experiments/TRR-0002/calibrated-dual/result.json experiments/TRR-0002/calibrated-dual/predictions.safetensors
+OUTPUT:
+ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d  RESEARCH_CHARTER.md
+f4673bc8491d488a988c179c8da8cab9fbed66473ce28988b63da8a52ee8151d  experiments/TRR-0002/crossover/result.json
+ad1801ec348a61cbcd50bfbc4a991c8deaa503b79f454c7f1d779567042ebf47  experiments/TRR-0002/calibration/frozen_calibration.json
+5bb59e32eead4676bb1ff98a801e934934a6a662169e1b748a2ae19b8f8d210a  experiments/TRR-0002/blind/fresh-blind-result.json
+faf1e0fbf39647016325c771e8a351e33099d47c3e76b1f645c897920c96cf5a  experiments/TRR-0002/blind/predictions.safetensors
+b4e492e9a426c36cd0ff7d14bdf227eda27c1b274e77ba0d9d5a5121d2f59702  experiments/TRR-0002/calibrated-dual/result.json
+218898b778f46a968c43f6567c14e0253a24fc1581e2ea8f25c775b68d48fde5  experiments/TRR-0002/calibrated-dual/predictions.safetensors
+EXIT_STATUS: 0

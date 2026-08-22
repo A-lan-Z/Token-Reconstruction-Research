@@ -37,6 +37,30 @@ TRR-0001-R2 adds the following cross-setup decisions:
 These decisions remain scoped to the two registered setups and tested method
 configurations. They do not impose a scientific method ban.
 
+TRR-0002 adds the following decisions:
+
+- public A1 proposals plus causal public-prefix selection are robust across both
+  registered setups; at K32 they reached 98.72% clean and 98.93% historical;
+- the fixed-budget historical A2 core fails mainly because its raw confidence
+  scale and suffix-abstention rule do not transfer, not because A1 stops finding
+  the correct token: A1 K32 recall remained 98.76% clean and 99.03% historical;
+- the residual-affine proposal and the A1/residual union did not improve on pure
+  A1 under the causal selector in the controlled crossover;
+- the public-only calibrated successor uses a scale-normalized K32 margin to
+  expand uncertain positions to K64, never abstains, and was frozen before its
+  fresh hidden selection existed;
+- that same frozen method achieved 98.72% on the fresh blind replicate, 99.16%
+  on the canonical clean setup, and 99.21% historically, exceeding the 98.22%
+  historical strict A1+A2 result and the 83.97% prior new-setup causal result;
+- always-K64 A1/causal remains slightly more accurate (99.32% clean and 99.26%
+  historical), while the calibrated method retains most of that gain at lower
+  compute cost; and
+- every new active method must still populate both canonical setups. Fresh
+  replicas supplement rather than silently replace the canonical cells.
+
+These decisions are scoped to the pinned public model, lens, target-update
+family, cuts, datasets, and tested geometries. They do not ban other methods.
+
 ## Administrative entries
 
 - TRR-0000 bootstraps and validates the repository-backed relay. It selects no
@@ -52,5 +76,8 @@ configurations. They do not impose a scientific method ban.
   confirmatory run. This is a revision of TRR-0001, not a new scientific
   direction, and TRR-0002 remains unauthorized.
 - User-directed revision TRR-0001-R2 establishes the durable dual-benchmark
-  protocol, backfills every existing method across both setups, and leaves
-  TRR-0002 unassigned and unstarted.
+  protocol and backfills every existing method across both setups.
+- The repository owner explicitly superseded the stale proposal-only TRR-0002
+  packet with the controlled component-crossover and calibrated-selector study.
+  The exact override is preserved at
+  `coordination/requests/TRR-0002-OWNER-OVERRIDE.md`.

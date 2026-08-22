@@ -65,12 +65,18 @@ Ground truth is opened only after the reconstruction decision and all measured e
 The original neutral seed contained no target activations, source truth,
 selected evaluation examples, model weights, datasets, trained lenses or
 adapters, prior scientific findings, or selected research direction. The
-current tree additionally contains administrative TRR-0000 requests, results,
-delivery evidence, and deterministic bootstrap artifacts.
+current tree additionally contains the TRR relay history plus reproducible
+TRR-0001 and TRR-0002 research code, compact prediction freezes, manifests,
+results, and validation evidence.
 
-Those relay records validate orchestration and reproducibility; they are not
-scientific findings and do not select a reconstruction method or research
-direction. Evaluation traces and truth remain outside this repository.
+The current non-authoritative result summary is that a public A1 proposal with
+a scale-calibrated adaptive causal selector achieved 98.72% on a fresh isolated
+blind Pile/LoRA replicate, 99.16% on the canonical clean setup, and 99.21% on
+the historical finance setup. See `coordination/results/TRR-0002.md` and
+`experiments/TRR-0002/manifest.json` for the exact evidence and scope.
+Evaluator-private source truth, selection keys, target updates, and large raw
+observations remain outside Git; committed prediction artifacts contain method
+outputs and diagnostics, not source plaintext.
 
 ## Quick checks
 

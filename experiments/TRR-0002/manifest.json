@@ -1,0 +1,459 @@
+{
+  "authority": {
+    "charter_path": "RESEARCH_CHARTER.md",
+    "charter_sha256": "ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d",
+    "owner_override_effect": "Run the controlled component-crossover study, calibrate a public-development-only A2 replacement, confirm it fresh-blind, and make dual-benchmark evaluation permanent.",
+    "owner_override_path": "coordination/requests/TRR-0002-OWNER-OVERRIDE.md",
+    "request_path": "coordination/requests/TRR-0002.md"
+  },
+  "benchmarks": [
+    {
+      "model": "meta-llama/Llama-3.2-1B-Instruct",
+      "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "records": 64,
+      "scored_tokens": 2496,
+      "seed_and_selection": "Frozen TRR-0001-R1 canonical selection",
+      "setup_id": "clean-pile-lora-64x40",
+      "trajectory": "Pile text with clean public LoRA update trajectories, 64 records \u00d7 40 token slots including the setup's excluded initial position"
+    },
+    {
+      "model": "meta-llama/Llama-3.2-1B-Instruct",
+      "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "records": 128,
+      "scored_tokens": 13990,
+      "seed_and_selection": "Frozen historical source300 selection",
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "trajectory": "Historical Finance-Instruct strict-BOS native trajectory"
+    }
+  ],
+  "calibration": {
+    "abstention": false,
+    "base_budget": 32,
+    "data_policy": "Public Pile development text and public base/LoRA updates only; no canonical truth, observation, target LoRA, or prior private record.",
+    "development_records": 32,
+    "fit": {
+      "adaptive_correct_tokens": 3707,
+      "always_k64_correct_tokens": 3708,
+      "k32_correct_tokens": 3686
+    },
+    "fit_conditions": [
+      "public_base",
+      "public_lora_2601",
+      "public_lora_2602"
+    ],
+    "fit_cost": {
+      "exit_status": 0,
+      "process_max_rss_kib": 3387224,
+      "wall_seconds": 104.28
+    },
+    "fit_result": {
+      "path": "experiments/TRR-0002/calibration/fit.json",
+      "sha256": "63e43604689996bac8065079d1cfcc0664d57d7a763d74d11d4ba832d54b689c"
+    },
+    "frozen_artifact": {
+      "bytes": 2940,
+      "path": "experiments/TRR-0002/calibration/frozen_calibration.json",
+      "sha256": "ad1801ec348a61cbcd50bfbc4a991c8deaa503b79f454c7f1d779567042ebf47"
+    },
+    "frozen_expansion_threshold": 1.2544946670532227,
+    "held_out": {
+      "correct_tokens": 1236,
+      "revised_after_holdout": false,
+      "scored_tokens": 1248,
+      "token_accuracy": 0.9903846153846154
+    },
+    "held_out_condition": "public_lora_2603",
+    "maximum_budget": 64,
+    "method_id": "a1_scale_calibrated_adaptive_causal_k32_to64",
+    "public_generation": {
+      "exit_status": 0,
+      "process_max_rss_kib": 4606268,
+      "wall_seconds": 13.05
+    },
+    "scale_statistic": "(top1 - top2) / RMS(candidate scores - candidate-score mean)",
+    "selector_source": {
+      "path": "src/token_reconstruction/calibrated_selector.py",
+      "sha256": "257fb647485a31b0c1c009b3fbc492f17a3bfda94058a0f2c5691af987bb36cf"
+    }
+  },
+  "canonical_dual": {
+    "comparators": {
+      "always_k64_a1_causal": {
+        "historical_accuracy": 0.9926375982844889,
+        "historical_compute_seconds": 63.4681,
+        "historical_logical_candidate_simulations": 895360,
+        "new_accuracy": 0.9931891025641025,
+        "new_compute_seconds": 8.37609,
+        "new_logical_candidate_simulations": 159744
+      },
+      "historical_strict_a1_a2": {
+        "historical_accuracy": 0.9822015725518227,
+        "new_accuracy": 0.1326121794871795
+      }
+    },
+    "ended_utc": "2026-08-22T17:23:49.845732Z",
+    "historical": {
+      "candidate_recall": 0.993638313080772,
+      "compute_seconds": 53.997557,
+      "correct_tokens": 13880,
+      "coverage": 1.0,
+      "exact_records": 96,
+      "logical_candidate_simulations": 718752,
+      "records": 128,
+      "scored_tokens": 13990,
+      "token_accuracy": 0.9921372408863474
+    },
+    "new": {
+      "candidate_recall": 0.9931891025641025,
+      "compute_seconds": 6.208804305992089,
+      "correct_tokens": 2475,
+      "coverage": 1.0,
+      "exact_records": 52,
+      "logical_candidate_simulations": 124832,
+      "records": 64,
+      "scored_tokens": 2496,
+      "token_accuracy": 0.9915865384615384
+    },
+    "prediction": {
+      "bytes": 9947248,
+      "path": "experiments/TRR-0002/calibrated-dual/predictions.safetensors",
+      "sha256": "218898b778f46a968c43f6567c14e0253a24fc1581e2ea8f25c775b68d48fde5"
+    },
+    "result": {
+      "path": "experiments/TRR-0002/calibrated-dual/result.json",
+      "sha256": "b4e492e9a426c36cd0ff7d14bdf227eda27c1b274e77ba0d9d5a5121d2f59702"
+    },
+    "run_cost": {
+      "exit_status": 0,
+      "peak_cuda_memory_allocated_bytes": 3611418112,
+      "process_max_rss_kib": 3657536,
+      "wall_seconds": 75.05
+    },
+    "started_utc": "2026-08-22T17:22:40.760363Z",
+    "success_rule": {
+      "cost_reported_both": true,
+      "historical_at_least": 0.9822,
+      "new_strictly_greater_than": 0.8397,
+      "passed": true,
+      "same_frozen_method": true
+    }
+  },
+  "commands": {
+    "blind_reconstruction": "scripts/trr0002_blind_isolate.sh outputs/TRR-0002/blind/reconstructor_input outputs/TRR-0002/blind_code_export /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct /home/alanz/.local/lib/python3.12/site-packages outputs/TRR-0002/blind_method",
+    "blind_score": "env PYTHONPATH=src python3 scripts/trr0002_blind_score.py --receipt experiments/TRR-0002/blind/freeze_receipt.json --input-root outputs/TRR-0002/blind/reconstructor_input --output-root outputs/TRR-0002/blind_method --code-root outputs/TRR-0002/blind_code_export --public-commitment experiments/TRR-0002/blind/selection_commitment.json --private-selection outputs/TRR-0002/evaluator_selection/private_selection.json --truth outputs/TRR-0002/blind/evaluator_private/blind_truth.jsonl --result experiments/TRR-0002/blind/fresh-blind-result.json",
+    "calibration_fit": "env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false CUBLAS_WORKSPACE_CONFIG=:4096:8 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True PYTHONPATH=src:scripts python3 scripts/trr0002_fit_calibration.py --repository-root . --historical-root /home/alanz/spartan/punim2939/backdoor_lora/ersoy2026 --public-root outputs/TRR-0002/public-calibration --plan experiments/TRR-0002/calibration/preregistration/plan.json --fit-output experiments/TRR-0002/calibration/fit.json --calibration-output experiments/TRR-0002/calibration/frozen_calibration.json",
+    "canonical_dual": "env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false CUBLAS_WORKSPACE_CONFIG=:4096:8 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True PYTHONPATH=src:scripts python3 scripts/trr0002_calibrated_dual_eval.py --repository-root . --historical-root /home/alanz/spartan/punim2939/backdoor_lora/ersoy2026 --new-input-root outputs/TRR-0001-R1/clean/frozen_bundle/reconstructor_input --new-truth-jsonl outputs/TRR-0001-R1/clean/evaluator_private/blind_truth.jsonl --calibration experiments/TRR-0002/calibration/frozen_calibration.json --crossover-result experiments/TRR-0002/crossover/result.json --fresh-blind-result experiments/TRR-0002/blind/fresh-blind-result.json --prediction-artifact outputs/TRR-0002/calibrated-dual/predictions.safetensors --output experiments/TRR-0002/calibrated-dual/result.json",
+    "crossover": "env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false CUBLAS_WORKSPACE_CONFIG=:4096:8 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True PYTHONPATH=src python3 scripts/trr0002_component_crossover.py --repository-root . --historical-root /home/alanz/spartan/punim2939/backdoor_lora/ersoy2026 --new-input-root outputs/TRR-0001-R1/clean/frozen_bundle/reconstructor_input --new-truth-jsonl outputs/TRR-0001-R1/clean/evaluator_private/blind_truth.jsonl --old-native-json experiments/TRR-0001/revision-r2/historical_native_rerun.json --previous-prediction-artifact outputs/TRR-0001-R2/dual-benchmark/predictions.safetensors --plan experiments/TRR-0002/preregistration/plan.json --registry research/dual_benchmark_registry.json --prediction-artifact outputs/TRR-0002/component-crossover/predictions.safetensors --output experiments/TRR-0002/crossover/result.json",
+    "public_generation": "env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false CUBLAS_WORKSPACE_CONFIG=:4096:8 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True PYTHONPATH=src python3 scripts/trr0002_public_calibration.py --plan experiments/TRR-0002/calibration/preregistration/plan.json --source-plan experiments/TRR-0001/plan.json --output-root outputs/TRR-0002/public-calibration"
+  },
+  "component_crossover": {
+    "a1_true_token_rank": {
+      "clean": {
+        "median_rank": 1.0,
+        "recall_k16": 0.9803686142,
+        "recall_k32": 0.9875801206,
+        "recall_k64": 0.9931890965,
+        "recall_k8": 0.9711538553
+      },
+      "historical": {
+        "median_rank": 1.0,
+        "recall_k16": 0.985275209,
+        "recall_k32": 0.9903502464,
+        "recall_k64": 0.9936383367,
+        "recall_k8": 0.9764117002
+      }
+    },
+    "a2_diagnostic": {
+      "clean": {
+        "evaluated_positions": 75,
+        "mean_first_abstention_position": 1.171875,
+        "normalized_winner_mean": 1.773655653,
+        "records_with_abstention": 64,
+        "records_without_abstention": 0
+      },
+      "conclusion": "A1 recall transfers; historical A2 confidence scale and autoregressive abstention do not.",
+      "historical": {
+        "evaluated_positions": 6349,
+        "mean_first_abstention_position": 47.7439994812,
+        "normalized_winner_mean": 2.5314087868,
+        "records_with_abstention": 125,
+        "records_without_abstention": 3
+      }
+    },
+    "accuracy_by_setup": {
+      "clean-pile-lora-64x40": {
+        "a1_causal": {
+          "16": 0.9803685897435898,
+          "32": 0.9871794871794872,
+          "64": 0.9931891025641025,
+          "8": 0.9707532051282052
+        },
+        "a1_historical_a2": {
+          "16": 0.003205128205128205,
+          "32": 0.004407051282051282,
+          "64": 0.016826923076923076,
+          "8": 0.002403846153846154
+        },
+        "a1_residual_union_causal": {
+          "16": 0.9771634615384616,
+          "32": 0.9859775641025641,
+          "64": 0.9903846153846154,
+          "8": 0.9627403846153846
+        },
+        "residual_affine_causal": {
+          "16": 0.8397435897435898,
+          "32": 0.8513621794871795,
+          "64": 0.8637820512820513,
+          "8": 0.8193108974358975
+        },
+        "residual_affine_historical_a2": {
+          "16": 0.004006410256410256,
+          "32": 0.008413461538461538,
+          "64": 0.02123397435897436,
+          "8": 0.0028044871794871795
+        }
+      },
+      "historical-finance-strict-bos-128x128": {
+        "a1_causal": {
+          "16": 0.9843459614010007,
+          "32": 0.9892780557541101,
+          "64": 0.9926375982844889,
+          "8": 0.9751965689778413
+        },
+        "a1_historical_a2": {
+          "16": 0.427662616154396,
+          "32": 0.4448892065761258,
+          "64": 0.4466761972837741,
+          "8": 0.427662616154396
+        },
+        "a1_residual_union_causal": {
+          "16": 0.9814152966404575,
+          "32": 0.9879914224446033,
+          "64": 0.9921372408863474,
+          "8": 0.9721229449606862
+        },
+        "residual_affine_causal": {
+          "16": 0.8112223016440314,
+          "32": 0.8314510364546104,
+          "64": 0.8418870621872766,
+          "8": 0.7828448892065761
+        },
+        "residual_affine_historical_a2": {
+          "16": 0.0,
+          "32": 0.0,
+          "64": 0.0,
+          "8": 0.0
+        }
+      }
+    },
+    "baseline_prediction_mismatches": 0,
+    "completed_cells": 44,
+    "controls": {
+      "direct_inverse_k16": {
+        "clean": 0.6470352564102564,
+        "historical": 0.6100071479628306
+      },
+      "residual_causal_k16": {
+        "clean": 0.8397435897435898,
+        "historical": 0.8112223016440314
+      },
+      "strict_bos_adaptive_a1_a2": {
+        "clean": 0.1326121794871795,
+        "historical": 0.9822015725518227
+      }
+    },
+    "cost": {
+      "exit_status": 0,
+      "process_max_rss_kib": 3661608,
+      "wall_seconds": 680.63
+    },
+    "ended_utc": "2026-08-22T16:25:29.826756Z",
+    "prediction_freeze": {
+      "bytes": 91956624,
+      "path": "outputs/TRR-0002/component-crossover/predictions.safetensors",
+      "sha256": "f06e5813daaf0578d8bcb9261b1f8064731bc44f35723711c794f2af1251043d"
+    },
+    "primary_hypothesis": {
+      "clean_correct_tokens": 2464,
+      "clean_required_strictly_greater_than": 2096,
+      "historical_correct_tokens": 13840,
+      "historical_required_at_least": 13741,
+      "method_id": "a1_causal_k32",
+      "passed": true
+    },
+    "required_cells": 44,
+    "result": {
+      "bytes": 2030976,
+      "path": "experiments/TRR-0002/crossover/result.json",
+      "sha256": "f4673bc8491d488a988c179c8da8cab9fbed66473ce28988b63da8a52ee8151d"
+    },
+    "schema": "token-reconstruction.trr0002-component-crossover-result.v1",
+    "started_utc": "2026-08-22T16:14:12.317070Z",
+    "status": "RETROSPECTIVE_COMPLETE_CROSSOVER"
+  },
+  "environment": {
+    "determinism": {
+      "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+      "TOKENIZERS_PARALLELISM": "false"
+    },
+    "device": "NVIDIA GeForce RTX 5080",
+    "offline_flags": {
+      "HF_DATASETS_OFFLINE": "1",
+      "HF_HUB_OFFLINE": "1",
+      "TRANSFORMERS_OFFLINE": "1"
+    },
+    "python": "3.12.3",
+    "torch": "2.10.0+cu128",
+    "torch_cuda": "12.8",
+    "transformers": "5.3.0"
+  },
+  "failed_or_excluded_runs": [
+    {
+      "id": "blind-selection-attempt1",
+      "path": "experiments/TRR-0002/blind/excluded-selection-attempt1/",
+      "reason": "Selected stale TRR-0001 metadata/records; rejected before reconstruction."
+    },
+    {
+      "id": "blind-selection-attempt2",
+      "path": "experiments/TRR-0002/blind/excluded-selection-attempt2/",
+      "reason": "Only relabeled already-used record IDs; rejected before reconstruction."
+    },
+    {
+      "id": "blind-reconstruction-attempt1",
+      "path": "experiments/TRR-0002/blind/excluded-reconstruction-attempt1/",
+      "reason": "Dynamic import/dataclass wrapper failure before predictions; method and calibration unchanged, wrapper-only correction preregistered."
+    }
+  ],
+  "fresh_blind": {
+    "access": {
+      "denial_probes_passed": 8,
+      "network_disabled": true,
+      "prediction_revision_after_truth": false,
+      "target_prefix_calls": 0,
+      "truth_or_source_inputs": 0
+    },
+    "cost": {
+      "cuda_peak_allocated_bytes": 2589056512,
+      "executed_candidate_simulations": 159488,
+      "logical_candidate_simulations": 124160,
+      "method_compute_seconds": 6.289365556003759,
+      "process_max_rss_kib": 3387152,
+      "proposal_seconds": 0.3777360999956727,
+      "selection_seconds": 5.902781313001469
+    },
+    "freeze_receipt": {
+      "created_utc": "2026-08-22T17:16:11Z",
+      "path": "experiments/TRR-0002/blind/freeze_receipt.json",
+      "sha256": "7a66e958ee4e9a37b38ac1fbeeda13d34333ab594c647151aaef50389d6e4288"
+    },
+    "metrics": {
+      "candidate_recall": 0.9887820512820513,
+      "conditional_selector_accuracy": 0.9983792544570502,
+      "correct_tokens": 2464,
+      "coverage": 1.0,
+      "exact_records": 49,
+      "record_bootstrap_ci95": [
+        0.9759615398943424,
+        0.9947916669771075
+      ],
+      "records": 64,
+      "scored_tokens": 2496,
+      "token_accuracy": 0.9871794871794872
+    },
+    "passed": true,
+    "prediction": {
+      "bytes": 1344816,
+      "committed_before_truth": true,
+      "path": "experiments/TRR-0002/blind/predictions.safetensors",
+      "sha256": "faf1e0fbf39647016325c771e8a351e33099d47c3e76b1f645c897920c96cf5a"
+    },
+    "result": {
+      "path": "experiments/TRR-0002/blind/fresh-blind-result.json",
+      "scored_utc": "2026-08-22T17:17:47Z",
+      "sha256": "5bb59e32eead4676bb1ff98a801e934934a6a662169e1b748a2ae19b8f8d210a"
+    },
+    "selection_commitment": {
+      "excluded_previous_records": 352,
+      "path": "experiments/TRR-0002/blind/selection_commitment.json",
+      "sha256": "52643012895248691e9091255bbb91476a7feaac7156616296cca437a28d5545"
+    },
+    "setup_id": "fresh-clean-pile-lora-64x40"
+  },
+  "handoff": {
+    "manifest_path": "experiments/TRR-0002/manifest.json",
+    "merge_performed": false,
+    "next_task_started": false,
+    "result_path": "coordination/results/TRR-0002.md",
+    "state_path": "coordination/STATE.json"
+  },
+  "protocol_updates": {
+    "active_methods": 23,
+    "documents": [
+      "README.md",
+      "research/DUAL_BENCHMARK_PROTOCOL.md",
+      "research/ROADMAP.md",
+      "research/DECISIONS.md",
+      "research/dual_benchmark_registry.json"
+    ],
+    "frozen_previous_registry": "experiments/TRR-0002/preregistration/dual_benchmark_registry.v2.json",
+    "registry_schema": "token-reconstruction.dual-benchmark-registry.v3",
+    "required_cells": 46,
+    "rule": "Every active reconstruction method is registered on both canonical setups."
+  },
+  "raw_log_hashes": {
+    "experiments/TRR-0002/blind/reconstructor-output.txt": "9055cf59407f3bdf8057f7e35d021f3b1827931ee86e7312f4acd024bf29d193",
+    "experiments/TRR-0002/blind/reconstructor-time.txt": "a7abfec9253381f38959521ff3a6479f857fd1b05567197a3c7fb729e67366f6",
+    "experiments/TRR-0002/blind/score-output.txt": "a3bdc563661167452fc67bb73462346ac454be2fac0bd76afe7ccc6791da9ec5",
+    "experiments/TRR-0002/blind/score-time.txt": "5723b64acc8eac18ee2161772ca2dbc01a73b8aa03ab6e44dbee0f3d0067a28f",
+    "experiments/TRR-0002/calibrated-dual/run-output.txt": "69021fc0609f7e26bafd208cc2552f0a0b64bea9015254e523a8f3aafe47e1cf",
+    "experiments/TRR-0002/calibrated-dual/run-time.txt": "8ff289afed7e795e154d4fcf06dc61d1fc0bd0a5ce84b11a0927931d6ff3b5b5",
+    "experiments/TRR-0002/calibration/fit-output.txt": "e5b70a292538bd775723a77fc41379b620c90a8644ae984d0f4a0d8802b70ff4",
+    "experiments/TRR-0002/calibration/fit-time.txt": "a22ed596c9815521b1c906dc5542db415116e0153340c135146333fc8603227b",
+    "experiments/TRR-0002/calibration/public-generation-output.txt": "7c7dbde15afe04a415b0e4306ea5f9ef50de2d7f88ba0364d77baaeb49224b82",
+    "experiments/TRR-0002/calibration/public-generation-time.txt": "e195fef3666dc2b26324bac2e208a60c6cda617074a03c257e30aef5ba2a0508",
+    "experiments/TRR-0002/calibration/public-generation.json": "6bed8aca6668bd749bbad03c0c85bbace306085dac3141895dad7685f03d0682",
+    "experiments/TRR-0002/crossover/run-output.txt": "1cfd136abfc0b6d624707fe55054a21bdcb38a7f239d6b15e6f4d61337208f73",
+    "experiments/TRR-0002/crossover/run-time.txt": "064b250ad9e7964b6625bc84b73bfac68c73075e459af751b04335cfeb6074d4"
+  },
+  "repository": {
+    "base_merge_commit": "84479014a6c07fa6f17d53df3f50eb32e3ef140c",
+    "blind_prediction_freeze_commit": "f12a07c",
+    "blind_preregistration_commit": "c270b9c4dc89df7760a8749d6834fc28af56290b",
+    "blind_wrapper_correction_commit": "ddf704c98b9d0193d7568ea2384d2ba57078a801",
+    "branch": "task/TRR-0002",
+    "calibration_execution_commit": "bc24a868fdea9a62f2d20081c0d0387cff6e4b4c",
+    "calibration_freeze_evidence_commit": "68974c3b23806fa4957f4ba40b7517c721c30e09",
+    "canonical_dual_execution_commit": "75aa76460c571e016d398f741efb005aa5556dab",
+    "crossover_execution_commit": "edfbf99b0c8e8944b5b962bbca66cb7ac1a38f1d",
+    "history_rewritten": false,
+    "merged": false
+  },
+  "schema": "token-reconstruction.trr0002-manifest.v1",
+  "status": "AWAITING_CHATGPT_REVIEW",
+  "task_id": "TRR-0002",
+  "validation": {
+    "artifact": {
+      "path": "experiments/TRR-0002/validation/final-validation.txt",
+      "sha256": "d767e8f64ed93ae106f43d8689d2365eb57a1206ab4440b5ac0b115d1cea765a"
+    },
+    "commands": [
+      "python3 -m py_compile scripts/*.py src/token_reconstruction/*.py tests/*.py",
+      "python3 -m pytest -q",
+      "python3 -c 'parse every tracked JSON document'",
+      "python3 -c 'verify registry Cartesian product and artifact hashes'",
+      "git diff --check",
+      "sha256sum RESEARCH_CHARTER.md"
+    ],
+    "completed_utc": "2026-08-22T17:39:32Z",
+    "results": {
+      "charter_sha256": "ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d",
+      "full_test_suite": "47 passed in 2.94s",
+      "git_diff_check": "PASS",
+      "json_parse": "PASS (125 JSON files)",
+      "principal_artifact_hashes": "PASS",
+      "python_compile": "PASS",
+      "registry_cartesian": "PASS (23 methods \u00d7 2 setups = 46 cells)"
+    },
+    "status": "PASSED"
+  }
+}
