@@ -225,12 +225,12 @@ def resolved_policy_from_dict(value: Mapping[str, Any]) -> ResolvedPolicy:
             return float("inf")
         return float(raw)
 
-    policy = ResolvedPolicy(
-        spec=spec,
-        thresholds=tuple(
-            (k, decode_threshold(encoded[str(k)])) for k in spec.schedule
-        ),
+    thresholds = (
+        ()
+        if spec.kind == "fixed"
+        else tuple((k, decode_threshold(encoded[str(k)])) for k in spec.schedule)
     )
+    policy = ResolvedPolicy(spec=spec, thresholds=thresholds)
     policy.validate()
     if value.get("policy_id") != policy.policy_id:
         raise ConfigurationSearchError("serialized policy ID changed")

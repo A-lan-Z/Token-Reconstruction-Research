@@ -108,6 +108,23 @@ def test_resolved_policy_strict_json_round_trip_handles_infinity() -> None:
     assert resolved_policy_from_dict(serialized) == policy
 
 
+def test_resolved_fixed_policy_round_trip_needs_no_threshold() -> None:
+    spec = PolicySpec(
+        kind="fixed",
+        score_rule="direct_cosine",
+        schedule=(512,),
+        fast_path_id="off",
+        fast_path_threshold=None,
+        routing_signal=None,
+        gate_mode=None,
+        terminal_action="commit_last_winner",
+    )
+    policy = resolve_policy(spec, {})
+    serialized = policy.serialized()
+    assert serialized["numeric_thresholds"] == {}
+    assert resolved_policy_from_dict(serialized) == policy
+
+
 def test_score_rules_and_normalized_margin_invariances() -> None:
     hidden = torch.tensor(
         [[[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [-1.0, 0.0, 0.0]]]
