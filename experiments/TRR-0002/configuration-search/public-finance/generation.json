@@ -1,0 +1,226 @@
+{
+  "calibration_plan": {
+    "bytes": 7072,
+    "path": "experiments/TRR-0002/calibration/preregistration/plan.json",
+    "sha256": "a1ace4d48240ecfd64c2bc6c1f2f1f609a358f2af6cfdcceb9fa1ea883bc6b43"
+  },
+  "canonical_evaluation_observation_inputs": 0,
+  "canonical_evaluation_truth_inputs": 0,
+  "command": {
+    "argv": [
+      "scripts/trr0002_r1_public_finance.py",
+      "--plan",
+      "experiments/TRR-0002/configuration-search/preregistration/plan.json",
+      "--public-root",
+      "outputs/TRR-0002/public-calibration",
+      "--output-root",
+      "outputs/TRR-0002/configuration-search/public-finance"
+    ],
+    "cwd": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research",
+    "environment": {
+      "HF_DATASETS_OFFLINE": "1",
+      "HF_HUB_OFFLINE": "1",
+      "PYTHONPATH": "src:scripts"
+    }
+  },
+  "conditions": [
+    {
+      "config": {
+        "id": "public_base",
+        "role": "threshold fitting",
+        "update": "none"
+      },
+      "id": "public_base",
+      "observation": {
+        "bytes": 16777448,
+        "path": "outputs/TRR-0002/configuration-search/public-finance/observations/public_base_cut4.safetensors",
+        "sha256": "a998437b84a7d1aabe5d59fe19ad2e499c9becdc4de7a3d9e3ca334e974aadba"
+      },
+      "update": null
+    },
+    {
+      "config": {
+        "alpha": 4.0,
+        "batch_records": 8,
+        "gradient_clip_norm": 1.0,
+        "id": "public_lora_2601",
+        "layers": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "learning_rate": 0.00075,
+        "modules": [
+          "q_proj",
+          "v_proj"
+        ],
+        "rank": 4,
+        "role": "threshold fitting",
+        "seed": 2601,
+        "steps": 30,
+        "training_records": "first 32 target_update_train records",
+        "weight_decay": 0.0
+      },
+      "id": "public_lora_2601",
+      "observation": {
+        "bytes": 16777456,
+        "path": "outputs/TRR-0002/configuration-search/public-finance/observations/public_lora_2601_cut4.safetensors",
+        "sha256": "964a57760b70b2031487304f16c0bf6e69300717e4fee8ca8f2300c6c7524595"
+      },
+      "update": {
+        "bytes": 427632,
+        "path": "outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors",
+        "sha256": "eea7bb49f801b61df2e26a8f59af7c3096f6f3a2604404e16e589443bcfba595"
+      }
+    },
+    {
+      "config": {
+        "alpha": 8.0,
+        "batch_records": 8,
+        "gradient_clip_norm": 1.0,
+        "id": "public_lora_2602",
+        "layers": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "learning_rate": 0.00075,
+        "modules": [
+          "q_proj",
+          "v_proj"
+        ],
+        "rank": 8,
+        "role": "threshold fitting",
+        "seed": 2602,
+        "steps": 30,
+        "training_records": "last 32 target_update_train records",
+        "weight_decay": 0.0
+      },
+      "id": "public_lora_2602",
+      "observation": {
+        "bytes": 16777456,
+        "path": "outputs/TRR-0002/configuration-search/public-finance/observations/public_lora_2602_cut4.safetensors",
+        "sha256": "0ada9c4902ee703e64e3f23c9e3855995f48efcfc215eeaea56df4cb05167a17"
+      },
+      "update": {
+        "bytes": 853624,
+        "path": "outputs/TRR-0002/public-calibration/updates/public_lora_2602.safetensors",
+        "sha256": "7f6f2ff310c58c68f69cd8e829124b82170454d611ee47b941cb66689553d729"
+      }
+    },
+    {
+      "config": {
+        "alpha": 12.0,
+        "batch_records": 8,
+        "gradient_clip_norm": 1.0,
+        "id": "public_lora_2603",
+        "layers": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "learning_rate": 0.00075,
+        "modules": [
+          "q_proj",
+          "v_proj"
+        ],
+        "rank": 4,
+        "role": "held-out public validation; forbidden for threshold selection or revision",
+        "seed": 2603,
+        "steps": 30,
+        "training_records": "all 64 target_update_train records in reverse fixed order",
+        "weight_decay": 0.0
+      },
+      "id": "public_lora_2603",
+      "observation": {
+        "bytes": 16777456,
+        "path": "outputs/TRR-0002/configuration-search/public-finance/observations/public_lora_2603_cut4.safetensors",
+        "sha256": "4b74e11e1b8fde14a2a6a57c2f3ac310a8dc530247aeea88cbff7c671400f894"
+      },
+      "update": {
+        "bytes": 427632,
+        "path": "outputs/TRR-0002/public-calibration/updates/public_lora_2603.safetensors",
+        "sha256": "50b894310f794a123b80f5a7648b1b872a36aa0683bbfee9a60048d003ed46eb"
+      }
+    }
+  ],
+  "ended_utc": "2026-08-23T03:14:14Z",
+  "exit_status": 0,
+  "peak_memory": {
+    "cuda_peak_allocated_bytes": 2673034240,
+    "cuda_peak_reserved_bytes": 2690646016,
+    "process_max_rss_kib": 4441676
+  },
+  "phases": [
+    {
+      "elapsed_seconds": 0.7736134139995556,
+      "ended_utc": "2026-08-23T03:14:09Z",
+      "exit_status": 0,
+      "phase": "load_public_tokenizer_and_finance_dataset",
+      "started_utc": "2026-08-23T03:14:09Z"
+    },
+    {
+      "elapsed_seconds": 0.0310654860077193,
+      "ended_utc": "2026-08-23T03:14:09Z",
+      "exit_status": 0,
+      "phase": "select_and_hash_disjoint_finance_records",
+      "started_utc": "2026-08-23T03:14:09Z"
+    },
+    {
+      "elapsed_seconds": 1.6335001029947307,
+      "ended_utc": "2026-08-23T03:14:11Z",
+      "exit_status": 0,
+      "phase": "capture_public_base",
+      "started_utc": "2026-08-23T03:14:09Z"
+    },
+    {
+      "elapsed_seconds": 0.7083425799937686,
+      "ended_utc": "2026-08-23T03:14:12Z",
+      "exit_status": 0,
+      "phase": "capture_public_lora_2601",
+      "started_utc": "2026-08-23T03:14:11Z"
+    },
+    {
+      "elapsed_seconds": 0.6771507890080102,
+      "ended_utc": "2026-08-23T03:14:13Z",
+      "exit_status": 0,
+      "phase": "capture_public_lora_2602",
+      "started_utc": "2026-08-23T03:14:12Z"
+    },
+    {
+      "elapsed_seconds": 0.6604972200002521,
+      "ended_utc": "2026-08-23T03:14:14Z",
+      "exit_status": 0,
+      "phase": "capture_public_lora_2603",
+      "started_utc": "2026-08-23T03:14:13Z"
+    }
+  ],
+  "plan": {
+    "bytes": 10944,
+    "path": "experiments/TRR-0002/configuration-search/preregistration/plan.json",
+    "sha256": "6bdbc379bc708e153d7c2bacb75bfcad06dd1577f26259c77a28085c0785980d"
+  },
+  "records": {
+    "bytes": 165659,
+    "path": "outputs/TRR-0002/configuration-search/public-finance/records.json",
+    "sha256": "99b5c4eb1ef53f1587aceb34dd3f786a3c6f63e3ceca6b2bf37ed7a27ab1e2c2"
+  },
+  "revision_id": "TRR-0002-OWNER-REVISION-R1",
+  "schema": "token-reconstruction.trr0002-owner-r1-public-finance-generation.v1",
+  "source_public_calibration": {
+    "bytes": 18824,
+    "path": "outputs/TRR-0002/public-calibration/generation.json",
+    "sha256": "6bed8aca6668bd749bbad03c0c85bbace306085dac3141895dad7685f03d0682"
+  },
+  "started_utc": "2026-08-23T03:14:08Z",
+  "status": "PUBLIC_FINANCE_GENERATED",
+  "task_id": "TRR-0002",
+  "truth": {
+    "bytes": 37280,
+    "path": "outputs/TRR-0002/configuration-search/public-finance/truth.safetensors",
+    "sha256": "4cb632e4047024f5c0a83b49594d36e4bf1b6a48a4e04f8948b8f100afd850ff"
+  }
+}
