@@ -86,40 +86,58 @@ def load_winner(path: Path) -> tuple[dict[str, Any], Any]:
     return payload, policy
 
 
-def load_domain(domain: str, pile_root: Path, finance_root: Path) -> dict[str, Any]:
+def load_domain_inputs(domain: str, pile_root: Path, finance_root: Path) -> dict[str, Any]:
     if domain == "pile":
         truth_path = pile_root / "truth.safetensors"
-        truth = load_file(truth_path, device="cpu")["token_ids"].to(torch.long)
-        mask = torch.ones(truth.shape, dtype=torch.long)
-        positions = torch.arange(truth.shape[1], dtype=torch.long).view(1, -1).expand_as(truth)
         records = json.loads((pile_root / "records.json").read_text(encoding="utf-8"))["development"]
         observation_path = pile_root / "observations" / f"{CONDITION}_cut4.safetensors"
     elif domain == "finance":
         truth_path = finance_root / "truth.safetensors"
-        truth_state = load_file(truth_path, device="cpu")
-        truth = truth_state["token_ids"].to(torch.long)
-        mask = truth_state["attention_mask"].to(torch.long)
-        positions = truth_state["position_ids"].to(torch.long)
         records = json.loads((finance_root / "records.json").read_text(encoding="utf-8"))["records"]
         observation_path = finance_root / "observations" / f"{CONDITION}_cut4.safetensors"
     else:
         raise RuntimeError("unknown held-out domain")
     observations = load_file(observation_path, device="cpu")["activations"].contiguous()
+    if len(records) != 32 or observations.shape[0] != 32:
+        raise RuntimeError("public held-out record count changed")
+    lengths = (
+        torch.full((32,), observations.shape[1], dtype=torch.long)
+        if domain == "pile"
+        else torch.tensor([int(row["valid_tokens"]) for row in records], dtype=torch.long)
+    )
+    mask = (
+        torch.arange(observations.shape[1], dtype=torch.long)[None, :]
+        < lengths[:, None]
+    ).to(torch.long)
+    positions = mask.cumsum(dim=1).sub(1).clamp_min(0)
     record_ids = [f"{CONDITION}:{row['record_id']}" for row in records]
-    if observations.shape[:2] != truth.shape or len(record_ids) != truth.shape[0]:
-        raise RuntimeError("public held-out geometry changed")
-    if truth.shape[0] != 32 or not truth[:, 0].eq(BOS_TOKEN_ID).all().item():
-        raise RuntimeError("public held-out record count or BOS changed")
     validate_observations(observations, mask, positions)
     return {
         "observations": observations,
         "attention_mask": mask,
         "position_ids": positions,
-        "truth": truth,
         "record_ids": record_ids,
         "observation_path": observation_path,
         "truth_path": truth_path,
     }
+
+
+def load_truth_after_freeze(state: dict[str, Any]) -> torch.Tensor:
+    truth_state = load_file(state["truth_path"], device="cpu")
+    truth = truth_state["token_ids"].to(torch.long)
+    if truth.shape != state["attention_mask"].shape:
+        raise RuntimeError("public held-out truth geometry changed")
+    if not truth[:, 0].eq(BOS_TOKEN_ID).all().item():
+        raise RuntimeError("public held-out truth lost BOS")
+    if "attention_mask" in truth_state and not torch.equal(
+        truth_state["attention_mask"].to(torch.long), state["attention_mask"]
+    ):
+        raise RuntimeError("public held-out attention metadata changed")
+    if "position_ids" in truth_state and not torch.equal(
+        truth_state["position_ids"].to(torch.long), state["position_ids"]
+    ):
+        raise RuntimeError("public held-out position metadata changed")
+    return truth
 
 
 def counts(values: torch.Tensor, mask: torch.Tensor) -> dict[str, int]:
@@ -156,11 +174,11 @@ def main() -> int:
         MODEL_SPEC, identity, lens_path=lens_path
     )
     domains = {
-        name: load_domain(name, args.pile_root, args.finance_root)
+        name: load_domain_inputs(name, args.pile_root, args.finance_root)
         for name in DOMAINS
     }
     tensors: dict[str, torch.Tensor] = {}
-    scored: dict[str, Any] = {}
+    executions: dict[str, Any] = {}
     max_k = max(policy.spec.schedule)
     torch.cuda.reset_peak_memory_stats(device)
     for domain, state in domains.items():
@@ -182,28 +200,10 @@ def main() -> int:
             record_batch_size=8,
         )
         candidate_view = proposal.candidates[:, :, :max_k].contiguous()
-        metrics, per_record = score_predictions(
-            predictions=result.predictions,
-            truth=state["truth"],
-            attention_mask=state["attention_mask"],
-            candidates=candidate_view,
-            record_ids=state["record_ids"],
-        )
-        mask = scored_mask(state["attention_mask"])
-        scored[domain] = {
-            "metrics": metrics,
-            "per_record": per_record,
-            "routes": counts(result.routes, mask),
-            "selected_k": counts(result.selected_k, mask),
-            "cost": {
-                "proposal_seconds": proposal.elapsed_seconds,
-                "selection_seconds": result.elapsed_seconds,
-                "compute_seconds": proposal.elapsed_seconds + result.elapsed_seconds,
-                "candidate_simulations": result.candidate_simulations,
-                "executed_candidate_simulations": result.executed_candidate_simulations,
-                "prefix_commit_tokens": result.prefix_commit_tokens,
-                "record_batch_size": result.record_batch_size,
-            },
+        executions[domain] = {
+            "proposal": proposal,
+            "result": result,
+            "candidates": candidate_view,
         }
         tensors[f"{domain}.predictions"] = result.predictions.to(torch.int32)
         tensors[f"{domain}.candidates_k{max_k}"] = candidate_view.to(torch.int32)
@@ -222,8 +222,41 @@ def main() -> int:
             "policy_id": policy.policy_id,
             "condition": CONDITION,
             "winner_revision_after_selection": "false",
+            "truth_loaded_before_freeze": "false",
         },
     )
+    prediction_frozen_utc = utc_now()
+
+    scored: dict[str, Any] = {}
+    for domain, state in domains.items():
+        execution = executions[domain]
+        proposal = execution["proposal"]
+        result = execution["result"]
+        truth = load_truth_after_freeze(state)
+        metrics, per_record = score_predictions(
+            predictions=result.predictions,
+            truth=truth,
+            attention_mask=state["attention_mask"],
+            candidates=execution["candidates"],
+            record_ids=state["record_ids"],
+        )
+        mask = scored_mask(state["attention_mask"])
+        scored[domain] = {
+            "metrics": metrics,
+            "per_record": per_record,
+            "routes": counts(result.routes, mask),
+            "selected_k": counts(result.selected_k, mask),
+            "cost": {
+                "proposal_seconds": proposal.elapsed_seconds,
+                "selection_seconds": result.elapsed_seconds,
+                "compute_seconds": proposal.elapsed_seconds + result.elapsed_seconds,
+                "candidate_simulations": result.candidate_simulations,
+                "executed_candidate_simulations": result.executed_candidate_simulations,
+                "prefix_commit_tokens": result.prefix_commit_tokens,
+                "record_batch_size": result.record_batch_size,
+            },
+        }
+    truth_loaded_utc = utc_now()
     result_path = args.output_root / "result.json"
     result_payload = {
         "schema": "token-reconstruction.trr0002-owner-r1-public-heldout-result.v1",
@@ -234,6 +267,9 @@ def main() -> int:
         "policy_id": policy.policy_id,
         "policy": policy.serialized(),
         "winner_revision_after_selection": False,
+        "prediction_frozen_before_truth_load": True,
+        "prediction_frozen_utc": prediction_frozen_utc,
+        "truth_loaded_utc": truth_loaded_utc,
         "started_utc": started_utc,
         "ended_utc": utc_now(),
         "command": command_record(),
