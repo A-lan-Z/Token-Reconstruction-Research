@@ -1,0 +1,846 @@
+{
+  "benchmark": {
+    "cut_depth": 4,
+    "dataset": "Josephgflowers/Finance-Instruct-500k",
+    "exact_record_metric": "all post-BOS token IDs in the record are correct",
+    "fingerprint": "4abbac8acaab4205",
+    "historical_chat_template_date": "06 Aug 2026",
+    "metric": "post-BOS token accuracy; abstentions and unattempted suffix tokens are wrong",
+    "original_finance_activation_trace": {
+      "bytes": 201803634,
+      "path": "/home/alanz/spartan/punim2939/backdoor_lora/ersoy2026/experiments/a1_a2_source300_20260809/input/runner_pending.pt",
+      "resolved_path": "/home/alanz/spartan/punim2939/backdoor_lora/ersoy2026/experiments/a1_a2_source300_20260809/input/runner_pending.pt",
+      "sha256": "0c880019a7b497fbf5d784b2cddb54f67b740c58c505fed8895697a1a1b4477a"
+    },
+    "positions": 128,
+    "raw_cursor_end_exclusive": 38978,
+    "raw_cursor_start": 38847,
+    "records": 128,
+    "scored_post_bos_tokens": 13990,
+    "shuffle_seed": 42,
+    "source_config": {
+      "bytes": 4109,
+      "path": "/home/alanz/spartan/punim2939/backdoor_lora/ersoy2026/config/a1_a2_source300_static_20260809.json",
+      "resolved_path": "/home/alanz/spartan/punim2939/backdoor_lora/ersoy2026/config/a1_a2_source300_static_20260809.json",
+      "sha256": "79ef9c9ca7400f003b94950dc299a8f3c314073258c76432ef273a920b3a460c"
+    },
+    "split": "train",
+    "valid_tokens_including_bos": 14118
+  },
+  "claim_limits": [
+    "historical Finance truth was open before R4, so this is a retrospective diagnostic",
+    "the GrandMaster-input R3 panel is auxiliary and is not numerically pooled with this bridge",
+    "the checkpoint-identity proposer is a separate control, not the historical A1",
+    "no unseen-data generalization claim follows from this bridge"
+  ],
+  "created_from_commit": "e42eb02c3c7d88a92a2d21d49c2f40eb0e6e2943",
+  "created_utc": "2026-08-23T13:46:12.998322Z",
+  "execution": {
+    "attention_implementation": "sdpa",
+    "candidate_budget_maximum": 512,
+    "dtype": "bfloat16",
+    "freeze_before_scoring": true,
+    "prediction_process_dataset_inputs": 0,
+    "prediction_process_target_prefix_calls": 0,
+    "prediction_process_truth_argument": null,
+    "record_batch_size": 4,
+    "target_generation_batch_size": 16
+  },
+  "invariants": {
+    "only_target_prefix_weights_change_across_conditions": true,
+    "same_A2_public_prefix": true,
+    "same_attention_masks": true,
+    "same_cut_depth": true,
+    "same_exact_token_ids": true,
+    "same_policy_constants": true,
+    "same_position_ids": true,
+    "same_record_order": true
+  },
+  "matrix": {
+    "checkpoint_identity_cells": 9,
+    "expected_cells": 45,
+    "historical_alpaca_cells": 36,
+    "no_post_score_method_selection": true,
+    "report_every_cell": true
+  },
+  "owner_request": {
+    "bytes": 1896,
+    "path": "coordination/requests/TRR-0002-OWNER-REVISION-R4.md",
+    "resolved_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/coordination/requests/TRR-0002-OWNER-REVISION-R4.md",
+    "sha256": "6b0e65f20fb835342074b55f8bb6fa9709733525537d45d2d6896607280fc979"
+  },
+  "policies": [
+    {
+      "label": "fixed_k64_direct",
+      "policy": {
+        "numeric_thresholds": {},
+        "policy_id": "a1a2_589f6e179eb4626877c2",
+        "spec": {
+          "fast_path_id": "off",
+          "fast_path_threshold": null,
+          "gate_comparator": "ge",
+          "gate_mode": null,
+          "kind": "fixed",
+          "routing_signal": null,
+          "schedule": [
+            64
+          ],
+          "score_rule": "direct_cosine",
+          "terminal_action": "commit_last_winner"
+        }
+      },
+      "policy_id": "a1a2_589f6e179eb4626877c2",
+      "public_rank": 34,
+      "public_selection_summary": {
+        "finance": {
+          "candidate_simulations": 119232,
+          "correct_tokens": 1862,
+          "exact_records": 15,
+          "median_selection_seconds": 5.954913175999991,
+          "records": 16,
+          "scored_tokens": 1863,
+          "token_accuracy": 0.9994632313472893
+        },
+        "pile": {
+          "candidate_simulations": 39936,
+          "correct_tokens": 618,
+          "exact_records": 11,
+          "median_selection_seconds": 1.2735241000000315,
+          "records": 16,
+          "scored_tokens": 624,
+          "token_accuracy": 0.9903846153846154
+        }
+      },
+      "reason": "low-cost fixed-budget control"
+    },
+    {
+      "label": "calibrated_k32_to_k64",
+      "policy": {
+        "numeric_thresholds": {
+          "32": 1.2544946670532227,
+          "64": 1.2544946670532227
+        },
+        "policy_id": "a1a2_c316cdf581012bd81cfa",
+        "spec": {
+          "fast_path_id": "off",
+          "fast_path_threshold": null,
+          "gate_comparator": "gt",
+          "gate_mode": "current_absolute_1.2544946670532227",
+          "kind": "current_anchor",
+          "routing_signal": "rms_normalized_margin",
+          "schedule": [
+            32,
+            64
+          ],
+          "score_rule": "direct_cosine",
+          "terminal_action": "commit_last_winner"
+        }
+      },
+      "policy_id": "a1a2_c316cdf581012bd81cfa",
+      "public_rank": 35,
+      "public_selection_summary": {
+        "finance": {
+          "candidate_simulations": 96320,
+          "correct_tokens": 1862,
+          "exact_records": 15,
+          "median_selection_seconds": 5.721691749999991,
+          "records": 16,
+          "scored_tokens": 1863,
+          "token_accuracy": 0.9994632313472893
+        },
+        "pile": {
+          "candidate_simulations": 30368,
+          "correct_tokens": 617,
+          "exact_records": 10,
+          "median_selection_seconds": 1.309241232000204,
+          "records": 16,
+          "scored_tokens": 624,
+          "token_accuracy": 0.9887820512820513
+        }
+      },
+      "reason": "previous scale-calibrated balanced control"
+    },
+    {
+      "label": "fixed_k128_direct",
+      "policy": {
+        "numeric_thresholds": {},
+        "policy_id": "a1a2_422b282c012ff665ee2e",
+        "spec": {
+          "fast_path_id": "off",
+          "fast_path_threshold": null,
+          "gate_comparator": "ge",
+          "gate_mode": null,
+          "kind": "fixed",
+          "routing_signal": null,
+          "schedule": [
+            128
+          ],
+          "score_rule": "direct_cosine",
+          "terminal_action": "commit_last_winner"
+        }
+      },
+      "policy_id": "a1a2_422b282c012ff665ee2e",
+      "public_rank": 29,
+      "public_selection_summary": {
+        "finance": {
+          "candidate_simulations": 238464,
+          "correct_tokens": 1863,
+          "exact_records": 16,
+          "median_selection_seconds": 10.196211535000202,
+          "records": 16,
+          "scored_tokens": 1863,
+          "token_accuracy": 1.0
+        },
+        "pile": {
+          "candidate_simulations": 79872,
+          "correct_tokens": 622,
+          "exact_records": 14,
+          "median_selection_seconds": 1.9901035010002488,
+          "records": 16,
+          "scored_tokens": 624,
+          "token_accuracy": 0.9967948717948718
+        }
+      },
+      "reason": "middle point on the fixed-budget cost curve"
+    },
+    {
+      "label": "fixed_k256_direct",
+      "policy": {
+        "numeric_thresholds": {},
+        "policy_id": "a1a2_43ea0bb737bc075531ca",
+        "spec": {
+          "fast_path_id": "off",
+          "fast_path_threshold": null,
+          "gate_comparator": "ge",
+          "gate_mode": null,
+          "kind": "fixed",
+          "routing_signal": null,
+          "schedule": [
+            256
+          ],
+          "score_rule": "direct_cosine",
+          "terminal_action": "commit_last_winner"
+        }
+      },
+      "policy_id": "a1a2_43ea0bb737bc075531ca",
+      "public_rank": 1,
+      "public_selection_summary": {
+        "finance": {
+          "candidate_simulations": 476928,
+          "correct_tokens": 1863,
+          "exact_records": 16,
+          "median_selection_seconds": 19.117610022999997,
+          "records": 16,
+          "scored_tokens": 1863,
+          "token_accuracy": 1.0
+        },
+        "pile": {
+          "candidate_simulations": 159744,
+          "correct_tokens": 624,
+          "exact_records": 16,
+          "median_selection_seconds": 3.6042361629997686,
+          "records": 16,
+          "scored_tokens": 624,
+          "token_accuracy": 1.0
+        }
+      },
+      "reason": "frozen exhaustive-search winner and public rank 1"
+    },
+    {
+      "label": "fixed_k256_centered",
+      "policy": {
+        "numeric_thresholds": {},
+        "policy_id": "a1a2_cb89b524f27c2d5e25eb",
+        "spec": {
+          "fast_path_id": "off",
+          "fast_path_threshold": null,
+          "gate_comparator": "ge",
+          "gate_mode": null,
+          "kind": "fixed",
+          "routing_signal": null,
+          "schedule": [
+            256
+          ],
+          "score_rule": "group_centered_cosine",
+          "terminal_action": "commit_last_winner"
+        }
+      },
+      "policy_id": "a1a2_cb89b524f27c2d5e25eb",
+      "public_rank": 2,
+      "public_selection_summary": {
+        "finance": {
+          "candidate_simulations": 476928,
+          "correct_tokens": 1863,
+          "exact_records": 16,
+          "median_selection_seconds": 19.170811230000254,
+          "records": 16,
+          "scored_tokens": 1863,
+          "token_accuracy": 1.0
+        },
+        "pile": {
+          "candidate_simulations": 159744,
+          "correct_tokens": 624,
+          "exact_records": 16,
+          "median_selection_seconds": 3.613793798000188,
+          "records": 16,
+          "scored_tokens": 624,
+          "token_accuracy": 1.0
+        }
+      },
+      "reason": "public rank 2; isolates score centering at K256"
+    },
+    {
+      "label": "fixed_k512_direct",
+      "policy": {
+        "numeric_thresholds": {},
+        "policy_id": "a1a2_cce5e6b5435e9b1bee34",
+        "spec": {
+          "fast_path_id": "off",
+          "fast_path_threshold": null,
+          "gate_comparator": "ge",
+          "gate_mode": null,
+          "kind": "fixed",
+          "routing_signal": null,
+          "schedule": [
+            512
+          ],
+          "score_rule": "direct_cosine",
+          "terminal_action": "commit_last_winner"
+        }
+      },
+      "policy_id": "a1a2_cce5e6b5435e9b1bee34",
+      "public_rank": 3,
+      "public_selection_summary": {
+        "finance": {
+          "candidate_simulations": 953856,
+          "correct_tokens": 1863,
+          "exact_records": 16,
+          "median_selection_seconds": 35.94726230800006,
+          "records": 16,
+          "scored_tokens": 1863,
+          "token_accuracy": 1.0
+        },
+        "pile": {
+          "candidate_simulations": 319488,
+          "correct_tokens": 624,
+          "exact_records": 16,
+          "median_selection_seconds": 6.409132051999904,
+          "records": 16,
+          "scored_tokens": 624,
+          "token_accuracy": 1.0
+        }
+      },
+      "reason": "public rank 3; tests whether mismatch needs more candidates"
+    },
+    {
+      "label": "fixed_k512_centered",
+      "policy": {
+        "numeric_thresholds": {},
+        "policy_id": "a1a2_13f73c306bf8946e9a28",
+        "spec": {
+          "fast_path_id": "off",
+          "fast_path_threshold": null,
+          "gate_comparator": "ge",
+          "gate_mode": null,
+          "kind": "fixed",
+          "routing_signal": null,
+          "schedule": [
+            512
+          ],
+          "score_rule": "group_centered_cosine",
+          "terminal_action": "commit_last_winner"
+        }
+      },
+      "policy_id": "a1a2_13f73c306bf8946e9a28",
+      "public_rank": 4,
+      "public_selection_summary": {
+        "finance": {
+          "candidate_simulations": 953856,
+          "correct_tokens": 1863,
+          "exact_records": 16,
+          "median_selection_seconds": 35.979639679,
+          "records": 16,
+          "scored_tokens": 1863,
+          "token_accuracy": 1.0
+        },
+        "pile": {
+          "candidate_simulations": 319488,
+          "correct_tokens": 624,
+          "exact_records": 16,
+          "median_selection_seconds": 6.510720817999982,
+          "records": 16,
+          "scored_tokens": 624,
+          "token_accuracy": 1.0
+        }
+      },
+      "reason": "public rank 4; tests centering at the maximum budget"
+    },
+    {
+      "label": "fast_a1_099_then_k256_direct",
+      "policy": {
+        "numeric_thresholds": {
+          "256": "-Infinity",
+          "512": "-Infinity"
+        },
+        "policy_id": "a1a2_91503c1f37fac38c4e20",
+        "spec": {
+          "fast_path_id": "a1_ge_0.99",
+          "fast_path_threshold": 0.99,
+          "gate_comparator": "ge",
+          "gate_mode": "always_accept",
+          "kind": "adaptive",
+          "routing_signal": "raw_margin",
+          "schedule": [
+            256,
+            512
+          ],
+          "score_rule": "direct_cosine",
+          "terminal_action": "abstain_and_stop_suffix"
+        }
+      },
+      "policy_id": "a1a2_91503c1f37fac38c4e20",
+      "public_rank": 5,
+      "public_selection_summary": {
+        "finance": {
+          "candidate_simulations": 223488,
+          "correct_tokens": 1863,
+          "exact_records": 16,
+          "median_selection_seconds": 10.991519663999952,
+          "records": 16,
+          "scored_tokens": 1863,
+          "token_accuracy": 1.0
+        },
+        "pile": {
+          "candidate_simulations": 121088,
+          "correct_tokens": 623,
+          "exact_records": 15,
+          "median_selection_seconds": 2.8726011670000844,
+          "records": 16,
+          "scored_tokens": 624,
+          "token_accuracy": 0.9983974358974359
+        }
+      },
+      "reason": "best public near-perfect speed configuration"
+    },
+    {
+      "label": "fast_a1_099_then_k256_centered",
+      "policy": {
+        "numeric_thresholds": {
+          "256": "-Infinity",
+          "512": "-Infinity"
+        },
+        "policy_id": "a1a2_ae35177bb01fa67279c3",
+        "spec": {
+          "fast_path_id": "a1_ge_0.99",
+          "fast_path_threshold": 0.99,
+          "gate_comparator": "ge",
+          "gate_mode": "always_accept",
+          "kind": "adaptive",
+          "routing_signal": "rms_normalized_margin",
+          "schedule": [
+            256,
+            512
+          ],
+          "score_rule": "group_centered_cosine",
+          "terminal_action": "abstain_and_stop_suffix"
+        }
+      },
+      "policy_id": "a1a2_ae35177bb01fa67279c3",
+      "public_rank": 8,
+      "public_selection_summary": {
+        "finance": {
+          "candidate_simulations": 223488,
+          "correct_tokens": 1863,
+          "exact_records": 16,
+          "median_selection_seconds": 11.025365511000018,
+          "records": 16,
+          "scored_tokens": 1863,
+          "token_accuracy": 1.0
+        },
+        "pile": {
+          "candidate_simulations": 121088,
+          "correct_tokens": 623,
+          "exact_records": 15,
+          "median_selection_seconds": 2.878116991999832,
+          "records": 16,
+          "scored_tokens": 624,
+          "token_accuracy": 0.9983974358974359
+        }
+      },
+      "reason": "score-centering counterpart to the A1 fast path"
+    },
+    {
+      "label": "multistage_historical_gate",
+      "policy": {
+        "numeric_thresholds": {
+          "128": 2.0,
+          "16": 2.0,
+          "256": 2.0,
+          "32": 2.0,
+          "4": 2.0,
+          "512": 2.0,
+          "64": 2.0,
+          "8": 2.0
+        },
+        "policy_id": "a1a2_a49923b51936a41a41fb",
+        "spec": {
+          "fast_path_id": "a1_ge_0.99",
+          "fast_path_threshold": 0.99,
+          "gate_comparator": "ge",
+          "gate_mode": "historical_absolute_2.0",
+          "kind": "adaptive",
+          "routing_signal": "normalized_softmax_winner",
+          "schedule": [
+            4,
+            8,
+            16,
+            32,
+            64,
+            128,
+            256,
+            512
+          ],
+          "score_rule": "group_centered_cosine",
+          "terminal_action": "commit_last_winner"
+        }
+      },
+      "policy_id": "a1a2_a49923b51936a41a41fb",
+      "public_rank": 12,
+      "public_selection_summary": {
+        "finance": {
+          "candidate_simulations": 101232,
+          "correct_tokens": 1863,
+          "exact_records": 16,
+          "median_selection_seconds": 10.874713186000008,
+          "records": 16,
+          "scored_tokens": 1863,
+          "token_accuracy": 1.0
+        },
+        "pile": {
+          "candidate_simulations": 59724,
+          "correct_tokens": 623,
+          "exact_records": 15,
+          "median_selection_seconds": 3.755380712000033,
+          "records": 16,
+          "scored_tokens": 624,
+          "token_accuracy": 0.9983974358974359
+        }
+      },
+      "reason": "best distinct public multi-stage low-simulation finalist"
+    },
+    {
+      "label": "adaptive_k256_to_k512_rms_q05",
+      "policy": {
+        "numeric_thresholds": {
+          "256": 0.4525494247674942,
+          "512": 0.5007767677307129
+        },
+        "policy_id": "a1a2_d1700b9c0f2b1b32ec13",
+        "spec": {
+          "fast_path_id": "a1_ge_0.99",
+          "fast_path_threshold": 0.99,
+          "gate_comparator": "ge",
+          "gate_mode": "fit_quantile_0.05",
+          "kind": "adaptive",
+          "routing_signal": "rms_normalized_margin",
+          "schedule": [
+            256,
+            512
+          ],
+          "score_rule": "direct_cosine",
+          "terminal_action": "commit_last_winner"
+        }
+      },
+      "policy_id": "a1a2_d1700b9c0f2b1b32ec13",
+      "public_rank": 13,
+      "public_selection_summary": {
+        "finance": {
+          "candidate_simulations": 236032,
+          "correct_tokens": 1863,
+          "exact_records": 16,
+          "median_selection_seconds": 11.653085220000094,
+          "records": 16,
+          "scored_tokens": 1863,
+          "token_accuracy": 1.0
+        },
+        "pile": {
+          "candidate_simulations": 125952,
+          "correct_tokens": 623,
+          "exact_records": 15,
+          "median_selection_seconds": 3.01933856800008,
+          "records": 16,
+          "scored_tokens": 624,
+          "token_accuracy": 0.9983974358974359
+        }
+      },
+      "reason": "best public fitted scale-normalized expansion finalist"
+    },
+    {
+      "label": "historical_strict_anchor",
+      "policy": {
+        "numeric_thresholds": {
+          "128": 2.0,
+          "32": 2.0,
+          "512": 2.0
+        },
+        "policy_id": "a1a2_6de800ba92c3d0ec0808",
+        "spec": {
+          "fast_path_id": "historical_a1_ge_0.999",
+          "fast_path_threshold": 0.999,
+          "gate_comparator": "ge",
+          "gate_mode": "historical_absolute_2.0",
+          "kind": "adaptive",
+          "routing_signal": "normalized_softmax_winner",
+          "schedule": [
+            32,
+            128,
+            512
+          ],
+          "score_rule": "group_centered_cosine",
+          "terminal_action": "abstain_and_stop_suffix"
+        }
+      },
+      "policy_id": "a1a2_6de800ba92c3d0ec0808",
+      "public_rank": 57,
+      "public_selection_summary": {
+        "finance": {
+          "candidate_simulations": 8704,
+          "correct_tokens": 16,
+          "exact_records": 0,
+          "median_selection_seconds": 0.8155588119998356,
+          "records": 16,
+          "scored_tokens": 1863,
+          "token_accuracy": 0.008588298443370907
+        },
+        "pile": {
+          "candidate_simulations": 8576,
+          "correct_tokens": 6,
+          "exact_records": 0,
+          "median_selection_seconds": 0.36712186299973837,
+          "records": 16,
+          "scored_tokens": 624,
+          "token_accuracy": 0.009615384615384616
+        }
+      },
+      "reason": "exact historical strict adaptive decision-rule control"
+    }
+  ],
+  "prior_evidence": {
+    "r2_plan": {
+      "bytes": 23237,
+      "path": "experiments/TRR-0002/finance-target-shortlist/preregistration.json",
+      "resolved_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/experiments/TRR-0002/finance-target-shortlist/preregistration.json",
+      "sha256": "df1ed404b43b89f232030dc1e98b29dc6ffc524dd2b968e74a8d8ab4ca5acb3a"
+    },
+    "r3_grandmaster_results_are_auxiliary_not_target_only": true,
+    "r3_plan": {
+      "bytes": 18873,
+      "path": "experiments/TRR-0002/strict-surrogate-heavy/preregistration.json",
+      "resolved_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/experiments/TRR-0002/strict-surrogate-heavy/preregistration.json",
+      "sha256": "2997063b7e0161f6a314a1c83bf2cae1604fcd42ff1cea344e26958999ce68f8"
+    }
+  },
+  "reconstruction_resources": {
+    "a2": {
+      "layers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+      "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "target_weights_or_calls_available": false
+    },
+    "proposers": [
+      {
+        "auxiliary_training_rows": 52002,
+        "fitted_parameters": 4196353,
+        "label": "historical A1 (public-Alpaca-fitted affine lens)",
+        "lens": {
+          "bytes": 16787653,
+          "path": "/home/alanz/spartan/punim2939/backdoor_lora/ersoy2026/inversion_20260730/out/lens_alpaca.pt",
+          "resolved_path": "/home/alanz/spartan/punim2939/backdoor_lora/ersoy2026/inversion_20260730/out/lens_alpaca.pt",
+          "sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742"
+        },
+        "policy_scope": "all 12 frozen R2 policies",
+        "proposer_id": "historical_alpaca_affine_a1",
+        "target_information_used": false
+      },
+      {
+        "auxiliary_training_rows": 0,
+        "fitted_parameters": 0,
+        "label": "plain untouched public-checkpoint A1 control",
+        "lens": null,
+        "policy_scope": "fixed K64 direct, K256 direct, and K512 centered",
+        "proposer_id": "checkpoint_identity_a1",
+        "target_information_used": false
+      }
+    ]
+  },
+  "reporting": {
+    "comparisons": "within-policy target-only deltas relative to Finance generation 300",
+    "primary": [
+      "correct post-BOS tokens",
+      "token accuracy",
+      "exact records"
+    ],
+    "secondary": [
+      "candidate recall",
+      "candidate simulations",
+      "runtime",
+      "peak memory"
+    ]
+  },
+  "reproduction_gate": {
+    "expected": {
+      "a1a2_13f73c306bf8946e9a28": {
+        "correct_tokens": 13980,
+        "exact_records": 124,
+        "scored_tokens": 13990
+      },
+      "a1a2_422b282c012ff665ee2e": {
+        "correct_tokens": 13920,
+        "exact_records": 103,
+        "scored_tokens": 13990
+      },
+      "a1a2_43ea0bb737bc075531ca": {
+        "correct_tokens": 13952,
+        "exact_records": 107,
+        "scored_tokens": 13990
+      },
+      "a1a2_589f6e179eb4626877c2": {
+        "correct_tokens": 13887,
+        "exact_records": 99,
+        "scored_tokens": 13990
+      },
+      "a1a2_6de800ba92c3d0ec0808": {
+        "correct_tokens": 13741,
+        "exact_records": 122,
+        "scored_tokens": 13990
+      },
+      "a1a2_91503c1f37fac38c4e20": {
+        "correct_tokens": 13947,
+        "exact_records": 113,
+        "scored_tokens": 13990
+      },
+      "a1a2_a49923b51936a41a41fb": {
+        "correct_tokens": 13958,
+        "exact_records": 115,
+        "scored_tokens": 13990
+      },
+      "a1a2_ae35177bb01fa67279c3": {
+        "correct_tokens": 13947,
+        "exact_records": 113,
+        "scored_tokens": 13990
+      },
+      "a1a2_c316cdf581012bd81cfa": {
+        "correct_tokens": 13880,
+        "exact_records": 96,
+        "scored_tokens": 13990
+      },
+      "a1a2_cb89b524f27c2d5e25eb": {
+        "correct_tokens": 13963,
+        "exact_records": 117,
+        "scored_tokens": 13990
+      },
+      "a1a2_cce5e6b5435e9b1bee34": {
+        "correct_tokens": 13970,
+        "exact_records": 114,
+        "scored_tokens": 13990
+      },
+      "a1a2_d1700b9c0f2b1b32ec13": {
+        "correct_tokens": 13962,
+        "exact_records": 118,
+        "scored_tokens": 13990
+      }
+    },
+    "reference": {
+      "bytes": 592400,
+      "path": "experiments/TRR-0002/finance-target-shortlist/result.json",
+      "resolved_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/experiments/TRR-0002/finance-target-shortlist/result.json",
+      "sha256": "f2d861bf614d15773236b2450f56edff6b2de28b3ed9cabd02cd54f7bd9ed63a"
+    },
+    "required_condition": "finance_generation300_target_cut4",
+    "required_exact_metric_match_for_all_12_policies": true,
+    "required_proposer": "historical_alpaca_affine_a1"
+  },
+  "revision_id": "TRR-0002-OWNER-REVISION-R4",
+  "schema": "token-reconstruction.trr0002-owner-r4-historical-target-bridge-preregistration.v1",
+  "scientific_question": "With the exact historical 128-record Finance token matrix fixed, how does A1+A2 reconstruction change when only the unavailable target prefix weights change?",
+  "status": "FROZEN_BEFORE_TARGET_OBSERVATION_GENERATION",
+  "targets": [
+    {
+      "condition_id": "public_base_target_cut4",
+      "model_artifacts": {
+        "config.json": {
+          "bytes": 877,
+          "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6/config.json",
+          "resolved_path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/3e3aaf51a035cb5092d9f6827a0dc074657ba88c",
+          "sha256": "2febf68cea25bf4611be02b7536f2488a5ba523bb1134986e3610152abe74fdb"
+        },
+        "model.safetensors": {
+          "bytes": 2471645608,
+          "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6/model.safetensors",
+          "resolved_path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f",
+          "sha256": "1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f"
+        },
+        "tokenizer.json": {
+          "bytes": 9085657,
+          "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6/tokenizer.json",
+          "resolved_path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/5cc5f00a5b203e90a27a3bd60d1ec393b07971e8",
+          "sha256": "79e3e522635f3171300913bb421464a87de6222182a0570b9b2ccba2a964b2b4"
+        }
+      },
+      "short_label": "public base target",
+      "target_id": "meta-llama/Llama-3.2-1B-Instruct",
+      "target_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "weight_version": "untouched_public_checkpoint"
+    },
+    {
+      "activation_source": {
+        "bytes": 201803634,
+        "path": "/home/alanz/spartan/punim2939/backdoor_lora/ersoy2026/experiments/a1_a2_source300_20260809/input/runner_pending.pt",
+        "resolved_path": "/home/alanz/spartan/punim2939/backdoor_lora/ersoy2026/experiments/a1_a2_source300_20260809/input/runner_pending.pt",
+        "sha256": "0c880019a7b497fbf5d784b2cddb54f67b740c58c505fed8895697a1a1b4477a"
+      },
+      "checkpoint_generation": 300,
+      "condition_id": "finance_generation300_target_cut4",
+      "fine_tuning_dataset": "Josephgflowers/Finance-Instruct-500k",
+      "short_label": "Finance generation-300 target",
+      "target_id": "meta-llama/Llama-3.2-1B-Instruct",
+      "target_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "target_step": 300,
+      "weight_version": "victim_post_000299"
+    },
+    {
+      "condition_id": "vikhr_heavy_target_cut4",
+      "fine_tuning_dataset": "Vikhrmodels/GrandMaster-PRO-MAX",
+      "model_artifacts": {
+        "config.json": {
+          "bytes": 926,
+          "path": "/home/alanz/.cache/huggingface/hub/models--Vikhrmodels--Vikhr-Llama-3.2-1B-Instruct/snapshots/7fa9d06a59246629244cdd3b6b92e4fc756baa0f/config.json",
+          "resolved_path": "/home/alanz/.cache/huggingface/hub/models--Vikhrmodels--Vikhr-Llama-3.2-1B-Instruct/blobs/6a18994c0cfea41e1d0d3be20a9d756e24b78823",
+          "sha256": "7510055506497971937a3b247c853e664fdc1b1bbeece4cafc03107fa5e6fae7"
+        },
+        "model.safetensors": {
+          "bytes": 2471645464,
+          "path": "/home/alanz/.cache/huggingface/hub/models--Vikhrmodels--Vikhr-Llama-3.2-1B-Instruct/snapshots/7fa9d06a59246629244cdd3b6b92e4fc756baa0f/model.safetensors",
+          "resolved_path": "/home/alanz/.cache/huggingface/hub/models--Vikhrmodels--Vikhr-Llama-3.2-1B-Instruct/blobs/389c73748a00a8a006a4a4a26fa473319676c25672aa188f8337981cd0cc8850",
+          "sha256": "389c73748a00a8a006a4a4a26fa473319676c25672aa188f8337981cd0cc8850"
+        },
+        "tokenizer.json": {
+          "bytes": 9085657,
+          "path": "/home/alanz/.cache/huggingface/hub/models--Vikhrmodels--Vikhr-Llama-3.2-1B-Instruct/snapshots/7fa9d06a59246629244cdd3b6b92e4fc756baa0f/tokenizer.json",
+          "resolved_path": "/home/alanz/.cache/huggingface/hub/models--Vikhrmodels--Vikhr-Llama-3.2-1B-Instruct/blobs/5cc5f00a5b203e90a27a3bd60d1ec393b07971e8",
+          "sha256": "79e3e522635f3171300913bb421464a87de6222182a0570b9b2ccba2a964b2b4"
+        }
+      },
+      "short_label": "Vikhr heavy target",
+      "target_id": "Vikhrmodels/Vikhr-Llama-3.2-1B-Instruct",
+      "target_revision": "7fa9d06a59246629244cdd3b6b92e4fc756baa0f",
+      "weight_version": "full_supervised_fine_tune"
+    }
+  ],
+  "task_id": "TRR-0002"
+}

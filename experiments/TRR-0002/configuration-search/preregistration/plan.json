@@ -1,0 +1,172 @@
+{
+  "schema": "token-reconstruction.trr0002-owner-r1-configuration-search-preregistration.v1",
+  "task_id": "TRR-0002",
+  "revision_id": "TRR-0002-OWNER-REVISION-R1",
+  "created_utc": "2026-08-23T02:38:27Z",
+  "status": "COMMITTED_BEFORE_PUBLIC_CONFIGURATION_SCORES_OR_CANONICAL_CONFIRMATION",
+  "execution_parent": "2f346428ca0d8847565ee1960e525bcc5fe52f42",
+  "authority": {
+    "charter_path": "RESEARCH_CHARTER.md",
+    "charter_sha256": "ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d",
+    "owner_revision_path": "coordination/requests/TRR-0002-OWNER-REVISION-R1.md",
+    "owner_revision_sha256": "54df5076c60d48ae8a2ce6676f4aa2f19ed76b15613a8e3687a16ed3cc12c499",
+    "dual_benchmark_protocol_path": "research/DUAL_BENCHMARK_PROTOCOL.md",
+    "dual_benchmark_protocol_sha256": "2669a85a06cae2f4be73f4c589b3ab54ca8602a12530692b51815870760d46c2",
+    "configuration_protocol_path": "research/A1_A2_CONFIGURATION_PROTOCOL.md",
+    "configuration_protocol_sha256": "938d856c9c28baa9f5a8194e0ea241133ba1a052431a646836d47b8dfdad0433"
+  },
+  "question": "Within the frozen historical A1 proposal plus public causal simulation family, which configuration gives the best accuracy that generalizes across Pile/LoRA-like and Finance/historical-like public development trajectories, and what cost does it require?",
+  "scope_boundary": {
+    "literal_continuous_exhaustion": "impossible because real-valued thresholds form an infinite set",
+    "meaning_of_exhaustive": "the complete Cartesian product of the discrete mechanisms, budgets, schedules, frozen empirical-quantile gates, exact anchor thresholds, and terminal actions below",
+    "proposal_changes": "forbidden; use the pinned historical public A1 affine lens and its stable top-512 ordering",
+    "canonical_data_during_search": "forbidden",
+    "scientific_files_are_not_method_bans": true
+  },
+  "public_data": {
+    "pile": {
+      "records": "the 32 public development records already fixed in experiments/TRR-0001/plan.json and materialized under outputs/TRR-0002/public-calibration",
+      "geometry": "32 records x 40 tokens including BOS",
+      "conditions": ["public_base", "public_lora_2601", "public_lora_2602", "public_lora_2603"]
+    },
+    "finance": {
+      "dataset": "Josephgflowers/Finance-Instruct-500k",
+      "split": "train",
+      "fingerprint": "4abbac8acaab4205",
+      "shuffle_seed": 42,
+      "raw_cursor_start": 38978,
+      "excluded_historical_cursor": [38847, 38978],
+      "selection": "take the first 32 nonempty user/assistant rows at or after raw cursor 38978, use the historical 06 Aug 2026 Llama chat template, truncate/right-pad to 128, and record every raw index and content/token hash",
+      "overlap_check": "selected raw indices must be outside the historical cursor and selected normalized row-content hashes must not occur in the historical cursor",
+      "conditions": "apply the exact already-frozen public_base and public_lora_2601/2602/2603 states used for Pile; do not train a finance-specific update"
+    },
+    "roles": {
+      "surface_fit": "records 0-15 in both domains under public_base and public_lora_2601",
+      "causal_selection": "records 16-31 in both domains under public_lora_2602",
+      "held_out_confirmation": "all 32 records in both domains under public_lora_2603; unavailable until after the winner is frozen and never used to revise it"
+    },
+    "canonical_input_count_before_winner_freeze": 0
+  },
+  "search_space": {
+    "proposal": {
+      "id": "historical_public_a1",
+      "maximum_candidates": 512,
+      "ordering": "score descending; token ID ascending for exact score ties",
+      "confidence": "top-one softmax probability over the full vocabulary"
+    },
+    "candidate_budget_grid": [1, 2, 4, 8, 16, 32, 64, 128, 256, 512],
+    "fixed_policies": "every budget in the grid for direct cosine; every budget except K=1 for group-centered cosine; crossed with every immediate-A1 mode",
+    "adaptive_schedule_grid": [2, 4, 8, 16, 32, 64, 128, 256, 512],
+    "adaptive_schedules": "every strictly increasing subsequence of the adaptive grid having at least two stages (502 schedules)",
+    "score_rules": {
+      "direct_cosine": "cosine between each public-prefix candidate simulation and the observed activation",
+      "group_centered_cosine": "subtract the mean candidate simulation at the current cumulative K from both candidates and target, then use cosine"
+    },
+    "immediate_a1_modes": [
+      {"id": "off", "minimum_confidence": null},
+      {"id": "a1_ge_0.90", "minimum_confidence": 0.9},
+      {"id": "a1_ge_0.95", "minimum_confidence": 0.95},
+      {"id": "a1_ge_0.99", "minimum_confidence": 0.99},
+      {"id": "historical_a1_ge_0.999", "minimum_confidence": 0.999}
+    ],
+    "routing_signals": {
+      "normalized_softmax_winner": "K times the largest softmax probability among current candidate scores",
+      "raw_margin": "largest score minus second-largest score",
+      "rms_normalized_margin": "raw margin divided by RMS deviation of current candidate scores from their mean"
+    },
+    "empirical_gate_modes": [
+      "always_accept",
+      "fit_quantile_0.05",
+      "fit_quantile_0.10",
+      "fit_quantile_0.20",
+      "fit_quantile_0.35",
+      "fit_quantile_0.50",
+      "fit_quantile_0.65",
+      "fit_quantile_0.80",
+      "fit_quantile_0.90",
+      "fit_quantile_0.95",
+      "never_accept"
+    ],
+    "gate_fit": "for each score rule, routing signal, and K, pool only surface-fit positions and compute the named empirical quantile; a policy uses the same quantile mode at every stage but its K-specific fitted numeric threshold",
+    "special_gate": "absolute normalized-softmax threshold 2.0 is additionally crossed with every adaptive schedule, score rule, immediate-A1 mode, and terminal action so the historical A2 decision rule is represented exactly",
+    "terminal_actions": {
+      "commit_last_winner": "always commit the winner at the last scheduled K",
+      "fallback_to_a1": "if the last-stage gate fails, commit A1 rank one",
+      "abstain_and_stop_suffix": "if the last-stage gate fails, emit no token and stop the rest of that record"
+    },
+    "anchors": {
+      "historical_strict": "centered; A1>=0.999; schedule 32,128,512; normalized-softmax threshold 2.0; abstain and stop suffix",
+      "current_calibrated": "direct; no immediate A1; schedule 32,64; expand when K32 RMS-normalized margin <=1.2544946670532227; commit K64 winner",
+      "fixed_cost_curve": "both score rules at every valid fixed K with immediate A1 disabled"
+    },
+    "deduplication": "policies with identical fully serialized decision rules are evaluated once",
+    "declared_distinct_policy_count_before_runtime_deduplication": 512136,
+    "count_derivation": {
+      "fixed": 95,
+      "adaptive_empirical": 496980,
+      "adaptive_historical_absolute_gate": 15060,
+      "current_exact_anchor": 1
+    }
+  },
+  "phase_1_truth_prefix_surface": {
+    "purpose": "exhaustively screen selector components without spending canonical data",
+    "prefix": "public truth prefix; explicitly diagnostic rather than a deployable reconstruction path",
+    "simulation": "simulate all 512 A1 candidates once per public fit position and derive exact winners and all three signals at every grid K for both score rules",
+    "every_policy": "evaluate every declared discrete policy on both public domains and report domain token accuracy, mean accuracy, exact records, selected K distribution, and logical candidate simulations",
+    "raw_evidence": "retain a compressed full policy table and score surfaces with byte counts and SHA-256; commit summaries and hashes"
+  },
+  "finalist_rule": {
+    "maximum": 61,
+    "union": [
+      "the best 12 policies by the phase-1 lexicographic rule",
+      "the best policy in each score-rule x routing-signal x terminal-action group (18 maximum)",
+      "the best fixed policy in each score-rule x immediate-A1 group (10 maximum)",
+      "the exact historical and current calibrated anchors",
+      "all 19 valid fixed-cost-curve controls with immediate A1 disabled"
+    ],
+    "deduplicate": true,
+    "phase_1_lexicographic_rule": [
+      "higher minimum token accuracy across Pile and Finance",
+      "higher mean token accuracy across the two domains",
+      "higher minimum exact-record fraction",
+      "fewer logical candidate simulations per 1000 scored tokens",
+      "fewer stages, then lower maximum K, then serialized policy ID"
+    ]
+  },
+  "phase_2_exact_causal_selection": {
+    "data": "public_lora_2602 records 16-31 in each domain only",
+    "execution": "full left-to-right causal reconstruction with only BOS and previously reconstructed tokens in the public-prefix cache; batched wavefront scheduling changes runtime only",
+    "required_equivalence": "the exact historical anchor must match the pinned native historical decision implementation on a synthetic preflight and the retained canonical reproduction before it can be used as a control",
+    "winner_rule": [
+      "higher minimum token accuracy across Pile and Finance",
+      "higher mean token accuracy",
+      "higher minimum exact-record fraction, then higher mean exact-record fraction",
+      "lower synchronized selection seconds per 1000 scored tokens",
+      "lower peak CUDA memory, then fewer logical simulations per 1000 scored tokens",
+      "fewer stages, then lower maximum K, then serialized policy ID"
+    ],
+    "freeze": "commit the exact winner, numeric K-specific gates, public input hashes, code hashes, predictions, and causal-selection table before accessing public_lora_2603 or any fresh/canonical truth"
+  },
+  "post_freeze": {
+    "public_held_out": "run the frozen winner once on public_lora_2603 in both domains and do not revise it",
+    "fresh_blind": "create a new 64x40 Pile/unavailable-LoRA selection excluding every prior evaluation and public-development record; freeze predictions before opening its truth",
+    "canonical_dual": "register the winner as an active method and run the identical serialized policy on both canonical setups under research/DUAL_BENCHMARK_PROTOCOL.md",
+    "comparators": [
+      "historical strict adaptive A1+A2",
+      "always A1 plus direct causal K64",
+      "a1_scale_calibrated_adaptive_causal_k32_to64"
+    ],
+    "no_method_swap_after_blind": true
+  },
+  "cost_accounting": [
+    "A1 proposal seconds",
+    "base and expansion selector seconds with CUDA synchronization",
+    "logical and executed candidate simulations",
+    "selected-K distribution",
+    "prefix commit tokens",
+    "peak CUDA allocated/reserved bytes and process max RSS",
+    "persisted state bytes",
+    "complete commands, timestamps, environment, code/input/output hashes, and exit status"
+  ],
+  "stopping_rule": "stop after one winner is frozen, held-out/fresh/canonical confirmation is complete, the full method-by-canonical-setup matrix is reported, and no merge or TRR-0003 work has occurred"
+}

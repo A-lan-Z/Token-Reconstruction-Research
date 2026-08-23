@@ -1,0 +1,44 @@
+TRR-0002 owner revision R2 final validation
+completed_utc: 2026-08-23T07:25:39Z
+
+[python compile]
+command: python3 -m py_compile scripts/trr0002_r2_finance_target_shortlist.py scripts/trr0002_r2_validate_finance_target.py tests/test_trr0002_r2_finance_target_shortlist.py
+exit_status: 0
+output: (none)
+
+[focused tests]
+command: env PYTHONPATH=src:scripts python3 -m pytest -q tests/test_trr0002_r2_finance_target_shortlist.py
+exit_status: 0
+output:
+.....                                                                    [100%]
+5 passed in 3.39s
+
+[finance target integrity]
+command: env PYTHONPATH=src:scripts python3 scripts/trr0002_r2_validate_finance_target.py --plan experiments/TRR-0002/finance-target-shortlist/preregistration.json --predictions experiments/TRR-0002/finance-target-shortlist/predictions.safetensors --evidence experiments/TRR-0002/finance-target-shortlist/reconstruction-evidence.json --receipt experiments/TRR-0002/finance-target-shortlist/freeze-receipt.json --result experiments/TRR-0002/finance-target-shortlist/result.json --prior-winner-predictions experiments/TRR-0002/configuration-search/canonical/predictions.safetensors --prior-calibrated-predictions experiments/TRR-0002/calibrated-dual/predictions.safetensors --output /tmp/trr0002-r2-validation-final-20260823-0725.json
+exit_status: 0
+output:
+{"checks": 26, "status": "PASS_ALL_FINANCE_TARGET_INTEGRITY_CHECKS"}
+
+[full source-checkout tests]
+command: env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONPATH=src:scripts python3 -m pytest -q
+exit_status: 0
+output:
+.............................................................            [100%]
+61 passed in 5.16s
+
+[all repository JSON]
+command: python3 -c "from pathlib import Path; import json; fs=list(Path('.').rglob('*.json')); [json.loads(p.read_text(encoding='utf-8')) for p in fs]; print('JSON_PARSE_PASS',len(fs))"
+exit_status: 0
+output:
+JSON_PARSE_PASS 183
+
+[whitespace]
+command: git diff --check
+exit_status: 0
+output: (none)
+
+[charter]
+command: sha256sum RESEARCH_CHARTER.md
+exit_status: 0
+output:
+ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d  RESEARCH_CHARTER.md

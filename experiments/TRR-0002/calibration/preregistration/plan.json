@@ -1,0 +1,147 @@
+{
+  "schema": "token-reconstruction.trr0002-calibration-preregistration.v1",
+  "task_id": "TRR-0002",
+  "created_utc": "2026-08-22T16:37:59Z",
+  "status": "COMMITTED_BEFORE_PUBLIC_DEVELOPMENT_FIT_AND_FRESH_BLIND_SELECTION",
+  "owner_directive": "coordination/requests/TRR-0002-OWNER-OVERRIDE.md",
+  "retrospective_crossover": {
+    "result": "experiments/TRR-0002/crossover/result.json",
+    "prediction_freeze": "outputs/TRR-0002/component-crossover/predictions.safetensors",
+    "primary_observation": "A1 plus the public causal selector at K=32 dominated both prior setup-specific baselines"
+  },
+  "method": {
+    "id": "a1_scale_calibrated_adaptive_causal_k32_to64",
+    "proposal": {
+      "family": "pinned historical public A1 affine lens",
+      "maximum_candidates": 64,
+      "ordering": "score descending; token ID ascending for exact ties"
+    },
+    "selector": {
+      "public_surrogate": "pinned public Llama embedding plus decoder layers 0,1,2,3",
+      "base_budget": 32,
+      "maximum_budget": 64,
+      "base_score": "uncentered cosine between public-prefix simulation and observed cut-4 activation",
+      "confidence": "(largest K32 score minus second-largest K32 score) divided by RMS deviation of the 32 scores from their mean",
+      "confidence_invariance": "unchanged by a common score shift or positive rescaling",
+      "routing": "simulate ranks 33-64 exactly when normalized confidence is less than or equal to the frozen threshold",
+      "commit": "highest causal score among evaluated candidates; proposal rank resolves exact score ties",
+      "abstention": "none",
+      "stopping": "all non-BOS non-padding positions",
+      "target_prefix_calls": 0,
+      "cross_record_adaptation": "none"
+    }
+  },
+  "public_development": {
+    "source": "the 32 public development records fixed in experiments/TRR-0001/plan.json",
+    "truth_status": "public auxiliary labels; never an evaluated canonical or fresh blind split",
+    "sequence_geometry": "32 records by 40 tokens including BOS",
+    "cut_depth": 4,
+    "update_training_source": "the 64 public target_update_train records fixed in experiments/TRR-0001/plan.json; disjoint from development",
+    "conditions": [
+      {
+        "id": "public_base",
+        "role": "threshold fitting",
+        "update": "none"
+      },
+      {
+        "id": "public_lora_2601",
+        "role": "threshold fitting",
+        "seed": 2601,
+        "training_records": "first 32 target_update_train records",
+        "layers": [0, 1, 2, 3],
+        "modules": ["q_proj", "v_proj"],
+        "rank": 4,
+        "alpha": 4.0,
+        "steps": 30,
+        "batch_records": 8,
+        "learning_rate": 0.00075,
+        "weight_decay": 0.0,
+        "gradient_clip_norm": 1.0
+      },
+      {
+        "id": "public_lora_2602",
+        "role": "threshold fitting",
+        "seed": 2602,
+        "training_records": "last 32 target_update_train records",
+        "layers": [0, 1, 2, 3],
+        "modules": ["q_proj", "v_proj"],
+        "rank": 8,
+        "alpha": 8.0,
+        "steps": 30,
+        "batch_records": 8,
+        "learning_rate": 0.00075,
+        "weight_decay": 0.0,
+        "gradient_clip_norm": 1.0
+      },
+      {
+        "id": "public_lora_2603",
+        "role": "held-out public validation; forbidden for threshold selection or revision",
+        "seed": 2603,
+        "training_records": "all 64 target_update_train records in reverse fixed order",
+        "layers": [0, 1, 2, 3],
+        "modules": ["q_proj", "v_proj"],
+        "rank": 4,
+        "alpha": 12.0,
+        "steps": 30,
+        "batch_records": 8,
+        "learning_rate": 0.00075,
+        "weight_decay": 0.0,
+        "gradient_clip_norm": 1.0
+      }
+    ]
+  },
+  "threshold_fit": {
+    "fit_conditions": ["public_base", "public_lora_2601", "public_lora_2602"],
+    "held_out_condition": "public_lora_2603",
+    "candidate_thresholds": "numeric no-expansion sentinel -1.0, numeric all-expansion sentinel 1000000.0, and the pooled K32 normalized-gap quantiles 0, 0.05, 0.10, 0.20, 0.35, 0.50, 0.75, 1.00 computed on fit conditions only",
+    "evaluation": "run the complete online causal decode independently at each candidate threshold",
+    "selection_rule": {
+      "when_full_k64_beats_k32": "require at least 90% of the pooled public-development correct-token gain from full K64 over K32; among qualifying thresholds choose the fewest logical simulations, then the smaller numeric threshold",
+      "otherwise": "maximize pooled public-development correct tokens; tie-break by fewer logical simulations, then the smaller numeric threshold"
+    },
+    "held_out_policy": "report the frozen threshold on public_lora_2603 without changing it",
+    "freeze": "commit exact threshold, fit table, commands, code hash, public update hashes, and public observation hashes before any fresh blind selection exists"
+  },
+  "fresh_blind_confirmation": {
+    "creation_order": "only after the frozen calibration commit",
+    "records": 64,
+    "scored_tokens": 2496,
+    "dataset": "NeelNanda/pile-10k at revision 127bfedcd5047750df5ccf3a12979a47bfa0bafa",
+    "selection": "evaluator-private cryptographic key and opaque public HMAC commitment",
+    "disjoint_from": [
+      "all 288 original TRR-0001 records",
+      "all 64 TRR-0001-R1 fresh records",
+      "all public calibration records"
+    ],
+    "target_update": {
+      "role": "unavailable evaluator-only prefix update",
+      "path": "outputs/TRR-0001/evaluator_private/target_lora.safetensors",
+      "sha256": "34d92f1e664236bfa1990b10148e8ad52c60b16e72ed0ff4c7eb7da8d15019f6",
+      "available_to_reconstructor": false
+    },
+    "cut_depth": 4,
+    "access_boundary": "separate minimal chroot with read-only code, public model, lens, calibration, and sanitized observations; no workspace, dataset, target update, truth, private selection, or network",
+    "freeze_order": "predictions, candidates, confidence, routing, timing, access evidence, and hashes frozen before selection reveal or truth opening"
+  },
+  "dual_setup_evaluation": {
+    "new_setup": "fresh 64x40 Pile/unavailable-LoRA cut-4 confirmation plus the canonical retrospective setup for direct comparability",
+    "historical_setup": "canonical 128x128 Finance strict-BOS source capture, retrospective only",
+    "frozen_method_state": "identical A1 lens, confidence definition, threshold, budgets, and routing rule",
+    "required_costs": [
+      "proposal time",
+      "base selection time",
+      "expansion time",
+      "logical and executed candidate simulations",
+      "end-to-end compute time",
+      "peak CPU and CUDA memory",
+      "persisted state bytes"
+    ]
+  },
+  "success_rule": {
+    "historical_token_accuracy_minimum": 0.9822,
+    "new_token_accuracy_strictly_greater_than": 0.8397,
+    "same_method_must_pass_both": true,
+    "cost_must_be_reported_on_both": true
+  },
+  "revision_policy": "No threshold, candidate budget, routing rule, method code, or public state may change after the calibration freeze. Any later variant is exploratory and requires a new preregistration."
+}

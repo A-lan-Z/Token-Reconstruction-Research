@@ -1,0 +1,116 @@
+{
+  "schema": "token-reconstruction.trr0002-component-crossover-preregistration.v2",
+  "task": {
+    "id": "TRR-0002",
+    "title": "Run the complete A1/residual/A2/causal component crossover on both canonical benchmarks",
+    "status": "PREREGISTERED_BEFORE_IMPLEMENTATION",
+    "branch": "task/TRR-0002"
+  },
+  "authority": {
+    "charter_path": "RESEARCH_CHARTER.md",
+    "charter_sha256": "ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d",
+    "incoming_packet_path": "coordination/requests/TRR-0002.md",
+    "incoming_packet_sha256": "7a325f780a6c236c1b2db626fcd5c793859945531a291c03db155bfba43f9653",
+    "owner_override_path": "coordination/requests/TRR-0002-OWNER-OVERRIDE.md",
+    "owner_override_sha256": "f2667f4624a43e58210fe3744ffff04e5f7e82bbc351517a34cb56f61af67f1c",
+    "owner_clarification": "Run all five requested component combinations at every budget on both setups, then diagnose margins/ranks and develop a public-development-calibrated A2 replacement."
+  },
+  "repository": {
+    "previous_task_head": "694024c76f8858628ad7c940fdb02d5e818c28fc",
+    "previous_pull_request": 2,
+    "merge_commit": "84479014a6c07fa6f17d53df3f50eb32e3ef140c",
+    "base_branch": "main"
+  },
+  "truth_status": {
+    "classification": "RETROSPECTIVE_COMPONENT_CROSSOVER",
+    "clean_setup": "truth already opened in TRR-0001-R1",
+    "historical_setup": "truth already opened before TRR-0001-R2",
+    "freeze_rule": "Write and hash the complete 44-cell prediction artifact before either truth source is loaded by the runner.",
+    "claim_limit": "The crossover diagnoses component compatibility; a calibrated replacement requires a separately frozen method and fresh blind target updates for confirmation."
+  },
+  "setups": [
+    "clean-pile-lora-64x40",
+    "historical-finance-strict-bos-128x128"
+  ],
+  "candidate_budgets": [8, 16, 32, 64],
+  "proposal_families": {
+    "a1": "Pinned public Alpaca affine lens; full-vocabulary ranking with stable token-ID tie break.",
+    "residual_affine": "Existing clean cut-4 affine inverse; full-vocabulary cosine ranking with stable token-ID tie break.",
+    "a1_residual_union": "Alternate A1 and residual-affine ranked IDs at each rank, A1 first, deduplicate, and continue until the fixed budget is filled."
+  },
+  "selector_families": {
+    "a2_fixed_budget": "Simulate all K candidates through the public prefix using the greedy reconstructed prefix; score with historical centered cosine; compute K times softmax winner probability; accept only at the historical threshold 2.0, otherwise abstain and stop the suffix. The original A1-confidence fast path and progressive tiers are excluded from this symmetric fixed-budget selector and retained separately in the strict historical baseline.",
+    "causal": "Simulate all K candidates through the public prefix using the greedy reconstructed prefix; choose maximum uncentered cosine; break ties by candidate order; never abstain."
+  },
+  "factorial_pairs": [
+    {"proposal": "a1", "selector": "a2_fixed_budget", "method_prefix": "a1_a2"},
+    {"proposal": "a1", "selector": "causal", "method_prefix": "a1_causal"},
+    {"proposal": "residual_affine", "selector": "a2_fixed_budget", "method_prefix": "residual_affine_a2"},
+    {"proposal": "residual_affine", "selector": "causal", "method_prefix": "residual_affine_causal"},
+    {"proposal": "a1_residual_union", "selector": "causal", "method_prefix": "a1_residual_union_causal"}
+  ],
+  "method_id_rule": "Append _k8, _k16, _k32, or _k64 to each method prefix. residual_affine_causal_k16 is the existing causal_public_surrogate_k16 method and is recorded under that established ID.",
+  "existing_controls": [
+    "direct_inverse_k16",
+    "causal_public_surrogate_k16",
+    "strict_bos_adaptive_a1_a2"
+  ],
+  "matrix": {
+    "factorial_combinations": 20,
+    "additional_nonfactorial_controls": 2,
+    "unique_method_count": 22,
+    "setup_count": 2,
+    "required_cells": 44,
+    "missing_cell_disposition": "COMPARISON_INCOMPLETE",
+    "cross_setup_token_pooling": false
+  },
+  "execution": {
+    "selector_candidate_batch_cap": 256,
+    "record_batch_size_by_k": {"8": 16, "16": 16, "32": 8, "64": 4},
+    "global_seed": 1729,
+    "bootstrap_draws": 10000,
+    "bootstrap_seed_clean": 3201,
+    "bootstrap_seed_historical": 3202,
+    "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+    "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "cut_depth": 4,
+    "prefix_layers": [0, 1, 2, 3],
+    "target_model_calls": 0,
+    "training_or_adaptation": false,
+    "deterministic_cuda": true,
+    "offline_model_and_dataset_mode": true
+  },
+  "primary_hypothesis": {
+    "method_id": "a1_causal_k32",
+    "clean_reference": {"method_id": "causal_public_surrogate_k16", "correct_tokens": 2096, "scored_tokens": 2496},
+    "historical_reference": {"method_id": "strict_bos_adaptive_a1_a2", "correct_tokens": 13741, "scored_tokens": 13990},
+    "dominance_rule": "PASS only if clean correct tokens exceed 2096 while historical correct tokens are at least 13741, or historical correct tokens exceed 13741 while clean correct tokens are at least 2096."
+  },
+  "required_diagnostics": [
+    "true-token rank and recall at K=8,16,32,64 for A1, residual-affine, and union proposals",
+    "A2 centered-cosine winner margin, normalized winner confidence, coverage, selective accuracy, and first-abstention position",
+    "causal uncentered-cosine winner margin and accuracy conditional on true-token inclusion",
+    "proposal exclusion versus selector error attribution",
+    "end-to-end accuracy, exact-record rate, paired record bootstrap intervals, phase timing, simulations, and peak memory"
+  ],
+  "calibrated_a2_followup": {
+    "starts_after": "The complete fixed crossover and diagnostics are frozen and reported.",
+    "development_only": "Fit thresholds or a routing model only on disjoint public auxiliary records and public development updates; target benchmark truth is forbidden for fitting or model selection.",
+    "features_allowed": [
+      "candidate rank normalized by K",
+      "centered-cosine top1-top2 margin normalized within the candidate set",
+      "K-normalized winner probability",
+      "proposal-family agreement",
+      "causal-versus-centered winner agreement"
+    ],
+    "freeze_before_evaluation": true,
+    "confirmation": "Evaluate the frozen calibrated method on both canonical setups for comparability and on fresh unavailable target updates for the blind claim."
+  },
+  "success_definition": {
+    "historical_minimum_accuracy": 0.9822015725518227,
+    "clean_strictly_greater_than_accuracy": 0.8397435897435898,
+    "both_setups_required": true,
+    "costs_required": true
+  },
+  "stopping_rule": "Run all 44 cells once with frozen code. Preserve failures. Do not promote the most favorable secondary budget to the preregistered primary claim."
+}

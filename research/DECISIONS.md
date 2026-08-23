@@ -37,6 +37,145 @@ TRR-0001-R2 adds the following cross-setup decisions:
 These decisions remain scoped to the two registered setups and tested method
 configurations. They do not impose a scientific method ban.
 
+TRR-0002 adds the following decisions:
+
+- public A1 proposals plus causal public-prefix selection are robust across both
+  registered setups; at K32 they reached 98.72% clean and 98.93% historical;
+- the fixed-budget historical A2 core fails mainly because its raw confidence
+  scale and suffix-abstention rule do not transfer, not because A1 stops finding
+  the correct token: A1 K32 recall remained 98.76% clean and 99.03% historical;
+- the residual-affine proposal and the A1/residual union did not improve on pure
+  A1 under the causal selector in the controlled crossover;
+- the public-only calibrated successor uses a scale-normalized K32 margin to
+  expand uncertain positions to K64, never abstains, and was frozen before its
+  fresh hidden selection existed;
+- that same frozen method achieved 98.72% on the fresh blind replicate, 99.16%
+  on the canonical clean setup, and 99.21% historically, exceeding the 98.22%
+  historical strict A1+A2 result and the 83.97% prior new-setup causal result;
+- always-K64 A1/causal remains slightly more accurate (99.32% clean and 99.26%
+  historical), while the calibrated method retains most of that gain at lower
+  compute cost; and
+- every new active method must still populate both canonical setups. Fresh
+  replicas supplement rather than silently replace the canonical cells.
+
+These decisions are scoped to the pinned public model, lens, target-update
+family, cuts, datasets, and tested geometries. They do not ban other methods.
+
+TRR-0002 owner revision R1 adds the following decisions:
+
+- “all configurations” means the complete preregistered finite Cartesian
+  family, not the impossible set of all real-valued thresholds; this study
+  evaluated all 512,136 declared unique policies;
+- the accuracy-first winner among the tested A1+A2 configurations is fixed
+  direct-cosine K256 with no immediate A1 shortcut, no adaptive routing, no
+  candidate-group centering, and no abstention;
+- the winner is an improved configuration of the historical A1+A2 mechanism,
+  not a new reconstruction mechanism;
+- the frozen policy achieved 99.64% on a new isolated blind Pile replicate,
+  99.76% on canonical clean Pile, and 99.73% on historical Finance;
+- compared with fixed K64 on the canonical records, K256 recovered 11 more
+  clean tokens and 65 more historical tokens, with no record-level regression,
+  but used four times the logical candidate simulations and about 1.8--2.2
+  times the measured compute time; and
+- K256 is the tested accuracy default, while calibrated K32-to-K64 and fixed
+  K64 remain explicitly labelled lower-cost alternatives rather than winners.
+
+These owner-R1 decisions remain scoped to the frozen finite search family and
+the recorded public, blind, and canonical conditions. They do not claim that
+K256 is globally optimal over untested mechanisms or continuous policies.
+
+TRR-0002 owner revision R2 adds the following retrospective decisions:
+
+- the historical Finance benchmark already implements the requested
+  target/surrogate separation: generation-300 Finance-Instruct target
+  activations are reconstructed using only the public Alpaca A1 lens and the
+  untouched public Llama-3.2-1B-Instruct prefix;
+- public finalist saturation concealed a real scoring-rule difference: on the
+  Finance target, centered K256 recovered 13,963/13,990 tokens versus 13,952
+  for direct K256, and centered K512 recovered 13,980 versus 13,970 for direct
+  K512;
+- centered K512 exactly reached A1 top-512 recall (13,980/13,990), so all ten
+  remaining errors were proposal misses and none were selector errors when the
+  true token was present;
+- the multistage centered finalist recovered 13,958/13,990 tokens with 60,200
+  logical candidate simulations, compared with 13,952 tokens and 3,581,440
+  simulations for direct K256, establishing a strong retrospective
+  quality/cost point on this target;
+- immediate A1 acceptance at confidence 0.99 was not free: the fast-path K256
+  variants recovered 13,947 tokens, five fewer than direct K256; and
+- future saturated configuration studies must freeze a target/surrogate
+  transfer stage and every prediction before truth opening, while a new hidden
+  target update is required for a replacement claim.
+
+These owner-R2 results are retrospective because historical Finance truth was
+already open. They diagnose the target-shift mechanism and do not replace the
+owner-R1 frozen winner or establish a setup-independent best configuration.
+
+TRR-0002 owner revision R3 adds the following decisions:
+
+- the plain untouched public checkpoint is not, by itself, a competitive
+  replacement for the historical fitted A1 lens under the tested direct
+  checkpoint-identity mapping; its best scores were 84.46% canonical clean,
+  74.20% historical Finance, 73.36% matched GrandMaster, and 69.37% heavy
+  GrandMaster, with zero exact inputs;
+- this does not establish that every no-fit proposer fails or that Alpaca is the
+  uniquely best fitting corpus; it establishes only that the tested historical
+  public fitted lens is much stronger than the zero-fit identity control;
+- on identical GrandMaster prompts, the Alpaca-lens centered-K512 control fell
+  from 83.0700% on the untouched target to 77.4581% on the verified heavy SFT
+  target, a 5.6119-point target-shift penalty;
+- no tested fresh-panel cell reconstructed a complete input, so exact
+  token-complete, decoded-text-complete, and source-string-complete metrics are
+  mandatory alongside token accuracy in future studies;
+- the best heavy-target control's 78.97% proposal recall and 98.09% conditional
+  selector accuracy make proposal recall the main remaining bottleneck on this
+  panel;
+- the heavy target is a verified full SFT of the exact public
+  Llama-3.2-1B-Instruct revision, shares its tokenizer, and changed 78.23% of
+  parameter values; and
+- record batch size affected K64 predictions, so future comparison matrices must
+  use a common numerical execution setting or prove exact tensor invariance.
+
+These owner-R3 findings are scoped to one 64-input panel, one heavy target, two
+proposers, and three fixed policies. The inputs came from the public test split
+of the target's declared fitting dataset, but exclusion from its training
+mixture is not established; the panel therefore makes no unseen-text-
+generalization claim. The findings do not alter the active registry or the
+owner-R1 direct-K256 replacement status.
+
+TRR-0002 owner revision R4 adds the following exact-input target-only
+bridge decisions:
+
+- the bridge holds the 128 historical input records, scoring denominator,
+  public A1 proposal source, public A2 surrogate, cut, numerical execution,
+  and decision policies fixed while changing only target-model weights;
+- historical public-Alpaca A1 still has at least 99.9285% top-512 proposal
+  recall for all three targets, including the verified heavy full SFT;
+- fixed centered K512 recovered 99.9285% on the untouched and Finance targets
+  and 99.7856% on the heavy target, reconstructing 124, 124, and 102 of 128
+  complete inputs respectively;
+- the most robust tested quality/cost policy was adaptive direct-cosine
+  K256-to-K512 with public-fitted RMS-margin thresholds: it recovered
+  99.7999%, 99.7999%, and 99.8213%, with 118, 118, and 115 complete inputs,
+  using about 23% of fixed-K512 candidate simulations;
+- the historical strict confidence gate and suffix-abstention policy fell from
+  98.2202% on Finance to 95.6183% on the heavy target despite near-perfect A1
+  recall, so its target-shift failure is a transfer failure in stopping and
+  acceptance rules rather than a collapse of the underlying A1 proposer;
+- the zero-fit checkpoint-identity A1 control recovered only 73.5525%,
+  74.2030%, and 75.1251%, with zero complete inputs, because its top-512
+  proposal recall was only 74.6676%--76.1901%; and
+- the lower R3 GrandMaster figures are not directly comparable target-shift
+  deltas because R3 also changed the input panel and geometry. R4 is the
+  controlled answer for changing target weights on historical inputs.
+
+R4 is retrospective bridge evidence: the historical inputs and truth were
+already known. It repairs interpretation and comparability but is not a fresh
+blind replacement claim. Future heavy executions must estimate their largest
+case, check live capacity, qualify a representative maximum cell, and use
+restart-safe isolated jobs. Resource-saving execution changes require exact
+output-equivalence evidence before adoption.
+
 ## Administrative entries
 
 - TRR-0000 bootstraps and validates the repository-backed relay. It selects no
@@ -52,5 +191,8 @@ configurations. They do not impose a scientific method ban.
   confirmatory run. This is a revision of TRR-0001, not a new scientific
   direction, and TRR-0002 remains unauthorized.
 - User-directed revision TRR-0001-R2 establishes the durable dual-benchmark
-  protocol, backfills every existing method across both setups, and leaves
-  TRR-0002 unassigned and unstarted.
+  protocol and backfills every existing method across both setups.
+- The repository owner explicitly superseded the stale proposal-only TRR-0002
+  packet with the controlled component-crossover and calibrated-selector study.
+  The exact override is preserved at
+  `coordination/requests/TRR-0002-OWNER-OVERRIDE.md`.

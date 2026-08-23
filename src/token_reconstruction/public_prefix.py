@@ -21,6 +21,22 @@ class PublicPrefixCache:
     backend: Any
     length: int = 0
 
+    def batch_select_indices(self, indices: torch.Tensor) -> None:
+        """Select parent rows while preserving the logical sequence length."""
+
+        selector = getattr(self.backend, "batch_select_indices", None)
+        if not callable(selector):
+            raise PublicPrefixError("decoder cache cannot select batch rows")
+        selector(indices)
+
+    def batch_repeat_interleave(self, repeats: int) -> None:
+        """Repeat parent rows while preserving the logical sequence length."""
+
+        repeat = getattr(self.backend, "batch_repeat_interleave", None)
+        if not callable(repeat):
+            raise PublicPrefixError("decoder cache cannot repeat batch rows")
+        repeat(repeats)
+
 
 class ContiguousPublicPrefix(nn.Module):
     """Embedding plus decoder layers `[0, cut_depth)` from a public Llama model."""

@@ -1,0 +1,175 @@
+{
+  "attempts": [
+    {
+      "access_manifest_created": false,
+      "cause": "The isolated mount received only the Hugging Face snapshot directory; its relative symbolic links pointed to an unmounted blob store, so the public checkpoint files were unreadable.",
+      "command": [
+        "/usr/bin/time",
+        "-v",
+        "scripts/trr0002_r3_isolate.sh",
+        "checkpoint_identity",
+        "outputs/TRR-0002/strict-surrogate-heavy/canonical/reconstructor_input",
+        "outputs/TRR-0002/strict-surrogate-heavy/frozen-code/ade41498f72f6be94a80eb8ec6cfb9f92dc7e206",
+        "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+        "/home/alanz/.local/lib/python3.12/site-packages",
+        "outputs/TRR-0002/strict-surrogate-heavy/predictions/canonical-checkpoint-identity"
+      ],
+      "elapsed_wall_seconds": 1.18,
+      "exit_status": 1,
+      "maximum_rss_kib": 664116,
+      "order": 1,
+      "prediction_created": false,
+      "resolution": "Stage a dereferenced local copy of the same hash-pinned base checkpoint; model and tokenizer SHA-256 values remained unchanged.",
+      "stage": "fail-closed access probe",
+      "target_or_truth_accessed": false
+    },
+    {
+      "access_manifest": {
+        "bytes": 5657,
+        "path": "outputs/TRR-0002/strict-surrogate-heavy/failed-runs/cache-api-access-manifest.json",
+        "sha256": "063e800beddcd65b30ae0d8f946d80931c1ae897835c01e9d150d1c1d1fb8ebb"
+      },
+      "cause": "PublicPrefixCache wrapped a Transformers DynamicCache but did not delegate its existing batch_select_indices and batch_repeat_interleave operations.",
+      "command": [
+        "/usr/bin/time",
+        "-v",
+        "scripts/trr0002_r3_isolate.sh",
+        "checkpoint_identity",
+        "outputs/TRR-0002/strict-surrogate-heavy/canonical/reconstructor_input",
+        "outputs/TRR-0002/strict-surrogate-heavy/frozen-code/ade41498f72f6be94a80eb8ec6cfb9f92dc7e206",
+        "outputs/TRR-0002/strict-surrogate-heavy/public-base-dereferenced",
+        "/home/alanz/.local/lib/python3.12/site-packages",
+        "outputs/TRR-0002/strict-surrogate-heavy/predictions/canonical-checkpoint-identity"
+      ],
+      "elapsed_wall_seconds": 6.32,
+      "exit_status": 1,
+      "isolation_checks_passed": true,
+      "maximum_rss_kib": 3453212,
+      "order": 2,
+      "prediction_created": false,
+      "resolution": "Delegate the two cache batch operations through PublicPrefixCache and add a regression test; the selector rule and all preregistered constants are unchanged.",
+      "stage": "first candidate-selection call",
+      "target_or_truth_accessed": false
+    },
+    {
+      "access_manifest": {
+        "bytes": 5930,
+        "path": "outputs/TRR-0002/strict-surrogate-heavy/failed-runs/canonical-control-oom1-access-manifest.json",
+        "sha256": "cd92bc3861e77db3eba9c78bc1acc88c0a663921d34d208680d854609192aeff"
+      },
+      "cause": "The first canonical Alpaca-control attempt encountered a transient CUDA allocation failure while entering the larger Finance condition at the common record batch size of eight.",
+      "elapsed_wall_seconds": 69.37,
+      "exit_status": 1,
+      "isolation_checks_passed": true,
+      "maximum_rss_kib": 3454020,
+      "order": 3,
+      "prediction_created": false,
+      "resolution": "Preserve the common batch size for runtime comparability and retry unchanged after confirming there was no competing CUDA process; the unchanged retry completed.",
+      "stage": "canonical Alpaca-control Finance candidate selection",
+      "target_or_truth_accessed": false
+    },
+    {
+      "access_manifest": {
+        "bytes": 5649,
+        "path": "outputs/TRR-0002/strict-surrogate-heavy/failed-runs/heavy-position-access-manifest.json",
+        "sha256": "5a2d4c964ac82cea1cc665b7491252fe296995fbb4e8bfaf957f64c655808145"
+      },
+      "cause": "The first heavy sanitized bundle set padded position IDs to zero, while the repository contract requires padding to repeat the final valid index.",
+      "command": [
+        "/usr/bin/time",
+        "-v",
+        "scripts/trr0002_r3_isolate.sh",
+        "checkpoint_identity",
+        "outputs/TRR-0002/strict-surrogate-heavy/heavy/reconstructor_input",
+        "outputs/TRR-0002/strict-surrogate-heavy/frozen-code/0c5e5866170e42bd05a3686624f3297eccf70038",
+        "outputs/TRR-0002/strict-surrogate-heavy/public-base-dereferenced",
+        "/home/alanz/.local/lib/python3.12/site-packages",
+        "outputs/TRR-0002/strict-surrogate-heavy/predictions/heavy-checkpoint-identity"
+      ],
+      "elapsed_wall_seconds": 2.97,
+      "exit_status": 1,
+      "isolation_checks_passed": true,
+      "maximum_rss_kib": 736092,
+      "order": 4,
+      "prediction_created": false,
+      "resolution": "Generate padded positions from the cumulative attention mask, validate both target tensors before sanitization, and create a new correction commitment without rewriting the original evidence.",
+      "stage": "sanitized heavy-input validation",
+      "target_or_truth_accessed": false
+    },
+    {
+      "access_manifest": {
+        "bytes": 5691,
+        "path": "outputs/TRR-0002/strict-surrogate-heavy/failed-runs/heavy-multicondition-oom-access-manifest.json",
+        "sha256": "07b3fa1e083c0b6961923a5d3cfae731933ceea5377403055ed45346a1e5423f"
+      },
+      "cause": "A single strict process completed all three matched-base policies but encountered CUDA out-of-memory when it switched to the heavy-target condition.",
+      "command": [
+        "/usr/bin/time",
+        "-v",
+        "scripts/trr0002_r3_isolate.sh",
+        "checkpoint_identity",
+        "outputs/TRR-0002/strict-surrogate-heavy/heavy-c1/reconstructor_input",
+        "outputs/TRR-0002/strict-surrogate-heavy/frozen-code/da7cb59b256497305bd8742a695db1033334817b",
+        "outputs/TRR-0002/strict-surrogate-heavy/public-base-dereferenced",
+        "/home/alanz/.local/lib/python3.12/site-packages",
+        "outputs/TRR-0002/strict-surrogate-heavy/predictions/heavy-checkpoint-identity"
+      ],
+      "elapsed_wall_seconds": 182.72,
+      "exit_status": 1,
+      "isolation_checks_passed": true,
+      "maximum_rss_kib": 3445068,
+      "order": 5,
+      "prediction_created": false,
+      "resolution": "Run matched-base and heavy-target conditions in separate fail-closed processes so CUDA state resets between them; candidate rules, policies, batch size, prompts, and observations remain unchanged.",
+      "stage": "transition from matched-base to heavy-target predictions",
+      "target_or_truth_accessed": false
+    },
+    {
+      "access_manifest": {
+        "bytes": 5659,
+        "path": "outputs/TRR-0002/strict-surrogate-heavy/failed-runs/heavy-target-k512-oom-access-manifest.json",
+        "sha256": "3f3703434a841617a6cd619c741bb03959ab1830cf2c52760c42a0cd5400b7fe"
+      },
+      "cause": "The separate strict heavy-target process completed K64 and K256 but exhausted 16 GB of CUDA memory during K512 at record batch size eight.",
+      "elapsed_wall_seconds": 166.23,
+      "exit_status": 1,
+      "isolation_checks_passed": true,
+      "maximum_rss_kib": 3445536,
+      "order": 6,
+      "prediction_created": false,
+      "resolution": "Use record batch size four for all four fresh matched/heavy condition processes, preserve batch size eight for both canonical processes, and require exact matched-base tensor invariance before freeze.",
+      "stage": "heavy-target strict K512 candidate scoring",
+      "target_or_truth_accessed": false
+    },
+    {
+      "cause": "An exact diagnostic comparison of matched-base strict predictions at record batch sizes eight and four found 34 differing entries in the K64 prediction tensor. All finite confidence values and every K256/K512 prediction, route, selected-K, and candidate tensor were identical.",
+      "diagnostic_scope": "11 tensors compared before prediction freeze",
+      "order": 7,
+      "resolution": "Treat reconstruction batch size as an execution setting that can affect outputs and rerun the entire 24-cell matrix at the common memory-safe record batch size four.",
+      "stage": "matched-base batch-size invariance diagnostic",
+      "target_or_truth_accessed": false
+    },
+    {
+      "access_manifest": {
+        "bytes": 5659,
+        "path": "outputs/TRR-0002/strict-surrogate-heavy/failed-runs/heavy-target-batch4-transient-oom1/access_manifest.json",
+        "sha256": "f8c9c519a0a1efc7b258791fe084f88d37f6ff21621320835d1d63cfbe07c894"
+      },
+      "cause": "The first batch-four strict heavy-target attempt encountered a transient CUDA allocation failure during K64 immediately after the canonical control process. After exit the device reported no running process and only 424 MiB used.",
+      "elapsed_wall_seconds": 15.57,
+      "exit_status": 1,
+      "isolation_checks_passed": true,
+      "maximum_rss_kib": 3444612,
+      "order": 8,
+      "prediction_created": false,
+      "resolution": "Preserve the failed attempt, verify the CUDA device was clear, and retry the identical batch-four command; the unchanged retry completed all three policies.",
+      "stage": "heavy-target strict K64 candidate scoring",
+      "target_or_truth_accessed": false
+    }
+  ],
+  "last_updated_utc": "2026-08-23T11:38:18Z",
+  "recorded_utc": "2026-08-23T08:58:29Z",
+  "revision_id": "TRR-0002-OWNER-REVISION-R3",
+  "schema": "token-reconstruction.trr0002-owner-r3-failed-runs.v1",
+  "task_id": "TRR-0002"
+}

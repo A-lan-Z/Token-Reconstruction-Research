@@ -1,0 +1,26 @@
+{"denial_probes": 8, "network_connect_errno": 101, "status": "ACCESS_BOUNDARY_VERIFIED"}
+Loading weights:   0%|          | 0/146 [00:00<?, ?it/s]Loading weights: 100%|██████████| 146/146 [00:00<00:00, 1972.12it/s]
+Traceback (most recent call last):
+  File "/code/scripts/trr0002_blind_reconstruct.py", line 348, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/code/scripts/trr0002_blind_reconstruct.py", line 207, in main
+    reference = import_reference(args.reference_source)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/code/scripts/trr0002_blind_reconstruct.py", line 55, in import_reference
+    spec.loader.exec_module(module)
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/code/reference/strict_bos/round001_teacher.py", line 46, in <module>
+    @dataclass(frozen=True)
+     ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/dataclasses.py", line 1258, in wrap
+    return _process_class(cls, init, repr, eq, order, unsafe_hash,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/dataclasses.py", line 983, in _process_class
+    and _is_type(type, cls, dataclasses, dataclasses.KW_ONLY,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/dataclasses.py", line 749, in _is_type
+    ns = sys.modules.get(cls.__module__).__dict__
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute '__dict__'. Did you mean: '__dir__'?

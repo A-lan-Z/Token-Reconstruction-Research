@@ -12,6 +12,11 @@ Every active reconstruction method must be evaluated in both canonical setups.
 The two setups answer different questions, so a complete matrix is more useful
 than choosing one setup and losing comparability with earlier work.
 
+Claims about the best configuration inside the A1+A2 family must additionally
+follow `research/A1_A2_CONFIGURATION_PROTOCOL.md`. Exploratory search variants
+are not active methods merely because they were enumerated; the single frozen
+winner becomes active and must then add one cell in each canonical setup.
+
 ## Canonical setups
 
 ### clean-pile-lora-64x40
@@ -48,6 +53,8 @@ than choosing one setup and losing comparability with earlier work.
 | `direct_inverse_k16` | public-data affine inverse, full-vocabulary cosine top-16 proposal, choose proposal rank 1 | clean 64x40 |
 | `causal_public_surrogate_k16` | the same frozen top-16 proposals, re-rank with the public prefix and reconstructed prefix, no target-prefix calls | clean 64x40 |
 | `strict_bos_adaptive_a1_a2` | public Alpaca A1 top-512, confidence fast path 0.999, progressive public-prefix A2 tiers 32/128/512, normalized-winner threshold 2.0, then suffix abstention | historical 128x128 |
+| `a1_scale_calibrated_adaptive_causal_k32_to64` | public A1 top-64; causally score K32; expand to K64 when the frozen scale-normalized top-two gap is at or below 1.2544946670532227; never abstain | dual-setup successor |
+| `a1_a2_exhaustive_configuration_winner` | public A1 top-256; direct causal cosine at fixed K256; no fast path, routing, centering, or abstention | dual-setup accuracy winner |
 
 The word `adaptive` in `strict_bos_adaptive_a1_a2` refers to its per-token tier
 and route selection. Learned online A1 adapters are separate methods and must be
@@ -55,7 +62,7 @@ registered as separate rows if reactivated.
 
 ## Required matrix
 
-Every result must contain these six cells:
+Every result must contain these six base-control cells:
 
 | Method | clean 64x40 | historical 128x128 |
 |---|---:|---:|
@@ -66,6 +73,66 @@ Every result must contain these six cells:
 Adding an active method adds one required cell in each setup. Adding a canonical
 setup adds one required cell for every active method. A task with a missing cell
 is incomplete for overall comparison, even when its available cells succeeded.
+
+### TRR-0002 controlled crossover extension
+
+TRR-0002 adds the following five component combinations at each fixed candidate
+budget 8, 16, 32, and 64, with every resulting method required in both setups:
+
+| Proposal | Selector |
+|---|---|
+| public Alpaca A1 | fixed-budget historical A2 core |
+| public Alpaca A1 | causal public-prefix cosine |
+| residual-affine inverse | fixed-budget historical A2 core |
+| residual-affine inverse | causal public-prefix cosine |
+| round-robin deduplicated A1/residual union | causal public-prefix cosine |
+
+The fixed-budget A2 core uses the historical centered-cosine score,
+`K * softmax(score)[winner]` confidence, threshold 2.0, and suffix abstention.
+The original A1-confidence fast path and progressive 32/128/512 tiers are not
+part of the symmetric factorial selector; they remain represented by the exact
+`strict_bos_adaptive_a1_a2` control.
+
+The causal selector uses the same public prefix and greedy reconstructed prefix,
+but selects the maximum uncentered cosine at every position without abstention.
+
+The crossover's frozen v2 registry is preserved at
+`experiments/TRR-0002/preregistration/dual_benchmark_registry.v2.json` and
+contains its 44 required setup-method cells. The active v3 registry adds the
+calibrated successor, producing 46 required cells. The crossover is
+retrospective; the calibrated successor was fitted only on public development
+updates, frozen, and then evaluated in a fresh isolated blind target-update run.
+
+### TRR-0002 calibrated successor
+
+The calibrated successor replaces the historical A2 raw confidence threshold
+and suffix abstention. Its confidence is the K32 causal top-two score gap divided
+by the RMS deviation of all 32 scores. This statistic is invariant to a common
+score shift or positive rescaling. Positions at or below the frozen public-only
+threshold expand to ranks 33--64; every position emits a token.
+
+The method must remain byte-identical across both canonical setup cells. A fresh
+clean confirmation may use a new cryptographically hidden, disjoint 64x40 split,
+but that replicate supplements rather than deletes the canonical clean cell.
+TRR-0002 froze the method before the new split existed and confirmed 98.72% on
+the fresh blind replicate, 99.16% on the canonical clean setup, and 99.21% on
+the historical setup.
+
+### TRR-0002 owner-R1 exhaustive configuration winner
+
+The owner-requested follow-up enumerated all 512,136 policies in its frozen
+finite A1+A2 configuration family on public component surfaces, causally ran 57
+deterministically selected finalists on disjoint public trajectories, and froze
+one winner before held-out, fresh-blind, or canonical access. The exact winner
+uses direct cosine at fixed K256, no immediate A1 shortcut, no adaptivity, no
+centering, and no abstention.
+
+The same serialized policy achieved 99.76% on canonical clean Pile and 99.73%
+on canonical historical Finance. A wholly new disjoint isolated blind replicate
+scored 99.64%. This makes K256 the accuracy-first default among tested A1+A2
+configurations. The calibrated K32-to-K64 method remains a cheaper balanced
+alternative; these are different operating points and must retain their own
+method IDs and cost records.
 
 ## Native executions and benchmark-compatible ports
 
@@ -136,3 +203,91 @@ already available. These results are retrospective comparability evidence, not
 a new blind confirmation. The clean TRR-0001-R1 direct and causal outputs remain
 the governing blind results for their native cells; R2 reruns test reproducibility
 and add the previously missing ports.
+
+## TRR-0002 status
+
+TRR-0002 completed all 44 preregistered crossover cells, the two calibrated
+method cells, and the two frozen exhaustive-winner cells. Both fresh clean
+confirmations were isolated and frozen before truth reveal. The active v4
+registry therefore contains 24 methods and 48 canonical setup-method cells;
+future active methods must likewise add one cell per canonical setup.
+
+### Owner-R2 target/surrogate diagnostic status
+
+Owner revision R2 did not register 12 new active methods or add a third
+canonical setup. It froze a diverse exploratory shortlist from the completed
+public configuration table and ran a retrospective stress diagnostic inside
+the existing historical Finance setup, whose target prefix is generation-300
+Finance-Instruct while A1/A2 retain public-only resources.
+
+Centered K512 reached 99.9285%, centered K256 reached 99.8070%, and the
+multistage centered finalist reached 99.7713% with 60,200 logical simulations.
+These single-setup target-shift results differentiate promising configurations
+but cannot support an overall-best or replacement claim. The active registry
+and its 48 required cells therefore remain unchanged.
+
+A future replacement study must preregister the selected policy as active,
+populate both canonical cells, and confirm it on a newly hidden target update.
+The saturation and freeze requirements are specified in
+`research/A1_A2_CONFIGURATION_PROTOCOL.md`.
+
+### Owner-R3 strict-surrogate and heavy-target diagnostic status
+
+Owner revision R3 added a paired auxiliary robustness panel without adding a
+third canonical setup or registering new active methods. It used the same 64
+HMAC-selected GrandMaster records for an untouched
+`meta-llama/Llama-3.2-1B-Instruct` target and the verified full-SFT derivative
+`Vikhrmodels/Vikhr-Llama-3.2-1B-Instruct`. The derivative declares that exact
+base, shares a byte-identical tokenizer, and changed 78.23% of parameter values.
+
+Two proposers (zero-fit checkpoint identity and the historical public Alpaca
+lens control) and three frozen policies (direct K64, direct K256, centered K512)
+were also backfilled on both canonical setups, producing 24 complete diagnostic
+cells. Every final archive used record batch size four and was frozen before the
+heavy truth opening.
+
+The best heavy-target cell was the Alpaca-lens centered K512 control at 77.4581%
+token accuracy and 0/64 exact inputs, down 5.6119 percentage points from the
+same-prompts matched target. The untouched-checkpoint proposer peaked at
+69.3704% and 0/64 exact inputs. These results do not change the active v4
+registry or the 48-cell canonical requirement.
+
+For future noncanonical robustness panels:
+
+- pair identical records across matched and shifted targets;
+- verify exact target lineage, tokenizer compatibility, update type, revision,
+  and quantitative weight drift;
+- record whether evaluation records may overlap declared target fine-tuning data;
+  unseen-text claims require documented disjoint provenance;
+- run every compared method on both canonical setups as well as every declared
+  auxiliary target condition;
+- freeze the complete method-by-condition matrix before hidden truth reveal;
+- report token accuracy, token-complete inputs, decoded-text-complete inputs,
+  source-string recovery when available, proposal recall, conditional selector
+  accuracy, candidate cost, runtime, memory, and failures; and
+- do not pool auxiliary and canonical scores or promote a single derivative to a
+  replacement claim.
+
+### Exact-input target-only bridge rule
+
+When an auxiliary study is intended to explain or compare against a historical
+score, it must include a target-only bridge. Within each paired bridge cell,
+hold constant the exact token IDs, masks, positions, record order, sequence
+limits, cut depth, reconstruction method, fixed assets, decision rules, and
+scoring denominator. Change only the target weights that produced the observed
+activation. A separate prompt, dataset, or record-selection change is an input-
+shift panel and cannot stand in for this bridge.
+
+The bridge must include the previously scored target condition as a reproduction
+anchor. Every frozen anchor policy must match its committed correct-token,
+denominator, and exact-record counts before results for another target are
+accepted. Predictions for the complete proposer-by-policy-by-target matrix must
+be frozen before the scorer opens truth.
+
+Reports must use explicit target identities rather than labels such as
+`unchanged target`, state whether A1 uses a fitted public asset or the untouched
+checkpoint, and report post-BOS token accuracy, token-exact inputs, proposal
+recall, conditional selector accuracy, candidate simulations, synchronized
+runtime, peak memory, and all failed or excluded runs. Across-target differences
+are paired robustness results; they are not pooled with either canonical
+benchmark and do not by themselves establish a replacement method.

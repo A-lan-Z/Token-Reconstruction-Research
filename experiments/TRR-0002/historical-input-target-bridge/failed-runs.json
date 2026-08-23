@@ -1,0 +1,228 @@
+{
+  "schema": "token-reconstruction.trr0002-owner-r4-failed-runs.v2",
+  "task_id": "TRR-0002",
+  "revision_id": "TRR-0002-OWNER-REVISION-R4",
+  "status": "PRESERVED_COMPLETE_FAILURE_AND_EXCLUSION_HISTORY",
+  "execution_commit": "913947202a7c468747751a24c5cb0ff3e403cecd",
+  "attempt": {
+    "id": "combined-process-attempt1",
+    "disposition": "EXCLUDED_BEFORE_FREEZE_AND_BEFORE_SCORING",
+    "reason": "CUDA out of memory while starting the third policy after two policies completed in one long-lived process",
+    "record_batch_size": 4,
+    "completed_unfrozen_cells": [
+      {
+        "condition_id": "public_base_target_cut4",
+        "policy_id": "a1a2_589f6e179eb4626877c2",
+        "label": "fixed_k64_direct",
+        "selection_seconds": 421.6803920780003
+      },
+      {
+        "condition_id": "public_base_target_cut4",
+        "policy_id": "a1a2_c316cdf581012bd81cfa",
+        "label": "calibrated_k32_to_k64",
+        "selection_seconds": 66.02305047599965
+      }
+    ],
+    "prediction_artifact_created": false,
+    "truth_loaded": false,
+    "score_opened": false,
+    "corrective_action": "Execute every target/policy cell in a fresh process, then combine byte-verified truthless parts before freezing."
+  },
+  "timing_artifact": {
+    "path": "experiments/TRR-0002/historical-input-target-bridge/failed-combined-attempt1-time.txt",
+    "bytes": 1402,
+    "sha256": "364a71091cc2485115a938ea91f4f9d218b0ed3a146ad84d11533823c2769080"
+  },
+  "additional_attempts": [
+    {
+      "id": "isolated-wrapper-interactive-attempt",
+      "disposition": "INTERRUPTED_WITH_COMPLETED_CELLS_PRESERVED",
+      "reason": "The unified execution session exited while starting the sixth fresh-process cell. Five create-only cells had completed and were retained.",
+      "completed_cells": 5,
+      "truth_loaded": false,
+      "freeze_created": false,
+      "timing_artifact": {
+        "path": "experiments/TRR-0002/historical-input-target-bridge/all-cells-time.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "corrective_action": "Add verified-cell skip/resume behavior and run the wrapper as a hidden restartable process."
+    },
+    {
+      "id": "background-resume1-k512-oom",
+      "disposition": "FAILED_CELL_NOT_FROZEN_OR_SCORED",
+      "reason": "Fixed direct K512 failed with CUDA out of memory before producing its create-only cell output.",
+      "elapsed": "0:20.31",
+      "exit_status": 1,
+      "truth_loaded": false,
+      "artifacts": {
+        "stdout": {
+          "path": "experiments/TRR-0002/historical-input-target-bridge/runner-resume.out",
+          "bytes": 915,
+          "sha256": "798630dc40cc133e5e2d37a92d3d6e167b5fae8f28c5bac4c356b55c568d8317"
+        },
+        "stderr": {
+          "path": "experiments/TRR-0002/historical-input-target-bridge/runner-resume.err",
+          "bytes": 3989,
+          "sha256": "649521092038ed94ddc7abec41b74786b2cbe3cb4ca2fe1f64dcd3285a5d10aa"
+        },
+        "timing": {
+          "path": "experiments/TRR-0002/historical-input-target-bridge/all-cells-resume-time.txt",
+          "bytes": 807,
+          "sha256": "7614f410feee55b055a64b72d02ffc2868514b74a18bd3fe703c22de7601df4c"
+        }
+      },
+      "corrective_action": "Enable the expandable-segments allocator and retain fresh-process isolation."
+    },
+    {
+      "id": "background-resume2-driver-unknown-error",
+      "disposition": "FAILED_AFTER_ONE_NEW_CELL_WITH_COMPLETED_CELL_PRESERVED",
+      "reason": "Fixed direct K512 completed, but centered K512 later failed with CUDA unknown error after 8:55.66.",
+      "elapsed": "8:55.66",
+      "exit_status": 1,
+      "truth_loaded": false,
+      "artifacts": {
+        "stdout": {
+          "path": "experiments/TRR-0002/historical-input-target-bridge/runner-resume2.out",
+          "bytes": 1294,
+          "sha256": "ed78837f0363ead1993bad639b597469596f69087f69765b1daffd39d6d89c4b"
+        },
+        "stderr": {
+          "path": "experiments/TRR-0002/historical-input-target-bridge/runner-resume2.err",
+          "bytes": 2017,
+          "sha256": "b7597fe2557dc7a5a8097041e3aaa55cb6c39af09945e96a7b22b5164dedc4ad"
+        },
+        "timing": {
+          "path": "experiments/TRR-0002/historical-input-target-bridge/all-cells-resume2-time.txt",
+          "bytes": 812,
+          "sha256": "ccc27dd3e99ebbe9daae04c66bf47aef786f882519ea8c98a27968d573ad21b1"
+        }
+      },
+      "corrective_action": "Stop rather than continue against an anomalous driver state; test a smaller internal forward batch only under exact output equivalence."
+    },
+    {
+      "id": "candidate-forward-128-equivalence-check",
+      "disposition": "REJECTED_NON_EQUIVALENT_RESOURCE_WORKAROUND",
+      "reason": "Reducing the internal candidate-forward limit from 512 to 128 changed one real K64 prediction.",
+      "elapsed": "1:27.05",
+      "command_exit_status": 0,
+      "differing_predictions": 1,
+      "difference": {
+        "record_index": 24,
+        "position": 64,
+        "reference_token": 80564,
+        "candidate_forward_128_token": 17870
+      },
+      "reference_prediction_sha256": "14ac0414c659ee172398d21227560ee5242264f7e3af842d9d2bff6591e372ce",
+      "candidate_forward_128_prediction_sha256": "0029080c196e074958dbec359bc567413f402996148fc9fc2bd552e50cd4273e",
+      "truth_loaded": false,
+      "timing_artifact": {
+        "path": "experiments/TRR-0002/historical-input-target-bridge/candidate-forward-equivalence-time.txt",
+        "bytes": 1448,
+        "sha256": "df69694e03bb2152fbab8275c64d91225581d2f986ff967e98ad15d975519d22"
+      },
+      "corrective_action": "Revert the proposed batching change and preserve the original numerical geometry."
+    },
+    {
+      "id": "background-resume3-corrupted-cuda-state",
+      "disposition": "FAILED_PREFLIGHT_DIAGNOSIS_BEFORE_NEW_CELL",
+      "reason": "A 502 MiB model allocation failed despite 14.60 GiB reported free, and PyTorch reported an impossible 17179869184 GiB of non-PyTorch memory in use.",
+      "elapsed": "0:04.99",
+      "exit_status": 1,
+      "truth_loaded": false,
+      "artifacts": {
+        "stdout": {
+          "path": "experiments/TRR-0002/historical-input-target-bridge/runner-resume3.out",
+          "bytes": 1098,
+          "sha256": "aeef765af04993d1e734cdc1c28d2f921a1ef81d88f9c80401bf1bd8764955be"
+        },
+        "stderr": {
+          "path": "experiments/TRR-0002/historical-input-target-bridge/runner-resume3.err",
+          "bytes": 2547,
+          "sha256": "d2e420d548a9a77dfa0d4e6f7a5ecc0cbc9fde5448d91e9c6a5887df6629a4c2"
+        },
+        "timing": {
+          "path": "experiments/TRR-0002/historical-input-target-bridge/all-cells-resume3-time.txt",
+          "bytes": 804,
+          "sha256": "adbc6e40da2046bbcab2ec9a8ee6424a258cdf649cc8db6fde82b799746079f7"
+        }
+      },
+      "corrective_action": "Stop GPU execution. The repository owner restarted the PC, after which the 600 MiB allocation probe and largest-cell qualification passed."
+    },
+    {
+      "id": "post-reboot-combine-nan-equality",
+      "disposition": "ALL_45_GPU_CELLS_VALID_COMBINER_RETRIED",
+      "reason": "All 45 prediction cells completed, but the CPU-only combiner used ordinary tensor equality, which treats matching NaNs at the 2,394 masked positions as unequal. Candidate token tensors were bit-identical.",
+      "elapsed": "1:30:20",
+      "exit_status": 1,
+      "completed_prediction_cells": 45,
+      "truth_loaded": false,
+      "freeze_created": false,
+      "artifacts": {
+        "stdout": {
+          "path": "experiments/TRR-0002/historical-input-target-bridge/runner-resume4.out",
+          "bytes": 15889,
+          "sha256": "0c147ec05306e2ebf59d86a6cef13d3fa40744156e9df67f75475ee8d8cb29a1"
+        },
+        "stderr": {
+          "path": "experiments/TRR-0002/historical-input-target-bridge/runner-resume4.err",
+          "bytes": 6265,
+          "sha256": "7c97e38e113f450b7ae984981362be9aa43a8e02e3e7ac9402d3bdec643d01cd"
+        },
+        "timing": {
+          "path": "experiments/TRR-0002/historical-input-target-bridge/all-cells-resume4-time.txt",
+          "bytes": 823,
+          "sha256": "4b9b2850d9ad1338a69306ac0fec42f6c5a4c65021a596715ea483e7b580723d"
+        }
+      },
+      "corrective_action": "Require identical dtype, shape, finite values, and NaN positions; add a regression test. The combine-only retry preserved all parts and exited zero."
+    },
+    {
+      "id": "freeze-missing-pythonpath",
+      "disposition": "CLI_ENVIRONMENT_ERROR_NO_RECEIPT_CREATED",
+      "reason": "The first standalone freeze invocation omitted PYTHONPATH=src:scripts and failed during imports.",
+      "elapsed": "0:01.84",
+      "exit_status": 1,
+      "truth_loaded": false,
+      "receipt_created": false,
+      "stderr": {
+        "path": "experiments/TRR-0002/historical-input-target-bridge/freeze.err",
+        "bytes": 462,
+        "sha256": "6d09a380549248b6fc920c49ab8cc07e9677a44b7567aa92c54077b03e974b52"
+      },
+      "timing": {
+        "path": "experiments/TRR-0002/historical-input-target-bridge/freeze-time.txt",
+        "bytes": 1296,
+        "sha256": "8d4e7ad537074498920f14eeac808b9cdd4960ce9174b9b22874401357bc13dc"
+      },
+      "corrective_action": "Rerun with the prediction environment; the separate retry created the receipt and exited zero."
+    },
+    {
+      "id": "validate-extra-repository-root-argument",
+      "disposition": "CLI_ARGUMENT_ERROR_NO_VALIDATION_CREATED",
+      "reason": "The first validation invocation supplied an unsupported --repository-root argument and argparse exited before validation.",
+      "elapsed": "0:01.86",
+      "exit_status": 2,
+      "truth_loaded_by_attempt": false,
+      "validation_created": false,
+      "stderr": {
+        "path": "experiments/TRR-0002/historical-input-target-bridge/validate.err",
+        "bytes": 298,
+        "sha256": "90d876074ccea281d12177288cd76bcf87344d656a92dd277992c002be7a1ce6"
+      },
+      "timing": {
+        "path": "experiments/TRR-0002/historical-input-target-bridge/validate-time.txt",
+        "bytes": 1257,
+        "sha256": "b5ec61e4df30c59d4b909534d945275ebc346b24ff160617682bfc32330f892d"
+      },
+      "corrective_action": "Rerun with the documented validator CLI; the retry passed all 12 checks."
+    }
+  ],
+  "final_status": {
+    "prediction_cells": 45,
+    "freeze_status": "ALL_45_CELLS_FROZEN_BEFORE_SCORING",
+    "score_status": "TARGET_ONLY_HISTORICAL_INPUT_BRIDGE_COMPLETE",
+    "validation_status": "PASS",
+    "validation_checks": 12
+  }
+}

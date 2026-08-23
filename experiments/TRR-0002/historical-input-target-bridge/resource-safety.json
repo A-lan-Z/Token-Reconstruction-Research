@@ -1,0 +1,116 @@
+{
+  "schema": "token-reconstruction.trr0002-owner-r4-resource-safety.v1",
+  "task_id": "TRR-0002",
+  "revision_id": "TRR-0002-OWNER-REVISION-R4",
+  "status": "LARGEST_CELL_QUALIFIED_AND_REMAINING_MATRIX_GUARDED",
+  "execution_commit": "913947202a7c468747751a24c5cb0ff3e403cecd",
+  "policy": {
+    "estimate_worst_case_first": true,
+    "qualify_largest_representative_cell": true,
+    "fresh_process_per_cell": true,
+    "minimum_free_gib_before_new_cell": 10,
+    "allocation_probe_mib": 600,
+    "cleanup_interval_seconds": 2,
+    "allocator_configuration": "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True",
+    "fail_closed": true,
+    "persistent_instruction_path": "AGENTS.md"
+  },
+  "post_reboot_preflight": {
+    "checked_utc": "2026-08-23T15:27:39.497271Z",
+    "device": "NVIDIA GeForce RTX 5080",
+    "total_bytes": 17094475776,
+    "free_bytes_before": 15679356928,
+    "free_bytes_after": 15620636672,
+    "minimum_free_bytes": 10737418240,
+    "probe_bytes": 629145600,
+    "status": "CUDA_PREFLIGHT_PASS",
+    "artifact": {
+      "path": "outputs/TRR-0002/historical-input-target-bridge/parts/historical_alpaca_affine_a1/public_base_target_cut4/a1a2_13f73c306bf8946e9a28.preflight.json",
+      "bytes": 273,
+      "sha256": "d553bf7262c3e3cc697e3a6be7599e5ca0aef69368d8a2a46908f52e8c25e642"
+    }
+  },
+  "qualified_largest_cell": {
+    "proposer_id": "historical_alpaca_affine_a1",
+    "condition_id": "public_base_target_cut4",
+    "policy_id": "a1a2_13f73c306bf8946e9a28",
+    "label": "fixed_k512_centered",
+    "record_batch_size": 4,
+    "candidate_simulations": 7162880,
+    "selection_seconds": 333.484817121,
+    "method_compute_seconds": 334.498073676,
+    "peak_cuda_allocated_bytes": 3979016192,
+    "peak_cuda_reserved_bytes": 4357881856,
+    "free_headroom_beyond_peak_reserved_bytes": 11321475072,
+    "evidence": {
+      "path": "outputs/TRR-0002/historical-input-target-bridge/parts/historical_alpaca_affine_a1/public_base_target_cut4/a1a2_13f73c306bf8946e9a28/evidence.json",
+      "bytes": 4776,
+      "sha256": "b506e2fa8fb031c03c91fa0047476390cef14d1d3c50181693417dec5ea76f2c"
+    },
+    "timing": {
+      "path": "outputs/TRR-0002/historical-input-target-bridge/parts/historical_alpaca_affine_a1/public_base_target_cut4/a1a2_13f73c306bf8946e9a28.time.txt",
+      "bytes": 1499,
+      "sha256": "050e7ca09865c48bf3f2fc31115fe5279af71a43e9a40e07fb4d3c57adc92bb3"
+    }
+  },
+  "matrix": {
+    "expected_prediction_cells": 45,
+    "completed_prediction_cells": 45,
+    "per_cell_timing_artifacts": 45,
+    "per_cell_preflight_artifacts": 39,
+    "completed_before_persistent_guard": 6,
+    "prediction_failures_after_pc_restart": 0,
+    "gpu_phase_status": "PASS",
+    "resume4_elapsed": "1:30:20",
+    "resume4_exit_status": 1,
+    "resume4_exit_explanation": "All 45 GPU cells completed; the later CPU-only combiner rejected matching NaNs under ordinary equality. The NaN-aware exact comparison regression fix passed and the combine-only retry exited zero."
+  },
+  "rejected_resource_workaround": {
+    "change": "Reduce internal candidate-forward limit from 512 to 128",
+    "status": "REJECTED_NON_EQUIVALENT",
+    "exact_command_recorded_in": "experiments/TRR-0002/historical-input-target-bridge/candidate-forward-equivalence-time.txt",
+    "reference_prediction_sha256": "14ac0414c659ee172398d21227560ee5242264f7e3af842d9d2bff6591e372ce",
+    "candidate_forward_128_prediction_sha256": "0029080c196e074958dbec359bc567413f402996148fc9fc2bd552e50cd4273e",
+    "differing_predictions": 1,
+    "difference": {
+      "record_index": 24,
+      "position": 64,
+      "reference_token": 80564,
+      "candidate_forward_128_token": 17870
+    },
+    "timing_artifact": {
+      "path": "experiments/TRR-0002/historical-input-target-bridge/candidate-forward-equivalence-time.txt",
+      "bytes": 1448,
+      "sha256": "df69694e03bb2152fbab8275c64d91225581d2f986ff967e98ad15d975519d22"
+    },
+    "corrective_action": "Revert the batching change and preserve the original numerical geometry."
+  },
+  "successful_resume_artifacts": {
+    "stdout": {
+      "path": "experiments/TRR-0002/historical-input-target-bridge/runner-resume4.out",
+      "bytes": 15889,
+      "sha256": "0c147ec05306e2ebf59d86a6cef13d3fa40744156e9df67f75475ee8d8cb29a1"
+    },
+    "stderr_and_combiner_failure": {
+      "path": "experiments/TRR-0002/historical-input-target-bridge/runner-resume4.err",
+      "bytes": 6265,
+      "sha256": "7c97e38e113f450b7ae984981362be9aa43a8e02e3e7ac9402d3bdec643d01cd"
+    },
+    "timing": {
+      "path": "experiments/TRR-0002/historical-input-target-bridge/all-cells-resume4-time.txt",
+      "bytes": 823,
+      "sha256": "4b9b2850d9ad1338a69306ac0fec42f6c5a4c65021a596715ea483e7b580723d"
+    },
+    "combine_retry_stdout": {
+      "path": "experiments/TRR-0002/historical-input-target-bridge/combine-retry.out",
+      "bytes": 8698,
+      "sha256": "407ad84bb29b0b8c1d634fa0c7d25379ad62c565b4d27f86179d3fe4346f207f"
+    },
+    "combine_retry_timing": {
+      "path": "experiments/TRR-0002/historical-input-target-bridge/combine-retry-time.txt",
+      "bytes": 762,
+      "sha256": "4ad10bdfcb33758acf7353d7e295f1126b1c87e4861dbaefac109bcf1df5f5b5"
+    },
+    "combine_retry_exit_status": 0
+  }
+}

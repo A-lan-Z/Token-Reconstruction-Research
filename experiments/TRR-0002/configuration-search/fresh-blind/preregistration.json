@@ -1,0 +1,99 @@
+{
+  "access_contract": {
+    "no_policy_revision_after_truth": true,
+    "prediction_freeze_before_truth": true,
+    "prohibited": "workspace, dataset, private selection, truth, unavailable target update, historical source, canonical truth, and network",
+    "reconstructor_inputs": "sanitized observations, attention/position geometry, public lens, exact frozen winner, public model and frozen code only"
+  },
+  "command": {
+    "argv": [
+      "scripts/trr0002_r1_blind_preregister.py",
+      "--repository-root",
+      ".",
+      "--winner",
+      "experiments/TRR-0002/configuration-search/causal-selection/winner.json",
+      "--public-commitment",
+      "experiments/TRR-0002/configuration-search/fresh-blind/selection_commitment.json",
+      "--target-lora",
+      "outputs/TRR-0001/evaluator_private/target_lora.safetensors",
+      "--public-lens",
+      "/home/alanz/spartan/punim2939/backdoor_lora/ersoy2026/inversion_20260730/out/lens_alpaca.pt",
+      "--output",
+      "experiments/TRR-0002/configuration-search/fresh-blind/preregistration.json"
+    ],
+    "cwd": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research",
+    "environment": {
+      "HF_DATASETS_OFFLINE": null,
+      "HF_HUB_OFFLINE": null,
+      "PYTHONPATH": "src:scripts"
+    }
+  },
+  "created_utc": "2026-08-23T04:55:48Z",
+  "execution": {
+    "abstention": false,
+    "policy_source": "src/token_reconstruction/a1a2_configuration_search.py",
+    "proposal_source": "src/token_reconstruction/component_crossover.py",
+    "record_batch_size": 8,
+    "reference_source": "reference/strict_bos/round001_teacher.py",
+    "seed": 20260826,
+    "target_prefix_calls": 0
+  },
+  "execution_parent": "a5ca6e18f7fecf03012455268cd5bb0e93f0f173",
+  "method_id": "a1_a2_exhaustive_configuration_winner",
+  "policy": {
+    "numeric_thresholds": {},
+    "policy_id": "a1a2_43ea0bb737bc075531ca",
+    "spec": {
+      "fast_path_id": "off",
+      "fast_path_threshold": null,
+      "gate_comparator": "ge",
+      "gate_mode": null,
+      "kind": "fixed",
+      "routing_signal": null,
+      "schedule": [
+        256
+      ],
+      "score_rule": "direct_cosine",
+      "terminal_action": "commit_last_winner"
+    }
+  },
+  "policy_id": "a1a2_43ea0bb737bc075531ca",
+  "retained_state": {
+    "fresh_adaptation_steps": 0,
+    "fresh_training_steps": 0,
+    "public_lens": {
+      "bytes": 16787653,
+      "path": "/home/alanz/spartan/punim2939/backdoor_lora/ersoy2026/inversion_20260730/out/lens_alpaca.pt",
+      "sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742"
+    },
+    "target_lora": {
+      "bytes": 427584,
+      "path": "outputs/TRR-0001/evaluator_private/target_lora.safetensors",
+      "sha256": "34d92f1e664236bfa1990b10148e8ad52c60b16e72ed0ff4c7eb7da8d15019f6"
+    }
+  },
+  "revision_id": "TRR-0002-OWNER-REVISION-R1",
+  "schema": "token-reconstruction.trr0002-owner-r1-blind-preregistration.v1",
+  "selection": {
+    "bytes": 2817,
+    "path": "experiments/TRR-0002/configuration-search/fresh-blind/selection_commitment.json",
+    "sha256": "6f949823d1ff3a36542bd91a65c81c07df7b9e62ca943a33d16afd1f3532e675"
+  },
+  "setup": {
+    "condition": "same unavailable rank-4 LoRA state as the earlier fresh run; wholly new disjoint Pile records",
+    "cut_depth": 4,
+    "id": "fresh-clean-pile-lora-r2-64x40",
+    "known_prefix_tokens": 1,
+    "positions": 40,
+    "records": 64,
+    "scored_tokens_per_record": 39
+  },
+  "status": "COMMITTED_BEFORE_OWNER_R1_FRESH_BLIND_OBSERVATIONS",
+  "task_id": "TRR-0002",
+  "truth_opened": false,
+  "winner": {
+    "bytes": 18525,
+    "path": "experiments/TRR-0002/configuration-search/causal-selection/winner.json",
+    "sha256": "a75a5220647b0dea019cabb09be7c99a82f0d8142bf5476ffff6be5099fcb4f3"
+  }
+}

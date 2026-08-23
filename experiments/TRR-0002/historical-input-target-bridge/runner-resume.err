@@ -1,0 +1,56 @@
+Loading weights:   0%|          | 0/146 [00:00<?, ?it/s]Loading weights:  54%|█████▍    | 79/146 [00:00<00:00, 774.10it/s]Loading weights: 100%|██████████| 146/146 [00:00<00:00, 1257.36it/s]
+Traceback (most recent call last):
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/scripts/trr0002_r4_historical_target_bridge.py", line 1945, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/scripts/trr0002_r4_historical_target_bridge.py", line 1941, in main
+    return commands[args.command_name](args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/scripts/trr0002_r4_historical_target_bridge.py", line 915, in command_predict
+    result = decode_policy(
+             ^^^^^^^^^^^^^^
+  File "/home/alanz/.local/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/src/token_reconstruction/a1a2_configuration_search.py", line 607, in decode_policy
+    segment = _candidate_hidden(
+              ^^^^^^^^^^^^^^^^^^
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/src/token_reconstruction/a1a2_configuration_search.py", line 485, in _candidate_hidden
+    hidden = precut.run_cached(
+             ^^^^^^^^^^^^^^^^^^
+  File "/home/alanz/.local/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/src/token_reconstruction/public_prefix.py", line 173, in run_cached
+    output = layer(
+             ^^^^^^
+  File "/home/alanz/.local/lib/python3.12/site-packages/transformers/modeling_layers.py", line 93, in __call__
+    return super().__call__(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alanz/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alanz/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1787, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alanz/.local/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py", line 320, in forward
+    hidden_states, _ = self.self_attn(
+                       ^^^^^^^^^^^^^^^
+  File "/home/alanz/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1776, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alanz/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1787, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alanz/.local/lib/python3.12/site-packages/transformers/models/llama/modeling_llama.py", line 279, in forward
+    attn_output, attn_weights = attention_interface(
+                                ^^^^^^^^^^^^^^^^^^^^
+  File "/home/alanz/.local/lib/python3.12/site-packages/transformers/integrations/sdpa_attention.py", line 92, in sdpa_attention_forward
+    attn_output = torch.nn.functional.scaled_dot_product_attention(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.AcceleratorError: CUDA error: out of memory
+Search for `cudaErrorMemoryAllocation' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+

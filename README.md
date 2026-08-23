@@ -65,12 +65,21 @@ Ground truth is opened only after the reconstruction decision and all measured e
 The original neutral seed contained no target activations, source truth,
 selected evaluation examples, model weights, datasets, trained lenses or
 adapters, prior scientific findings, or selected research direction. The
-current tree additionally contains administrative TRR-0000 requests, results,
-delivery evidence, and deterministic bootstrap artifacts.
+current tree additionally contains the TRR relay history plus reproducible
+TRR-0001 and TRR-0002 research code, compact prediction freezes, manifests,
+results, and validation evidence.
 
-Those relay records validate orchestration and reproducibility; they are not
-scientific findings and do not select a reconstruction method or research
-direction. Evaluation traces and truth remain outside this repository.
+The current non-authoritative result summary is that the bounded exhaustive
+A1+A2 configuration study selected fixed direct-cosine K256 with no shortcut,
+adaptivity, centering, or abstention. The frozen configuration achieved 99.64%
+on a new isolated blind Pile/LoRA replicate, 99.76% on canonical clean Pile,
+and 99.73% on historical Finance. This is an improved configuration of the
+established A1+A2 mechanism, not a newly invented reconstruction mechanism. See
+`coordination/results/TRR-0002.md` and `experiments/TRR-0002/manifest.json` for
+the exact evidence, cost trade-off, and scope.
+Evaluator-private source truth, selection keys, target updates, and large raw
+observations remain outside Git; committed prediction artifacts contain method
+outputs and diagnostics, not source plaintext.
 
 ## Quick checks
 

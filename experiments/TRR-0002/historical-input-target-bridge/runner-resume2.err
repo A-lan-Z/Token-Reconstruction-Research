@@ -1,0 +1,27 @@
+Loading weights:   0%|          | 0/146 [00:00<?, ?it/s]Loading weights: 100%|██████████| 146/146 [00:00<00:00, 1926.70it/s]
+Loading weights:   0%|          | 0/146 [00:00<?, ?it/s]Loading weights: 100%|██████████| 146/146 [00:00<00:00, 2040.46it/s]
+Traceback (most recent call last):
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/scripts/trr0002_r4_historical_target_bridge.py", line 1945, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/scripts/trr0002_r4_historical_target_bridge.py", line 1941, in main
+    return commands[args.command_name](args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/scripts/trr0002_r4_historical_target_bridge.py", line 915, in command_predict
+    result = decode_policy(
+             ^^^^^^^^^^^^^^
+  File "/home/alanz/.local/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/src/token_reconstruction/a1a2_configuration_search.py", line 617, in decode_policy
+    scores = score_candidates(
+             ^^^^^^^^^^^^^^^^^
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/src/token_reconstruction/a1a2_configuration_search.py", line 417, in score_candidates
+    if not torch.isfinite(scores).all().item():
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.AcceleratorError: CUDA error: unknown error
+Search for `cudaErrorUnknown' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+

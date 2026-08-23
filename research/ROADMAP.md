@@ -5,19 +5,35 @@ by the repository-backed relay.
 
 ## Current scientific priority
 
-TRR-0001-R2 has completed the required 3-method by 2-setup comparison matrix
-and is awaiting review. Causal public-surrogate K16 is the strongest tested
-method on the clean 64x40 Pile/LoRA setup; strict-BOS adaptive A1+A2 is the
-strongest tested method on the historical 128x128 finance setup. Because the
-winner changes with the setup, no method is currently accepted as the overall
-replacement for the others.
+TRR-0002 owner revision R4 completed a 45-cell exact-input target-only bridge.
+It reused all 128 historical inputs and the exact old post-BOS metric while
+holding the public A1 proposal source, public A2 surrogate, cut, policies, and
+numerical execution fixed. Only the target-model weights changed among the
+untouched public checkpoint, Finance generation 300, and a verified heavy full
+SFT.
 
-All future method comparisons must populate both registered setups under
-`research/DUAL_BENCHMARK_PROTOCOL.md`. A partial matrix is comparison-incomplete
-and cannot support an overall-best claim. The highest-value proposed scientific
-direction is to improve cross-setup robustness, especially strict-BOS routing
-and coverage on the clean setup, while preserving its historical precision.
-TRR-0002 has not been assigned or started.
+The best robust quality/cost point was adaptive K256-to-K512: 99.7999%,
+99.7999%, and 99.8213%, with 118, 118, and 115 completely reconstructed inputs.
+It used about 23% of fixed-K512 candidate simulations. Fixed centered K512 was
+the accuracy-first point at 99.9285%, 99.9285%, and 99.7856%, with 124, 124,
+and 102 complete inputs. Thus heavier target fine-tuning alone did not destroy
+historical A1+A2; the historical strict policy's larger 2.60-point loss came
+from confidence-gate and suffix-abstention transfer.
+
+R4 also confirms that the plain zero-fit checkpoint-identity proposer is not a
+replacement for the fitted public A1 lens: it recovered only 73.55%--75.13%
+and 0/128 complete inputs. The next accuracy work, if authorized, should
+preregister non-arbitrary public-only proposal constructions and test them on a
+new blind external input panel using paired untouched and fine-tuned targets.
+Holding inputs and all non-target components fixed is mandatory for a claimed
+target-weight effect.
+
+Whole-input recovery remains a primary practical metric. Future studies must
+report complete inputs alongside token accuracy and cost. All active methods
+must still populate both registered canonical setups under
+`research/DUAL_BENCHMARK_PROTOCOL.md`; target-only bridge cells supplement
+rather than replace that matrix. R4 is retrospective evidence and does not
+start TRR-0003 or replace the owner-R1 fresh-blind default.
 
 ## Prior R1 priority (superseded by the dual-benchmark requirement)
 
@@ -32,8 +48,8 @@ passed but does not repair its access interface.
 If a later packet authorizes new research, the highest-value proposed direction
 is a fresh preregistered study of public-only candidate proposal at multiple
 budgets, holding the validated causal selector fixed and measuring the
-quality/cost frontier across multiple target updates. This is a proposal only.
-TRR-0002 has not been assigned or started.
+quality/cost frontier across multiple target updates. That proposal was
+superseded by the completed TRR-0002 controlled crossover and calibration study.
 
 ## Scope note
 

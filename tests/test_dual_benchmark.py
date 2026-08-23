@@ -8,16 +8,24 @@ import torch.nn.functional as F
 
 from token_reconstruction.dual_benchmark import (
     BOS_TOKEN_ID,
-    METHOD_IDS,
+    METHOD_IDS as BASE_METHOD_IDS,
     SETUP_IDS,
     causal_k16,
     propose_k16,
     score_predictions,
     stable_candidate_order,
 )
+from token_reconstruction.component_crossover import METHOD_IDS as CROSSOVER_METHOD_IDS
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
+CALIBRATED_METHOD_ID = "a1_scale_calibrated_adaptive_causal_k32_to64"
+CONFIGURATION_WINNER_METHOD_ID = "a1_a2_exhaustive_configuration_winner"
+ACTIVE_METHOD_IDS = (
+    *CROSSOVER_METHOD_IDS,
+    CALIBRATED_METHOD_ID,
+    CONFIGURATION_WINNER_METHOD_ID,
+)
 
 
 class NormalizeIdentity(torch.nn.Module):
@@ -74,20 +82,24 @@ def test_registry_is_exact_cartesian_product() -> None:
         for item in registry["required_cells"]
     }
     assert setup_ids == SETUP_IDS
-    assert method_ids == METHOD_IDS
+    assert method_ids == ACTIVE_METHOD_IDS
     assert len(cells) == len(registry["required_cells"])
     assert cells == {
         (setup_id, method_id)
         for setup_id in SETUP_IDS
-        for method_id in METHOD_IDS
+        for method_id in ACTIVE_METHOD_IDS
     }
     assert registry["missing_cell_disposition"] == "comparison-incomplete"
     assert registry["cross_setup_pooling"] is False
     protocol = (
         REPOSITORY_ROOT / registry["protocol_path"]
     ).read_text(encoding="utf-8")
-    for identifier in (*SETUP_IDS, *METHOD_IDS):
+    for identifier in (*SETUP_IDS, *BASE_METHOD_IDS):
         assert identifier in protocol
+    assert "48 canonical setup-method cells" in protocol
+    assert "fixed-budget historical A2 core" in protocol
+    assert CALIBRATED_METHOD_ID in protocol
+    assert CONFIGURATION_WINNER_METHOD_ID in protocol
 
 
 def test_stable_candidate_order_breaks_score_ties_by_token_id() -> None:
