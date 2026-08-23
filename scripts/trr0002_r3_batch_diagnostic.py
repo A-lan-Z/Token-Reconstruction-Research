@@ -52,6 +52,12 @@ def main() -> int:
     parser.add_argument("--reference-directory", type=Path, required=True)
     parser.add_argument("--candidate-directory", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--reference-record-batch-size", type=int, required=True
+    )
+    parser.add_argument(
+        "--candidate-record-batch-size", type=int, required=True
+    )
     args = parser.parse_args()
 
     reference_path = args.reference_directory / "predictions.safetensors"
@@ -62,6 +68,14 @@ def main() -> int:
     candidate = load_file(str(candidate_path), device="cpu")
     reference_evidence = load_json(reference_evidence_path)
     candidate_evidence = load_json(candidate_evidence_path)
+    if min(
+        args.reference_record_batch_size, args.candidate_record_batch_size
+    ) < 1:
+        raise ValueError("record batch sizes must be positive")
+    recorded_candidate_batch = candidate_evidence.get("record_batch_size")
+    if recorded_candidate_batch != args.candidate_record_batch_size:
+        raise RuntimeError("candidate evidence has a different record batch size")
+
     if set(reference) != set(candidate):
         raise RuntimeError("prediction archives have different tensor registries")
 
@@ -102,12 +116,12 @@ def main() -> int:
         "command": ["python3", *sys.argv],
         "target_or_truth_accessed": False,
         "reference": {
-            "record_batch_size": reference_evidence.get("record_batch_size"),
+            "record_batch_size": args.reference_record_batch_size,
             "predictions": file_record(reference_path),
             "evidence": file_record(reference_evidence_path),
         },
         "candidate": {
-            "record_batch_size": candidate_evidence.get("record_batch_size"),
+            "record_batch_size": args.candidate_record_batch_size,
             "predictions": file_record(candidate_path),
             "evidence": file_record(candidate_evidence_path),
         },
