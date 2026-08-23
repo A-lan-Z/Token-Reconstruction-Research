@@ -1,0 +1,110 @@
+{
+  "command": {
+    "argv": [
+      "scripts/trr0002_r3_strict_surrogate.py",
+      "prepare-heavy",
+      "--repository-root",
+      ".",
+      "--plan",
+      "experiments/TRR-0002/strict-surrogate-heavy/preregistration.json",
+      "--selection-key",
+      "outputs/TRR-0002/strict-surrogate-heavy/evaluator_private/selection-key.bin",
+      "--base-model-path",
+      "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+      "--heavy-model-path",
+      "/home/alanz/.cache/huggingface/hub/models--Vikhrmodels--Vikhr-Llama-3.2-1B-Instruct/snapshots/7fa9d06a59246629244cdd3b6b92e4fc756baa0f",
+      "--input-root",
+      "outputs/TRR-0002/strict-surrogate-heavy/heavy-c1/reconstructor_input",
+      "--truth-sidecar",
+      "outputs/TRR-0002/strict-surrogate-heavy/heavy-c1/evaluator_private/truth.json",
+      "--selection-commitment",
+      "experiments/TRR-0002/strict-surrogate-heavy/heavy-selection-commitment-c1.json",
+      "--preparation-evidence",
+      "experiments/TRR-0002/strict-surrogate-heavy/heavy-preparation-c1.json"
+    ],
+    "cwd": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research",
+    "environment": {
+      "HF_DATASETS_OFFLINE": "0",
+      "HF_HUB_OFFLINE": "0",
+      "PYTHONPATH": "src:scripts"
+    }
+  },
+  "ended_utc": "2026-08-23T09:44:31.586196Z",
+  "environment": {
+    "device": "NVIDIA GeForce RTX 5080",
+    "peak_memory": {
+      "cuda_peak_allocated_bytes": 2493066752,
+      "cuda_peak_reserved_bytes": 2506096640,
+      "process_max_rss_kib": 7210252
+    },
+    "process_max_rss_kib": 7210252,
+    "python": "3.12.3",
+    "torch": "2.10.0+cu128",
+    "transformers": "5.3.0"
+  },
+  "execution_commit": "da7cb59b256497305bd8742a695db1033334817b",
+  "lengths": {
+    "bins": {
+      "16-32": 16,
+      "33-64": 16,
+      "65-96": 16,
+      "97-128": 16
+    },
+    "maximum": 128,
+    "mean": 67.265625,
+    "median": 66.0,
+    "minimum": 17,
+    "scored_tokens": 4241
+  },
+  "model_weight_drift": {
+    "changed_parameter_fraction": 0.7822583900948233,
+    "changed_parameter_values": 966726183,
+    "changed_tensors": 114,
+    "maximum_absolute_parameter_delta": 0.07666015625,
+    "parameter_values": 1235814400,
+    "prefix_parameter_values": 505954304,
+    "relative_l2_all_weights": 0.04014707355962966,
+    "relative_l2_embedding_and_layers_0_to_3": 0.021563570084107232,
+    "tensor_count": 146
+  },
+  "observations": {
+    "bytes": 67191696,
+    "path": "outputs/TRR-0002/strict-surrogate-heavy/heavy-c1/reconstructor_input/observations.safetensors",
+    "resolved_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/strict-surrogate-heavy/heavy-c1/reconstructor_input/observations.safetensors",
+    "sha256": "0d482f87bf39e2ffac930705625150b4b77420137f987dd48ccb070035919428"
+  },
+  "plan": {
+    "bytes": 18873,
+    "path": "experiments/TRR-0002/strict-surrogate-heavy/preregistration.json",
+    "resolved_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/experiments/TRR-0002/strict-surrogate-heavy/preregistration.json",
+    "sha256": "2997063b7e0161f6a314a1c83bf2cae1604fcd42ff1cea344e26958999ce68f8"
+  },
+  "revision_id": "TRR-0002-OWNER-REVISION-R3",
+  "schema": "token-reconstruction.trr0002-owner-r3-heavy-preparation.v1",
+  "selection_commitment": {
+    "bytes": 1769,
+    "path": "experiments/TRR-0002/strict-surrogate-heavy/heavy-selection-commitment-c1.json",
+    "resolved_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/experiments/TRR-0002/strict-surrogate-heavy/heavy-selection-commitment-c1.json",
+    "sha256": "9df64baac536759b7bfca35a21252500742e5824c7f99e9eea8136c46f2b19f6"
+  },
+  "started_utc": "2026-08-23T09:44:22.654051Z",
+  "status": "EVALUATOR_TARGET_PREPARATION_COMPLETE",
+  "target_prefix_execution": {
+    "attention_implementation": "sdpa",
+    "boundary_layer": 4,
+    "dtype": "bfloat16",
+    "heavy_target_calls": 64,
+    "heavy_target_seconds": 1.1005570390007051,
+    "public_base_calls": 64,
+    "public_base_seconds": 1.2994630150024022
+  },
+  "task_id": "TRR-0002",
+  "tokenizer_byte_identical": true,
+  "truth_sidecar": {
+    "bytes": 107495,
+    "path": "outputs/TRR-0002/strict-surrogate-heavy/heavy-c1/evaluator_private/truth.json",
+    "resolved_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/strict-surrogate-heavy/heavy-c1/evaluator_private/truth.json",
+    "retention": "evaluator-private until prediction freeze",
+    "sha256": "6d2b950cde058a070d26fe30d78ca810cb1db3ae34971d7ad95a284606efa3df"
+  }
+}
