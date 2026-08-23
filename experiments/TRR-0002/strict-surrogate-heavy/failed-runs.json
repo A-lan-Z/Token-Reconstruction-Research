@@ -50,8 +50,54 @@
       "resolution": "Delegate the two cache batch operations through PublicPrefixCache and add a regression test; the selector rule and all preregistered constants are unchanged.",
       "stage": "first candidate-selection call",
       "target_or_truth_accessed": false
+    },
+    {
+      "access_manifest": {
+        "bytes": 5930,
+        "path": "outputs/TRR-0002/strict-surrogate-heavy/failed-runs/canonical-control-oom1-access-manifest.json",
+        "sha256": "cd92bc3861e77db3eba9c78bc1acc88c0a663921d34d208680d854609192aeff"
+      },
+      "cause": "The first canonical Alpaca-control attempt encountered a transient CUDA allocation failure while entering the larger Finance condition at the common record batch size of eight.",
+      "elapsed_wall_seconds": 69.37,
+      "exit_status": 1,
+      "isolation_checks_passed": true,
+      "maximum_rss_kib": 3454020,
+      "order": 3,
+      "prediction_created": false,
+      "resolution": "Preserve the common batch size for runtime comparability and retry unchanged after confirming there was no competing CUDA process; the unchanged retry completed.",
+      "stage": "canonical Alpaca-control Finance candidate selection",
+      "target_or_truth_accessed": false
+    },
+    {
+      "access_manifest": {
+        "bytes": 5649,
+        "path": "outputs/TRR-0002/strict-surrogate-heavy/failed-runs/heavy-position-access-manifest.json",
+        "sha256": "5a2d4c964ac82cea1cc665b7491252fe296995fbb4e8bfaf957f64c655808145"
+      },
+      "cause": "The first heavy sanitized bundle set padded position IDs to zero, while the repository contract requires padding to repeat the final valid index.",
+      "command": [
+        "/usr/bin/time",
+        "-v",
+        "scripts/trr0002_r3_isolate.sh",
+        "checkpoint_identity",
+        "outputs/TRR-0002/strict-surrogate-heavy/heavy/reconstructor_input",
+        "outputs/TRR-0002/strict-surrogate-heavy/frozen-code/0c5e5866170e42bd05a3686624f3297eccf70038",
+        "outputs/TRR-0002/strict-surrogate-heavy/public-base-dereferenced",
+        "/home/alanz/.local/lib/python3.12/site-packages",
+        "outputs/TRR-0002/strict-surrogate-heavy/predictions/heavy-checkpoint-identity"
+      ],
+      "elapsed_wall_seconds": 2.97,
+      "exit_status": 1,
+      "isolation_checks_passed": true,
+      "maximum_rss_kib": 736092,
+      "order": 4,
+      "prediction_created": false,
+      "resolution": "Generate padded positions from the cumulative attention mask, validate both target tensors before sanitization, and create a new correction commitment without rewriting the original evidence.",
+      "stage": "sanitized heavy-input validation",
+      "target_or_truth_accessed": false
     }
   ],
+  "last_updated_utc": "2026-08-23T09:42:20Z",
   "recorded_utc": "2026-08-23T08:58:29Z",
   "revision_id": "TRR-0002-OWNER-REVISION-R3",
   "schema": "token-reconstruction.trr0002-owner-r3-failed-runs.v1",

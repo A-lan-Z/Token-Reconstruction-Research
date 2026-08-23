@@ -116,6 +116,21 @@ def sha256_text(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
 
 
+def right_padded_position_ids(attention_mask: torch.Tensor) -> torch.Tensor:
+    """Build position IDs that hold the final valid index through padding."""
+
+    if attention_mask.ndim != 2 or attention_mask.shape[1] < 2:
+        raise StrictBaseSurrogateError("attention mask geometry is invalid")
+    mask = attention_mask.to(torch.long)
+    if not mask[:, 0].eq(1).all().item():
+        raise StrictBaseSurrogateError("every row must begin with a valid token")
+    if not mask.eq(0).logical_or(mask.eq(1)).all().item():
+        raise StrictBaseSurrogateError("attention mask is not binary")
+    if mask[:, 1:].gt(mask[:, :-1]).any().item():
+        raise StrictBaseSurrogateError("attention mask is not right padded")
+    return mask.cumsum(1).sub(1).clamp_min(0)
+
+
 @dataclass(frozen=True)
 class ExactInputSummary:
     records: int

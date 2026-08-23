@@ -7,6 +7,7 @@ from token_reconstruction.strict_base_surrogate import (
     exact_input_summary,
     length_stratified_summary,
     propose_checkpoint_identity,
+    right_padded_position_ids,
 )
 
 
@@ -67,6 +68,17 @@ def test_exact_input_summary_reports_error_concentration_and_text() -> None:
     bins = length_stratified_summary(rows, bins=((3, 3), (4, 4)))
     assert bins["3-3"]["exact_token_records"] == 1
     assert bins["4-4"]["exact_token_records"] == 0
+
+
+def test_right_padded_positions_hold_the_final_valid_index() -> None:
+    mask = torch.tensor(
+        [[1, 1, 1, 0, 0], [1, 1, 1, 1, 0]], dtype=torch.long
+    )
+    positions = right_padded_position_ids(mask)
+    assert torch.equal(
+        positions,
+        torch.tensor([[0, 1, 2, 2, 2], [0, 1, 2, 3, 3]], dtype=torch.long),
+    )
 
 
 def test_canonical_mapping_encoding_is_ordered_and_stable() -> None:

@@ -53,6 +53,7 @@ from token_reconstruction.strict_base_surrogate import (
     exact_input_summary,
     length_stratified_summary,
     propose_checkpoint_identity,
+    right_padded_position_ids,
     sha256_text,
 )
 
@@ -760,10 +761,9 @@ def command_prepare_heavy(args: argparse.Namespace) -> int:
     write_json_exclusive(args.truth_sidecar, truth)
     os.chmod(args.truth_sidecar, 0o600)
     attention_mask = torch.zeros((64, 128), dtype=torch.long)
-    position_ids = torch.zeros((64, 128), dtype=torch.long)
     for index, ids in enumerate(token_rows):
         attention_mask[index, : len(ids)] = 1
-        position_ids[index, : len(ids)] = torch.arange(len(ids))
+    position_ids = right_padded_position_ids(attention_mask)
 
     if not torch.cuda.is_available():
         raise RuntimeError("heavy target preparation requires CUDA")
@@ -776,6 +776,10 @@ def command_prepare_heavy(args: argparse.Namespace) -> int:
     )
     heavy_observations, heavy_seconds = generate_prefix_observations(
         heavy_path, token_rows, device=device
+    )
+    validate_observations(base_observations, attention_mask, position_ids)
+    validate_observations(
+        heavy_observations, attention_mask, position_ids
     )
     drift = model_weight_drift(
         base_path / "model.safetensors", heavy_path / "model.safetensors"
