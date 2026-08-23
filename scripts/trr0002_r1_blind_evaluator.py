@@ -77,7 +77,7 @@ def private_records(private: dict[str, Any], public: dict[str, Any]) -> list[dic
     except ValueError as exc:
         raise RuntimeError("private selection key is invalid") from exc
     records = private["records"]
-    expected_ids = [f"blind-r2-{position:06d}" for position in range(1, 65)]
+    expected_ids = [f"blind-r1-{position:06d}" for position in range(1, 65)]
     if len(key) != 32 or not isinstance(records, list) or len(records) != 64:
         raise RuntimeError("private selection geometry changed")
     if [row.get("record_id") for row in records] != expected_ids:

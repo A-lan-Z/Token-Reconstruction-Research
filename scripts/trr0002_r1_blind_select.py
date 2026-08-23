@@ -118,15 +118,10 @@ def main() -> int:
         rows=rows,
         excluded_indices=excluded,
     )
-    # The shared helper emits blind-r1 IDs; relabel only the opaque identifiers.
-    selected = [
-        {**row, "record_id": f"blind-r2-{position:06d}"}
-        for position, row in enumerate(selected, start=1)
-    ]
     if len(selected) != 64 or {int(row["dataset_index"]) for row in selected} & excluded:
         raise RuntimeError("new blind selection overlaps an excluded record")
     opaque_order = [row["record_id"] for row in selected]
-    expected_order = [f"blind-r2-{position:06d}" for position in range(1, 65)]
+    expected_order = [f"blind-r1-{position:06d}" for position in range(1, 65)]
     if opaque_order != expected_order:
         raise RuntimeError("new opaque record order changed")
     digest = commitment_digest(key, selected)
