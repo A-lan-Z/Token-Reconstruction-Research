@@ -12,6 +12,11 @@ Every active reconstruction method must be evaluated in both canonical setups.
 The two setups answer different questions, so a complete matrix is more useful
 than choosing one setup and losing comparability with earlier work.
 
+Claims about the best configuration inside the A1+A2 family must additionally
+follow `research/A1_A2_CONFIGURATION_PROTOCOL.md`. Exploratory search variants
+are not active methods merely because they were enumerated; the single frozen
+winner becomes active and must then add one cell in each canonical setup.
+
 ## Canonical setups
 
 ### clean-pile-lora-64x40
