@@ -813,6 +813,23 @@ def load_conditions(
     return output
 
 
+def tensors_equal_with_matching_nan(
+    left: torch.Tensor, right: torch.Tensor
+) -> bool:
+    """Require exact values while allowing NaN at the same positions."""
+    if left.dtype != right.dtype or left.shape != right.shape:
+        return False
+    if torch.equal(left, right):
+        return True
+    if not (left.is_floating_point() or left.is_complex()):
+        return False
+    left_nan = torch.isnan(left)
+    right_nan = torch.isnan(right)
+    return torch.equal(left_nan, right_nan) and torch.equal(
+        left[~left_nan], right[~right_nan]
+    )
+
+
 def command_predict(args: argparse.Namespace) -> int:
     if (
         args.output_directory.exists()
@@ -1134,7 +1151,9 @@ def command_combine(args: argparse.Namespace) -> int:
             )
         for key in (candidate_key, confidence_key):
             if key in tensors:
-                if not torch.equal(tensors[key], state[key]):
+                if not tensors_equal_with_matching_nan(
+                    tensors[key], state[key]
+                ):
                     raise RuntimeError(
                         "R4 repeated proposal tensors differ"
                     )

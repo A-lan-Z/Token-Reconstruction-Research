@@ -143,6 +143,39 @@ mixture is not established; the panel therefore makes no unseen-text-
 generalization claim. The findings do not alter the active registry or the
 owner-R1 direct-K256 replacement status.
 
+TRR-0002 owner revision R4 adds the following exact-input target-only
+bridge decisions:
+
+- the bridge holds the 128 historical input records, scoring denominator,
+  public A1 proposal source, public A2 surrogate, cut, numerical execution,
+  and decision policies fixed while changing only target-model weights;
+- historical public-Alpaca A1 still has at least 99.9285% top-512 proposal
+  recall for all three targets, including the verified heavy full SFT;
+- fixed centered K512 recovered 99.9285% on the untouched and Finance targets
+  and 99.7856% on the heavy target, reconstructing 124, 124, and 102 of 128
+  complete inputs respectively;
+- the most robust tested quality/cost policy was adaptive direct-cosine
+  K256-to-K512 with public-fitted RMS-margin thresholds: it recovered
+  99.7999%, 99.7999%, and 99.8213%, with 118, 118, and 115 complete inputs,
+  using about 23% of fixed-K512 candidate simulations;
+- the historical strict confidence gate and suffix-abstention policy fell from
+  98.2202% on Finance to 95.6183% on the heavy target despite near-perfect A1
+  recall, so its target-shift failure is a transfer failure in stopping and
+  acceptance rules rather than a collapse of the underlying A1 proposer;
+- the zero-fit checkpoint-identity A1 control recovered only 73.5525%,
+  74.2030%, and 75.1251%, with zero complete inputs, because its top-512
+  proposal recall was only 74.6676%--76.1901%; and
+- the lower R3 GrandMaster figures are not directly comparable target-shift
+  deltas because R3 also changed the input panel and geometry. R4 is the
+  controlled answer for changing target weights on historical inputs.
+
+R4 is retrospective bridge evidence: the historical inputs and truth were
+already known. It repairs interpretation and comparability but is not a fresh
+blind replacement claim. Future heavy executions must estimate their largest
+case, check live capacity, qualify a representative maximum cell, and use
+restart-safe isolated jobs. Resource-saving execution changes require exact
+output-equivalence evidence before adoption.
+
 ## Administrative entries
 
 - TRR-0000 bootstraps and validates the repository-backed relay. It selects no

@@ -1,0 +1,136 @@
+TRR-0002 OWNER REVISION R4 FINAL VALIDATION
+================================================
+
+Task: TRR-0002
+Revision: TRR-0002-OWNER-REVISION-R4
+Previous reviewed R3 head: b55853a5911ba49029ae37d8ea5b438dbd3a28ed
+Completed UTC: 2026-08-23T17:42:29Z
+Status: PASS
+
+Resource qualification
+----------------------
+
+The post-restart largest representative cell was historical-Alpaca A1,
+public-target, fixed centered K512. The live preflight saw 15,679,356,928 free
+CUDA bytes, passed a real 600 MiB allocation and synchronization probe, and the
+cell measured:
+
+- peak allocated: 3,979,016,192 bytes
+- peak reserved: 4,357,881,856 bytes
+- headroom beyond measured peak reserved: 11,321,475,072 bytes
+- method compute: 334.498073676 seconds
+
+The remaining new cells ran in isolated restart-safe processes behind a 10 GiB
+minimum-free-memory guard. There are 39 preflight artifacts, 45 timing
+artifacts, 45 prediction parts, and 45 evidence parts. Six cells completed
+before the persistent guard was added. All 45 final cells completed.
+
+A candidate-forward limit reduction from 512 to 128 was tested and rejected:
+it changed the real K64 prediction at record 24, position 64. The final evidence
+uses the qualified reference execution setting.
+
+Validation commands and outcomes
+--------------------------------
+
+1. Full Python compilation
+
+   PYTHONPATH=src:scripts python3 -m py_compile scripts/*.py src/token_reconstruction/*.py tests/*.py
+
+   Exit 0; PASS.
+
+2. R4 runner syntax
+
+   bash -n scripts/trr0002_r4_run_cells.sh
+
+   Exit 0; PASS.
+
+3. Focused R4 tests
+
+   env PYTHONPATH=src:scripts python3 -m pytest -q tests/test_trr0002_r4_historical_target_bridge.py
+
+   Exit 0; 5 passed in 2.44s.
+
+4. Full source-checkout tests
+
+   env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONPATH=src:scripts python3 -m pytest -q
+
+   Exit 0; 72 passed in 4.11s.
+
+5. Parse every repository JSON document
+
+   python3 -c "import json,pathlib; files=[p for p in pathlib.Path('.').rglob('*.json') if '.git' not in p.parts]; [json.loads(p.read_text(encoding='utf-8')) for p in files]; print('JSON_PARSE_PASS files='+str(len(files)))"
+
+   Exit 0; JSON_PARSE_PASS files=1020.
+
+6. Independent R4 integrity recheck
+
+   env PYTHONPATH=src:scripts python3 scripts/trr0002_r4_historical_target_bridge.py validate --plan experiments/TRR-0002/historical-input-target-bridge/preregistration.json --preparation-evidence experiments/TRR-0002/historical-input-target-bridge/preparation.json --freeze-receipt experiments/TRR-0002/historical-input-target-bridge/freeze-receipt.json --result experiments/TRR-0002/historical-input-target-bridge/results.json --output /tmp/trr0002-r4-final-validation-20260823T1735.json
+
+   Exit 0; {"checks": 12, "status": "PASS"}.
+   Recheck SHA-256: 3080d05be2bd208258de9137e7e7d4045f30b1982d4a833474245730cb9d0bfd.
+   It differs from the committed validation only in its exact output argument
+   and created_utc field.
+
+7. Part-evidence count check
+
+   python3 -c "from pathlib import Path; p=Path('outputs/TRR-0002/historical-input-target-bridge/parts'); fs=[x for x in p.rglob('*') if x.is_file()]; pre=[x for x in fs if x.name.endswith('.preflight.json')]; tim=[x for x in fs if x.name.endswith('.time.txt')]; pred=[x for x in fs if x.name=='predictions.safetensors']; ev=[x for x in fs if x.name=='evidence.json']; assert (len(pre),len(tim),len(pred),len(ev))==(39,45,45,45)"
+
+   Exit 0; PASS: preflight=39, timing=45, predictions=45, evidence=45.
+
+8. Manifest/result/artifact cross-check
+
+   A Python assertion check loaded manifest.json and results.json, matched the
+   nine accuracy-first, balanced, and low-cost summaries to their exact matrix
+   cells, required 45/45 completion, and verified byte counts and SHA-256 for
+   all ten R4 principal artifacts.
+
+   Exit 0; MANIFEST_RESULT_CROSSCHECK_PASS cells=45 artifacts=10.
+
+9. Charter integrity
+
+   sha256sum RESEARCH_CHARTER.md
+
+   Exit 0:
+   ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d.
+
+10. Whitespace validation
+
+    git diff --cached --check -- . \
+      ':(exclude)experiments/TRR-0002/historical-input-target-bridge/runner-resume.err' \
+      ':(exclude)experiments/TRR-0002/historical-input-target-bridge/runner-resume2.err'
+
+    Exit 0; PASS.
+
+    The two exclusions are byte-exact failed-run stderr artifacts whose
+    original tool output ends with a blank line. They are preserved rather
+    than rewritten; their exact hashes and failure roles are recorded in
+    failed-runs.json.
+
+Principal immutable artifacts
+-----------------------------
+
+- R4 request SHA-256:
+  6b0e65f20fb835342074b55f8bb6fa9709733525537d45d2d6896607280fc979
+- result SHA-256:
+  924881bdac7f9679b857ac10d79fa80f09eb5d39af470dff9251c53f1ce10260
+- committed validation SHA-256:
+  0a0d1efbd0aeb1b55dabe26eef711144d4a8289188d16d9617d93cbf28be36ac
+- freeze receipt SHA-256:
+  002e7e84e8300aa63ffbe92ab39a0df2ef3c2c4cca5f0eeb28c61d5964f278ed
+- resource-safety SHA-256:
+  88651093a7e3920edebf9c0dedf214f04685fd66eac55c040e9ee7016992cded
+- failed-run registry SHA-256:
+  be32ffd8ce700e16948f3a905ff7f8fc6a18402cba49cd951b7426fda8882849
+
+Preserved operator-only validation corrections
+----------------------------------------------
+
+- An initial focused-test invocation used PYTHONPATH=. and failed collection
+  because the script module lives under scripts/. The corrected exact command
+  above passed 5/5 tests; no implementation or evidence changed.
+- The first two ad-hoc manifest cross-check assertions used an incorrect
+  manifest field shape (a parent-level candidate count and one rounded float).
+  The manifest float was corrected to the exact result value, and the corrected
+  assertion check passed. Neither attempt accessed or changed predictions.
+
+No merge occurred. TRR-0003 was not assigned or started.

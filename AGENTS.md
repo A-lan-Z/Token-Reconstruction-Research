@@ -45,6 +45,26 @@ For the active task:
 Do not stop merely to ask about an implementation preference when a reasonable
 technical choice can be made and recorded.
 
+## Compute resource preflight
+
+Before a GPU- or memory-intensive run:
+
+- estimate the worst-case tensor geometry, runtime, and peak memory from a
+  smaller run, prior evidence, or an explicit calculation;
+- compare that estimate with live CPU/GPU resources and retain a documented
+  safety margin;
+- qualify the largest representative cell before releasing a larger matrix;
+- use isolated, restart-safe jobs and a fail-closed resource guard for long
+  sweeps, and record preflight, peak-memory, and failure evidence; and
+- stop on allocator, driver, thermal, or memory anomalies and reassess before
+  continuing.
+
+Do not assume that numerical batching or microbatching is semantically neutral.
+Require an output-equivalence check before using it as a resource workaround;
+if outputs differ, preserve and exclude the attempt. Once the largest
+representative cell passes with a reasonable measured margin, execute the
+planned scientific matrix without shrinking it solely because it is large.
+
 ## Evidence
 
 For every claimed run, record as applicable:

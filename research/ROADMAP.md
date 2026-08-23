@@ -5,36 +5,35 @@ by the repository-backed relay.
 
 ## Current scientific priority
 
-TRR-0002 owner revision R3 completed a 24-cell strict-surrogate and
-target-shift study. It retained both canonical setups and added paired
-GrandMaster observations from the untouched public checkpoint and a verified
-heavy full-SFT derivative on the same 64 hidden records.
+TRR-0002 owner revision R4 completed a 45-cell exact-input target-only bridge.
+It reused all 128 historical inputs and the exact old post-BOS metric while
+holding the public A1 proposal source, public A2 surrogate, cut, policies, and
+numerical execution fixed. Only the target-model weights changed among the
+untouched public checkpoint, Finance generation 300, and a verified heavy full
+SFT.
 
-The zero-fit checkpoint-identity proposer did not replace the historical public
-Alpaca lens. On the heavy target, centered K512 reached 69.37% with the strict
-proposer and 77.46% with the Alpaca control. The same control reached 83.07% on
-the matched target, so heavy fine-tuning caused a 5.61-point loss. Every
-fresh-panel method reconstructed 0/64 complete inputs.
+The best robust quality/cost point was adaptive K256-to-K512: 99.7999%,
+99.7999%, and 99.8213%, with 118, 118, and 115 completely reconstructed inputs.
+It used about 23% of fixed-K512 candidate simulations. Fixed centered K512 was
+the accuracy-first point at 99.9285%, 99.9285%, and 99.7856%, with 124, 124,
+and 102 complete inputs. Thus heavier target fine-tuning alone did not destroy
+historical A1+A2; the historical strict policy's larger 2.60-point loss came
+from confidence-gate and suffix-abstention transfer.
 
-The heavy winner's candidate recall was 78.97%, while A2 was 98.09% accurate
-when the true token was present. The next accuracy work should therefore improve
-public-only candidate generation under target shift rather than merely enlarge
-or complicate the selector. A scientifically useful follow-up would
-preregister several non-arbitrary public proposer constructions or fitting
-corpora, justify each resource, and freeze them before a new hidden
-fine-tuned-target panel exists. That panel should use an external corpus with
-documented provenance disjoint from the target's declared fine-tuning corpus if
-it is intended to measure generalization to unseen text.
+R4 also confirms that the plain zero-fit checkpoint-identity proposer is not a
+replacement for the fitted public A1 lens: it recovered only 73.55%--75.13%
+and 0/128 complete inputs. The next accuracy work, if authorized, should
+preregister non-arbitrary public-only proposal constructions and test them on a
+new blind external input panel using paired untouched and fine-tuned targets.
+Holding inputs and all non-target components fixed is mandatory for a claimed
+target-weight effect.
 
-Whole-input recovery is now a primary practical metric. Future studies should
-optimize and report token-complete inputs, decoded-text-complete inputs, errors
-per failed input, and length-stratified recovery, not token accuracy alone.
-
-All compared methods must still populate both registered canonical setups under
-`research/DUAL_BENCHMARK_PROTOCOL.md`, as well as every declared auxiliary
-target. The active registry remains 24 methods and 48 required canonical cells.
-Owner-R1 fixed direct K256 remains the official fresh-blind accuracy default;
-calibrated K32-to-K64 and fixed K64 remain cheaper controls.
+Whole-input recovery remains a primary practical metric. Future studies must
+report complete inputs alongside token accuracy and cost. All active methods
+must still populate both registered canonical setups under
+`research/DUAL_BENCHMARK_PROTOCOL.md`; target-only bridge cells supplement
+rather than replace that matrix. R4 is retrospective evidence and does not
+start TRR-0003 or replace the owner-R1 fresh-blind default.
 
 ## Prior R1 priority (superseded by the dual-benchmark requirement)
 

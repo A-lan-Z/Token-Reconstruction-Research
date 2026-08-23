@@ -43,6 +43,7 @@ export HF_DATASETS_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
 export TOKENIZERS_PARALLELISM=false
 export CUBLAS_WORKSPACE_CONFIG=:4096:8
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
 run_cell() {
   local trr4_proposer=$1
@@ -50,11 +51,23 @@ run_cell() {
   local trr4_policy=$3
   local trr4_output="$trr4_parts/$trr4_proposer/$trr4_condition/$trr4_policy"
   local trr4_time="$trr4_parts/$trr4_proposer/$trr4_condition/${trr4_policy}.time.txt"
+  if [[ -d "$trr4_output" ]]; then
+    if [[ -s "$trr4_output/evidence.json" && -s "$trr4_output/predictions.safetensors" && -s "$trr4_time" ]]; then
+      echo "R4 cell already complete; preserving and skipping: $trr4_output"
+      return 0
+    fi
+    echo "R4 cell output is incomplete and will not be overwritten: $trr4_output" >&2
+    exit 1
+  fi
   if [[ -e "$trr4_output" || -L "$trr4_output" ]]; then
-    echo "R4 cell output already exists: $trr4_output" >&2
+    echo "R4 cell output path is not a directory: $trr4_output" >&2
     exit 1
   fi
   mkdir -p "$(dirname "$trr4_output")"
+  python3 scripts/trr_compute_preflight.py \
+    --minimum-free-gib 10 \
+    --probe-mib 600 \
+    > "${trr4_time%.time.txt}.preflight.json"
   trr4_args=(
     scripts/trr0002_r4_historical_target_bridge.py predict
     --repository-root .
@@ -70,6 +83,7 @@ run_cell() {
     trr4_args+=(--lens-path "$trr4_lens")
   fi
   /usr/bin/time -v -o "$trr4_time" python3 "${trr4_args[@]}"
+  sleep 2
 }
 
 for trr4_condition in "${trr4_conditions[@]}"; do

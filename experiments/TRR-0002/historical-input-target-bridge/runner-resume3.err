@@ -1,0 +1,31 @@
+Loading weights:   0%|          | 0/146 [00:00<?, ?it/s]Loading weights: 100%|██████████| 146/146 [00:00<00:00, 1716.21it/s]
+Traceback (most recent call last):
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/scripts/trr0002_r4_historical_target_bridge.py", line 1945, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/scripts/trr0002_r4_historical_target_bridge.py", line 1941, in main
+    return commands[args.command_name](args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/scripts/trr0002_r4_historical_target_bridge.py", line 868, in command_predict
+    prefix, embeddings, device = owner_r3.load_public_surrogate(
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/scripts/trr0002_r3_strict_surrogate.py", line 1087, in load_public_surrogate
+    ).to(device).eval()
+      ^^^^^^^^^^
+  File "/home/alanz/.local/lib/python3.12/site-packages/transformers/modeling_utils.py", line 3587, in to
+    return super().to(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alanz/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1381, in to
+    return self._apply(convert)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/alanz/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 933, in _apply
+    module._apply(fn)
+  File "/home/alanz/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 933, in _apply
+    module._apply(fn)
+  File "/home/alanz/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 964, in _apply
+    param_applied = fn(param)
+                    ^^^^^^^^^
+  File "/home/alanz/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1367, in convert
+    return t.to(
+           ^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 502.00 MiB. GPU 0 has a total capacity of 15.92 GiB of which 14.60 GiB is free. Including non-PyTorch memory, this process has 17179869184.00 GiB memory in use. Of the allocated memory 0 bytes is allocated by PyTorch, and 0 bytes is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)

@@ -13,6 +13,9 @@
     "owner_revision_r3_effect": "Test an untouched-checkpoint-only proposer, add exact whole-input metrics, and run a paired matched-versus-heavy full-SFT target panel while retaining both canonical setups.",
     "owner_revision_r3_path": "coordination/requests/TRR-0002-OWNER-REVISION-R3.md",
     "owner_revision_r3_sha256": "60c77ad2a160b75efb90bd8e0574b158af7b7c5bb6ff47d7020b35a82a5fba56",
+    "owner_revision_r4_effect": "Restore literal historical comparability by holding the exact 128 old inputs, metric, cut, public A1/A2 resources, and policies fixed while only target weights vary; reproduce every Finance anchor cell before accepting target-only deltas.",
+    "owner_revision_r4_path": "coordination/requests/TRR-0002-OWNER-REVISION-R4.md",
+    "owner_revision_r4_sha256": "6b0e65f20fb835342074b55f8bb6fa9709733525537d45d2d6896607280fc979",
     "request_path": "coordination/requests/TRR-0002.md"
   },
   "benchmarks": [
@@ -148,6 +151,13 @@
     }
   },
   "commands": {
+    "owner_r4_preflight": "python3 scripts/trr_compute_preflight.py --minimum-free-gib 10 --probe-mib 600",
+    "owner_r4_prepare": "env PYTHONPATH=src:scripts python3 scripts/trr0002_r4_historical_target_bridge.py prepare --repository-root . --historical-root /home/alanz/spartan/punim2939/backdoor_lora/ersoy2026 --plan experiments/TRR-0002/historical-input-target-bridge/preregistration.json --base-model-path /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6 --heavy-model-path /home/alanz/.cache/huggingface/hub/models--Vikhrmodels--Vikhr-Llama-3.2-1B-Instruct/snapshots/7fa9d06a59246629244cdd3b6b92e4fc756baa0f --input-root outputs/TRR-0002/historical-input-target-bridge/reconstructor_input --truth-sidecar outputs/TRR-0002/historical-input-target-bridge/evaluator_private/truth.safetensors --evidence experiments/TRR-0002/historical-input-target-bridge/preparation.json",
+    "owner_r4_prediction_matrix": "/usr/bin/time -v -o experiments/TRR-0002/historical-input-target-bridge/all-cells-resume4-time.txt scripts/trr0002_r4_run_cells.sh",
+    "owner_r4_combine_retry": "/usr/bin/time -v -o experiments/TRR-0002/historical-input-target-bridge/combine-retry-time.txt scripts/trr0002_r4_run_cells.sh",
+    "owner_r4_freeze": "env PYTHONPATH=src:scripts python3 scripts/trr0002_r4_historical_target_bridge.py freeze --repository-root . --plan experiments/TRR-0002/historical-input-target-bridge/preregistration.json --input-root outputs/TRR-0002/historical-input-target-bridge/reconstructor_input --prediction-directory outputs/TRR-0002/historical-input-target-bridge/predictions/historical-alpaca-a1 --prediction-directory outputs/TRR-0002/historical-input-target-bridge/predictions/checkpoint-identity-a1 --output experiments/TRR-0002/historical-input-target-bridge/freeze-receipt.json",
+    "owner_r4_score": "env PYTHONPATH=src:scripts python3 scripts/trr0002_r4_historical_target_bridge.py score --repository-root . --historical-root /home/alanz/spartan/punim2939/backdoor_lora/ersoy2026 --plan experiments/TRR-0002/historical-input-target-bridge/preregistration.json --freeze-receipt experiments/TRR-0002/historical-input-target-bridge/freeze-receipt.json --truth-sidecar outputs/TRR-0002/historical-input-target-bridge/evaluator_private/truth.safetensors --preparation-evidence experiments/TRR-0002/historical-input-target-bridge/preparation.json --prediction-directory outputs/TRR-0002/historical-input-target-bridge/predictions/historical-alpaca-a1 --prediction-directory outputs/TRR-0002/historical-input-target-bridge/predictions/checkpoint-identity-a1 --output experiments/TRR-0002/historical-input-target-bridge/results.json",
+    "owner_r4_validate": "env PYTHONPATH=src:scripts python3 scripts/trr0002_r4_historical_target_bridge.py validate --plan experiments/TRR-0002/historical-input-target-bridge/preregistration.json --preparation-evidence experiments/TRR-0002/historical-input-target-bridge/preparation.json --freeze-receipt experiments/TRR-0002/historical-input-target-bridge/freeze-receipt.json --result experiments/TRR-0002/historical-input-target-bridge/results.json --output experiments/TRR-0002/historical-input-target-bridge/validation.json",
     "blind_reconstruction": "scripts/trr0002_blind_isolate.sh outputs/TRR-0002/blind/reconstructor_input outputs/TRR-0002/blind_code_export /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct /home/alanz/.local/lib/python3.12/site-packages outputs/TRR-0002/blind_method",
     "blind_score": "env PYTHONPATH=src python3 scripts/trr0002_blind_score.py --receipt experiments/TRR-0002/blind/freeze_receipt.json --input-root outputs/TRR-0002/blind/reconstructor_input --output-root outputs/TRR-0002/blind_method --code-root outputs/TRR-0002/blind_code_export --public-commitment experiments/TRR-0002/blind/selection_commitment.json --private-selection outputs/TRR-0002/evaluator_selection/private_selection.json --truth outputs/TRR-0002/blind/evaluator_private/blind_truth.jsonl --result experiments/TRR-0002/blind/fresh-blind-result.json",
     "calibration_fit": "env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false CUBLAS_WORKSPACE_CONFIG=:4096:8 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True PYTHONPATH=src:scripts python3 scripts/trr0002_fit_calibration.py --repository-root . --historical-root /home/alanz/spartan/punim2939/backdoor_lora/ersoy2026 --public-root outputs/TRR-0002/public-calibration --plan experiments/TRR-0002/calibration/preregistration/plan.json --fit-output experiments/TRR-0002/calibration/fit.json --calibration-output experiments/TRR-0002/calibration/frozen_calibration.json",
@@ -971,9 +981,277 @@
     },
     "validation_status": "PASS_14_CHECKS"
   },
+  "historical_input_target_bridge": {
+    "revision_id": "TRR-0002-OWNER-REVISION-R4",
+    "status": "TARGET_ONLY_HISTORICAL_INPUT_BRIDGE_COMPLETE",
+    "scientific_question": "With the exact old inputs and reconstruction resources fixed, how much does changing only target weights change reconstruction?",
+    "one_variable_statement": "All 128 exact historical token sequences, masks, positions, order, limits, cut depth, public A1/A2 resources, policies, and scoring remain fixed; only target weights that produced the observed activations vary.",
+    "benchmark": {
+      "records": 128,
+      "positions": 128,
+      "valid_tokens_including_bos": 14118,
+      "scored_post_bos_tokens": 13990,
+      "cut_depth": 4,
+      "metric": "Post-BOS token accuracy; abstentions and unattempted suffixes count incorrect",
+      "secondary_metric": "Token-exact complete inputs out of 128"
+    },
+    "targets": {
+      "public_base_target_cut4": {
+        "target_id": "meta-llama/Llama-3.2-1B-Instruct",
+        "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+        "weight_version": "untouched_public_checkpoint"
+      },
+      "finance_generation300_target_cut4": {
+        "target_id": "meta-llama/Llama-3.2-1B-Instruct",
+        "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+        "fine_tuning_dataset": "Josephgflowers/Finance-Instruct-500k",
+        "checkpoint_generation": 300,
+        "target_step": 300,
+        "weight_version": "victim_post_000299"
+      },
+      "vikhr_heavy_target_cut4": {
+        "target_id": "Vikhrmodels/Vikhr-Llama-3.2-1B-Instruct",
+        "revision": "7fa9d06a59246629244cdd3b6b92e4fc756baa0f",
+        "fine_tuning_dataset": "Vikhrmodels/GrandMaster-PRO-MAX",
+        "weight_version": "full_supervised_fine_tune"
+      }
+    },
+    "reconstruction_resources": {
+      "a2": {
+        "model": "meta-llama/Llama-3.2-1B-Instruct",
+        "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+        "layers": "0-3",
+        "target_prefix_calls": 0
+      },
+      "historical_alpaca_affine_a1": {
+        "description": "Historical fitted affine lens using public Alpaca data; no target fine-tune information",
+        "lens_sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742"
+      },
+      "checkpoint_identity_a1": {
+        "description": "Untouched public checkpoint embedding identity map",
+        "fitted_parameters": 0,
+        "training_rows": 0
+      }
+    },
+    "matrix": {
+      "expected_cells": 45,
+      "completed_cells": 45,
+      "historical_a1_policies_per_target": 12,
+      "checkpoint_identity_policies_per_target": 3,
+      "target_conditions": 3,
+      "truth_loaded_by_prediction_processes": false,
+      "target_prefix_calls_by_prediction_processes": 0,
+      "frozen_before_scoring": true
+    },
+    "reproduction_gate": {
+      "status": "PASS",
+      "all_12_finance_cells_exact": true,
+      "matched_fields": [
+        "correct_tokens",
+        "scored_tokens",
+        "exact_records"
+      ]
+    },
+    "principal_results": {
+      "accuracy_first": {
+        "label": "fixed_k512_centered",
+        "spec": "Fixed K512, group-centered cosine, no fast path or gate, always commit",
+        "candidate_simulations": 7162880,
+        "public": {
+          "correct_tokens": 13980,
+          "token_accuracy": 0.9992852037169406,
+          "exact_records": 124,
+          "method_compute_seconds": 334.498073676
+        },
+        "finance": {
+          "correct_tokens": 13980,
+          "token_accuracy": 0.9992852037169406,
+          "exact_records": 124,
+          "method_compute_seconds": 330.0431587769999
+        },
+        "heavy": {
+          "correct_tokens": 13960,
+          "token_accuracy": 0.997855611150822,
+          "exact_records": 102,
+          "method_compute_seconds": 277.19944053400013
+        }
+      },
+      "balanced_winner": {
+        "label": "adaptive_k256_to_k512_rms_q05",
+        "spec": "A1>=0.99 fast path; direct cosine K256 then K512; RMS-normalized margin; public-fitted q05 thresholds 0.4525494247674942 and 0.5007767677307129; always commit",
+        "public": {
+          "correct_tokens": 13962,
+          "token_accuracy": 0.9979985704074339,
+          "exact_records": 118,
+          "method_compute_seconds": 115.58959791699976,
+          "candidate_simulations": 1645312
+        },
+        "finance": {
+          "correct_tokens": 13962,
+          "token_accuracy": 0.9979985704074339,
+          "exact_records": 118,
+          "method_compute_seconds": 115.19915162100006,
+          "candidate_simulations": 1636608
+        },
+        "heavy": {
+          "correct_tokens": 13965,
+          "token_accuracy": 0.9982130092923517,
+          "exact_records": 115,
+          "method_compute_seconds": 94.34551819400076,
+          "candidate_simulations": 1626880
+        }
+      },
+      "low_cost": {
+        "label": "multistage_historical_gate",
+        "spec": "A1>=0.99 fast path; centered stages 4,8,16,32,64,128,256,512; normalized-softmax gate 2.0; always commit",
+        "public": {
+          "token_accuracy": 0.9976411722659042,
+          "exact_records": 114,
+          "method_compute_seconds": 51.908591931000046,
+          "candidate_simulations": 58068
+        },
+        "finance": {
+          "token_accuracy": 0.9977126518942101,
+          "exact_records": 115,
+          "method_compute_seconds": 51.71894870799997,
+          "candidate_simulations": 60332
+        },
+        "heavy": {
+          "token_accuracy": 0.997927090779128,
+          "exact_records": 112,
+          "method_compute_seconds": 48.84775798600003,
+          "candidate_simulations": 66128
+        }
+      },
+      "historical_strict_anchor": {
+        "spec": "A1>=0.999 fast path; centered K32,K128,K512; normalized-softmax gate 2.0; abstain and stop suffix",
+        "public_accuracy": 0.9821300929235168,
+        "public_exact_records": 122,
+        "finance_accuracy": 0.9822015725518227,
+        "finance_exact_records": 122,
+        "heavy_accuracy": 0.9561829878484632,
+        "heavy_exact_records": 108
+      },
+      "zero_fit_checkpoint_a1_k512_centered": {
+        "public_accuracy": 0.7355253752680486,
+        "finance_accuracy": 0.7420300214438885,
+        "heavy_accuracy": 0.7512508934953538,
+        "exact_records_each_target": 0
+      }
+    },
+    "proposal_and_selector_diagnostics": {
+      "historical_a1_top512_recall": {
+        "public": 0.9992852037169406,
+        "finance": 0.9992852037169406,
+        "heavy": 0.9993566833452466
+      },
+      "historical_a1_centered_k512_accuracy_given_inclusion": {
+        "public": 1.0,
+        "finance": 1.0,
+        "heavy": 0.9984979615192047
+      },
+      "checkpoint_identity_a1_top512_recall": {
+        "public": 0.7466761972837741,
+        "finance": 0.752037169406719,
+        "heavy": 0.7619013581129378
+      },
+      "checkpoint_identity_centered_k512_accuracy_given_inclusion": {
+        "public": 0.9850660539919587,
+        "finance": 0.9866932801064537,
+        "heavy": 0.986021202739469
+      }
+    },
+    "paired_target_deltas_from_finance_percentage_points": {
+      "fixed_k512_centered": {
+        "public": 0.0,
+        "heavy": -0.14295925661186748
+      },
+      "adaptive_k256_to_k512_rms_q05": {
+        "public": 0.0,
+        "heavy": 0.02144388849177381
+      },
+      "multistage_historical_gate": {
+        "public": -0.007147962830599708,
+        "heavy": 0.021443888491777363
+      },
+      "historical_strict_anchor": {
+        "public": -0.007147962830596155,
+        "heavy": -2.6018584703369536
+      },
+      "checkpoint_identity_k512_centered": {
+        "public": -0.6504646175839912,
+        "heavy": 0.9220872051465323
+      }
+    },
+    "resource_safety": {
+      "status": "LARGEST_CELL_QUALIFIED_AND_REMAINING_MATRIX_GUARDED",
+      "device": "NVIDIA GeForce RTX 5080",
+      "minimum_free_gib": 10,
+      "probe_mib": 600,
+      "qualified_peak_cuda_allocated_bytes": 3979016192,
+      "qualified_peak_cuda_reserved_bytes": 4357881856,
+      "free_headroom_beyond_peak_reserved_bytes": 11321475072,
+      "guarded_cells_with_preflight_artifacts": 39,
+      "rejected_non_equivalent_batching_workaround": true
+    },
+    "artifacts": {
+      "owner_request": {
+        "path": "coordination/requests/TRR-0002-OWNER-REVISION-R4.md",
+        "bytes": 1896,
+        "sha256": "6b0e65f20fb835342074b55f8bb6fa9709733525537d45d2d6896607280fc979"
+      },
+      "preregistration": {
+        "path": "experiments/TRR-0002/historical-input-target-bridge/preregistration.json",
+        "bytes": 29490,
+        "sha256": "2f9c96fc114484aca30bc0af595a0c5630b9c8a1f80eb0df9e1c9ca0990e487d"
+      },
+      "preparation": {
+        "path": "experiments/TRR-0002/historical-input-target-bridge/preparation.json",
+        "bytes": 4915,
+        "sha256": "cc585c9bdf50f9989e7806f4cd269f253d272b437f40094e7e42a435a51dc48a"
+      },
+      "failure_registry": {
+        "path": "experiments/TRR-0002/historical-input-target-bridge/failed-runs.json",
+        "bytes": 10556,
+        "sha256": "be32ffd8ce700e16948f3a905ff7f8fc6a18402cba49cd951b7426fda8882849"
+      },
+      "resource_safety": {
+        "path": "experiments/TRR-0002/historical-input-target-bridge/resource-safety.json",
+        "bytes": 5234,
+        "sha256": "88651093a7e3920edebf9c0dedf214f04685fd66eac55c040e9ee7016992cded"
+      },
+      "historical_a1_predictions": {
+        "path": "outputs/TRR-0002/historical-input-target-bridge/predictions/historical-alpaca-a1/predictions.safetensors",
+        "bytes": 107368472,
+        "sha256": "4df1c66cfd084c4c375514daa80e7bd40a21a77406f6127bf85235d04f938cb9"
+      },
+      "checkpoint_identity_predictions": {
+        "path": "outputs/TRR-0002/historical-input-target-bridge/predictions/checkpoint-identity-a1/predictions.safetensors",
+        "bytes": 102487736,
+        "sha256": "05b7519115beadf996bc231896926d109741457e5e4bd2187ee84e3270b6c02b"
+      },
+      "freeze_receipt": {
+        "path": "experiments/TRR-0002/historical-input-target-bridge/freeze-receipt.json",
+        "bytes": 4616,
+        "sha256": "002e7e84e8300aa63ffbe92ab39a0df2ef3c2c4cca5f0eeb28c61d5964f278ed"
+      },
+      "result": {
+        "path": "experiments/TRR-0002/historical-input-target-bridge/results.json",
+        "bytes": 2421516,
+        "sha256": "924881bdac7f9679b857ac10d79fa80f09eb5d39af470dff9251c53f1ce10260"
+      },
+      "validation": {
+        "path": "experiments/TRR-0002/historical-input-target-bridge/validation.json",
+        "bytes": 3103,
+        "sha256": "0a0d1efbd0aeb1b55dabe26eef711144d4a8289188d16d9617d93cbf28be36ac"
+      }
+    },
+    "validation_status": "PASS_12_CHECKS"
+  },
   "environment": {
     "determinism": {
       "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+      "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True",
       "TOKENIZERS_PARALLELISM": "false"
     },
     "device": "NVIDIA GeForce RTX 5080",
@@ -1162,13 +1440,17 @@
     "finance_target_shortlist_prediction_freeze_commit": "736a01aea5ce9223d57b4552717222bb0a3bcec8",
     "finance_target_shortlist_preregistration_commit": "d144822f365d398c7cfcbf7ddfdfc5f557fc9063",
     "finance_target_shortlist_scientific_evidence_commit": "5de94f21a2bacbbd99b126c10ac48ef6d1cd41ac",
+    "historical_input_bridge_request_commit": "2050b3226e8998b1ee5bcf2a77189c9b0651645b",
+    "historical_input_bridge_implementation_commit": "e42eb02d4dfb16567d26f7089e4dbd5394160ad9",
+    "historical_input_bridge_preregistration_commit": "bccc95d5ec90581f1f19e6590c1060a7cda07eee",
+    "historical_input_bridge_execution_commit": "913947202a7c468747751a24c5cb0ff3e403cecd",
     "history_rewritten": false,
     "merged": false,
     "pull_request": 3,
     "pull_request_url": "https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/3"
   },
-  "revision_id": "TRR-0002-OWNER-REVISION-R3",
-  "schema": "token-reconstruction.trr0002-manifest.v3",
+  "revision_id": "TRR-0002-OWNER-REVISION-R4",
+  "schema": "token-reconstruction.trr0002-manifest.v4",
   "status": "AWAITING_CHATGPT_REVIEW",
   "task_id": "TRR-0002",
   "validation": {
@@ -1266,6 +1548,47 @@
         "manifest_result_crosscheck": "PASS",
         "python_compile": "PASS",
         "r3_integrity_validation": "PASS (14 checks in committed artifact and final /tmp recheck)"
+      }
+    },
+    "owner_revision_r4": {
+      "artifact": {
+        "path": "experiments/TRR-0002/validation/owner-r4-final-validation.txt",
+        "bytes": 5794,
+        "sha256": "f048c2d023ebd3280a1418b38c77874256c02fa30797279d6633b2a7f741d7b6"
+      },
+      "commands": [
+        "PYTHONPATH=src:scripts python3 -m py_compile scripts/*.py src/token_reconstruction/*.py tests/*.py",
+        "bash -n scripts/trr0002_r4_run_cells.sh",
+        "env PYTHONPATH=src:scripts python3 -m pytest -q tests/test_trr0002_r4_historical_target_bridge.py",
+        "env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONPATH=src:scripts python3 -m pytest -q",
+        "python3 -c 'parse every repository JSON document'",
+        "env PYTHONPATH=src:scripts python3 scripts/trr0002_r4_historical_target_bridge.py validate --plan experiments/TRR-0002/historical-input-target-bridge/preregistration.json --preparation-evidence experiments/TRR-0002/historical-input-target-bridge/preparation.json --freeze-receipt experiments/TRR-0002/historical-input-target-bridge/freeze-receipt.json --result experiments/TRR-0002/historical-input-target-bridge/results.json --output /tmp/trr0002-r4-final-validation-20260823T1735.json",
+        "python3 -c 'verify R4 part counts, manifest-result summaries, and all ten principal artifact byte counts and hashes'",
+        "git diff --cached --check -- . ':(exclude)experiments/TRR-0002/historical-input-target-bridge/runner-resume.err' ':(exclude)experiments/TRR-0002/historical-input-target-bridge/runner-resume2.err'",
+        "sha256sum RESEARCH_CHARTER.md"
+      ],
+      "completed_utc": "2026-08-23T17:42:29Z",
+      "preserved_operator_validation_corrections": [
+        {
+          "attempt": "Focused pytest with PYTHONPATH=.",
+          "outcome": "Collection failed before tests because the module is under scripts/; corrected command passed without changing implementation or evidence."
+        },
+        {
+          "attempt": "Two ad-hoc manifest cross-check assertions.",
+          "outcome": "Initial assertions assumed the wrong manifest field shape and exposed one rounded summary float; corrected exact summary and assertion passed without changing predictions."
+        }
+      ],
+      "results": {
+        "bash_syntax": "PASS",
+        "charter_sha256": "ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d",
+        "focused_tests": "5 passed in 2.44s",
+        "full_test_suite": "72 passed in 4.11s",
+        "git_diff_check": "PASS",
+        "json_parse": "PASS (1020 files)",
+        "manifest_result_crosscheck": "PASS (45 cells, 10 principal artifacts)",
+        "part_evidence_counts": "PASS (39 preflights, 45 timings, 45 predictions, 45 evidence files)",
+        "python_compile": "PASS",
+        "r4_integrity_validation": "PASS (12 checks in committed artifact and final /tmp recheck)"
       }
     },
     "status": "PASSED"

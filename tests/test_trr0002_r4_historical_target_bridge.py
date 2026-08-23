@@ -60,6 +60,27 @@ def test_tensor_identity_hash_binds_dtype_shape_and_values() -> None:
     assert bridge.tensor_sha256(value) != bridge.tensor_sha256(changed)
 
 
+def test_repeated_proposal_equality_allows_only_matching_nan() -> None:
+    reference = torch.tensor([1.0, float("nan"), -2.0])
+    assert bridge.tensors_equal_with_matching_nan(
+        reference, reference.clone()
+    )
+
+    finite_change = reference.clone()
+    finite_change[0] = 2.0
+    assert not bridge.tensors_equal_with_matching_nan(
+        reference, finite_change
+    )
+
+    moved_nan = torch.tensor([float("nan"), 1.0, -2.0])
+    assert not bridge.tensors_equal_with_matching_nan(
+        reference, moved_nan
+    )
+    assert not bridge.tensors_equal_with_matching_nan(
+        reference, reference.to(torch.float64)
+    )
+
+
 def test_candidate_recall_excludes_bos_and_padding() -> None:
     truth = torch.tensor([[128000, 5, 6, 0], [128000, 7, 8, 9]])
     mask = torch.tensor([[1, 1, 1, 0], [1, 1, 1, 1]])

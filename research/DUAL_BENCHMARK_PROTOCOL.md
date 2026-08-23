@@ -267,3 +267,27 @@ For future noncanonical robustness panels:
   accuracy, candidate cost, runtime, memory, and failures; and
 - do not pool auxiliary and canonical scores or promote a single derivative to a
   replacement claim.
+
+### Exact-input target-only bridge rule
+
+When an auxiliary study is intended to explain or compare against a historical
+score, it must include a target-only bridge. Within each paired bridge cell,
+hold constant the exact token IDs, masks, positions, record order, sequence
+limits, cut depth, reconstruction method, fixed assets, decision rules, and
+scoring denominator. Change only the target weights that produced the observed
+activation. A separate prompt, dataset, or record-selection change is an input-
+shift panel and cannot stand in for this bridge.
+
+The bridge must include the previously scored target condition as a reproduction
+anchor. Every frozen anchor policy must match its committed correct-token,
+denominator, and exact-record counts before results for another target are
+accepted. Predictions for the complete proposer-by-policy-by-target matrix must
+be frozen before the scorer opens truth.
+
+Reports must use explicit target identities rather than labels such as
+`unchanged target`, state whether A1 uses a fitted public asset or the untouched
+checkpoint, and report post-BOS token accuracy, token-exact inputs, proposal
+recall, conditional selector accuracy, candidate simulations, synchronized
+runtime, peak memory, and all failed or excluded runs. Across-target differences
+are paired robustness results; they are not pooled with either canonical
+benchmark and do not by themselves establish a replacement method.
