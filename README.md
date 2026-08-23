@@ -69,11 +69,14 @@ current tree additionally contains the TRR relay history plus reproducible
 TRR-0001 and TRR-0002 research code, compact prediction freezes, manifests,
 results, and validation evidence.
 
-The current non-authoritative result summary is that a public A1 proposal with
-a scale-calibrated adaptive causal selector achieved 98.72% on a fresh isolated
-blind Pile/LoRA replicate, 99.16% on the canonical clean setup, and 99.21% on
-the historical finance setup. See `coordination/results/TRR-0002.md` and
-`experiments/TRR-0002/manifest.json` for the exact evidence and scope.
+The current non-authoritative result summary is that the bounded exhaustive
+A1+A2 configuration study selected fixed direct-cosine K256 with no shortcut,
+adaptivity, centering, or abstention. The frozen configuration achieved 99.64%
+on a new isolated blind Pile/LoRA replicate, 99.76% on canonical clean Pile,
+and 99.73% on historical Finance. This is an improved configuration of the
+established A1+A2 mechanism, not a newly invented reconstruction mechanism. See
+`coordination/results/TRR-0002.md` and `experiments/TRR-0002/manifest.json` for
+the exact evidence, cost trade-off, and scope.
 Evaluator-private source truth, selection keys, target updates, and large raw
 observations remain outside Git; committed prediction artifacts contain method
 outputs and diagnostics, not source plaintext.

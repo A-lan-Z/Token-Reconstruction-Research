@@ -5,21 +5,23 @@ by the repository-backed relay.
 
 ## Current scientific priority
 
-TRR-0002 has completed the controlled 44-cell component crossover, public-only
-confidence calibration, a fresh isolated blind confirmation, and the calibrated
-method's two canonical cells. The frozen calibrated A1/causal method achieved
-98.72% on the fresh blind 64x40 Pile/LoRA replicate, 99.16% on the canonical
-clean setup, and 99.21% on the historical finance setup. It therefore satisfies
-the preregistered simultaneous success rule and replaces historical strict A1+A2
-as the current robust default. Always-K64 A1/causal remains the highest-accuracy
-tested variant at greater cost.
+TRR-0002 has now completed both the controlled crossover/calibration phase and
+the owner-requested bounded exhaustive A1+A2 configuration study. The latter
+screened 512,136 unique policies, causally compared 57 finalists, and froze
+fixed direct-cosine K256 with no shortcut, adaptivity, centering, or abstention.
+That same policy achieved 99.64% on a wholly new isolated blind Pile replicate,
+99.76% on canonical clean Pile, and 99.73% on historical Finance. It is the
+current accuracy-first A1+A2 default. This is a better configuration of the
+established mechanism, not a new reconstruction mechanism.
 
 All future method comparisons must populate both registered setups under
 `research/DUAL_BENCHMARK_PROTOCOL.md`. A partial matrix is comparison-incomplete
-and cannot support an overall-best claim. The active registry now contains 23
-methods and 46 required canonical cells. The highest-value next work is to
-improve A1 proposal recall beyond rank 64 or reduce adaptive causal cost while
-holding the frozen blind protocol and dual-setup coverage fixed.
+and cannot support an overall-best claim. The active registry now contains 24
+methods and 48 required canonical cells. The calibrated K32-to-K64 method and
+fixed K64 remain cheaper Pareto alternatives, but neither is the accuracy
+winner. The highest-value next work is to approach K256 accuracy with fewer
+candidate simulations, or improve proposal recall beyond rank 256, while
+holding fresh-blind isolation and dual-setup coverage fixed.
 
 ## Prior R1 priority (superseded by the dual-benchmark requirement)
 

@@ -4,6 +4,9 @@
     "charter_sha256": "ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d",
     "owner_override_effect": "Run the controlled component-crossover study, calibrate a public-development-only A2 replacement, confirm it fresh-blind, and make dual-benchmark evaluation permanent.",
     "owner_override_path": "coordination/requests/TRR-0002-OWNER-OVERRIDE.md",
+    "owner_revision_effect": "Exhaustively evaluate the preregistered finite A1+A2 configuration family, select one accuracy-first winner, freeze it, and confirm it on held-out, fresh-blind, and both canonical setups.",
+    "owner_revision_path": "coordination/requests/TRR-0002-OWNER-REVISION-R1.md",
+    "owner_revision_sha256": "54df5076c60d48ae8a2ce6676f4aa2f19ed76b15613a8e3687a16ed3cc12c499",
     "request_path": "coordination/requests/TRR-0002.md"
   },
   "benchmarks": [
@@ -144,7 +147,18 @@
     "calibration_fit": "env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false CUBLAS_WORKSPACE_CONFIG=:4096:8 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True PYTHONPATH=src:scripts python3 scripts/trr0002_fit_calibration.py --repository-root . --historical-root /home/alanz/spartan/punim2939/backdoor_lora/ersoy2026 --public-root outputs/TRR-0002/public-calibration --plan experiments/TRR-0002/calibration/preregistration/plan.json --fit-output experiments/TRR-0002/calibration/fit.json --calibration-output experiments/TRR-0002/calibration/frozen_calibration.json",
     "canonical_dual": "env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false CUBLAS_WORKSPACE_CONFIG=:4096:8 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True PYTHONPATH=src:scripts python3 scripts/trr0002_calibrated_dual_eval.py --repository-root . --historical-root /home/alanz/spartan/punim2939/backdoor_lora/ersoy2026 --new-input-root outputs/TRR-0001-R1/clean/frozen_bundle/reconstructor_input --new-truth-jsonl outputs/TRR-0001-R1/clean/evaluator_private/blind_truth.jsonl --calibration experiments/TRR-0002/calibration/frozen_calibration.json --crossover-result experiments/TRR-0002/crossover/result.json --fresh-blind-result experiments/TRR-0002/blind/fresh-blind-result.json --prediction-artifact outputs/TRR-0002/calibrated-dual/predictions.safetensors --output experiments/TRR-0002/calibrated-dual/result.json",
     "crossover": "env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false CUBLAS_WORKSPACE_CONFIG=:4096:8 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True PYTHONPATH=src python3 scripts/trr0002_component_crossover.py --repository-root . --historical-root /home/alanz/spartan/punim2939/backdoor_lora/ersoy2026 --new-input-root outputs/TRR-0001-R1/clean/frozen_bundle/reconstructor_input --new-truth-jsonl outputs/TRR-0001-R1/clean/evaluator_private/blind_truth.jsonl --old-native-json experiments/TRR-0001/revision-r2/historical_native_rerun.json --previous-prediction-artifact outputs/TRR-0001-R2/dual-benchmark/predictions.safetensors --plan experiments/TRR-0002/preregistration/plan.json --registry research/dual_benchmark_registry.json --prediction-artifact outputs/TRR-0002/component-crossover/predictions.safetensors --output experiments/TRR-0002/crossover/result.json",
-    "public_generation": "env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false CUBLAS_WORKSPACE_CONFIG=:4096:8 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True PYTHONPATH=src python3 scripts/trr0002_public_calibration.py --plan experiments/TRR-0002/calibration/preregistration/plan.json --source-plan experiments/TRR-0001/plan.json --output-root outputs/TRR-0002/public-calibration"
+    "public_generation": "env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false CUBLAS_WORKSPACE_CONFIG=:4096:8 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True PYTHONPATH=src python3 scripts/trr0002_public_calibration.py --plan experiments/TRR-0002/calibration/preregistration/plan.json --source-plan experiments/TRR-0001/plan.json --output-root outputs/TRR-0002/public-calibration",
+    "owner_r1_surface": "env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false CUBLAS_WORKSPACE_CONFIG=:4096:8 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True PYTHONPATH=src:scripts python3 scripts/trr0002_r1_surface.py --repository-root . --historical-root /home/alanz/spartan/punim2939/backdoor_lora/ersoy2026 --plan experiments/TRR-0002/configuration-search/preregistration/plan.json --pile-root outputs/TRR-0002/public-calibration --finance-root outputs/TRR-0002/configuration-search/public-finance --output-root outputs/TRR-0002/configuration-search/surfaces",
+    "owner_r1_search": "env PYTHONPATH=src:scripts python3 scripts/trr0002_r1_search.py --plan experiments/TRR-0002/configuration-search/preregistration/plan.json --surface-root outputs/TRR-0002/configuration-search/surfaces --output-root outputs/TRR-0002/configuration-search/search",
+    "owner_r1_causal_selection": "env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false CUBLAS_WORKSPACE_CONFIG=:4096:8 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True PYTHONPATH=src:scripts python3 scripts/trr0002_r1_causal_select.py --repository-root . --historical-root /home/alanz/spartan/punim2939/backdoor_lora/ersoy2026 --plan experiments/TRR-0002/configuration-search/preregistration/plan.json --pile-root outputs/TRR-0002/public-calibration --finance-root outputs/TRR-0002/configuration-search/public-finance --search-root outputs/TRR-0002/configuration-search/search --output-root outputs/TRR-0002/configuration-search/causal-selection --timing-passes 3",
+    "owner_r1_heldout": "env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false CUBLAS_WORKSPACE_CONFIG=:4096:8 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True PYTHONPATH=src:scripts python3 scripts/trr0002_r1_heldout.py --repository-root . --historical-root /home/alanz/spartan/punim2939/backdoor_lora/ersoy2026 --winner experiments/TRR-0002/configuration-search/causal-selection/winner.json --pile-root outputs/TRR-0002/public-calibration --finance-root outputs/TRR-0002/configuration-search/public-finance --output-root outputs/TRR-0002/configuration-search/heldout",
+    "owner_r1_blind_selection": "env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONPATH=src:scripts python3 scripts/trr0002_r1_blind_select.py --source-plan experiments/TRR-0001/plan.json --previous-trr0001-private-selection outputs/TRR-0001-R1/evaluator_private/fresh_selection_private.json --previous-trr0002-private-selection outputs/TRR-0002/evaluator_selection/excluded-attempt1/private_selection.json --previous-trr0002-private-selection outputs/TRR-0002/evaluator_selection/private_selection.json --public-calibration-records outputs/TRR-0002/public-calibration/records.json --public-commitment experiments/TRR-0002/configuration-search/fresh-blind/selection_commitment.json --private-selection outputs/TRR-0002/configuration-search/evaluator-selection-r1/private_selection.json",
+    "owner_r1_blind_preregister": "env PYTHONPATH=src:scripts python3 scripts/trr0002_r1_blind_preregister.py --repository-root . --winner experiments/TRR-0002/configuration-search/causal-selection/winner.json --public-commitment experiments/TRR-0002/configuration-search/fresh-blind/selection_commitment.json --target-lora outputs/TRR-0001/evaluator_private/target_lora.safetensors --public-lens /home/alanz/spartan/punim2939/backdoor_lora/ersoy2026/inversion_20260730/out/lens_alpaca.pt --output experiments/TRR-0002/configuration-search/fresh-blind/preregistration.json",
+    "owner_r1_blind_evaluator": "env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false CUBLAS_WORKSPACE_CONFIG=:4096:8 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True PYTHONPATH=src:scripts python3 scripts/trr0002_r1_blind_evaluator.py --plan experiments/TRR-0002/configuration-search/fresh-blind/preregistration.json --public-commitment experiments/TRR-0002/configuration-search/fresh-blind/selection_commitment.json --private-selection outputs/TRR-0002/configuration-search/evaluator-selection-r1/private_selection.json --target-lora outputs/TRR-0001/evaluator_private/target_lora.safetensors --public-lens /home/alanz/spartan/punim2939/backdoor_lora/ersoy2026/inversion_20260730/out/lens_alpaca.pt --winner experiments/TRR-0002/configuration-search/causal-selection/winner.json --output-root outputs/TRR-0002/configuration-search/fresh-blind --preregistration-commit bb13ee049bd09115ff36713b4fa8e16edcc9cc21",
+    "owner_r1_blind_isolation_attempt2": "scripts/trr0002_r1_blind_isolate.sh outputs/TRR-0002/configuration-search/fresh-blind/reconstructor_input outputs/TRR-0002/configuration-search/fresh-blind-code /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct /home/alanz/.local/lib/python3.12/site-packages outputs/TRR-0002/configuration-search/fresh-blind/method_output_attempt2",
+    "owner_r1_blind_freeze": "env PYTHONPATH=src:scripts python3 scripts/trr0002_r1_blind_freeze.py --input-root outputs/TRR-0002/configuration-search/fresh-blind/reconstructor_input --output-root outputs/TRR-0002/configuration-search/fresh-blind/method_output_attempt2 --code-root outputs/TRR-0002/configuration-search/fresh-blind-code --plan experiments/TRR-0002/configuration-search/fresh-blind/preregistration.json --public-commitment experiments/TRR-0002/configuration-search/fresh-blind/selection_commitment.json --winner experiments/TRR-0002/configuration-search/causal-selection/winner.json --receipt outputs/TRR-0002/configuration-search/fresh-blind/freeze_receipt.json",
+    "owner_r1_blind_score": "env PYTHONPATH=src:scripts python3 scripts/trr0002_r1_blind_score.py --receipt outputs/TRR-0002/configuration-search/fresh-blind/freeze_receipt.json --input-root outputs/TRR-0002/configuration-search/fresh-blind/reconstructor_input --output-root outputs/TRR-0002/configuration-search/fresh-blind/method_output_attempt2 --code-root outputs/TRR-0002/configuration-search/fresh-blind-code --public-commitment experiments/TRR-0002/configuration-search/fresh-blind/selection_commitment.json --private-selection outputs/TRR-0002/configuration-search/evaluator-selection-r1/private_selection.json --truth outputs/TRR-0002/configuration-search/fresh-blind/evaluator_private/blind_truth.jsonl --result outputs/TRR-0002/configuration-search/fresh-blind/fresh-blind-result.json",
+    "owner_r1_canonical_dual": "env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false CUBLAS_WORKSPACE_CONFIG=:4096:8 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True PYTHONPATH=src:scripts python3 scripts/trr0002_r1_dual_eval.py --repository-root . --historical-root /home/alanz/spartan/punim2939/backdoor_lora/ersoy2026 --new-input-root outputs/TRR-0001-R1/clean/frozen_bundle/reconstructor_input --new-truth-jsonl outputs/TRR-0001-R1/clean/evaluator_private/blind_truth.jsonl --winner experiments/TRR-0002/configuration-search/causal-selection/winner.json --crossover-result experiments/TRR-0002/crossover/result.json --calibrated-result experiments/TRR-0002/calibrated-dual/result.json --prediction-artifact outputs/TRR-0002/configuration-search/canonical/predictions.safetensors --output outputs/TRR-0002/configuration-search/canonical/result.json"
   },
   "component_crossover": {
     "a1_true_token_rank": {
@@ -291,6 +305,193 @@
     "started_utc": "2026-08-22T16:14:12.317070Z",
     "status": "RETROSPECTIVE_COMPLETE_CROSSOVER"
   },
+  "configuration_search": {
+    "revision_id": "TRR-0002-OWNER-REVISION-R1",
+    "scope": {
+      "literal_continuous_exhaustion": "Impossible because real-valued thresholds are infinite.",
+      "exhaustive_claim": "Complete Cartesian product of the mechanisms, schedules, discrete budgets, frozen empirical gates, and terminal actions declared before scores.",
+      "canonical_inputs_before_winner_freeze": 0
+    },
+    "preregistration": {
+      "bytes": 10944,
+      "commit": "91772bdacdc59ed5b179957feb3327b1fe26bf16",
+      "path": "experiments/TRR-0002/configuration-search/preregistration/plan.json",
+      "sha256": "6bdbc379bc708e153d7c2bacb75bfcad06dd1577f26259c77a28085c0785980d"
+    },
+    "enumeration": {
+      "declared_policies": 512136,
+      "evaluated_policies": 512136,
+      "unique_policy_ids": 512136,
+      "complete": true,
+      "elapsed_seconds": 111.63491757299926,
+      "process_max_rss_kib": 592944,
+      "full_table": {
+        "bytes": 25942561,
+        "compression": "gzip",
+        "path": "outputs/TRR-0002/configuration-search/search/all_policies.jsonl.gz",
+        "rows": 512136,
+        "sha256": "f5c15f263285d38bcfe7a28d268381a3d9a86ecb3b163fe303b6df5f01c16ee4"
+      },
+      "result": {
+        "bytes": 2709,
+        "path": "experiments/TRR-0002/configuration-search/search/result.json",
+        "sha256": "f4fd2a3cd6a79835805e96951f2fd67737870cf39bd04f1a0f7179c6c038cf32"
+      }
+    },
+    "causal_selection": {
+      "execution_commit": "3a1807d46045576657b39300fe6ae6ee10cae4a9",
+      "finalists": 57,
+      "selection_condition": "public_lora_2602 records 16-31 in disjoint public Pile and Finance development sets",
+      "pile_accuracy": 1.0,
+      "finance_accuracy": 1.0,
+      "pile_exact_records": 16,
+      "finance_exact_records": 16,
+      "logical_candidate_simulations": 636672,
+      "median_combined_selection_seconds": 22.721846185999766,
+      "record_batch_size": 8,
+      "result": {
+        "bytes": 3345,
+        "path": "experiments/TRR-0002/configuration-search/causal-selection/result.json",
+        "sha256": "0836c0f775c60006adc8a4f89da0bb5fc3f15387ba18621a95fea35c8c5378cd"
+      }
+    },
+    "winner": {
+      "method_id": "a1_a2_exhaustive_configuration_winner",
+      "policy_id": "a1a2_43ea0bb737bc075531ca",
+      "proposal": "historical public A1",
+      "candidate_budget": 256,
+      "score_rule": "direct_cosine",
+      "immediate_a1": false,
+      "adaptive": false,
+      "candidate_group_centering": false,
+      "abstention": false,
+      "terminal_action": "commit_last_winner",
+      "mechanism_claim": "A better configuration of the established A1+A2 mechanism, not a new reconstruction mechanism.",
+      "artifact": {
+        "bytes": 18525,
+        "path": "experiments/TRR-0002/configuration-search/causal-selection/winner.json",
+        "sha256": "a75a5220647b0dea019cabb09be7c99a82f0d8142bf5476ffff6be5099fcb4f3"
+      },
+      "freeze_receipt": {
+        "bytes": 2675,
+        "commit_before_confirmation": "cd0fa9ba691007f78424fcd8496a9dbabae699d1",
+        "path": "experiments/TRR-0002/configuration-search/winner-freeze.json",
+        "sha256": "2b3c1e07dd0cb68002da1987ff0c7366a2d5786a4946d9445bed36ca049f9922"
+      }
+    },
+    "public_held_out": {
+      "condition": "public_lora_2603",
+      "prediction_frozen_before_truth": true,
+      "revised_after_holdout": false,
+      "pile": {
+        "correct_tokens": 1247,
+        "scored_tokens": 1248,
+        "token_accuracy": 0.999198717948718,
+        "exact_records": 31,
+        "records": 32
+      },
+      "finance": {
+        "correct_tokens": 3489,
+        "scored_tokens": 3489,
+        "token_accuracy": 1.0,
+        "exact_records": 32,
+        "records": 32
+      },
+      "result": {
+        "bytes": 29841,
+        "path": "experiments/TRR-0002/configuration-search/heldout/result.json",
+        "sha256": "758348adb064ccbb7833619cae5ec60a3444f7d0f9b736ac032ee20ce2806f6e"
+      }
+    },
+    "fresh_blind": {
+      "setup_id": "fresh-clean-pile-lora-r2-64x40",
+      "excluded_records": 480,
+      "selection_overlap": 0,
+      "access_denial_probes": 9,
+      "network_disabled": true,
+      "truth_or_source_inputs": 0,
+      "target_prefix_calls": 0,
+      "prediction_revision_after_truth": false,
+      "correct_tokens": 2487,
+      "scored_tokens": 2496,
+      "token_accuracy": 0.9963942307692307,
+      "exact_records": 57,
+      "records": 64,
+      "candidate_recall": 0.9975961538461539,
+      "proposal_exclusions": 6,
+      "selector_errors_given_inclusion": 3,
+      "logical_candidate_simulations": 638976,
+      "method_compute_seconds": 15.11277000300015,
+      "result": {
+        "bytes": 8317,
+        "path": "experiments/TRR-0002/configuration-search/fresh-blind/fresh-blind-result.json",
+        "sha256": "7f7838a774a03aecd49e4bcea5fae8284c0c63d81974ae3b7d214a2729841ac6"
+      },
+      "prediction": {
+        "bytes": 2660584,
+        "path": "experiments/TRR-0002/configuration-search/fresh-blind/predictions.safetensors",
+        "sha256": "d2a35ced3fb6893494ae7809aca258e51602c0762daa94dd9e53f0f2ccfbb79a"
+      }
+    },
+    "canonical_dual": {
+      "execution_commit": "122fe2e7cf371b32dbbcd838c35d73eeee3d2b61",
+      "clean": {
+        "correct_tokens": 2490,
+        "scored_tokens": 2496,
+        "token_accuracy": 0.9975961538461539,
+        "exact_records": 60,
+        "candidate_recall": 0.9975961538461539,
+        "compute_seconds": 15.301557769999818,
+        "logical_candidate_simulations": 638976
+      },
+      "historical": {
+        "correct_tokens": 13952,
+        "scored_tokens": 13990,
+        "token_accuracy": 0.9972837741243745,
+        "exact_records": 107,
+        "candidate_recall": 0.9981415296640458,
+        "compute_seconds": 140.31507978799982,
+        "logical_candidate_simulations": 3581440
+      },
+      "success_rule_passed": true,
+      "result": {
+        "bytes": 81772,
+        "path": "experiments/TRR-0002/configuration-search/canonical/result.json",
+        "sha256": "271a4fa3bd4a093b6c4373ad9c704ca3ae74a8cf3712ba91a7f0fe4821f079f1"
+      },
+      "prediction": {
+        "bytes": 19684248,
+        "path": "experiments/TRR-0002/configuration-search/canonical/predictions.safetensors",
+        "sha256": "94bd9b5c6344d8fc9bbd4df703208d911704ecfa67a6ca1c00dd505661562ef4"
+      }
+    },
+    "cost_comparison": {
+      "fixed_k64": {
+        "clean_accuracy": 0.9931891025641025,
+        "clean_compute_seconds": 8.376088864999474,
+        "clean_logical_candidate_simulations": 159744,
+        "historical_accuracy": 0.9926375982844889,
+        "historical_compute_seconds": 63.468062747997465,
+        "historical_logical_candidate_simulations": 895360
+      },
+      "previous_calibrated_k32_to64": {
+        "clean_accuracy": 0.9915865384615384,
+        "clean_compute_seconds": 6.208804305992089,
+        "clean_logical_candidate_simulations": 124832,
+        "historical_accuracy": 0.9921372408863474,
+        "historical_compute_seconds": 53.99755732900667,
+        "historical_logical_candidate_simulations": 718752
+      },
+      "winner_vs_k64": {
+        "additional_clean_correct_tokens": 11,
+        "additional_historical_correct_tokens": 65,
+        "clean_worse_records": 0,
+        "historical_worse_records": 0,
+        "logical_simulation_multiplier": 4.0
+      }
+    },
+    "status": "COMPLETE_FROZEN_WINNER_CONFIRMED_WITHOUT_REVISION"
+  },
   "environment": {
     "determinism": {
       "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
@@ -322,6 +523,31 @@
       "id": "blind-reconstruction-attempt1",
       "path": "experiments/TRR-0002/blind/excluded-reconstruction-attempt1/",
       "reason": "Dynamic import/dataclass wrapper failure before predictions; method and calibration unchanged, wrapper-only correction preregistered."
+    },
+    {
+      "id": "owner-r1-causal-selection-attempt1",
+      "path": "experiments/TRR-0002/configuration-search/execution/causal-selection-attempt1-output.txt",
+      "reason": "Batch-1 scheduler was interrupted by a WSL execution failure after one finalist; no winner selected and output excluded."
+    },
+    {
+      "id": "owner-r1-causal-selection-attempt2",
+      "path": "experiments/TRR-0002/configuration-search/execution/causal-selection-attempt2-output.txt",
+      "reason": "Replacement scheduler failed in the WSL host before a complete result; no winner selected and output excluded."
+    },
+    {
+      "id": "owner-r1-causal-selection-attempt3",
+      "path": "experiments/TRR-0002/configuration-search/execution/causal-selection-attempt3-time-and-stderr.txt",
+      "reason": "Batch-16 scheduler was unstable under WSL and excluded; it was replaced by the semantically equivalent batch-8 scheduler."
+    },
+    {
+      "id": "owner-r1-causal-selection-attempt4",
+      "path": "experiments/TRR-0002/configuration-search/execution/causal-selection-attempt4-time-and-stderr.txt",
+      "reason": "A fixed-policy deserialization defect raised KeyError after 17 of 57 finalists. The neutral reader and regression test were fixed; all finalists were rerun from scratch in attempt 5."
+    },
+    {
+      "id": "owner-r1-blind-isolation-attempt1",
+      "path": "experiments/TRR-0002/configuration-search/execution/trr0002-r1-blind-isolation-attempt1-time-and-stderr.txt",
+      "reason": "Fail-closed import error before access probing or predictions because three package-initializer dependencies were absent from the exact-code export. The same committed dependencies were added and attempt 2 used a new create-only output directory."
     }
   ],
   "fresh_blind": {
@@ -388,17 +614,18 @@
     "state_path": "coordination/STATE.json"
   },
   "protocol_updates": {
-    "active_methods": 23,
+    "active_methods": 24,
     "documents": [
       "README.md",
+      "research/A1_A2_CONFIGURATION_PROTOCOL.md",
       "research/DUAL_BENCHMARK_PROTOCOL.md",
       "research/ROADMAP.md",
       "research/DECISIONS.md",
       "research/dual_benchmark_registry.json"
     ],
     "frozen_previous_registry": "experiments/TRR-0002/preregistration/dual_benchmark_registry.v2.json",
-    "registry_schema": "token-reconstruction.dual-benchmark-registry.v3",
-    "required_cells": 46,
+    "registry_schema": "token-reconstruction.dual-benchmark-registry.v4",
+    "required_cells": 48,
     "rule": "Every active reconstruction method is registered on both canonical setups."
   },
   "raw_log_hashes": {
@@ -414,7 +641,23 @@
     "experiments/TRR-0002/calibration/public-generation-time.txt": "e195fef3666dc2b26324bac2e208a60c6cda617074a03c257e30aef5ba2a0508",
     "experiments/TRR-0002/calibration/public-generation.json": "6bed8aca6668bd749bbad03c0c85bbace306085dac3141895dad7685f03d0682",
     "experiments/TRR-0002/crossover/run-output.txt": "1cfd136abfc0b6d624707fe55054a21bdcb38a7f239d6b15e6f4d61337208f73",
-    "experiments/TRR-0002/crossover/run-time.txt": "064b250ad9e7964b6625bc84b73bfac68c73075e459af751b04335cfeb6074d4"
+    "experiments/TRR-0002/crossover/run-time.txt": "064b250ad9e7964b6625bc84b73bfac68c73075e459af751b04335cfeb6074d4",
+    "experiments/TRR-0002/configuration-search/execution/search-output.txt": "ffad24362c050127bbca1c9bf9918feeb7958329341d4da3055966486115e9ba",
+    "experiments/TRR-0002/configuration-search/execution/search-time.txt": "841cec5f659b80fb1fdd3b9317639e1bba7ddd85ba85bcda6c61075ce813842c",
+    "experiments/TRR-0002/configuration-search/execution/causal-selection-attempt5-output.txt": "c99be65938ac81799103bfacf29312a02e912d36426b3d9c0f349b9618152fa7",
+    "experiments/TRR-0002/configuration-search/execution/causal-selection-attempt5-time-and-stderr.txt": "655921879a943853532c9958e304aec04cfca0ff4c2ab51ed04e22b5755f1caf",
+    "experiments/TRR-0002/configuration-search/execution/heldout-output.txt": "c60d8ce9f3086e9f7b96020bf7ebb5f3c35428daf7589b0ed93c958e23ee30ec",
+    "experiments/TRR-0002/configuration-search/execution/heldout-time.txt": "a27665adb9c1abb2e24f9ccd573a462be328ff9279003e523162bc01ff96925a",
+    "experiments/TRR-0002/configuration-search/execution/trr0002-r1-blind-selection-output.txt": "7478cc88a4d54e31ed589ddc100649fb64152e3f417d8d634bfae16f6159b5c1",
+    "experiments/TRR-0002/configuration-search/execution/trr0002-r1-blind-evaluator-output.txt": "f582c059ada7ff03701d066797f375e2522301fd46bb6e925669040b864c6628",
+    "experiments/TRR-0002/configuration-search/execution/trr0002-r1-blind-evaluator-time.txt": "699a07fe2df133c99178e676de8bba1b001a3a7eff9cfbd1171223cfaf975ea6",
+    "experiments/TRR-0002/configuration-search/execution/trr0002-r1-blind-isolation-attempt1-time-and-stderr.txt": "71b3f706dc487f5c0b8138e370b6df698c98eeb7793d1c0874faeb0dfdb521df",
+    "experiments/TRR-0002/configuration-search/execution/trr0002-r1-blind-isolation-attempt2-output.txt": "432a09c8ba6c4347d89d41674f779feadb25418416539af6b717c1b2c8d88f69",
+    "experiments/TRR-0002/configuration-search/execution/trr0002-r1-blind-isolation-attempt2-time.txt": "6646b88343d1bc5682f96ee1b0f85fbf1cdabdd533b2f5d48c04765c7450b188",
+    "experiments/TRR-0002/configuration-search/execution/trr0002-r1-blind-freeze-output.txt": "3a48a2daf05230fd825e752400f531eb911e82ae71b64ae970348d148f84b183",
+    "experiments/TRR-0002/configuration-search/execution/trr0002-r1-blind-score-output.txt": "8788a4da565acc5f311d7d1eaf74a2a68e43615df1ba3e178da331481e44bccb",
+    "experiments/TRR-0002/configuration-search/execution/trr0002-r1-canonical-output.txt": "34bf71818547b1f261d273230a1962d89259cf4c61a7fe0d411e56dcba0d8536",
+    "experiments/TRR-0002/configuration-search/execution/trr0002-r1-canonical-time.txt": "1a50216e9357b2de7fb9f09a4cfd0c96089fc66d93ef611a57a6c2a9b9730190"
   },
   "repository": {
     "base_merge_commit": "84479014a6c07fa6f17d53df3f50eb32e3ef140c",
@@ -425,37 +668,64 @@
     "calibration_execution_commit": "bc24a868fdea9a62f2d20081c0d0387cff6e4b4c",
     "calibration_freeze_evidence_commit": "68974c3b23806fa4957f4ba40b7517c721c30e09",
     "canonical_dual_execution_commit": "75aa76460c571e016d398f741efb005aa5556dab",
+    "configuration_search_preregistration_commit": "91772bdacdc59ed5b179957feb3327b1fe26bf16",
+    "configuration_causal_execution_commit": "3a1807d46045576657b39300fe6ae6ee10cae4a9",
+    "configuration_winner_freeze_commit": "cd0fa9ba691007f78424fcd8496a9dbabae699d1",
+    "configuration_heldout_evidence_commit": "a5ca6e18f7fecf03012455268cd5bb0e93f0f173",
+    "configuration_blind_preregistration_commit": "bb13ee049bd09115ff36713b4fa8e16edcc9cc21",
+    "configuration_blind_evidence_commit": "122fe2e7cf371b32dbbcd838c35d73eeee3d2b61",
+    "configuration_canonical_execution_commit": "122fe2e7cf371b32dbbcd838c35d73eeee3d2b61",
+    "configuration_canonical_evidence_commit": "62e6be969e78ad9f04de4b81db8ca1106f2cccaf",
     "crossover_execution_commit": "edfbf99b0c8e8944b5b962bbca66cb7ac1a38f1d",
     "history_rewritten": false,
     "merged": false,
     "pull_request": 3,
     "pull_request_url": "https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/3"
   },
-  "schema": "token-reconstruction.trr0002-manifest.v1",
+  "revision_id": "TRR-0002-OWNER-REVISION-R1",
+  "schema": "token-reconstruction.trr0002-manifest.v2",
   "status": "AWAITING_CHATGPT_REVIEW",
   "task_id": "TRR-0002",
   "validation": {
-    "artifact": {
-      "path": "experiments/TRR-0002/validation/final-validation.txt",
-      "sha256": "d767e8f64ed93ae106f43d8689d2365eb57a1206ab4440b5ac0b115d1cea765a"
-    },
-    "commands": [
-      "python3 -m py_compile scripts/*.py src/token_reconstruction/*.py tests/*.py",
-      "python3 -m pytest -q",
-      "python3 -c 'parse every tracked JSON document'",
-      "python3 -c 'verify registry Cartesian product and artifact hashes'",
-      "git diff --check",
-      "sha256sum RESEARCH_CHARTER.md"
-    ],
-    "completed_utc": "2026-08-22T17:39:32Z",
-    "results": {
-      "charter_sha256": "ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d",
+    "previous_completion": {
+      "artifact": {
+        "path": "experiments/TRR-0002/validation/final-validation.txt",
+        "sha256": "d767e8f64ed93ae106f43d8689d2365eb57a1206ab4440b5ac0b115d1cea765a"
+      },
+      "completed_utc": "2026-08-22T17:39:32Z",
       "full_test_suite": "47 passed in 2.94s",
-      "git_diff_check": "PASS",
-      "json_parse": "PASS (125 JSON files)",
-      "principal_artifact_hashes": "PASS",
-      "python_compile": "PASS",
-      "registry_cartesian": "PASS (23 methods \u00d7 2 setups = 46 cells)"
+      "registry_cartesian": "PASS (23 methods x 2 setups = 46 cells)"
+    },
+    "owner_revision_r1": {
+      "artifact": {
+        "bytes": 2144,
+        "path": "experiments/TRR-0002/validation/owner-r1-final-validation.txt",
+        "sha256": "7813eccd5e82dab25f0c7150551b9d0a6dee4d2bb1007d33f4c058057b0c6d04"
+      },
+      "commands": [
+        "python3 -m py_compile scripts/*.py src/token_reconstruction/*.py tests/*.py",
+        "python3 -m pytest -q tests/test_dual_benchmark.py",
+        "env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONPATH=src:scripts python3 -m pytest -q",
+        "python3 -c 'parse every repository JSON document and verify registry Cartesian product plus owner-R1 principal artifact hashes'",
+        "git diff --check",
+        "sha256sum RESEARCH_CHARTER.md"
+      ],
+      "completed_utc": "2026-08-23T05:20:45Z",
+      "preserved_initial_failure": {
+        "result": "1 failed, 55 passed in 6.96s",
+        "reason": "Registry test expected 23 methods after the 24th method was correctly registered.",
+        "corrected": true
+      },
+      "results": {
+        "charter_sha256": "ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d",
+        "focused_registry_tests": "4 passed in 1.67s",
+        "full_test_suite": "56 passed in 5.86s",
+        "git_diff_check": "PASS",
+        "json_parse": "PASS",
+        "principal_artifact_hashes": "PASS",
+        "python_compile": "PASS",
+        "registry_cartesian": "PASS (24 methods x 2 setups = 48 cells)"
+      }
     },
     "status": "PASSED"
   }

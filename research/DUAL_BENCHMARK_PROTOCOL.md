@@ -54,6 +54,7 @@ winner becomes active and must then add one cell in each canonical setup.
 | `causal_public_surrogate_k16` | the same frozen top-16 proposals, re-rank with the public prefix and reconstructed prefix, no target-prefix calls | clean 64x40 |
 | `strict_bos_adaptive_a1_a2` | public Alpaca A1 top-512, confidence fast path 0.999, progressive public-prefix A2 tiers 32/128/512, normalized-winner threshold 2.0, then suffix abstention | historical 128x128 |
 | `a1_scale_calibrated_adaptive_causal_k32_to64` | public A1 top-64; causally score K32; expand to K64 when the frozen scale-normalized top-two gap is at or below 1.2544946670532227; never abstain | dual-setup successor |
+| `a1_a2_exhaustive_configuration_winner` | public A1 top-256; direct causal cosine at fixed K256; no fast path, routing, centering, or abstention | dual-setup accuracy winner |
 
 The word `adaptive` in `strict_bos_adaptive_a1_a2` refers to its per-token tier
 and route selection. Learned online A1 adapters are separate methods and must be
@@ -116,6 +117,22 @@ but that replicate supplements rather than deletes the canonical clean cell.
 TRR-0002 froze the method before the new split existed and confirmed 98.72% on
 the fresh blind replicate, 99.16% on the canonical clean setup, and 99.21% on
 the historical setup.
+
+### TRR-0002 owner-R1 exhaustive configuration winner
+
+The owner-requested follow-up enumerated all 512,136 policies in its frozen
+finite A1+A2 configuration family on public component surfaces, causally ran 57
+deterministically selected finalists on disjoint public trajectories, and froze
+one winner before held-out, fresh-blind, or canonical access. The exact winner
+uses direct cosine at fixed K256, no immediate A1 shortcut, no adaptivity, no
+centering, and no abstention.
+
+The same serialized policy achieved 99.76% on canonical clean Pile and 99.73%
+on canonical historical Finance. A wholly new disjoint isolated blind replicate
+scored 99.64%. This makes K256 the accuracy-first default among tested A1+A2
+configurations. The calibrated K32-to-K64 method remains a cheaper balanced
+alternative; these are different operating points and must retain their own
+method IDs and cost records.
 
 ## Native executions and benchmark-compatible ports
 
@@ -189,8 +206,8 @@ and add the previously missing ports.
 
 ## TRR-0002 status
 
-TRR-0002 completed all 44 preregistered crossover cells and the two additional
-calibrated-method canonical cells. Its fresh clean confirmation was isolated and
-frozen before truth reveal. The active registry therefore contains 23 methods
-and 46 canonical setup-method cells; future active methods must likewise add one
-cell per canonical setup.
+TRR-0002 completed all 44 preregistered crossover cells, the two calibrated
+method cells, and the two frozen exhaustive-winner cells. Both fresh clean
+confirmations were isolated and frozen before truth reveal. The active v4
+registry therefore contains 24 methods and 48 canonical setup-method cells;
+future active methods must likewise add one cell per canonical setup.

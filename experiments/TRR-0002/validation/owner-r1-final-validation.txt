@@ -1,0 +1,51 @@
+TRR-0002-OWNER-REVISION-R1 final validation
+Completed UTC: 2026-08-23T05:20:45Z
+
+1. Python compilation
+Command: python3 -m py_compile scripts/*.py src/token_reconstruction/*.py tests/*.py
+Exit status: 0
+Result: PASS
+
+2. Initial full-suite validation (preserved failure)
+Command: env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONPATH=src:scripts python3 -m pytest -q
+Exit status: 1
+Result: 1 failed, 55 passed in 6.96s
+Failure: tests/test_dual_benchmark.py::test_registry_is_exact_cartesian_product still expected the 23-method registry and did not include a1_a2_exhaustive_configuration_winner.
+Correction: added the frozen winner to ACTIVE_METHOD_IDS, updated the expected 48-cell protocol text, and asserted that the new method appears in the protocol.
+
+3. Focused corrected validation
+Command: env PYTHONPATH=src:scripts python3 -m pytest -q tests/test_dual_benchmark.py
+Exit status: 0
+Result: 4 passed in 1.67s
+
+4. Final full-suite validation
+Command: env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONPATH=src:scripts python3 -m pytest -q
+Exit status: 0
+Result: 56 passed in 5.86s
+GNU-time wall: 0:07.24
+Maximum resident set size: 1,014,992 KiB
+
+5. Structured-data and evidence validation
+Command: parse every repository JSON document; verify registry Cartesian product; verify owner-R1 principal artifact byte counts and SHA-256 values
+Exit status: 0
+Result: JSON_PARSE_PASS; REGISTRY_PASS 24 methods x 2 setups = 48 cells; PRINCIPAL_HASHES_PASS
+
+6. Charter integrity
+Command: sha256sum RESEARCH_CHARTER.md
+Exit status: 0
+Result: ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d
+
+7. Whitespace validation
+Command: git diff --check
+Exit status: 0
+Result: PASS
+
+8. Blind-integrity summary
+Winner freeze commit before held-out/blind/canonical access: cd0fa9ba691007f78424fcd8496a9dbabae699d1
+Fresh blind preregistration commit: bb13ee049bd09115ff36713b4fa8e16edcc9cc21
+Access probes passed: 9
+Truth/source inputs during reconstruction: 0
+Target-prefix calls: 0
+Prediction revision after truth: false
+
+Overall result: PASS after one preserved registry-test maintenance correction.

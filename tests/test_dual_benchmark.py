@@ -20,7 +20,12 @@ from token_reconstruction.component_crossover import METHOD_IDS as CROSSOVER_MET
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 CALIBRATED_METHOD_ID = "a1_scale_calibrated_adaptive_causal_k32_to64"
-ACTIVE_METHOD_IDS = (*CROSSOVER_METHOD_IDS, CALIBRATED_METHOD_ID)
+CONFIGURATION_WINNER_METHOD_ID = "a1_a2_exhaustive_configuration_winner"
+ACTIVE_METHOD_IDS = (
+    *CROSSOVER_METHOD_IDS,
+    CALIBRATED_METHOD_ID,
+    CONFIGURATION_WINNER_METHOD_ID,
+)
 
 
 class NormalizeIdentity(torch.nn.Module):
@@ -91,9 +96,10 @@ def test_registry_is_exact_cartesian_product() -> None:
     ).read_text(encoding="utf-8")
     for identifier in (*SETUP_IDS, *BASE_METHOD_IDS):
         assert identifier in protocol
-    assert "46 required cells" in protocol
+    assert "48 canonical setup-method cells" in protocol
     assert "fixed-budget historical A2 core" in protocol
     assert CALIBRATED_METHOD_ID in protocol
+    assert CONFIGURATION_WINNER_METHOD_ID in protocol
 
 
 def test_stable_candidate_order_breaks_score_ties_by_token_id() -> None:

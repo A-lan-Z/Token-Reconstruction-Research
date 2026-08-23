@@ -61,6 +61,29 @@ TRR-0002 adds the following decisions:
 These decisions are scoped to the pinned public model, lens, target-update
 family, cuts, datasets, and tested geometries. They do not ban other methods.
 
+TRR-0002 owner revision R1 adds the following decisions:
+
+- “all configurations” means the complete preregistered finite Cartesian
+  family, not the impossible set of all real-valued thresholds; this study
+  evaluated all 512,136 declared unique policies;
+- the accuracy-first winner among the tested A1+A2 configurations is fixed
+  direct-cosine K256 with no immediate A1 shortcut, no adaptive routing, no
+  candidate-group centering, and no abstention;
+- the winner is an improved configuration of the historical A1+A2 mechanism,
+  not a new reconstruction mechanism;
+- the frozen policy achieved 99.64% on a new isolated blind Pile replicate,
+  99.76% on canonical clean Pile, and 99.73% on historical Finance;
+- compared with fixed K64 on the canonical records, K256 recovered 11 more
+  clean tokens and 65 more historical tokens, with no record-level regression,
+  but used four times the logical candidate simulations and about 1.8--2.2
+  times the measured compute time; and
+- K256 is the tested accuracy default, while calibrated K32-to-K64 and fixed
+  K64 remain explicitly labelled lower-cost alternatives rather than winners.
+
+These owner-R1 decisions remain scoped to the frozen finite search family and
+the recorded public, blind, and canonical conditions. They do not claim that
+K256 is globally optimal over untested mechanisms or continuous policies.
+
 ## Administrative entries
 
 - TRR-0000 bootstraps and validates the repository-backed relay. It selects no
