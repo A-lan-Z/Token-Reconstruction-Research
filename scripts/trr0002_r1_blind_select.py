@@ -31,7 +31,12 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--source-plan", type=Path, required=True)
     parser.add_argument("--previous-trr0001-private-selection", type=Path, required=True)
-    parser.add_argument("--previous-trr0002-private-selection", type=Path, required=True)
+    parser.add_argument(
+        "--previous-trr0002-private-selection",
+        type=Path,
+        action="append",
+        required=True,
+    )
     parser.add_argument("--public-calibration-records", type=Path, required=True)
     parser.add_argument("--public-commitment", type=Path, required=True)
     parser.add_argument("--private-selection", type=Path, required=True)
@@ -88,13 +93,15 @@ def main() -> int:
     previous_trr0001 = prior_indices(
         load_json(args.previous_trr0001_private_selection), label="TRR-0001-R1 blind selection"
     )
-    previous_trr0002 = prior_indices(
-        load_json(args.previous_trr0002_private_selection), label="TRR-0002 prior blind selection"
-    )
+    previous_trr0002_sets = [
+        prior_indices(load_json(path), label=f"TRR-0002 prior blind selection {index}")
+        for index, path in enumerate(args.previous_trr0002_private_selection, start=1)
+    ]
+    previous_trr0002 = set().union(*previous_trr0002_sets)
     calibration = calibration_indices(load_json(args.public_calibration_records))
     if not calibration.issubset(original):
         raise RuntimeError("public Pile development records escaped the original selection")
-    if original & previous_trr0001 or original & previous_trr0002 or previous_trr0001 & previous_trr0002:
+    if original & previous_trr0001 or original & previous_trr0002:
         raise RuntimeError("prior evaluation selections are not mutually disjoint")
     excluded = original | previous_trr0001 | previous_trr0002 | calibration
 
@@ -140,6 +147,7 @@ def main() -> int:
             "original_trr0001_records": len(original),
             "previous_fresh_trr0001_r1_records": len(previous_trr0001),
             "previous_fresh_trr0002_records": len(previous_trr0002),
+            "previous_trr0002_selection_files": len(previous_trr0002_sets),
             "public_pile_development_records": len(calibration),
             "unique_excluded_records": len(excluded),
             "selected_overlap": 0,
