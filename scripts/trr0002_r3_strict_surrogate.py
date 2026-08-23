@@ -219,6 +219,7 @@ def build_parser() -> argparse.ArgumentParser:
     predict.add_argument("--input-root", type=Path, required=True)
     predict.add_argument("--model-path", type=Path, required=True)
     predict.add_argument("--proposer", choices=PROPOSER_IDS, required=True)
+    predict.add_argument("--condition-id", choices=CONDITION_IDS)
     predict.add_argument("--lens-path", type=Path)
     predict.add_argument("--output-directory", type=Path, required=True)
     predict.add_argument("--access-manifest", type=Path, required=True)
@@ -1169,6 +1170,12 @@ def command_predict(args: argparse.Namespace) -> int:
         raise RuntimeError("Alpaca control requires the frozen lens")
 
     observations_by_condition = load_conditions(args.input_root, config)
+    if args.condition_id is not None:
+        if args.condition_id not in observations_by_condition:
+            raise RuntimeError("condition filter is absent from sanitized input")
+        observations_by_condition = {
+            args.condition_id: observations_by_condition[args.condition_id]
+        }
     prefix, embeddings, device = load_public_surrogate(args.model_path)
     lens = None
     if args.proposer == "alpaca_affine_control":
@@ -1292,6 +1299,7 @@ def command_predict(args: argparse.Namespace) -> int:
         "command": command_record(),
         "exit_status": 0,
         "config": file_record(args.config),
+        "condition_ids": list(costs),
         "observations": file_record(args.input_root / "observations.safetensors"),
         "access_manifest": file_record(args.access_manifest),
         "predictions": file_record(prediction_path),
@@ -1348,9 +1356,9 @@ def command_freeze(args: argparse.Namespace) -> int:
     root = args.repository_root.resolve(strict=True)
     plan = load_json(args.plan)
     validate_plan(plan)
-    if len(args.prediction_directory) != 4:
+    if len(args.prediction_directory) != 6:
         raise RuntimeError(
-            "R3 freeze requires exactly four isolated prediction directories"
+            "R3 freeze requires exactly six isolated prediction directories"
         )
     entries: list[dict[str, Any]] = []
     seen: set[tuple[str, tuple[str, ...]]] = set()
@@ -1364,10 +1372,13 @@ def command_freeze(args: argparse.Namespace) -> int:
         require_file_record(
             evidence["access_manifest"], access_path, "access manifest"
         )
-        config = load_json(Path(evidence["config"]["resolved_path"]))
-        condition_ids = tuple(
-            row["condition_id"] for row in config["conditions"]
-        )
+        if "condition_ids" in evidence:
+            condition_ids = tuple(evidence["condition_ids"])
+        else:
+            config = load_json(Path(evidence["config"]["resolved_path"]))
+            condition_ids = tuple(
+                row["condition_id"] for row in config["conditions"]
+            )
         identity = (evidence["proposer_id"], condition_ids)
         if identity in seen:
             raise RuntimeError(f"duplicate prediction identity: {identity}")
@@ -1391,14 +1402,12 @@ def command_freeze(args: argparse.Namespace) -> int:
         (proposer, ("clean_pile_lora_cut4", "historical_finance_cut4"))
         for proposer in PROPOSER_IDS
     } | {
-        (
-            proposer,
-            (
-                "grandmaster_public_base_cut4",
-                "grandmaster_vikhr_heavy_cut4",
-            ),
-        )
+        (proposer, (condition,))
         for proposer in PROPOSER_IDS
+        for condition in (
+            "grandmaster_public_base_cut4",
+            "grandmaster_vikhr_heavy_cut4",
+        )
     }
     if seen != expected:
         raise RuntimeError(f"prediction matrix incomplete before freeze: {seen}")
@@ -1428,6 +1437,13 @@ def command_freeze(args: argparse.Namespace) -> int:
         "required_cells": 24,
         "heavy_truth_opened": False,
         "selection_key_opened": False,
+        "prediction_processes": 6,
+        "operational_deviation": {
+            "preregistered_processes": 4,
+            "actual_processes": 6,
+            "reason": "reset CUDA state between matched-base and heavy-target conditions",
+            "scientific_settings_changed": False,
+        },
         "target_prefix_calls_by_reconstructors": 0,
     }
     write_json_exclusive(args.output, receipt)
@@ -1877,7 +1893,7 @@ def command_validate(args: argparse.Namespace) -> int:
         "freeze_status": (
             receipt.get("status") == "ALL_24_CELLS_FROZEN_BEFORE_HEAVY_TRUTH"
         ),
-        "freeze_entries": len(receipt.get("prediction_entries", [])) == 4,
+        "freeze_entries": len(receipt.get("prediction_entries", [])) == 6,
         "selection_commitment_matches": (
             commitment.get("selection_key_sha256")
             == reveal.get("selection_key_sha256")

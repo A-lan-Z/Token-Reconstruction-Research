@@ -3,11 +3,11 @@
 set -euo pipefail
 
 usage() {
-  echo "usage: $0 PROPOSER INPUT_ROOT CODE_ROOT BASE_MODEL_SNAPSHOT SITE_PACKAGES OUTPUT_ROOT [CONTROL_ASSET_ROOT]" >&2
+  echo "usage: $0 PROPOSER INPUT_ROOT CODE_ROOT BASE_MODEL_SNAPSHOT SITE_PACKAGES OUTPUT_ROOT [CONTROL_ASSET_ROOT] [CONDITION_ID]" >&2
   exit 2
 }
 
-if [[ $# -lt 6 || $# -gt 8 ]]; then
+if [[ $# -lt 6 || $# -gt 9 ]]; then
   usage
 fi
 
@@ -18,21 +18,54 @@ trr3_model_root=$4
 trr3_site_packages=$5
 trr3_output_root=$6
 trr3_asset_root=""
+trr3_condition_id=""
 
 case "$trr3_proposer" in
   checkpoint_identity)
-    if [[ "${TRR3_ISOLATION_INTERNAL:-0}" != 1 && $# -ne 6 ]]; then
-      usage
+    if [[ "${TRR3_ISOLATION_INTERNAL:-0}" != 1 ]]; then
+      if [[ $# -ne 6 && $# -ne 7 ]]; then
+        usage
+      fi
+      if [[ $# -eq 7 ]]; then
+        trr3_condition_id=$7
+      fi
+    else
+      if [[ $# -ne 7 && $# -ne 8 ]]; then
+        usage
+      fi
+      if [[ $# -eq 8 ]]; then
+        trr3_condition_id=$7
+      fi
     fi
     ;;
   alpaca_affine_control)
-    if [[ "${TRR3_ISOLATION_INTERNAL:-0}" != 1 && $# -ne 7 ]]; then
-      usage
+    if [[ "${TRR3_ISOLATION_INTERNAL:-0}" != 1 ]]; then
+      if [[ $# -ne 7 && $# -ne 8 ]]; then
+        usage
+      fi
+      trr3_asset_root=$7
+      if [[ $# -eq 8 ]]; then
+        trr3_condition_id=$8
+      fi
+    else
+      if [[ $# -ne 8 && $# -ne 9 ]]; then
+        usage
+      fi
+      trr3_asset_root=$7
+      if [[ $# -eq 9 ]]; then
+        trr3_condition_id=$8
+      fi
     fi
-    trr3_asset_root=$7
     ;;
   *)
     echo "unknown R3 proposer: $trr3_proposer" >&2
+    exit 2
+    ;;
+esac
+case "$trr3_condition_id" in
+  ""|clean_pile_lora_cut4|historical_finance_cut4|grandmaster_public_base_cut4|grandmaster_vikhr_heavy_cut4) ;;
+  *)
+    echo "unknown R3 condition filter: $trr3_condition_id" >&2
     exit 2
     ;;
 esac
@@ -70,10 +103,22 @@ if [[ "${TRR3_ISOLATION_INTERNAL:-0}" != 1 ]]; then
   chmod 700 "$trr3_stage"
   export TRR3_ISOLATION_INTERNAL=1
   if [[ -n "$trr3_asset_root" ]]; then
+    if [[ -n "$trr3_condition_id" ]]; then
+      exec /usr/bin/unshare --user --map-root-user --mount --net --pid --fork -- \
+        "$0" "$trr3_proposer" "$trr3_input_root" "$trr3_code_root" \
+        "$trr3_model_root" "$trr3_site_packages" "$trr3_output_root" \
+        "$trr3_asset_root" "$trr3_condition_id" "$trr3_stage"
+    fi
     exec /usr/bin/unshare --user --map-root-user --mount --net --pid --fork -- \
       "$0" "$trr3_proposer" "$trr3_input_root" "$trr3_code_root" \
       "$trr3_model_root" "$trr3_site_packages" "$trr3_output_root" \
       "$trr3_asset_root" "$trr3_stage"
+  fi
+  if [[ -n "$trr3_condition_id" ]]; then
+    exec /usr/bin/unshare --user --map-root-user --mount --net --pid --fork -- \
+      "$0" "$trr3_proposer" "$trr3_input_root" "$trr3_code_root" \
+      "$trr3_model_root" "$trr3_site_packages" "$trr3_output_root" \
+      "$trr3_condition_id" "$trr3_stage"
   fi
   exec /usr/bin/unshare --user --map-root-user --mount --net --pid --fork -- \
     "$0" "$trr3_proposer" "$trr3_input_root" "$trr3_code_root" \
@@ -81,15 +126,17 @@ if [[ "${TRR3_ISOLATION_INTERNAL:-0}" != 1 ]]; then
 fi
 
 if [[ "$trr3_proposer" == "checkpoint_identity" ]]; then
-  if [[ $# -ne 7 ]]; then
-    usage
+  if [[ -n "$trr3_condition_id" ]]; then
+    trr3_stage=$8
+  else
+    trr3_stage=$7
   fi
-  trr3_stage=$7
 else
-  if [[ $# -ne 8 ]]; then
-    usage
+  if [[ -n "$trr3_condition_id" ]]; then
+    trr3_stage=$9
+  else
+    trr3_stage=$8
   fi
-  trr3_stage=$8
 fi
 case "$trr3_stage" in
   /tmp/trr0002-owner-r3.*) ;;
@@ -207,6 +254,9 @@ trr3_predict_args=(
 )
 if [[ "$trr3_proposer" == "alpaca_affine_control" ]]; then
   trr3_predict_args+=(--lens-path /assets/lens_alpaca.pt)
+fi
+if [[ -n "$trr3_condition_id" ]]; then
+  trr3_predict_args+=(--condition-id "$trr3_condition_id")
 fi
 
 exec /usr/bin/env -i "${trr3_env[@]}" /usr/bin/python3 -s "${trr3_predict_args[@]}"

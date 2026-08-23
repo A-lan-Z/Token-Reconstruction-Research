@@ -95,9 +95,37 @@
       "resolution": "Generate padded positions from the cumulative attention mask, validate both target tensors before sanitization, and create a new correction commitment without rewriting the original evidence.",
       "stage": "sanitized heavy-input validation",
       "target_or_truth_accessed": false
+    },
+    {
+      "access_manifest": {
+        "bytes": 5691,
+        "path": "outputs/TRR-0002/strict-surrogate-heavy/failed-runs/heavy-multicondition-oom-access-manifest.json",
+        "sha256": "07b3fa1e083c0b6961923a5d3cfae731933ceea5377403055ed45346a1e5423f"
+      },
+      "cause": "A single strict process completed all three matched-base policies but encountered CUDA out-of-memory when it switched to the heavy-target condition.",
+      "command": [
+        "/usr/bin/time",
+        "-v",
+        "scripts/trr0002_r3_isolate.sh",
+        "checkpoint_identity",
+        "outputs/TRR-0002/strict-surrogate-heavy/heavy-c1/reconstructor_input",
+        "outputs/TRR-0002/strict-surrogate-heavy/frozen-code/da7cb59b256497305bd8742a695db1033334817b",
+        "outputs/TRR-0002/strict-surrogate-heavy/public-base-dereferenced",
+        "/home/alanz/.local/lib/python3.12/site-packages",
+        "outputs/TRR-0002/strict-surrogate-heavy/predictions/heavy-checkpoint-identity"
+      ],
+      "elapsed_wall_seconds": 182.72,
+      "exit_status": 1,
+      "isolation_checks_passed": true,
+      "maximum_rss_kib": 3445068,
+      "order": 5,
+      "prediction_created": false,
+      "resolution": "Run matched-base and heavy-target conditions in separate fail-closed processes so CUDA state resets between them; candidate rules, policies, batch size, prompts, and observations remain unchanged.",
+      "stage": "transition from matched-base to heavy-target predictions",
+      "target_or_truth_accessed": false
     }
   ],
-  "last_updated_utc": "2026-08-23T09:42:20Z",
+  "last_updated_utc": "2026-08-23T09:50:00Z",
   "recorded_utc": "2026-08-23T08:58:29Z",
   "revision_id": "TRR-0002-OWNER-REVISION-R3",
   "schema": "token-reconstruction.trr0002-owner-r3-failed-runs.v1",
