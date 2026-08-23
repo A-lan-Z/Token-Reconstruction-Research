@@ -1444,6 +1444,7 @@
     "historical_input_bridge_implementation_commit": "e42eb02d4dfb16567d26f7089e4dbd5394160ad9",
     "historical_input_bridge_preregistration_commit": "bccc95d5ec90581f1f19e6590c1060a7cda07eee",
     "historical_input_bridge_execution_commit": "913947202a7c468747751a24c5cb0ff3e403cecd",
+    "historical_input_bridge_evidence_commit": "88af8480060c323247aaad69d2848fa0a9261819",
     "history_rewritten": false,
     "merged": false,
     "pull_request": 3,
@@ -1556,6 +1557,11 @@
         "bytes": 5794,
         "sha256": "f048c2d023ebd3280a1418b38c77874256c02fa30797279d6633b2a7f741d7b6"
       },
+      "changed_file_comparison": {
+        "path": "experiments/TRR-0002/validation/owner-r4-changed-files.txt",
+        "bytes": 3871,
+        "sha256": "392ae28306201320ef383eb3ad411ed9cb51318cb1c0ed4a5462ba80d74b9bd4"
+      },
       "commands": [
         "PYTHONPATH=src:scripts python3 -m py_compile scripts/*.py src/token_reconstruction/*.py tests/*.py",
         "bash -n scripts/trr0002_r4_run_cells.sh",
@@ -1565,6 +1571,7 @@
         "env PYTHONPATH=src:scripts python3 scripts/trr0002_r4_historical_target_bridge.py validate --plan experiments/TRR-0002/historical-input-target-bridge/preregistration.json --preparation-evidence experiments/TRR-0002/historical-input-target-bridge/preparation.json --freeze-receipt experiments/TRR-0002/historical-input-target-bridge/freeze-receipt.json --result experiments/TRR-0002/historical-input-target-bridge/results.json --output /tmp/trr0002-r4-final-validation-20260823T1735.json",
         "python3 -c 'verify R4 part counts, manifest-result summaries, and all ten principal artifact byte counts and hashes'",
         "git diff --cached --check -- . ':(exclude)experiments/TRR-0002/historical-input-target-bridge/runner-resume.err' ':(exclude)experiments/TRR-0002/historical-input-target-bridge/runner-resume2.err'",
+        "git diff --name-status b55853a5911ba49029ae37d8ea5b438dbd3a28ed 88af8480060c323247aaad69d2848fa0a9261819",
         "sha256sum RESEARCH_CHARTER.md"
       ],
       "completed_utc": "2026-08-23T17:42:29Z",
@@ -1581,6 +1588,7 @@
       "results": {
         "bash_syntax": "PASS",
         "charter_sha256": "ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d",
+        "changed_file_comparison": "PASS (54 paths from R3 head to R4 scientific evidence commit)",
         "focused_tests": "5 passed in 2.44s",
         "full_test_suite": "72 passed in 4.11s",
         "git_diff_check": "PASS",
