@@ -148,9 +148,26 @@
       "resolution": "Treat reconstruction batch size as an execution setting that can affect outputs and rerun the entire 24-cell matrix at the common memory-safe record batch size four.",
       "stage": "matched-base batch-size invariance diagnostic",
       "target_or_truth_accessed": false
+    },
+    {
+      "access_manifest": {
+        "bytes": 5659,
+        "path": "outputs/TRR-0002/strict-surrogate-heavy/failed-runs/heavy-target-batch4-transient-oom1/access_manifest.json",
+        "sha256": "f8c9c519a0a1efc7b258791fe084f88d37f6ff21621320835d1d63cfbe07c894"
+      },
+      "cause": "The first batch-four strict heavy-target attempt encountered a transient CUDA allocation failure during K64 immediately after the canonical control process. After exit the device reported no running process and only 424 MiB used.",
+      "elapsed_wall_seconds": 15.57,
+      "exit_status": 1,
+      "isolation_checks_passed": true,
+      "maximum_rss_kib": 3444612,
+      "order": 8,
+      "prediction_created": false,
+      "resolution": "Preserve the failed attempt, verify the CUDA device was clear, and retry the identical batch-four command; the unchanged retry completed all three policies.",
+      "stage": "heavy-target strict K64 candidate scoring",
+      "target_or_truth_accessed": false
     }
   ],
-  "last_updated_utc": "2026-08-23T10:24:46Z",
+  "last_updated_utc": "2026-08-23T11:38:18Z",
   "recorded_utc": "2026-08-23T08:58:29Z",
   "revision_id": "TRR-0002-OWNER-REVISION-R3",
   "schema": "token-reconstruction.trr0002-owner-r3-failed-runs.v1",
