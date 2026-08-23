@@ -1,0 +1,59 @@
+{
+  "attempts": [
+    {
+      "access_manifest_created": false,
+      "cause": "The isolated mount received only the Hugging Face snapshot directory; its relative symbolic links pointed to an unmounted blob store, so the public checkpoint files were unreadable.",
+      "command": [
+        "/usr/bin/time",
+        "-v",
+        "scripts/trr0002_r3_isolate.sh",
+        "checkpoint_identity",
+        "outputs/TRR-0002/strict-surrogate-heavy/canonical/reconstructor_input",
+        "outputs/TRR-0002/strict-surrogate-heavy/frozen-code/ade41498f72f6be94a80eb8ec6cfb9f92dc7e206",
+        "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+        "/home/alanz/.local/lib/python3.12/site-packages",
+        "outputs/TRR-0002/strict-surrogate-heavy/predictions/canonical-checkpoint-identity"
+      ],
+      "elapsed_wall_seconds": 1.18,
+      "exit_status": 1,
+      "maximum_rss_kib": 664116,
+      "order": 1,
+      "prediction_created": false,
+      "resolution": "Stage a dereferenced local copy of the same hash-pinned base checkpoint; model and tokenizer SHA-256 values remained unchanged.",
+      "stage": "fail-closed access probe",
+      "target_or_truth_accessed": false
+    },
+    {
+      "access_manifest": {
+        "bytes": 5657,
+        "path": "outputs/TRR-0002/strict-surrogate-heavy/failed-runs/cache-api-access-manifest.json",
+        "sha256": "063e800beddcd65b30ae0d8f946d80931c1ae897835c01e9d150d1c1d1fb8ebb"
+      },
+      "cause": "PublicPrefixCache wrapped a Transformers DynamicCache but did not delegate its existing batch_select_indices and batch_repeat_interleave operations.",
+      "command": [
+        "/usr/bin/time",
+        "-v",
+        "scripts/trr0002_r3_isolate.sh",
+        "checkpoint_identity",
+        "outputs/TRR-0002/strict-surrogate-heavy/canonical/reconstructor_input",
+        "outputs/TRR-0002/strict-surrogate-heavy/frozen-code/ade41498f72f6be94a80eb8ec6cfb9f92dc7e206",
+        "outputs/TRR-0002/strict-surrogate-heavy/public-base-dereferenced",
+        "/home/alanz/.local/lib/python3.12/site-packages",
+        "outputs/TRR-0002/strict-surrogate-heavy/predictions/canonical-checkpoint-identity"
+      ],
+      "elapsed_wall_seconds": 6.32,
+      "exit_status": 1,
+      "isolation_checks_passed": true,
+      "maximum_rss_kib": 3453212,
+      "order": 2,
+      "prediction_created": false,
+      "resolution": "Delegate the two cache batch operations through PublicPrefixCache and add a regression test; the selector rule and all preregistered constants are unchanged.",
+      "stage": "first candidate-selection call",
+      "target_or_truth_accessed": false
+    }
+  ],
+  "recorded_utc": "2026-08-23T08:58:29Z",
+  "revision_id": "TRR-0002-OWNER-REVISION-R3",
+  "schema": "token-reconstruction.trr0002-owner-r3-failed-runs.v1",
+  "task_id": "TRR-0002"
+}

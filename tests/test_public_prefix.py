@@ -6,7 +6,11 @@ import pytest
 import torch
 from torch import nn
 
-from token_reconstruction.public_prefix import ContiguousPublicPrefix, PublicPrefixError
+from token_reconstruction.public_prefix import (
+    ContiguousPublicPrefix,
+    PublicPrefixCache,
+    PublicPrefixError,
+)
 
 
 class FakeModel(nn.Module):
@@ -17,6 +21,31 @@ class FakeModel(nn.Module):
         self.model.layers = nn.ModuleList([nn.Identity(), nn.Identity()])
         self.model.rotary_emb = nn.Identity()
         self.config = SimpleNamespace()
+
+
+class FakeBatchBackend:
+    def __init__(self) -> None:
+        self.selected: torch.Tensor | None = None
+        self.repeats: int | None = None
+
+    def batch_select_indices(self, indices: torch.Tensor) -> None:
+        self.selected = indices.clone()
+
+    def batch_repeat_interleave(self, repeats: int) -> None:
+        self.repeats = repeats
+
+
+def test_cache_delegates_candidate_batch_operations_without_changing_length() -> None:
+    backend = FakeBatchBackend()
+    cache = PublicPrefixCache(backend=backend, length=7)
+    indices = torch.tensor([2, 0], dtype=torch.long)
+
+    cache.batch_select_indices(indices)
+    cache.batch_repeat_interleave(64)
+
+    assert torch.equal(backend.selected, indices)
+    assert backend.repeats == 64
+    assert cache.length == 7
 
 
 def test_zero_layer_cut_is_exact_embedding_and_tracks_length() -> None:
