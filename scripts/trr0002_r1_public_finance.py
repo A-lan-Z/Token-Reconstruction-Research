@@ -250,6 +250,9 @@ def main() -> int:
         tokenizer = AutoTokenizer.from_pretrained(
             MODEL_ID, revision=MODEL_REVISION, local_files_only=True
         )
+        if tokenizer.pad_token_id is None:
+            tokenizer.pad_token = tokenizer.eos_token
+        tokenizer.padding_side = "right"
         dataset = load_dataset(DATASET_ID, split="train").shuffle(seed=SHUFFLE_SEED)
     if str(dataset._fingerprint) != DATASET_FINGERPRINT:
         raise RuntimeError("public finance dataset fingerprint changed")
