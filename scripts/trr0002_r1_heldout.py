@@ -10,6 +10,7 @@ from pathlib import Path
 import sys
 from typing import Any
 
+from safetensors import safe_open
 from safetensors.torch import load_file, save_file
 import torch
 
@@ -89,28 +90,25 @@ def load_winner(path: Path) -> tuple[dict[str, Any], Any]:
 def load_domain_inputs(domain: str, pile_root: Path, finance_root: Path) -> dict[str, Any]:
     if domain == "pile":
         truth_path = pile_root / "truth.safetensors"
-        records = json.loads((pile_root / "records.json").read_text(encoding="utf-8"))["development"]
         observation_path = pile_root / "observations" / f"{CONDITION}_cut4.safetensors"
     elif domain == "finance":
         truth_path = finance_root / "truth.safetensors"
-        records = json.loads((finance_root / "records.json").read_text(encoding="utf-8"))["records"]
         observation_path = finance_root / "observations" / f"{CONDITION}_cut4.safetensors"
     else:
         raise RuntimeError("unknown held-out domain")
     observations = load_file(observation_path, device="cpu")["activations"].contiguous()
-    if len(records) != 32 or observations.shape[0] != 32:
+    if observations.shape[0] != 32:
         raise RuntimeError("public held-out record count changed")
-    lengths = (
-        torch.full((32,), observations.shape[1], dtype=torch.long)
-        if domain == "pile"
-        else torch.tensor([int(row["valid_tokens"]) for row in records], dtype=torch.long)
-    )
-    mask = (
-        torch.arange(observations.shape[1], dtype=torch.long)[None, :]
-        < lengths[:, None]
-    ).to(torch.long)
-    positions = mask.cumsum(dim=1).sub(1).clamp_min(0)
-    record_ids = [f"{CONDITION}:{row['record_id']}" for row in records]
+    if domain == "pile":
+        mask = torch.ones(observations.shape[:2], dtype=torch.long)
+        positions = torch.arange(observations.shape[1], dtype=torch.long).view(1, -1).expand_as(mask)
+    else:
+        with safe_open(truth_path, framework="pt", device="cpu") as handle:
+            if set(handle.keys()) != {"attention_mask", "position_ids", "token_ids"}:
+                raise RuntimeError("public Finance tensor fields changed")
+            mask = handle.get_tensor("attention_mask").to(torch.long)
+            positions = handle.get_tensor("position_ids").to(torch.long)
+    record_ids = [f"{CONDITION}:{domain}-{index:06d}" for index in range(32)]
     validate_observations(observations, mask, positions)
     return {
         "observations": observations,
