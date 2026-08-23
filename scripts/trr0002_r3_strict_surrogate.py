@@ -230,7 +230,6 @@ def build_parser() -> argparse.ArgumentParser:
     freeze.add_argument("--plan", type=Path, required=True)
     freeze.add_argument("--canonical-input-root", type=Path, required=True)
     freeze.add_argument("--heavy-input-root", type=Path, required=True)
-    freeze.add_argument("--batch-invariance", type=Path, required=True)
     freeze.add_argument(
         "--prediction-directory", action="append", type=Path, required=True
     )
@@ -1372,6 +1371,10 @@ def command_freeze(args: argparse.Namespace) -> int:
         access_path = directory / "access_manifest.json"
         evidence = load_json(evidence_path)
         access = load_json(access_path)
+        if evidence.get("record_batch_size") != 4:
+            raise RuntimeError(
+                "every final prediction entry must use record batch size four"
+            )
         require_file_record(evidence["predictions"], prediction_path, "prediction")
         require_file_record(
             evidence["access_manifest"], access_path, "access manifest"
@@ -1415,12 +1418,6 @@ def command_freeze(args: argparse.Namespace) -> int:
     }
     if seen != expected:
         raise RuntimeError(f"prediction matrix incomplete before freeze: {seen}")
-    invariance = load_json(args.batch_invariance)
-    if (
-        invariance.get("status") != "PASS"
-        or invariance.get("all_tensors_equal") is not True
-    ):
-        raise RuntimeError("batch-size invariance evidence failed")
     receipt = {
         "schema": "token-reconstruction.trr0002-owner-r3-freeze-receipt.v1",
         "task_id": TASK_ID,
@@ -1444,7 +1441,6 @@ def command_freeze(args: argparse.Namespace) -> int:
         "prediction_entries": sorted(
             entries, key=lambda row: (row["condition_ids"][0], row["proposer_id"])
         ),
-        "batch_invariance": file_record(args.batch_invariance),
         "required_cells": 24,
         "heavy_truth_opened": False,
         "selection_key_opened": False,
@@ -1452,10 +1448,15 @@ def command_freeze(args: argparse.Namespace) -> int:
         "operational_deviation": {
             "preregistered_processes": 4,
             "actual_processes": 6,
-            "canonical_record_batch_size": 8,
-            "fresh_target_record_batch_size": 4,
-            "reason": "reset CUDA state between matched-base and heavy-target conditions",
-            "batch_invariance_verified": True,
+            "initial_record_batch_size": 8,
+            "final_common_record_batch_size": 4,
+            "reason": (
+                "the 16 GB device could not complete heavy-target K512 at "
+                "batch eight, and an exact diagnostic found K64 prediction "
+                "differences between batches eight and four"
+            ),
+            "entire_matrix_rerun_consistently": True,
+            "execution_setting_changed": True,
             "scientific_settings_changed": False,
         },
         "target_prefix_calls_by_reconstructors": 0,
@@ -1908,9 +1909,12 @@ def command_validate(args: argparse.Namespace) -> int:
             receipt.get("status") == "ALL_24_CELLS_FROZEN_BEFORE_HEAVY_TRUTH"
         ),
         "freeze_entries": len(receipt.get("prediction_entries", [])) == 6,
-        "batch_invariance_verified": (
+        "common_record_batch_size_four": (
             receipt.get("operational_deviation", {}).get(
-                "batch_invariance_verified"
+                "final_common_record_batch_size"
+            ) == 4
+            and receipt.get("operational_deviation", {}).get(
+                "entire_matrix_rerun_consistently"
             ) is True
         ),
         "selection_commitment_matches": (

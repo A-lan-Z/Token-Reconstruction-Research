@@ -71,8 +71,8 @@ def test_exact_input_summary_reports_error_concentration_and_text() -> None:
     assert bins["4-4"]["exact_token_records"] == 0
 
 
-def test_single_condition_process_uses_lower_memory_batch() -> None:
-    assert isolated_record_batch_size(None) == 8
+def test_all_final_processes_use_the_same_memory_safe_batch() -> None:
+    assert isolated_record_batch_size(None) == 4
     assert isolated_record_batch_size("grandmaster_vikhr_heavy_cut4") == 4
 
 

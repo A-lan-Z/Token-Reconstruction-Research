@@ -140,9 +140,17 @@
       "resolution": "Use record batch size four for all four fresh matched/heavy condition processes, preserve batch size eight for both canonical processes, and require exact matched-base tensor invariance before freeze.",
       "stage": "heavy-target strict K512 candidate scoring",
       "target_or_truth_accessed": false
+    },
+    {
+      "cause": "An exact diagnostic comparison of matched-base strict predictions at record batch sizes eight and four found 34 differing entries in the K64 prediction tensor. All finite confidence values and every K256/K512 prediction, route, selected-K, and candidate tensor were identical.",
+      "diagnostic_scope": "11 tensors compared before prediction freeze",
+      "order": 7,
+      "resolution": "Treat reconstruction batch size as an execution setting that can affect outputs and rerun the entire 24-cell matrix at the common memory-safe record batch size four.",
+      "stage": "matched-base batch-size invariance diagnostic",
+      "target_or_truth_accessed": false
     }
   ],
-  "last_updated_utc": "2026-08-23T10:09:53Z",
+  "last_updated_utc": "2026-08-23T10:24:46Z",
   "recorded_utc": "2026-08-23T08:58:29Z",
   "revision_id": "TRR-0002-OWNER-REVISION-R3",
   "schema": "token-reconstruction.trr0002-owner-r3-failed-runs.v1",

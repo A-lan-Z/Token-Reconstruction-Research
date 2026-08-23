@@ -117,9 +117,10 @@ def sha256_text(value: str) -> str:
 
 
 def isolated_record_batch_size(condition_filter: str | None) -> int:
-    """Use lower-memory batches when a target condition has its own process."""
+    """Use one memory-safe batch size throughout the final comparison matrix."""
 
-    return 4 if condition_filter is not None else 8
+    del condition_filter
+    return 4
 
 
 def right_padded_position_ids(attention_mask: torch.Tensor) -> torch.Tensor:
