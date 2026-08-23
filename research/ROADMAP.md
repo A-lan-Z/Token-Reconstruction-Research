@@ -6,22 +6,36 @@ by the repository-backed relay.
 ## Current scientific priority
 
 TRR-0002 has now completed both the controlled crossover/calibration phase and
-the owner-requested bounded exhaustive A1+A2 configuration study. The latter
-screened 512,136 unique policies, causally compared 57 finalists, and froze
-fixed direct-cosine K256 with no shortcut, adaptivity, centering, or abstention.
-That same policy achieved 99.64% on a wholly new isolated blind Pile replicate,
-99.76% on canonical clean Pile, and 99.73% on historical Finance. It is the
-current accuracy-first A1+A2 default. This is a better configuration of the
-established mechanism, not a new reconstruction mechanism.
+the owner-requested bounded exhaustive A1+A2 configuration study. Owner
+revision R2 additionally ran a frozen 12-policy target/surrogate transfer panel
+because the public selection split had saturated. The target was the existing
+generation-300 Finance-Instruct model, while A1 and A2 retained only public
+surrogate resources.
+
+The transfer panel produced 11 distinct accuracies. Centered K512 reached
+99.9285% and exactly matched A1 top-512 proposal recall; direct K512 reached
+99.8570%, centered K256 99.8070%, and direct K256 99.7284%. The multistage
+centered finalist reached 99.7713% with only 1.68% of direct K256's logical
+candidate simulations. Thus target mismatch reveals both a centering benefit
+and a much stronger quality/cost point that the public ceiling concealed.
+
+The R2 panel is retrospective because the Finance truth was already open. The
+official fresh-blind/dual-canonical default therefore remains the owner-R1
+fixed direct-cosine K256 policy, not because R2 found it best on the target, but
+because only that policy was frozen before the completed blind confirmation.
 
 All future method comparisons must populate both registered setups under
 `research/DUAL_BENCHMARK_PROTOCOL.md`. A partial matrix is comparison-incomplete
 and cannot support an overall-best claim. The active registry now contains 24
 methods and 48 required canonical cells. The calibrated K32-to-K64 method and
-fixed K64 remain cheaper Pareto alternatives, but neither is the accuracy
-winner. The highest-value next work is to approach K256 accuracy with fewer
-candidate simulations, or improve proposal recall beyond rank 256, while
-holding fresh-blind isolation and dual-setup coverage fixed.
+fixed K64 remain registered cheaper controls.
+
+The highest-value next work is a preregistered fresh hidden Finance-target
+update that confirms centered K512 and the multistage finalist without tuning,
+while retaining both canonical setups. If centered K512 again reaches its
+candidate-recall ceiling, further accuracy work should improve A1 recall beyond
+rank 512 rather than add selector complexity. If the multistage result repeats,
+it becomes the leading candidate for a lower-cost active method.
 
 ## Prior R1 priority (superseded by the dual-benchmark requirement)
 

@@ -211,3 +211,22 @@ method cells, and the two frozen exhaustive-winner cells. Both fresh clean
 confirmations were isolated and frozen before truth reveal. The active v4
 registry therefore contains 24 methods and 48 canonical setup-method cells;
 future active methods must likewise add one cell per canonical setup.
+
+### Owner-R2 target/surrogate diagnostic status
+
+Owner revision R2 did not register 12 new active methods or add a third
+canonical setup. It froze a diverse exploratory shortlist from the completed
+public configuration table and ran a retrospective stress diagnostic inside
+the existing historical Finance setup, whose target prefix is generation-300
+Finance-Instruct while A1/A2 retain public-only resources.
+
+Centered K512 reached 99.9285%, centered K256 reached 99.8070%, and the
+multistage centered finalist reached 99.7713% with 60,200 logical simulations.
+These single-setup target-shift results differentiate promising configurations
+but cannot support an overall-best or replacement claim. The active registry
+and its 48 required cells therefore remain unchanged.
+
+A future replacement study must preregister the selected policy as active,
+populate both canonical cells, and confirm it on a newly hidden target update.
+The saturation and freeze requirements are specified in
+`research/A1_A2_CONFIGURATION_PROTOCOL.md`.

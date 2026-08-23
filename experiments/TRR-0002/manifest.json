@@ -7,6 +7,9 @@
     "owner_revision_effect": "Exhaustively evaluate the preregistered finite A1+A2 configuration family, select one accuracy-first winner, freeze it, and confirm it on held-out, fresh-blind, and both canonical setups.",
     "owner_revision_path": "coordination/requests/TRR-0002-OWNER-REVISION-R1.md",
     "owner_revision_sha256": "54df5076c60d48ae8a2ce6676f4aa2f19ed76b15613a8e3687a16ed3cc12c499",
+    "owner_revision_r2_effect": "Evaluate a frozen diverse public shortlist on the existing generation-300 Finance-Instruct target while A1/A2 retain only public surrogate resources; freeze predictions before separate retrospective scoring.",
+    "owner_revision_r2_path": "coordination/requests/TRR-0002-OWNER-REVISION-R2.md",
+    "owner_revision_r2_sha256": "7023763a97a9bf4dd24816e422f3c4010949a69a8534b301e2eb17c11deedfc5",
     "request_path": "coordination/requests/TRR-0002.md"
   },
   "benchmarks": [
@@ -158,7 +161,10 @@
     "owner_r1_blind_isolation_attempt2": "scripts/trr0002_r1_blind_isolate.sh outputs/TRR-0002/configuration-search/fresh-blind/reconstructor_input outputs/TRR-0002/configuration-search/fresh-blind-code /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct /home/alanz/.local/lib/python3.12/site-packages outputs/TRR-0002/configuration-search/fresh-blind/method_output_attempt2",
     "owner_r1_blind_freeze": "env PYTHONPATH=src:scripts python3 scripts/trr0002_r1_blind_freeze.py --input-root outputs/TRR-0002/configuration-search/fresh-blind/reconstructor_input --output-root outputs/TRR-0002/configuration-search/fresh-blind/method_output_attempt2 --code-root outputs/TRR-0002/configuration-search/fresh-blind-code --plan experiments/TRR-0002/configuration-search/fresh-blind/preregistration.json --public-commitment experiments/TRR-0002/configuration-search/fresh-blind/selection_commitment.json --winner experiments/TRR-0002/configuration-search/causal-selection/winner.json --receipt outputs/TRR-0002/configuration-search/fresh-blind/freeze_receipt.json",
     "owner_r1_blind_score": "env PYTHONPATH=src:scripts python3 scripts/trr0002_r1_blind_score.py --receipt outputs/TRR-0002/configuration-search/fresh-blind/freeze_receipt.json --input-root outputs/TRR-0002/configuration-search/fresh-blind/reconstructor_input --output-root outputs/TRR-0002/configuration-search/fresh-blind/method_output_attempt2 --code-root outputs/TRR-0002/configuration-search/fresh-blind-code --public-commitment experiments/TRR-0002/configuration-search/fresh-blind/selection_commitment.json --private-selection outputs/TRR-0002/configuration-search/evaluator-selection-r1/private_selection.json --truth outputs/TRR-0002/configuration-search/fresh-blind/evaluator_private/blind_truth.jsonl --result outputs/TRR-0002/configuration-search/fresh-blind/fresh-blind-result.json",
-    "owner_r1_canonical_dual": "env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false CUBLAS_WORKSPACE_CONFIG=:4096:8 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True PYTHONPATH=src:scripts python3 scripts/trr0002_r1_dual_eval.py --repository-root . --historical-root /home/alanz/spartan/punim2939/backdoor_lora/ersoy2026 --new-input-root outputs/TRR-0001-R1/clean/frozen_bundle/reconstructor_input --new-truth-jsonl outputs/TRR-0001-R1/clean/evaluator_private/blind_truth.jsonl --winner experiments/TRR-0002/configuration-search/causal-selection/winner.json --crossover-result experiments/TRR-0002/crossover/result.json --calibrated-result experiments/TRR-0002/calibrated-dual/result.json --prediction-artifact outputs/TRR-0002/configuration-search/canonical/predictions.safetensors --output outputs/TRR-0002/configuration-search/canonical/result.json"
+    "owner_r1_canonical_dual": "env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false CUBLAS_WORKSPACE_CONFIG=:4096:8 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True PYTHONPATH=src:scripts python3 scripts/trr0002_r1_dual_eval.py --repository-root . --historical-root /home/alanz/spartan/punim2939/backdoor_lora/ersoy2026 --new-input-root outputs/TRR-0001-R1/clean/frozen_bundle/reconstructor_input --new-truth-jsonl outputs/TRR-0001-R1/clean/evaluator_private/blind_truth.jsonl --winner experiments/TRR-0002/configuration-search/causal-selection/winner.json --crossover-result experiments/TRR-0002/crossover/result.json --calibrated-result experiments/TRR-0002/calibrated-dual/result.json --prediction-artifact outputs/TRR-0002/configuration-search/canonical/predictions.safetensors --output outputs/TRR-0002/configuration-search/canonical/result.json",
+    "owner_r2_finance_target_predict": "env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false CUBLAS_WORKSPACE_CONFIG=:4096:8 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True PYTHONPATH=src:scripts /usr/bin/time -v -o experiments/TRR-0002/finance-target-shortlist/prediction-time.txt python3 scripts/trr0002_r2_finance_target_shortlist.py predict --historical-root /home/alanz/spartan/punim2939/backdoor_lora/ersoy2026 --plan experiments/TRR-0002/finance-target-shortlist/preregistration.json --prediction-artifact experiments/TRR-0002/finance-target-shortlist/predictions.safetensors --evidence experiments/TRR-0002/finance-target-shortlist/reconstruction-evidence.json --freeze-receipt experiments/TRR-0002/finance-target-shortlist/freeze-receipt.json --record-batch-size 8",
+    "owner_r2_finance_target_score": "env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false PYTHONPATH=src:scripts /usr/bin/time -v -o experiments/TRR-0002/finance-target-shortlist/score-time.txt python3 scripts/trr0002_r2_finance_target_shortlist.py score --historical-root /home/alanz/spartan/punim2939/backdoor_lora/ersoy2026 --plan experiments/TRR-0002/finance-target-shortlist/preregistration.json --prediction-artifact experiments/TRR-0002/finance-target-shortlist/predictions.safetensors --evidence experiments/TRR-0002/finance-target-shortlist/reconstruction-evidence.json --freeze-receipt experiments/TRR-0002/finance-target-shortlist/freeze-receipt.json --output experiments/TRR-0002/finance-target-shortlist/result.json",
+    "owner_r2_finance_target_validate": "env PYTHONPATH=src:scripts python3 scripts/trr0002_r2_validate_finance_target.py --plan experiments/TRR-0002/finance-target-shortlist/preregistration.json --predictions experiments/TRR-0002/finance-target-shortlist/predictions.safetensors --evidence experiments/TRR-0002/finance-target-shortlist/reconstruction-evidence.json --receipt experiments/TRR-0002/finance-target-shortlist/freeze-receipt.json --result experiments/TRR-0002/finance-target-shortlist/result.json --prior-winner-predictions experiments/TRR-0002/configuration-search/canonical/predictions.safetensors --prior-calibrated-predictions experiments/TRR-0002/calibrated-dual/predictions.safetensors --output experiments/TRR-0002/finance-target-shortlist/validation.json"
   },
   "component_crossover": {
     "a1_true_token_rank": {
@@ -492,6 +498,174 @@
     },
     "status": "COMPLETE_FROZEN_WINNER_CONFIRMED_WITHOUT_REVISION"
   },
+  "finance_target_shortlist": {
+    "revision_id": "TRR-0002-OWNER-REVISION-R2",
+    "status": "RETROSPECTIVE_FINANCE_TARGET_SHORTLIST_SCORED",
+    "scientific_question": "Do publicly leading A1+A2 configurations separate when the target prefix is Finance-Instruct-fine-tuned but A1/A2 retain only the untouched public surrogate?",
+    "claim_status": "Retrospective target-shift diagnostic; not fresh blind evidence and not a replacement of the owner-R1 frozen winner.",
+    "target": {
+      "model": "meta-llama/Llama-3.2-1B-Instruct",
+      "base_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "fine_tuning_dataset": "Josephgflowers/Finance-Instruct-500k",
+      "checkpoint_generation": 300,
+      "target_step": 300,
+      "weight_version": "victim_post_000299",
+      "boundary_layer": 4,
+      "records": 128,
+      "positions": 128,
+      "scored_tokens": 13990,
+      "activation_trace_sha256": "0c880019a7b497fbf5d784b2cddb54f67b740c58c505fed8895697a1a1b4477a"
+    },
+    "surrogate": {
+      "model": "meta-llama/Llama-3.2-1B-Instruct",
+      "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "a1": "public Alpaca affine lens",
+      "a1_lens_sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742",
+      "a2_prefix_layers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "target_fine_tune_parameters_available": false
+    },
+    "freeze_order": {
+      "preregistration_commit": "d144822f365d398c7cfcbf7ddfdfc5f557fc9063",
+      "prediction_execution_commit": "d144822f365d398c7cfcbf7ddfdfc5f557fc9063",
+      "prediction_freeze_commit_before_scoring": "736a01aea5ce9223d57b4552717222bb0a3bcec8",
+      "prediction_process_truth_inputs": 0,
+      "prediction_process_dataset_inputs": 0,
+      "prediction_process_target_prefix_calls": 0,
+      "prediction_revised_after_scoring": false,
+      "shortlist_count": 12
+    },
+    "differentiation": {
+      "distinct_token_accuracy_values": 11,
+      "perfect_configurations": 0,
+      "best_correct_tokens": 13980,
+      "worst_correct_tokens": 13741,
+      "correct_token_range": 239
+    },
+    "candidate_recall": {
+      "32": {
+        "hits": 13855,
+        "recall": 0.990350250178699
+      },
+      "64": {
+        "hits": 13901,
+        "recall": 0.993638313080772
+      },
+      "128": {
+        "hits": 13934,
+        "recall": 0.9959971408148678
+      },
+      "256": {
+        "hits": 13964,
+        "recall": 0.9981415296640458
+      },
+      "512": {
+        "hits": 13980,
+        "recall": 0.9992852037169406
+      }
+    },
+    "leading_results": [
+      {
+        "rank": 1,
+        "label": "fixed_k512_centered",
+        "policy_id": "a1a2_13f73c306bf8946e9a28",
+        "correct_tokens": 13980,
+        "token_accuracy": 0.9992852037169406,
+        "exact_records": 124,
+        "method_compute_seconds": 263.62170630500077,
+        "logical_candidate_simulations": 7162880
+      },
+      {
+        "rank": 2,
+        "label": "fixed_k512_direct",
+        "policy_id": "a1a2_cce5e6b5435e9b1bee34",
+        "correct_tokens": 13970,
+        "token_accuracy": 0.9985704074338814,
+        "exact_records": 114,
+        "method_compute_seconds": 290.75970623600006,
+        "logical_candidate_simulations": 7162880
+      },
+      {
+        "rank": 3,
+        "label": "fixed_k256_centered",
+        "policy_id": "a1a2_cb89b524f27c2d5e25eb",
+        "correct_tokens": 13963,
+        "token_accuracy": 0.9980700500357398,
+        "exact_records": 117,
+        "method_compute_seconds": 175.87122704300054,
+        "logical_candidate_simulations": 3581440
+      },
+      {
+        "rank": 4,
+        "label": "adaptive_k256_to_k512_rms_q05",
+        "policy_id": "a1a2_d1700b9c0f2b1b32ec13",
+        "correct_tokens": 13962,
+        "token_accuracy": 0.9979985704074339,
+        "exact_records": 118,
+        "method_compute_seconds": 92.92088116000014,
+        "logical_candidate_simulations": 1636608
+      },
+      {
+        "rank": 5,
+        "label": "multistage_historical_gate",
+        "policy_id": "a1a2_a49923b51936a41a41fb",
+        "correct_tokens": 13958,
+        "token_accuracy": 0.9977126518942101,
+        "exact_records": 115,
+        "method_compute_seconds": 26.640277855000022,
+        "logical_candidate_simulations": 60200
+      },
+      {
+        "rank": 6,
+        "label": "fixed_k256_direct",
+        "policy_id": "a1a2_43ea0bb737bc075531ca",
+        "correct_tokens": 13952,
+        "token_accuracy": 0.9972837741243745,
+        "exact_records": 107,
+        "method_compute_seconds": 175.86372015400048,
+        "logical_candidate_simulations": 3581440
+      }
+    ],
+    "artifacts": {
+      "preregistration": {
+        "path": "experiments/TRR-0002/finance-target-shortlist/preregistration.json",
+        "bytes": 23237,
+        "sha256": "df1ed404b43b89f232030dc1e98b29dc6ffc524dd2b968e74a8d8ab4ca5acb3a"
+      },
+      "predictions": {
+        "path": "experiments/TRR-0002/finance-target-shortlist/predictions.safetensors",
+        "bytes": 35870456,
+        "sha256": "6795b274492792319aca2aebca6b9c8c1b6c4449141b582c1729c5bbd54a23c8"
+      },
+      "reconstruction_evidence": {
+        "path": "experiments/TRR-0002/finance-target-shortlist/reconstruction-evidence.json",
+        "bytes": 10719,
+        "sha256": "9261a4159112d67d7414db799d4523721737a250af50f756a5dd813762e7aa7e"
+      },
+      "freeze_receipt": {
+        "path": "experiments/TRR-0002/finance-target-shortlist/freeze-receipt.json",
+        "bytes": 1534,
+        "sha256": "9553dd90dd2a88f61a6a3cc7c84336dfef047906ee34fc814eaa0bc0523df743"
+      },
+      "result": {
+        "path": "experiments/TRR-0002/finance-target-shortlist/result.json",
+        "bytes": 592400,
+        "sha256": "f2d861bf614d15773236b2450f56edff6b2de28b3ed9cabd02cd54f7bd9ed63a"
+      },
+      "validation": {
+        "path": "experiments/TRR-0002/finance-target-shortlist/validation.json",
+        "bytes": 5436,
+        "sha256": "0453e740ac43dfa6fbe9836f16e5d2df55f8bbbe50195cd73ef35602040c8afc"
+      }
+    },
+    "validation_status": "PASS_ALL_FINANCE_TARGET_INTEGRITY_CHECKS",
+    "direct_k256_prior_prediction_mismatches": 0,
+    "calibrated_prior_prediction_mismatches": 1
+  },
   "environment": {
     "determinism": {
       "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
@@ -642,6 +816,8 @@
     "experiments/TRR-0002/calibration/public-generation.json": "6bed8aca6668bd749bbad03c0c85bbace306085dac3141895dad7685f03d0682",
     "experiments/TRR-0002/crossover/run-output.txt": "1cfd136abfc0b6d624707fe55054a21bdcb38a7f239d6b15e6f4d61337208f73",
     "experiments/TRR-0002/crossover/run-time.txt": "064b250ad9e7964b6625bc84b73bfac68c73075e459af751b04335cfeb6074d4",
+    "experiments/TRR-0002/finance-target-shortlist/prediction-time.txt": "a418f9b15b370ab4c962e76440cccb4ce356c5e028137ab1dd0622328f42c4cb",
+    "experiments/TRR-0002/finance-target-shortlist/score-time.txt": "c17f4e6c9d2f293ed7f1c1001da738c20801669df5bbe54c0c6a0fd73c82fc17",
     "experiments/TRR-0002/configuration-search/execution/search-output.txt": "ffad24362c050127bbca1c9bf9918feeb7958329341d4da3055966486115e9ba",
     "experiments/TRR-0002/configuration-search/execution/search-time.txt": "841cec5f659b80fb1fdd3b9317639e1bba7ddd85ba85bcda6c61075ce813842c",
     "experiments/TRR-0002/configuration-search/execution/causal-selection-attempt5-output.txt": "c99be65938ac81799103bfacf29312a02e912d36426b3d9c0f349b9618152fa7",
@@ -677,12 +853,15 @@
     "configuration_canonical_execution_commit": "122fe2e7cf371b32dbbcd838c35d73eeee3d2b61",
     "configuration_canonical_evidence_commit": "62e6be969e78ad9f04de4b81db8ca1106f2cccaf",
     "crossover_execution_commit": "edfbf99b0c8e8944b5b962bbca66cb7ac1a38f1d",
+    "finance_target_shortlist_prediction_execution_commit": "d144822f365d398c7cfcbf7ddfdfc5f557fc9063",
+    "finance_target_shortlist_prediction_freeze_commit": "736a01aea5ce9223d57b4552717222bb0a3bcec8",
+    "finance_target_shortlist_preregistration_commit": "d144822f365d398c7cfcbf7ddfdfc5f557fc9063",
     "history_rewritten": false,
     "merged": false,
     "pull_request": 3,
     "pull_request_url": "https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/3"
   },
-  "revision_id": "TRR-0002-OWNER-REVISION-R1",
+  "revision_id": "TRR-0002-OWNER-REVISION-R2",
   "schema": "token-reconstruction.trr0002-manifest.v2",
   "status": "AWAITING_CHATGPT_REVIEW",
   "task_id": "TRR-0002",
@@ -725,6 +904,32 @@
         "principal_artifact_hashes": "PASS",
         "python_compile": "PASS",
         "registry_cartesian": "PASS (24 methods x 2 setups = 48 cells)"
+      }
+    },
+    "owner_revision_r2": {
+      "artifact": {
+        "bytes": 2153,
+        "path": "experiments/TRR-0002/validation/owner-r2-final-validation.txt",
+        "sha256": "e86983002c3be904b38a7784173f5401cee7448ce98d80cc6d58ebebe0a3ec43"
+      },
+      "commands": [
+        "python3 -m py_compile scripts/trr0002_r2_finance_target_shortlist.py scripts/trr0002_r2_validate_finance_target.py tests/test_trr0002_r2_finance_target_shortlist.py",
+        "env PYTHONPATH=src:scripts python3 -m pytest -q tests/test_trr0002_r2_finance_target_shortlist.py",
+        "env PYTHONPATH=src:scripts python3 scripts/trr0002_r2_validate_finance_target.py --plan experiments/TRR-0002/finance-target-shortlist/preregistration.json --predictions experiments/TRR-0002/finance-target-shortlist/predictions.safetensors --evidence experiments/TRR-0002/finance-target-shortlist/reconstruction-evidence.json --receipt experiments/TRR-0002/finance-target-shortlist/freeze-receipt.json --result experiments/TRR-0002/finance-target-shortlist/result.json --prior-winner-predictions experiments/TRR-0002/configuration-search/canonical/predictions.safetensors --prior-calibrated-predictions experiments/TRR-0002/calibrated-dual/predictions.safetensors --output /tmp/trr0002-r2-validation-final-20260823-0725.json",
+        "env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONPATH=src:scripts python3 -m pytest -q",
+        "python3 -c 'parse every repository JSON document'",
+        "git diff --check",
+        "sha256sum RESEARCH_CHARTER.md"
+      ],
+      "completed_utc": "2026-08-23T07:25:39Z",
+      "results": {
+        "charter_sha256": "ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d",
+        "finance_target_integrity": "PASS (26 checks)",
+        "focused_tests": "5 passed in 3.39s",
+        "full_test_suite": "61 passed in 5.16s",
+        "git_diff_check": "PASS",
+        "json_parse": "PASS (183 files)",
+        "python_compile": "PASS"
       }
     },
     "status": "PASSED"

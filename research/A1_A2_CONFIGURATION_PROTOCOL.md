@@ -91,10 +91,11 @@ held-out public Pile condition and 100% on held-out public Finance, 99.64% on a
 new isolated blind Pile replicate, 99.76% on canonical clean Pile, and 99.73%
 on canonical historical Finance.
 
-For questions about the best tested A1+A2 setup, the accuracy-first answer is
-therefore fixed K=256, no adaptivity, no immediate A1 acceptance, and direct
-per-candidate comparison. The former K32-to-K64 calibrated method remains a
-lower-cost balanced point, and fixed K64 remains an intermediate point. They
+For questions about the governing fresh-blind and dual-canonical owner-R1
+study, the accuracy-first answer is therefore fixed K=256, no adaptivity, no
+immediate A1 acceptance, and direct per-candidate comparison. The former
+K32-to-K64 calibrated method remains a lower-cost balanced point, and fixed K64
+remains an intermediate point. They
 must not be relabelled as the accuracy winner: on the canonical setups K=256
 used four times as many logical candidate simulations as K64 and about
 1.8--2.2 times its measured compute time, while recovering 11 additional clean
@@ -104,3 +105,52 @@ Future configuration studies must freeze a new finite Cartesian product and
 repeat the same public-selection, winner-freeze, fresh confirmation, and
 dual-canonical procedure. They must not tune a replacement on the held-out,
 fresh-blind, or canonical results recorded here.
+
+## Owner-R2 target/surrogate diagnostic
+
+Owner revision R2 addressed saturation in the public selection evaluation. The
+existing historical Finance setup already provides the requested transfer:
+
+- target activations come from generation-300 Finance-Instruct-fine-tuned
+  Llama-3.2-1B-Instruct at boundary layer 4;
+- A1 uses the public Alpaca affine lens; and
+- A2 uses only untouched public Llama layers 0--3.
+
+The owner-R2 shortlist was frozen before reconstruction. A separate prediction
+process received no dataset or truth input, made zero target-prefix calls, and
+committed all predictions before a separate scorer opened the already-known
+historical truth. Twelve diverse policies produced eleven distinct accuracies.
+
+Centered K512 recovered 13,980/13,990 tokens (99.9285%) and exactly matched A1
+top-512 candidate recall. Direct K512 recovered 13,970. Centered K256 recovered
+13,963, versus 13,952 for direct K256. This shows that public saturation hid a
+real benefit from subtracting the candidate group's shared activation offset
+before comparison under a fine-tuned-target/public-surrogate mismatch.
+
+The multistage centered policy recovered 13,958 tokens using 60,200 logical
+candidate simulations, versus 13,952 tokens and 3,581,440 simulations for
+direct K256. It is a promising low-cost target-shift policy. However, the
+Finance truth was already open, its paired uncertainty interval versus direct
+K256 crosses zero, and none of these shortlist policies populated both
+canonical cells as newly registered methods. These results are therefore
+retrospective diagnostics, not a replacement claim.
+
+The owner-R1 fixed direct K256 policy remains the governing fresh-blind and
+dual-canonical method until a new study is frozen and confirmed.
+
+### Saturation rule for future studies
+
+When public selection leaves multiple leading configurations tied or separated
+by at most one token, a replacement claim must add a target/surrogate transfer
+stage before final selection:
+
+1. freeze the target update, record selection, complete configuration shortlist,
+   policies, and total ranking rule before target observations or truth are used;
+2. expose only target activations and permitted stage-local metadata to the
+   reconstruction process while retaining public-only A1/A2 resources;
+3. freeze and hash every prediction before a separate scorer opens truth;
+4. report proposal recall, conditional selector accuracy, timing, memory, and
+   candidate simulations so proposal and selector failures remain separable;
+5. retain both canonical setups for overall comparability; and
+6. require a new hidden target-update confirmation before replacing a frozen
+   method. A retrospective target panel is diagnostic only.

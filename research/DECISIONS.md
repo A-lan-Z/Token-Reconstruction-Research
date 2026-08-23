@@ -84,6 +84,33 @@ These owner-R1 decisions remain scoped to the frozen finite search family and
 the recorded public, blind, and canonical conditions. They do not claim that
 K256 is globally optimal over untested mechanisms or continuous policies.
 
+TRR-0002 owner revision R2 adds the following retrospective decisions:
+
+- the historical Finance benchmark already implements the requested
+  target/surrogate separation: generation-300 Finance-Instruct target
+  activations are reconstructed using only the public Alpaca A1 lens and the
+  untouched public Llama-3.2-1B-Instruct prefix;
+- public finalist saturation concealed a real scoring-rule difference: on the
+  Finance target, centered K256 recovered 13,963/13,990 tokens versus 13,952
+  for direct K256, and centered K512 recovered 13,980 versus 13,970 for direct
+  K512;
+- centered K512 exactly reached A1 top-512 recall (13,980/13,990), so all ten
+  remaining errors were proposal misses and none were selector errors when the
+  true token was present;
+- the multistage centered finalist recovered 13,958/13,990 tokens with 60,200
+  logical candidate simulations, compared with 13,952 tokens and 3,581,440
+  simulations for direct K256, establishing a strong retrospective
+  quality/cost point on this target;
+- immediate A1 acceptance at confidence 0.99 was not free: the fast-path K256
+  variants recovered 13,947 tokens, five fewer than direct K256; and
+- future saturated configuration studies must freeze a target/surrogate
+  transfer stage and every prediction before truth opening, while a new hidden
+  target update is required for a replacement claim.
+
+These owner-R2 results are retrospective because historical Finance truth was
+already open. They diagnose the target-shift mechanism and do not replace the
+owner-R1 frozen winner or establish a setup-independent best configuration.
+
 ## Administrative entries
 
 - TRR-0000 bootstraps and validates the repository-backed relay. It selects no
