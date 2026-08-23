@@ -10,6 +10,9 @@
     "owner_revision_r2_effect": "Evaluate a frozen diverse public shortlist on the existing generation-300 Finance-Instruct target while A1/A2 retain only public surrogate resources; freeze predictions before separate retrospective scoring.",
     "owner_revision_r2_path": "coordination/requests/TRR-0002-OWNER-REVISION-R2.md",
     "owner_revision_r2_sha256": "7023763a97a9bf4dd24816e422f3c4010949a69a8534b301e2eb17c11deedfc5",
+    "owner_revision_r3_effect": "Test an untouched-checkpoint-only proposer, add exact whole-input metrics, and run a paired matched-versus-heavy full-SFT target panel while retaining both canonical setups.",
+    "owner_revision_r3_path": "coordination/requests/TRR-0002-OWNER-REVISION-R3.md",
+    "owner_revision_r3_sha256": "60c77ad2a160b75efb90bd8e0574b158af7b7c5bb6ff47d7020b35a82a5fba56",
     "request_path": "coordination/requests/TRR-0002.md"
   },
   "benchmarks": [
@@ -666,6 +669,308 @@
     "direct_k256_prior_prediction_mismatches": 0,
     "calibrated_prior_prediction_mismatches": 1
   },
+  "strict_surrogate_heavy": {
+    "status": "COMPLETE_24_CELL_STRICT_SURROGATE_AND_HEAVY_TARGET_MATRIX",
+    "claim_scope": "Paired same-prompts target-shift diagnostic; no active-method replacement and no third canonical setup.",
+    "evaluation_overlap_caveat": {
+      "source_split": "Vikhrmodels/GrandMaster-PRO-MAX public test split",
+      "declared_fitting_dataset": "Vikhrmodels/GrandMaster-PRO-MAX",
+      "training_mixture_exclusion_established": false,
+      "unseen_text_generalization_claim": false,
+      "required_future_control": "Use a frozen external corpus with documented disjoint provenance for an unseen-text claim."
+    },
+    "ended_utc": "2026-08-23T11:40:35.531604Z",
+    "matrix": {
+      "conditions": 4,
+      "proposers": 2,
+      "policies": 3,
+      "required_cells": 24,
+      "completed_cells": 24,
+      "final_common_record_batch_size": 4
+    },
+    "lineage": {
+      "base_model": "meta-llama/Llama-3.2-1B-Instruct",
+      "base_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "base_model_sha256": "1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f",
+      "heavy_model": "Vikhrmodels/Vikhr-Llama-3.2-1B-Instruct",
+      "heavy_revision": "7fa9d06a59246629244cdd3b6b92e4fc756baa0f",
+      "heavy_model_sha256": "389c73748a00a8a006a4a4a26fa473319676c25672aa188f8337981cd0cc8850",
+      "declared_exact_base_verified": true,
+      "architecture_match_verified": true,
+      "full_weight_sft_not_adapter": true,
+      "fine_tuning_algorithm": "supervised fine-tuning",
+      "fine_tuning_dataset": "Vikhrmodels/GrandMaster-PRO-MAX",
+      "fine_tuning_dataset_revision": "de9cc765d834f6d14f03155fe9c78b0b6c992b4c",
+      "model_card_instruction_count": 150000,
+      "tokenizer_sha256_both": "79e3e522635f3171300913bb421464a87de6222182a0570b9b2ccba2a964b2b4",
+      "weight_drift": {
+        "parameter_values": 1235814400,
+        "changed_parameter_values": 966726183,
+        "changed_parameter_fraction": 0.7822583900948233,
+        "changed_tensors": 114,
+        "relative_l2_all_weights": 0.04014707355962966,
+        "relative_l2_embedding_and_layers_0_to_3": 0.021563570084107232
+      }
+    },
+    "surrogates": {
+      "checkpoint_identity": {
+        "auxiliary_training_rows": 0,
+        "fitted_parameters": 0,
+        "rule": "Cosine-rank the observed cut-4 activation directly against untouched public-checkpoint input embeddings.",
+        "lens_mounted": false
+      },
+      "alpaca_affine_control": {
+        "role": "Historical public fitted-lens control, not an untouched-checkpoint-only method.",
+        "lens_sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742"
+      },
+      "a2_for_all_cells": {
+        "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+        "public_prefix_layers": [0, 1, 2, 3],
+        "target_prefix_calls": 0
+      }
+    },
+    "policies": [
+      {
+        "label": "fixed_k64_direct",
+        "policy_id": "a1a2_589f6e179eb4626877c2",
+        "candidate_budget": 64,
+        "score_rule": "direct_cosine",
+        "fast_path": false,
+        "adaptive": false,
+        "abstention": false
+      },
+      {
+        "label": "fixed_k256_direct",
+        "policy_id": "a1a2_43ea0bb737bc075531ca",
+        "candidate_budget": 256,
+        "score_rule": "direct_cosine",
+        "fast_path": false,
+        "adaptive": false,
+        "abstention": false
+      },
+      {
+        "label": "fixed_k512_centered",
+        "policy_id": "a1a2_13f73c306bf8946e9a28",
+        "candidate_budget": 512,
+        "score_rule": "group_centered_cosine",
+        "fast_path": false,
+        "adaptive": false,
+        "abstention": false
+      }
+    ],
+    "heavy_panel": {
+      "records": 64,
+      "scored_post_bos_tokens": 4241,
+      "selection_hmac_sha256": "a6e5dbb3c7899c24d03f30c6fc4a6765120d6435981d1684d662450567c707aa",
+      "length_bins": {
+        "16-32": 16,
+        "33-64": 16,
+        "65-96": 16,
+        "97-128": 16
+      }
+    },
+    "principal_results": {
+      "best_by_condition": [
+        {
+          "condition": "clean_pile_lora_cut4",
+          "proposer": "alpaca_affine_control",
+          "policy": "fixed_k512_centered",
+          "correct_tokens": 2492,
+          "scored_tokens": 2496,
+          "token_accuracy": 0.9983974358974359,
+          "exact_token_inputs": 61,
+          "inputs": 64,
+          "method_compute_seconds": 28.509461772006034
+        },
+        {
+          "condition": "historical_finance_cut4",
+          "proposer": "alpaca_affine_control",
+          "policy": "fixed_k512_centered",
+          "correct_tokens": 13980,
+          "scored_tokens": 13990,
+          "token_accuracy": 0.9992852037169406,
+          "exact_token_inputs": 124,
+          "inputs": 128,
+          "method_compute_seconds": 352.9223581860024
+        },
+        {
+          "condition": "grandmaster_public_base_cut4",
+          "proposer": "alpaca_affine_control",
+          "policy": "fixed_k512_centered",
+          "correct_tokens": 3523,
+          "scored_tokens": 4241,
+          "token_accuracy": 0.8307003065314784,
+          "exact_token_inputs": 0,
+          "inputs": 64,
+          "method_compute_seconds": 846.5291936889989
+        },
+        {
+          "condition": "grandmaster_vikhr_heavy_cut4",
+          "proposer": "alpaca_affine_control",
+          "policy": "fixed_k512_centered",
+          "correct_tokens": 3285,
+          "scored_tokens": 4241,
+          "token_accuracy": 0.7745814666352275,
+          "exact_token_inputs": 0,
+          "exact_decoded_text_inputs": 0,
+          "exact_source_string_inputs": 0,
+          "inputs": 64,
+          "method_compute_seconds": 362.570670471996
+        }
+      ],
+      "untouched_checkpoint_maxima": {
+        "clean_pile_lora_cut4": {
+          "policy": "fixed_k512_centered",
+          "token_accuracy": 0.844551282051282,
+          "exact_token_inputs": 0
+        },
+        "historical_finance_cut4": {
+          "policy": "fixed_k512_centered",
+          "token_accuracy": 0.7420300214438885,
+          "exact_token_inputs": 0
+        },
+        "grandmaster_public_base_cut4": {
+          "policy": "fixed_k512_centered",
+          "token_accuracy": 0.7335534072152794,
+          "exact_token_inputs": 0
+        },
+        "grandmaster_vikhr_heavy_cut4": {
+          "policy": "fixed_k512_centered",
+          "token_accuracy": 0.6937043150200425,
+          "exact_token_inputs": 0
+        }
+      },
+      "heavy_control_operating_points": [
+        {
+          "policy": "fixed_k64_direct",
+          "token_accuracy": 0.5614241924074511,
+          "exact_token_inputs": 0,
+          "candidate_simulations": 271424,
+          "method_compute_seconds": 24.139196657997672
+        },
+        {
+          "policy": "fixed_k256_direct",
+          "token_accuracy": 0.6918179674605046,
+          "exact_token_inputs": 0,
+          "candidate_simulations": 1085696,
+          "method_compute_seconds": 57.13328265599557
+        },
+        {
+          "policy": "fixed_k512_centered",
+          "token_accuracy": 0.7745814666352275,
+          "exact_token_inputs": 0,
+          "candidate_simulations": 2171392,
+          "method_compute_seconds": 362.570670471996
+        }
+      ],
+      "heavy_minus_matched_best_control_token_accuracy": -0.05611883989625088,
+      "heavy_best_control_candidate_recall": 0.7896722471115303,
+      "heavy_best_control_conditional_selector_accuracy": 0.9808898178560764,
+      "matched_best_control_candidate_recall": 0.8337656213157274,
+      "matched_best_control_conditional_selector_accuracy": 0.9963235294117647
+    },
+    "blindness_and_execution": {
+      "predictions_frozen_before_heavy_truth": true,
+      "heavy_target_visible_to_reconstructors": false,
+      "truth_inputs_to_reconstructors": 0,
+      "network_disabled": true,
+      "prediction_processes": 6,
+      "failed_or_excluded_attempts": 8,
+      "initial_batch_size": 8,
+      "final_common_batch_size": 4,
+      "batch_diagnostic_differing_k64_predictions": 34
+    },
+    "prediction_archives": [
+      {
+        "name": "canonical-checkpoint-identity",
+        "sha256": "596d8cf6436e182a2e6cbd4e357db9b80ded84b4943ae13c704fc8333beae473"
+      },
+      {
+        "name": "canonical-alpaca-control",
+        "sha256": "b9cd76763e31961059e3888f1e2543f43342a0f40ce5d3506995655ce234634e"
+      },
+      {
+        "name": "heavy-base-checkpoint-identity",
+        "sha256": "650b72c2cfd9154126bf1964303b9bb59c7d0445a2472bacaad321e84df59f9f"
+      },
+      {
+        "name": "heavy-target-checkpoint-identity",
+        "sha256": "58902c5755a05369f79b4d2fecd4eb5ad35d3999d7a3cac6d757d9df01cb0699"
+      },
+      {
+        "name": "heavy-base-alpaca-control",
+        "sha256": "5bbd018e336b222ff14f717f21412dc398f1399784a7913978d805dbdaf490df"
+      },
+      {
+        "name": "heavy-target-alpaca-control",
+        "sha256": "0f1c9e2363c4d495e170214b72deabd3abfa53bc063a96ba94291b4ba23c9d9c"
+      }
+    ],
+    "commits": {
+      "owner_request": "63da452043ff97009b7111f93432ce45d2468d7c",
+      "initial_implementation": "f9b28848e945ed9748539b7beef39a17a1ee8cf1",
+      "preregistration": "630216beba197a68e27b96cd7251d70513a05fbe",
+      "corrected_heavy_preparation": "db34203aa9881f11d4301766f2a89384f521e248",
+      "common_batch_enforcement": "dc5a5f9da7e5f08617b454e2d2a7754d7cffc69f",
+      "batch_diagnostic": "d50b04311f427301929088c29af77b184bd8b9ef",
+      "final_prediction_retry_evidence": "a0fe21e214ab06b6bce450e0a00fa737ef035bd4",
+      "prediction_freeze_before_truth": "8e1332ef59cdb2c33900ef955525b6467731b5c4",
+      "scoring": "8e1332ef59cdb2c33900ef955525b6467731b5c4"
+    },
+    "artifacts": {
+      "owner_request": {
+        "path": "coordination/requests/TRR-0002-OWNER-REVISION-R3.md",
+        "bytes": 2397,
+        "sha256": "60c77ad2a160b75efb90bd8e0574b158af7b7c5bb6ff47d7020b35a82a5fba56"
+      },
+      "preregistration": {
+        "path": "experiments/TRR-0002/strict-surrogate-heavy/preregistration.json",
+        "bytes": 18873,
+        "sha256": "2997063b7e0161f6a314a1c83bf2cae1604fcd42ff1cea344e26958999ce68f8"
+      },
+      "heavy_preparation": {
+        "path": "experiments/TRR-0002/strict-surrogate-heavy/heavy-preparation-c1.json",
+        "bytes": 4600,
+        "sha256": "72ca6978d7e133147f5b9f3a9db3d2bbe579227343b391a50c2c79a35bad3c53"
+      },
+      "selection_commitment": {
+        "path": "experiments/TRR-0002/strict-surrogate-heavy/heavy-selection-commitment-c1.json",
+        "bytes": 1769,
+        "sha256": "9df64baac536759b7bfca35a21252500742e5824c7f99e9eea8136c46f2b19f6"
+      },
+      "batch_diagnostic": {
+        "path": "experiments/TRR-0002/strict-surrogate-heavy/batch-size-diagnostic.json",
+        "bytes": 5462,
+        "sha256": "b33fcf4a864a01a0e4adddce0bdd7f1c75aa722341411b2264dbe8401675ce71"
+      },
+      "failure_ledger": {
+        "path": "experiments/TRR-0002/strict-surrogate-heavy/failed-runs.json",
+        "bytes": 9486,
+        "sha256": "f2e94caa75cd8da81edb7d877c72114301850b8afd4409ca88931c98fd20c183"
+      },
+      "freeze_receipt": {
+        "path": "experiments/TRR-0002/strict-surrogate-heavy/freeze-receipt.json",
+        "bytes": 12566,
+        "sha256": "5e508a4e3c1bb41986c5df51a51f6885b11edff1eefbe130c488b800d7c2a003"
+      },
+      "selection_reveal": {
+        "path": "experiments/TRR-0002/strict-surrogate-heavy/selection-reveal.json",
+        "bytes": 15356,
+        "sha256": "8b9851c88a420823ea35e20efc03829522bacbb6513fa631f446fd44281787af"
+      },
+      "result": {
+        "path": "experiments/TRR-0002/strict-surrogate-heavy/results.json",
+        "bytes": 858816,
+        "sha256": "adbf31f7b6c89463c507372082abb97233d58c2421ca84b279e7af69d567e8d7"
+      },
+      "validation": {
+        "path": "experiments/TRR-0002/strict-surrogate-heavy/validation.json",
+        "bytes": 2514,
+        "sha256": "ce9bb04faa2de113c4f0de21ccc2bfbadcb200981ecb31779f6e0d7be5bbb16e"
+      }
+    },
+    "validation_status": "PASS_14_CHECKS"
+  },
   "environment": {
     "determinism": {
       "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
@@ -862,8 +1167,8 @@
     "pull_request": 3,
     "pull_request_url": "https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/3"
   },
-  "revision_id": "TRR-0002-OWNER-REVISION-R2",
-  "schema": "token-reconstruction.trr0002-manifest.v2",
+  "revision_id": "TRR-0002-OWNER-REVISION-R3",
+  "schema": "token-reconstruction.trr0002-manifest.v3",
   "status": "AWAITING_CHATGPT_REVIEW",
   "task_id": "TRR-0002",
   "validation": {
@@ -931,6 +1236,36 @@
         "git_diff_check": "PASS",
         "json_parse": "PASS (183 files)",
         "python_compile": "PASS"
+      }
+    },
+    "owner_revision_r3": {
+      "artifact": {
+        "path": "experiments/TRR-0002/strict-surrogate-heavy/validation.json",
+        "bytes": 2514,
+        "sha256": "ce9bb04faa2de113c4f0de21ccc2bfbadcb200981ecb31779f6e0d7be5bbb16e"
+      },
+      "commands": [
+        "PYTHONPATH=src:scripts python3 -m py_compile scripts/*.py src/token_reconstruction/*.py tests/*.py",
+        "bash -n scripts/trr0002_r3_isolate.sh",
+        "PYTHONPATH=src:scripts python3 -m pytest -q tests/test_trr0002_r3_strict_surrogate.py",
+        "PYTHONPATH=src:scripts python3 -m pytest -q",
+        "PYTHONPATH=src:scripts python3 scripts/trr0002_r3_strict_surrogate.py validate --plan experiments/TRR-0002/strict-surrogate-heavy/preregistration.json --freeze-receipt experiments/TRR-0002/strict-surrogate-heavy/freeze-receipt.json --selection-commitment experiments/TRR-0002/strict-surrogate-heavy/heavy-selection-commitment-c1.json --selection-reveal experiments/TRR-0002/strict-surrogate-heavy/selection-reveal.json --result experiments/TRR-0002/strict-surrogate-heavy/results.json --output experiments/TRR-0002/strict-surrogate-heavy/validation.json",
+        "PYTHONPATH=src:scripts python3 scripts/trr0002_r3_strict_surrogate.py validate --plan experiments/TRR-0002/strict-surrogate-heavy/preregistration.json --freeze-receipt experiments/TRR-0002/strict-surrogate-heavy/freeze-receipt.json --selection-commitment experiments/TRR-0002/strict-surrogate-heavy/heavy-selection-commitment-c1.json --selection-reveal experiments/TRR-0002/strict-surrogate-heavy/selection-reveal.json --result experiments/TRR-0002/strict-surrogate-heavy/results.json --output /tmp/trr0002-r3-final-validation.json",
+        "python3 -c 'parse all tracked and R3 JSON; cross-check manifest summaries, artifact hashes and byte counts, and six prediction archives against the 24-cell result and freeze receipt'",
+        "git diff --check",
+        "sha256sum RESEARCH_CHARTER.md"
+      ],
+      "completed_utc": "2026-08-23T12:13:44Z",
+      "results": {
+        "bash_syntax": "PASS",
+        "charter_sha256": "ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d",
+        "focused_tests": "5 passed in 1.86s",
+        "full_test_suite": "67 passed in 5.98s",
+        "git_diff_check": "PASS",
+        "json_parse": "PASS (105 files)",
+        "manifest_result_crosscheck": "PASS",
+        "python_compile": "PASS",
+        "r3_integrity_validation": "PASS (14 checks in committed artifact and final /tmp recheck)"
       }
     },
     "status": "PASSED"

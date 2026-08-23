@@ -111,6 +111,38 @@ These owner-R2 results are retrospective because historical Finance truth was
 already open. They diagnose the target-shift mechanism and do not replace the
 owner-R1 frozen winner or establish a setup-independent best configuration.
 
+TRR-0002 owner revision R3 adds the following decisions:
+
+- the plain untouched public checkpoint is not, by itself, a competitive
+  replacement for the historical fitted A1 lens under the tested direct
+  checkpoint-identity mapping; its best scores were 84.46% canonical clean,
+  74.20% historical Finance, 73.36% matched GrandMaster, and 69.37% heavy
+  GrandMaster, with zero exact inputs;
+- this does not establish that every no-fit proposer fails or that Alpaca is the
+  uniquely best fitting corpus; it establishes only that the tested historical
+  public fitted lens is much stronger than the zero-fit identity control;
+- on identical GrandMaster prompts, the Alpaca-lens centered-K512 control fell
+  from 83.0700% on the untouched target to 77.4581% on the verified heavy SFT
+  target, a 5.6119-point target-shift penalty;
+- no tested fresh-panel cell reconstructed a complete input, so exact
+  token-complete, decoded-text-complete, and source-string-complete metrics are
+  mandatory alongside token accuracy in future studies;
+- the best heavy-target control's 78.97% proposal recall and 98.09% conditional
+  selector accuracy make proposal recall the main remaining bottleneck on this
+  panel;
+- the heavy target is a verified full SFT of the exact public
+  Llama-3.2-1B-Instruct revision, shares its tokenizer, and changed 78.23% of
+  parameter values; and
+- record batch size affected K64 predictions, so future comparison matrices must
+  use a common numerical execution setting or prove exact tensor invariance.
+
+These owner-R3 findings are scoped to one 64-input panel, one heavy target, two
+proposers, and three fixed policies. The inputs came from the public test split
+of the target's declared fitting dataset, but exclusion from its training
+mixture is not established; the panel therefore makes no unseen-text-
+generalization claim. The findings do not alter the active registry or the
+owner-R1 direct-K256 replacement status.
+
 ## Administrative entries
 
 - TRR-0000 bootstraps and validates the repository-backed relay. It selects no

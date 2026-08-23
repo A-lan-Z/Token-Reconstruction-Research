@@ -154,3 +154,48 @@ stage before final selection:
 5. retain both canonical setups for overall comparability; and
 6. require a new hidden target-update confirmation before replacing a frozen
    method. A retrospective target panel is diagnostic only.
+
+## Owner-R3 surrogate-provenance and whole-input rule
+
+Owner revision R3 tested whether the fitted public A1 lens could be removed
+rather than merely left unexplained. A zero-fit checkpoint-identity proposer was
+not competitive: its best canonical scores were 84.46% clean and 74.20%
+historical, with zero exact inputs. The historical Alpaca-lens control remained
+substantially stronger. This is a negative diagnostic, not evidence that every
+possible no-fit proposer must fail.
+
+Future A1+A2 studies must therefore make surrogate provenance explicit:
+
+1. An arm described as **untouched-checkpoint-only** may use checkpoint weights,
+   configuration, and tokenizer, but no auxiliary-data-fitted lens, adapter,
+   inverse, calibration, retrieval index, or fitted constant. Its exact mapping
+   from the observed activation to candidates must be serialized.
+2. An arm using a public-data-fitted resource is permitted by the charter, but
+   must identify the fitting dataset, rationale, snapshot or revision, artifact
+   hash, fitted parameter count, and whether the resource is shared across all
+   target conditions. It must not be described as using only the untouched
+   checkpoint.
+3. A target-shift panel must pair the same selected source records across a
+   matched public target and the fine-tuned target. Verify the target's exact
+   base-model declaration, architecture, tokenizer identity, full-weight versus
+   adapter status, revision, and a quantitative weight-drift measure. Record
+   whether the evaluation prompts may overlap the target's declared fine-tuning
+   corpus. A claim about generalization to unseen text requires a separately
+   frozen evaluation corpus with documented disjoint provenance.
+4. Freeze all paired predictions before opening hidden truth. A single target
+   derivative is a robustness diagnostic and cannot replace the two canonical
+   cells or support a universal fine-tuning claim.
+5. Report exact token-complete inputs and exact decoded-text inputs in addition
+   to token accuracy. When original source strings are available, report exact
+   source-string recovery separately. Also report errors per failed input,
+   first-error position, and length-stratified results.
+6. Treat record batch size and other numerical execution settings as
+   decision-affecting unless exact tensor invariance is demonstrated. Use one
+   setting throughout a comparison matrix or rerun the entire matrix when an
+   invariance test fails; preserve the diagnostic and every failed attempt.
+
+The R3 auxiliary panel used a common record batch size of four after an exact
+batch-8 versus batch-4 comparison found 34 differing K64 predictions. The
+governing active-method choice remains owner-R1 direct K256 because R3 registered
+no replacement and its new target panel supplements rather than changes the
+canonical protocol.

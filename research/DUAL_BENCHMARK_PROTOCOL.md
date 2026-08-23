@@ -230,3 +230,40 @@ A future replacement study must preregister the selected policy as active,
 populate both canonical cells, and confirm it on a newly hidden target update.
 The saturation and freeze requirements are specified in
 `research/A1_A2_CONFIGURATION_PROTOCOL.md`.
+
+### Owner-R3 strict-surrogate and heavy-target diagnostic status
+
+Owner revision R3 added a paired auxiliary robustness panel without adding a
+third canonical setup or registering new active methods. It used the same 64
+HMAC-selected GrandMaster records for an untouched
+`meta-llama/Llama-3.2-1B-Instruct` target and the verified full-SFT derivative
+`Vikhrmodels/Vikhr-Llama-3.2-1B-Instruct`. The derivative declares that exact
+base, shares a byte-identical tokenizer, and changed 78.23% of parameter values.
+
+Two proposers (zero-fit checkpoint identity and the historical public Alpaca
+lens control) and three frozen policies (direct K64, direct K256, centered K512)
+were also backfilled on both canonical setups, producing 24 complete diagnostic
+cells. Every final archive used record batch size four and was frozen before the
+heavy truth opening.
+
+The best heavy-target cell was the Alpaca-lens centered K512 control at 77.4581%
+token accuracy and 0/64 exact inputs, down 5.6119 percentage points from the
+same-prompts matched target. The untouched-checkpoint proposer peaked at
+69.3704% and 0/64 exact inputs. These results do not change the active v4
+registry or the 48-cell canonical requirement.
+
+For future noncanonical robustness panels:
+
+- pair identical records across matched and shifted targets;
+- verify exact target lineage, tokenizer compatibility, update type, revision,
+  and quantitative weight drift;
+- record whether evaluation records may overlap declared target fine-tuning data;
+  unseen-text claims require documented disjoint provenance;
+- run every compared method on both canonical setups as well as every declared
+  auxiliary target condition;
+- freeze the complete method-by-condition matrix before hidden truth reveal;
+- report token accuracy, token-complete inputs, decoded-text-complete inputs,
+  source-string recovery when available, proposal recall, conditional selector
+  accuracy, candidate cost, runtime, memory, and failures; and
+- do not pool auxiliary and canonical scores or promote a single derivative to a
+  replacement claim.

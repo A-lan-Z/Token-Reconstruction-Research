@@ -5,37 +5,36 @@ by the repository-backed relay.
 
 ## Current scientific priority
 
-TRR-0002 has now completed both the controlled crossover/calibration phase and
-the owner-requested bounded exhaustive A1+A2 configuration study. Owner
-revision R2 additionally ran a frozen 12-policy target/surrogate transfer panel
-because the public selection split had saturated. The target was the existing
-generation-300 Finance-Instruct model, while A1 and A2 retained only public
-surrogate resources.
+TRR-0002 owner revision R3 completed a 24-cell strict-surrogate and
+target-shift study. It retained both canonical setups and added paired
+GrandMaster observations from the untouched public checkpoint and a verified
+heavy full-SFT derivative on the same 64 hidden records.
 
-The transfer panel produced 11 distinct accuracies. Centered K512 reached
-99.9285% and exactly matched A1 top-512 proposal recall; direct K512 reached
-99.8570%, centered K256 99.8070%, and direct K256 99.7284%. The multistage
-centered finalist reached 99.7713% with only 1.68% of direct K256's logical
-candidate simulations. Thus target mismatch reveals both a centering benefit
-and a much stronger quality/cost point that the public ceiling concealed.
+The zero-fit checkpoint-identity proposer did not replace the historical public
+Alpaca lens. On the heavy target, centered K512 reached 69.37% with the strict
+proposer and 77.46% with the Alpaca control. The same control reached 83.07% on
+the matched target, so heavy fine-tuning caused a 5.61-point loss. Every
+fresh-panel method reconstructed 0/64 complete inputs.
 
-The R2 panel is retrospective because the Finance truth was already open. The
-official fresh-blind/dual-canonical default therefore remains the owner-R1
-fixed direct-cosine K256 policy, not because R2 found it best on the target, but
-because only that policy was frozen before the completed blind confirmation.
+The heavy winner's candidate recall was 78.97%, while A2 was 98.09% accurate
+when the true token was present. The next accuracy work should therefore improve
+public-only candidate generation under target shift rather than merely enlarge
+or complicate the selector. A scientifically useful follow-up would
+preregister several non-arbitrary public proposer constructions or fitting
+corpora, justify each resource, and freeze them before a new hidden
+fine-tuned-target panel exists. That panel should use an external corpus with
+documented provenance disjoint from the target's declared fine-tuning corpus if
+it is intended to measure generalization to unseen text.
 
-All future method comparisons must populate both registered setups under
-`research/DUAL_BENCHMARK_PROTOCOL.md`. A partial matrix is comparison-incomplete
-and cannot support an overall-best claim. The active registry now contains 24
-methods and 48 required canonical cells. The calibrated K32-to-K64 method and
-fixed K64 remain registered cheaper controls.
+Whole-input recovery is now a primary practical metric. Future studies should
+optimize and report token-complete inputs, decoded-text-complete inputs, errors
+per failed input, and length-stratified recovery, not token accuracy alone.
 
-The highest-value next work is a preregistered fresh hidden Finance-target
-update that confirms centered K512 and the multistage finalist without tuning,
-while retaining both canonical setups. If centered K512 again reaches its
-candidate-recall ceiling, further accuracy work should improve A1 recall beyond
-rank 512 rather than add selector complexity. If the multistage result repeats,
-it becomes the leading candidate for a lower-cost active method.
+All compared methods must still populate both registered canonical setups under
+`research/DUAL_BENCHMARK_PROTOCOL.md`, as well as every declared auxiliary
+target. The active registry remains 24 methods and 48 required canonical cells.
+Owner-R1 fixed direct K256 remains the official fresh-blind accuracy default;
+calibrated K32-to-K64 and fixed K64 remain cheaper controls.
 
 ## Prior R1 priority (superseded by the dual-benchmark requirement)
 
