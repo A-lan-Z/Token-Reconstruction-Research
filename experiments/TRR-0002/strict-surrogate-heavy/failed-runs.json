@@ -123,9 +123,26 @@
       "resolution": "Run matched-base and heavy-target conditions in separate fail-closed processes so CUDA state resets between them; candidate rules, policies, batch size, prompts, and observations remain unchanged.",
       "stage": "transition from matched-base to heavy-target predictions",
       "target_or_truth_accessed": false
+    },
+    {
+      "access_manifest": {
+        "bytes": 5659,
+        "path": "outputs/TRR-0002/strict-surrogate-heavy/failed-runs/heavy-target-k512-oom-access-manifest.json",
+        "sha256": "3f3703434a841617a6cd619c741bb03959ab1830cf2c52760c42a0cd5400b7fe"
+      },
+      "cause": "The separate strict heavy-target process completed K64 and K256 but exhausted 16 GB of CUDA memory during K512 at record batch size eight.",
+      "elapsed_wall_seconds": 166.23,
+      "exit_status": 1,
+      "isolation_checks_passed": true,
+      "maximum_rss_kib": 3445536,
+      "order": 6,
+      "prediction_created": false,
+      "resolution": "Use record batch size four for all four fresh matched/heavy condition processes, preserve batch size eight for both canonical processes, and require exact matched-base tensor invariance before freeze.",
+      "stage": "heavy-target strict K512 candidate scoring",
+      "target_or_truth_accessed": false
     }
   ],
-  "last_updated_utc": "2026-08-23T09:50:00Z",
+  "last_updated_utc": "2026-08-23T10:09:53Z",
   "recorded_utc": "2026-08-23T08:58:29Z",
   "revision_id": "TRR-0002-OWNER-REVISION-R3",
   "schema": "token-reconstruction.trr0002-owner-r3-failed-runs.v1",

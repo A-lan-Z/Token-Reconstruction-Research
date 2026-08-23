@@ -116,6 +116,12 @@ def sha256_text(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
 
 
+def isolated_record_batch_size(condition_filter: str | None) -> int:
+    """Use lower-memory batches when a target condition has its own process."""
+
+    return 4 if condition_filter is not None else 8
+
+
 def right_padded_position_ids(attention_mask: torch.Tensor) -> torch.Tensor:
     """Build position IDs that hold the final valid index through padding."""
 

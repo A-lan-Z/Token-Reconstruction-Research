@@ -5,6 +5,7 @@ import torch
 from token_reconstruction.strict_base_surrogate import (
     canonical_mapping_bytes,
     exact_input_summary,
+    isolated_record_batch_size,
     length_stratified_summary,
     propose_checkpoint_identity,
     right_padded_position_ids,
@@ -68,6 +69,11 @@ def test_exact_input_summary_reports_error_concentration_and_text() -> None:
     bins = length_stratified_summary(rows, bins=((3, 3), (4, 4)))
     assert bins["3-3"]["exact_token_records"] == 1
     assert bins["4-4"]["exact_token_records"] == 0
+
+
+def test_single_condition_process_uses_lower_memory_batch() -> None:
+    assert isolated_record_batch_size(None) == 8
+    assert isolated_record_batch_size("grandmaster_vikhr_heavy_cut4") == 4
 
 
 def test_right_padded_positions_hold_the_final_valid_index() -> None:

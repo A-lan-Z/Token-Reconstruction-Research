@@ -51,6 +51,7 @@ from token_reconstruction.public_prefix import ContiguousPublicPrefix
 from token_reconstruction.strict_base_surrogate import (
     canonical_mapping_bytes,
     exact_input_summary,
+    isolated_record_batch_size,
     length_stratified_summary,
     propose_checkpoint_identity,
     right_padded_position_ids,
@@ -229,6 +230,7 @@ def build_parser() -> argparse.ArgumentParser:
     freeze.add_argument("--plan", type=Path, required=True)
     freeze.add_argument("--canonical-input-root", type=Path, required=True)
     freeze.add_argument("--heavy-input-root", type=Path, required=True)
+    freeze.add_argument("--batch-invariance", type=Path, required=True)
     freeze.add_argument(
         "--prediction-directory", action="append", type=Path, required=True
     )
@@ -1189,6 +1191,7 @@ def command_predict(args: argparse.Namespace) -> int:
 
     started_utc = utc_now()
     seed_everything(20260902)
+    record_batch_size = isolated_record_batch_size(args.condition_id)
     tensors: dict[str, torch.Tensor] = {}
     costs: dict[str, Any] = {}
     for condition_id, (observations, mask, positions) in observations_by_condition.items():
@@ -1226,7 +1229,7 @@ def command_predict(args: argparse.Namespace) -> int:
                 precut=prefix,
                 device=device,
                 policy=policy,
-                record_batch_size=8,
+                record_batch_size=record_batch_size,
             )
             key = f"{condition_id}.{entry['policy_id']}"
             tensors[f"{key}.predictions"] = result.predictions.to(torch.int32)
@@ -1300,6 +1303,7 @@ def command_predict(args: argparse.Namespace) -> int:
         "exit_status": 0,
         "config": file_record(args.config),
         "condition_ids": list(costs),
+        "record_batch_size": record_batch_size,
         "observations": file_record(args.input_root / "observations.safetensors"),
         "access_manifest": file_record(args.access_manifest),
         "predictions": file_record(prediction_path),
@@ -1411,6 +1415,12 @@ def command_freeze(args: argparse.Namespace) -> int:
     }
     if seen != expected:
         raise RuntimeError(f"prediction matrix incomplete before freeze: {seen}")
+    invariance = load_json(args.batch_invariance)
+    if (
+        invariance.get("status") != "PASS"
+        or invariance.get("all_tensors_equal") is not True
+    ):
+        raise RuntimeError("batch-size invariance evidence failed")
     receipt = {
         "schema": "token-reconstruction.trr0002-owner-r3-freeze-receipt.v1",
         "task_id": TASK_ID,
@@ -1434,6 +1444,7 @@ def command_freeze(args: argparse.Namespace) -> int:
         "prediction_entries": sorted(
             entries, key=lambda row: (row["condition_ids"][0], row["proposer_id"])
         ),
+        "batch_invariance": file_record(args.batch_invariance),
         "required_cells": 24,
         "heavy_truth_opened": False,
         "selection_key_opened": False,
@@ -1441,7 +1452,10 @@ def command_freeze(args: argparse.Namespace) -> int:
         "operational_deviation": {
             "preregistered_processes": 4,
             "actual_processes": 6,
+            "canonical_record_batch_size": 8,
+            "fresh_target_record_batch_size": 4,
             "reason": "reset CUDA state between matched-base and heavy-target conditions",
+            "batch_invariance_verified": True,
             "scientific_settings_changed": False,
         },
         "target_prefix_calls_by_reconstructors": 0,
@@ -1894,6 +1908,11 @@ def command_validate(args: argparse.Namespace) -> int:
             receipt.get("status") == "ALL_24_CELLS_FROZEN_BEFORE_HEAVY_TRUTH"
         ),
         "freeze_entries": len(receipt.get("prediction_entries", [])) == 6,
+        "batch_invariance_verified": (
+            receipt.get("operational_deviation", {}).get(
+                "batch_invariance_verified"
+            ) is True
+        ),
         "selection_commitment_matches": (
             commitment.get("selection_key_sha256")
             == reveal.get("selection_key_sha256")
