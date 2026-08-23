@@ -261,8 +261,19 @@ def build_parser() -> argparse.ArgumentParser:
     predict.add_argument("--input-root", type=Path, required=True)
     predict.add_argument("--model-path", type=Path, required=True)
     predict.add_argument("--proposer", choices=PROPOSER_IDS, required=True)
+    predict.add_argument("--condition-id", choices=CONDITION_IDS)
+    predict.add_argument("--policy-id")
     predict.add_argument("--lens-path", type=Path)
     predict.add_argument("--output-directory", type=Path, required=True)
+
+    combine = commands.add_parser("combine")
+    combine.add_argument("--repository-root", type=Path, default=Path("."))
+    combine.add_argument("--plan", type=Path, required=True)
+    combine.add_argument("--input-root", type=Path, required=True)
+    combine.add_argument(
+        "--part-directory", action="append", type=Path, required=True
+    )
+    combine.add_argument("--output-directory", type=Path, required=True)
 
     freeze = commands.add_parser("freeze")
     freeze.add_argument("--repository-root", type=Path, default=Path("."))
@@ -838,6 +849,22 @@ def command_predict(args: argparse.Namespace) -> int:
     observations_by_condition = load_conditions(
         args.input_root, config
     )
+    if args.condition_id is not None:
+        if args.condition_id not in observations_by_condition:
+            raise RuntimeError("R4 condition filter is absent")
+        observations_by_condition = {
+            args.condition_id: observations_by_condition[args.condition_id]
+        }
+    if args.policy_id is not None:
+        entries = [
+            entry
+            for entry in entries
+            if entry["policy_id"] == args.policy_id
+        ]
+        if len(entries) != 1:
+            raise RuntimeError(
+                "R4 policy filter is absent for this proposer"
+            )
     prefix, embeddings, device = owner_r3.load_public_surrogate(
         args.model_path.resolve(strict=True)
     )
@@ -1004,7 +1031,9 @@ def command_predict(args: argparse.Namespace) -> int:
             "fitted_lens_available": args.lens_path is not None,
         },
         "policy_count": len(entries),
-        "condition_count": len(CONDITIONS),
+        "policy_ids": [entry["policy_id"] for entry in entries],
+        "condition_count": len(observations_by_condition),
+        "condition_ids": list(observations_by_condition),
         "costs": costs,
         "environment": {
             "python": platform.python_version(),
@@ -1026,6 +1055,200 @@ def command_predict(args: argparse.Namespace) -> int:
             {
                 "status": evidence["status"],
                 "proposer": args.proposer,
+                "sha256": evidence["predictions"]["sha256"],
+            },
+            sort_keys=True,
+        )
+    )
+    return 0
+
+
+def command_combine(args: argparse.Namespace) -> int:
+    if (
+        args.output_directory.exists()
+        or args.output_directory.is_symlink()
+    ):
+        raise RuntimeError("R4 combined output is create-only")
+    root = args.repository_root.resolve(strict=True)
+    plan = load_json(args.plan)
+    validate_plan(plan)
+    if not args.part_directory:
+        raise RuntimeError("R4 combine received no parts")
+
+    proposer_id: str | None = None
+    tensors: dict[str, torch.Tensor] = {}
+    costs = {
+        condition_id: {"proposal": None, "policies": {}}
+        for condition_id in CONDITION_IDS
+    }
+    parts: list[dict[str, Any]] = []
+    observed_cells: set[tuple[str, str]] = set()
+    for directory in args.part_directory:
+        evidence_path = directory / "evidence.json"
+        prediction_path = directory / "predictions.safetensors"
+        evidence = load_json(evidence_path)
+        current_proposer = evidence.get("proposer_id")
+        if proposer_id is None:
+            proposer_id = current_proposer
+        if current_proposer != proposer_id:
+            raise RuntimeError("R4 combine mixed proposers")
+        if (
+            evidence.get("status")
+            != "PREDICTIONS_CREATED_WITHOUT_TRUTH"
+            or evidence.get("condition_count") != 1
+            or evidence.get("policy_count") != 1
+            or evidence["access"]["truth_arguments"] != 0
+            or evidence["access"]["target_prefix_calls"] != 0
+        ):
+            raise RuntimeError("R4 prediction part is invalid")
+        require_file_record(
+            evidence["plan"], args.plan, "part plan"
+        )
+        require_file_record(
+            evidence["predictions"],
+            prediction_path,
+            "part prediction",
+        )
+        condition_id = evidence["condition_ids"][0]
+        policy_id = evidence["policy_ids"][0]
+        if (condition_id, policy_id) in observed_cells:
+            raise RuntimeError("duplicate R4 prediction cell")
+        observed_cells.add((condition_id, policy_id))
+        state = load_file(prediction_path, device="cpu")
+        candidate_key = f"{condition_id}.candidates_top512"
+        confidence_key = f"{condition_id}.a1_confidence"
+        expected_keys = {candidate_key, confidence_key}
+        cell_prefix = f"{condition_id}.{policy_id}"
+        expected_keys.update(
+            f"{cell_prefix}.{suffix}"
+            for suffix in (
+                "predictions",
+                "routes",
+                "selected_k",
+                "selected_signal",
+            )
+        )
+        if set(state) != expected_keys:
+            raise RuntimeError(
+                "R4 prediction part tensor registry changed"
+            )
+        for key in (candidate_key, confidence_key):
+            if key in tensors:
+                if not torch.equal(tensors[key], state[key]):
+                    raise RuntimeError(
+                        "R4 repeated proposal tensors differ"
+                    )
+            else:
+                tensors[key] = state[key].contiguous()
+        for suffix in (
+            "predictions",
+            "routes",
+            "selected_k",
+            "selected_signal",
+        ):
+            key = f"{cell_prefix}.{suffix}"
+            tensors[key] = state[key].contiguous()
+        if costs[condition_id]["proposal"] is None:
+            costs[condition_id]["proposal"] = evidence["costs"][
+                condition_id
+            ]["proposal"]
+        costs[condition_id]["policies"][policy_id] = evidence[
+            "costs"
+        ][condition_id]["policies"][policy_id]
+        parts.append(
+            {
+                "directory": str(directory),
+                "condition_id": condition_id,
+                "policy_id": policy_id,
+                "predictions": file_record(prediction_path),
+                "evidence": file_record(evidence_path),
+            }
+        )
+
+    if proposer_id not in PROPOSER_IDS:
+        raise RuntimeError("R4 combined proposer is invalid")
+    entries = proposer_entries(plan, proposer_id)
+    expected_cells = {
+        (condition_id, entry["policy_id"])
+        for condition_id in CONDITION_IDS
+        for entry in entries
+    }
+    if observed_cells != expected_cells:
+        missing = sorted(expected_cells - observed_cells)
+        extra = sorted(observed_cells - expected_cells)
+        raise RuntimeError(
+            f"R4 prediction parts incomplete: missing={missing}, extra={extra}"
+        )
+    if any(value["proposal"] is None for value in costs.values()):
+        raise RuntimeError("R4 combined proposal costs are incomplete")
+
+    args.output_directory.mkdir(parents=True, exist_ok=False)
+    prediction_path = (
+        args.output_directory / "predictions.safetensors"
+    )
+    save_file(
+        tensors,
+        prediction_path,
+        metadata={
+            "schema": (
+                "token-reconstruction.trr0002-owner-r4-"
+                "combined-predictions.v1"
+            ),
+            "task_id": TASK_ID,
+            "revision_id": REVISION_ID,
+            "proposer_id": proposer_id,
+            "truth_loaded": "false",
+            "target_prefix_calls": "0",
+            "part_count": str(len(parts)),
+        },
+    )
+    evidence = {
+        "schema": (
+            "token-reconstruction.trr0002-owner-r4-"
+            "combined-reconstruction-evidence.v1"
+        ),
+        "task_id": TASK_ID,
+        "revision_id": REVISION_ID,
+        "status": "PREDICTIONS_CREATED_WITHOUT_TRUTH",
+        "proposer_id": proposer_id,
+        "created_utc": utc_now(),
+        "execution_commit": git_head(root),
+        "command": command_record(),
+        "exit_status": 0,
+        "plan": file_record(args.plan),
+        "sanitized_config": file_record(
+            args.input_root / "config.json"
+        ),
+        "sanitized_observations": file_record(
+            args.input_root / "observations.safetensors"
+        ),
+        "predictions": file_record(prediction_path),
+        "access": {
+            "truth_arguments": 0,
+            "dataset_arguments": 0,
+            "target_weights_available": False,
+            "target_prefix_calls": 0,
+            "public_surrogate_only": True,
+            "fitted_lens_available": (
+                proposer_id == "historical_alpaca_affine_a1"
+            ),
+        },
+        "policy_count": len(entries),
+        "policy_ids": [entry["policy_id"] for entry in entries],
+        "condition_count": len(CONDITIONS),
+        "condition_ids": list(CONDITION_IDS),
+        "costs": costs,
+        "parts": parts,
+    }
+    write_json_exclusive(
+        args.output_directory / "evidence.json", evidence
+    )
+    print(
+        json.dumps(
+            {
+                "status": evidence["status"],
+                "proposer": proposer_id,
+                "parts": len(parts),
                 "sha256": evidence["predictions"]["sha256"],
             },
             sort_keys=True,
@@ -1710,6 +1933,7 @@ def main() -> int:
         "preregister": command_preregister,
         "prepare": command_prepare,
         "predict": command_predict,
+        "combine": command_combine,
         "freeze": command_freeze,
         "score": command_score,
         "validate": command_validate,
