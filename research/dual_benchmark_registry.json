@@ -1,7 +1,7 @@
 {
-  "schema": "token-reconstruction.dual-benchmark-registry.v3",
+  "schema": "token-reconstruction.dual-benchmark-registry.v4",
   "protocol_path": "research/DUAL_BENCHMARK_PROTOCOL.md",
-  "effective_revision": "TRR-0002-CALIBRATED",
+  "effective_revision": "TRR-0002-OWNER-REVISION-R1-CONFIGURATION-STUDY",
   "setups": [
     {
       "id": "clean-pile-lora-64x40",
@@ -144,6 +144,17 @@
       "confidence": "scale_normalized_top_two_causal_score_gap",
       "calibration": "public-development-only then frozen",
       "fresh_blind_confirmation": "experiments/TRR-0002/blind/fresh-blind-result.json"
+    },
+    {
+      "id": "a1_a2_exhaustive_configuration_winner",
+      "candidate_budget": 256,
+      "can_abstain": false,
+      "proposal": "historical A1 nearest-neighbor candidates",
+      "selection": "historical A2 direct cosine comparison",
+      "fast_path": false,
+      "adaptivity": false,
+      "frozen_winner": "experiments/TRR-0002/configuration-search/causal-selection/winner.json",
+      "selection_receipt": "experiments/TRR-0002/configuration-search/winner-freeze.json"
     }
   ],
   "required_cells": [
@@ -330,6 +341,14 @@
     {
       "setup_id": "historical-finance-strict-bos-128x128",
       "method_id": "a1_scale_calibrated_adaptive_causal_k32_to64"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_a2_exhaustive_configuration_winner"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_a2_exhaustive_configuration_winner"
     }
   ],
   "completeness_rule": "required_cells must equal setups x methods",
