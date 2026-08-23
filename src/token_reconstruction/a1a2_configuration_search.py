@@ -528,7 +528,7 @@ def decode_policy(
     if a1_confidence[confidence_mask].lt(0).any().item() or a1_confidence[confidence_mask].gt(1).any().item():
         raise ConfigurationSearchError("valid A1 confidence is outside [0,1]")
     if record_batch_size is None:
-        record_batch_size = 16
+        record_batch_size = 8
     if not 0 < record_batch_size <= 16:
         raise ConfigurationSearchError("record batch size is invalid")
 

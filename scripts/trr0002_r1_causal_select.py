@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import gc
 import importlib.util
 import json
 import math
@@ -252,6 +253,8 @@ def main() -> int:
                 pass_results.append(result)
                 elapsed.append(result.elapsed_seconds)
                 peaks.append(int(torch.cuda.max_memory_allocated(device)))
+                gc.collect()
+                torch.cuda.empty_cache()
             baseline = pass_results[0]
             for repeated in pass_results[1:]:
                 if not torch.equal(repeated.predictions, baseline.predictions):
