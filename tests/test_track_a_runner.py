@@ -142,3 +142,70 @@ def test_module_state_digest_changes_with_parameter() -> None:
     assert first != second
     assert bytes_first == bytes_second
     assert tensors_first == tensors_second
+
+
+def test_load_public_state_uses_unshadowed_resource_module(monkeypatch) -> None:
+    class NoMoveModule(torch.nn.Module):
+        def _apply(self, fn):
+            return self
+
+    class FakeEmbedding(NoMoveModule):
+        def __init__(self) -> None:
+            super().__init__()
+            self.weight = torch.nn.Parameter(
+                torch.empty((128256, TRACK_A.HIDDEN_SIZE), dtype=torch.bfloat16, device="meta")
+            )
+
+    class FakeLayer(NoMoveModule):
+        def __init__(self) -> None:
+            super().__init__()
+            self.anchor = torch.nn.Parameter(torch.zeros(1))
+
+        def forward(self, hidden_states, *, past_key_values=None, **kwargs):
+            return (hidden_states,)
+
+    class FakeDecoder(NoMoveModule):
+        def __init__(self) -> None:
+            super().__init__()
+            self.embed_tokens = FakeEmbedding()
+            self.layers = torch.nn.ModuleList([FakeLayer() for _ in range(TRACK_A.CUT_DEPTH + 1)])
+            self.rotary_emb = NoMoveModule()
+
+    class FakeFull(torch.nn.Module):
+        def __init__(self) -> None:
+            super().__init__()
+            self.model = FakeDecoder()
+            self.config = SimpleNamespace(hidden_size=TRACK_A.HIDDEN_SIZE, vocab_size=128256)
+
+        def to(self, *args, **kwargs):
+            return self
+
+    fake_full = FakeFull()
+    monkeypatch.setattr(
+        TRACK_A.AutoModelForCausalLM,
+        "from_pretrained",
+        lambda *args, **kwargs: fake_full,
+    )
+    monkeypatch.setattr(TRACK_A.torch.cuda, "is_available", lambda: True)
+    monkeypatch.setattr(TRACK_A.torch.cuda, "max_memory_allocated", lambda: 123)
+    monkeypatch.setattr(TRACK_A.torch.cuda, "max_memory_reserved", lambda: 456)
+    monkeypatch.setattr(TRACK_A.torch.cuda, "reset_peak_memory_stats", lambda: None)
+    monkeypatch.setattr(
+        TRACK_A.torch.cuda,
+        "mem_get_info",
+        lambda: (20 * 1024**3, 24 * 1024**3),
+    )
+    monkeypatch.setattr(TRACK_A, "synchronize", lambda: None)
+    monkeypatch.setattr(TRACK_A, "_hash_module_state", lambda module: ("p" * 64, 123, 4))
+    monkeypatch.setattr(TRACK_A, "_hash_tensor", lambda tensor: "e" * 64)
+
+    state = TRACK_A._load_public_state(
+        model_path=Path("/tmp/pinned-public-snapshot"),
+        model_revision=TRACK_A.MODEL_REVISION,
+        resource=SimpleNamespace(),
+        min_free_bytes=10 * 1024**3,
+    )
+    assert state.prefix_digest == "p" * 64
+    assert state.embedding_digest == "e" * 64
+    assert state.parameter_bytes == 123
+    assert state.preparation_peak["process_max_rss_kib"] > 0
