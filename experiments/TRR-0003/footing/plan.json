@@ -1,0 +1,267 @@
+{
+  "comparison_status": {
+    "dual_benchmark_matrix": "comparison-incomplete by design for this pilot",
+    "historical_comparators": "pending shared-panel run",
+    "track_a_canonical": "NOT RUN",
+    "track_b_canonical": "NOT RUN"
+  },
+  "condition_notes": {
+    "numerical_difference_reporting": "record activation dtype, prefix implementation, and timing differences",
+    "paired_rows": true,
+    "public_base": "matched public checkpoint diagnostic control",
+    "public_lora_2601": {
+      "construction": {
+        "alpha": 4.0,
+        "batch_records": 8,
+        "gradient_clip_norm": 1.0,
+        "layers": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "learning_rate": 0.00075,
+        "modules": [
+          "q_proj",
+          "v_proj"
+        ],
+        "rank": 4,
+        "seed": 2601,
+        "steps": 30,
+        "weight_decay": 0.0
+      },
+      "generation_metadata": {
+        "bytes": 18824,
+        "path": "outputs/TRR-0002/public-calibration/generation.json",
+        "sha256": "6bed8aca6668bd749bbad03c0c85bbace306085dac3141895dad7685f03d0682"
+      },
+      "paired_activation_drift_excluding_bos": {
+        "finance": {
+          "cosine_token_mean": 0.9323530793190002,
+          "cosine_token_min": 0.8147825598716736,
+          "relative_l2_all_scored": 0.36805301904678345,
+          "relative_l2_record_values": [
+            0.35910511016845703,
+            0.3736957907676697,
+            0.3506608307361603,
+            0.37833356857299805,
+            0.3841949999332428,
+            0.3763507604598999,
+            0.3831447958946228,
+            0.34823447465896606
+          ],
+          "relative_l2_token_max": 0.5924667119979858,
+          "relative_l2_token_mean": 0.37100356817245483,
+          "relative_l2_token_median": 0.3599863052368164,
+          "relative_l2_token_min": 0.22963427007198334,
+          "scored_tokens": 762
+        },
+        "pile": {
+          "cosine_token_mean": 0.9374589323997498,
+          "cosine_token_min": 0.8183478116989136,
+          "relative_l2_all_scored": 0.3600521981716156,
+          "relative_l2_record_values": [
+            0.34081289172172546,
+            0.3603263795375824,
+            0.36451151967048645,
+            0.4231092631816864,
+            0.392707884311676,
+            0.3461180031299591,
+            0.3201833963394165,
+            0.3338460326194763
+          ],
+          "relative_l2_token_max": 0.650872528553009,
+          "relative_l2_token_mean": 0.36357027292251587,
+          "relative_l2_token_median": 0.3537026643753052,
+          "relative_l2_token_min": 0.24391604959964752,
+          "scored_tokens": 312
+        }
+      },
+      "role": "single synthetic LoRA condition; update weights unavailable to reconstruction; not full-SFT evidence",
+      "update_state": {
+        "bytes": 427632,
+        "path": "outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors",
+        "sha256": "eea7bb49f801b61df2e26a8f59af7c3096f6f3a2604404e16e589443bcfba595"
+      }
+    },
+    "same_observation_execution": true
+  },
+  "fitting_separation": {
+    "existing_comparator_state": {
+      "direct_inverse_training_split": "inverse_train",
+      "historical_lens_training": "prior TRR-0002 public A1 fit; frozen comparator only"
+    },
+    "track_a": {
+      "fitted_state": false,
+      "panel_used_for_development_only": true
+    },
+    "track_b": {
+      "finance_fitting": "must be separately declared by Track B; shared panel rows are forbidden",
+      "fit_record_count": 128,
+      "fit_split": "inverse_train",
+      "panel_overlap_checked": true,
+      "panel_rows_forbidden": true,
+      "source_ledger": "outputs/TRR-0002/public-calibration/records.json",
+      "source_plan": "experiments/TRR-0001/plan.json",
+      "validation_record_ids": [
+        "pile10k-03704-196fb68f1e8c8f4d",
+        "pile10k-01147-3cabb537de0307a4",
+        "pile10k-04180-4430d549ecb1f67b",
+        "pile10k-09265-665817fbc28d6ff1",
+        "pile10k-03696-25c6b18ad9bd96b7",
+        "pile10k-01684-719ed75439afac14",
+        "pile10k-05582-47de2a59e5fa098a",
+        "pile10k-06151-401b7991a508f3ec",
+        "pile10k-01135-d78d5a658f6c9fd0",
+        "pile10k-01209-76629620726a951e",
+        "pile10k-03822-895542a8f751a604",
+        "pile10k-03063-ad82c49263db1ed3",
+        "pile10k-03888-7a75c0058e70aff0",
+        "pile10k-08124-880267c79bd11e36",
+        "pile10k-07080-20db73413922f84f",
+        "pile10k-05403-a41ab559b95640a0",
+        "pile10k-02713-ab0e1382f10a2023",
+        "pile10k-02406-7c0d5a47d4213bab",
+        "pile10k-06002-268ccf5aa064ff1d",
+        "pile10k-09454-5302927b82fca808",
+        "pile10k-05767-1d9da1e2b56fd5c3",
+        "pile10k-00776-47e2e3c5766c1dfc",
+        "pile10k-04866-f8db91253ac291fa",
+        "pile10k-03011-ffc6bb6a609adb59"
+      ],
+      "validation_row_slice": [
+        8,
+        32
+      ],
+      "validation_split": "development_rows_8_31"
+    }
+  },
+  "panel": {
+    "bytes": 88693,
+    "cells": 4,
+    "distinct_records_per_condition": 16,
+    "observed_sequences_total": 32,
+    "path": "experiments/TRR-0003/footing/panel.json",
+    "sha256": "d1810330f53ebb7e149be45b8c07414e09d30b31b68c7c09d24df3854fec7333"
+  },
+  "public_assets": {
+    "existing_direct_inverse": {
+      "bytes": 16785688,
+      "path": "outputs/TRR-0001/reconstructor_public/inverses/cut4.safetensors",
+      "sha256": "9e2487f85057748130bf87b2aad0a883f3c36dfc052eefd83c0f5c35497a24e3"
+    },
+    "historical_lens": {
+      "bytes": 16787653,
+      "path": "outputs/TRR-0002/blind/reconstructor_input/public_a1_lens.pt",
+      "sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742"
+    },
+    "panel_observations": {
+      "finance": {
+        "public_base": {
+          "bytes": 16777448,
+          "path": "outputs/TRR-0002/configuration-search/public-finance/observations/public_base_cut4.safetensors",
+          "row_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "sha256": "a998437b84a7d1aabe5d59fe19ad2e499c9becdc4de7a3d9e3ca334e974aadba",
+          "tensor_key": "activations"
+        },
+        "public_lora_2601": {
+          "bytes": 16777456,
+          "path": "outputs/TRR-0002/configuration-search/public-finance/observations/public_lora_2601_cut4.safetensors",
+          "row_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "sha256": "964a57760b70b2031487304f16c0bf6e69300717e4fee8ca8f2300c6c7524595",
+          "tensor_key": "activations"
+        }
+      },
+      "pile": {
+        "public_base": {
+          "bytes": 5243104,
+          "path": "outputs/TRR-0002/public-calibration/observations/public_base_cut4.safetensors",
+          "row_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "sha256": "34ec6dddec3edea07061725c840c4d5fa64b079190aee8f19dcac68de0297fd7",
+          "tensor_key": "activations"
+        },
+        "public_lora_2601": {
+          "bytes": 5243112,
+          "path": "outputs/TRR-0002/public-calibration/observations/public_lora_2601_cut4.safetensors",
+          "row_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "sha256": "d70379b718896d3da2612498a04a188240097ae7029bf0d012d6ce48cb3c4db7",
+          "tensor_key": "activations"
+        }
+      }
+    },
+    "public_prefix_snapshot": {
+      "local_files_only": true,
+      "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+      "revision": "9213176726f574b556790deb65791e0c5aa438b6"
+    }
+  },
+  "resources": {
+    "device": "RTX 5080 16GB shared development panel",
+    "model": {
+      "id": "meta-llama/Llama-3.2-1B-Instruct",
+      "revision": "9213176726f574b556790deb65791e0c5aa438b6"
+    },
+    "network": "offline local caches only",
+    "paid_compute": false
+  },
+  "schema": "token-reconstruction.trr0003-footing-plan.v1",
+  "status": "FOOTING_READY_FOR_REVIEW",
+  "task_id": "TRR-0003",
+  "validated_panel": {
+    "cells": [
+      "pile__public_base",
+      "pile__public_lora_2601",
+      "finance__public_base",
+      "finance__public_lora_2601"
+    ],
+    "conditions": [
+      "public_base",
+      "public_lora_2601"
+    ],
+    "largest_geometry": [
+      8,
+      128,
+      2048
+    ],
+    "styles": [
+      "pile",
+      "finance"
+    ]
+  }
+}
