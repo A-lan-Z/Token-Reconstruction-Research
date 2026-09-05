@@ -738,6 +738,7 @@ def _rank_summary(
     best_other = result["best_other_scores"].detach().cpu().float()
     true_margin = result["true_other_margin"].detach().cpu().float()
     true_rank = result["true_rank"].detach().cpu().long()
+    true_equal_count = result["true_equal_count"].detach().cpu().long()
     true_ids = result["true_ids"].detach().cpu().long()
     top1_is_true = top1.eq(true_ids)
     if not math.isfinite(float(score_scale)) or float(score_scale) <= 0.0:
@@ -749,7 +750,11 @@ def _rank_summary(
     reported_true_score = true_score / score_scale
     reported_best_other = best_other / score_scale
     reported_true_margin = true_margin / score_scale
-    if len(row_context_indices) != int(top1.numel()) or len(row_token_ids) != int(top1.numel()):
+    if (
+        len(row_context_indices) != int(top1.numel())
+        or len(row_token_ids) != int(top1.numel())
+        or int(true_equal_count.numel()) != int(top1.numel())
+    ):
         raise DiagnosticError("ranking row metadata changed")
     rows: list[dict[str, Any]] = []
     for index in range(int(top1.numel())):
@@ -761,6 +766,7 @@ def _rank_summary(
                 "top1_id": int(top1[index]),
                 "runner_up_id": int(runner[index]),
                 "true_rank": int(true_rank[index]),
+                "true_equal_count": int(true_equal_count[index]),
                 "top1_is_true": bool(top1_is_true[index]),
                 "top1_score": float(reported_top1_score[index]),
                 "runner_up_score": float(reported_runner_score[index]),
@@ -791,6 +797,7 @@ def _rank_summary(
             "top1_correct_rate": float(top1_is_true.float().mean().item()),
             "true_rank": _stats(true_rank.float()),
             "true_rank_histogram": {str(int(k)): int(v) for k, v in zip(unique, counts, strict=True)},
+            "true_equal_count": _stats(true_equal_count.float()),
             "top1_runner_margin": _stats(reported_top1_margin),
             "true_other_margin": _stats(reported_true_margin),
             "true_score": _stats(reported_true_score),
@@ -1500,7 +1507,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 "rows": pair_result["pairs"],
             },
             "local_n8_neighbors": {
-                "dictionary": "fixed N=8 neighbors derived from reused P01 BOS table rows",
+                "dictionary": "fixed N=8 nearest OTHER reused P01 BOS rows plus known true ID (N=9 dictionary)",
                 "rows": local_dictionary_rows,
                 "rankings": local_variants,
             },
@@ -1607,7 +1614,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             "oracle_centering_not_method": True,
             "fitted_lens_not_method": True,
             "full_vocab_rows": 12,
-            "local_dictionary_n": 8,
+            "local_neighbor_n": 8,
+            "local_dictionary_n": 9,
         },
     }
     _write_json_exclusive(manifest_path, manifest)
