@@ -1,0 +1,308 @@
+{
+  "captured_utc": "2026-09-05T07:05:07Z",
+  "cpu_readiness_note": "Real BF16 tensor/module hashing, panel geometry/position wiring, manifest revalidation, and 15 focused tests passed before the current shared-footing edit; rerun the checks after the shared syntax fix.",
+  "geometry_estimates": {
+    "candidate_prefix_simulations": 0,
+    "causal_mask_bf16_bytes": 32768,
+    "frozen_ladder_branch_layer_calls_per_record": 1008,
+    "frozen_ladder_cycle_layer_calls_per_record": 56,
+    "frozen_ladder_total_public_prefix_layer_calls_per_record": 1064,
+    "largest_projection_distance_chunk_bytes": 4161536,
+    "largest_sequence_tokens": 128,
+    "max_iteration_branch_layer_calls_per_record": 512,
+    "max_iteration_cycle_layer_calls_per_record": 8,
+    "max_iteration_total_public_prefix_layer_calls_per_record": 520,
+    "record_batch_size": 1,
+    "target_bf16_bytes": 524288,
+    "target_fp32_bytes": 1048576
+  },
+  "git_head": "4e361216fc1e829549a9d849afd2ad3692215123",
+  "identity_control": {
+    "path": "experiments/TRR-0003/track_a/identity_control/observations/public_validation_rows08_15_cut4.safetensors",
+    "purpose": "separate public matched identity control; must be checked before describing panel public_base as a solved matched inverse",
+    "rows": "8-15 from public calibration activation asset",
+    "sha256": "838b431388da59bbb46a03572deb97e58a3787b70300c82d744cdbbee50d9388",
+    "truth_opened": false
+  },
+  "live_resources": {
+    "cpu_count": 32,
+    "filesystem_free_bytes": 316680114176,
+    "gpu": {
+      "allocation_performed": false,
+      "index": 0,
+      "memory_free_mib": 12235,
+      "memory_total_mib": 16303,
+      "memory_used_mib": 3743,
+      "name": "NVIDIA GeForce RTX 5080",
+      "source": "nvidia-smi --query-gpu ...",
+      "utilization_percent": 8
+    },
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "ram_available_bytes": 28724269056,
+    "ram_total_bytes": 32411611136
+  },
+  "matched_identity_control": {
+    "command": "env HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false PYTHONPATH=src:scripts python3 scripts/trr0003_track_a_identity.py --validation-root outputs/TRR-0003/track_b/public_validation_slice_v2 --model-path /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6 --resource-manifest experiments/TRR-0003/track_a/public_resource_manifest.json --output outputs/TRR-0003/track_a_identity/public_prefix_forward.json",
+    "evaluator_truth_opened": false,
+    "labels_role": "public auxiliary labels used only to generate matched public-prefix forward input",
+    "overlap_counts": {
+      "blind_evaluation": 0,
+      "inverse_train": 0,
+      "panel": 0,
+      "target_update_train": 0
+    },
+    "script_path": "scripts/trr0003_track_a_identity.py",
+    "status": "READY_PENDING_GPU_AND_SHARED_FOOTING_FIX",
+    "validation_evidence": "outputs/TRR-0003/track_b/public_validation_slice_v2/validation_slice_evidence.json",
+    "validation_root": "outputs/TRR-0003/track_b/public_validation_slice_v2",
+    "validation_slice": "public development rows [8:32), 24 records"
+  },
+  "notes": [
+    "No GPU allocation or public model load was performed by this preflight.",
+    "The current GPU snapshot has enough free memory for the initial 600 MiB probe but the conservative post full model load estimate is below the 10 GiB guard; rerun the live preflight after the competing job releases the device.",
+    "All timing and peak memory claims remain pending the qualified execution.",
+    "The shared branch advanced with a Track B-only validation commit after the initial footing freeze; this preflight was refreshed against the live HEAD before execution."
+  ],
+  "panel": {
+    "cells": [
+      {
+        "cell_id": "pile__public_base",
+        "observation": {
+          "bytes": 5243104,
+          "path": "outputs/TRR-0002/public-calibration/observations/public_base_cut4.safetensors",
+          "row_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "sha256": "34ec6dddec3edea07061725c840c4d5fa64b079190aee8f19dcac68de0297fd7",
+          "tensor_key": "activations"
+        },
+        "observation_dtype": "torch.bfloat16",
+        "shape": [
+          8,
+          40,
+          2048
+        ],
+        "valid_tokens": [
+          40,
+          40,
+          40,
+          40,
+          40,
+          40,
+          40,
+          40
+        ]
+      },
+      {
+        "cell_id": "pile__public_lora_2601",
+        "observation": {
+          "bytes": 5243112,
+          "path": "outputs/TRR-0002/public-calibration/observations/public_lora_2601_cut4.safetensors",
+          "row_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "sha256": "d70379b718896d3da2612498a04a188240097ae7029bf0d012d6ce48cb3c4db7",
+          "tensor_key": "activations"
+        },
+        "observation_dtype": "torch.bfloat16",
+        "shape": [
+          8,
+          40,
+          2048
+        ],
+        "valid_tokens": [
+          40,
+          40,
+          40,
+          40,
+          40,
+          40,
+          40,
+          40
+        ]
+      },
+      {
+        "cell_id": "finance__public_base",
+        "observation": {
+          "bytes": 16777448,
+          "path": "outputs/TRR-0002/configuration-search/public-finance/observations/public_base_cut4.safetensors",
+          "row_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "sha256": "a998437b84a7d1aabe5d59fe19ad2e499c9becdc4de7a3d9e3ca334e974aadba",
+          "tensor_key": "activations"
+        },
+        "observation_dtype": "torch.bfloat16",
+        "shape": [
+          8,
+          128,
+          2048
+        ],
+        "valid_tokens": [
+          49,
+          109,
+          128,
+          128,
+          55,
+          45,
+          128,
+          128
+        ]
+      },
+      {
+        "cell_id": "finance__public_lora_2601",
+        "observation": {
+          "bytes": 16777456,
+          "path": "outputs/TRR-0002/configuration-search/public-finance/observations/public_lora_2601_cut4.safetensors",
+          "row_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "sha256": "964a57760b70b2031487304f16c0bf6e69300717e4fee8ca8f2300c6c7524595",
+          "tensor_key": "activations"
+        },
+        "observation_dtype": "torch.bfloat16",
+        "shape": [
+          8,
+          128,
+          2048
+        ],
+        "valid_tokens": [
+          49,
+          109,
+          128,
+          128,
+          55,
+          45,
+          128,
+          128
+        ]
+      }
+    ],
+    "path": "experiments/TRR-0003/footing/panel.json",
+    "schema": "token-reconstruction.trr0003-footing-panel.v1",
+    "sha256": "d1810330f53ebb7e149be45b8c07414e09d30b31b68c7c09d24df3854fec7333",
+    "status": "RETROSPECTIVE_DEVELOPMENT_PANEL"
+  },
+  "public_resources": {
+    "manifest_path": "experiments/TRR-0003/track_a/public_resource_manifest.json",
+    "manifest_sha256": "9fd0ab2a786dd7884c72dcb0d724ba10dc3912518c05cff7a69267132beefb94",
+    "model": {
+      "id": "meta-llama/Llama-3.2-1B-Instruct",
+      "revision": "9213176726f574b556790deb65791e0c5aa438b6"
+    },
+    "schema": "token-reconstruction.public-model-resource-manifest.v1",
+    "snapshot_path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+    "total_manifest_bytes": 2482971357,
+    "verified_files": [
+      {
+        "bytes": 877,
+        "path": "config.json",
+        "sha256": "2febf68cea25bf4611be02b7536f2488a5ba523bb1134986e3610152abe74fdb"
+      },
+      {
+        "bytes": 189,
+        "path": "generation_config.json",
+        "sha256": "88effbb63300dbbc7390143fbbdd9d9fa50587b37e8bfd16c8c90d4970a74a36"
+      },
+      {
+        "bytes": 2471645608,
+        "path": "model.safetensors",
+        "sha256": "1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f"
+      },
+      {
+        "bytes": 220,
+        "path": "original/params.json",
+        "sha256": "1d616a44f3cdac29b9288cf14718b76eb1bed56ed38be1f7e39b06ed139e3733"
+      },
+      {
+        "bytes": 2183982,
+        "path": "original/tokenizer.model",
+        "sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55"
+      },
+      {
+        "bytes": 296,
+        "path": "special_tokens_map.json",
+        "sha256": "6f38c73729248f6c127296386e3cdde96e254636cc58b4169d3fd32328d9a8ec"
+      },
+      {
+        "bytes": 9085657,
+        "path": "tokenizer.json",
+        "sha256": "79e3e522635f3171300913bb421464a87de6222182a0570b9b2ccba2a964b2b4"
+      },
+      {
+        "bytes": 54528,
+        "path": "tokenizer_config.json",
+        "sha256": "9823dcfdc1121869029da45192238e85cf44f0b232a6d9dc20e4fe6f4242a14e"
+      }
+    ]
+  },
+  "qualification": {
+    "artifact_role": "one-record resource/implementation qualification; never a complete panel cell",
+    "cell_id": "finance__public_base",
+    "command": "env HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false PYTHONPATH=src python3 scripts/trr0003_track_a.py --panel experiments/TRR-0003/footing/panel.json --style finance --condition public_base --output-root outputs/TRR-0003/track_a_qualification --diagnostic-root outputs/TRR-0003/track_a_qualification_diagnostics/finance_public_base --model-path /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6 --resource-manifest experiments/TRR-0003/track_a/public_resource_manifest.json --method-config experiments/TRR-0003/track_a/preregistration.json --record-indices 2",
+    "diagnostic_root": "outputs/TRR-0003/track_a_qualification_diagnostics/finance_public_base",
+    "expected_public_prefix_layer_calls_across_frozen_ladder": 1064,
+    "expected_public_prefix_layer_calls_at_iteration32": 520,
+    "max_wall_seconds": 600,
+    "output_root": "outputs/TRR-0003/track_a_qualification",
+    "purpose": "largest-position matched public numerical qualification before paired pilot",
+    "record_index": 2,
+    "run_authorized": false,
+    "truth_opened": false,
+    "valid_tokens": 128
+  },
+  "resource_guard": {
+    "allocation_probe_mib": 600,
+    "current_initial_margin_mib": 1395,
+    "current_state_passes_initial_probe": true,
+    "current_state_passes_post_load_guard": false,
+    "estimated_full_model_load_mib": 2358,
+    "estimated_post_load_free_mib": 9877,
+    "estimated_post_load_margin_mib": -363,
+    "execution_blocked_until_gpu_released": true,
+    "initial_required_free_mib": 10840,
+    "minimum_free_after_model_load_mib": 10240
+  },
+  "schema": "token-reconstruction.trr0003-track-a-cpu-preflight.v1",
+  "source_unchanged_during_preflight": true,
+  "status": "CPU_PREFLIGHT_COMPLETE_GPU_EXECUTION_PENDING",
+  "task_id": "TRR-0003",
+  "weight_header_geometry": {
+    "header_bytes": 16800,
+    "model_file_bytes": 2471645608,
+    "model_file_sha256": "1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f",
+    "public_prefix_parameter_bytes": 1011908608,
+    "public_prefix_parameter_mib": 965.031,
+    "public_prefix_tensor_count": 37,
+    "tensor_count": 146,
+    "tensor_payload_bytes": 2471628800
+  }
+}

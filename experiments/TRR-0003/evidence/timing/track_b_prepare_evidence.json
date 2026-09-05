@@ -1,0 +1,99 @@
+{
+  "artifacts": {
+    "embedding_table": {
+      "bytes": 1050673488,
+      "path": "public_normalized_embeddings.safetensors",
+      "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+    },
+    "observations": {
+      "bytes": 20971792,
+      "path": "fit_observations.safetensors",
+      "sha256": "d9ae5cce82d651f8859d1c007c28057c8e9a4379f918d4c1e7e961ecaccb692c"
+    },
+    "records": {
+      "bytes": 23919,
+      "path": "fit_records.json",
+      "sha256": "7aee0f6cb452bb1df401c920ca2a628d32fb204d144d72e4419fc8bd34a3a08e"
+    },
+    "truth": {
+      "bytes": 20688,
+      "path": "fit_truth.safetensors",
+      "sha256": "56075e48932bcc9ec6aafa048ce205a135ab4311326ad78222663afa4acde3e9"
+    }
+  },
+  "code_sha256": "fea26f6ff24e11de9b80bff49880f098d8e7190cc0bb9386449104a98f755602",
+  "command": {
+    "argv": [
+      "scripts/trr0003_track_b.py",
+      "prepare",
+      "--source-plan",
+      "experiments/TRR-0001/plan.json",
+      "--output-root",
+      "outputs/TRR-0003/track_b/public_fit_v2",
+      "--record-batch-size",
+      "8"
+    ],
+    "cwd": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research",
+    "environment": {
+      "HF_DATASETS_OFFLINE": "1",
+      "HF_HUB_OFFLINE": "1",
+      "PYTHONPATH": "src:scripts"
+    }
+  },
+  "dataset": {
+    "id": "NeelNanda/pile-10k",
+    "revision": "127bfedcd5047750df5ccf3a12979a47bfa0bafa",
+    "split": "train"
+  },
+  "ended_utc": "2026-09-05T06:51:36Z",
+  "git_commit": "b16b584f7f63befcaaa2decf58bdce379685b66d",
+  "model": {
+    "cut_depth": 4,
+    "dtype": "bfloat16",
+    "id": "meta-llama/Llama-3.2-1B-Instruct",
+    "revision": "9213176726f574b556790deb65791e0c5aa438b6"
+  },
+  "peak_memory": {
+    "cuda_peak_allocated_bytes": 2609591296,
+    "cuda_peak_reserved_bytes": 2625634304,
+    "process_max_rss_kib": 5272888
+  },
+  "phases": [
+    {
+      "elapsed_seconds": 1.8091001840002718,
+      "ended_utc": "2026-09-05T06:51:33Z",
+      "exit_status": 0,
+      "phase": "load_public_model_tokenizer_dataset",
+      "started_utc": "2026-09-05T06:51:32Z"
+    },
+    {
+      "elapsed_seconds": 0.25969469400024536,
+      "ended_utc": "2026-09-05T06:51:34Z",
+      "exit_status": 0,
+      "phase": "materialize_public_inverse_train_records",
+      "started_utc": "2026-09-05T06:51:33Z"
+    },
+    {
+      "elapsed_seconds": 1.0887487410000176,
+      "ended_utc": "2026-09-05T06:51:35Z",
+      "exit_status": 0,
+      "phase": "capture_public_cut4_fit_observations",
+      "started_utc": "2026-09-05T06:51:34Z"
+    },
+    {
+      "elapsed_seconds": 1.593086195000069,
+      "ended_utc": "2026-09-05T06:51:36Z",
+      "exit_status": 0,
+      "phase": "extract_public_embedding_table",
+      "started_utc": "2026-09-05T06:51:35Z"
+    }
+  ],
+  "records": {
+    "count": 128,
+    "split": "inverse_train"
+  },
+  "schema": "token-reconstruction.trr0003-track-b-prepare.v1",
+  "started_utc": "2026-09-05T06:51:32Z",
+  "task_id": "TRR-0003",
+  "track": "track_b"
+}

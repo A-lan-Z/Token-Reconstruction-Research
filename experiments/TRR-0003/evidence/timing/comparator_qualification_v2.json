@@ -1,0 +1,146 @@
+{
+  "created_utc": "2026-09-05T08:25:20Z",
+  "method_ids": [
+    "historical_alpaca_a1",
+    "frozen_a1_a2_k256",
+    "direct_inverse"
+  ],
+  "model": {
+    "model": {
+      "attention_implementation": "sdpa",
+      "dtype": "bfloat16",
+      "id": "meta-llama/Llama-3.2-1B-Instruct",
+      "local_files_only": true,
+      "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "snapshot": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6"
+    },
+    "model_load_wall_seconds": 1.2601535950016114,
+    "model_preparation_seconds": 1.2582116760004283
+  },
+  "panel": {
+    "bytes": 88693,
+    "path": "experiments/TRR-0003/footing/panel.json",
+    "sha256": "d1810330f53ebb7e149be45b8c07414e09d30b31b68c7c09d24df3854fec7333"
+  },
+  "qualification": {
+    "candidate_budget": 256,
+    "cell_id": "finance__public_base",
+    "record_batch_size": 4,
+    "records": 8,
+    "reference_record_batch_size": 8,
+    "sequence_tokens": 128,
+    "truth_opened": false
+  },
+  "schema": "token-reconstruction.trr0003-footing-qualification-evidence.v1",
+  "selected_cell_id": "finance__public_base",
+  "status": "QUALIFICATION_ONLY_PREDICTIONS_COMPLETE",
+  "task_id": "TRR-0003",
+  "timing": {
+    "direct_inverse": [
+      {
+        "active_tokens": 770,
+        "artifact": "outputs/TRR-0003/footing/comparator_qualification_v2/finance/public_base/direct_inverse.safetensors",
+        "batch_equivalence": {
+          "basis": "rank-one proposal is independent of causal record batching",
+          "comparison_seconds": 9.800005500437692e-07,
+          "primary_record_batch_size": 4,
+          "reference_record_batch_size": 8,
+          "verified": true
+        },
+        "candidate_budget": 16,
+        "candidate_simulations": 0,
+        "cell_id": "finance__public_base",
+        "cold_start": true,
+        "elapsed_seconds": 0.03862905200003297,
+        "executed_candidate_simulations": 0,
+        "logical_candidate_simulations": 0,
+        "method_id": "direct_inverse",
+        "peak_memory": {
+          "cuda_peak_allocated_bytes": 2206705152,
+          "cuda_peak_reserved_bytes": 5389680640,
+          "process_max_rss_kib": 3392496
+        },
+        "per_record_seconds": 0.004828631500004121,
+        "per_scored_token_seconds": 5.069429396329786e-05,
+        "prefix_commit_tokens": 0,
+        "proposal_seconds": 0.03671839300113788,
+        "public_prefix_calls": 0,
+        "record_batch_size": 4,
+        "records": 8,
+        "rule": "rank_one",
+        "scored_tokens": 762
+      }
+    ],
+    "frozen_a1_a2_k256": [
+      {
+        "active_tokens": 770,
+        "artifact": "outputs/TRR-0003/footing/comparator_qualification_v2/finance/public_base/frozen_a1_a2_k256.safetensors",
+        "batch_equivalence": {
+          "comparison_seconds": 8.66430320299878,
+          "primary_record_batch_size": 4,
+          "reference_candidate_simulations": 195072,
+          "reference_public_prefix_calls": 890,
+          "reference_record_batch_size": 8,
+          "verified": true
+        },
+        "candidate_budget": 256,
+        "candidate_simulations": 195072,
+        "cell_id": "finance__public_base",
+        "cold_start": true,
+        "elapsed_seconds": 10.388175628000681,
+        "executed_candidate_simulations": 195072,
+        "logical_candidate_simulations": 195072,
+        "method_id": "frozen_a1_a2_k256",
+        "peak_memory": {
+          "cuda_peak_allocated_bytes": 3372375040,
+          "cuda_peak_reserved_bytes": 5389680640,
+          "process_max_rss_kib": 3392496
+        },
+        "per_record_seconds": 1.2985219535000851,
+        "per_scored_token_seconds": 0.013632776414699057,
+        "prefix_commit_tokens": 1024,
+        "proposal_seconds": 0.034046277000015834,
+        "public_prefix_calls": 1018,
+        "record_batch_size": 4,
+        "records": 8,
+        "rule": "fixed_k256_public_prefix",
+        "scored_tokens": 762
+      }
+    ],
+    "historical_alpaca_a1": [
+      {
+        "active_tokens": 770,
+        "artifact": "outputs/TRR-0003/footing/comparator_qualification_v2/finance/public_base/historical_alpaca_a1.safetensors",
+        "batch_equivalence": {
+          "basis": "rank-one proposal is independent of causal record batching",
+          "comparison_seconds": 6.829995982116088e-07,
+          "primary_record_batch_size": 4,
+          "reference_record_batch_size": 8,
+          "verified": true
+        },
+        "candidate_budget": 16,
+        "candidate_simulations": 0,
+        "cell_id": "finance__public_base",
+        "cold_start": true,
+        "elapsed_seconds": 0.3194383430000016,
+        "executed_candidate_simulations": 0,
+        "logical_candidate_simulations": 0,
+        "method_id": "historical_alpaca_a1",
+        "peak_memory": {
+          "cuda_peak_allocated_bytes": 2526858240,
+          "cuda_peak_reserved_bytes": 5372903424,
+          "process_max_rss_kib": 3392496
+        },
+        "per_record_seconds": 0.0399297928750002,
+        "per_scored_token_seconds": 0.00041921042388451656,
+        "prefix_commit_tokens": 0,
+        "proposal_seconds": 0.31584371000099054,
+        "public_prefix_calls": 0,
+        "record_batch_size": 4,
+        "records": 8,
+        "rule": "rank_one",
+        "scored_tokens": 762
+      }
+    ]
+  }
+}

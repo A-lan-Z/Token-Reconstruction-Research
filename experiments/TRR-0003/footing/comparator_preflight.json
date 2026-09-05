@@ -1,0 +1,59 @@
+{
+  "candidate_workspace": {
+    "activation_bfloat16_bytes": 4194304,
+    "candidate_hidden_float32_bytes": 16777216,
+    "candidate_ids_int64_bytes": 16384,
+    "candidate_scores_float32_bytes": 8192,
+    "forked_kv_cache_bfloat16_bytes": 8388608,
+    "kv_cache_bfloat16_bytes": 8388608,
+    "proposal_candidates_k512_int64_bytes": 8388608,
+    "proposal_scores_k512_float32_bytes": 4194304,
+    "total_bytes": 50356224
+  },
+  "geometry": {
+    "candidate_budget": 256,
+    "cut_depth": 4,
+    "hidden_size": 2048,
+    "largest_cell_id": "finance__public_base",
+    "record_batch_size": 4,
+    "records": 8,
+    "sequence_tokens": 128,
+    "vocab_size": 128256
+  },
+  "observed_prior_peaks": [
+    {
+      "cuda_peak_allocated_bytes": 3979016192,
+      "cuda_peak_reserved_bytes": 4357881856,
+      "path": "outputs/TRR-0002/historical-input-target-bridge/parts/historical_alpaca_affine_a1/finance_generation300_target_cut4/a1a2_13f73c306bf8946e9a28/evidence.json",
+      "role": "prior Finance K512 A1+A2 cell"
+    },
+    {
+      "cuda_peak_allocated_bytes": 5362029568,
+      "cuda_peak_reserved_bytes": 5393874944,
+      "path": "outputs/TRR-0002/blind_method/reconstructor_evidence.json",
+      "role": "prior full public model and A1+A2 preparation"
+    }
+  ],
+  "resource_envelope": {
+    "gpu_envelope_bytes": 6500000000,
+    "gpu_envelope_gib": 6.053596138954163,
+    "host_envelope_bytes": 12000000000,
+    "host_envelope_gib": 11.175870895385742,
+    "minimum_free_before_load_bytes": 8589934592,
+    "minimum_free_before_load_gib": 8.0,
+    "minimum_margin_fraction": 0.25,
+    "notes": "Envelope covers pinned BF16 public model, FP32 normalized embedding table, A1 K512 proposal buffers, K256 candidate hidden output, copied four-layer KV cache, and allocator/runtime slack. The explicit candidate/KV workspace estimate is recorded above; prior measured peaks are retained as additional evidence."
+  },
+  "qualification_rule": {
+    "batch_equivalence_reference_size": 8,
+    "cell_id": "finance__public_base",
+    "candidate_budget": 256,
+    "record_batch_size": 4,
+    "require_measured_reserved_below_gpu_envelope": true,
+    "require_remaining_free_fraction": 0.25,
+    "run_before_main_matrix": true
+  },
+  "schema": "token-reconstruction.trr0003-footing-comparator-preflight.v1",
+  "task_id": "TRR-0003",
+  "track": "footing_comparator"
+}

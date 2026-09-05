@@ -1,0 +1,2233 @@
+{
+  "archive_map_path": "experiments/TRR-0003/evidence_archive.json",
+  "branch": "task/TRR-0003",
+  "canonical_comparison_complete": false,
+  "canonical_matrix": {
+    "status": "NOT_RUN_COMPARISON_INCOMPLETE",
+    "new_methods": "not run in either canonical setup",
+    "claim_scope": "exploratory development panel only"
+  },
+  "commands": {
+    "track_a_full_cells": {
+      "finance__public_base": "/usr/bin/python3 scripts/trr0003_track_a.py --panel experiments/TRR-0003/footing/panel.json --style finance --condition public_base --output-root outputs/TRR-0003/track_a --diagnostic-root outputs/TRR-0003/track_a_diagnostics/finance_public_base --model-path /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6 --resource-manifest experiments/TRR-0003/track_a/public_resource_manifest.json --method-config experiments/TRR-0003/track_a/preregistration.json",
+      "finance__public_lora_2601": "/usr/bin/python3 scripts/trr0003_track_a.py --panel experiments/TRR-0003/footing/panel.json --style finance --condition public_lora_2601 --output-root outputs/TRR-0003/track_a --diagnostic-root outputs/TRR-0003/track_a_diagnostics/finance_public_lora_2601 --model-path /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6 --resource-manifest experiments/TRR-0003/track_a/public_resource_manifest.json --method-config experiments/TRR-0003/track_a/preregistration.json",
+      "pile__public_base": "/usr/bin/python3 scripts/trr0003_track_a.py --panel experiments/TRR-0003/footing/panel.json --style pile --condition public_base --output-root outputs/TRR-0003/track_a --diagnostic-root outputs/TRR-0003/track_a_diagnostics/pile_public_base --model-path /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6 --resource-manifest experiments/TRR-0003/track_a/public_resource_manifest.json --method-config experiments/TRR-0003/track_a/preregistration.json",
+      "pile__public_lora_2601": "/usr/bin/python3 scripts/trr0003_track_a.py --panel experiments/TRR-0003/footing/panel.json --style pile --condition public_lora_2601 --output-root outputs/TRR-0003/track_a --diagnostic-root outputs/TRR-0003/track_a_diagnostics/pile_public_lora_2601 --model-path /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6 --resource-manifest experiments/TRR-0003/track_a/public_resource_manifest.json --method-config experiments/TRR-0003/track_a/preregistration.json"
+    },
+    "track_a_identity_control": "/usr/bin/python3 scripts/trr0003_track_a_identity.py --validation-root outputs/TRR-0003/track_b/public_validation_slice_v2 --model-path /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6 --resource-manifest experiments/TRR-0003/track_a/public_resource_manifest.json --output outputs/TRR-0003/track_a_identity/public_prefix_forward.json",
+    "track_a_largest_finance_qualification": "/usr/bin/python3 scripts/trr0003_track_a.py --panel experiments/TRR-0003/footing/panel.json --style finance --condition public_base --output-root outputs/TRR-0003/track_a_qualification --diagnostic-root outputs/TRR-0003/track_a_qualification_diagnostics/finance_public_base --model-path /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6 --resource-manifest experiments/TRR-0003/track_a/public_resource_manifest.json --method-config experiments/TRR-0003/track_a/preregistration.json --record-indices 2",
+    "track_b_fit": {
+      "argv": [
+        "scripts/trr0003_track_b.py",
+        "fit",
+        "--input-root",
+        "outputs/TRR-0003/track_b/public_fit_v2",
+        "--output-root",
+        "outputs/TRR-0003/track_b/extended_fit_1800_v1",
+        "--public-validation-observations",
+        "outputs/TRR-0003/track_b/public_validation_slice_v2/public_validation_observations.safetensors",
+        "--public-validation-truth",
+        "outputs/TRR-0003/track_b/public_validation_slice_v2/public_validation_truth.safetensors",
+        "--methods",
+        "angular_inverse_control,tied_affine_token_ce,residual_mlp256_token_ce",
+        "--steps",
+        "1800",
+        "--angular-steps",
+        "1800",
+        "--overfit-records",
+        "8",
+        "--overfit-steps",
+        "1500",
+        "--batch-size",
+        "512",
+        "--learning-rate",
+        "0.001",
+        "--log-every",
+        "25",
+        "--logit-scale",
+        "16",
+        "--bottleneck-size",
+        "256",
+        "--seed",
+        "1737",
+        "--device",
+        "cuda"
+      ],
+      "cwd": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research",
+      "environment": {
+        "HF_DATASETS_OFFLINE": "1",
+        "HF_HUB_OFFLINE": "1",
+        "PYTHONPATH": "src:scripts"
+      }
+    },
+    "track_b_panel_prediction": {
+      "argv": [
+        "python3",
+        "experiments/TRR-0003/track_b/predict_cells.py",
+        "--output-root",
+        "outputs/TRR-0003/track_b/panel_selected_v1",
+        "--device",
+        "cuda"
+      ],
+      "cwd": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research"
+    },
+    "track_b_selected_replay": {
+      "argv": [
+        "python3",
+        "experiments/TRR-0003/track_b/replay_selected.py",
+        "--input-root",
+        "outputs/TRR-0003/track_b/public_fit_v2",
+        "--validation-observations",
+        "outputs/TRR-0003/track_b/public_validation_slice_v2/public_validation_observations.safetensors",
+        "--validation-truth",
+        "outputs/TRR-0003/track_b/public_validation_slice_v2/public_validation_truth.safetensors",
+        "--curve-evidence",
+        "outputs/TRR-0003/track_b/extended_fit_1800_v1/fit_evidence.json",
+        "--output-root",
+        "outputs/TRR-0003/track_b/selected_checkpoints_v1",
+        "--device",
+        "cuda"
+      ],
+      "cwd": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research"
+    }
+  },
+  "comparators": {
+    "direct_inverse_state": {
+      "bytes": 16785688,
+      "path": "outputs/TRR-0001/reconstructor_public/inverses/cut4.safetensors",
+      "sha256": "9e2487f85057748130bf87b2aad0a883f3c36dfc052eefd83c0f5c35497a24e3"
+    },
+    "historical_alpaca_a1_lens": {
+      "bytes": 16787653,
+      "path": "outputs/TRR-0002/blind/reconstructor_input/public_a1_lens.pt",
+      "sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742"
+    },
+    "public_lora_update": {
+      "bytes": 427632,
+      "path": "outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors",
+      "sha256": "eea7bb49f801b61df2e26a8f59af7c3096f6f3a2604404e16e589443bcfba595"
+    },
+    "public_prefix_reference": {
+      "bytes": 31291,
+      "path": "outputs/TRR-0002/configuration-search/fresh-blind-code/reference/strict_bos/round001_teacher.py",
+      "sha256": "10532a746cb8c30eb2caf338e206e1fa9d85e708d4db43a0d8fd4a2ff1a6f8bd"
+    }
+  },
+  "created_utc": "2026-09-05T08:13:14Z",
+  "evidence_files": [
+    {
+      "bytes": 3693,
+      "path": "RESEARCH_CHARTER.md",
+      "sha256": "ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d"
+    },
+    {
+      "bytes": 8154,
+      "path": "coordination/requests/TRR-0003.md",
+      "sha256": "397a588e3b01ac9c22758ac1fae07171327b68178acd30ce606114aa59c78142"
+    },
+    {
+      "bytes": 48460,
+      "path": "experiments/TRR-0003/build_comparison_summary_v1.py",
+      "sha256": "a8c868dcc3bae62b3b395082fb62082358a6ef4c25e16c63a80d0056872dc78d",
+      "role": "summary-generator"
+    },
+    {
+      "bytes": 265635,
+      "path": "experiments/TRR-0003/comparison_summary_v1.json",
+      "sha256": "bd6353722e8298df99a1c8bd2ed5b9b0446fc1eef0062aa3e9904b1ed7a3850a",
+      "role": "cross-track-summary"
+    },
+    {
+      "bytes": 21919,
+      "path": "experiments/TRR-0003/comparison_summary_v1.md",
+      "sha256": "5b03dd2fe293ad93f19fa9f78f1e1de5938f14e60078398314b4834de7d44bfe",
+      "role": "cross-track-summary"
+    },
+    {
+      "bytes": 512151,
+      "path": "experiments/TRR-0003/comparison_summary_v1.png",
+      "sha256": "12718ce1cdc08637ce005d1a1bfd0e0689db850e256920866a96795fa98bac74",
+      "role": "cross-track-figure"
+    },
+    {
+      "bytes": 119085,
+      "path": "experiments/TRR-0003/comparison_summary_v1.svg",
+      "sha256": "07f5931bcedf7243f9412bf6cac45b55d600db0367d07360e30bcd77d31326a0",
+      "role": "cross-track-figure"
+    },
+    {
+      "bytes": 219720,
+      "path": "experiments/TRR-0003/evidence/common_score_v2.json",
+      "sha256": "9c25621c966f7e1dcddc96c0f0491127a0a32dfa11ec41fd947ff803093a5bd8"
+    },
+    {
+      "bytes": 957,
+      "path": "experiments/TRR-0003/evidence/comparison_sources_v1/README.md",
+      "sha256": "8b4ffe94712f27fa8a766cd5efa0c975fcd6618fb4d7abeced84c41ffb24368a",
+      "role": "authoritative-raw-timing-copy"
+    },
+    {
+      "bytes": 1828,
+      "path": "experiments/TRR-0003/evidence/comparison_sources_v1/outputs/TRR-0003/footing/comparator_matrix_v2/finance/public_base/direct_inverse.evidence.json",
+      "sha256": "776dd1ac64b79f75622afed028183800a1c69f86bbd073fcdc9637097e4889e0",
+      "role": "authoritative-raw-timing-copy"
+    },
+    {
+      "bytes": 1878,
+      "path": "experiments/TRR-0003/evidence/comparison_sources_v1/outputs/TRR-0003/footing/comparator_matrix_v2/finance/public_base/frozen_a1_a2_k256.evidence.json",
+      "sha256": "23668dc53d6681671ee9553e3748a45aad36bca19aa4c65807a02a32e4dbb9ec",
+      "role": "authoritative-raw-timing-copy"
+    },
+    {
+      "bytes": 1840,
+      "path": "experiments/TRR-0003/evidence/comparison_sources_v1/outputs/TRR-0003/footing/comparator_matrix_v2/finance/public_base/historical_alpaca_a1.evidence.json",
+      "sha256": "7b1542010f4ee1019f223de1ac82d823246dc0af024d2c1926d99b27ccf9cfc6",
+      "role": "authoritative-raw-timing-copy"
+    },
+    {
+      "bytes": 1848,
+      "path": "experiments/TRR-0003/evidence/comparison_sources_v1/outputs/TRR-0003/footing/comparator_matrix_v2/finance/public_lora_2601/direct_inverse.evidence.json",
+      "sha256": "7b864349e017c03b624343e6a6440361d6576f7f2271f943ff332bec69c43a91",
+      "role": "authoritative-raw-timing-copy"
+    },
+    {
+      "bytes": 1897,
+      "path": "experiments/TRR-0003/evidence/comparison_sources_v1/outputs/TRR-0003/footing/comparator_matrix_v2/finance/public_lora_2601/frozen_a1_a2_k256.evidence.json",
+      "sha256": "e9bf05c29a08307921b22688adb7f7be77a1d6c23b64a68bdfd76421a3953e26",
+      "role": "authoritative-raw-timing-copy"
+    },
+    {
+      "bytes": 1863,
+      "path": "experiments/TRR-0003/evidence/comparison_sources_v1/outputs/TRR-0003/footing/comparator_matrix_v2/finance/public_lora_2601/historical_alpaca_a1.evidence.json",
+      "sha256": "be55823b6e2706f970bf6480fe1ba0d3f97182a361c2c88dbdaef746085b03c2",
+      "role": "authoritative-raw-timing-copy"
+    },
+    {
+      "bytes": 1815,
+      "path": "experiments/TRR-0003/evidence/comparison_sources_v1/outputs/TRR-0003/footing/comparator_matrix_v2/pile/public_base/direct_inverse.evidence.json",
+      "sha256": "1a9d73e5854873e419d00026b87cfdc28077eb94a26929b8c778b0c6c4cf506c",
+      "role": "authoritative-raw-timing-copy"
+    },
+    {
+      "bytes": 1857,
+      "path": "experiments/TRR-0003/evidence/comparison_sources_v1/outputs/TRR-0003/footing/comparator_matrix_v2/pile/public_base/frozen_a1_a2_k256.evidence.json",
+      "sha256": "499114ca953080f0e2d6ace15767733cc8469111fc3d2394f2056a840efff1e1",
+      "role": "authoritative-raw-timing-copy"
+    },
+    {
+      "bytes": 1824,
+      "path": "experiments/TRR-0003/evidence/comparison_sources_v1/outputs/TRR-0003/footing/comparator_matrix_v2/pile/public_base/historical_alpaca_a1.evidence.json",
+      "sha256": "f3b11d0ad20efd893cd0d85314c34985cfd1e2e67d38865ba6ce398691e8ebaa",
+      "role": "authoritative-raw-timing-copy"
+    },
+    {
+      "bytes": 1837,
+      "path": "experiments/TRR-0003/evidence/comparison_sources_v1/outputs/TRR-0003/footing/comparator_matrix_v2/pile/public_lora_2601/direct_inverse.evidence.json",
+      "sha256": "ca5262eacbcdc1beb00a25a5385cc62d1bb0a019abac4e70b94593dc03fd97de",
+      "role": "authoritative-raw-timing-copy"
+    },
+    {
+      "bytes": 1877,
+      "path": "experiments/TRR-0003/evidence/comparison_sources_v1/outputs/TRR-0003/footing/comparator_matrix_v2/pile/public_lora_2601/frozen_a1_a2_k256.evidence.json",
+      "sha256": "09440252a4bc66140d46f78a5659d6fba74679d526d7952335382f3316433eef",
+      "role": "authoritative-raw-timing-copy"
+    },
+    {
+      "bytes": 1848,
+      "path": "experiments/TRR-0003/evidence/comparison_sources_v1/outputs/TRR-0003/footing/comparator_matrix_v2/pile/public_lora_2601/historical_alpaca_a1.evidence.json",
+      "sha256": "d19cf0715d6e9f22845bbced1b82fd2358543b7a2adca2202bef835c35970005",
+      "role": "authoritative-raw-timing-copy"
+    },
+    {
+      "bytes": 13946,
+      "path": "experiments/TRR-0003/evidence/comparison_sources_v1/outputs/TRR-0003/footing/comparator_matrix_v2/run_evidence.json",
+      "sha256": "07c00066e760512278af08827be4d665100750ec756561d6d6b4f24d151c67fb",
+      "role": "authoritative-raw-timing-copy"
+    },
+    {
+      "bytes": 1403734,
+      "path": "experiments/TRR-0003/evidence/comparison_sources_v1/outputs/TRR-0003/track_a_diagnostics/finance_public_base/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16/evidence.json",
+      "sha256": "3ee173a1db12e837f277e768d5413d48c158d9962c88a62556001ad7d3196260",
+      "role": "authoritative-raw-timing-copy"
+    },
+    {
+      "bytes": 1403708,
+      "path": "experiments/TRR-0003/evidence/comparison_sources_v1/outputs/TRR-0003/track_a_diagnostics/finance_public_lora_2601/finance/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16/evidence.json",
+      "sha256": "0bebcf1e967d0045eb1c5224ebeae130cb1e77dc548756449727bd73d39dc88c",
+      "role": "authoritative-raw-timing-copy"
+    },
+    {
+      "bytes": 1203676,
+      "path": "experiments/TRR-0003/evidence/comparison_sources_v1/outputs/TRR-0003/track_a_diagnostics/pile_public_base/pile/public_base/checkpoint_reverse_fixed_point_euclidean_k16/evidence.json",
+      "sha256": "b76eff7d972786b28a399b4b5d518a2b6c6d93ac1005b48dd168a9b757ac46c8",
+      "role": "authoritative-raw-timing-copy"
+    },
+    {
+      "bytes": 1203525,
+      "path": "experiments/TRR-0003/evidence/comparison_sources_v1/outputs/TRR-0003/track_a_diagnostics/pile_public_lora_2601/pile/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16/evidence.json",
+      "sha256": "350093fe0e96de211b8871dfa634155b94f9f589b5c76dcc9fdc1a642444028c",
+      "role": "authoritative-raw-timing-copy"
+    },
+    {
+      "bytes": 30187,
+      "path": "experiments/TRR-0003/evidence/comparison_sources_v1/outputs/TRR-0003/track_b/panel_selected_v1/prediction_evidence.json",
+      "sha256": "df0fafe090a2c55d31a4d8fbd937dbed1f6deed477d9e60b395ad55ad36033c2",
+      "role": "authoritative-raw-timing-copy"
+    },
+    {
+      "bytes": 96595,
+      "path": "experiments/TRR-0003/evidence/control/common_matrix_bindings.json",
+      "sha256": "51d729904387de62c91667bcb2bcd36368244aaace34c8d0ff0095a4c817c377",
+      "role": "freeze-score-or-control-receipt"
+    },
+    {
+      "bytes": 20623,
+      "path": "experiments/TRR-0003/evidence/control/common_matrix_merge_evidence.json",
+      "sha256": "01e6952f966a5dfc569eba1661b9f9a63174b2e9084d21bf62c3366304c26c20",
+      "role": "freeze-score-or-control-receipt"
+    },
+    {
+      "bytes": 114767,
+      "path": "experiments/TRR-0003/evidence/control/common_matrix_registration.json",
+      "sha256": "8e68a5ed48f55c1f55bef04d507b12caf12cdc906071fa49b1461b35d524adf1",
+      "role": "freeze-score-or-control-receipt"
+    },
+    {
+      "bytes": 20088,
+      "path": "experiments/TRR-0003/evidence/control/common_matrix_v2.freeze.json",
+      "sha256": "b80a48456d0c3330e4a350d65c48def82a99065c0b64a979b1d7191754da285f",
+      "role": "freeze-score-or-control-receipt"
+    },
+    {
+      "bytes": 219720,
+      "path": "experiments/TRR-0003/evidence/control/common_score_v2.json",
+      "sha256": "9c25621c966f7e1dcddc96c0f0491127a0a32dfa11ec41fd947ff803093a5bd8",
+      "role": "freeze-score-or-control-receipt"
+    },
+    {
+      "bytes": 1201,
+      "path": "experiments/TRR-0003/evidence/control/final_validation.json",
+      "sha256": "791d6f46a0fbcca51da978f52de89c74a77ca9a18870bd19f5ace1aab9f7a51d",
+      "role": "freeze-score-or-control-receipt"
+    },
+    {
+      "bytes": 4738,
+      "path": "experiments/TRR-0003/evidence/control/historical_a1_provenance_timing_audit.md",
+      "sha256": "00246425228af144a887e0d4e58de90dd9ae09d82b4b422502354c02906ed0d0",
+      "role": "freeze-score-or-control-receipt"
+    },
+    {
+      "bytes": 114767,
+      "path": "experiments/TRR-0003/evidence/control/method_registry_v2.json",
+      "sha256": "8e68a5ed48f55c1f55bef04d507b12caf12cdc906071fa49b1461b35d524adf1",
+      "role": "freeze-score-or-control-receipt"
+    },
+    {
+      "bytes": 88693,
+      "path": "experiments/TRR-0003/evidence/control/panel.json",
+      "sha256": "d1810330f53ebb7e149be45b8c07414e09d30b31b68c7c09d24df3854fec7333",
+      "role": "freeze-score-or-control-receipt"
+    },
+    {
+      "bytes": 8668,
+      "path": "experiments/TRR-0003/evidence/control/plan.json",
+      "sha256": "1a685a8d4bf1608d8cda346ebd954c3653f00d57bea43e02fcae843af2835d83",
+      "role": "freeze-score-or-control-receipt"
+    },
+    {
+      "bytes": 1645,
+      "path": "experiments/TRR-0003/evidence/control/public_resource_manifest.json",
+      "sha256": "9fd0ab2a786dd7884c72dcb0d724ba10dc3912518c05cff7a69267132beefb94",
+      "role": "freeze-score-or-control-receipt"
+    },
+    {
+      "bytes": 11569,
+      "path": "experiments/TRR-0003/evidence/control/track_a_cpu_preflight.json",
+      "sha256": "0badc7a869750bc64809880ea6a97cda0fb9fd7920ebe757e456bb37041ffa28",
+      "role": "freeze-score-or-control-receipt"
+    },
+    {
+      "bytes": 2370,
+      "path": "experiments/TRR-0003/evidence/control/track_a_preregistration.json",
+      "sha256": "38ab52d1051754cc24a27deec9cfcfd6fca9de372e98742002874157b41d43b6",
+      "role": "freeze-score-or-control-receipt"
+    },
+    {
+      "bytes": 3280,
+      "path": "experiments/TRR-0003/evidence/control/track_b_bf16_asset_smoke.json",
+      "sha256": "8da7d1e224335840e1ab7ce027c33e4fcaab7e063a505131bf30f4e10352af59",
+      "role": "freeze-score-or-control-receipt"
+    },
+    {
+      "bytes": 3444,
+      "path": "experiments/TRR-0003/evidence/control/track_b_checkpoint_selection_amendment.json",
+      "sha256": "cb528321bb287f6a3a799d94c40ecb90129822d60bdbcfc5f7d1c0c2f2dcf0ca",
+      "role": "freeze-score-or-control-receipt"
+    },
+    {
+      "bytes": 23919,
+      "path": "experiments/TRR-0003/evidence/control/track_b_fit_records.json",
+      "sha256": "7aee0f6cb452bb1df401c920ca2a628d32fb204d144d72e4419fc8bd34a3a08e",
+      "role": "freeze-score-or-control-receipt"
+    },
+    {
+      "bytes": 11281,
+      "path": "experiments/TRR-0003/evidence/control/track_b_panel_bindings.json",
+      "sha256": "61a7f97aef2fcd20596ab942e85744505c8bb9e56f302f87edbbb91699bfcaec",
+      "role": "freeze-score-or-control-receipt"
+    },
+    {
+      "bytes": 4842,
+      "path": "experiments/TRR-0003/evidence/control/truth_binding_v2.json",
+      "sha256": "14cc6b6bf35d1e52ad903179f8403d6be84b82a7321cd99c76ff354d2d2cb6fa",
+      "role": "freeze-score-or-control-receipt"
+    },
+    {
+      "bytes": 8570,
+      "path": "experiments/TRR-0003/evidence/control/truth_preparation_v2.json",
+      "sha256": "9402c019c6ba203eb1014aba48db93e84d70d3df4fe3e60608ba3c2e2129a118",
+      "role": "freeze-score-or-control-receipt"
+    },
+    {
+      "bytes": 134266,
+      "path": "experiments/TRR-0003/evidence/diagnostics/track_a_bos_forward_v1.json",
+      "sha256": "cde08842f400b1ed59e85ffac134917629e3e996368a4f067d520ce9d2e9fdb5",
+      "role": "truth-free-diagnostic"
+    },
+    {
+      "bytes": 268296,
+      "path": "experiments/TRR-0003/evidence/diagnostics/track_a_bos_forward_v2.json",
+      "sha256": "72ffa41c3d6b78f4240f57c4b40cb9def8193bacb69762c365049c85e30f952b",
+      "role": "truth-free-diagnostic"
+    },
+    {
+      "bytes": 20207,
+      "path": "experiments/TRR-0003/evidence/diagnostics/track_a_identity_v1.json",
+      "sha256": "58f935b213ce564bcecd3c49ffaeb2000adb2d8088d1d0b0955ac3005866080c",
+      "role": "truth-free-diagnostic"
+    },
+    {
+      "bytes": 207165,
+      "path": "experiments/TRR-0003/evidence/diagnostics/track_a_largest_finance_qualification.json",
+      "sha256": "afab35c7b49b269feb46b1749dfff9d22af0bd851330c05cc8ef54c8ee401da8",
+      "role": "truth-free-diagnostic"
+    },
+    {
+      "bytes": 6501,
+      "path": "experiments/TRR-0003/evidence/diagnostics/track_b_token_transfer.json",
+      "sha256": "052e66486988a6b8b990bf8d3f232a14388e1a950ec2d470a81c2e944e0ebaab",
+      "role": "truth-free-diagnostic"
+    },
+    {
+      "bytes": 541,
+      "path": "experiments/TRR-0003/evidence/failures/track_a_bos_forward_v2.failure.json",
+      "sha256": "4a6b5705d17f3e465acbd578440d02d61f56dc657d77d439a5eee7163aff0468",
+      "role": "failed-attempt-receipt"
+    },
+    {
+      "bytes": 551,
+      "path": "experiments/TRR-0003/evidence/failures/track_a_identity_v1.failure.json",
+      "sha256": "422634675eebd49041a698f7a66a797d6e102d1a22dd6c76cd0f3005663f4eea",
+      "role": "failed-attempt-receipt"
+    },
+    {
+      "bytes": 995,
+      "path": "experiments/TRR-0003/evidence/failures/track_b_validation_prepare_attempt-001.json",
+      "sha256": "400000f07bb21f53f0c654ac7c464a6bb1935bd94c6d9d24d0240168d90fecf4",
+      "role": "failed-attempt-receipt"
+    },
+    {
+      "bytes": 4411,
+      "path": "experiments/TRR-0003/evidence/figures/make_track_a_residual_accuracy_time.py",
+      "sha256": "06c96371472f8d4dbba2f2f632054c6dbbae4eff97032ee9af4fec307f1ab0ea",
+      "role": "figure-or-figure-source"
+    },
+    {
+      "bytes": 4759,
+      "path": "experiments/TRR-0003/evidence/figures/track_a_residual_accuracy_time.json",
+      "sha256": "b0fd79e18454318484af4e862031522cb184711591c12d7be99ea54f57cbe42e",
+      "role": "figure-or-figure-source"
+    },
+    {
+      "bytes": 186650,
+      "path": "experiments/TRR-0003/evidence/figures/track_a_residual_accuracy_time.png",
+      "sha256": "96b13b959052a425706c7f950bbcd61a0270b90f4497626e385197752c51b088",
+      "role": "figure-or-figure-source"
+    },
+    {
+      "bytes": 98828,
+      "path": "experiments/TRR-0003/evidence/figures/track_a_residual_accuracy_time.svg",
+      "sha256": "cd7a4d978f16053ec3c07105012d2c3861e6036af89eb5e99e53d1f23f1611ea",
+      "role": "figure-or-figure-source"
+    },
+    {
+      "bytes": 5306,
+      "path": "experiments/TRR-0003/evidence/figures/track_b_curve_and_cost_summary.json",
+      "sha256": "5b1802887f56c44b3badca668d8b6a5343723c2dfefe010fc629ad0edbe79cd6",
+      "role": "figure-or-figure-source"
+    },
+    {
+      "bytes": 170532,
+      "path": "experiments/TRR-0003/evidence/figures/track_b_learning_curves.png",
+      "sha256": "d797c94a433510cbab0e5ae206a3017217e8ac71e64c95a2e2c4112b35ac659c",
+      "role": "figure-or-figure-source"
+    },
+    {
+      "bytes": 65080,
+      "path": "experiments/TRR-0003/evidence/figures/track_b_learning_curves.svg",
+      "sha256": "d7a087e3c75b8ccd58b8a7ab9cffddd7aa5886566a5b34d9166177212e7d3deb",
+      "role": "figure-or-figure-source"
+    },
+    {
+      "bytes": 1201,
+      "path": "experiments/TRR-0003/evidence/final_validation.json",
+      "sha256": "791d6f46a0fbcca51da978f52de89c74a77ca9a18870bd19f5ace1aab9f7a51d"
+    },
+    {
+      "bytes": 4778,
+      "path": "experiments/TRR-0003/evidence/guards/extended_fit_1800_guard_v1.json",
+      "sha256": "fbc75aa1c53f493935b5d32a42fe886b5c51a2a52357f90baffa65fa621fcd16",
+      "role": "resource-guard-receipt"
+    },
+    {
+      "bytes": 4750,
+      "path": "experiments/TRR-0003/evidence/guards/main_fit_guard_v1.json",
+      "sha256": "494979f5aab5ab175c90c26f4e37000cb52b0477fc33edc4bdb43443a2017e4c",
+      "role": "resource-guard-receipt"
+    },
+    {
+      "bytes": 5236,
+      "path": "experiments/TRR-0003/evidence/guards/predict_cells_guard_v1.json",
+      "sha256": "f9011950d630335686e782fb88df96b0a0ca5e788e46122864bceb7accb09fa5",
+      "role": "resource-guard-receipt"
+    },
+    {
+      "bytes": 2010,
+      "path": "experiments/TRR-0003/evidence/guards/public_fit_prepare_guard.json",
+      "sha256": "913e6ecbc3e6aa948918483e5784ed41d88fb4d03838e75ced8d4655fd698907",
+      "role": "resource-guard-receipt"
+    },
+    {
+      "bytes": 3240,
+      "path": "experiments/TRR-0003/evidence/guards/public_fit_prepare_guard_v2.json",
+      "sha256": "5e5325ed5681e2bcfe22c946a148c9ac1e51dda103ccd95dcdf09ad40e95460c",
+      "role": "resource-guard-receipt"
+    },
+    {
+      "bytes": 4615,
+      "path": "experiments/TRR-0003/evidence/guards/qualification_affine_guard.json",
+      "sha256": "3ebca1d8a314e116c79609231c29ab491ea140430e80b387e6e10e3bb3447eb8",
+      "role": "resource-guard-receipt"
+    },
+    {
+      "bytes": 4623,
+      "path": "experiments/TRR-0003/evidence/guards/qualification_affine_guard_v2.json",
+      "sha256": "5deef74f7d6e5dea3316f2d818bbaa1458ff037390c1758598572fc7b90c6275",
+      "role": "resource-guard-receipt"
+    },
+    {
+      "bytes": 5683,
+      "path": "experiments/TRR-0003/evidence/guards/selected_replay_guard_v1.json",
+      "sha256": "77748f55dadbc22d7420fb1dab330509f84d408e56249180a1cc59238709edda",
+      "role": "resource-guard-receipt"
+    },
+    {
+      "bytes": 5826,
+      "path": "experiments/TRR-0003/evidence/guards/token_transfer_guard_v1.json",
+      "sha256": "76dd39fb56eaa016f71729e63efb276bb73a32de7df1fe6f804e43cd35783186",
+      "role": "resource-guard-receipt"
+    },
+    {
+      "bytes": 12352,
+      "path": "experiments/TRR-0003/evidence/predictions/finance/public_base/angular_inverse_control.safetensors",
+      "sha256": "f0bd1f0268005cbbab535c3696022be3648ccdae33501523ebace51be089187b",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 146032,
+      "path": "experiments/TRR-0003/evidence/predictions/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16_i000.safetensors",
+      "sha256": "aeb4c00e014ac9d18830bc95b87a3ac233192cc639d415f9fc55dc73dff2b105",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 146032,
+      "path": "experiments/TRR-0003/evidence/predictions/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16_i001.safetensors",
+      "sha256": "2918d8ec438b9484d337732d04c932578d63b8f6af023cc1225ff297777a21dc",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 146032,
+      "path": "experiments/TRR-0003/evidence/predictions/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16_i002.safetensors",
+      "sha256": "5b79a41e53d13c5eba2166ca35223c3f52c8e995baddfdf4444d24bd3a70e605",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 146032,
+      "path": "experiments/TRR-0003/evidence/predictions/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16_i004.safetensors",
+      "sha256": "ad37b88f0e910e00e4e5d4ee4f65c472a6fbaee05d7b45268af16a8f1e2b9503",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 146032,
+      "path": "experiments/TRR-0003/evidence/predictions/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16_i008.safetensors",
+      "sha256": "312dbd60e9043c3af0d4bec50bde203cecd1078fcffa0b812abd2943a0f6ffc0",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 146040,
+      "path": "experiments/TRR-0003/evidence/predictions/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16_i016.safetensors",
+      "sha256": "d15e4eb4505581948ae78dc00d044649a1d8aab8ad2577a46816e4b005e1b5b5",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 146040,
+      "path": "experiments/TRR-0003/evidence/predictions/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16_i032.safetensors",
+      "sha256": "54ad41afb8db8d3eb6e530ff7c65a9c5041f33a6bd0cb22a625f848daa406152",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 207168,
+      "path": "experiments/TRR-0003/evidence/predictions/finance/public_base/direct_inverse.safetensors",
+      "sha256": "88de37b1f22cf1d2bdda9017b250c10b420f56aec0602cf4e08686d5831dd880",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 3156528,
+      "path": "experiments/TRR-0003/evidence/predictions/finance/public_base/frozen_a1_a2_k256.safetensors",
+      "sha256": "b59aabda2fb843cc0c70d9630239389dcea8e16c49ff8b9b0be94a4b0423a528",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 207168,
+      "path": "experiments/TRR-0003/evidence/predictions/finance/public_base/historical_alpaca_a1.safetensors",
+      "sha256": "ba11ce21abf824db5a6e0d83a0c703aa138fb44f9fb376bc50f4f1b505524087",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 12352,
+      "path": "experiments/TRR-0003/evidence/predictions/finance/public_base/residual_mlp256_token_ce.safetensors",
+      "sha256": "65aeccaca1268fe41b5ccf8c7c39eaa20ff29db8d2a8ee9914bbd66f0732eb70",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 12344,
+      "path": "experiments/TRR-0003/evidence/predictions/finance/public_base/tied_affine_token_ce.safetensors",
+      "sha256": "919e48edd1c29798692c5df16ddd230570791c9489d5815b34329c384f8a628f",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 12360,
+      "path": "experiments/TRR-0003/evidence/predictions/finance/public_lora_2601/angular_inverse_control.safetensors",
+      "sha256": "da404c11e7fe41055e8d86dbc33e84aa59180d0a36db6f8c79bcfa39f4be49cc",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 146048,
+      "path": "experiments/TRR-0003/evidence/predictions/finance/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16_i000.safetensors",
+      "sha256": "48f136aa28645aea6a89d124a461ed22401a1184a2af7057a04544a11ad5ed54",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 146048,
+      "path": "experiments/TRR-0003/evidence/predictions/finance/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16_i001.safetensors",
+      "sha256": "af27defbe15e6d9313cdfd93ea1961cb5be69f66bae29d8a89e0470d460dfdba",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 146048,
+      "path": "experiments/TRR-0003/evidence/predictions/finance/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16_i002.safetensors",
+      "sha256": "08fff20fc97110d33cc0360ec7c8a75718fbbc8d4b8d8031199244766cec231b",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 146048,
+      "path": "experiments/TRR-0003/evidence/predictions/finance/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16_i004.safetensors",
+      "sha256": "af22ee5d21ac270afc18d60850dcf1d0c6cdb15121551e26a95fd1c823787418",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 146048,
+      "path": "experiments/TRR-0003/evidence/predictions/finance/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16_i008.safetensors",
+      "sha256": "debca10e6b88f21ce609d8abf796e15607665d5b01ceb164e23bfbd0f55e9e94",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 146048,
+      "path": "experiments/TRR-0003/evidence/predictions/finance/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16_i016.safetensors",
+      "sha256": "b533ce1765b8b958232f24170ef91c3cb1f84870f215ee4abc2e807a996716ac",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 146048,
+      "path": "experiments/TRR-0003/evidence/predictions/finance/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16_i032.safetensors",
+      "sha256": "0d4063d789980fd368f7624cac8011b2858a555292783d16bb251392bad98bf6",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 207176,
+      "path": "experiments/TRR-0003/evidence/predictions/finance/public_lora_2601/direct_inverse.safetensors",
+      "sha256": "4e98918450f39ae523f3831d2833f88ac393b04c1734e72b84d42a66fc1bf6b7",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 3156536,
+      "path": "experiments/TRR-0003/evidence/predictions/finance/public_lora_2601/frozen_a1_a2_k256.safetensors",
+      "sha256": "513b5be88c4b6c33f8f7c5395e18cc1849cc6a7448783d86564c61988c2b3ee8",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 207176,
+      "path": "experiments/TRR-0003/evidence/predictions/finance/public_lora_2601/historical_alpaca_a1.safetensors",
+      "sha256": "ed788c4dd05bbc302d3b1143bb2b923357e1cd1df1c7b38c8174ffceeef8dfd9",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 12360,
+      "path": "experiments/TRR-0003/evidence/predictions/finance/public_lora_2601/residual_mlp256_token_ce.safetensors",
+      "sha256": "4ceef4618c58a1e8226905a7d7f985899cea94db1dd91d10737f086566dbaa58",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 12352,
+      "path": "experiments/TRR-0003/evidence/predictions/finance/public_lora_2601/tied_affine_token_ce.safetensors",
+      "sha256": "60ab024eebc641beb6a75564a39ce346a6f78c3d2f29809929d659b182a3d975",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 6712,
+      "path": "experiments/TRR-0003/evidence/predictions/pile/public_base/angular_inverse_control.safetensors",
+      "sha256": "eb7e39ba4584ca4e9929f7045065018f9ffa194dd57e6b5f6f71b0db752a6b9b",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 53096,
+      "path": "experiments/TRR-0003/evidence/predictions/pile/public_base/checkpoint_reverse_fixed_point_euclidean_k16_i000.safetensors",
+      "sha256": "de08b4d09080c06e407028994c6e2f212c2c84d4fe0dc3bdd731f775f55b5ee7",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 53096,
+      "path": "experiments/TRR-0003/evidence/predictions/pile/public_base/checkpoint_reverse_fixed_point_euclidean_k16_i001.safetensors",
+      "sha256": "5cb6e8bc8667a74b2e6d92f60c206b4cf8d40d41702c7e67011907670fee612e",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 53096,
+      "path": "experiments/TRR-0003/evidence/predictions/pile/public_base/checkpoint_reverse_fixed_point_euclidean_k16_i002.safetensors",
+      "sha256": "2ecd70dc785ba0dc56033409d7cd6febd23356f20aefb0db6b1fcfe6c4bad8b8",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 53096,
+      "path": "experiments/TRR-0003/evidence/predictions/pile/public_base/checkpoint_reverse_fixed_point_euclidean_k16_i004.safetensors",
+      "sha256": "7e9505ccf69f757beefddd8dceb6e3ef8732a5a30f19ae560fd68a0bb98b923c",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 53096,
+      "path": "experiments/TRR-0003/evidence/predictions/pile/public_base/checkpoint_reverse_fixed_point_euclidean_k16_i008.safetensors",
+      "sha256": "98f10d088a54319863d4b95271cb61f231d9c4bfb0c3fc94e98638c21554e78d",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 53096,
+      "path": "experiments/TRR-0003/evidence/predictions/pile/public_base/checkpoint_reverse_fixed_point_euclidean_k16_i016.safetensors",
+      "sha256": "a3e59389d8c7a459996a48740f1dee58e183b5cc2bfd30a69c64d8c7eab673df",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 53096,
+      "path": "experiments/TRR-0003/evidence/predictions/pile/public_base/checkpoint_reverse_fixed_point_euclidean_k16_i032.safetensors",
+      "sha256": "00ebc6313981bf985f362c73ef09cd72876ea54f8ea0f82153295537d373a48b",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 66352,
+      "path": "experiments/TRR-0003/evidence/predictions/pile/public_base/direct_inverse.safetensors",
+      "sha256": "8128c819bccf420d9c4f5fbc845f8a195b70a38168c787f323200aa504885189",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 988192,
+      "path": "experiments/TRR-0003/evidence/predictions/pile/public_base/frozen_a1_a2_k256.safetensors",
+      "sha256": "0d3475313472ed8b1714473bff4f66098ffd9ab274af540eac1199ece0ce0783",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 66352,
+      "path": "experiments/TRR-0003/evidence/predictions/pile/public_base/historical_alpaca_a1.safetensors",
+      "sha256": "7ef74e5f6616cf9b0b30540123f03e984b13a13f8b4d1da77f642b5b2b4f7d0e",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 6712,
+      "path": "experiments/TRR-0003/evidence/predictions/pile/public_base/residual_mlp256_token_ce.safetensors",
+      "sha256": "89ac18564bfefb7441db4a033d60f789b2af98844bb56c044b8a4cc5a72765d7",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 6704,
+      "path": "experiments/TRR-0003/evidence/predictions/pile/public_base/tied_affine_token_ce.safetensors",
+      "sha256": "5e2fdc283da0036afd8796f12696d8a9fc373fb7c806de013d1ffe2f9442b1dc",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 6720,
+      "path": "experiments/TRR-0003/evidence/predictions/pile/public_lora_2601/angular_inverse_control.safetensors",
+      "sha256": "5197715e6f6522d12192a19bc31e33fab8d3a20a1bf7ddfa19e7fc87bba38178",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 53104,
+      "path": "experiments/TRR-0003/evidence/predictions/pile/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16_i000.safetensors",
+      "sha256": "29527f4c308d6224d9fb35e0c94159eadf63230cc1ea8c5e4f0bcbebfac1edb1",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 53104,
+      "path": "experiments/TRR-0003/evidence/predictions/pile/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16_i001.safetensors",
+      "sha256": "b28c3443860f81b1c18075d314dd5f2d11c44d36aa4a45e4eb2e4104f7f02063",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 53104,
+      "path": "experiments/TRR-0003/evidence/predictions/pile/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16_i002.safetensors",
+      "sha256": "4edd6c5722a0720e4a44b666ee5ce7418b7e02df62ee5c40c73080146057feca",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 53104,
+      "path": "experiments/TRR-0003/evidence/predictions/pile/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16_i004.safetensors",
+      "sha256": "bde552669546f9734c3a5867d4d161078bafbd85a4701e6660dd518867038a9f",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 53104,
+      "path": "experiments/TRR-0003/evidence/predictions/pile/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16_i008.safetensors",
+      "sha256": "a3989a21b090fc93a1e0357de737941b2f9132ccfe3c5c66ac1a5064a9ebe2a4",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 53104,
+      "path": "experiments/TRR-0003/evidence/predictions/pile/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16_i016.safetensors",
+      "sha256": "458a994cbdede7f540abc044ff971e1617157cef6940e76cca19369f1b8ee204",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 53104,
+      "path": "experiments/TRR-0003/evidence/predictions/pile/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16_i032.safetensors",
+      "sha256": "31d86bdf56700a708f1e50599d1e55b1aba2834269d90250708ec22b055e0448",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 66360,
+      "path": "experiments/TRR-0003/evidence/predictions/pile/public_lora_2601/direct_inverse.safetensors",
+      "sha256": "7c474c93c409f92db8f08b2379aa6286cd2e0b198de639413436eba51786bac8",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 988200,
+      "path": "experiments/TRR-0003/evidence/predictions/pile/public_lora_2601/frozen_a1_a2_k256.safetensors",
+      "sha256": "48ef832f0cd41a1dbe23329b1eadc7a0990b582486e8e8651c65c66265031cb2",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 66360,
+      "path": "experiments/TRR-0003/evidence/predictions/pile/public_lora_2601/historical_alpaca_a1.safetensors",
+      "sha256": "29b2428d3cc57ece9a1da0e0cf23a6375ac90325bb82fcc49a672eabebdb2b33",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 6720,
+      "path": "experiments/TRR-0003/evidence/predictions/pile/public_lora_2601/residual_mlp256_token_ce.safetensors",
+      "sha256": "155b55f73230b275ab5897cd0456efbb6e00e08a6b5ac84b7bb1c0b85cfb386f",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 6712,
+      "path": "experiments/TRR-0003/evidence/predictions/pile/public_lora_2601/tied_affine_token_ce.safetensors",
+      "sha256": "cdd9d2810f74ab4fe97b5a368d4cc8d0c302aa3928b35742eccb98d681ae9ea8",
+      "role": "frozen-prediction-tensor"
+    },
+    {
+      "bytes": 52988,
+      "path": "experiments/TRR-0003/evidence/summary/build_comparison_summary_v1.py",
+      "sha256": "746d6e5f9d4bab9891532da44b3604ee72aa6edb8e15437aa551f73afc14c542",
+      "role": "cross-track-summary-or-figure"
+    },
+    {
+      "bytes": 274288,
+      "path": "experiments/TRR-0003/evidence/summary/comparison_summary_v1.json",
+      "sha256": "37bd4d940a17d25749a4f4554623e6f7dc5887cdcf74dfd49acb7434356c1210",
+      "role": "cross-track-summary-or-figure"
+    },
+    {
+      "bytes": 21969,
+      "path": "experiments/TRR-0003/evidence/summary/comparison_summary_v1.md",
+      "sha256": "f455ef171fa7c7d1da4607aa5f0ee5ea4181b381852e7a23f387b86ad59e8879",
+      "role": "cross-track-summary-or-figure"
+    },
+    {
+      "bytes": 512151,
+      "path": "experiments/TRR-0003/evidence/summary/comparison_summary_v1.png",
+      "sha256": "12718ce1cdc08637ce005d1a1bfd0e0689db850e256920866a96795fa98bac74",
+      "role": "cross-track-summary-or-figure"
+    },
+    {
+      "bytes": 119085,
+      "path": "experiments/TRR-0003/evidence/summary/comparison_summary_v1.svg",
+      "sha256": "2e1bfa083dfb64c94bc8ead58a0ae69bc13229c360e96afc9352a5016d4fafa4",
+      "role": "cross-track-summary-or-figure"
+    },
+    {
+      "bytes": 5501,
+      "path": "experiments/TRR-0003/evidence/timing/comparator_matrix_v2_bindings.json",
+      "sha256": "9bb50bb7e723631249f766c657a1d44dc6f0ca199d97db46c789c8abc7448678",
+      "role": "timing-receipt"
+    },
+    {
+      "bytes": 13946,
+      "path": "experiments/TRR-0003/evidence/timing/comparator_matrix_v2_run_evidence.json",
+      "sha256": "07c00066e760512278af08827be4d665100750ec756561d6d6b4f24d151c67fb",
+      "role": "timing-receipt"
+    },
+    {
+      "bytes": 5318,
+      "path": "experiments/TRR-0003/evidence/timing/comparator_qualification_v2.json",
+      "sha256": "c2a769bf35f6897f8d0a3709c969b3e81d7c1dec24926b8bb72a1e4407efc14f",
+      "role": "timing-receipt"
+    },
+    {
+      "bytes": 143725,
+      "path": "experiments/TRR-0003/evidence/timing/track_a_runtime_analysis.json",
+      "sha256": "6d0dcc72f9ab88d10f967a6c41e31c8724caf6ff1a4da07c0226d467df4f4f5a",
+      "role": "timing-receipt"
+    },
+    {
+      "bytes": 98218,
+      "path": "experiments/TRR-0003/evidence/timing/track_b_extended_fit_1800_evidence.json",
+      "sha256": "6c63befd730d16460c9d4c0778ce465c7e1556347dc102750c78ff70e8ad6b9e",
+      "role": "timing-receipt"
+    },
+    {
+      "bytes": 2963,
+      "path": "experiments/TRR-0003/evidence/timing/track_b_prepare_evidence.json",
+      "sha256": "774fd93d0729da9fddb1c88f434a686c0c51c84626d5561de80e69a8154c3278",
+      "role": "timing-receipt"
+    },
+    {
+      "bytes": 8496,
+      "path": "experiments/TRR-0003/evidence/timing/track_b_selected_replay_evidence.json",
+      "sha256": "b448a8d13e3cf14b5e74305c79df696e59a889d4ff7890f608acb16ed4c778d0",
+      "role": "timing-receipt"
+    },
+    {
+      "bytes": 5683,
+      "path": "experiments/TRR-0003/evidence/timing/track_b_selected_replay_guard.json",
+      "sha256": "77748f55dadbc22d7420fb1dab330509f84d408e56249180a1cc59238709edda",
+      "role": "timing-receipt"
+    },
+    {
+      "bytes": 5826,
+      "path": "experiments/TRR-0003/evidence/timing/track_b_token_transfer_guard.json",
+      "sha256": "76dd39fb56eaa016f71729e63efb276bb73a32de7df1fe6f804e43cd35783186",
+      "role": "timing-receipt"
+    },
+    {
+      "bytes": 2360,
+      "path": "experiments/TRR-0003/footing/comparator_preflight.json",
+      "sha256": "bb9f067f580e13e1be85fa8730711efe8bbad0047ad36f9509e7d308077ab1d0"
+    },
+    {
+      "bytes": 21432,
+      "path": "experiments/TRR-0003/footing/comparator_run_guard.py",
+      "sha256": "dc736b386ddda352127e0537dcb4b09e483f14582dc93979583e411109600485"
+    },
+    {
+      "bytes": 4969,
+      "path": "experiments/TRR-0003/footing/footing_report.md",
+      "sha256": "14060ae4ec4321740ea2c82c663aa3641894ea58b16ed52d86e6a171379cc154"
+    },
+    {
+      "bytes": 5502,
+      "path": "experiments/TRR-0003/footing/inventory.json",
+      "sha256": "4f900c377daccf13b843a041b4f9cd7e634b0354effcf7fdbd436334a61f883e"
+    },
+    {
+      "bytes": 2259,
+      "path": "experiments/TRR-0003/footing/lora_2601_drift.json",
+      "sha256": "1f0444544f43e5a14b4932aba1b95face5e505a9e01cd4fa80d03217054109b3"
+    },
+    {
+      "bytes": 88693,
+      "path": "experiments/TRR-0003/footing/panel.json",
+      "sha256": "d1810330f53ebb7e149be45b8c07414e09d30b31b68c7c09d24df3854fec7333"
+    },
+    {
+      "bytes": 8668,
+      "path": "experiments/TRR-0003/footing/plan.json",
+      "sha256": "1a685a8d4bf1608d8cda346ebd954c3653f00d57bea43e02fcae843af2835d83"
+    },
+    {
+      "bytes": 4836,
+      "path": "experiments/TRR-0003/footing/truth_binding.json",
+      "sha256": "abd2a64f01b6751ce482b50060f3fd857fa7b07537b6b9abd0f9a2702c864d97"
+    },
+    {
+      "bytes": 4842,
+      "path": "experiments/TRR-0003/footing/truth_binding_v2.json",
+      "sha256": "14cc6b6bf35d1e52ad903179f8403d6be84b82a7321cd99c76ff354d2d2cb6fa"
+    },
+    {
+      "bytes": 8316,
+      "path": "experiments/TRR-0003/footing/truth_preparation.json",
+      "sha256": "d7f9aa44314c0a3046804ad2f468b84d382ea24f139091d648943cca0f40e505"
+    },
+    {
+      "bytes": 8570,
+      "path": "experiments/TRR-0003/footing/truth_preparation_v2.json",
+      "sha256": "9402c019c6ba203eb1014aba48db93e84d70d3df4fe3e60608ba3c2e2129a118"
+    },
+    {
+      "bytes": 2541,
+      "path": "experiments/TRR-0003/track_a/README.md",
+      "sha256": "d9b301740fad71a52cca838437cacd2d0aac613cc89953d6da9c3ac4bdab4c5a"
+    },
+    {
+      "bytes": 11569,
+      "path": "experiments/TRR-0003/track_a/cpu_preflight.json",
+      "sha256": "0badc7a869750bc64809880ea6a97cda0fb9fd7920ebe757e456bb37041ffa28"
+    },
+    {
+      "bytes": 2370,
+      "path": "experiments/TRR-0003/track_a/preregistration.json",
+      "sha256": "38ab52d1051754cc24a27deec9cfcfd6fca9de372e98742002874157b41d43b6"
+    },
+    {
+      "bytes": 1645,
+      "path": "experiments/TRR-0003/track_a/public_resource_manifest.json",
+      "sha256": "9fd0ab2a786dd7884c72dcb0d724ba10dc3912518c05cff7a69267132beefb94"
+    },
+    {
+      "bytes": 5808,
+      "path": "experiments/TRR-0003/track_a/report_fragment.md",
+      "sha256": "fbc0a064dd256ba1785c7d11a2b08f228b83e5374857dcf3624eccccb139518b"
+    },
+    {
+      "bytes": 143725,
+      "path": "experiments/TRR-0003/track_a/runtime_analysis.json",
+      "sha256": "6d0dcc72f9ab88d10f967a6c41e31c8724caf6ff1a4da07c0226d467df4f4f5a"
+    },
+    {
+      "bytes": 10348,
+      "path": "experiments/TRR-0003/track_b/analyze_token_transfer.py",
+      "sha256": "2f6b5b1ee7a66cdb4ca0f4a997194e859ea575912fcb1232512f74dcd9664609"
+    },
+    {
+      "bytes": 3280,
+      "path": "experiments/TRR-0003/track_b/bf16_asset_smoke.json",
+      "sha256": "8da7d1e224335840e1ab7ce027c33e4fcaab7e063a505131bf30f4e10352af59"
+    },
+    {
+      "bytes": 3444,
+      "path": "experiments/TRR-0003/track_b/checkpoint_selection_amendment.json",
+      "sha256": "cb528321bb287f6a3a799d94c40ecb90129822d60bdbcfc5f7d1c0c2f2dcf0ca"
+    },
+    {
+      "bytes": 4778,
+      "path": "experiments/TRR-0003/track_b/extended_fit_1800_guard_v1.json",
+      "sha256": "fbc75aa1c53f493935b5d32a42fe886b5c51a2a52357f90baffa65fa621fcd16"
+    },
+    {
+      "bytes": 0,
+      "path": "experiments/TRR-0003/track_b/extended_fit_1800_guard_v1.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 183,
+      "path": "experiments/TRR-0003/track_b/extended_fit_1800_guard_v1.stdout.log",
+      "sha256": "b15e1c6bef73245553ec5ec3f144d8b4fa6c65d3feef47c3e38951ba9c10703c"
+    },
+    {
+      "bytes": 16376,
+      "path": "experiments/TRR-0003/track_b/inventory_v1.json",
+      "sha256": "286e7915b39dee8c47bdbdd49f8bfa34cdfe076265b8fcd5d6a544164da134e2"
+    },
+    {
+      "bytes": 8664,
+      "path": "experiments/TRR-0003/track_b/plan.json",
+      "sha256": "3297cb3fb5324cdd444103f83c926242205b8e6c4d775c86525ef27470fa16e7"
+    },
+    {
+      "bytes": 22300,
+      "path": "experiments/TRR-0003/track_b/predict_cells.py",
+      "sha256": "8af9259e8e479e6ea1656ace970474ae299534c843896f5045c2b7de227b5f7c"
+    },
+    {
+      "bytes": 5236,
+      "path": "experiments/TRR-0003/track_b/predict_cells_guard_v1.json",
+      "sha256": "f9011950d630335686e782fb88df96b0a0ca5e788e46122864bceb7accb09fa5"
+    },
+    {
+      "bytes": 0,
+      "path": "experiments/TRR-0003/track_b/predict_cells_guard_v1.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 184,
+      "path": "experiments/TRR-0003/track_b/predict_cells_guard_v1.stdout.log",
+      "sha256": "576f01035c4fb2e9cd10926c01f812663d7bed520f831f7f54412a55c13f1987"
+    },
+    {
+      "bytes": 4173,
+      "path": "experiments/TRR-0003/track_b/preflight.json",
+      "sha256": "5b20c966ef5e9383afd875db264bc1fea659b50c40650b3e208e414d515077d3"
+    },
+    {
+      "bytes": 11857,
+      "path": "experiments/TRR-0003/track_b/prepare_validation_slice.py",
+      "sha256": "f0e71bb3f156910c5e866788461acb3ec602cfc5a7200ce4cd1c1fccb912129d"
+    },
+    {
+      "bytes": 3240,
+      "path": "experiments/TRR-0003/track_b/public_fit_prepare_guard_v2.json",
+      "sha256": "5e5325ed5681e2bcfe22c946a148c9ac1e51dda103ccd95dcdf09ad40e95460c"
+    },
+    {
+      "bytes": 13854,
+      "path": "experiments/TRR-0003/track_b/replay_selected.py",
+      "sha256": "c8589ac44a9a1e82aeb8f372b5af20212e05db215af1c3a0db9e6446d0fa1e94"
+    },
+    {
+      "bytes": 8576,
+      "path": "experiments/TRR-0003/track_b/report_fragment.md",
+      "sha256": "537afc1a3662b51ae68d4f9f2b716055cdd034a9076adabe6c0c432e3530b2d7"
+    },
+    {
+      "bytes": 9905,
+      "path": "experiments/TRR-0003/track_b/run_guard.py",
+      "sha256": "016cc97c999daf10464e4bfe19b30c9b1d3baa6b01cb9420f7b3ada204dfb4c2"
+    },
+    {
+      "bytes": 5683,
+      "path": "experiments/TRR-0003/track_b/selected_replay_guard_v1.json",
+      "sha256": "77748f55dadbc22d7420fb1dab330509f84d408e56249180a1cc59238709edda"
+    },
+    {
+      "bytes": 0,
+      "path": "experiments/TRR-0003/track_b/selected_replay_guard_v1.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 106,
+      "path": "experiments/TRR-0003/track_b/selected_replay_guard_v1.stdout.log",
+      "sha256": "81172e8be9e0f1df2fc989eb31f0d790c0ff407c3e2accbed6c7336bc32b29b8"
+    },
+    {
+      "bytes": 6501,
+      "path": "experiments/TRR-0003/track_b/token_transfer_diagnostic_v1.json",
+      "sha256": "052e66486988a6b8b990bf8d3f232a14388e1a950ec2d470a81c2e944e0ebaab"
+    },
+    {
+      "bytes": 5826,
+      "path": "experiments/TRR-0003/track_b/token_transfer_guard_v1.json",
+      "sha256": "76dd39fb56eaa016f71729e63efb276bb73a32de7df1fe6f804e43cd35783186"
+    },
+    {
+      "bytes": 995,
+      "path": "experiments/TRR-0003/track_b/validation_prepare_failures/attempt-001.json",
+      "sha256": "400000f07bb21f53f0c654ac7c464a6bb1935bd94c6d9d24d0240168d90fecf4"
+    },
+    {
+      "bytes": 15328,
+      "path": "research/DUAL_BENCHMARK_PROTOCOL.md",
+      "sha256": "86806c33cbaab2b5f23590a06cea2945013067171984c4293daedee49e37a1f4"
+    },
+    {
+      "bytes": 22919,
+      "path": "scripts/trr0003_footing.py",
+      "sha256": "ac311250a96ad06aa8fb0fe284664d09b7a7210fd6f8c1e8a9136ae1b65978d9"
+    },
+    {
+      "bytes": 44976,
+      "path": "scripts/trr0003_footing_compare.py",
+      "sha256": "bb3690a481014f3ea12b411a3ec6eb58d7c888ef6c4135f9e03908027857f98e"
+    },
+    {
+      "bytes": 51312,
+      "path": "scripts/trr0003_track_a.py",
+      "sha256": "9c8c3eb34a89743ce20c484713410350cafa99046fdefc59cd37eb331a8c4fdd"
+    },
+    {
+      "bytes": 22650,
+      "path": "scripts/trr0003_track_a_bos_diagnostic.py",
+      "sha256": "ff645585e80235a2757070a50597b550a305787a0249dce08aa3aca8d4ae656f",
+      "role": "code-binding"
+    },
+    {
+      "bytes": 28157,
+      "path": "scripts/trr0003_track_a_export.py",
+      "sha256": "7c918ab7484d485272b305e462864db881fe335de2e87907b7461f375bc66095"
+    },
+    {
+      "bytes": 29099,
+      "path": "scripts/trr0003_track_a_identity.py",
+      "sha256": "042bee01caea81f2644f8988d139e3fbbcbc0d2ed1559f1bde241228488bbf75"
+    },
+    {
+      "bytes": 30310,
+      "path": "scripts/trr0003_track_b.py",
+      "sha256": "858009173dff014bb7990b13d8e26e39119da7bba1732f01b72b510ae69bbc83"
+    },
+    {
+      "bytes": 16557,
+      "path": "src/token_reconstruction/checkpoint_inverse.py",
+      "sha256": "b872dedf1fd83016ce6559a9c1fff0b52cb5433ae5a43a2daef8049cc6252626"
+    },
+    {
+      "bytes": 8587,
+      "path": "src/token_reconstruction/experiment_runtime.py",
+      "sha256": "9bfe8ba34fe473faf1ace17f16ea0e5e363728822bd715ddcf21c33c4ffc2177"
+    },
+    {
+      "bytes": 56490,
+      "path": "src/token_reconstruction/footing.py",
+      "sha256": "9adfb838b2f42c936c7d6397579dd5477f0063cf61c8d5a0a6d7e21a1d2a9b36"
+    },
+    {
+      "bytes": 10049,
+      "path": "src/token_reconstruction/freeze.py",
+      "sha256": "2449846bdbaf3afb520cdca24ab373afe5b8297cb82ee510780719a02c6ab35c"
+    },
+    {
+      "bytes": 6236,
+      "path": "src/token_reconstruction/inverse.py",
+      "sha256": "083fd8cf8cf7dad2c8107db0c3929e67c58fc37389c07ea70c1ad82dcac5f740"
+    },
+    {
+      "bytes": 8297,
+      "path": "src/token_reconstruction/public_prefix.py",
+      "sha256": "b9dca1d8d56c7c07413015aea4bde79e8ceac827c32ee9bc0d1a236ea1dd35f6"
+    },
+    {
+      "bytes": 28739,
+      "path": "src/token_reconstruction/standalone_decoder.py",
+      "sha256": "e6228195ffb8595f98707b402fb1b1caab3b237ceabfdbe1d6fe6dced67a73d0"
+    },
+    {
+      "bytes": 6469,
+      "path": "tests/test_checkpoint_inverse.py",
+      "sha256": "24abc03068baf2de136bef51fbb72fa9b9a503574d60d27dae2e353758a285e0"
+    },
+    {
+      "bytes": 1980,
+      "path": "tests/test_track_a_bos_diagnostic.py",
+      "sha256": "456d42f5dfe95faa4f27136ade15f996131b618f9f8827bb7fe11358bc5c6ab9",
+      "role": "regression-test"
+    },
+    {
+      "bytes": 4685,
+      "path": "tests/test_track_a_identity.py",
+      "sha256": "9595d80380312ed1a35643c30cfc337e81f52bb3ad6f0449e3813f6b62c673e8"
+    },
+    {
+      "bytes": 7434,
+      "path": "tests/test_track_a_runner.py",
+      "sha256": "748ad236417dfeda93bc82a7a5a478cc8f3e9def0ec133269a1be48929ba7856"
+    },
+    {
+      "bytes": 25758,
+      "path": "tests/test_trr0003_footing.py",
+      "sha256": "f9dad11f25b1b6495bcd112ebbc4e2a4490ac47478a6a2b95cd1b2c62a42a137"
+    }
+  ],
+  "failed_attempts": [
+    {
+      "artifact": {
+        "bytes": 551,
+        "path": "outputs/TRR-0003/track_a_identity/public_prefix_forward.failure.json",
+        "sha256": "422634675eebd49041a698f7a66a797d6e102d1a22dd6c76cd0f3005663f4eea"
+      },
+      "cause": "resource module shadowed by ResourceBundle parameter",
+      "resolution": "sys_resource import and real-loader regression",
+      "truth_opened": false
+    },
+    {
+      "artifact": {
+        "bytes": 995,
+        "path": "experiments/TRR-0003/track_b/validation_prepare_failures/attempt-001.json",
+        "sha256": "400000f07bb21f53f0c654ac7c464a6bb1935bd94c6d9d24d0240168d90fecf4"
+      },
+      "cause": "public validation preparation wiring failure",
+      "resolution": "dedicated validation slice v2",
+      "truth_opened": false
+    },
+    {
+      "artifact": {
+        "bytes": 2010,
+        "path": "experiments/TRR-0003/track_b/public_fit_prepare_guard.json",
+        "sha256": "913e6ecbc3e6aa948918483e5784ed41d88fb4d03838e75ced8d4655fd698907"
+      },
+      "cause": "tuple-unpacking failure: not enough values to unpack (expected 3, got 2)",
+      "resolution": "corrected preparation tuple handling; public_fit_v2 preparation then succeeded",
+      "returncode": 2,
+      "status": "FAILED_PRESERVED_EXCLUDED",
+      "truth_opened": false
+    },
+    {
+      "artifact": {
+        "bytes": 4615,
+        "path": "experiments/TRR-0003/track_b/qualification_affine_guard.json",
+        "sha256": "3ebca1d8a314e116c79609231c29ab491ea140430e80b387e6e10e3bb3447eb8"
+      },
+      "cause": "BF16 tensor hashing failure: TypeError: Got unsupported ScalarType BFloat16",
+      "resolution": "added BF16-safe byte hashing; qualification_affine_guard_v2 then passed",
+      "guard_passed": false,
+      "resource_preflight": "PASS",
+      "returncode": 1,
+      "status": "FAILED_PRESERVED_EXCLUDED",
+      "truth_opened": false
+    },
+    {
+      "artifact": {
+        "bytes": 6314,
+        "path": "experiments/TRR-0003/footing/comparator_matrix_guard_v1.json",
+        "sha256": "985b20acbacb1061b818cf5724a7f39d1843b1cb911a34b774c5c23df6760963"
+      },
+      "cause": "BOS candidate validation rejected an invalid or out-of-vocabulary placeholder token (-1)",
+      "resolution": "normalized the intentionally unused BOS candidate in the output adapter; comparator_matrix_v2 then passed",
+      "guard_process_completed": true,
+      "returncode": 1,
+      "status": "FAILED_PRESERVED_EXCLUDED",
+      "truth_opened": false
+    },
+    {
+      "artifact": {
+        "bytes": 541,
+        "path": "outputs/TRR-0003/track_a_bos_forward_diagnostic/public_bos_forward_v2.failure.json",
+        "sha256": "4a6b5705d17f3e465acbd578440d02d61f56dc657d77d439a5eee7163aff0468"
+      },
+      "cause": "malformed model/resource-manifest path binding: TrackAError: resource manifest does not bind the requested model path",
+      "resolution": "corrected the model/resource-manifest path binding before the successful v2 diagnostic",
+      "status": "FAILED_CLOSED",
+      "truth_opened": false,
+      "shared_panel_loaded": false
+    }
+  ],
+  "last_accepted_task": "TRR-0001",
+  "methods": {
+    "historical_comparators": {
+      "method_ids": [
+        "historical_alpaca_a1",
+        "frozen_a1_a2_k256",
+        "direct_inverse"
+      ],
+      "states": {
+        "direct_inverse_state": {
+          "bytes": 16785688,
+          "path": "outputs/TRR-0001/reconstructor_public/inverses/cut4.safetensors",
+          "sha256": "9e2487f85057748130bf87b2aad0a883f3c36dfc052eefd83c0f5c35497a24e3"
+        },
+        "historical_alpaca_a1_lens": {
+          "bytes": 16787653,
+          "path": "outputs/TRR-0002/blind/reconstructor_input/public_a1_lens.pt",
+          "sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742"
+        },
+        "public_lora_update": {
+          "bytes": 427632,
+          "path": "outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors",
+          "sha256": "eea7bb49f801b61df2e26a8f59af7c3096f6f3a2604404e16e589443bcfba595"
+        },
+        "public_prefix_reference": {
+          "bytes": 31291,
+          "path": "outputs/TRR-0002/configuration-search/fresh-blind-code/reference/strict_bos/round001_teacher.py",
+          "sha256": "10532a746cb8c30eb2caf338e206e1fa9d85e708d4db43a0d8fd4a2ff1a6f8bd"
+        }
+      },
+      "status": "PANEL_SCORED_FROM_FROZEN_RECEIPT"
+    },
+    "track_a": {
+      "aliases_expected_in_common_matrix": [
+        "checkpoint_reverse_fixed_point_euclidean_k16_i000",
+        "checkpoint_reverse_fixed_point_euclidean_k16_i001",
+        "checkpoint_reverse_fixed_point_euclidean_k16_i002",
+        "checkpoint_reverse_fixed_point_euclidean_k16_i004",
+        "checkpoint_reverse_fixed_point_euclidean_k16_i008",
+        "checkpoint_reverse_fixed_point_euclidean_k16_i016",
+        "checkpoint_reverse_fixed_point_euclidean_k16_i032"
+      ],
+      "candidate_prefix_simulations": 0,
+      "cell_evidence": [
+        {
+          "bytes": 1403734,
+          "path": "outputs/TRR-0003/track_a_diagnostics/finance_public_base/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16/evidence.json",
+          "sha256": "3ee173a1db12e837f277e768d5413d48c158d9962c88a62556001ad7d3196260"
+        },
+        {
+          "bytes": 1403708,
+          "path": "outputs/TRR-0003/track_a_diagnostics/finance_public_lora_2601/finance/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16/evidence.json",
+          "sha256": "0bebcf1e967d0045eb1c5224ebeae130cb1e77dc548756449727bd73d39dc88c"
+        },
+        {
+          "bytes": 1203676,
+          "path": "outputs/TRR-0003/track_a_diagnostics/pile_public_base/pile/public_base/checkpoint_reverse_fixed_point_euclidean_k16/evidence.json",
+          "sha256": "b76eff7d972786b28a399b4b5d518a2b6c6d93ac1005b48dd168a9b757ac46c8"
+        },
+        {
+          "bytes": 1203525,
+          "path": "outputs/TRR-0003/track_a_diagnostics/pile_public_lora_2601/pile/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16/evidence.json",
+          "sha256": "350093fe0e96de211b8871dfa634155b94f9f589b5c76dcc9fdc1a642444028c"
+        }
+      ],
+      "execution_commit": "770f3d833df42f5ac98f423c3e459dbdb74a9e41",
+      "export_execution_commit": "2a8070e5b48ff1e817118ed7afcc2b4996a5ea09",
+      "exported_aliases": [
+        {
+          "bytes": 400556,
+          "path": "outputs/TRR-0003/track_a_export_v1/export_manifest.json",
+          "sha256": "702ec7aa2790406da53e206cf331ed0a01e63c7ef1b446acbd7e95b57b1da465"
+        },
+        {
+          "bytes": 146032,
+          "path": "outputs/TRR-0003/track_a_export_v1/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16_i000.safetensors",
+          "sha256": "aeb4c00e014ac9d18830bc95b87a3ac233192cc639d415f9fc55dc73dff2b105"
+        },
+        {
+          "bytes": 146032,
+          "path": "outputs/TRR-0003/track_a_export_v1/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16_i001.safetensors",
+          "sha256": "2918d8ec438b9484d337732d04c932578d63b8f6af023cc1225ff297777a21dc"
+        },
+        {
+          "bytes": 146032,
+          "path": "outputs/TRR-0003/track_a_export_v1/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16_i002.safetensors",
+          "sha256": "5b79a41e53d13c5eba2166ca35223c3f52c8e995baddfdf4444d24bd3a70e605"
+        },
+        {
+          "bytes": 146032,
+          "path": "outputs/TRR-0003/track_a_export_v1/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16_i004.safetensors",
+          "sha256": "ad37b88f0e910e00e4e5d4ee4f65c472a6fbaee05d7b45268af16a8f1e2b9503"
+        },
+        {
+          "bytes": 146032,
+          "path": "outputs/TRR-0003/track_a_export_v1/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16_i008.safetensors",
+          "sha256": "312dbd60e9043c3af0d4bec50bde203cecd1078fcffa0b812abd2943a0f6ffc0"
+        },
+        {
+          "bytes": 146040,
+          "path": "outputs/TRR-0003/track_a_export_v1/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16_i016.safetensors",
+          "sha256": "d15e4eb4505581948ae78dc00d044649a1d8aab8ad2577a46816e4b005e1b5b5"
+        },
+        {
+          "bytes": 146040,
+          "path": "outputs/TRR-0003/track_a_export_v1/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16_i032.safetensors",
+          "sha256": "54ad41afb8db8d3eb6e530ff7c65a9c5041f33a6bd0cb22a625f848daa406152"
+        },
+        {
+          "bytes": 146048,
+          "path": "outputs/TRR-0003/track_a_export_v1/finance/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16_i000.safetensors",
+          "sha256": "48f136aa28645aea6a89d124a461ed22401a1184a2af7057a04544a11ad5ed54"
+        },
+        {
+          "bytes": 146048,
+          "path": "outputs/TRR-0003/track_a_export_v1/finance/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16_i001.safetensors",
+          "sha256": "af27defbe15e6d9313cdfd93ea1961cb5be69f66bae29d8a89e0470d460dfdba"
+        },
+        {
+          "bytes": 146048,
+          "path": "outputs/TRR-0003/track_a_export_v1/finance/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16_i002.safetensors",
+          "sha256": "08fff20fc97110d33cc0360ec7c8a75718fbbc8d4b8d8031199244766cec231b"
+        },
+        {
+          "bytes": 146048,
+          "path": "outputs/TRR-0003/track_a_export_v1/finance/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16_i004.safetensors",
+          "sha256": "af22ee5d21ac270afc18d60850dcf1d0c6cdb15121551e26a95fd1c823787418"
+        },
+        {
+          "bytes": 146048,
+          "path": "outputs/TRR-0003/track_a_export_v1/finance/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16_i008.safetensors",
+          "sha256": "debca10e6b88f21ce609d8abf796e15607665d5b01ceb164e23bfbd0f55e9e94"
+        },
+        {
+          "bytes": 146048,
+          "path": "outputs/TRR-0003/track_a_export_v1/finance/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16_i016.safetensors",
+          "sha256": "b533ce1765b8b958232f24170ef91c3cb1f84870f215ee4abc2e807a996716ac"
+        },
+        {
+          "bytes": 146048,
+          "path": "outputs/TRR-0003/track_a_export_v1/finance/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16_i032.safetensors",
+          "sha256": "0d4063d789980fd368f7624cac8011b2858a555292783d16bb251392bad98bf6"
+        },
+        {
+          "bytes": 53096,
+          "path": "outputs/TRR-0003/track_a_export_v1/pile/public_base/checkpoint_reverse_fixed_point_euclidean_k16_i000.safetensors",
+          "sha256": "de08b4d09080c06e407028994c6e2f212c2c84d4fe0dc3bdd731f775f55b5ee7"
+        },
+        {
+          "bytes": 53096,
+          "path": "outputs/TRR-0003/track_a_export_v1/pile/public_base/checkpoint_reverse_fixed_point_euclidean_k16_i001.safetensors",
+          "sha256": "5cb6e8bc8667a74b2e6d92f60c206b4cf8d40d41702c7e67011907670fee612e"
+        },
+        {
+          "bytes": 53096,
+          "path": "outputs/TRR-0003/track_a_export_v1/pile/public_base/checkpoint_reverse_fixed_point_euclidean_k16_i002.safetensors",
+          "sha256": "2ecd70dc785ba0dc56033409d7cd6febd23356f20aefb0db6b1fcfe6c4bad8b8"
+        },
+        {
+          "bytes": 53096,
+          "path": "outputs/TRR-0003/track_a_export_v1/pile/public_base/checkpoint_reverse_fixed_point_euclidean_k16_i004.safetensors",
+          "sha256": "7e9505ccf69f757beefddd8dceb6e3ef8732a5a30f19ae560fd68a0bb98b923c"
+        },
+        {
+          "bytes": 53096,
+          "path": "outputs/TRR-0003/track_a_export_v1/pile/public_base/checkpoint_reverse_fixed_point_euclidean_k16_i008.safetensors",
+          "sha256": "98f10d088a54319863d4b95271cb61f231d9c4bfb0c3fc94e98638c21554e78d"
+        },
+        {
+          "bytes": 53096,
+          "path": "outputs/TRR-0003/track_a_export_v1/pile/public_base/checkpoint_reverse_fixed_point_euclidean_k16_i016.safetensors",
+          "sha256": "a3e59389d8c7a459996a48740f1dee58e183b5cc2bfd30a69c64d8c7eab673df"
+        },
+        {
+          "bytes": 53096,
+          "path": "outputs/TRR-0003/track_a_export_v1/pile/public_base/checkpoint_reverse_fixed_point_euclidean_k16_i032.safetensors",
+          "sha256": "00ebc6313981bf985f362c73ef09cd72876ea54f8ea0f82153295537d373a48b"
+        },
+        {
+          "bytes": 53104,
+          "path": "outputs/TRR-0003/track_a_export_v1/pile/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16_i000.safetensors",
+          "sha256": "29527f4c308d6224d9fb35e0c94159eadf63230cc1ea8c5e4f0bcbebfac1edb1"
+        },
+        {
+          "bytes": 53104,
+          "path": "outputs/TRR-0003/track_a_export_v1/pile/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16_i001.safetensors",
+          "sha256": "b28c3443860f81b1c18075d314dd5f2d11c44d36aa4a45e4eb2e4104f7f02063"
+        },
+        {
+          "bytes": 53104,
+          "path": "outputs/TRR-0003/track_a_export_v1/pile/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16_i002.safetensors",
+          "sha256": "4edd6c5722a0720e4a44b666ee5ce7418b7e02df62ee5c40c73080146057feca"
+        },
+        {
+          "bytes": 53104,
+          "path": "outputs/TRR-0003/track_a_export_v1/pile/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16_i004.safetensors",
+          "sha256": "bde552669546f9734c3a5867d4d161078bafbd85a4701e6660dd518867038a9f"
+        },
+        {
+          "bytes": 53104,
+          "path": "outputs/TRR-0003/track_a_export_v1/pile/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16_i008.safetensors",
+          "sha256": "a3989a21b090fc93a1e0357de737941b2f9132ccfe3c5c66ac1a5064a9ebe2a4"
+        },
+        {
+          "bytes": 53104,
+          "path": "outputs/TRR-0003/track_a_export_v1/pile/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16_i016.safetensors",
+          "sha256": "458a994cbdede7f540abc044ff971e1617157cef6940e76cca19369f1b8ee204"
+        },
+        {
+          "bytes": 53104,
+          "path": "outputs/TRR-0003/track_a_export_v1/pile/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16_i032.safetensors",
+          "sha256": "31d86bdf56700a708f1e50599d1e55b1aba2834269d90250708ec22b055e0448"
+        }
+      ],
+      "fitted_parameters": false,
+      "identity_control": [
+        {
+          "bytes": 551,
+          "path": "outputs/TRR-0003/track_a_identity/public_prefix_forward.failure.json",
+          "sha256": "422634675eebd49041a698f7a66a797d6e102d1a22dd6c76cd0f3005663f4eea"
+        },
+        {
+          "bytes": 20207,
+          "path": "outputs/TRR-0003/track_a_identity/public_prefix_forward.json",
+          "sha256": "58f935b213ce564bcecd3c49ffaeb2000adb2d8088d1d0b0955ac3005866080c"
+        },
+        {
+          "bytes": 207165,
+          "path": "outputs/TRR-0003/track_a_qualification_diagnostics/finance_public_base/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16/evidence.json",
+          "sha256": "afab35c7b49b269feb46b1749dfff9d22af0bd851330c05cc8ef54c8ee401da8"
+        }
+      ],
+      "method_id": "checkpoint_reverse_fixed_point_euclidean_k16",
+      "qualification": [
+        {
+          "bytes": 148912,
+          "path": "outputs/TRR-0003/track_a_qualification_diagnostics/finance_public_base/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16/iteration_000.safetensors",
+          "sha256": "584c460e1af80136233e0e1d7871745a6b57bea66fb9ee7198dd399385c77e7d"
+        },
+        {
+          "bytes": 148912,
+          "path": "outputs/TRR-0003/track_a_qualification_diagnostics/finance_public_base/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16/iteration_001.safetensors",
+          "sha256": "9e38717f96b0c066cf2db3e1f1af0178274dd0cc19757b6b94cbfca24cc35d92"
+        },
+        {
+          "bytes": 148912,
+          "path": "outputs/TRR-0003/track_a_qualification_diagnostics/finance_public_base/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16/iteration_002.safetensors",
+          "sha256": "fe250bf05ea2e516846f911a59b13956fc3f0796e0d1b060a3b6e950cbe86f22"
+        },
+        {
+          "bytes": 148912,
+          "path": "outputs/TRR-0003/track_a_qualification_diagnostics/finance_public_base/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16/iteration_004.safetensors",
+          "sha256": "ef206bc1164751a6a9305ad6062e81dfc703cbbede38ce878a6ee8fcbd9c9422"
+        },
+        {
+          "bytes": 148912,
+          "path": "outputs/TRR-0003/track_a_qualification_diagnostics/finance_public_base/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16/iteration_008.safetensors",
+          "sha256": "776e9e94fda3a3c4b61f9c7f035c53005f5e0c1b70859cd71329fa46f95d4b86"
+        },
+        {
+          "bytes": 148912,
+          "path": "outputs/TRR-0003/track_a_qualification_diagnostics/finance_public_base/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16/iteration_016.safetensors",
+          "sha256": "50356f7db6d6b9f0a82550437614d1f803751f9e42b22549d6559abe47803cf5"
+        },
+        {
+          "bytes": 148912,
+          "path": "outputs/TRR-0003/track_a_qualification_diagnostics/finance_public_base/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16/iteration_032.safetensors",
+          "sha256": "8df32623d6ec89ed9cb982a77171bab3e364bfa8cd437e7f6e672dbb0d025e25"
+        }
+      ],
+      "raw_diagnostics": [
+        {
+          "bytes": 148912,
+          "path": "outputs/TRR-0003/track_a_diagnostics/finance_public_base/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16/iteration_000.safetensors",
+          "sha256": "b052a4979abdcd0e7fb09995b31307d320ea4fbf12c54bc08529017340c6f0b1"
+        },
+        {
+          "bytes": 148912,
+          "path": "outputs/TRR-0003/track_a_diagnostics/finance_public_base/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16/iteration_001.safetensors",
+          "sha256": "9e5375e8c68d4a0038ac22ff240e4d1ae36768e86d655c660b0ca90c35ded982"
+        },
+        {
+          "bytes": 148912,
+          "path": "outputs/TRR-0003/track_a_diagnostics/finance_public_base/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16/iteration_002.safetensors",
+          "sha256": "bae47cd31c51b54d1c590490fae7e8b4a13169b0c5b7dd4cd6e172f966d68f17"
+        },
+        {
+          "bytes": 148912,
+          "path": "outputs/TRR-0003/track_a_diagnostics/finance_public_base/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16/iteration_004.safetensors",
+          "sha256": "d8a1bb759a17c5a35c691846c60721cbd81028c359b1c756f7ebc7cc53a061db"
+        },
+        {
+          "bytes": 148912,
+          "path": "outputs/TRR-0003/track_a_diagnostics/finance_public_base/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16/iteration_008.safetensors",
+          "sha256": "eb7acf06393181234c0ae0c045ab7d090302e7d5d2754d9426290a51da9e0dc4"
+        },
+        {
+          "bytes": 148912,
+          "path": "outputs/TRR-0003/track_a_diagnostics/finance_public_base/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16/iteration_016.safetensors",
+          "sha256": "986bd29613c66dd6324b58bc2fd6ef00754c2152cc25e49e4de553cbfcce219d"
+        },
+        {
+          "bytes": 148912,
+          "path": "outputs/TRR-0003/track_a_diagnostics/finance_public_base/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16/iteration_032.safetensors",
+          "sha256": "1423257c34096d319341ce021acd3720c689c68590665b4ace629aee4bfab21d"
+        },
+        {
+          "bytes": 148920,
+          "path": "outputs/TRR-0003/track_a_diagnostics/finance_public_lora_2601/finance/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16/iteration_000.safetensors",
+          "sha256": "cc7b18b153dae1e8c24bd74eb8b6b269aa7c0d0761ce03040610007c131f3547"
+        },
+        {
+          "bytes": 148920,
+          "path": "outputs/TRR-0003/track_a_diagnostics/finance_public_lora_2601/finance/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16/iteration_001.safetensors",
+          "sha256": "1f30477937a5bb24c147e3a223f306a48722827b499fc25a8f515f5c61492a37"
+        },
+        {
+          "bytes": 148920,
+          "path": "outputs/TRR-0003/track_a_diagnostics/finance_public_lora_2601/finance/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16/iteration_002.safetensors",
+          "sha256": "deb985d60cf224486155149498b981f8311c9e9adc1b86b08772f4c24ad4c883"
+        },
+        {
+          "bytes": 148920,
+          "path": "outputs/TRR-0003/track_a_diagnostics/finance_public_lora_2601/finance/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16/iteration_004.safetensors",
+          "sha256": "be9307a3b67bd45bb1b61aa00009d0a36654e8f84f4bcd430b17ddfd71f170db"
+        },
+        {
+          "bytes": 148920,
+          "path": "outputs/TRR-0003/track_a_diagnostics/finance_public_lora_2601/finance/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16/iteration_008.safetensors",
+          "sha256": "72e4543e1d810f8ef67b4f71b5be88bb2955d9e016e9030ce77a244d4cb01d28"
+        },
+        {
+          "bytes": 148920,
+          "path": "outputs/TRR-0003/track_a_diagnostics/finance_public_lora_2601/finance/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16/iteration_016.safetensors",
+          "sha256": "a5a0f22dcd7f88ec4ba98f88f74d7c511037d15e17be7e1a04b90c271c6798f0"
+        },
+        {
+          "bytes": 148920,
+          "path": "outputs/TRR-0003/track_a_diagnostics/finance_public_lora_2601/finance/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16/iteration_032.safetensors",
+          "sha256": "4240254f6e8bff2e8732e60306af3d08f8f1d8b9dfd2e9e4c03597d2ee5fdaa5"
+        },
+        {
+          "bytes": 50336,
+          "path": "outputs/TRR-0003/track_a_diagnostics/pile_public_base/pile/public_base/checkpoint_reverse_fixed_point_euclidean_k16/iteration_000.safetensors",
+          "sha256": "6154070723cdd8bb6c2a89adcfdc820f23024e40b98642a1e30bf35a12d5d0d5"
+        },
+        {
+          "bytes": 50336,
+          "path": "outputs/TRR-0003/track_a_diagnostics/pile_public_base/pile/public_base/checkpoint_reverse_fixed_point_euclidean_k16/iteration_001.safetensors",
+          "sha256": "8e5cd300107b35be2415768e1c28d82def3ba0854911d8139946116dd1f28e38"
+        },
+        {
+          "bytes": 50336,
+          "path": "outputs/TRR-0003/track_a_diagnostics/pile_public_base/pile/public_base/checkpoint_reverse_fixed_point_euclidean_k16/iteration_002.safetensors",
+          "sha256": "c136888e041c10a58863fc9ac7b803d048800112642b62d51889c0654a3ed5a9"
+        },
+        {
+          "bytes": 50336,
+          "path": "outputs/TRR-0003/track_a_diagnostics/pile_public_base/pile/public_base/checkpoint_reverse_fixed_point_euclidean_k16/iteration_004.safetensors",
+          "sha256": "02e5dba1a48e5cc25d800a6f7287439f779deccb12ffe97ae8b520783e05c8ac"
+        },
+        {
+          "bytes": 50336,
+          "path": "outputs/TRR-0003/track_a_diagnostics/pile_public_base/pile/public_base/checkpoint_reverse_fixed_point_euclidean_k16/iteration_008.safetensors",
+          "sha256": "9b0815758e8f7300ef9ea1d94f8b417838f55063ab524eefee36b1f9e5dea269"
+        },
+        {
+          "bytes": 50336,
+          "path": "outputs/TRR-0003/track_a_diagnostics/pile_public_base/pile/public_base/checkpoint_reverse_fixed_point_euclidean_k16/iteration_016.safetensors",
+          "sha256": "eb76c5fbae92c17bb712a7df317b5a6207e346eaf28b9db9716f6d45d6da3dcc"
+        },
+        {
+          "bytes": 50336,
+          "path": "outputs/TRR-0003/track_a_diagnostics/pile_public_base/pile/public_base/checkpoint_reverse_fixed_point_euclidean_k16/iteration_032.safetensors",
+          "sha256": "3b69a4b1ebb55248a6f157fbfe12bbe1737321d3eca14f588b6c0789cf5f458e"
+        },
+        {
+          "bytes": 50344,
+          "path": "outputs/TRR-0003/track_a_diagnostics/pile_public_lora_2601/pile/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16/iteration_000.safetensors",
+          "sha256": "e6914bec48cc72f65aabfa67931db1eccb0e7c09e66dd5e7cee39c1d2e63e7b5"
+        },
+        {
+          "bytes": 50344,
+          "path": "outputs/TRR-0003/track_a_diagnostics/pile_public_lora_2601/pile/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16/iteration_001.safetensors",
+          "sha256": "04a898b5fd1a073380c9f5645e6eb9d42391f5c50c8a0a3a88f820f15a8753fb"
+        },
+        {
+          "bytes": 50344,
+          "path": "outputs/TRR-0003/track_a_diagnostics/pile_public_lora_2601/pile/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16/iteration_002.safetensors",
+          "sha256": "a96b16b27c1c1e454b4e9e0c9de68aeb63425808546839a3373f16b6ad7d43b7"
+        },
+        {
+          "bytes": 50344,
+          "path": "outputs/TRR-0003/track_a_diagnostics/pile_public_lora_2601/pile/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16/iteration_004.safetensors",
+          "sha256": "6417bd7c70baa5cbeafda2d61347713273e0bf89f809389ab5ab0e56ff6940fa"
+        },
+        {
+          "bytes": 50344,
+          "path": "outputs/TRR-0003/track_a_diagnostics/pile_public_lora_2601/pile/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16/iteration_008.safetensors",
+          "sha256": "1e5e5e1376f44dfd9db98d6c134490a2ca854403ed699ff1a958e0f470451f8b"
+        },
+        {
+          "bytes": 50344,
+          "path": "outputs/TRR-0003/track_a_diagnostics/pile_public_lora_2601/pile/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16/iteration_016.safetensors",
+          "sha256": "50fd2406d4f8ad8aeffc6166a4b500d622e2e71c1041696717b57d1cda0ac46b"
+        },
+        {
+          "bytes": 50344,
+          "path": "outputs/TRR-0003/track_a_diagnostics/pile_public_lora_2601/pile/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16/iteration_032.safetensors",
+          "sha256": "d33aa26b9a8ae1b718bf1980c2f6518db1ce6f067115655bd802c740cdbbc620"
+        }
+      ],
+      "raw_predictions": [
+        {
+          "bytes": 140536,
+          "path": "outputs/TRR-0003/track_a/finance/public_base/checkpoint_reverse_fixed_point_euclidean_k16.safetensors",
+          "sha256": "c76419b46e7057697c2d3397a09a64811ccebe2c5538b2140437cedf8715e43a"
+        },
+        {
+          "bytes": 140552,
+          "path": "outputs/TRR-0003/track_a/finance/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16.safetensors",
+          "sha256": "267713b23620b9c3c6e0e87ea5592295738de92084893781ba975e746525b850"
+        },
+        {
+          "bytes": 47600,
+          "path": "outputs/TRR-0003/track_a/pile/public_base/checkpoint_reverse_fixed_point_euclidean_k16.safetensors",
+          "sha256": "05b4e86a7e4a6ac0024f1a456702148a1cf4b3371015455e8ebb9956a59b793e"
+        },
+        {
+          "bytes": 47608,
+          "path": "outputs/TRR-0003/track_a/pile/public_lora_2601/checkpoint_reverse_fixed_point_euclidean_k16.safetensors",
+          "sha256": "ba7066dfaac39b95b9b39fd232fbbff6daef87486f8668a104f67ec46112eeaf"
+        }
+      ],
+      "training_steps": 0,
+      "status": "PANEL_PREDICTIONS_COMPLETE_BEFORE_SCORE",
+      "diagnostic_execution_commit": "372b5df6d9fdd461f01a560a815e8417ae2d3cd4",
+      "iteration_ladder": [
+        0,
+        1,
+        2,
+        4,
+        8,
+        16,
+        32
+      ],
+      "residual_diagnostic": {
+        "source": "experiments/TRR-0003/track_a/runtime_analysis.json",
+        "tracked_copy": "experiments/TRR-0003/evidence/timing/track_a_runtime_analysis.json",
+        "matched_control": "public_base",
+        "shifted_control": "public_lora_2601",
+        "truth_opened": false
+      }
+    },
+    "track_b": {
+      "execution_commit": "770f3d833df42f5ac98f423c3e459dbdb74a9e41",
+      "fit_and_validation": [
+        {
+          "bytes": 98218,
+          "path": "outputs/TRR-0003/track_b/extended_fit_1800_v1/fit_evidence.json",
+          "sha256": "6c63befd730d16460c9d4c0778ce465c7e1556347dc102750c78ff70e8ad6b9e"
+        },
+        {
+          "bytes": 5306,
+          "path": "outputs/TRR-0003/track_b/figures_v1/track_b_curve_and_cost_summary.json",
+          "sha256": "5b1802887f56c44b3badca668d8b6a5343723c2dfefe010fc629ad0edbe79cd6"
+        },
+        {
+          "bytes": 170532,
+          "path": "outputs/TRR-0003/track_b/figures_v1/track_b_learning_curves.png",
+          "sha256": "d797c94a433510cbab0e5ae206a3017217e8ac71e64c95a2e2c4112b35ac659c"
+        },
+        {
+          "bytes": 65080,
+          "path": "outputs/TRR-0003/track_b/figures_v1/track_b_learning_curves.svg",
+          "sha256": "d7a087e3c75b8ccd58b8a7ab9cffddd7aa5886566a5b34d9166177212e7d3deb"
+        },
+        {
+          "bytes": 11281,
+          "path": "outputs/TRR-0003/track_b/panel_selected_v1/bindings.json",
+          "sha256": "61a7f97aef2fcd20596ab942e85744505c8bb9e56f302f87edbbb91699bfcaec"
+        },
+        {
+          "bytes": 30187,
+          "path": "outputs/TRR-0003/track_b/panel_selected_v1/prediction_evidence.json",
+          "sha256": "df0fafe090a2c55d31a4d8fbd937dbed1f6deed477d9e60b395ad55ad36033c2"
+        },
+        {
+          "bytes": 20971792,
+          "path": "outputs/TRR-0003/track_b/public_fit_v2/fit_observations.safetensors",
+          "sha256": "d9ae5cce82d651f8859d1c007c28057c8e9a4379f918d4c1e7e961ecaccb692c"
+        },
+        {
+          "bytes": 23919,
+          "path": "outputs/TRR-0003/track_b/public_fit_v2/fit_records.json",
+          "sha256": "7aee0f6cb452bb1df401c920ca2a628d32fb204d144d72e4419fc8bd34a3a08e"
+        },
+        {
+          "bytes": 20688,
+          "path": "outputs/TRR-0003/track_b/public_fit_v2/fit_truth.safetensors",
+          "sha256": "56075e48932bcc9ec6aafa048ce205a135ab4311326ad78222663afa4acde3e9"
+        },
+        {
+          "bytes": 2963,
+          "path": "outputs/TRR-0003/track_b/public_fit_v2/prepare_evidence.json",
+          "sha256": "774fd93d0729da9fddb1c88f434a686c0c51c84626d5561de80e69a8154c3278"
+        },
+        {
+          "bytes": 1050673488,
+          "path": "outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+          "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+        },
+        {
+          "bytes": 3932608,
+          "path": "outputs/TRR-0003/track_b/public_validation_slice_v2/public_validation_observations.safetensors",
+          "sha256": "0a35e71995241ced0f3c4203d6fb54ddbaac90f2f49c6317cc03ead66bfaa6d6"
+        },
+        {
+          "bytes": 5098,
+          "path": "outputs/TRR-0003/track_b/public_validation_slice_v2/public_validation_records.json",
+          "sha256": "446e6259482b730b3e22cdc693d37b406031141d7ac034de68ecaa5cc49456fb"
+        },
+        {
+          "bytes": 4288,
+          "path": "outputs/TRR-0003/track_b/public_validation_slice_v2/public_validation_truth.safetensors",
+          "sha256": "ed2110d5f57eac4d0a02d4680836857ee9886515c1938f94cd98c6b7dd4a2273"
+        },
+        {
+          "bytes": 5223,
+          "path": "outputs/TRR-0003/track_b/public_validation_slice_v2/validation_slice_evidence.json",
+          "sha256": "d7dbfccc70f6a60b92ca4849870fea077c068584fd1eeca119e560c69600d22c"
+        },
+        {
+          "bytes": 16785688,
+          "path": "outputs/TRR-0003/track_b/selected_checkpoints_v1/angular_inverse_control.safetensors",
+          "sha256": "e595f3f49365d8b2362972e3d43834856a0e01a722e1bd563e7de52e11b683dc"
+        },
+        {
+          "bytes": 4717416,
+          "path": "outputs/TRR-0003/track_b/selected_checkpoints_v1/residual_mlp256_token_ce.safetensors",
+          "sha256": "203af5ddab65eee11b1faa8fea5976154704a8fe56bb5480b1895c92564c0c86"
+        },
+        {
+          "bytes": 8496,
+          "path": "outputs/TRR-0003/track_b/selected_checkpoints_v1/selected_replay_evidence.json",
+          "sha256": "b448a8d13e3cf14b5e74305c79df696e59a889d4ff7890f608acb16ed4c778d0"
+        },
+        {
+          "bytes": 17299160,
+          "path": "outputs/TRR-0003/track_b/selected_checkpoints_v1/tied_affine_token_ce.safetensors",
+          "sha256": "0dad94bc31c39654506ac5ba9b75dc5cd64ef98935dc8372032bb03237509c28"
+        }
+      ],
+      "fitted_parameters": true,
+      "inference_candidate_prefix_simulations": 0,
+      "method_ids": [
+        "angular_inverse_control",
+        "tied_affine_token_ce",
+        "residual_mlp256_token_ce"
+      ],
+      "panel_predictions": [
+        {
+          "bytes": 12352,
+          "path": "outputs/TRR-0003/track_b/panel_selected_v1/finance/public_base/angular_inverse_control.safetensors",
+          "sha256": "f0bd1f0268005cbbab535c3696022be3648ccdae33501523ebace51be089187b"
+        },
+        {
+          "bytes": 12352,
+          "path": "outputs/TRR-0003/track_b/panel_selected_v1/finance/public_base/residual_mlp256_token_ce.safetensors",
+          "sha256": "65aeccaca1268fe41b5ccf8c7c39eaa20ff29db8d2a8ee9914bbd66f0732eb70"
+        },
+        {
+          "bytes": 12344,
+          "path": "outputs/TRR-0003/track_b/panel_selected_v1/finance/public_base/tied_affine_token_ce.safetensors",
+          "sha256": "919e48edd1c29798692c5df16ddd230570791c9489d5815b34329c384f8a628f"
+        },
+        {
+          "bytes": 12360,
+          "path": "outputs/TRR-0003/track_b/panel_selected_v1/finance/public_lora_2601/angular_inverse_control.safetensors",
+          "sha256": "da404c11e7fe41055e8d86dbc33e84aa59180d0a36db6f8c79bcfa39f4be49cc"
+        },
+        {
+          "bytes": 12360,
+          "path": "outputs/TRR-0003/track_b/panel_selected_v1/finance/public_lora_2601/residual_mlp256_token_ce.safetensors",
+          "sha256": "4ceef4618c58a1e8226905a7d7f985899cea94db1dd91d10737f086566dbaa58"
+        },
+        {
+          "bytes": 12352,
+          "path": "outputs/TRR-0003/track_b/panel_selected_v1/finance/public_lora_2601/tied_affine_token_ce.safetensors",
+          "sha256": "60ab024eebc641beb6a75564a39ce346a6f78c3d2f29809929d659b182a3d975"
+        },
+        {
+          "bytes": 6712,
+          "path": "outputs/TRR-0003/track_b/panel_selected_v1/pile/public_base/angular_inverse_control.safetensors",
+          "sha256": "eb7e39ba4584ca4e9929f7045065018f9ffa194dd57e6b5f6f71b0db752a6b9b"
+        },
+        {
+          "bytes": 6712,
+          "path": "outputs/TRR-0003/track_b/panel_selected_v1/pile/public_base/residual_mlp256_token_ce.safetensors",
+          "sha256": "89ac18564bfefb7441db4a033d60f789b2af98844bb56c044b8a4cc5a72765d7"
+        },
+        {
+          "bytes": 6704,
+          "path": "outputs/TRR-0003/track_b/panel_selected_v1/pile/public_base/tied_affine_token_ce.safetensors",
+          "sha256": "5e2fdc283da0036afd8796f12696d8a9fc373fb7c806de013d1ffe2f9442b1dc"
+        },
+        {
+          "bytes": 6720,
+          "path": "outputs/TRR-0003/track_b/panel_selected_v1/pile/public_lora_2601/angular_inverse_control.safetensors",
+          "sha256": "5197715e6f6522d12192a19bc31e33fab8d3a20a1bf7ddfa19e7fc87bba38178"
+        },
+        {
+          "bytes": 6720,
+          "path": "outputs/TRR-0003/track_b/panel_selected_v1/pile/public_lora_2601/residual_mlp256_token_ce.safetensors",
+          "sha256": "155b55f73230b275ab5897cd0456efbb6e00e08a6b5ac84b7bb1c0b85cfb386f"
+        },
+        {
+          "bytes": 6712,
+          "path": "outputs/TRR-0003/track_b/panel_selected_v1/pile/public_lora_2601/tied_affine_token_ce.safetensors",
+          "sha256": "cdd9d2810f74ab4fe97b5a368d4cc8d0c302aa3928b35742eccb98d681ae9ea8"
+        }
+      ],
+      "status": "PANEL_PREDICTIONS_COMPLETE_BEFORE_SCORE",
+      "diagnostic_execution_commit": "372b5df6d9fdd461f01a560a815e8417ae2d3cd4",
+      "inference_contract": {
+        "candidate_simulations": 0,
+        "public_prefix_calls": 0,
+        "a2_fallback": false,
+        "prediction_rule": "direct argmax over decoder logits"
+      }
+    }
+  },
+  "panel": {
+    "bytes": 88693,
+    "path": "experiments/TRR-0003/footing/panel.json",
+    "sha256": "d1810330f53ebb7e149be45b8c07414e09d30b31b68c7c09d24df3854fec7333"
+  },
+  "panel_contract": {
+    "cells": [
+      "pile__public_base",
+      "pile__public_lora_2601",
+      "finance__public_base",
+      "finance__public_lora_2601"
+    ],
+    "largest_geometry": [
+      8,
+      128,
+      2048
+    ],
+    "records_per_style_per_condition": 8,
+    "scored_positions": {
+      "finance": 762,
+      "pile": 312
+    }
+  },
+  "public_model": {
+    "files": [
+      {
+        "bytes": 877,
+        "path": "config.json",
+        "sha256": "2febf68cea25bf4611be02b7536f2488a5ba523bb1134986e3610152abe74fdb"
+      },
+      {
+        "bytes": 189,
+        "path": "generation_config.json",
+        "sha256": "88effbb63300dbbc7390143fbbdd9d9fa50587b37e8bfd16c8c90d4970a74a36"
+      },
+      {
+        "bytes": 2471645608,
+        "path": "model.safetensors",
+        "sha256": "1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f"
+      },
+      {
+        "bytes": 220,
+        "path": "original/params.json",
+        "sha256": "1d616a44f3cdac29b9288cf14718b76eb1bed56ed38be1f7e39b06ed139e3733"
+      },
+      {
+        "bytes": 2183982,
+        "path": "original/tokenizer.model",
+        "sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55"
+      },
+      {
+        "bytes": 296,
+        "path": "special_tokens_map.json",
+        "sha256": "6f38c73729248f6c127296386e3cdde96e254636cc58b4169d3fd32328d9a8ec"
+      },
+      {
+        "bytes": 9085657,
+        "path": "tokenizer.json",
+        "sha256": "79e3e522635f3171300913bb421464a87de6222182a0570b9b2ccba2a964b2b4"
+      },
+      {
+        "bytes": 54528,
+        "path": "tokenizer_config.json",
+        "sha256": "9823dcfdc1121869029da45192238e85cf44f0b232a6d9dc20e4fe6f4242a14e"
+      }
+    ],
+    "local_files_only": true,
+    "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+    "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "snapshot_path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+    "total_bytes": 2482971357
+  },
+  "public_resource_manifest": {
+    "bytes": 1645,
+    "path": "experiments/TRR-0003/track_a/public_resource_manifest.json",
+    "sha256": "9fd0ab2a786dd7884c72dcb0d724ba10dc3912518c05cff7a69267132beefb94"
+  },
+  "pull_request": {
+    "number": 4,
+    "url": "https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/4",
+    "status": "OPEN_AWAITING_OWNER_REVIEW",
+    "base": "task/TRR-0002",
+    "head": "task/TRR-0003",
+    "historical_pr": {
+      "number": 3,
+      "status": "OPEN_UNMERGED",
+      "accepted_by_this_task": false
+    }
+  },
+  "resources": {
+    "hardware": "NVIDIA GeForce RTX 5080, 16 GiB development GPU; serialized GPU runs",
+    "host": "WSL2 Linux, 32 CPU threads, 30 GiB RAM",
+    "large_binaries_policy": "retained at recorded paths and mapped by digest; not duplicated",
+    "network": "offline local caches only",
+    "paid_compute": false
+  },
+  "result_path": "coordination/results/TRR-0003.md",
+  "reviewed_research_head": "6b618760f50055dc5c8a62e830ab7a9761190cfe",
+  "schema": "token-reconstruction.trr0003-handoff-manifest.v1",
+  "scientific_execution_commit": "770f3d833df42f5ac98f423c3e459dbdb74a9e41",
+  "score_receipt": {
+    "path": "experiments/TRR-0003/evidence/common_score_v2.json",
+    "bytes": 219720,
+    "sha256": "9c25621c966f7e1dcddc96c0f0491127a0a32dfa11ec41fd947ff803093a5bd8",
+    "status": "RETROSPECTIVE_DEVELOPMENT_PANEL_SCORED_AFTER_FREEZE",
+    "entries": 52,
+    "methods": 13,
+    "cells": 4,
+    "predictions_complete_before_truth_scoring": true,
+    "scorer_opened_truth_after_freeze": true
+  },
+  "status": "AWAITING_OWNER_REVIEW_RETROSPECTIVE_PANEL_SCORED",
+  "task_id": "TRR-0003",
+  "tests": {
+    "final_repository_validation": {
+      "command": "PYTHONPATH=src:scripts pytest -q",
+      "source_commit": "372b5df6d9fdd461f01a560a815e8417ae2d3cd4",
+      "passed": 121,
+      "elapsed_seconds": 6.39
+    },
+    "focused_track_a_bos_diagnostic": {
+      "command": "PYTHONPATH=src:scripts pytest -q tests/test_track_a_bos_diagnostic.py",
+      "source_commit": "372b5df6d9fdd461f01a560a815e8417ae2d3cd4",
+      "passed": 4,
+      "elapsed_seconds": 3.27
+    },
+    "git_diff_check": "passed",
+    "loader_regression": "real _load_public_state path tested with model/CUDA loaders mocked",
+    "coverage_limits": [
+      "individual token/position/order/metadata sidecar mutations are not each separately exercised",
+      "invalid receipts do not all have low-level truth-byte instrumentation",
+      "no observed failure from these coverage gaps"
+    ]
+  },
+  "truth_gate": {
+    "required_matrix_cells": 52,
+    "score_status": "RETROSPECTIVE_DEVELOPMENT_PANEL_SCORED_AFTER_FREEZE",
+    "evaluator_truth_opened_by_assembly": false,
+    "predictions_complete_before_truth_scoring": true,
+    "scorer_opened_truth_after_freeze": true,
+    "private_sidecar_tensor": "intentionally omitted from repository; scorer owns gated access",
+    "final_truth_binding_metadata": {
+      "bytes": 4842,
+      "path": "experiments/TRR-0003/footing/truth_binding_v2.json",
+      "sha256": "14cc6b6bf35d1e52ad903179f8403d6be84b82a7321cd99c76ff354d2d2cb6fa"
+    },
+    "final_truth_preparation_metadata": {
+      "bytes": 8570,
+      "path": "experiments/TRR-0003/footing/truth_preparation_v2.json",
+      "sha256": "9402c019c6ba203eb1014aba48db93e84d70d3df4fe3e60608ba3c2e2129a118"
+    },
+    "superseded_v1_metadata": [
+      {
+        "bytes": 4836,
+        "path": "experiments/TRR-0003/footing/truth_binding.json",
+        "sha256": "abd2a64f01b6751ce482b50060f3fd857fa7b07537b6b9abd0f9a2702c864d97"
+      },
+      {
+        "bytes": 8316,
+        "path": "experiments/TRR-0003/footing/truth_preparation.json",
+        "sha256": "d7f9aa44314c0a3046804ad2f468b84d382ea24f139091d648943cca0f40e505"
+      }
+    ]
+  },
+  "score_status": "RETROSPECTIVE_DEVELOPMENT_PANEL_SCORED_AFTER_FREEZE",
+  "final_source_commit": "372b5df6d9fdd461f01a560a815e8417ae2d3cd4",
+  "phase_commits": {
+    "track_b_preparation": "b16b584f7f63befcaaa2decf58bdce379685b66d",
+    "track_b_fitting": "4e361216fc1e829549a9d849afd2ad3692215123",
+    "track_a_and_b_selected_runs": "770f3d833df42f5ac98f423c3e459dbdb74a9e41",
+    "track_a_alias_export": "2a8070e5b48ff1e817118ed7afcc2b4996a5ea09",
+    "comparators": "b169134f7b97eb4447ad92369fb08909aeea25b7",
+    "track_a_bos_diagnostic_v1": "b169134f7b97eb4447ad92369fb08909aeea25b7",
+    "track_a_bos_diagnostic_v2_and_final_tests": "372b5df6d9fdd461f01a560a815e8417ae2d3cd4",
+    "truth_preparation": "9c5f1c1b9b977e9f99db6f73e07dd91d4308c175",
+    "common_freeze_and_score": "b169134f7b97eb4447ad92369fb08909aeea25b7"
+  },
+  "evidence_archive": {
+    "path": "experiments/TRR-0003/evidence_archive.json",
+    "sha256": null,
+    "hash_policy": "mutable handoff reference; archive does not hash this manifest"
+  },
+  "process_deviations": [
+    {
+      "utc": "2026-09-05T08:32:29Z",
+      "description": "A Track B architecture/results summary was accidentally routed to independent TRR-P01.",
+      "resolution": "P01 reported its plan was already frozen and would not use the content; TRR-0003 used no P01 scientific outputs.",
+      "scientific_outputs_used": false
+    }
+  ],
+  "external_artifacts": [
+    {
+      "role": "public_model_snapshot",
+      "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+      "bytes": 2482971357,
+      "sha256": "snapshot_member_hashes_in_public_resource_manifest",
+      "retained_external": true
+    },
+    {
+      "role": "loaded_public_prefix_and_embedding_state",
+      "bytes": 1011908864,
+      "sha256": "f39d1106fbfd42cfd6af3b08a499d5f0a10bca287912882393ee587abaefe6fa",
+      "path": "runtime-loaded prefix+embedding state; source files remain in public model cache",
+      "retained_external": true
+    },
+    {
+      "role": "track_b_normalized_public_embedding_table",
+      "path": "outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+      "bytes": 1050673488,
+      "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+      "retained_external": true
+    },
+    {
+      "role": "track_b_fit_observations",
+      "path": "outputs/TRR-0003/track_b/public_fit_v2/fit_observations.safetensors",
+      "bytes": 20971792,
+      "sha256": "d9ae5cce82d651f8859d1c007c28057c8e9a4379f918d4c1e7e961ecaccb692c",
+      "retained_external": true
+    },
+    {
+      "role": "track_b_selected_decoder_states",
+      "paths": [
+        {
+          "path": "outputs/TRR-0003/track_b/selected_checkpoints_v1/angular_inverse_control.safetensors",
+          "bytes": 16785688,
+          "sha256": "e595f3f49365d8b2362972e3d43834856a0e01a722e1bd563e7de52e11b683dc"
+        },
+        {
+          "path": "outputs/TRR-0003/track_b/selected_checkpoints_v1/tied_affine_token_ce.safetensors",
+          "bytes": 17299160,
+          "sha256": "0dad94bc31c39654506ac5ba9b75dc5cd64ef98935dc8372032bb03237509c28"
+        },
+        {
+          "path": "outputs/TRR-0003/track_b/selected_checkpoints_v1/residual_mlp256_token_ce.safetensors",
+          "bytes": 4717416,
+          "sha256": "203af5ddab65eee11b1faa8fea5976154704a8fe56bb5480b1895c92564c0c86"
+        }
+      ],
+      "retained_external": true
+    },
+    {
+      "role": "evaluator_private_truth_sidecar",
+      "path": "outputs/TRR-0003/evaluator_private/panel_truth_v2.safetensors",
+      "bytes": 37704,
+      "sha256": "95f17b016753ab9baff41bdc32afe7fa25555ab45a5432b5f1fa24cf19b2695a",
+      "sensitive": true,
+      "retained_external": true
+    }
+  ],
+  "evidence_package": {
+    "tracked_root": "experiments/TRR-0003/evidence",
+    "tracked_file_count": 130,
+    "tracked_bytes_at_manifest_update": 21057927,
+    "frozen_prediction_tensor_count": 52,
+    "comparison_source_file_count": 19,
+    "external_large_artifacts": "public model, Track-B embedding/fit tensors, selected decoder states, and private truth remain at recorded paths"
+  },
+  "updated_utc": "2026-09-05T09:43:46.623244+00:00",
+  "scientific_execution_commit_scope": "Track A and Track B selected panel prediction phase only; preparation, fitting, comparator, freeze, and diagnostics are listed in phase_commits.",
+  "excluded_attempts": [
+    {
+      "artifact": {
+        "bytes": 8316,
+        "path": "experiments/TRR-0003/footing/truth_preparation.json",
+        "sha256": "d7f9aa44314c0a3046804ad2f468b84d382ea24f139091d648943cca0f40e505"
+      },
+      "cause": "superseded by final truth_preparation_v2 metadata; retained only as a provisional uncommitted source receipt",
+      "scientific_success": false,
+      "evaluation_truth_opened": false,
+      "status": "EXCLUDED_SUPERSEDED_PROVISIONAL",
+      "superseded_by": {
+        "bytes": 8570,
+        "path": "experiments/TRR-0003/footing/truth_preparation_v2.json",
+        "sha256": "9402c019c6ba203eb1014aba48db93e84d70d3df4fe3e60608ba3c2e2129a118"
+      }
+    }
+  ],
+  "scientific_evidence_commit": "1da29c5467f74166265209bceeaa873b941f0a76",
+  "publication_checks": {
+    "source_and_prose_whitespace": "passed; git diff --cached --check -- . ':(exclude)*.svg'",
+    "generated_svg_policy": "Matplotlib SVG bytes retain their original formatting and hashes; whitespace-only SVG diagnostics are not source/prose defects.",
+    "private_truth_archived": false,
+    "paid_compute_used": false
+  }
+}

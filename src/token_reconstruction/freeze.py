@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+from pathlib import PurePosixPath
 from typing import Any, Mapping
 
 
@@ -36,6 +37,54 @@ def _relative(path: Path, repository_root: Path) -> str:
         raise FreezeError(f"path is outside repository root: {path}") from exc
 
 
+def _safe_relative(value: Any, *, description: str) -> str:
+    """Validate a receipt path before joining it to a trusted directory.
+
+    Receipt paths are data written by a previous process. Treating them as
+    ordinary strings lets ``..`` escape the frozen root during verification,
+    which could make an unrelated file appear to satisfy the receipt.
+    """
+
+    if not isinstance(value, str) or not value:
+        raise FreezeError(f"{description} path is absent")
+    if "\\" in value:
+        raise FreezeError(f"{description} path must use POSIX separators")
+    candidate = PurePosixPath(value)
+    if (
+        candidate.is_absolute()
+        or not candidate.parts
+        or any(part in ("", ".", "..") for part in candidate.parts)
+    ):
+        raise FreezeError(f"{description} path is unsafe: {value}")
+    normalized = candidate.as_posix()
+    if normalized != value:
+        raise FreezeError(f"{description} path is not normalized: {value}")
+    return normalized
+
+
+def _path_under(path: Path, root: Path, *, description: str) -> Path:
+    """Resolve a regular path and require that it remains below ``root``."""
+
+    if path.is_symlink():
+        raise FreezeError(f"{description} must not be a symbolic link: {path}")
+    resolved_root = root.resolve()
+    resolved = path.resolve()
+    try:
+        resolved.relative_to(resolved_root)
+    except ValueError as exc:
+        raise FreezeError(f"{description} path escaped its root: {path}") from exc
+    return resolved
+
+
+def _prohibited_relative(relative: str) -> bool:
+    lowered = relative.casefold()
+    lowered_parts = tuple(part.casefold() for part in PurePosixPath(relative).parts)
+    return any(fragment in lowered for fragment in ("truth", "oracle")) or any(
+        part == "evaluator_private" or part.startswith("target_lora")
+        for part in lowered_parts
+    )
+
+
 def freeze_payload(
     *,
     repository_root: Path,
@@ -55,20 +104,11 @@ def freeze_payload(
 
     entries: list[dict[str, Any]] = []
     for path in sorted(frozen_root.rglob("*")):
-        if path.is_dir():
+        if path.is_dir() and not path.is_symlink():
             continue
         _regular_file(path, "frozen artifact")
         relative = _relative(path, repository_root)
-        lowered = relative.casefold()
-        lowered_parts = tuple(part.casefold() for part in Path(relative).parts)
-        private_target_path = any(
-            part == "evaluator_private" or part.startswith("target_lora")
-            for part in lowered_parts
-        )
-        if (
-            any(fragment in lowered for fragment in ("truth", "oracle"))
-            or private_target_path
-        ):
+        if _prohibited_relative(relative):
             raise FreezeError(f"prohibited private artifact in frozen bundle: {relative}")
         entries.append(
             {
@@ -154,27 +194,66 @@ def verify_freeze_receipt(
     plan = payload.get("plan")
     if not isinstance(plan, dict):
         raise FreezeError("freeze receipt plan record is absent")
-    plan_path = repository_root / str(plan.get("path", ""))
+    plan_relative = _safe_relative(plan.get("path"), description="frozen plan")
+    plan_path = _path_under(
+        repository_root / plan_relative,
+        repository_root,
+        description="frozen plan",
+    )
     _regular_file(plan_path, "frozen plan")
     if plan_path.stat().st_size != plan.get("bytes") or sha256_path(plan_path) != plan.get(
         "sha256"
     ):
         raise FreezeError("frozen plan hash or size changed")
 
+    frozen_root_relative = _safe_relative(
+        payload.get("frozen_root"), description="frozen root"
+    )
+    frozen_root = _path_under(
+        repository_root / frozen_root_relative,
+        repository_root,
+        description="frozen root",
+    )
+    if frozen_root.is_symlink() or not frozen_root.is_dir():
+        raise FreezeError("frozen root must be a regular directory")
+
     observed_paths: set[str] = set()
     for entry in payload["entries"]:
         if not isinstance(entry, dict):
             raise FreezeError("freeze receipt entry is malformed")
-        relative = entry.get("path")
-        if not isinstance(relative, str) or not relative or relative in observed_paths:
+        relative = _safe_relative(entry.get("path"), description="frozen artifact")
+        if relative in observed_paths:
             raise FreezeError("freeze receipt path is absent or duplicated")
+        if _prohibited_relative(relative):
+            raise FreezeError(f"prohibited private artifact in frozen bundle: {relative}")
         observed_paths.add(relative)
-        artifact = repository_root / relative
+        artifact = _path_under(
+            repository_root / relative,
+            frozen_root,
+            description="frozen artifact",
+        )
         _regular_file(artifact, "frozen artifact")
         if artifact.stat().st_size != entry.get("bytes"):
             raise FreezeError(f"frozen artifact size changed: {relative}")
         if sha256_path(artifact) != entry.get("sha256"):
             raise FreezeError(f"frozen artifact hash changed: {relative}")
+
+    actual_paths: set[str] = set()
+    for path in sorted(frozen_root.rglob("*")):
+        if path.is_dir() and not path.is_symlink():
+            continue
+        _regular_file(path, "frozen artifact")
+        relative = path.resolve().relative_to(repository_root.resolve()).as_posix()
+        if _prohibited_relative(relative):
+            raise FreezeError(f"prohibited private artifact in frozen bundle: {relative}")
+        actual_paths.add(relative)
+    if actual_paths != observed_paths:
+        missing = sorted(observed_paths - actual_paths)
+        extra = sorted(actual_paths - observed_paths)
+        raise FreezeError(
+            "frozen artifact set changed: "
+            f"missing={missing!r} extra={extra!r}"
+        )
     return payload
 
 

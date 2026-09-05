@@ -1,0 +1,82 @@
+{
+  "classification": "exploratory checkpoint-selection amendment; does not activate a dual-benchmark method",
+  "decision_scope": {
+    "allowed_labels": "public inverse_train and disjoint public auxiliary validation only",
+    "canonical_truth": "not opened and not used",
+    "current_panel_truth": "not opened and not used",
+    "purpose": "select a named diagnostic/deployment candidate before the shared panel freeze"
+  },
+  "replay_contract": {
+    "batch_size": 512,
+    "bottleneck_size": 256,
+    "input_root": "outputs/TRR-0003/track_b/public_fit_v2",
+    "learning_rate": 0.001,
+    "log_every": 25,
+    "logit_scale": 16.0,
+    "method_order": [
+      "angular_inverse_control",
+      "tied_affine_token_ce",
+      "residual_mlp256_token_ce"
+    ],
+    "seed": 1737,
+    "state_outputs": "outputs/TRR-0003/track_b/selected_checkpoints_v1/<method>.safetensors",
+    "trajectory_verification": "replay curve row must byte-for-byte equal the selected row in source curve evidence",
+    "validation_observations": "outputs/TRR-0003/track_b/public_validation_slice_v2/public_validation_observations.safetensors",
+    "validation_truth": "outputs/TRR-0003/track_b/public_validation_slice_v2/public_validation_truth.safetensors"
+  },
+  "replay_runner": {
+    "bytes": 13854,
+    "path": "experiments/TRR-0003/track_b/replay_selected.py",
+    "sha256": "c8589ac44a9a1e82aeb8f372b5af20212e05db215af1c3a0db9e6446d0fa1e94"
+  },
+  "retained_diagnostics": [
+    "outputs/TRR-0003/track_b/main_fit_v1",
+    "outputs/TRR-0003/track_b/extended_fit_1800_v1",
+    "outputs/TRR-0003/track_b/extended_fit_1800_v1/overfit_<method>.safetensors"
+  ],
+  "schema": "token-reconstruction.trr0003-track-b-checkpoint-selection-amendment.v1",
+  "selected": {
+    "angular_inverse_control": {
+      "public_validation_loss": 0.49358895421028137,
+      "public_validation_token_accuracy": 0.6303418874740601,
+      "step": 150,
+      "train_token_accuracy": 0.9749599695205688
+    },
+    "residual_mlp256_token_ce": {
+      "public_validation_loss": 4.352277445996928,
+      "public_validation_token_accuracy": 0.5405982905982906,
+      "step": 375,
+      "train_token_accuracy": 0.9553285256410257
+    },
+    "tied_affine_token_ce": {
+      "public_validation_loss": 4.341833130926148,
+      "public_validation_token_accuracy": 0.6271367521367521,
+      "step": 175,
+      "train_token_accuracy": 0.9973958333333334
+    }
+  },
+  "selection_rule": {
+    "candidate_checkpoints": "every logged 25-step point in the frozen 1800-step curve",
+    "candidate_simulations": 0,
+    "maximize": true,
+    "metric": "public_validation_token_accuracy",
+    "panel_labels_opened": false,
+    "target_prefix_calls": 0,
+    "target_weights_loaded": false,
+    "tie_break": "earliest logged checkpoint"
+  },
+  "source_curve": {
+    "bytes": 98218,
+    "path": "outputs/TRR-0003/track_b/extended_fit_1800_v1/fit_evidence.json",
+    "sha256": "6c63befd730d16460c9d4c0778ce465c7e1556347dc102750c78ff70e8ad6b9e"
+  },
+  "source_plan": {
+    "bytes": 8664,
+    "path": "experiments/TRR-0003/track_b/plan.json",
+    "sha256": "3297cb3fb5324cdd444103f83c926242205b8e6c4d775c86525ef27470fa16e7"
+  },
+  "status": "PUBLIC_VALIDATION_SELECTION_BEFORE_PANEL_PREDICTION",
+  "supersedes_for_checkpoint_choice": "plan.json fixed final-checkpoint rule only; original fit split, optimizer, architecture, and inference contract remain unchanged",
+  "task_id": "TRR-0003",
+  "track": "track_b"
+}
