@@ -77,6 +77,17 @@ DEFAULT_MINIMUM_HOST_AVAILABLE_GIB = 10.0
 DEFAULT_MAX_SECONDS = 3600.0
 DEFAULT_QUALIFICATION_STEPS = 2
 MAX_QUALIFICATION_STEPS = 8
+# V1 completed the registered causal largest cell but stopped because its
+# analytic forecast was low. Keep this empirical calibration explicit and
+# cite the preserved failure receipt; it does not relax the live guards.
+QUALIFICATION_V1_MEASURED_PEAK_BYTES = 2_942_304_256
+QUALIFICATION_MEASURED_FLOOR_MULTIPLIER = 1.5
+QUALIFICATION_MEASURED_FLOOR_BYTES = math.ceil(
+    QUALIFICATION_V1_MEASURED_PEAK_BYTES * QUALIFICATION_MEASURED_FLOOR_MULTIPLIER
+)
+QUALIFICATION_V1_FAILURE_RECEIPT = (
+    "experiments/TRR-0005/joint_qualification_v1/failure.json"
+)
 DISTRIBUTION_CONTRACT_IDS = {
     "original": "original_like_alpaca_v1",
     "enriched": "coverage_mix_v1",
@@ -339,7 +350,9 @@ def resource_preflight(
     validation_peak_bytes = embedding_bytes + parameter_bytes + validation_workspace_bytes
     raw_sum = max(training_peak_bytes, validation_peak_bytes)
     safety_margin_bytes = math.ceil(raw_sum * 0.50)
-    envelope_bytes = raw_sum + safety_margin_bytes
+    analytic_envelope_bytes = raw_sum + safety_margin_bytes
+    measured_floor_bytes = int(QUALIFICATION_MEASURED_FLOOR_BYTES)
+    envelope_bytes = max(analytic_envelope_bytes, measured_floor_bytes)
     gib = 1024**3
     return {
         "geometry": {
@@ -367,6 +380,9 @@ def resource_preflight(
             "validation_peak_envelope": validation_peak_bytes,
             "raw_sum": raw_sum,
             "safety_margin_50_percent": safety_margin_bytes,
+            "analytic_conservative_envelope": analytic_envelope_bytes,
+            "measured_v1_qualification_peak": QUALIFICATION_V1_MEASURED_PEAK_BYTES,
+            "measured_qualification_floor": measured_floor_bytes,
             "conservative_envelope": envelope_bytes,
         },
         "gib": {
@@ -376,6 +392,9 @@ def resource_preflight(
             "validation_peak_envelope": validation_peak_bytes / gib,
             "raw_sum": raw_sum / gib,
             "safety_margin_50_percent": safety_margin_bytes / gib,
+            "analytic_conservative_envelope": analytic_envelope_bytes / gib,
+            "measured_v1_qualification_peak": QUALIFICATION_V1_MEASURED_PEAK_BYTES / gib,
+            "measured_qualification_floor": measured_floor_bytes / gib,
             "conservative_envelope": envelope_bytes / gib,
         },
         "forecast_basis": {
@@ -384,6 +403,16 @@ def resource_preflight(
             "validation_peak_bytes": validation_peak_bytes,
             "worst_case_stage": "training_backward_with_AdamW",
             "selected_logits_backward_multiplier": 2,
+            "analytic_conservative_envelope_bytes": analytic_envelope_bytes,
+            "measured_v1_peak_bytes": QUALIFICATION_V1_MEASURED_PEAK_BYTES,
+            "measured_floor_multiplier": QUALIFICATION_MEASURED_FLOOR_MULTIPLIER,
+            "measured_floor_bytes": measured_floor_bytes,
+            "measured_floor_source": QUALIFICATION_V1_FAILURE_RECEIPT,
+            "measured_floor_source_status": "FAILED_PRESERVED",
+            "measured_floor_source_observation": (
+                "V1 completed two optimizer steps and validation before stopping "
+                "because measured device peak exceeded its analytic forecast"
+            ),
             "training_backward": [
                 "8x192 float32 activation batch",
                 "affine and Q/K/V/output parameters",
@@ -398,7 +427,17 @@ def resource_preflight(
                 "512xvocabulary selected-logit buffer",
                 "hidden/projection workspace",
             ],
-            "combination": "conservative sum of resident terms plus 50 percent safety margin; measured qualification peak is recorded separately",
+            "combination": (
+                "conservative_envelope=max(analytic 50-percent envelope, "
+                "1.5x preserved V1 measured peak); live allocator and host "
+                "guards remain independently enforced"
+            ),
+            "uncertainty": (
+                "The analytic terms remain an auditable geometry estimate. The "
+                "empirical floor is calibrated from one largest-cell V1 run and "
+                "is not a capacity guarantee; every qualification and fit still "
+                "records measured peaks and stops on guard anomalies."
+            ),
         },
         "arm_execution": "sequential; one contextual or affine arm resident at a time",
         "qualification_requirement": "largest registered 8x192 cell passes live guard before 3000-step matrix",
@@ -1166,32 +1205,20 @@ def _run_qualification_distribution(
             ),
             "forecast_scope": "device tensors; host public-resource RSS is reported separately",
         }
-        if measured_device_peak is not None and measured_device_peak > forecast_bytes:
-            raise JointFitRunnerError(
-                f"{name} qualification measured device peak exceeds conservative forecast: "
-                f"{measured_device_peak} > {forecast_bytes}"
-            )
-        guard.append(
-            _resource_guard(
-                args,
-                device,
-                stage=f"{name}:qualification_after_peak_snapshot",
-                deadline=deadline,
-            )
+        forecast_passed = (
+            measured_device_peak is None or measured_device_peak <= forecast_bytes
         )
-        cleanup_started = time.perf_counter()
-        del model, optimizer, scheduler, embedding
-        if device.type == "cuda":
-            torch.cuda.empty_cache()
-        gc.collect()
-        cleanup_seconds = time.perf_counter() - cleanup_started
-        wall_seconds = time.perf_counter() - started
+        wall_before_forecast_seconds = time.perf_counter() - started
         result = {
             "distribution": name,
             "contract_distribution_id": DISTRIBUTION_CONTRACT_IDS[name],
             "method_id": method_id,
             "canonical_method_id": f"{name}__{method_id}",
-            "status": "QUALIFIED_CAUSAL_LARGEST_CELL",
+            "status": (
+                "QUALIFIED_CAUSAL_LARGEST_CELL"
+                if forecast_passed
+                else "FAILED_FORECAST_COMPARISON"
+            ),
             "schedule_steps": int(schedule.steps),
             "qualification_steps": qualification_steps,
             "draws_per_step": args.position_budget,
@@ -1206,8 +1233,13 @@ def _run_qualification_distribution(
             "embedding_transfer_seconds": embedding_transfer_seconds,
             "optimization_update_seconds": optimization_update_seconds,
             "qualification_validation_seconds": qualification_validation_seconds,
-            "cleanup_seconds": cleanup_seconds,
-            "total_qualification_wall_seconds": wall_seconds,
+            "selection_validation_seconds": None,
+            "final_fit_diagnostic_seconds": None,
+            "cleanup_seconds": None,
+            "total_qualification_wall_seconds": wall_before_forecast_seconds,
+            "qualification_progress_path": str(
+                distribution_root / "qualification_progress.json"
+            ),
             "timing_accounting": {
                 "public_tensor_load_seconds": None,
                 "schedule_construction_seconds": None,
@@ -1217,8 +1249,10 @@ def _run_qualification_distribution(
                 "embedding_transfer_seconds": embedding_transfer_seconds,
                 "optimization_update_seconds": optimization_update_seconds,
                 "qualification_validation_seconds": qualification_validation_seconds,
-                "cleanup_seconds": cleanup_seconds,
-                "total_qualification_wall_seconds": wall_seconds,
+                "selection_validation_seconds": None,
+                "final_fit_diagnostic_seconds": None,
+                "cleanup_seconds": None,
+                "total_qualification_wall_seconds": wall_before_forecast_seconds,
                 "state_io_seconds": None,
                 "components_are_subinterval_or_accumulated": True,
             },
@@ -1238,6 +1272,35 @@ def _run_qualification_distribution(
                 "supervision": "same-position current-token CE only",
             },
         }
+        # Persist metrics, per-step timings, peak memory, and the forecast
+        # comparison before enforcing the forecast check.  If the check fails,
+        # the caller's failure.json and this partial receipt together preserve
+        # the completed qualification work.
+        _json_write(distribution_root / "qualification_progress.json", result)
+        if not forecast_passed:
+            raise JointFitRunnerError(
+                f"{name} qualification measured device peak exceeds conservative forecast: "
+                f"{measured_device_peak} > {forecast_bytes}"
+            )
+        guard.append(
+            _resource_guard(
+                args,
+                device,
+                stage=f"{name}:qualification_after_peak_snapshot",
+                deadline=deadline,
+            )
+        )
+        cleanup_started = time.perf_counter()
+        del model, optimizer, scheduler, embedding
+        if device.type == "cuda":
+            torch.cuda.empty_cache()
+        gc.collect()
+        cleanup_seconds = time.perf_counter() - cleanup_started
+        wall_seconds = time.perf_counter() - started
+        result["cleanup_seconds"] = cleanup_seconds
+        result["total_qualification_wall_seconds"] = wall_seconds
+        result["timing_accounting"]["cleanup_seconds"] = cleanup_seconds
+        result["timing_accounting"]["total_qualification_wall_seconds"] = wall_seconds
         return result
     except Exception:
         # Preserve the caller's failure receipt and resource guard history.
@@ -1633,4 +1696,3 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

@@ -80,6 +80,15 @@
     "minimum_free_gpu_gib": 8.0,
     "maximum_gpu_reserved_gib": 6.0,
     "maximum_host_rss_gib": 16.0,
+    "minimum_host_available_gib": 10.0,
+    "analytic_forecast_safety_margin": 0.5,
+    "empirical_forecast_floor": {
+      "v1_measured_peak_bytes": 2942304256,
+      "multiplier": 1.5,
+      "floor_bytes": 4413456384,
+      "source": "experiments/TRR-0005/joint_qualification_v1/failure.json",
+      "combination": "max(analytic envelope, empirical floor); live guards remain enforced"
+    },
     "execution": "sequential arms and distributions; preflight before public tensor load; preserve failure.json",
     "heavy_execution": "deferred until root grants the shared resource window"
   },

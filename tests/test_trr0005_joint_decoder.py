@@ -206,6 +206,12 @@ def test_resource_preflight_records_largest_geometry() -> None:
     }
     assert result["bytes"]["selected_logits_fp32"] == 512 * 128256 * 4
     assert result["bytes"]["conservative_envelope"] > result["bytes"]["raw_sum"]
+    assert result["bytes"]["measured_v1_qualification_peak"] == 2_942_304_256
+    assert result["bytes"]["measured_qualification_floor"] == 4_413_456_384
+    assert result["bytes"]["conservative_envelope"] == 4_413_456_384
+    assert result["forecast_basis"]["measured_floor_source"].endswith(
+        "joint_qualification_v1/failure.json"
+    )
 
 
 def test_evaluator_bookkeeping_preserves_histogram_and_exact_counts() -> None:
@@ -373,4 +379,3 @@ def test_public_loader_rejects_fit_validation_overlap(tmp_path: Path) -> None:
     )
     with pytest.raises(JointDecoderError, match="overlap"):
         load_public_joint_data(fit_manifest, val_manifest)
-
