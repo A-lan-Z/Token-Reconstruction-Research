@@ -1,0 +1,315 @@
+{
+  "conditions": [
+    {
+      "id": "public_base",
+      "role": "matched public control",
+      "weights_available_to_reconstructor": true
+    },
+    {
+      "id": "public_lora_2601",
+      "role": "one synthetic target-shift diagnostic",
+      "weights_available_to_reconstructor": false
+    }
+  ],
+  "coverage_analysis": {
+    "counts": "computed only after exact public labels and frozen confirmation records are available",
+    "denominator": "active scored tokens, reported per style and target condition",
+    "interval_unit": "complete-record paired resampling within each style/condition; no independent-token confidence intervals",
+    "position_bins_post_bos": [
+      "1-15",
+      "16-39",
+      "40-79",
+      "80+"
+    ],
+    "shared_reference": "TRR-0004 large public Alpaca fitting labels; this is a coverage reference, not the retained A1's observed/unobserved set",
+    "token_frequency_bins": [
+      "0",
+      "1-4",
+      "5-19",
+      "20+"
+    ]
+  },
+  "exclusion_sources": [
+    {
+      "id": "trr3_public_panel",
+      "known_exact_ids": true,
+      "record": {
+        "bytes": 88693,
+        "path": "experiments/TRR-0003/evidence/control/panel.json",
+        "sha256": "d1810330f53ebb7e149be45b8c07414e09d30b31b68c7c09d24df3854fec7333"
+      },
+      "role": "historical public development panel IDs; exclude matching Pile/Finance records"
+    },
+    {
+      "id": "trr3_public_plan",
+      "known_exact_ids": false,
+      "record": {
+        "bytes": 8668,
+        "path": "experiments/TRR-0003/evidence/control/plan.json",
+        "sha256": "1a685a8d4bf1608d8cda346ebd954c3653f00d57bea43e02fcae843af2835d83"
+      },
+      "role": "historical public fitting/evaluation split declarations"
+    },
+    {
+      "id": "trr3_public_pile_fit",
+      "known_exact_ids": true,
+      "record": {
+        "available": true,
+        "bytes": 23919,
+        "hash_status": "pinned",
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/fit_records.json",
+        "sha256": "7aee0f6cb452bb1df401c920ca2a628d32fb204d144d72e4419fc8bd34a3a08e"
+      },
+      "role": "historical public Pile fitting IDs"
+    },
+    {
+      "id": "trr3_public_pile_validation",
+      "known_exact_ids": true,
+      "record": {
+        "available": true,
+        "bytes": 5098,
+        "hash_status": "pinned",
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_validation_slice_v2/public_validation_records.json",
+        "sha256": "446e6259482b730b3e22cdc693d37b406031141d7ac034de68ecaa5cc49456fb"
+      },
+      "role": "historical public validation Pile IDs"
+    },
+    {
+      "id": "trr4_alpaca_fit",
+      "known_exact_ids": true,
+      "record": {
+        "bytes": 463510,
+        "path": "experiments/TRR-0004/fit/adapter_v2/affine_fit_records.json",
+        "sha256": "3f733212efd62b19e71f60f002f4e9756b4975ebfb4dcabf0ac27935929f94ff"
+      },
+      "role": "current public Alpaca fitting rows; dataset-disjoint from confirmation"
+    },
+    {
+      "id": "trr4_alpaca_validation",
+      "known_exact_ids": true,
+      "record": {
+        "bytes": 16456,
+        "path": "experiments/TRR-0004/fit/adapter_v2/affine_validation_records.json",
+        "sha256": "30b422b681bef5e7af4c26d339e57dfb3571ecef8077bdc4be5d960ef05c9777"
+      },
+      "role": "current public Alpaca validation rows; dataset-disjoint from confirmation"
+    },
+    {
+      "id": "trr4_alpaca_fit_manifest",
+      "known_exact_ids": true,
+      "record": {
+        "bytes": 4838,
+        "path": "experiments/TRR-0004/fit/adapter_v2/public_fit_manifest.json",
+        "sha256": "432285de19bde996dfd1b3b7c289d321b93e99ed0fba88303bb99331c69c118f"
+      },
+      "role": "current public fit resource declaration"
+    },
+    {
+      "id": "trr4_alpaca_split_plan",
+      "known_exact_ids": true,
+      "record": {
+        "bytes": 691612,
+        "path": "experiments/TRR-0004/alpaca_split_plan.json",
+        "sha256": "29ca79db0f29fd5ec1e3769b5427ac1496b59ef7f88e7e921e41c13b1e07eb2e"
+      },
+      "role": "current public Alpaca split declaration and future exclusion policy"
+    }
+  ],
+  "execution": {
+    "git_commit": "094c2c951d8aa353b8084c297e25ec78af5a598d",
+    "model_loaded": false,
+    "network_used": false,
+    "observations_generated": false,
+    "python": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/.venv-trr0004/bin/python",
+    "script": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/scripts/trr0004_fresh_confirmation.py",
+    "truth_opened": false
+  },
+  "generated_at_utc": "2026-09-05T00:00:00Z",
+  "historical_provenance_boundary": {
+    "no_private_evaluator_contents_used": true,
+    "retained_a1_exact_fit_duration_available": false,
+    "retained_a1_exact_fit_record_ids_available": false,
+    "unknown_historical_ids_do_not_block": "dataset-disjoint Pile/Finance selection using the known public metadata above"
+  },
+  "methods_prospective": [
+    {
+      "candidate_policy": "forbidden",
+      "id": "historical_alpaca_a1",
+      "rule": "retained standalone historical A1 direct argmax; top-k is diagnostic only",
+      "track": "comparator"
+    },
+    {
+      "candidate_policy": "required",
+      "id": "frozen_a1_a2_k256",
+      "rule": "retained A1 proposals scored by fixed public-prefix A2 K256",
+      "track": "comparator"
+    },
+    {
+      "candidate_policy": "forbidden",
+      "id": "historical_affine_ce_no_vocab_bias",
+      "rule": "fresh public-fit affine decoder without vocabulary bias; selected public-fit checkpoint step 1900",
+      "track": "track_b"
+    },
+    {
+      "candidate_policy": "forbidden",
+      "id": "causal_h_attention128",
+      "rule": "compact causal contextual decoder over activation history",
+      "track": "track_b"
+    },
+    {
+      "candidate_policy": "forbidden",
+      "id": "positionwise_mlp256",
+      "rule": "parameter-matched compact nonlinear decoder",
+      "track": "track_b"
+    }
+  ],
+  "model": {
+    "cut_depth": 4,
+    "hidden_size": 2048,
+    "id": "meta-llama/Llama-3.2-1B-Instruct",
+    "revision": "9213176726f574b556790deb65791e0c5aa438b6"
+  },
+  "observation_generation_contract": {
+    "alternate_batch_policy": "unpadded batch-1 is diagnostic only and cannot replace the primary path",
+    "batch_size": 8,
+    "padding_semantics": "right-padding; active outputs must be bit-exact under future-pad perturbation",
+    "path": "public_prefix.forward_full",
+    "same_public_prefix_path": true,
+    "sequence_tokens": 192
+  },
+  "public_sources": {
+    "alpaca": {
+      "arrow": {
+        "available": true,
+        "bytes": 46230248,
+        "hash_status": "pinned",
+        "path": "/home/alanz/.cache/huggingface/datasets/tatsu-lab___alpaca/default/0.0.0/dce01c9b08f87459cf36a430d809084718273017/alpaca-train.arrow",
+        "sha256": "f45103036ed651f4c06d0a3c3e0fb7d53acb3074ed5c8e804a69c1efc1cea794"
+      },
+      "id": "tatsu-lab/alpaca",
+      "revision": "dce01c9b08f87459cf36a430d809084718273017",
+      "role": "current public fitting recipe only; excluded from confirmation",
+      "split": "train"
+    },
+    "finance": {
+      "dataset_info": {
+        "available": true,
+        "bytes": 813,
+        "hash_status": "computed",
+        "path": "/home/alanz/.cache/huggingface/datasets/Josephgflowers___finance-instruct-500k/default/0.0.0/583a98fb0ec14d904e9423b671d9d0fea88891b6/dataset_info.json",
+        "sha256": "36b7f591bb38c31b463ca1e55bff6a872b4268321d584f16f11752e8c4f4905e"
+      },
+      "fingerprint": "4abbac8acaab4205",
+      "id": "Josephgflowers/Finance-Instruct-500k",
+      "role": "fresh public confirmation candidates",
+      "split": "train"
+    },
+    "pile": {
+      "arrow": {
+        "available": true,
+        "bytes": 61270696,
+        "hash_status": "pinned",
+        "path": "/home/alanz/.cache/huggingface/datasets/NeelNanda___pile-10k/default/0.0.0/127bfedcd5047750df5ccf3a12979a47bfa0bafa/pile-10k-train.arrow",
+        "sha256": "77ddf02e2a69373a944bc8bc8ac8f7b9926f5c62203d727341a24d709bf81113"
+      },
+      "dataset_info": {
+        "available": true,
+        "bytes": 736,
+        "hash_status": "computed",
+        "path": "/home/alanz/.cache/huggingface/datasets/NeelNanda___pile-10k/default/0.0.0/127bfedcd5047750df5ccf3a12979a47bfa0bafa/dataset_info.json",
+        "sha256": "6f76b8c5908b60192866afdcf2ff773bb877ae7c8240d9007e841633af21ba0e"
+      },
+      "id": "NeelNanda/pile-10k",
+      "revision": "127bfedcd5047750df5ccf3a12979a47bfa0bafa",
+      "role": "fresh public confirmation candidates",
+      "split": "train"
+    }
+  },
+  "registration_boundary": "Method state/config paths, exact selected records, activation paths, and truth binding are written only after methods are frozen. This plan does not activate a benchmark method.",
+  "schema": "token-reconstruction.trr0004-fresh-confirmation-plan.v1",
+  "selection_rule": {
+    "algorithm": "After method/config freeze, render each source in stored order with the pinned tokenizer/template; filter minimum post-BOS length; exclude public IDs/content hashes from every listed metadata source; stable-sort by (dataset, source row index, public record ID); take the first 16 eligible rows per dataset.",
+    "bos_token_id": 128000,
+    "exact_ids_and_hashes_written_only_after": [
+      "method state/config freeze",
+      "public selection metadata freeze"
+    ],
+    "finance": {
+      "pair_rows_across_conditions": true,
+      "truncate_or_right_pad_to": 128
+    },
+    "padding_token_id": 128001,
+    "pile": {
+      "pair_rows_across_conditions": true,
+      "take_first_tokens": 40
+    },
+    "record_hashes_selected": null,
+    "record_ids_selected": null,
+    "source_text_or_token_ids_written": false
+  },
+  "status": "PROSPECTIVE_SELECTION_RULE_NO_RECORDS_SELECTED",
+  "styles": [
+    {
+      "id": "pile",
+      "input_style": "plain Pile text",
+      "minimum_post_bos_tokens": 39,
+      "records": 16,
+      "sequence_tokens": 40
+    },
+    {
+      "id": "finance",
+      "input_style": "Finance chat-template rendering",
+      "minimum_post_bos_tokens": 32,
+      "records": 16,
+      "sequence_tokens": 128
+    }
+  ],
+  "task_id": "TRR-0004",
+  "timing_contract": {
+    "accuracy_output": "first measured run after exact repeat check",
+    "cold_costs_separate": [
+      "state/config/model load",
+      "prefix/embedding load",
+      "input I/O",
+      "hashing",
+      "GPU initialization"
+    ],
+    "cuda_synchronize_boundaries": true,
+    "measured_runs_per_record_method": 3,
+    "method_specific_costs": "prefix calls and candidate simulations are measured from each method's implementation; this plan does not assume zero",
+    "shared_resources_resident": true,
+    "standalone_decoder_runtime": {
+      "a2_fallback": false,
+      "candidate_simulations": 0,
+      "prefix_calls": 0
+    },
+    "steady_interval": "CPU H input -> device preprocessing -> method prediction -> predicted IDs CPU",
+    "warmup_runs_per_record_method": 1
+  },
+  "tokenizer": {
+    "bos_token_id": 128000,
+    "id": "meta-llama/Llama-3.2-1B-Instruct",
+    "local_files_only": true,
+    "padding_token_id": 128001,
+    "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "snapshot": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6"
+  },
+  "truth_gate_contract": {
+    "load_order": [
+      "freeze receipt",
+      "panel and public observations",
+      "method registration",
+      "all prediction artifacts",
+      "truth loader"
+    ],
+    "private_sidecar_contents_not_read_before_gate": true,
+    "required_matrix": "4 cells \u00d7 every registered method",
+    "truth_loader_called_by_adapter": false
+  },
+  "uncertainty_and_coverage": {
+    "position_coverage": "Pile uses first 39 post-BOS positions; Finance reports active post-BOS positions through max128 and padding counts per row",
+    "selection_counts": "unknown until public metadata freeze",
+    "style_coverage": "one plain-text and one Finance chat-template style",
+    "target_shift_coverage": "one synthetic LoRA2601 condition; not evidence for broad target/SFT transfer"
+  }
+}
