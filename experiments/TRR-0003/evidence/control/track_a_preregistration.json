@@ -1,0 +1,75 @@
+{
+  "schema": "token-reconstruction.trr0003-track-a-registration.v1",
+  "task_id": "TRR-0003",
+  "method_id": "checkpoint_reverse_fixed_point_euclidean_k16",
+  "status": "EXPLORATORY_REGISTERED",
+  "truth_opened": false,
+  "fitted_parameters": false,
+  "algorithm": {
+    "method_id": "checkpoint_reverse_fixed_point_euclidean_k16",
+    "method_schema": "token-reconstruction.trr0003-track-a-registration.v1",
+    "architecture": "reverse_pre_norm_residual_fixed_point",
+    "model": {
+      "id": "meta-llama/Llama-3.2-1B-Instruct",
+      "revision": "9213176726f574b556790deb65791e0c5aa438b6"
+    },
+    "cut_depth": 4,
+    "initial_estimate": "observed_boundary_activation",
+    "reverse_order": "layer_{cut_depth_minus_one}_to_layer_0; mlp_then_attention",
+    "fixed_point_update": "estimate <- (1-damping)*estimate + damping*(target-public_branch(estimate))",
+    "damping": 0.5,
+    "iterations": [
+      0,
+      1,
+      2,
+      4,
+      8,
+      16,
+      32
+    ],
+    "zero_fit_identity_baseline": {
+      "iterations": 0,
+      "estimate": "observed_boundary_activation",
+      "inversion_steps": 0,
+      "projection": "same_exact_euclidean_public_embedding_scan"
+    },
+    "projection": "squared_euclidean",
+    "top_k": 16,
+    "vocab_chunk_size": 8192,
+    "projection_tie_break": "distance_then_token_id",
+    "record_batch_size": 1,
+    "candidate_prefix_simulations": 0,
+    "truth_opened": false,
+    "fitted_parameters": false,
+    "auxiliary_training_steps": 0,
+    "teacher_prefix_diagnostic": false,
+    "branch_forward_calls_per_step": 2,
+    "deterministic_execution": "torch_deterministic_algorithms_true; sdpa_math_only",
+    "sequence_policy": "strip_only_right_padding; position_ids_must_equal_arange"
+  },
+  "panel": {
+    "path": "experiments/TRR-0003/footing/panel.json",
+    "styles": {
+      "pile": {
+        "records_per_cell": 8,
+        "sequence_tokens": 40
+      },
+      "finance": {
+        "records_per_cell": 8,
+        "sequence_tokens": 128
+      }
+    },
+    "conditions": [
+      "public_base",
+      "public_lora_2601"
+    ],
+    "canonical_cells": "NOT_RUN_IN_PILOT"
+  },
+  "development_data": {
+    "fitting_or_calibration": false,
+    "truth_used_for_decisions": false,
+    "public_model_matched_control": true,
+    "target_shift_condition": "public_lora_2601",
+    "future_confirmation_data_reserved": true
+  }
+}
