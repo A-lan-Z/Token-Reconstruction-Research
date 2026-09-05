@@ -1421,7 +1421,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             "reference_plus_queries": plus_queries.contiguous(),
             "local_neighbor_ids": local_neighbor_ids.to(torch.int32).contiguous(),
             "local_neighbor_scores": local_neighbor_scores.contiguous(),
-            "recomputed_baseline": baseline.contiguous(),
+            "recomputed_baseline": baseline.detach().clone().contiguous(),
             "reused_table_rows": table_rows.contiguous(),
         },
         tensor_path,
