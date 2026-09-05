@@ -1,0 +1,105 @@
+{
+  "active_registry_unchanged": true,
+  "base": {
+    "frozen_during_extension_fit": true,
+    "method_id": "historical_affine_ce_no_vocab_bias",
+    "required_state_keys": [
+      "W",
+      "b",
+      "s"
+    ],
+    "source": "freshly fitted TRR-0004 historical-style full affine state selected by Track A",
+    "state_artifact": {
+      "binding_role": "fresh public-data affine base selected by Track A; no inherited weak tied-CE checkpoint",
+      "bytes": 16786108,
+      "selected_step": 1900,
+      "sha256": "09c5b852373d8555b06508a79bb00c94041202702b61b121b35fa2b6f9f64e65"
+    },
+    "state_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/fit_large_v1/historical_affine_ce_no_vocab_bias.safetensors",
+    "vocabulary_bias": false
+  },
+  "cost_plan": {
+    "conservative_peak_estimate": "runner computes table + selected-logit autograd copies + full sequence hidden/workspace from actual input geometry; estimate is not a measured result until qualification",
+    "preflight": "qualify the largest public geometry before full fit; require at least 8 GiB free CUDA memory, at most 6 GiB current reservation, and at most 16 GiB host RSS; default wall guard is 1,200 seconds",
+    "preparation": "public activation/truth tensor capture is external to this runner and must be recorded by its own receipt",
+    "runner": "one embedding-table transfer, two main fits, two 8-record subset overfit diagnostics, public validation at registered checkpoints"
+  },
+  "dataset": {
+    "fit_post_bos_positions": "read from registration large_nested.post_bos_positions",
+    "fit_records": 1200,
+    "id": "tatsu-lab/alpaca",
+    "labels": "public current-token labels only; fit and validation IDs must exactly match the supplied combined registration",
+    "rendering": "registered Alpaca Llama chat recipe at cut-4, maximum sequence length 192",
+    "revision": "dce01c9b08f87459cf36a430d809084718273017",
+    "validation_components": [
+      {
+        "group": "alpaca",
+        "native_sequence_length": 192,
+        "records": 24
+      },
+      {
+        "group": "pile",
+        "native_sequence_length": 40,
+        "records": 24
+      }
+    ],
+    "validation_group_balance": "style-balanced mean over the two explicit 24-record groups",
+    "validation_records": 48
+  },
+  "execution": {
+    "current_panel_truth_accessed": false,
+    "run_status": "NOT_RUN",
+    "selected_states": false,
+    "training_started": false
+  },
+  "exploratory": true,
+  "methods": [
+    {
+      "added_parameters_at_hidden_2048": 1051008,
+      "added_path": "one-head causal attention over H_0..H_i",
+      "context_width": 128,
+      "method_id": "causal_h_attention128",
+      "zero_initialized_output": true
+    },
+    {
+      "added_parameters_at_hidden_2048": 1050880,
+      "added_path": "positionwise GELU residual correction",
+      "bottleneck_width": 256,
+      "method_id": "positionwise_mlp256",
+      "zero_initialized_output": true
+    }
+  ],
+  "registration_asset": "footing-provided combined registration with the 1200-record public fit split and two explicit validation groups",
+  "runtime_contract": {
+    "a2_fallback": false,
+    "candidate_simulations": 0,
+    "current_evaluator_truth": false,
+    "deployed_inputs": "cut-4 activation sequence, fixed normalized public embedding table, selected extension state",
+    "public_prefix_calls": 0,
+    "target_weights": false,
+    "teacher_prefix": false
+  },
+  "schema": "token-reconstruction.trr0004-contextual-extension-registration.v1",
+  "shared_algorithm": {
+    "context_input": "activation H_0 through H_i with causal validity mask; no token or teacher input",
+    "fit_steps": 3000,
+    "gradient_clip_norm": 1.0,
+    "input_normalization": "F.layer_norm(x, (hidden_size,), weight=None, bias=None, eps=1e-5)",
+    "learning_rate": 0.001,
+    "optimizer": "AdamW",
+    "position_budget": 512,
+    "position_budget_scope": "total selected positions per record batch, not per record",
+    "projection": "full vocabulary logits materialized only for selected loss rows, at most 512 per batch",
+    "record_batch_size": 8,
+    "sampler": "one precomputed seed-bound record/position schedule saved and reused byte-identically by both methods",
+    "scheduler": "CosineAnnealingLR",
+    "seed": 1737,
+    "selection": "step 0 is retained as the exact-base diagnostic; selected deployment state is earliest best NONZERO checkpoint by style-balanced public validation token accuracy",
+    "subset_diagnostic_steps": 600,
+    "subset_records": 8,
+    "validation_checkpoints": "0,25,50,75,100,150,200, then every 100 steps through 3000",
+    "weight_decay": 0.0
+  },
+  "status": "BASE_BOUND_BEFORE_CONTEXTUAL_FIT",
+  "task_id": "TRR-0004"
+}
