@@ -1,6 +1,6 @@
 # TRR-0004 setup and preflight
 
-Status: **setup complete; first preparation attempt failed before model load; corrected retry not run**.
+Status: **public activation preparation complete; no confirmation records generated**.
 
 Recorded at 2026-09-05T10:09:56.574088+00:00. The isolated worktree is `/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004` on `task/TRR-0004`, exactly at `eab3fc21fdae67fe628a42620029e25829a188b1`. The incoming packet is preserved byte-for-byte at `coordination/requests/TRR-0004.md` (8,551 bytes; SHA256 `7eb85bc38225b253fe4a0410961539130882277d64dff5e6ba295766a4b197d0`).
 
@@ -104,3 +104,36 @@ The corrected loader accepts this fallback only when
 `<|end_of_text|>`. The tokenizer is not mutated. The local snapshot check and
 mocked fallback test pass; root must commit this correction before the retry,
 which uses the new create-only output root `public_activation_v2`.
+
+## Successful public activation preparation (v2)
+
+The corrected create-only run completed at frozen commit
+`3a7206ec6440b3344b3c4db72b543c17152bfac7` using the task-local venv and
+public-only inputs. The launcher receipt is
+`experiments/TRR-0004/evidence/public_activation_launch_v2/launch.json`; its
+stdout/stderr and the full preparation receipt are retained beside it. The
+process completed in 9.764 seconds with no network access. Peak allocation was
+2,472,678,400 bytes and peak reservation 2,480,930,816 bytes on the RTX 5080;
+host RSS peaked at 6,173,032,448 bytes. All values passed the 8 GiB reserved
+and 16 GiB RSS guards.
+
+The required largest geometry qualification passed: the fixed batch-8 × 192
+path changed 433 future padding token IDs in the same shape and observed
+bit-exact active outputs (maximum absolute difference 0.0). The separate
+unpadded batch-1 diagnostic was not used for capture and is recorded as
+`non_equivalent_not_used`: maximum absolute difference 2.0, relative L2
+0.0035975385, bit-exact false.
+
+The public artifacts are in `outputs/TRR-0004/public_activation_v2/`:
+`train_large_cut4.safetensors` (947,176,648 bytes; SHA256
+`d1c78fcf1acc91b57d51355ee11f267bf4c12f1bc7d5160164b3b6ea11b45344`),
+`train_large_records.json` (726,532 bytes; SHA256
+`34e10ddc7c502b30822730b84c6f3a48b6285888b8ef92fc9e1aef65ecca29df`),
+`validation_alpaca_cut4.safetensors` (18,945,712 bytes; SHA256
+`9f0d051252ec4a2f9d48a48d7500049c4a10710244572e82d2d122bc7b0c3337`), and
+`validation_alpaca_records.json` (12,943 bytes; SHA256
+`b31cbdecbaf5b2617e8e20b3d32d7840316a7daf9e35ccf92870d15b189d190f`). The
+train tensor geometry is 1,200 × 192 × 2,048 BF16 with 124,371 post-BOS
+positions and a nested 5,000-position selector; validation is 24 × 192 ×
+2,048 with 2,197 post-BOS positions. The preparation receipt confirms no
+target weights, evaluator-private truth, or confirmation records were accessed.

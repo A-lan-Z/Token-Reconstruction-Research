@@ -272,7 +272,7 @@
     "qualification_timeout_seconds": 600
   },
   "public_activation_preparation": {
-    "actual_run": false,
+    "actual_run": true,
     "attempted": true,
     "exact_invocation_template": "timeout --signal=TERM 600s env HF_DATASETS_OFFLINE=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false PYTHONPATH=src:scripts .venv-trr0004/bin/python scripts/trr0004_prepare_public_activations.py --split-plan experiments/TRR-0004/alpaca_split_plan.json --dataset-arrow /home/alanz/.cache/huggingface/datasets/tatsu-lab___alpaca/default/0.0.0/dce01c9b08f87459cf36a430d809084718273017/alpaca-train.arrow --dataset-info /home/alanz/.cache/huggingface/datasets/tatsu-lab___alpaca/default/0.0.0/dce01c9b08f87459cf36a430d809084718273017/dataset_info.json --tokenizer /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6 --model /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6 --pile-receipt /home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_validation_slice_v2/validation_slice_evidence.json --output-root outputs/TRR-0004/public_activation_v2 --device cuda --batch-records 8",
     "first_attempt": {
@@ -368,7 +368,176 @@
       "prefix_source": "token_reconstruction.public_prefix.ContiguousPublicPrefix.forward_full",
       "split_plan_sha256": "29ca79db0f29fd5ec1e3769b5427ac1496b59ef7f88e7e921e41c13b1e07eb2e"
     },
-    "status": "RETRY_READY_AFTER_PRE_MODEL_LOAD_FAILURE",
+    "status": "COMPLETE_NO_CONFIRMATION",
+    "successful_output_root": "outputs/TRR-0004/public_activation_v2",
+    "successful_run": {
+      "confirmation_records_generated": false,
+      "evaluator_private_truth_accessed": false,
+      "execution": {
+        "batch_records": 8,
+        "cuda_runtime": "12.8",
+        "device": "cuda",
+        "device_name": "NVIDIA GeForce RTX 5080",
+        "ended_utc": "2026-09-05T11:24:10Z",
+        "network_used": false,
+        "started_utc": "2026-09-05T11:24:00Z",
+        "wall_seconds": 9.764313294999738
+      },
+      "launch_receipt": {
+        "bytes": 4344,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/evidence/public_activation_launch_v2/launch.json",
+        "sha256": "6566e78e50661f219661e199e0e96e75505d96f40ad13079df4c0127cf83e83a"
+      },
+      "model_weights_sha256_verified": "1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f",
+      "outputs": {
+        "train_large": {
+          "bytes": 947176648,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_cut4.safetensors",
+          "role": "public fit activations and labels; nested selectors included",
+          "sha256": "d1c78fcf1acc91b57d51355ee11f267bf4c12f1bc7d5160164b3b6ea11b45344"
+        },
+        "train_records": {
+          "bytes": 726532,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_records.json",
+          "sha256": "34e10ddc7c502b30822730b84c6f3a48b6285888b8ef92fc9e1aef65ecca29df"
+        },
+        "validation_alpaca": {
+          "bytes": 18945712,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/public_activation_v2/validation_alpaca_cut4.safetensors",
+          "role": "public continuation validation activations and labels",
+          "sha256": "9f0d051252ec4a2f9d48a48d7500049c4a10710244572e82d2d122bc7b0c3337"
+        },
+        "validation_records": {
+          "bytes": 12943,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/public_activation_v2/validation_alpaca_records.json",
+          "sha256": "b31cbdecbaf5b2617e8e20b3d32d7840316a7daf9e35ccf92870d15b189d190f"
+        }
+      },
+      "peak_memory": {
+        "cuda_peak_allocated_bytes": 2472678400,
+        "cuda_peak_reserved_bytes": 2480930816,
+        "host_max_rss_bytes": 6173032448
+      },
+      "phases": [
+        {
+          "elapsed_seconds": 0.0007795100027578883,
+          "exit_status": 0,
+          "phase": "public_resource_guard"
+        },
+        {
+          "elapsed_seconds": 0.6106296189973364,
+          "exit_status": 0,
+          "phase": "load_public_alpaca_cache_and_tokenizer"
+        },
+        {
+          "elapsed_seconds": 0.5398158019997936,
+          "exit_status": 0,
+          "phase": "materialize_registered_public_token_sequences"
+        },
+        {
+          "elapsed_seconds": 3.0466276129991456,
+          "exit_status": 0,
+          "phase": "load_public_model_and_prefix"
+        },
+        {
+          "elapsed_seconds": 0.599315105999267,
+          "exit_status": 0,
+          "phase": "qualify_public_prefix_batch8_x_192_padding"
+        },
+        {
+          "elapsed_seconds": 2.8680388360007782,
+          "exit_status": 0,
+          "phase": "capture_public_train_large_cut4_activations"
+        },
+        {
+          "elapsed_seconds": 0.046758223001234,
+          "exit_status": 0,
+          "phase": "capture_public_alpaca_validation_cut4_activations"
+        },
+        {
+          "elapsed_seconds": 0.9426876360012102,
+          "exit_status": 0,
+          "phase": "serialize_public_activation_artifacts"
+        }
+      ],
+      "preparation_evidence": {
+        "bytes": 17361,
+        "path": "outputs/TRR-0004/public_activation_v2/preparation_evidence.json",
+        "sha256": "77e7bcbe2a95c526e805d384aec7ba8bf731630b6734d6542ba71d0af4ec120b"
+      },
+      "qualification": {
+        "batching_substitution_allowed": false,
+        "measured_peak_after_phase": {
+          "cuda_peak_allocated_bytes": 2472678400,
+          "cuda_peak_reserved_bytes": 2480930816,
+          "host_max_rss_bytes": 3774595072
+        },
+        "primary_geometry": {
+          "active_output_bit_exact": true,
+          "batch_records": 8,
+          "changed_future_pad_tokens": 433,
+          "decision_rule": "torch.equal on native active outputs; no tolerance",
+          "future_pad_token_id": 0,
+          "maximum_absolute_difference": 0.0,
+          "path": "fixed batch-8 x 192 ContiguousPublicPrefix.forward_full",
+          "same_batch_shape": true,
+          "sequence_tokens": 192
+        },
+        "status": "passed",
+        "unpadded_batch1_diagnostic": {
+          "active_output_bit_exact": false,
+          "batch_records": 8,
+          "compared_active_values": 2258944,
+          "decision_rule": "diagnostic only; no tolerance gate and no batching substitution",
+          "maximum_absolute_difference": 2.0,
+          "reference_path": "ContiguousPublicPrefix.forward_full on each unpadded active record",
+          "relative_l2": 0.003597538511118046,
+          "status": "non_equivalent_not_used",
+          "used_for_capture": false
+        }
+      },
+      "resource_guard": {
+        "device": "cuda",
+        "failure_policy": "stop and preserve failure on OOM, non-finite activation, allocator/driver anomaly, or source mismatch",
+        "free_bytes": 15679356928,
+        "maximum_host_rss_bytes": 17179869184,
+        "maximum_reserved_bytes": 8589934592,
+        "minimum_free_bytes": 8589934592,
+        "status": "passed",
+        "total_bytes": 17066033152
+      },
+      "source_code_sha256": {
+        "activation_module": "3be43dd5b6a5918a48f289971ab2a833977a7f9d87094e6001c5c7cdc60ab76f",
+        "public_prefix_module": "b9dca1d8d56c7c07413015aea4bde79e8ceac827c32ee9bc0d1a236ea1dd35f6",
+        "runner": "6f1a9b6d7ee4aad89ee8152021e6e431b8652a6f7c162167a6180229feed70e8",
+        "runtime_module": "9bfe8ba34fe473faf1ace17f16ea0e5e363728822bd715ddcf21c33c4ffc2177",
+        "split_module": "fa9a15fd4cf92ffa06be3bd77888324536180e8a2fd2c43ae14f20e470a3626a"
+      },
+      "source_commit": "3a7206ec6440b3344b3c4db72b543c17152bfac7",
+      "status": "PUBLIC_ACTIVATION_PREPARATION_COMPLETE_NO_CONFIRMATION",
+      "stderr_receipt": {
+        "bytes": 147,
+        "path": "experiments/TRR-0004/evidence/public_activation_launch_v2/stderr.log",
+        "sha256": "f5de8a0359be2e1cc086e1eadacad907c439c11857a060a0e575c86c0afc2919"
+      },
+      "stdout_receipt": {
+        "bytes": 521,
+        "path": "experiments/TRR-0004/evidence/public_activation_launch_v2/stdout.log",
+        "sha256": "05668a06c64d6714805c68759117cb91ee4fe64d69c42227dd11b2efde51e913"
+      },
+      "tensor_hashes": {
+        "train_activations": "6c56af87704e2481fc5a259ab4cb471006993e6f43dd10e0dbc3ee22fb7b296f",
+        "train_attention_mask": "e2ee7f711107a8a887a053657bc5b53bb210cc4735247108df08540a5a9ebb76",
+        "train_position_ids": "7937dcf9463cfda24117a2d1f6e8d1a74a627711757ad4985bbe5b18936cb997",
+        "train_selector_large": "b41ccdc40c1be73bba19908ca7a69cc6e3a4d218ba20cfd5f6374abd88ae8561",
+        "train_selector_small": "f5928ff7c1a0b42f3adca216b2138fbdf81ba02908082b085fd0b7c12543ca99",
+        "train_token_ids": "63e4e98a1c3984e48ea6b28252648927084b88ed5b9b4ad1dd59786eab04f84f",
+        "validation_activations": "f828c4e23762171f03cbcf3a58d501d3ece716356ee87d1a4e7cdb6ab17af0c5",
+        "validation_attention_mask": "165629aa01ee1260ca5811929bb66e46a078cbfa4569c4289b2c85cf127b63a5",
+        "validation_position_ids": "13fba48b12fd47fe097918583c02b4b84bda04817b8fdc8b656e983ec7e19cee",
+        "validation_token_ids": "ac2162d17f51b3f6f1ec4eed5c259cf790247802472d5ea080d42ba9d82f6c50"
+      }
+    },
     "target_or_private_truth_accessed": false,
     "test_result": "7 public activation tests plus 6 split tests passed",
     "tests": "tests/test_public_activation.py",
@@ -520,7 +689,7 @@
     "No TRR-0004 scientific implementation, model load, fit, evaluation, or heavy CPU/GPU execution has occurred in this setup step.",
     "Public Alpaca nested split is registered; activation CLI is implemented for fixed cut-4 batch-8 x 192 preparation but has not run yet."
   ],
-  "status": "SETUP_COMPLETE_NO_EXPERIMENTS_RUN",
+  "status": "PUBLIC_ACTIVATION_PREPARATION_COMPLETE_NO_CONFIRMATION",
   "task_id": "TRR-0004",
   "task_local_paths": {
     "evidence_root": {

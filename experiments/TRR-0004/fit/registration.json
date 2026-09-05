@@ -1,0 +1,136 @@
+{
+  "architecture": {
+    "embedding_classifier": "fixed normalized public input-embedding table",
+    "formula": "q=normalize(x @ W.T + b); logits=(q.to(E.dtype) @ E.T).float()*exp(s) + vocab_bias",
+    "hidden_bias": true,
+    "hidden_map": "full hidden-space affine W,b",
+    "learned_global_logit_scale": true,
+    "variants": {
+      "historical_affine_ce_no_vocab_bias": {
+        "bias_mode": "none",
+        "parameter_difference": "none",
+        "vocabulary_bias": false
+      },
+      "historical_affine_ce_vocab_bias": {
+        "bias_mode": "vocab",
+        "parameter_difference": "one vocabulary bias only",
+        "vocabulary_bias": "trainable zero-initialized [vocab] vector"
+      }
+    },
+    "weight_orientation": "activation rows are multiplied by W.T"
+  },
+  "claim_scope": "controlled public recipe recreation; diagnostic comparison only; no replacement claim",
+  "data_contract": {
+    "alignment": {
+      "bos_position": 0,
+      "label_index": "i",
+      "mode": "current_token",
+      "observation_index": "i",
+      "scored_positions": "post_bos"
+    },
+    "embedding_table": "pre-normalized float32 public table, validated by pinned file hash",
+    "historical_provenance_boundary": "the retained TRR-0002 state has incomplete exact fit provenance; this is a fresh recipe recreation",
+    "manifest_path": "experiments/TRR-0004/fit/adapter_v2/public_fit_manifest.json",
+    "manifest_schema": "token-reconstruction.trr0004-public-fit-data.v1",
+    "manifest_adapter": "scripts/trr0004_build_affine_fit_manifest.py",
+    "padded_artifact_adapter": {
+      "combined_file_allowed": true,
+      "layout": "padded_records",
+      "mask_rule": "attention_mask must be contiguous right-padding; only active BOS/post-BOS rows are flattened",
+      "observation_truth_alignment": "same record and position index",
+      "required_keys": [
+        "activations",
+        "token_ids",
+        "attention_mask"
+      ]
+    },
+    "public_only": true,
+    "required_layouts": [
+      "packed_records",
+      "packed_post_bos",
+      "padded_records"
+    ],
+    "source_split_registration": "experiments/TRR-0004/alpaca_split_plan.json",
+    "split_check": "fit and public-validation record IDs are checked before any label tensor is opened",
+    "truth_policy": "public auxiliary labels only; evaluator-private truth is not accepted by this loader"
+  },
+  "fit_recipe": {
+    "batch_size": 512,
+    "fit_bos_positions": true,
+    "fit_sizes": {
+      "large_including_one_BOS_per_record": 125571,
+      "large_nested_post_bos_positions": 124371,
+      "nested_order": "identical public record/position prefix",
+      "small_nested_post_bos_positions": 5000
+    },
+    "gradient_clip_norm": 0.0,
+    "gradient_clip_note": "The historical attack.py source did not call clip_grad_norm_; this controlled recipe disables clipping (norm 0) and still fails closed on non-finite gradient norms.",
+    "initial_W": "identity",
+    "initial_b": "zero",
+    "initial_s": 3.0,
+    "learning_rate": 0.001,
+    "objective": "full-vocabulary cross-entropy",
+    "optimizer": "AdamW",
+    "optimizer_seed": 0,
+    "scheduler": "CosineAnnealingLR",
+    "selection": {
+      "all_validation_rows_used": true,
+      "checkpoints": "step 0, 25, 50, 75, 100, 150, 200, then every 100 through 3000",
+      "metric": "style-balanced public validation token accuracy",
+      "metric_definition": "unweighted mean of per-group token accuracies over all public validation rows; one group reduces to aggregate accuracy",
+      "rule": "earliest checkpoint attaining the maximum",
+      "training_schedule_is_fixed": true,
+      "validation_does_not_update_or_stop_optimizer": true,
+      "validation_groups_source": "sanitized style/group/source/dataset/domain fields in public validation record metadata; missing field is public"
+    },
+    "steps": 3000,
+    "training_probe": {
+      "curve_rows": 2048,
+      "full_fit_pass": "one final full-fit capacity diagnostic after the last update",
+      "role": "fixed fit-only learning-curve diagnostic, never checkpoint selection",
+      "seed": 17,
+      "source": "public fit rows only"
+    },
+    "validation_bos_positions": false,
+    "weight_decay": 0.0
+  },
+  "implementation": {
+    "a2_fallback": false,
+    "candidate_simulations_at_inference": 0,
+    "module": "src/token_reconstruction/historical_affine_ce.py",
+    "public_prefix_calls_at_inference": 0,
+    "runner": "scripts/trr0004_historical_affine_ce.py",
+    "tests": "tests/test_historical_affine_ce.py",
+    "trained_state_present": false
+  },
+  "method_ids": [
+    "historical_affine_ce_no_vocab_bias",
+    "historical_affine_ce_vocab_bias"
+  ],
+  "notes": [
+    "No model fitting or model execution is authorized by this registration alone.",
+    "The historical-style arm intentionally retains hidden bias and learned scale while omitting vocabulary bias.",
+    "The vocabulary-bias arm is a controlled ablation, not a post hoc deletion from a fitted checkpoint.",
+    "Public validation curves and the retained historical A1 bridge are development diagnostics only.",
+    "Validation selection is style-balanced over all public validation rows; validation groups come from sanitized record metadata and are recorded in every fit evidence file.",
+    "The fit runner consumes the footing adapter manifest over the combined right-padded public activation artifacts and checks active lengths before flattening."
+  ],
+  "preparation_cost_reporting": {
+    "cold_start": "public tensor manifest/resource load and model initialization",
+    "fit": "each 3000-step arm reported separately",
+    "retained_state": "W,b,s plus optional vocabulary bias; embedding table remains an external runtime resource",
+    "steady_state": "direct prediction includes the fixed public embedding table and no A2 or prefix calls"
+  },
+  "resource_guard": {
+    "default_wall_timeout_seconds": 900,
+    "failure_policy": "stop and preserve logs/artifacts; never score partial state",
+    "largest_geometry": "full vocabulary logits at batch 512 with hidden width 2048; activations and normalized embedding table resident",
+    "maximum_host_rss_gib": 16.0,
+    "maximum_reserved_gpu_gib": 6.0,
+    "memory_estimate": "~1.03 GiB BF16/FP32 activation storage plus ~1.05 GiB embedding table and optimizer/model/workspace overhead; qualify with >=8 GiB free and <=6 GiB reserved",
+    "minimum_free_gpu_gib": 8.0
+  },
+  "schema": "token-reconstruction.trr0004-controlled-affine-ce-registration.v1",
+  "status": "registered_source_only_not_run",
+  "task_id": "TRR-0004"
+}

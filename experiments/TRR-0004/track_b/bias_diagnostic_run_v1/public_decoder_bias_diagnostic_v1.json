@@ -1,0 +1,2470 @@
+{
+  "access_contract": {
+    "a2_fallback": false,
+    "candidate_simulations": 0,
+    "current_evaluation_truth_accessed": false,
+    "panel_truth_accessed": false,
+    "public_fit_labels_used": true,
+    "public_prefix_calls": 0,
+    "public_validation_labels_used": true,
+    "target_truth_accessed": false,
+    "target_weights_accessed": false,
+    "validation_truth_role": "public auxiliary validation only"
+  },
+  "code": {
+    "diagnostic_module": {
+      "bytes": 24058,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/src/token_reconstruction/decoder_diagnostics.py",
+      "role": "diagnostic module source",
+      "sha256": "db96903d3cc43f4dcaa5e6de1f269d2e8b6cbd26d19ea6291d26a47f151de318"
+    },
+    "git_commit_end": "328f3a3559289338b7e38fc64465e1808d466e29",
+    "git_commit_start": "328f3a3559289338b7e38fc64465e1808d466e29",
+    "git_commit_unchanged": true,
+    "inverse_module": {
+      "bytes": 6236,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/src/token_reconstruction/inverse.py",
+      "role": "frozen angular inverse source",
+      "sha256": "083fd8cf8cf7dad2c8107db0c3929e67c58fc37389c07ea70c1ad82dcac5f740"
+    },
+    "runner": {
+      "bytes": 20498,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/scripts/trr0004_track_b_bias_diagnostic.py",
+      "role": "diagnostic runner source",
+      "sha256": "ab072934ac36359851c820c12707aff5c396fef408c3fa3fff0f2fd16d955d8c"
+    },
+    "standalone_decoder_module": {
+      "bytes": 28739,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/src/token_reconstruction/standalone_decoder.py",
+      "role": "frozen standalone decoder source",
+      "sha256": "e6228195ffb8595f98707b402fb1b1caab3b237ceabfdbe1d6fe6dced67a73d0"
+    }
+  },
+  "configuration": {
+    "batch_size": 128,
+    "bos_token_id": 128000,
+    "device": "cuda",
+    "frequency_bins": [
+      {
+        "lower_fit_count": 0,
+        "name": "unseen",
+        "upper_fit_count": 0
+      },
+      {
+        "lower_fit_count": 1,
+        "name": "singleton",
+        "upper_fit_count": 1
+      },
+      {
+        "lower_fit_count": 2,
+        "name": "rare_2_4",
+        "upper_fit_count": 4
+      },
+      {
+        "lower_fit_count": 5,
+        "name": "low_5_9",
+        "upper_fit_count": 9
+      },
+      {
+        "lower_fit_count": 10,
+        "name": "medium_10_49",
+        "upper_fit_count": 49
+      },
+      {
+        "lower_fit_count": 50,
+        "name": "frequent_50_plus",
+        "upper_fit_count": null
+      }
+    ],
+    "hidden_size": 2048,
+    "rank_definition": "one plus the number of strictly larger full-vocabulary logits; ties share competition rank",
+    "variants": [
+      {
+        "bias_mode": "original",
+        "normalize_output": true,
+        "scale": null,
+        "variant_id": "original"
+      },
+      {
+        "bias_mode": "zero",
+        "normalize_output": true,
+        "scale": null,
+        "variant_id": "vocab_bias_disabled"
+      },
+      {
+        "bias_mode": "original",
+        "normalize_output": true,
+        "scale": 1.0,
+        "variant_id": "original_bias_scale_1"
+      },
+      {
+        "bias_mode": "zero",
+        "normalize_output": true,
+        "scale": 1.0,
+        "variant_id": "no_bias_scale_1"
+      },
+      {
+        "bias_mode": "zero",
+        "normalize_output": false,
+        "scale": null,
+        "variant_id": "no_bias_output_normalization_disabled"
+      }
+    ],
+    "vocab_size": 128256
+  },
+  "execution": {
+    "command": [
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/.venv-trr0004/bin/python",
+      "scripts/trr0004_track_b_bias_diagnostic.py",
+      "--validation-observations",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_validation_slice_v2/public_validation_observations.safetensors",
+      "--validation-truth",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_validation_slice_v2/public_validation_truth.safetensors",
+      "--validation-records",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_validation_slice_v2/public_validation_records.json",
+      "--fit-truth",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/fit_truth.safetensors",
+      "--fit-records",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/fit_records.json",
+      "--embedding-table",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+      "--angular-state",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/selected_checkpoints_v1/angular_inverse_control.safetensors",
+      "--tied-state",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/selected_checkpoints_v1/tied_affine_token_ce.safetensors",
+      "--mlp-state",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/selected_checkpoints_v1/residual_mlp256_token_ce.safetensors",
+      "--batch-size",
+      "128",
+      "--device",
+      "cuda",
+      "--output",
+      "experiments/TRR-0004/track_b/bias_diagnostic_run_v1/public_decoder_bias_diagnostic_v1.json"
+    ],
+    "environment": {
+      "cuda_runtime": "12.8",
+      "device": "cuda",
+      "device_name": "NVIDIA GeForce RTX 5080",
+      "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+      "python": "3.12.3",
+      "torch": "2.10.0+cu128"
+    },
+    "finished_at": "2026-09-05T10:35:28Z",
+    "started_at": "2026-09-05T10:35:27Z",
+    "wall_seconds": 1.3836174819989537,
+    "working_directory": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004"
+  },
+  "inputs": {
+    "embedding_table": {
+      "bytes": 1050673488,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+      "role": "fixed public normalized embedding table",
+      "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+    },
+    "fit_truth": {
+      "bytes": 20688,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/fit_truth.safetensors",
+      "role": "public fit truth",
+      "sha256": "56075e48932bcc9ec6aafa048ce205a135ab4311326ad78222663afa4acde3e9"
+    },
+    "geometry": {
+      "embedding_table": [
+        128256,
+        2048
+      ],
+      "fit_flat_examples": 4992,
+      "fit_truth": [
+        128,
+        40
+      ],
+      "validation_flat_examples": 936,
+      "validation_observations": [
+        24,
+        40,
+        2048
+      ],
+      "validation_truth": [
+        24,
+        40
+      ]
+    },
+    "tensor_hashes": {
+      "embedding_table": "51151b86a4af915ffc6cc57740d26f78d80dad1b2fb57dfcfa14fe6982f3cbdf",
+      "fit_truth": "8fa396290f8e2e952f7ff1fdd4f8b4bf1bae1c4a7bb3e72a17561d3995497f84",
+      "validation_observations": "ffc6af8904986386bbb92a5df71a8f9f9531543c587a8fce4d04d0209d85f25b",
+      "validation_truth": "578332330d2b0cc72d0508ade8bc8a1c4cbdd52893f62d40af1795eadaff2768"
+    },
+    "validation_observations": {
+      "bytes": 3932608,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_validation_slice_v2/public_validation_observations.safetensors",
+      "role": "public validation observations",
+      "sha256": "0a35e71995241ced0f3c4203d6fb54ddbaac90f2f49c6317cc03ead66bfaa6d6"
+    },
+    "validation_truth": {
+      "bytes": 4288,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_validation_slice_v2/public_validation_truth.safetensors",
+      "role": "public validation truth",
+      "sha256": "ed2110d5f57eac4d0a02d4680836857ee9886515c1938f94cd98c6b7dd4a2273"
+    }
+  },
+  "memory_at_shared_embedding_boundary": {
+    "allocated_bytes": 1050673152,
+    "host_max_rss_bytes": 3450826752,
+    "max_allocated_bytes": 1050673152,
+    "max_reserved_bytes": 1050673152,
+    "reserved_bytes": 1050673152
+  },
+  "methods": {
+    "angular_inverse_control": {
+      "baseline_variant": "original",
+      "bias_diagnostics": {
+        "present": false,
+        "reason": "angular control has no vocabulary bias"
+      },
+      "checkpoint": {
+        "bytes": 16785688,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/selected_checkpoints_v1/angular_inverse_control.safetensors",
+        "role": "angular_inverse_control fitted checkpoint",
+        "sha256": "e595f3f49365d8b2362972e3d43834856a0e01a722e1bd563e7de52e11b683dc"
+      },
+      "comparisons_to_baseline": {
+        "no_bias_output_normalization_disabled": {
+          "accuracy_delta": 0.0,
+          "better_rank_examples": 2,
+          "changed_from_correct": 0,
+          "changed_to_correct": 0,
+          "mean_rank_delta": -0.0010683761211112142,
+          "prediction_changed_examples": 0,
+          "prediction_changed_fraction": 0.0,
+          "same_rank_examples": 932,
+          "worse_rank_examples": 2
+        },
+        "no_bias_scale_1": {
+          "accuracy_delta": 0.0,
+          "better_rank_examples": 0,
+          "changed_from_correct": 0,
+          "changed_to_correct": 0,
+          "mean_rank_delta": 0.0,
+          "prediction_changed_examples": 0,
+          "prediction_changed_fraction": 0.0,
+          "same_rank_examples": 936,
+          "worse_rank_examples": 0
+        },
+        "original": {
+          "accuracy_delta": 0.0,
+          "better_rank_examples": 0,
+          "changed_from_correct": 0,
+          "changed_to_correct": 0,
+          "mean_rank_delta": 0.0,
+          "prediction_changed_examples": 0,
+          "prediction_changed_fraction": 0.0,
+          "same_rank_examples": 936,
+          "worse_rank_examples": 0
+        },
+        "original_bias_scale_1": {
+          "accuracy_delta": 0.0,
+          "better_rank_examples": 0,
+          "changed_from_correct": 0,
+          "changed_to_correct": 0,
+          "mean_rank_delta": 0.0,
+          "prediction_changed_examples": 0,
+          "prediction_changed_fraction": 0.0,
+          "same_rank_examples": 936,
+          "worse_rank_examples": 0
+        },
+        "vocab_bias_disabled": {
+          "accuracy_delta": 0.0,
+          "better_rank_examples": 0,
+          "changed_from_correct": 0,
+          "changed_to_correct": 0,
+          "mean_rank_delta": 0.0,
+          "prediction_changed_examples": 0,
+          "prediction_changed_fraction": 0.0,
+          "same_rank_examples": 936,
+          "worse_rank_examples": 0
+        }
+      },
+      "interpretation_limits": [
+        "These are post hoc controls on a fitted checkpoint; zeroing vocabulary bias is not a no-bias fit.",
+        "Public validation labels are auxiliary development labels and are not an independent confirmation set.",
+        "All accuracy and rank values come from one direct full-vocabulary projection with no A2 fallback."
+      ],
+      "method_id": "angular_inverse_control",
+      "native_logit_scale": 1.0,
+      "pairwise_variant_comparisons": {
+        "no_bias_output_normalization_disabled__vs__no_bias_scale_1": {
+          "mean_rank_delta_left_minus_right": -0.0010683761211112142,
+          "prediction_changed_examples": 0,
+          "same_rank_examples": 932
+        },
+        "no_bias_output_normalization_disabled__vs__original": {
+          "mean_rank_delta_left_minus_right": -0.0010683761211112142,
+          "prediction_changed_examples": 0,
+          "same_rank_examples": 932
+        },
+        "no_bias_output_normalization_disabled__vs__original_bias_scale_1": {
+          "mean_rank_delta_left_minus_right": -0.0010683761211112142,
+          "prediction_changed_examples": 0,
+          "same_rank_examples": 932
+        },
+        "no_bias_output_normalization_disabled__vs__vocab_bias_disabled": {
+          "mean_rank_delta_left_minus_right": -0.0010683761211112142,
+          "prediction_changed_examples": 0,
+          "same_rank_examples": 932
+        },
+        "no_bias_scale_1__vs__original": {
+          "mean_rank_delta_left_minus_right": 0.0,
+          "prediction_changed_examples": 0,
+          "same_rank_examples": 936
+        },
+        "no_bias_scale_1__vs__original_bias_scale_1": {
+          "mean_rank_delta_left_minus_right": 0.0,
+          "prediction_changed_examples": 0,
+          "same_rank_examples": 936
+        },
+        "no_bias_scale_1__vs__vocab_bias_disabled": {
+          "mean_rank_delta_left_minus_right": 0.0,
+          "prediction_changed_examples": 0,
+          "same_rank_examples": 936
+        },
+        "original__vs__original_bias_scale_1": {
+          "mean_rank_delta_left_minus_right": 0.0,
+          "prediction_changed_examples": 0,
+          "same_rank_examples": 936
+        },
+        "original__vs__vocab_bias_disabled": {
+          "mean_rank_delta_left_minus_right": 0.0,
+          "prediction_changed_examples": 0,
+          "same_rank_examples": 936
+        },
+        "original_bias_scale_1__vs__vocab_bias_disabled": {
+          "mean_rank_delta_left_minus_right": 0.0,
+          "prediction_changed_examples": 0,
+          "same_rank_examples": 936
+        }
+      },
+      "peak_memory": {
+        "allocated_bytes": 1077026816,
+        "host_max_rss_bytes": 3450826752,
+        "max_allocated_bytes": 1299694592,
+        "max_reserved_bytes": 1493172224,
+        "reserved_bytes": 1493172224
+      },
+      "scale_control": {
+        "applicable": true,
+        "empirical": {
+          "mean_rank_delta_left_minus_right": 0.0,
+          "prediction_changed_examples": 0,
+          "same_rank_examples": 936
+        },
+        "empirical_argmax_invariant": true,
+        "expected_argmax_invariant": true,
+        "scale_ratio": 1.0
+      },
+      "timing": {
+        "checkpoint_load_and_device_seconds": 0.014582153999072034,
+        "diagnostic_projection_seconds": 0.3248869500021101,
+        "embedding_transfer_seconds_once_before_methods": 0.19037400999877718,
+        "timing_scope": "post hoc diagnostic total across five variant projections; not deployed steady-state inference"
+      },
+      "variant_order": [
+        "original",
+        "vocab_bias_disabled",
+        "original_bias_scale_1",
+        "no_bias_scale_1",
+        "no_bias_output_normalization_disabled"
+      ],
+      "variants": {
+        "no_bias_output_normalization_disabled": {
+          "bias_mode": "zero",
+          "metrics": {
+            "correct_tokens": 590,
+            "exact_records": 0,
+            "examples": 936,
+            "frequency_bin_metrics": {
+              "frequent_50_plus": {
+                "correct_tokens": 160,
+                "examples": 161,
+                "mean_true_rank": 1.018633484840393,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.9937888383865356
+              },
+              "low_5_9": {
+                "correct_tokens": 30,
+                "examples": 36,
+                "mean_true_rank": 1.4166666269302368,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.8333333134651184
+              },
+              "medium_10_49": {
+                "correct_tokens": 95,
+                "examples": 103,
+                "mean_true_rank": 1.106796145439148,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.9223300814628601
+              },
+              "rare_2_4": {
+                "correct_tokens": 89,
+                "examples": 119,
+                "mean_true_rank": 997.8319091796875,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.7478991746902466
+              },
+              "singleton": {
+                "correct_tokens": 61,
+                "examples": 91,
+                "mean_true_rank": 128.60440063476562,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.6703296899795532
+              },
+              "unseen": {
+                "correct_tokens": 155,
+                "examples": 426,
+                "mean_true_rank": 1488.0821533203125,
+                "median_true_rank": 3.0,
+                "token_accuracy": 0.3638497591018677
+              }
+            },
+            "mean_true_rank": 816.9839477539062,
+            "median_true_rank": 1.0,
+            "p90_true_rank": 755.0,
+            "positions_per_record": 39,
+            "records": 24,
+            "seen_token_accuracy": {
+              "seen": {
+                "correct_tokens": 435,
+                "examples": 510,
+                "mean_true_rank": 256.41961669921875,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.8529411554336548
+              },
+              "unseen": {
+                "correct_tokens": 155,
+                "examples": 426,
+                "mean_true_rank": 1488.0821533203125,
+                "median_true_rank": 3.0,
+                "token_accuracy": 0.3638497591018677
+              }
+            },
+            "token_accuracy": 0.6303418874740601,
+            "top1": 0.6303418874740601,
+            "top10": 0.7927350401878357,
+            "top5": 0.7638888955116272,
+            "top50": 0.8269230723381042
+          },
+          "normalize_output": false,
+          "scale": 1.0,
+          "scale_is_native": true
+        },
+        "no_bias_scale_1": {
+          "bias_mode": "zero",
+          "metrics": {
+            "correct_tokens": 590,
+            "exact_records": 0,
+            "examples": 936,
+            "frequency_bin_metrics": {
+              "frequent_50_plus": {
+                "correct_tokens": 160,
+                "examples": 161,
+                "mean_true_rank": 1.018633484840393,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.9937888383865356
+              },
+              "low_5_9": {
+                "correct_tokens": 30,
+                "examples": 36,
+                "mean_true_rank": 1.4166666269302368,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.8333333134651184
+              },
+              "medium_10_49": {
+                "correct_tokens": 95,
+                "examples": 103,
+                "mean_true_rank": 1.106796145439148,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.9223300814628601
+              },
+              "rare_2_4": {
+                "correct_tokens": 89,
+                "examples": 119,
+                "mean_true_rank": 997.8319091796875,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.7478991746902466
+              },
+              "singleton": {
+                "correct_tokens": 61,
+                "examples": 91,
+                "mean_true_rank": 128.60440063476562,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.6703296899795532
+              },
+              "unseen": {
+                "correct_tokens": 155,
+                "examples": 426,
+                "mean_true_rank": 1488.08447265625,
+                "median_true_rank": 3.0,
+                "token_accuracy": 0.3638497591018677
+              }
+            },
+            "mean_true_rank": 816.9850463867188,
+            "median_true_rank": 1.0,
+            "p90_true_rank": 755.0,
+            "positions_per_record": 39,
+            "records": 24,
+            "seen_token_accuracy": {
+              "seen": {
+                "correct_tokens": 435,
+                "examples": 510,
+                "mean_true_rank": 256.41961669921875,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.8529411554336548
+              },
+              "unseen": {
+                "correct_tokens": 155,
+                "examples": 426,
+                "mean_true_rank": 1488.08447265625,
+                "median_true_rank": 3.0,
+                "token_accuracy": 0.3638497591018677
+              }
+            },
+            "token_accuracy": 0.6303418874740601,
+            "top1": 0.6303418874740601,
+            "top10": 0.7927350401878357,
+            "top5": 0.7638888955116272,
+            "top50": 0.8269230723381042
+          },
+          "normalize_output": true,
+          "scale": 1.0,
+          "scale_is_native": false
+        },
+        "original": {
+          "bias_mode": "original",
+          "metrics": {
+            "correct_tokens": 590,
+            "exact_records": 0,
+            "examples": 936,
+            "frequency_bin_metrics": {
+              "frequent_50_plus": {
+                "correct_tokens": 160,
+                "examples": 161,
+                "mean_true_rank": 1.018633484840393,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.9937888383865356
+              },
+              "low_5_9": {
+                "correct_tokens": 30,
+                "examples": 36,
+                "mean_true_rank": 1.4166666269302368,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.8333333134651184
+              },
+              "medium_10_49": {
+                "correct_tokens": 95,
+                "examples": 103,
+                "mean_true_rank": 1.106796145439148,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.9223300814628601
+              },
+              "rare_2_4": {
+                "correct_tokens": 89,
+                "examples": 119,
+                "mean_true_rank": 997.8319091796875,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.7478991746902466
+              },
+              "singleton": {
+                "correct_tokens": 61,
+                "examples": 91,
+                "mean_true_rank": 128.60440063476562,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.6703296899795532
+              },
+              "unseen": {
+                "correct_tokens": 155,
+                "examples": 426,
+                "mean_true_rank": 1488.08447265625,
+                "median_true_rank": 3.0,
+                "token_accuracy": 0.3638497591018677
+              }
+            },
+            "mean_true_rank": 816.9850463867188,
+            "median_true_rank": 1.0,
+            "p90_true_rank": 755.0,
+            "positions_per_record": 39,
+            "records": 24,
+            "seen_token_accuracy": {
+              "seen": {
+                "correct_tokens": 435,
+                "examples": 510,
+                "mean_true_rank": 256.41961669921875,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.8529411554336548
+              },
+              "unseen": {
+                "correct_tokens": 155,
+                "examples": 426,
+                "mean_true_rank": 1488.08447265625,
+                "median_true_rank": 3.0,
+                "token_accuracy": 0.3638497591018677
+              }
+            },
+            "token_accuracy": 0.6303418874740601,
+            "top1": 0.6303418874740601,
+            "top10": 0.7927350401878357,
+            "top5": 0.7638888955116272,
+            "top50": 0.8269230723381042
+          },
+          "normalize_output": true,
+          "scale": 1.0,
+          "scale_is_native": true
+        },
+        "original_bias_scale_1": {
+          "bias_mode": "original",
+          "metrics": {
+            "correct_tokens": 590,
+            "exact_records": 0,
+            "examples": 936,
+            "frequency_bin_metrics": {
+              "frequent_50_plus": {
+                "correct_tokens": 160,
+                "examples": 161,
+                "mean_true_rank": 1.018633484840393,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.9937888383865356
+              },
+              "low_5_9": {
+                "correct_tokens": 30,
+                "examples": 36,
+                "mean_true_rank": 1.4166666269302368,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.8333333134651184
+              },
+              "medium_10_49": {
+                "correct_tokens": 95,
+                "examples": 103,
+                "mean_true_rank": 1.106796145439148,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.9223300814628601
+              },
+              "rare_2_4": {
+                "correct_tokens": 89,
+                "examples": 119,
+                "mean_true_rank": 997.8319091796875,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.7478991746902466
+              },
+              "singleton": {
+                "correct_tokens": 61,
+                "examples": 91,
+                "mean_true_rank": 128.60440063476562,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.6703296899795532
+              },
+              "unseen": {
+                "correct_tokens": 155,
+                "examples": 426,
+                "mean_true_rank": 1488.08447265625,
+                "median_true_rank": 3.0,
+                "token_accuracy": 0.3638497591018677
+              }
+            },
+            "mean_true_rank": 816.9850463867188,
+            "median_true_rank": 1.0,
+            "p90_true_rank": 755.0,
+            "positions_per_record": 39,
+            "records": 24,
+            "seen_token_accuracy": {
+              "seen": {
+                "correct_tokens": 435,
+                "examples": 510,
+                "mean_true_rank": 256.41961669921875,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.8529411554336548
+              },
+              "unseen": {
+                "correct_tokens": 155,
+                "examples": 426,
+                "mean_true_rank": 1488.08447265625,
+                "median_true_rank": 3.0,
+                "token_accuracy": 0.3638497591018677
+              }
+            },
+            "token_accuracy": 0.6303418874740601,
+            "top1": 0.6303418874740601,
+            "top10": 0.7927350401878357,
+            "top5": 0.7638888955116272,
+            "top50": 0.8269230723381042
+          },
+          "normalize_output": true,
+          "scale": 1.0,
+          "scale_is_native": false
+        },
+        "vocab_bias_disabled": {
+          "bias_mode": "zero",
+          "metrics": {
+            "correct_tokens": 590,
+            "exact_records": 0,
+            "examples": 936,
+            "frequency_bin_metrics": {
+              "frequent_50_plus": {
+                "correct_tokens": 160,
+                "examples": 161,
+                "mean_true_rank": 1.018633484840393,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.9937888383865356
+              },
+              "low_5_9": {
+                "correct_tokens": 30,
+                "examples": 36,
+                "mean_true_rank": 1.4166666269302368,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.8333333134651184
+              },
+              "medium_10_49": {
+                "correct_tokens": 95,
+                "examples": 103,
+                "mean_true_rank": 1.106796145439148,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.9223300814628601
+              },
+              "rare_2_4": {
+                "correct_tokens": 89,
+                "examples": 119,
+                "mean_true_rank": 997.8319091796875,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.7478991746902466
+              },
+              "singleton": {
+                "correct_tokens": 61,
+                "examples": 91,
+                "mean_true_rank": 128.60440063476562,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.6703296899795532
+              },
+              "unseen": {
+                "correct_tokens": 155,
+                "examples": 426,
+                "mean_true_rank": 1488.08447265625,
+                "median_true_rank": 3.0,
+                "token_accuracy": 0.3638497591018677
+              }
+            },
+            "mean_true_rank": 816.9850463867188,
+            "median_true_rank": 1.0,
+            "p90_true_rank": 755.0,
+            "positions_per_record": 39,
+            "records": 24,
+            "seen_token_accuracy": {
+              "seen": {
+                "correct_tokens": 435,
+                "examples": 510,
+                "mean_true_rank": 256.41961669921875,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.8529411554336548
+              },
+              "unseen": {
+                "correct_tokens": 155,
+                "examples": 426,
+                "mean_true_rank": 1488.08447265625,
+                "median_true_rank": 3.0,
+                "token_accuracy": 0.3638497591018677
+              }
+            },
+            "token_accuracy": 0.6303418874740601,
+            "top1": 0.6303418874740601,
+            "top10": 0.7927350401878357,
+            "top5": 0.7638888955116272,
+            "top50": 0.8269230723381042
+          },
+          "normalize_output": true,
+          "scale": 1.0,
+          "scale_is_native": true
+        }
+      },
+      "vocabulary_coverage": {
+        "fit_examples": 4992,
+        "fit_unique_tokens": 2441,
+        "frequency_bins": {
+          "frequent_50_plus": {
+            "lower_fit_count": 50,
+            "upper_fit_count": null,
+            "validation_examples": 161
+          },
+          "low_5_9": {
+            "lower_fit_count": 5,
+            "upper_fit_count": 9,
+            "validation_examples": 36
+          },
+          "medium_10_49": {
+            "lower_fit_count": 10,
+            "upper_fit_count": 49,
+            "validation_examples": 103
+          },
+          "rare_2_4": {
+            "lower_fit_count": 2,
+            "upper_fit_count": 4,
+            "validation_examples": 119
+          },
+          "singleton": {
+            "lower_fit_count": 1,
+            "upper_fit_count": 1,
+            "validation_examples": 91
+          },
+          "unseen": {
+            "lower_fit_count": 0,
+            "upper_fit_count": 0,
+            "validation_examples": 426
+          }
+        },
+        "validation_examples": 936,
+        "validation_seen_examples": 510,
+        "validation_unique_tokens": 594,
+        "validation_unseen_examples": 426,
+        "vocab_size": 128256
+      }
+    },
+    "residual_mlp256_token_ce": {
+      "baseline_variant": "original",
+      "bias_diagnostics": {
+        "all_tokens": {
+          "count": 128256,
+          "max": 0.2086799293756485,
+          "mean": -0.36289194226264954,
+          "min": -0.4602619707584381,
+          "p05": -0.39150527119636536,
+          "p50": -0.37440797686576843,
+          "p95": -0.3356042802333832,
+          "std": 0.06617255508899689
+        },
+        "by_frequency_bin": {
+          "frequent_50_plus": {
+            "bias": {
+              "count": 11,
+              "max": 0.09157508611679077,
+              "mean": -0.008613746613264084,
+              "min": -0.0784410834312439,
+              "p05": -0.07631227374076843,
+              "p50": -0.010560503229498863,
+              "p95": 0.07970830798149109,
+              "std": 0.05546226352453232
+            },
+            "fit_label_count": 918,
+            "token_count": 11
+          },
+          "low_5_9": {
+            "bias": {
+              "count": 62,
+              "max": 0.2086799293756485,
+              "mean": 0.13283073902130127,
+              "min": -0.09016942977905273,
+              "p05": 0.05817912518978119,
+              "p50": 0.14883427321910858,
+              "p95": 0.19480152428150177,
+              "std": 0.057516347616910934
+            },
+            "fit_label_count": 374,
+            "token_count": 62
+          },
+          "medium_10_49": {
+            "bias": {
+              "count": 39,
+              "max": 0.1760285496711731,
+              "mean": 0.06811293214559555,
+              "min": -0.09658721834421158,
+              "p05": -0.03564028814435005,
+              "p50": 0.08233451843261719,
+              "p95": 0.15421417355537415,
+              "std": 0.06271930038928986
+            },
+            "fit_label_count": 660,
+            "token_count": 39
+          },
+          "rare_2_4": {
+            "bias": {
+              "count": 520,
+              "max": 0.1922885924577713,
+              "mean": 0.12545818090438843,
+              "min": -0.12203634530305862,
+              "p05": 0.04541550949215889,
+              "p50": 0.13462010025978088,
+              "p95": 0.17083151638507843,
+              "std": 0.043390046805143356
+            },
+            "fit_label_count": 1231,
+            "token_count": 520
+          },
+          "singleton": {
+            "bias": {
+              "count": 1809,
+              "max": 0.14181146025657654,
+              "mean": 0.08858716487884521,
+              "min": -0.1754736453294754,
+              "p05": 0.03872636333107948,
+              "p50": 0.09469267725944519,
+              "p95": 0.12051232159137726,
+              "std": 0.03155980259180069
+            },
+            "fit_label_count": 1809,
+            "token_count": 1809
+          },
+          "unseen": {
+            "bias": {
+              "count": 125815,
+              "max": -0.21640366315841675,
+              "mean": -0.3718106746673584,
+              "min": -0.4602619707584381,
+              "p05": -0.39158934354782104,
+              "p50": -0.37473341822624207,
+              "p95": -0.34129104018211365,
+              "std": 0.015902850776910782
+            },
+            "fit_label_count": 0,
+            "token_count": 125815
+          }
+        },
+        "present": true,
+        "true_token_rank": {
+          "count": 936,
+          "max": 6751.0,
+          "mean": 67.7852554321289,
+          "min": 1.0,
+          "p05": 1.0,
+          "p50": 1.0,
+          "p95": 240.0,
+          "std": 393.5085754394531
+        },
+        "validation_by_frequency_bin": {
+          "frequent_50_plus": {
+            "correct_tokens": 160,
+            "examples": 161,
+            "mean_true_rank": 1.018633484840393,
+            "median_true_rank": 1.0,
+            "token_accuracy": 0.9937888383865356
+          },
+          "low_5_9": {
+            "correct_tokens": 32,
+            "examples": 36,
+            "mean_true_rank": 1.4444444179534912,
+            "median_true_rank": 1.0,
+            "token_accuracy": 0.8888888955116272
+          },
+          "medium_10_49": {
+            "correct_tokens": 99,
+            "examples": 103,
+            "mean_true_rank": 1.0388349294662476,
+            "median_true_rank": 1.0,
+            "token_accuracy": 0.9611650705337524
+          },
+          "rare_2_4": {
+            "correct_tokens": 88,
+            "examples": 119,
+            "mean_true_rank": 3.033613443374634,
+            "median_true_rank": 1.0,
+            "token_accuracy": 0.7394958138465881
+          },
+          "singleton": {
+            "correct_tokens": 60,
+            "examples": 91,
+            "mean_true_rank": 3.681318759918213,
+            "median_true_rank": 1.0,
+            "token_accuracy": 0.6593406796455383
+          },
+          "unseen": {
+            "correct_tokens": 67,
+            "examples": 426,
+            "mean_true_rank": 146.5446014404297,
+            "median_true_rank": 11.0,
+            "token_accuracy": 0.15727698802947998
+          }
+        },
+        "validation_predicted_original": {
+          "count": 936,
+          "max": 0.19507397711277008,
+          "mean": 0.01895439252257347,
+          "min": -0.3821048140525818,
+          "p05": -0.32954317331314087,
+          "p50": 0.049257099628448486,
+          "p95": 0.15770938992500305,
+          "std": 0.1293700784444809
+        },
+        "validation_true": {
+          "count": 936,
+          "max": 0.19485819339752197,
+          "mean": -0.13003835082054138,
+          "min": -0.4252244234085083,
+          "p05": -0.3694584369659424,
+          "p50": -0.07418346405029297,
+          "p95": 0.13516263663768768,
+          "std": 0.20047125220298767
+        },
+        "validation_true_correct": {
+          "count": 506,
+          "max": 0.17184582352638245,
+          "mean": -0.0084349000826478,
+          "min": -0.3821048140525818,
+          "p05": -0.3520626127719879,
+          "p50": 0.032458800822496414,
+          "p95": 0.14754319190979004,
+          "std": 0.14746533334255219
+        },
+        "validation_true_error": {
+          "count": 430,
+          "max": 0.19485819339752197,
+          "mean": -0.2731345295906067,
+          "min": -0.4252244234085083,
+          "p05": -0.37459972500801086,
+          "p50": -0.3356005549430847,
+          "p95": 0.10517654567956924,
+          "std": 0.15496309101581573
+        },
+        "vocab_size": 128256
+      },
+      "checkpoint": {
+        "bytes": 4717416,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/selected_checkpoints_v1/residual_mlp256_token_ce.safetensors",
+        "role": "residual_mlp256_token_ce fitted checkpoint",
+        "sha256": "203af5ddab65eee11b1faa8fea5976154704a8fe56bb5480b1895c92564c0c86"
+      },
+      "comparisons_to_baseline": {
+        "no_bias_output_normalization_disabled": {
+          "accuracy_delta": 0.03632479906082153,
+          "better_rank_examples": 332,
+          "changed_from_correct": 5,
+          "changed_to_correct": 39,
+          "mean_rank_delta": -16.167734146118164,
+          "prediction_changed_examples": 95,
+          "prediction_changed_fraction": 0.10149572789669037,
+          "same_rank_examples": 576,
+          "worse_rank_examples": 28
+        },
+        "no_bias_scale_1": {
+          "accuracy_delta": 0.03632479906082153,
+          "better_rank_examples": 332,
+          "changed_from_correct": 5,
+          "changed_to_correct": 39,
+          "mean_rank_delta": -16.167734146118164,
+          "prediction_changed_examples": 95,
+          "prediction_changed_fraction": 0.10149572789669037,
+          "same_rank_examples": 576,
+          "worse_rank_examples": 28
+        },
+        "original": {
+          "accuracy_delta": 0.0,
+          "better_rank_examples": 0,
+          "changed_from_correct": 0,
+          "changed_to_correct": 0,
+          "mean_rank_delta": 0.0,
+          "prediction_changed_examples": 0,
+          "prediction_changed_fraction": 0.0,
+          "same_rank_examples": 936,
+          "worse_rank_examples": 0
+        },
+        "original_bias_scale_1": {
+          "accuracy_delta": -0.09615382552146912,
+          "better_rank_examples": 27,
+          "changed_from_correct": 102,
+          "changed_to_correct": 12,
+          "mean_rank_delta": 1041.7435302734375,
+          "prediction_changed_examples": 366,
+          "prediction_changed_fraction": 0.3910256326198578,
+          "same_rank_examples": 416,
+          "worse_rank_examples": 493
+        },
+        "vocab_bias_disabled": {
+          "accuracy_delta": 0.03632479906082153,
+          "better_rank_examples": 332,
+          "changed_from_correct": 5,
+          "changed_to_correct": 39,
+          "mean_rank_delta": -16.167734146118164,
+          "prediction_changed_examples": 95,
+          "prediction_changed_fraction": 0.10149572789669037,
+          "same_rank_examples": 576,
+          "worse_rank_examples": 28
+        }
+      },
+      "interpretation_limits": [
+        "These are post hoc controls on a fitted checkpoint; zeroing vocabulary bias is not a no-bias fit.",
+        "Public validation labels are auxiliary development labels and are not an independent confirmation set.",
+        "All accuracy and rank values come from one direct full-vocabulary projection with no A2 fallback."
+      ],
+      "method_id": "residual_mlp256_token_ce",
+      "native_logit_scale": 16.0,
+      "pairwise_variant_comparisons": {
+        "no_bias_output_normalization_disabled__vs__no_bias_scale_1": {
+          "mean_rank_delta_left_minus_right": 0.0,
+          "prediction_changed_examples": 0,
+          "same_rank_examples": 936
+        },
+        "no_bias_output_normalization_disabled__vs__original": {
+          "mean_rank_delta_left_minus_right": -16.167734146118164,
+          "prediction_changed_examples": 95,
+          "same_rank_examples": 576
+        },
+        "no_bias_output_normalization_disabled__vs__original_bias_scale_1": {
+          "mean_rank_delta_left_minus_right": -1057.911376953125,
+          "prediction_changed_examples": 410,
+          "same_rank_examples": 411
+        },
+        "no_bias_output_normalization_disabled__vs__vocab_bias_disabled": {
+          "mean_rank_delta_left_minus_right": 0.0,
+          "prediction_changed_examples": 0,
+          "same_rank_examples": 936
+        },
+        "no_bias_scale_1__vs__original": {
+          "mean_rank_delta_left_minus_right": -16.167734146118164,
+          "prediction_changed_examples": 95,
+          "same_rank_examples": 576
+        },
+        "no_bias_scale_1__vs__original_bias_scale_1": {
+          "mean_rank_delta_left_minus_right": -1057.911376953125,
+          "prediction_changed_examples": 410,
+          "same_rank_examples": 411
+        },
+        "no_bias_scale_1__vs__vocab_bias_disabled": {
+          "mean_rank_delta_left_minus_right": 0.0,
+          "prediction_changed_examples": 0,
+          "same_rank_examples": 936
+        },
+        "original__vs__original_bias_scale_1": {
+          "mean_rank_delta_left_minus_right": -1041.7435302734375,
+          "prediction_changed_examples": 366,
+          "same_rank_examples": 416
+        },
+        "original__vs__vocab_bias_disabled": {
+          "mean_rank_delta_left_minus_right": 16.167734146118164,
+          "prediction_changed_examples": 95,
+          "same_rank_examples": 576
+        },
+        "original_bias_scale_1__vs__vocab_bias_disabled": {
+          "mean_rank_delta_left_minus_right": 1057.911376953125,
+          "prediction_changed_examples": 410,
+          "same_rank_examples": 411
+        }
+      },
+      "peak_memory": {
+        "allocated_bytes": 1065547776,
+        "host_max_rss_bytes": 3450826752,
+        "max_allocated_bytes": 1288215552,
+        "max_reserved_bytes": 1476395008,
+        "reserved_bytes": 1476395008
+      },
+      "scale_control": {
+        "applicable": true,
+        "empirical": {
+          "mean_rank_delta_left_minus_right": 0.0,
+          "prediction_changed_examples": 0,
+          "same_rank_examples": 936
+        },
+        "empirical_argmax_invariant": true,
+        "expected_argmax_invariant": true,
+        "scale_ratio": 0.0625
+      },
+      "timing": {
+        "checkpoint_load_and_device_seconds": 0.005287079999106936,
+        "diagnostic_projection_seconds": 0.18975397699978203,
+        "embedding_transfer_seconds_once_before_methods": 0.19037400999877718,
+        "timing_scope": "post hoc diagnostic total across five variant projections; not deployed steady-state inference"
+      },
+      "variant_order": [
+        "original",
+        "vocab_bias_disabled",
+        "original_bias_scale_1",
+        "no_bias_scale_1",
+        "no_bias_output_normalization_disabled"
+      ],
+      "variants": {
+        "no_bias_output_normalization_disabled": {
+          "bias_mode": "zero",
+          "metrics": {
+            "correct_tokens": 540,
+            "exact_records": 0,
+            "examples": 936,
+            "frequency_bin_metrics": {
+              "frequent_50_plus": {
+                "correct_tokens": 160,
+                "examples": 161,
+                "mean_true_rank": 1.0124223232269287,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.9937888383865356
+              },
+              "low_5_9": {
+                "correct_tokens": 30,
+                "examples": 36,
+                "mean_true_rank": 1.5277777910232544,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.8333333134651184
+              },
+              "medium_10_49": {
+                "correct_tokens": 99,
+                "examples": 103,
+                "mean_true_rank": 1.0485436916351318,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.9611650705337524
+              },
+              "rare_2_4": {
+                "correct_tokens": 87,
+                "examples": 119,
+                "mean_true_rank": 3.470588207244873,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.7310924530029297
+              },
+              "singleton": {
+                "correct_tokens": 58,
+                "examples": 91,
+                "mean_true_rank": 3.912087917327881,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.6373626589775085
+              },
+              "unseen": {
+                "correct_tokens": 106,
+                "examples": 426,
+                "mean_true_rank": 110.84272003173828,
+                "median_true_rank": 5.0,
+                "token_accuracy": 0.2488262951374054
+              }
+            },
+            "mean_true_rank": 51.617523193359375,
+            "median_true_rank": 1.0,
+            "p90_true_rank": 55.5,
+            "positions_per_record": 39,
+            "records": 24,
+            "seen_token_accuracy": {
+              "seen": {
+                "correct_tokens": 434,
+                "examples": 510,
+                "mean_true_rank": 2.1470587253570557,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.8509804010391235
+              },
+              "unseen": {
+                "correct_tokens": 106,
+                "examples": 426,
+                "mean_true_rank": 110.84272003173828,
+                "median_true_rank": 5.0,
+                "token_accuracy": 0.2488262951374054
+              }
+            },
+            "token_accuracy": 0.5769230723381042,
+            "top1": 0.5769230723381042,
+            "top10": 0.7991452813148499,
+            "top5": 0.7489316463470459,
+            "top50": 0.8963675498962402
+          },
+          "normalize_output": false,
+          "scale": 16.0,
+          "scale_is_native": true
+        },
+        "no_bias_scale_1": {
+          "bias_mode": "zero",
+          "metrics": {
+            "correct_tokens": 540,
+            "exact_records": 0,
+            "examples": 936,
+            "frequency_bin_metrics": {
+              "frequent_50_plus": {
+                "correct_tokens": 160,
+                "examples": 161,
+                "mean_true_rank": 1.0124223232269287,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.9937888383865356
+              },
+              "low_5_9": {
+                "correct_tokens": 30,
+                "examples": 36,
+                "mean_true_rank": 1.5277777910232544,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.8333333134651184
+              },
+              "medium_10_49": {
+                "correct_tokens": 99,
+                "examples": 103,
+                "mean_true_rank": 1.0485436916351318,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.9611650705337524
+              },
+              "rare_2_4": {
+                "correct_tokens": 87,
+                "examples": 119,
+                "mean_true_rank": 3.470588207244873,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.7310924530029297
+              },
+              "singleton": {
+                "correct_tokens": 58,
+                "examples": 91,
+                "mean_true_rank": 3.912087917327881,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.6373626589775085
+              },
+              "unseen": {
+                "correct_tokens": 106,
+                "examples": 426,
+                "mean_true_rank": 110.84272003173828,
+                "median_true_rank": 5.0,
+                "token_accuracy": 0.2488262951374054
+              }
+            },
+            "mean_true_rank": 51.617523193359375,
+            "median_true_rank": 1.0,
+            "p90_true_rank": 55.5,
+            "positions_per_record": 39,
+            "records": 24,
+            "seen_token_accuracy": {
+              "seen": {
+                "correct_tokens": 434,
+                "examples": 510,
+                "mean_true_rank": 2.1470587253570557,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.8509804010391235
+              },
+              "unseen": {
+                "correct_tokens": 106,
+                "examples": 426,
+                "mean_true_rank": 110.84272003173828,
+                "median_true_rank": 5.0,
+                "token_accuracy": 0.2488262951374054
+              }
+            },
+            "token_accuracy": 0.5769230723381042,
+            "top1": 0.5769230723381042,
+            "top10": 0.7991452813148499,
+            "top5": 0.7489316463470459,
+            "top50": 0.8963675498962402
+          },
+          "normalize_output": true,
+          "scale": 1.0,
+          "scale_is_native": false
+        },
+        "original": {
+          "bias_mode": "original",
+          "metrics": {
+            "correct_tokens": 506,
+            "exact_records": 0,
+            "examples": 936,
+            "frequency_bin_metrics": {
+              "frequent_50_plus": {
+                "correct_tokens": 160,
+                "examples": 161,
+                "mean_true_rank": 1.018633484840393,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.9937888383865356
+              },
+              "low_5_9": {
+                "correct_tokens": 32,
+                "examples": 36,
+                "mean_true_rank": 1.4444444179534912,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.8888888955116272
+              },
+              "medium_10_49": {
+                "correct_tokens": 99,
+                "examples": 103,
+                "mean_true_rank": 1.0388349294662476,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.9611650705337524
+              },
+              "rare_2_4": {
+                "correct_tokens": 88,
+                "examples": 119,
+                "mean_true_rank": 3.033613443374634,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.7394958138465881
+              },
+              "singleton": {
+                "correct_tokens": 60,
+                "examples": 91,
+                "mean_true_rank": 3.681318759918213,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.6593406796455383
+              },
+              "unseen": {
+                "correct_tokens": 67,
+                "examples": 426,
+                "mean_true_rank": 146.5446014404297,
+                "median_true_rank": 11.0,
+                "token_accuracy": 0.15727698802947998
+              }
+            },
+            "mean_true_rank": 67.7852554321289,
+            "median_true_rank": 1.0,
+            "p90_true_rank": 91.5,
+            "positions_per_record": 39,
+            "records": 24,
+            "seen_token_accuracy": {
+              "seen": {
+                "correct_tokens": 439,
+                "examples": 510,
+                "mean_true_rank": 1.9980392456054688,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.8607842922210693
+              },
+              "unseen": {
+                "correct_tokens": 67,
+                "examples": 426,
+                "mean_true_rank": 146.5446014404297,
+                "median_true_rank": 11.0,
+                "token_accuracy": 0.15727698802947998
+              }
+            },
+            "token_accuracy": 0.5405982732772827,
+            "top1": 0.5405982732772827,
+            "top10": 0.757478654384613,
+            "top5": 0.6976495981216431,
+            "top50": 0.8685897588729858
+          },
+          "normalize_output": true,
+          "scale": 16.0,
+          "scale_is_native": true
+        },
+        "original_bias_scale_1": {
+          "bias_mode": "original",
+          "metrics": {
+            "correct_tokens": 416,
+            "exact_records": 0,
+            "examples": 936,
+            "frequency_bin_metrics": {
+              "frequent_50_plus": {
+                "correct_tokens": 160,
+                "examples": 161,
+                "mean_true_rank": 1.1055901050567627,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.9937888383865356
+              },
+              "low_5_9": {
+                "correct_tokens": 32,
+                "examples": 36,
+                "mean_true_rank": 1.3888888359069824,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.8888888955116272
+              },
+              "medium_10_49": {
+                "correct_tokens": 96,
+                "examples": 103,
+                "mean_true_rank": 1.0873786211013794,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.9320388436317444
+              },
+              "rare_2_4": {
+                "correct_tokens": 82,
+                "examples": 119,
+                "mean_true_rank": 3.865546226501465,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.6890756487846375
+              },
+              "singleton": {
+                "correct_tokens": 46,
+                "examples": 91,
+                "mean_true_rank": 15.351648330688477,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.5054945349693298
+              },
+              "unseen": {
+                "correct_tokens": 0,
+                "examples": 426,
+                "mean_true_rank": 2432.6806640625,
+                "median_true_rank": 2445.0,
+                "token_accuracy": 0.0
+              }
+            },
+            "mean_true_rank": 1109.52880859375,
+            "median_true_rank": 6.0,
+            "p90_true_rank": 2479.0,
+            "positions_per_record": 39,
+            "records": 24,
+            "seen_token_accuracy": {
+              "seen": {
+                "correct_tokens": 416,
+                "examples": 510,
+                "mean_true_rank": 4.307843208312988,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.8156862854957581
+              },
+              "unseen": {
+                "correct_tokens": 0,
+                "examples": 426,
+                "mean_true_rank": 2432.6806640625,
+                "median_true_rank": 2445.0,
+                "token_accuracy": 0.0
+              }
+            },
+            "token_accuracy": 0.4444444477558136,
+            "top1": 0.4444444477558136,
+            "top10": 0.5064102411270142,
+            "top5": 0.4989316165447235,
+            "top50": 0.5320512652397156
+          },
+          "normalize_output": true,
+          "scale": 1.0,
+          "scale_is_native": false
+        },
+        "vocab_bias_disabled": {
+          "bias_mode": "zero",
+          "metrics": {
+            "correct_tokens": 540,
+            "exact_records": 0,
+            "examples": 936,
+            "frequency_bin_metrics": {
+              "frequent_50_plus": {
+                "correct_tokens": 160,
+                "examples": 161,
+                "mean_true_rank": 1.0124223232269287,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.9937888383865356
+              },
+              "low_5_9": {
+                "correct_tokens": 30,
+                "examples": 36,
+                "mean_true_rank": 1.5277777910232544,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.8333333134651184
+              },
+              "medium_10_49": {
+                "correct_tokens": 99,
+                "examples": 103,
+                "mean_true_rank": 1.0485436916351318,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.9611650705337524
+              },
+              "rare_2_4": {
+                "correct_tokens": 87,
+                "examples": 119,
+                "mean_true_rank": 3.470588207244873,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.7310924530029297
+              },
+              "singleton": {
+                "correct_tokens": 58,
+                "examples": 91,
+                "mean_true_rank": 3.912087917327881,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.6373626589775085
+              },
+              "unseen": {
+                "correct_tokens": 106,
+                "examples": 426,
+                "mean_true_rank": 110.84272003173828,
+                "median_true_rank": 5.0,
+                "token_accuracy": 0.2488262951374054
+              }
+            },
+            "mean_true_rank": 51.617523193359375,
+            "median_true_rank": 1.0,
+            "p90_true_rank": 55.5,
+            "positions_per_record": 39,
+            "records": 24,
+            "seen_token_accuracy": {
+              "seen": {
+                "correct_tokens": 434,
+                "examples": 510,
+                "mean_true_rank": 2.1470587253570557,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.8509804010391235
+              },
+              "unseen": {
+                "correct_tokens": 106,
+                "examples": 426,
+                "mean_true_rank": 110.84272003173828,
+                "median_true_rank": 5.0,
+                "token_accuracy": 0.2488262951374054
+              }
+            },
+            "token_accuracy": 0.5769230723381042,
+            "top1": 0.5769230723381042,
+            "top10": 0.7991452813148499,
+            "top5": 0.7489316463470459,
+            "top50": 0.8963675498962402
+          },
+          "normalize_output": true,
+          "scale": 16.0,
+          "scale_is_native": true
+        }
+      },
+      "vocabulary_coverage": {
+        "fit_examples": 4992,
+        "fit_unique_tokens": 2441,
+        "frequency_bins": {
+          "frequent_50_plus": {
+            "lower_fit_count": 50,
+            "upper_fit_count": null,
+            "validation_examples": 161
+          },
+          "low_5_9": {
+            "lower_fit_count": 5,
+            "upper_fit_count": 9,
+            "validation_examples": 36
+          },
+          "medium_10_49": {
+            "lower_fit_count": 10,
+            "upper_fit_count": 49,
+            "validation_examples": 103
+          },
+          "rare_2_4": {
+            "lower_fit_count": 2,
+            "upper_fit_count": 4,
+            "validation_examples": 119
+          },
+          "singleton": {
+            "lower_fit_count": 1,
+            "upper_fit_count": 1,
+            "validation_examples": 91
+          },
+          "unseen": {
+            "lower_fit_count": 0,
+            "upper_fit_count": 0,
+            "validation_examples": 426
+          }
+        },
+        "validation_examples": 936,
+        "validation_seen_examples": 510,
+        "validation_unique_tokens": 594,
+        "validation_unseen_examples": 426,
+        "vocab_size": 128256
+      }
+    },
+    "tied_affine_token_ce": {
+      "baseline_variant": "original",
+      "bias_diagnostics": {
+        "all_tokens": {
+          "count": 128256,
+          "max": 0.0921190083026886,
+          "mean": -0.1530502587556839,
+          "min": -0.1963408887386322,
+          "p05": -0.16949141025543213,
+          "p50": -0.15776647627353668,
+          "p95": -0.1355370581150055,
+          "std": 0.028191834688186646
+        },
+        "by_frequency_bin": {
+          "frequent_50_plus": {
+            "bias": {
+              "count": 11,
+              "max": 0.0921190083026886,
+              "mean": 0.03763280436396599,
+              "min": -0.018825862556695938,
+              "p05": -0.017558328807353973,
+              "p50": 0.04636703059077263,
+              "p95": 0.08611580729484558,
+              "std": 0.035845618695020676
+            },
+            "fit_label_count": 918,
+            "token_count": 11
+          },
+          "low_5_9": {
+            "bias": {
+              "count": 62,
+              "max": 0.08994922786951065,
+              "mean": 0.056330855935811996,
+              "min": -0.029503148049116135,
+              "p05": 0.021900001913309097,
+              "p50": 0.0641995519399643,
+              "p95": 0.08187776058912277,
+              "std": 0.023635664954781532
+            },
+            "fit_label_count": 374,
+            "token_count": 62
+          },
+          "medium_10_49": {
+            "bias": {
+              "count": 39,
+              "max": 0.08019019663333893,
+              "mean": 0.0431053601205349,
+              "min": -0.03435950726270676,
+              "p05": -0.0021674479357898235,
+              "p50": 0.05033570155501366,
+              "p95": 0.07402162253856659,
+              "std": 0.02441769279539585
+            },
+            "fit_label_count": 660,
+            "token_count": 39
+          },
+          "rare_2_4": {
+            "bias": {
+              "count": 520,
+              "max": 0.07978147268295288,
+              "mean": 0.04814545437693596,
+              "min": -0.046699222177267075,
+              "p05": 0.017582537606358528,
+              "p50": 0.050904758274555206,
+              "p95": 0.06911931931972504,
+              "std": 0.016774199903011322
+            },
+            "fit_label_count": 1231,
+            "token_count": 520
+          },
+          "singleton": {
+            "bias": {
+              "count": 1809,
+              "max": 0.06457607448101044,
+              "mean": 0.03209327906370163,
+              "min": -0.0677066221833229,
+              "p05": 0.003272000467404723,
+              "p50": 0.03492605313658714,
+              "p95": 0.05088270828127861,
+              "std": 0.015622207894921303
+            },
+            "fit_label_count": 1809,
+            "token_count": 1809
+          },
+          "unseen": {
+            "bias": {
+              "count": 125815,
+              "max": -0.08147799223661423,
+              "mean": -0.1567244976758957,
+              "min": -0.1963408887386322,
+              "p05": -0.16955924034118652,
+              "p50": -0.1579863429069519,
+              "p95": -0.13880382478237152,
+              "std": 0.009725251235067844
+            },
+            "fit_label_count": 0,
+            "token_count": 125815
+          }
+        },
+        "present": true,
+        "true_token_rank": {
+          "count": 936,
+          "max": 3041.0,
+          "mean": 27.18269157409668,
+          "min": 1.0,
+          "p05": 1.0,
+          "p50": 1.0,
+          "p95": 116.75,
+          "std": 149.8422088623047
+        },
+        "validation_by_frequency_bin": {
+          "frequent_50_plus": {
+            "correct_tokens": 160,
+            "examples": 161,
+            "mean_true_rank": 1.0124223232269287,
+            "median_true_rank": 1.0,
+            "token_accuracy": 0.9937888383865356
+          },
+          "low_5_9": {
+            "correct_tokens": 31,
+            "examples": 36,
+            "mean_true_rank": 2.1666667461395264,
+            "median_true_rank": 1.0,
+            "token_accuracy": 0.8611111044883728
+          },
+          "medium_10_49": {
+            "correct_tokens": 99,
+            "examples": 103,
+            "mean_true_rank": 1.0485436916351318,
+            "median_true_rank": 1.0,
+            "token_accuracy": 0.9611650705337524
+          },
+          "rare_2_4": {
+            "correct_tokens": 88,
+            "examples": 119,
+            "mean_true_rank": 4.957983016967773,
+            "median_true_rank": 1.0,
+            "token_accuracy": 0.7394958138465881
+          },
+          "singleton": {
+            "correct_tokens": 63,
+            "examples": 91,
+            "mean_true_rank": 3.0549449920654297,
+            "median_true_rank": 1.0,
+            "token_accuracy": 0.692307710647583
+          },
+          "unseen": {
+            "correct_tokens": 146,
+            "examples": 426,
+            "mean_true_rank": 56.86854553222656,
+            "median_true_rank": 3.0,
+            "token_accuracy": 0.34272301197052
+          }
+        },
+        "validation_predicted_original": {
+          "count": 936,
+          "max": 0.0921190083026886,
+          "mean": 0.007650126237422228,
+          "min": -0.16044491529464722,
+          "p05": -0.14622628688812256,
+          "p50": 0.035403937101364136,
+          "p95": 0.08011261373758316,
+          "std": 0.0716787725687027
+        },
+        "validation_true": {
+          "count": 936,
+          "max": 0.0921190083026886,
+          "mean": -0.04339433088898659,
+          "min": -0.1742471605539322,
+          "p05": -0.1545218676328659,
+          "p50": -0.01629079505801201,
+          "p95": 0.0691525861620903,
+          "std": 0.08950396627187729
+        },
+        "validation_true_correct": {
+          "count": 587,
+          "max": 0.0921190083026886,
+          "mean": -0.0072479709051549435,
+          "min": -0.16044491529464722,
+          "p05": -0.14902620017528534,
+          "p50": 0.025727080181241035,
+          "p95": 0.08011261373758316,
+          "std": 0.08011896163225174
+        },
+        "validation_true_error": {
+          "count": 349,
+          "max": 0.07687155902385712,
+          "mean": -0.1041906401515007,
+          "min": -0.1742471605539322,
+          "p05": -0.1582292914390564,
+          "p50": -0.13357502222061157,
+          "p95": 0.05108530446887016,
+          "std": 0.069243885576725
+        },
+        "vocab_size": 128256
+      },
+      "checkpoint": {
+        "bytes": 17299160,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/selected_checkpoints_v1/tied_affine_token_ce.safetensors",
+        "role": "tied_affine_token_ce fitted checkpoint",
+        "sha256": "0dad94bc31c39654506ac5ba9b75dc5cd64ef98935dc8372032bb03237509c28"
+      },
+      "comparisons_to_baseline": {
+        "no_bias_output_normalization_disabled": {
+          "accuracy_delta": 0.0160256028175354,
+          "better_rank_examples": 206,
+          "changed_from_correct": 0,
+          "changed_to_correct": 15,
+          "mean_rank_delta": -4.257478713989258,
+          "prediction_changed_examples": 34,
+          "prediction_changed_fraction": 0.03632478788495064,
+          "same_rank_examples": 715,
+          "worse_rank_examples": 15
+        },
+        "no_bias_scale_1": {
+          "accuracy_delta": 0.0160256028175354,
+          "better_rank_examples": 206,
+          "changed_from_correct": 0,
+          "changed_to_correct": 15,
+          "mean_rank_delta": -4.257478713989258,
+          "prediction_changed_examples": 34,
+          "prediction_changed_fraction": 0.03632478788495064,
+          "same_rank_examples": 715,
+          "worse_rank_examples": 15
+        },
+        "original": {
+          "accuracy_delta": 0.0,
+          "better_rank_examples": 0,
+          "changed_from_correct": 0,
+          "changed_to_correct": 0,
+          "mean_rank_delta": 0.0,
+          "prediction_changed_examples": 0,
+          "prediction_changed_fraction": 0.0,
+          "same_rank_examples": 936,
+          "worse_rank_examples": 0
+        },
+        "original_bias_scale_1": {
+          "accuracy_delta": -0.16880342364311218,
+          "better_rank_examples": 25,
+          "changed_from_correct": 159,
+          "changed_to_correct": 1,
+          "mean_rank_delta": 351.31732177734375,
+          "prediction_changed_examples": 290,
+          "prediction_changed_fraction": 0.30982905626296997,
+          "same_rank_examples": 450,
+          "worse_rank_examples": 461
+        },
+        "vocab_bias_disabled": {
+          "accuracy_delta": 0.0160256028175354,
+          "better_rank_examples": 206,
+          "changed_from_correct": 0,
+          "changed_to_correct": 15,
+          "mean_rank_delta": -4.257478713989258,
+          "prediction_changed_examples": 34,
+          "prediction_changed_fraction": 0.03632478788495064,
+          "same_rank_examples": 715,
+          "worse_rank_examples": 15
+        }
+      },
+      "interpretation_limits": [
+        "These are post hoc controls on a fitted checkpoint; zeroing vocabulary bias is not a no-bias fit.",
+        "Public validation labels are auxiliary development labels and are not an independent confirmation set.",
+        "All accuracy and rank values come from one direct full-vocabulary projection with no A2 fallback."
+      ],
+      "method_id": "tied_affine_token_ce",
+      "native_logit_scale": 16.0,
+      "pairwise_variant_comparisons": {
+        "no_bias_output_normalization_disabled__vs__no_bias_scale_1": {
+          "mean_rank_delta_left_minus_right": 0.0,
+          "prediction_changed_examples": 0,
+          "same_rank_examples": 936
+        },
+        "no_bias_output_normalization_disabled__vs__original": {
+          "mean_rank_delta_left_minus_right": -4.257478713989258,
+          "prediction_changed_examples": 34,
+          "same_rank_examples": 715
+        },
+        "no_bias_output_normalization_disabled__vs__original_bias_scale_1": {
+          "mean_rank_delta_left_minus_right": -355.5747985839844,
+          "prediction_changed_examples": 319,
+          "same_rank_examples": 449
+        },
+        "no_bias_output_normalization_disabled__vs__vocab_bias_disabled": {
+          "mean_rank_delta_left_minus_right": 0.0,
+          "prediction_changed_examples": 0,
+          "same_rank_examples": 936
+        },
+        "no_bias_scale_1__vs__original": {
+          "mean_rank_delta_left_minus_right": -4.257478713989258,
+          "prediction_changed_examples": 34,
+          "same_rank_examples": 715
+        },
+        "no_bias_scale_1__vs__original_bias_scale_1": {
+          "mean_rank_delta_left_minus_right": -355.5747985839844,
+          "prediction_changed_examples": 319,
+          "same_rank_examples": 449
+        },
+        "no_bias_scale_1__vs__vocab_bias_disabled": {
+          "mean_rank_delta_left_minus_right": 0.0,
+          "prediction_changed_examples": 0,
+          "same_rank_examples": 936
+        },
+        "original__vs__original_bias_scale_1": {
+          "mean_rank_delta_left_minus_right": -351.31732177734375,
+          "prediction_changed_examples": 290,
+          "same_rank_examples": 450
+        },
+        "original__vs__vocab_bias_disabled": {
+          "mean_rank_delta_left_minus_right": 4.257478713989258,
+          "prediction_changed_examples": 34,
+          "same_rank_examples": 715
+        },
+        "original_bias_scale_1__vs__vocab_bias_disabled": {
+          "mean_rank_delta_left_minus_right": 355.5747985839844,
+          "prediction_changed_examples": 319,
+          "same_rank_examples": 449
+        }
+      },
+      "peak_memory": {
+        "allocated_bytes": 1077539840,
+        "host_max_rss_bytes": 3450826752,
+        "max_allocated_bytes": 1300207616,
+        "max_reserved_bytes": 1493172224,
+        "reserved_bytes": 1493172224
+      },
+      "scale_control": {
+        "applicable": true,
+        "empirical": {
+          "mean_rank_delta_left_minus_right": 0.0,
+          "prediction_changed_examples": 0,
+          "same_rank_examples": 936
+        },
+        "empirical_argmax_invariant": true,
+        "expected_argmax_invariant": true,
+        "scale_ratio": 0.0625
+      },
+      "timing": {
+        "checkpoint_load_and_device_seconds": 0.012044256000081077,
+        "diagnostic_projection_seconds": 0.17398797900023055,
+        "embedding_transfer_seconds_once_before_methods": 0.19037400999877718,
+        "timing_scope": "post hoc diagnostic total across five variant projections; not deployed steady-state inference"
+      },
+      "variant_order": [
+        "original",
+        "vocab_bias_disabled",
+        "original_bias_scale_1",
+        "no_bias_scale_1",
+        "no_bias_output_normalization_disabled"
+      ],
+      "variants": {
+        "no_bias_output_normalization_disabled": {
+          "bias_mode": "zero",
+          "metrics": {
+            "correct_tokens": 602,
+            "exact_records": 0,
+            "examples": 936,
+            "frequency_bin_metrics": {
+              "frequent_50_plus": {
+                "correct_tokens": 160,
+                "examples": 161,
+                "mean_true_rank": 1.0124223232269287,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.9937888383865356
+              },
+              "low_5_9": {
+                "correct_tokens": 31,
+                "examples": 36,
+                "mean_true_rank": 2.194444417953491,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.8611111044883728
+              },
+              "medium_10_49": {
+                "correct_tokens": 100,
+                "examples": 103,
+                "mean_true_rank": 1.0388349294662476,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.9708737730979919
+              },
+              "rare_2_4": {
+                "correct_tokens": 88,
+                "examples": 119,
+                "mean_true_rank": 5.327731132507324,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.7394958138465881
+              },
+              "singleton": {
+                "correct_tokens": 63,
+                "examples": 91,
+                "mean_true_rank": 3.065934181213379,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.692307710647583
+              },
+              "unseen": {
+                "correct_tokens": 160,
+                "examples": 426,
+                "mean_true_rank": 47.408451080322266,
+                "median_true_rank": 3.0,
+                "token_accuracy": 0.3755868673324585
+              }
+            },
+            "mean_true_rank": 22.925212860107422,
+            "median_true_rank": 1.0,
+            "p90_true_rank": 29.0,
+            "positions_per_record": 39,
+            "records": 24,
+            "seen_token_accuracy": {
+              "seen": {
+                "correct_tokens": 442,
+                "examples": 510,
+                "mean_true_rank": 2.4745097160339355,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.8666666746139526
+              },
+              "unseen": {
+                "correct_tokens": 160,
+                "examples": 426,
+                "mean_true_rank": 47.408451080322266,
+                "median_true_rank": 3.0,
+                "token_accuracy": 0.3755868673324585
+              }
+            },
+            "token_accuracy": 0.6431623697280884,
+            "top1": 0.6431623697280884,
+            "top10": 0.8493589758872986,
+            "top5": 0.7895299196243286,
+            "top50": 0.9273504018783569
+          },
+          "normalize_output": false,
+          "scale": 16.0,
+          "scale_is_native": true
+        },
+        "no_bias_scale_1": {
+          "bias_mode": "zero",
+          "metrics": {
+            "correct_tokens": 602,
+            "exact_records": 0,
+            "examples": 936,
+            "frequency_bin_metrics": {
+              "frequent_50_plus": {
+                "correct_tokens": 160,
+                "examples": 161,
+                "mean_true_rank": 1.0124223232269287,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.9937888383865356
+              },
+              "low_5_9": {
+                "correct_tokens": 31,
+                "examples": 36,
+                "mean_true_rank": 2.194444417953491,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.8611111044883728
+              },
+              "medium_10_49": {
+                "correct_tokens": 100,
+                "examples": 103,
+                "mean_true_rank": 1.0388349294662476,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.9708737730979919
+              },
+              "rare_2_4": {
+                "correct_tokens": 88,
+                "examples": 119,
+                "mean_true_rank": 5.327731132507324,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.7394958138465881
+              },
+              "singleton": {
+                "correct_tokens": 63,
+                "examples": 91,
+                "mean_true_rank": 3.065934181213379,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.692307710647583
+              },
+              "unseen": {
+                "correct_tokens": 160,
+                "examples": 426,
+                "mean_true_rank": 47.408451080322266,
+                "median_true_rank": 3.0,
+                "token_accuracy": 0.3755868673324585
+              }
+            },
+            "mean_true_rank": 22.925212860107422,
+            "median_true_rank": 1.0,
+            "p90_true_rank": 29.0,
+            "positions_per_record": 39,
+            "records": 24,
+            "seen_token_accuracy": {
+              "seen": {
+                "correct_tokens": 442,
+                "examples": 510,
+                "mean_true_rank": 2.4745097160339355,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.8666666746139526
+              },
+              "unseen": {
+                "correct_tokens": 160,
+                "examples": 426,
+                "mean_true_rank": 47.408451080322266,
+                "median_true_rank": 3.0,
+                "token_accuracy": 0.3755868673324585
+              }
+            },
+            "token_accuracy": 0.6431623697280884,
+            "top1": 0.6431623697280884,
+            "top10": 0.8493589758872986,
+            "top5": 0.7895299196243286,
+            "top50": 0.9273504018783569
+          },
+          "normalize_output": true,
+          "scale": 1.0,
+          "scale_is_native": false
+        },
+        "original": {
+          "bias_mode": "original",
+          "metrics": {
+            "correct_tokens": 587,
+            "exact_records": 0,
+            "examples": 936,
+            "frequency_bin_metrics": {
+              "frequent_50_plus": {
+                "correct_tokens": 160,
+                "examples": 161,
+                "mean_true_rank": 1.0124223232269287,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.9937888383865356
+              },
+              "low_5_9": {
+                "correct_tokens": 31,
+                "examples": 36,
+                "mean_true_rank": 2.1666667461395264,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.8611111044883728
+              },
+              "medium_10_49": {
+                "correct_tokens": 99,
+                "examples": 103,
+                "mean_true_rank": 1.0485436916351318,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.9611650705337524
+              },
+              "rare_2_4": {
+                "correct_tokens": 88,
+                "examples": 119,
+                "mean_true_rank": 4.957983016967773,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.7394958138465881
+              },
+              "singleton": {
+                "correct_tokens": 63,
+                "examples": 91,
+                "mean_true_rank": 3.0549449920654297,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.692307710647583
+              },
+              "unseen": {
+                "correct_tokens": 146,
+                "examples": 426,
+                "mean_true_rank": 56.86854553222656,
+                "median_true_rank": 3.0,
+                "token_accuracy": 0.34272301197052
+              }
+            },
+            "mean_true_rank": 27.18269157409668,
+            "median_true_rank": 1.0,
+            "p90_true_rank": 35.0,
+            "positions_per_record": 39,
+            "records": 24,
+            "seen_token_accuracy": {
+              "seen": {
+                "correct_tokens": 441,
+                "examples": 510,
+                "mean_true_rank": 2.386274576187134,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.8647058606147766
+              },
+              "unseen": {
+                "correct_tokens": 146,
+                "examples": 426,
+                "mean_true_rank": 56.86854553222656,
+                "median_true_rank": 3.0,
+                "token_accuracy": 0.34272301197052
+              }
+            },
+            "token_accuracy": 0.627136766910553,
+            "top1": 0.627136766910553,
+            "top10": 0.8322649598121643,
+            "top5": 0.7756410241127014,
+            "top50": 0.9209401607513428
+          },
+          "normalize_output": true,
+          "scale": 16.0,
+          "scale_is_native": true
+        },
+        "original_bias_scale_1": {
+          "bias_mode": "original",
+          "metrics": {
+            "correct_tokens": 429,
+            "exact_records": 0,
+            "examples": 936,
+            "frequency_bin_metrics": {
+              "frequent_50_plus": {
+                "correct_tokens": 160,
+                "examples": 161,
+                "mean_true_rank": 1.024844765663147,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.9937888383865356
+              },
+              "low_5_9": {
+                "correct_tokens": 30,
+                "examples": 36,
+                "mean_true_rank": 1.6111111640930176,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.8333333134651184
+              },
+              "medium_10_49": {
+                "correct_tokens": 98,
+                "examples": 103,
+                "mean_true_rank": 1.0873786211013794,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.9514563083648682
+              },
+              "rare_2_4": {
+                "correct_tokens": 84,
+                "examples": 119,
+                "mean_true_rank": 3.773109197616577,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.7058823704719543
+              },
+              "singleton": {
+                "correct_tokens": 57,
+                "examples": 91,
+                "mean_true_rank": 5.0329670906066895,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.6263736486434937
+              },
+              "unseen": {
+                "correct_tokens": 0,
+                "examples": 426,
+                "mean_true_rank": 828.7183227539062,
+                "median_true_rank": 340.0,
+                "token_accuracy": 0.0
+              }
+            },
+            "mean_true_rank": 378.5,
+            "median_true_rank": 3.0,
+            "p90_true_rank": 1652.5,
+            "positions_per_record": 39,
+            "records": 24,
+            "seen_token_accuracy": {
+              "seen": {
+                "correct_tokens": 429,
+                "examples": 510,
+                "mean_true_rank": 2.4352941513061523,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.841176450252533
+              },
+              "unseen": {
+                "correct_tokens": 0,
+                "examples": 426,
+                "mean_true_rank": 828.7183227539062,
+                "median_true_rank": 340.0,
+                "token_accuracy": 0.0
+              }
+            },
+            "token_accuracy": 0.4583333432674408,
+            "top1": 0.4583333432674408,
+            "top10": 0.567307710647583,
+            "top5": 0.5309829115867615,
+            "top50": 0.6485042572021484
+          },
+          "normalize_output": true,
+          "scale": 1.0,
+          "scale_is_native": false
+        },
+        "vocab_bias_disabled": {
+          "bias_mode": "zero",
+          "metrics": {
+            "correct_tokens": 602,
+            "exact_records": 0,
+            "examples": 936,
+            "frequency_bin_metrics": {
+              "frequent_50_plus": {
+                "correct_tokens": 160,
+                "examples": 161,
+                "mean_true_rank": 1.0124223232269287,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.9937888383865356
+              },
+              "low_5_9": {
+                "correct_tokens": 31,
+                "examples": 36,
+                "mean_true_rank": 2.194444417953491,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.8611111044883728
+              },
+              "medium_10_49": {
+                "correct_tokens": 100,
+                "examples": 103,
+                "mean_true_rank": 1.0388349294662476,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.9708737730979919
+              },
+              "rare_2_4": {
+                "correct_tokens": 88,
+                "examples": 119,
+                "mean_true_rank": 5.327731132507324,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.7394958138465881
+              },
+              "singleton": {
+                "correct_tokens": 63,
+                "examples": 91,
+                "mean_true_rank": 3.065934181213379,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.692307710647583
+              },
+              "unseen": {
+                "correct_tokens": 160,
+                "examples": 426,
+                "mean_true_rank": 47.408451080322266,
+                "median_true_rank": 3.0,
+                "token_accuracy": 0.3755868673324585
+              }
+            },
+            "mean_true_rank": 22.925212860107422,
+            "median_true_rank": 1.0,
+            "p90_true_rank": 29.0,
+            "positions_per_record": 39,
+            "records": 24,
+            "seen_token_accuracy": {
+              "seen": {
+                "correct_tokens": 442,
+                "examples": 510,
+                "mean_true_rank": 2.4745097160339355,
+                "median_true_rank": 1.0,
+                "token_accuracy": 0.8666666746139526
+              },
+              "unseen": {
+                "correct_tokens": 160,
+                "examples": 426,
+                "mean_true_rank": 47.408451080322266,
+                "median_true_rank": 3.0,
+                "token_accuracy": 0.3755868673324585
+              }
+            },
+            "token_accuracy": 0.6431623697280884,
+            "top1": 0.6431623697280884,
+            "top10": 0.8493589758872986,
+            "top5": 0.7895299196243286,
+            "top50": 0.9273504018783569
+          },
+          "normalize_output": true,
+          "scale": 16.0,
+          "scale_is_native": true
+        }
+      },
+      "vocabulary_coverage": {
+        "fit_examples": 4992,
+        "fit_unique_tokens": 2441,
+        "frequency_bins": {
+          "frequent_50_plus": {
+            "lower_fit_count": 50,
+            "upper_fit_count": null,
+            "validation_examples": 161
+          },
+          "low_5_9": {
+            "lower_fit_count": 5,
+            "upper_fit_count": 9,
+            "validation_examples": 36
+          },
+          "medium_10_49": {
+            "lower_fit_count": 10,
+            "upper_fit_count": 49,
+            "validation_examples": 103
+          },
+          "rare_2_4": {
+            "lower_fit_count": 2,
+            "upper_fit_count": 4,
+            "validation_examples": 119
+          },
+          "singleton": {
+            "lower_fit_count": 1,
+            "upper_fit_count": 1,
+            "validation_examples": 91
+          },
+          "unseen": {
+            "lower_fit_count": 0,
+            "upper_fit_count": 0,
+            "validation_examples": 426
+          }
+        },
+        "validation_examples": 936,
+        "validation_seen_examples": 510,
+        "validation_unique_tokens": 594,
+        "validation_unseen_examples": 426,
+        "vocab_size": 128256
+      }
+    }
+  },
+  "phase_timing_seconds": {
+    "checkpoint_load_and_device_by_method": {
+      "angular_inverse_control": 0.014582153999072034,
+      "residual_mlp256_token_ce": 0.005287079999106936,
+      "tied_affine_token_ce": 0.012044256000081077
+    },
+    "diagnostic_projection_by_method": {
+      "angular_inverse_control": 0.3248869500021101,
+      "residual_mlp256_token_ce": 0.18975397699978203,
+      "tied_affine_token_ce": 0.17398797900023055
+    },
+    "embedding_transfer_once": 0.19037400999877718,
+    "public_input_and_record_manifest_load": 0.4407230040014838
+  },
+  "public_split": {
+    "fit_record_count": 128,
+    "fit_records": {
+      "bytes": 23919,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/fit_records.json",
+      "role": "public fit record manifest",
+      "sha256": "7aee0f6cb452bb1df401c920ca2a628d32fb204d144d72e4419fc8bd34a3a08e"
+    },
+    "fit_validation_overlap_count": 0,
+    "validation_disjointness_metadata": {
+      "disjointness_checked_before_label_access": true,
+      "overlap_counts": {
+        "blind_evaluation": 0,
+        "inverse_train": 0,
+        "panel": 0,
+        "target_update_train": 0
+      },
+      "truth_role": "public auxiliary validation only"
+    },
+    "validation_record_count": 24,
+    "validation_records": {
+      "bytes": 5098,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_validation_slice_v2/public_validation_records.json",
+      "role": "public validation record manifest",
+      "sha256": "446e6259482b730b3e22cdc693d37b406031141d7ac034de68ecaa5cc49456fb"
+    }
+  },
+  "purpose": "Diagnose whether fitted CE vocabulary bias, scale, or output normalization contributes to the standalone decoder gap.",
+  "schema": "token-reconstruction.trr0004-public-decoder-diagnostic.v1",
+  "status": "posthoc_public_auxiliary_diagnostic",
+  "task_id": "TRR-0004",
+  "track": "track_b",
+  "warning": "Post hoc ablations of fitted checkpoints are diagnosis only; zeroing a fitted bias is not a no-bias fit and this validation is not independent confirmation."
+}
