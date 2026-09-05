@@ -67,9 +67,10 @@ the source corpus plan and coverage summary.
 
 The saved position-schedule receipt reports `total_draws`,
 `unique_draws_within_step`, `repeated_draws_within_step`, and replacement-only
-unique/repeated counts.  Thus a small fixture that requires replacement can
-show the repeated exposures explicitly while the registered 1200-record fit
-stream reports 512 unique pairs in each sampled step.
+unique/repeated counts. The executed 3000-step schedule contains one step
+with replacement and 200 repeated within-step draws, for 1,536,000 total
+supervision draws. Every arm and both distributions use that same schedule;
+the repeated draws remain part of the loss.
 
 The runner keeps each distribution's tensors only for its sequential fit,
 then releases them before loading the other distribution.  It writes

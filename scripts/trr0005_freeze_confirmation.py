@@ -222,4 +222,3 @@ if __name__ == "__main__":
         raise SystemExit(main())
     except (ConfirmationFreezeError, FreezeError, OSError, ValueError) as exc:
         raise SystemExit(f"TRR-0005 freeze error: {exc}") from exc
-

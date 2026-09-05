@@ -2095,4 +2095,3 @@ if __name__ == "__main__":
         raise SystemExit(main())
     except (ProducerError, ContractError, OSError, ValueError) as exc:
         raise SystemExit(f"TRR-0005 producer error: {exc}")
-
