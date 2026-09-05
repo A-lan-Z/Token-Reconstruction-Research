@@ -1,0 +1,1029 @@
+{
+  "conditions": [
+    {
+      "id": "public_base",
+      "role": "matched public control",
+      "weights_available_to_reconstructor": true
+    },
+    {
+      "id": "public_lora_2601",
+      "role": "one synthetic target-shift diagnostic",
+      "weights_available_to_reconstructor": false
+    }
+  ],
+  "coverage_analysis": {
+    "counts": "computed only after exact public labels and frozen confirmation records are available",
+    "denominator": "active scored tokens, reported per style and target condition",
+    "interval_unit": "complete-record paired resampling within each style/condition; no independent-token confidence intervals",
+    "position_bins_post_bos": [
+      "1-15",
+      "16-39",
+      "40-79",
+      "80+"
+    ],
+    "shared_reference": "TRR-0004 large public Alpaca fitting labels; this is a coverage reference, not the retained A1's observed/unobserved set",
+    "token_frequency_bins": [
+      "0",
+      "1-4",
+      "5-19",
+      "20+"
+    ]
+  },
+  "exclusion_sources": [
+    {
+      "id": "trr3_public_panel",
+      "known_exact_ids": true,
+      "record": {
+        "bytes": 88693,
+        "path": "experiments/TRR-0003/evidence/control/panel.json",
+        "sha256": "d1810330f53ebb7e149be45b8c07414e09d30b31b68c7c09d24df3854fec7333"
+      },
+      "role": "historical public development panel IDs; exclude matching Pile/Finance records"
+    },
+    {
+      "id": "trr3_public_plan",
+      "known_exact_ids": false,
+      "record": {
+        "bytes": 8668,
+        "path": "experiments/TRR-0003/evidence/control/plan.json",
+        "sha256": "1a685a8d4bf1608d8cda346ebd954c3653f00d57bea43e02fcae843af2835d83"
+      },
+      "role": "historical public fitting/evaluation split declarations"
+    },
+    {
+      "id": "trr3_public_pile_fit",
+      "known_exact_ids": true,
+      "record": {
+        "available": true,
+        "bytes": 23919,
+        "hash_status": "pinned",
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/fit_records.json",
+        "sha256": "7aee0f6cb452bb1df401c920ca2a628d32fb204d144d72e4419fc8bd34a3a08e"
+      },
+      "role": "historical public Pile fitting IDs"
+    },
+    {
+      "id": "trr3_public_pile_validation",
+      "known_exact_ids": true,
+      "record": {
+        "available": true,
+        "bytes": 5098,
+        "hash_status": "pinned",
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_validation_slice_v2/public_validation_records.json",
+        "sha256": "446e6259482b730b3e22cdc693d37b406031141d7ac034de68ecaa5cc49456fb"
+      },
+      "role": "historical public validation Pile IDs"
+    },
+    {
+      "id": "trr4_alpaca_fit",
+      "known_exact_ids": true,
+      "record": {
+        "bytes": 463510,
+        "path": "experiments/TRR-0004/fit/adapter_v2/affine_fit_records.json",
+        "sha256": "3f733212efd62b19e71f60f002f4e9756b4975ebfb4dcabf0ac27935929f94ff"
+      },
+      "role": "current public Alpaca fitting rows; dataset-disjoint from confirmation"
+    },
+    {
+      "id": "trr4_alpaca_validation",
+      "known_exact_ids": true,
+      "record": {
+        "bytes": 16456,
+        "path": "experiments/TRR-0004/fit/adapter_v2/affine_validation_records.json",
+        "sha256": "30b422b681bef5e7af4c26d339e57dfb3571ecef8077bdc4be5d960ef05c9777"
+      },
+      "role": "current public Alpaca validation rows; dataset-disjoint from confirmation"
+    },
+    {
+      "id": "trr4_alpaca_fit_manifest",
+      "known_exact_ids": true,
+      "record": {
+        "bytes": 4838,
+        "path": "experiments/TRR-0004/fit/adapter_v2/public_fit_manifest.json",
+        "sha256": "432285de19bde996dfd1b3b7c289d321b93e99ed0fba88303bb99331c69c118f"
+      },
+      "role": "current public fit resource declaration"
+    },
+    {
+      "id": "trr4_alpaca_split_plan",
+      "known_exact_ids": true,
+      "record": {
+        "bytes": 691612,
+        "path": "experiments/TRR-0004/alpaca_split_plan.json",
+        "sha256": "29ca79db0f29fd5ec1e3769b5427ac1496b59ef7f88e7e921e41c13b1e07eb2e"
+      },
+      "role": "current public Alpaca split declaration and future exclusion policy"
+    }
+  ],
+  "execution": {
+    "git_commit": "2c6b21634b59adf00b641e8299818eef48bee9d9",
+    "model_loaded": false,
+    "network_used": false,
+    "observations_generated": false,
+    "producer": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/scripts/trr0004_produce_confirmation.py",
+    "python": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/.venv-trr0004/bin/python",
+    "script": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/scripts/trr0004_fresh_confirmation.py",
+    "truth_opened": false
+  },
+  "generated_at_utc": "2026-09-05T00:00:00Z",
+  "historical_provenance_boundary": {
+    "no_private_evaluator_contents_used": true,
+    "retained_a1_exact_fit_duration_available": false,
+    "retained_a1_exact_fit_record_ids_available": false,
+    "unknown_historical_ids_do_not_block": "dataset-disjoint Pile/Finance selection using the known public metadata above"
+  },
+  "method_freeze": {
+    "marker_sha256": "df94093504693163c90775d2c4c9ffd23c63b16d19a52a2137d805a8c16154bc",
+    "method_ids": [
+      "historical_alpaca_a1",
+      "frozen_a1_a2_k256",
+      "historical_affine_ce_no_vocab_bias",
+      "causal_h_attention128",
+      "positionwise_mlp256"
+    ],
+    "record": {
+      "bytes": 9306,
+      "path": "experiments/TRR-0004/fresh_confirmation_method_freeze.json",
+      "sha256": "df94093504693163c90775d2c4c9ffd23c63b16d19a52a2137d805a8c16154bc"
+    },
+    "status": "FROZEN_METHOD_STATES"
+  },
+  "methods_prospective": [
+    {
+      "candidate_policy": "forbidden",
+      "id": "historical_alpaca_a1",
+      "rule": "retained standalone historical A1 direct argmax; top-k is diagnostic only",
+      "track": "comparator"
+    },
+    {
+      "candidate_policy": "required",
+      "id": "frozen_a1_a2_k256",
+      "rule": "retained A1 proposals scored by fixed public-prefix A2 K256",
+      "track": "comparator"
+    },
+    {
+      "candidate_policy": "forbidden",
+      "id": "historical_affine_ce_no_vocab_bias",
+      "rule": "fresh public-fit affine decoder without vocabulary bias; selected public-fit checkpoint step 1900",
+      "track": "track_b"
+    },
+    {
+      "candidate_policy": "forbidden",
+      "id": "causal_h_attention128",
+      "rule": "compact causal contextual decoder over activation history",
+      "track": "track_b"
+    },
+    {
+      "candidate_policy": "forbidden",
+      "id": "positionwise_mlp256",
+      "rule": "parameter-matched compact nonlinear decoder",
+      "track": "track_b"
+    }
+  ],
+  "model": {
+    "cut_depth": 4,
+    "hidden_size": 2048,
+    "id": "meta-llama/Llama-3.2-1B-Instruct",
+    "revision": "9213176726f574b556790deb65791e0c5aa438b6"
+  },
+  "observation_generation_contract": {
+    "alternate_batch_policy": "unpadded batch-1 is diagnostic only and cannot replace the primary path",
+    "batch_size": 8,
+    "padding_semantics": "right-padding; active outputs must be bit-exact under future-pad perturbation",
+    "path": "public_prefix.forward_full",
+    "same_public_prefix_path": true,
+    "sequence_tokens": 192
+  },
+  "producer_schema": "token-reconstruction.trr0004-confirmation-producer.v1",
+  "public_sources": {
+    "alpaca": {
+      "arrow": {
+        "available": true,
+        "bytes": 46230248,
+        "hash_status": "pinned",
+        "path": "/home/alanz/.cache/huggingface/datasets/tatsu-lab___alpaca/default/0.0.0/dce01c9b08f87459cf36a430d809084718273017/alpaca-train.arrow",
+        "sha256": "f45103036ed651f4c06d0a3c3e0fb7d53acb3074ed5c8e804a69c1efc1cea794"
+      },
+      "id": "tatsu-lab/alpaca",
+      "revision": "dce01c9b08f87459cf36a430d809084718273017",
+      "role": "current public fitting recipe only; excluded from confirmation",
+      "split": "train"
+    },
+    "finance": {
+      "dataset_info": {
+        "available": true,
+        "bytes": 813,
+        "hash_status": "computed",
+        "path": "/home/alanz/.cache/huggingface/datasets/Josephgflowers___finance-instruct-500k/default/0.0.0/583a98fb0ec14d904e9423b671d9d0fea88891b6/dataset_info.json",
+        "sha256": "36b7f591bb38c31b463ca1e55bff6a872b4268321d584f16f11752e8c4f4905e"
+      },
+      "fingerprint": "4abbac8acaab4205",
+      "id": "Josephgflowers/Finance-Instruct-500k",
+      "role": "fresh public confirmation candidates",
+      "split": "train"
+    },
+    "pile": {
+      "arrow": {
+        "available": true,
+        "bytes": 61270696,
+        "hash_status": "pinned",
+        "path": "/home/alanz/.cache/huggingface/datasets/NeelNanda___pile-10k/default/0.0.0/127bfedcd5047750df5ccf3a12979a47bfa0bafa/pile-10k-train.arrow",
+        "sha256": "77ddf02e2a69373a944bc8bc8ac8f7b9926f5c62203d727341a24d709bf81113"
+      },
+      "dataset_info": {
+        "available": true,
+        "bytes": 736,
+        "hash_status": "computed",
+        "path": "/home/alanz/.cache/huggingface/datasets/NeelNanda___pile-10k/default/0.0.0/127bfedcd5047750df5ccf3a12979a47bfa0bafa/dataset_info.json",
+        "sha256": "6f76b8c5908b60192866afdcf2ff773bb877ae7c8240d9007e841633af21ba0e"
+      },
+      "id": "NeelNanda/pile-10k",
+      "revision": "127bfedcd5047750df5ccf3a12979a47bfa0bafa",
+      "role": "fresh public confirmation candidates",
+      "split": "train"
+    }
+  },
+  "public_sources_frozen": {
+    "finance": {
+      "arrow_files": [
+        {
+          "bytes": 503571864,
+          "path": "/home/alanz/.cache/huggingface/datasets/Josephgflowers___finance-instruct-500k/default/0.0.0/583a98fb0ec14d904e9423b671d9d0fea88891b6/finance-instruct-500k-train-00000-of-00002.arrow",
+          "sha256": "b49ca0980a0b02fecbef2220eee0ef5d3c3c893ae42b4e1910edec993c3d164e"
+        },
+        {
+          "bytes": 53756664,
+          "path": "/home/alanz/.cache/huggingface/datasets/Josephgflowers___finance-instruct-500k/default/0.0.0/583a98fb0ec14d904e9423b671d9d0fea88891b6/finance-instruct-500k-train-00001-of-00002.arrow",
+          "sha256": "ce4b0786646cd68561da736f145fd5df7ba2f4e754e0caa3ae646d6be9900bd3"
+        }
+      ],
+      "fingerprint": "4abbac8acaab4205",
+      "id": "Josephgflowers/Finance-Instruct-500k",
+      "split": "train"
+    },
+    "pile": {
+      "arrow_files": [
+        {
+          "bytes": 61270696,
+          "path": "/home/alanz/.cache/huggingface/datasets/NeelNanda___pile-10k/default/0.0.0/127bfedcd5047750df5ccf3a12979a47bfa0bafa/pile-10k-train.arrow",
+          "sha256": "77ddf02e2a69373a944bc8bc8ac8f7b9926f5c62203d727341a24d709bf81113"
+        }
+      ],
+      "id": "NeelNanda/pile-10k",
+      "revision": "127bfedcd5047750df5ccf3a12979a47bfa0bafa",
+      "split": "train"
+    },
+    "tokenizer": {
+      "files": {
+        "config.json": {
+          "bytes": 877,
+          "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6/config.json",
+          "resolved_path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/3e3aaf51a035cb5092d9f6827a0dc074657ba88c",
+          "sha256": "2febf68cea25bf4611be02b7536f2488a5ba523bb1134986e3610152abe74fdb",
+          "symlink": true
+        },
+        "special_tokens_map.json": {
+          "bytes": 296,
+          "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6/special_tokens_map.json",
+          "resolved_path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/02ee80b6196926a5ad790a004d9efd6ab1ba6542",
+          "sha256": "6f38c73729248f6c127296386e3cdde96e254636cc58b4169d3fd32328d9a8ec",
+          "symlink": true
+        },
+        "tokenizer.json": {
+          "bytes": 9085657,
+          "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6/tokenizer.json",
+          "resolved_path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/5cc5f00a5b203e90a27a3bd60d1ec393b07971e8",
+          "sha256": "79e3e522635f3171300913bb421464a87de6222182a0570b9b2ccba2a964b2b4",
+          "symlink": true
+        },
+        "tokenizer_config.json": {
+          "bytes": 54528,
+          "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6/tokenizer_config.json",
+          "resolved_path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/4ff488a165e900e5129cda7c20ab32d568d2a475",
+          "sha256": "9823dcfdc1121869029da45192238e85cf44f0b232a6d9dc20e4fe6f4242a14e",
+          "symlink": true
+        }
+      },
+      "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6"
+    }
+  },
+  "registration_boundary": "Method state/config paths, exact selected records, activation paths, and truth binding are written only after methods are frozen. This plan does not activate a benchmark method.",
+  "schema": "token-reconstruction.trr0004-fresh-confirmation-plan.v1",
+  "selected_at_utc": "2026-09-05T13:49:54Z",
+  "selection_rule": {
+    "algorithm": "Render each public source in stored row order with the pinned renderer; require the declared minimum post-BOS length; exclude identities from every explicit known public metadata source; reject duplicate hashes of the truncated sequence; take the first 16 eligible rows per dataset.",
+    "bos_token_id": 128000,
+    "deduplicate_truncated_sequences": true,
+    "eligibility_diagnostics": {
+      "finance": {
+        "duplicate_truncated_sequence": 0,
+        "excluded": 1,
+        "invalid": 0,
+        "too_short": 0
+      },
+      "pile": {
+        "duplicate_truncated_sequence": 0,
+        "excluded": 1,
+        "invalid": 0,
+        "too_short": 0
+      }
+    },
+    "exact_ids_and_hashes_written_only_after": [
+      "method state/config freeze",
+      "public selection metadata freeze"
+    ],
+    "finance": {
+      "pair_rows_across_conditions": true,
+      "truncate_or_right_pad_to": 128
+    },
+    "padding_token_id": 128001,
+    "pile": {
+      "pair_rows_across_conditions": true,
+      "take_first_tokens": 40
+    },
+    "record_hashes_selected": {
+      "finance": {
+        "finance-public-000001-4192a0e13e20b1ef": "4192a0e13e20b1ef85f7d70cfae37b4cdebc35886625312ff98cab5ed0ea4fe5",
+        "finance-public-000002-70db44757d8e5ce3": "70db44757d8e5ce3e34e4934c8b60f61f640583cce712e60255ee3846c28ded2",
+        "finance-public-000003-9a6fa9d74706371b": "9a6fa9d74706371b44083668967e44e3129c5359fb655324df4f02cf989a2437",
+        "finance-public-000004-4bd2d47826437b9b": "4bd2d47826437b9ba807aa4789ac7bb033027fea527b0c1106cacf7e9057ec82",
+        "finance-public-000005-d7926eca5bd20532": "d7926eca5bd205329c24799724fe996655d51054cf079aa5c491db3db50a3098",
+        "finance-public-000006-c95a121bb31a026b": "c95a121bb31a026b06d213e0a02f617d4cade2a9f5831d8088edcadbc9aba0f1",
+        "finance-public-000007-d9f1ce780fc17d68": "d9f1ce780fc17d68ee1e9dc8428f6f39a05083636fa03362fe759c3eb1488c52",
+        "finance-public-000008-067fc0adc079ff8d": "067fc0adc079ff8d6a6bf311f373944a3cd21e29e142b8d77568300865d20ee6",
+        "finance-public-000009-293e8f8a390932ca": "293e8f8a390932caab65881894d017861b6576d7ddba6a44d6a95ff1cd210b8d",
+        "finance-public-000010-8888f3f22acfd046": "8888f3f22acfd04641f9b76a12b6f26a9bc01a980d4bf88f67bac377f27abfbe",
+        "finance-public-000011-75d3c632c0518f61": "75d3c632c0518f6114458efa8d911e5512f7199fd88637746d1264e8942d3fca",
+        "finance-public-000012-18b21fcbfb3846bc": "18b21fcbfb3846bce318315e79bbbdf602fac7219dfae12bea24ab33aa5c951f",
+        "finance-public-000013-5fabb1de0d2d87c6": "5fabb1de0d2d87c6c4c747aa93ee12449dd2d50330bf774484fedd359b792060",
+        "finance-public-000014-3859c04089defe61": "3859c04089defe61f84e2ec8a0c453d538f42ff203a032ce7ddf6a3529d6a876",
+        "finance-public-000015-51cb45deac478d21": "51cb45deac478d21a59c002a1ab2e2e4341532071df28f96b61e80f6100e7ff0",
+        "finance-public-000016-60100a4ab177d922": "60100a4ab177d9225563e5949a2910986da05458101c7e7c3a6b1d5aa2848d5d"
+      },
+      "pile": {
+        "pile10k-00000-abd0a56569c3d574": "abd0a56569c3d574474ef6ce4583ffa136fd60a9e4addffe59a7de407ff2136b",
+        "pile10k-00001-bd05fad63f0ae174": "bd05fad63f0ae1746bd6cd36d26d8a092a13b146888188091ad518668d14697a",
+        "pile10k-00002-55951433a3b6f8e9": "55951433a3b6f8e989b9c67ddbca37df565abc3336caa248615824d179953053",
+        "pile10k-00003-a55ed0b454ca6c46": "a55ed0b454ca6c4632a5bcba0b7f54e205f985f4b40c9a63649e990e9459440f",
+        "pile10k-00004-07e07565ef376695": "07e07565ef376695ca9de7eab1585ee6f5fd8bf6060d946c3077a3b686407e5d",
+        "pile10k-00006-aed029cbb82bd184": "aed029cbb82bd184597309516024327922eac69b316545640f4be33ad82513ae",
+        "pile10k-00007-8a6ccccb2230639e": "8a6ccccb2230639efce3a1e30be6ae9d6de2c0fceb6274d31498f0068e6411ba",
+        "pile10k-00008-0c2893161be2d549": "0c2893161be2d54916d6dd89a32a30cdc8f3dc9e57bc75c4116b86ce5b92ed46",
+        "pile10k-00009-ca278bde3f784aca": "ca278bde3f784aca8c3a4b9ab388427ff100d942867954e71246f424313af700",
+        "pile10k-00010-abe11f0c70d97da2": "abe11f0c70d97da22e0b6668a236fde06efb8937002c35881aee75784c0f7bb0",
+        "pile10k-00011-7f73a82c1ed85354": "7f73a82c1ed853542879786f76693a909744671ac8dbe5aeb185fb3b04f4d91f",
+        "pile10k-00012-e2df0870570e658d": "e2df0870570e658d7f42ca3657e1e7052165e2cc647fd4256f8b6f114e2a3f2b",
+        "pile10k-00013-03cabc948ae4a165": "03cabc948ae4a165ca4c2050fbb318359e3b49496f92f33056c20c8c6e631da4",
+        "pile10k-00014-5b5b9681bff18b11": "5b5b9681bff18b11c21e39c63a6ca6a1778d5a4c881722e62c56de8310107d34",
+        "pile10k-00015-a8c53de9d39a94fe": "a8c53de9d39a94febff18de6950524c170b63b59d67286a86f3d202c27b7139c",
+        "pile10k-00016-57198a87a3830122": "57198a87a3830122b4df12296914f865ec4f62429627cccff732ff2098ed3cb1"
+      }
+    },
+    "record_ids_selected": {
+      "finance": [
+        "finance-public-000001-4192a0e13e20b1ef",
+        "finance-public-000002-70db44757d8e5ce3",
+        "finance-public-000003-9a6fa9d74706371b",
+        "finance-public-000004-4bd2d47826437b9b",
+        "finance-public-000005-d7926eca5bd20532",
+        "finance-public-000006-c95a121bb31a026b",
+        "finance-public-000007-d9f1ce780fc17d68",
+        "finance-public-000008-067fc0adc079ff8d",
+        "finance-public-000009-293e8f8a390932ca",
+        "finance-public-000010-8888f3f22acfd046",
+        "finance-public-000011-75d3c632c0518f61",
+        "finance-public-000012-18b21fcbfb3846bc",
+        "finance-public-000013-5fabb1de0d2d87c6",
+        "finance-public-000014-3859c04089defe61",
+        "finance-public-000015-51cb45deac478d21",
+        "finance-public-000016-60100a4ab177d922"
+      ],
+      "pile": [
+        "pile10k-00000-abd0a56569c3d574",
+        "pile10k-00001-bd05fad63f0ae174",
+        "pile10k-00002-55951433a3b6f8e9",
+        "pile10k-00003-a55ed0b454ca6c46",
+        "pile10k-00004-07e07565ef376695",
+        "pile10k-00006-aed029cbb82bd184",
+        "pile10k-00007-8a6ccccb2230639e",
+        "pile10k-00008-0c2893161be2d549",
+        "pile10k-00009-ca278bde3f784aca",
+        "pile10k-00010-abe11f0c70d97da2",
+        "pile10k-00011-7f73a82c1ed85354",
+        "pile10k-00012-e2df0870570e658d",
+        "pile10k-00013-03cabc948ae4a165",
+        "pile10k-00014-5b5b9681bff18b11",
+        "pile10k-00015-a8c53de9d39a94fe",
+        "pile10k-00016-57198a87a3830122"
+      ]
+    },
+    "selected_records": {
+      "finance": [
+        {
+          "full_token_count": 442,
+          "post_bos_token_count": 441,
+          "public_record_sha256": "4192a0e13e20b1ef85f7d70cfae37b4cdebc35886625312ff98cab5ed0ea4fe5",
+          "raw_index": 1,
+          "record_id": "finance-public-000001-4192a0e13e20b1ef",
+          "source_index": 1,
+          "truncated_sequence_sha256": "9be720f34f525aabfe4d7144696557a59c656e5565f538882ee7a9d291cd6271",
+          "valid_tokens": 128
+        },
+        {
+          "full_token_count": 359,
+          "post_bos_token_count": 358,
+          "public_record_sha256": "70db44757d8e5ce3e34e4934c8b60f61f640583cce712e60255ee3846c28ded2",
+          "raw_index": 2,
+          "record_id": "finance-public-000002-70db44757d8e5ce3",
+          "source_index": 2,
+          "truncated_sequence_sha256": "6bb7bd8edcf7916dd093ee9d23bb6d016b4cea242bae44ca0876241e50ce866f",
+          "valid_tokens": 128
+        },
+        {
+          "full_token_count": 308,
+          "post_bos_token_count": 307,
+          "public_record_sha256": "9a6fa9d74706371b44083668967e44e3129c5359fb655324df4f02cf989a2437",
+          "raw_index": 3,
+          "record_id": "finance-public-000003-9a6fa9d74706371b",
+          "source_index": 3,
+          "truncated_sequence_sha256": "050caa1e3373bff8f5e23c280a7876584aa4d46aec04968fa9300d9d230dd3ba",
+          "valid_tokens": 128
+        },
+        {
+          "full_token_count": 367,
+          "post_bos_token_count": 366,
+          "public_record_sha256": "4bd2d47826437b9ba807aa4789ac7bb033027fea527b0c1106cacf7e9057ec82",
+          "raw_index": 4,
+          "record_id": "finance-public-000004-4bd2d47826437b9b",
+          "source_index": 4,
+          "truncated_sequence_sha256": "b1734d73bc5e50ff6d866cf2e7cc297802fca10d85b7e76651ef5c3eab6912f6",
+          "valid_tokens": 128
+        },
+        {
+          "full_token_count": 328,
+          "post_bos_token_count": 327,
+          "public_record_sha256": "d7926eca5bd205329c24799724fe996655d51054cf079aa5c491db3db50a3098",
+          "raw_index": 5,
+          "record_id": "finance-public-000005-d7926eca5bd20532",
+          "source_index": 5,
+          "truncated_sequence_sha256": "e5e608ef4a85dcbe1b4577514886727a148b72d0c04418d93a427243fa5afb40",
+          "valid_tokens": 128
+        },
+        {
+          "full_token_count": 330,
+          "post_bos_token_count": 329,
+          "public_record_sha256": "c95a121bb31a026b06d213e0a02f617d4cade2a9f5831d8088edcadbc9aba0f1",
+          "raw_index": 6,
+          "record_id": "finance-public-000006-c95a121bb31a026b",
+          "source_index": 6,
+          "truncated_sequence_sha256": "9d2df7be496a8c0e8e1b96509e6c7a6b158a89bbaa26f5439c96219586adba0d",
+          "valid_tokens": 128
+        },
+        {
+          "full_token_count": 257,
+          "post_bos_token_count": 256,
+          "public_record_sha256": "d9f1ce780fc17d68ee1e9dc8428f6f39a05083636fa03362fe759c3eb1488c52",
+          "raw_index": 7,
+          "record_id": "finance-public-000007-d9f1ce780fc17d68",
+          "source_index": 7,
+          "truncated_sequence_sha256": "4e71f9f63e68ce62c56f646f9e72f616995d004a4aa39ade13d1fef298924494",
+          "valid_tokens": 128
+        },
+        {
+          "full_token_count": 411,
+          "post_bos_token_count": 410,
+          "public_record_sha256": "067fc0adc079ff8d6a6bf311f373944a3cd21e29e142b8d77568300865d20ee6",
+          "raw_index": 8,
+          "record_id": "finance-public-000008-067fc0adc079ff8d",
+          "source_index": 8,
+          "truncated_sequence_sha256": "d4dd9d39a0654d8651e1e7fc780428a11e59c700132121a74e4b3003ae2428ff",
+          "valid_tokens": 128
+        },
+        {
+          "full_token_count": 350,
+          "post_bos_token_count": 349,
+          "public_record_sha256": "293e8f8a390932caab65881894d017861b6576d7ddba6a44d6a95ff1cd210b8d",
+          "raw_index": 9,
+          "record_id": "finance-public-000009-293e8f8a390932ca",
+          "source_index": 9,
+          "truncated_sequence_sha256": "4104642af94f186aaa408f23f25b1571d89bfc0bf48dc5ab6c6dfaa0e05d40fa",
+          "valid_tokens": 128
+        },
+        {
+          "full_token_count": 350,
+          "post_bos_token_count": 349,
+          "public_record_sha256": "8888f3f22acfd04641f9b76a12b6f26a9bc01a980d4bf88f67bac377f27abfbe",
+          "raw_index": 10,
+          "record_id": "finance-public-000010-8888f3f22acfd046",
+          "source_index": 10,
+          "truncated_sequence_sha256": "ef66b62208ed3f00a093e253377e0b5cdeabedb67bf56515ad2ba2c183d996ba",
+          "valid_tokens": 128
+        },
+        {
+          "full_token_count": 392,
+          "post_bos_token_count": 391,
+          "public_record_sha256": "75d3c632c0518f6114458efa8d911e5512f7199fd88637746d1264e8942d3fca",
+          "raw_index": 11,
+          "record_id": "finance-public-000011-75d3c632c0518f61",
+          "source_index": 11,
+          "truncated_sequence_sha256": "9eafdf2130c8533abac189223735410a9b9ebeeefbf075730fbf21c1f77bdf73",
+          "valid_tokens": 128
+        },
+        {
+          "full_token_count": 371,
+          "post_bos_token_count": 370,
+          "public_record_sha256": "18b21fcbfb3846bce318315e79bbbdf602fac7219dfae12bea24ab33aa5c951f",
+          "raw_index": 12,
+          "record_id": "finance-public-000012-18b21fcbfb3846bc",
+          "source_index": 12,
+          "truncated_sequence_sha256": "55c5aea44010d804abf9a8dcc01edda17f6aa9a0f27cac0cbe98cd4ece0e02ee",
+          "valid_tokens": 128
+        },
+        {
+          "full_token_count": 319,
+          "post_bos_token_count": 318,
+          "public_record_sha256": "5fabb1de0d2d87c6c4c747aa93ee12449dd2d50330bf774484fedd359b792060",
+          "raw_index": 13,
+          "record_id": "finance-public-000013-5fabb1de0d2d87c6",
+          "source_index": 13,
+          "truncated_sequence_sha256": "1fe222946982188f9c6f6a3e5d96b8b20c2ac0057d68514772d0d34f9b13f3c5",
+          "valid_tokens": 128
+        },
+        {
+          "full_token_count": 290,
+          "post_bos_token_count": 289,
+          "public_record_sha256": "3859c04089defe61f84e2ec8a0c453d538f42ff203a032ce7ddf6a3529d6a876",
+          "raw_index": 14,
+          "record_id": "finance-public-000014-3859c04089defe61",
+          "source_index": 14,
+          "truncated_sequence_sha256": "4d59b438b30a235abacdc20064ef06cf05939a10c09dcd9e4534f11a059307cb",
+          "valid_tokens": 128
+        },
+        {
+          "full_token_count": 391,
+          "post_bos_token_count": 390,
+          "public_record_sha256": "51cb45deac478d21a59c002a1ab2e2e4341532071df28f96b61e80f6100e7ff0",
+          "raw_index": 15,
+          "record_id": "finance-public-000015-51cb45deac478d21",
+          "source_index": 15,
+          "truncated_sequence_sha256": "435c005c732cb45f6cd8d7bb535ecce53a1353ea8aaf853d7667a113e749287a",
+          "valid_tokens": 128
+        },
+        {
+          "full_token_count": 552,
+          "post_bos_token_count": 551,
+          "public_record_sha256": "60100a4ab177d9225563e5949a2910986da05458101c7e7c3a6b1d5aa2848d5d",
+          "raw_index": 16,
+          "record_id": "finance-public-000016-60100a4ab177d922",
+          "source_index": 16,
+          "truncated_sequence_sha256": "e7105753bc031a2b034982e6313786312061bc4ad61492b7a0fec5678efdb1f8",
+          "valid_tokens": 128
+        }
+      ],
+      "pile": [
+        {
+          "full_token_count": 2953,
+          "post_bos_token_count": 2952,
+          "public_record_sha256": "abd0a56569c3d574474ef6ce4583ffa136fd60a9e4addffe59a7de407ff2136b",
+          "raw_index": 0,
+          "record_id": "pile10k-00000-abd0a56569c3d574",
+          "source_index": 0,
+          "truncated_sequence_sha256": "e0cfa237055e71d122f888e95f65359733d411c4292685d815a1e4479d30a1a4",
+          "valid_tokens": 40
+        },
+        {
+          "full_token_count": 1004,
+          "post_bos_token_count": 1003,
+          "public_record_sha256": "bd05fad63f0ae1746bd6cd36d26d8a092a13b146888188091ad518668d14697a",
+          "raw_index": 1,
+          "record_id": "pile10k-00001-bd05fad63f0ae174",
+          "source_index": 1,
+          "truncated_sequence_sha256": "0179f4cda5044f90fd2acad06ff1d504facf4c28fdeee424ba919c91a4f58b37",
+          "valid_tokens": 40
+        },
+        {
+          "full_token_count": 251,
+          "post_bos_token_count": 250,
+          "public_record_sha256": "55951433a3b6f8e989b9c67ddbca37df565abc3336caa248615824d179953053",
+          "raw_index": 2,
+          "record_id": "pile10k-00002-55951433a3b6f8e9",
+          "source_index": 2,
+          "truncated_sequence_sha256": "0bedc06f36ff83f77e623b2f4277f69c2295cc236494faf8b75ac7d33569b07b",
+          "valid_tokens": 40
+        },
+        {
+          "full_token_count": 81,
+          "post_bos_token_count": 80,
+          "public_record_sha256": "a55ed0b454ca6c4632a5bcba0b7f54e205f985f4b40c9a63649e990e9459440f",
+          "raw_index": 3,
+          "record_id": "pile10k-00003-a55ed0b454ca6c46",
+          "source_index": 3,
+          "truncated_sequence_sha256": "c976926be274e0696d48c24553820dc4e142cc72e6f56036f63277b4567b39ac",
+          "valid_tokens": 40
+        },
+        {
+          "full_token_count": 361,
+          "post_bos_token_count": 360,
+          "public_record_sha256": "07e07565ef376695ca9de7eab1585ee6f5fd8bf6060d946c3077a3b686407e5d",
+          "raw_index": 4,
+          "record_id": "pile10k-00004-07e07565ef376695",
+          "source_index": 4,
+          "truncated_sequence_sha256": "c8be7d629ae393366263f8913c7f8b97abe5a0e2af86f80e87d550e12828f038",
+          "valid_tokens": 40
+        },
+        {
+          "full_token_count": 823,
+          "post_bos_token_count": 822,
+          "public_record_sha256": "aed029cbb82bd184597309516024327922eac69b316545640f4be33ad82513ae",
+          "raw_index": 6,
+          "record_id": "pile10k-00006-aed029cbb82bd184",
+          "source_index": 6,
+          "truncated_sequence_sha256": "5619b1d21eb525cb373bd0e3efded6d65389f425f1a209311a7d967cd24a842c",
+          "valid_tokens": 40
+        },
+        {
+          "full_token_count": 228,
+          "post_bos_token_count": 227,
+          "public_record_sha256": "8a6ccccb2230639efce3a1e30be6ae9d6de2c0fceb6274d31498f0068e6411ba",
+          "raw_index": 7,
+          "record_id": "pile10k-00007-8a6ccccb2230639e",
+          "source_index": 7,
+          "truncated_sequence_sha256": "0e88a3526080374181eb77f7e5107cf829291995f2afcb30fd1045c4bf43b157",
+          "valid_tokens": 40
+        },
+        {
+          "full_token_count": 225,
+          "post_bos_token_count": 224,
+          "public_record_sha256": "0c2893161be2d54916d6dd89a32a30cdc8f3dc9e57bc75c4116b86ce5b92ed46",
+          "raw_index": 8,
+          "record_id": "pile10k-00008-0c2893161be2d549",
+          "source_index": 8,
+          "truncated_sequence_sha256": "57aa2e6d7854fcd2eb59c747a586da3badbc9acecda98d5c65bfbb6491f57eb9",
+          "valid_tokens": 40
+        },
+        {
+          "full_token_count": 268,
+          "post_bos_token_count": 267,
+          "public_record_sha256": "ca278bde3f784aca8c3a4b9ab388427ff100d942867954e71246f424313af700",
+          "raw_index": 9,
+          "record_id": "pile10k-00009-ca278bde3f784aca",
+          "source_index": 9,
+          "truncated_sequence_sha256": "0cc6eec2156c79f9275b9b6360adbfc60649235ad6005541e62ca11fd1d34187",
+          "valid_tokens": 40
+        },
+        {
+          "full_token_count": 575,
+          "post_bos_token_count": 574,
+          "public_record_sha256": "abe11f0c70d97da22e0b6668a236fde06efb8937002c35881aee75784c0f7bb0",
+          "raw_index": 10,
+          "record_id": "pile10k-00010-abe11f0c70d97da2",
+          "source_index": 10,
+          "truncated_sequence_sha256": "6da517f8765de1fd71bc8e9726cc76aecfc99b5b3d5a769e94247f5b15c7f37d",
+          "valid_tokens": 40
+        },
+        {
+          "full_token_count": 66,
+          "post_bos_token_count": 65,
+          "public_record_sha256": "7f73a82c1ed853542879786f76693a909744671ac8dbe5aeb185fb3b04f4d91f",
+          "raw_index": 11,
+          "record_id": "pile10k-00011-7f73a82c1ed85354",
+          "source_index": 11,
+          "truncated_sequence_sha256": "f9c22b179643142831725a166ac0cfbe81a8625ad591e7ca5142a3816264f9cf",
+          "valid_tokens": 40
+        },
+        {
+          "full_token_count": 324,
+          "post_bos_token_count": 323,
+          "public_record_sha256": "e2df0870570e658d7f42ca3657e1e7052165e2cc647fd4256f8b6f114e2a3f2b",
+          "raw_index": 12,
+          "record_id": "pile10k-00012-e2df0870570e658d",
+          "source_index": 12,
+          "truncated_sequence_sha256": "9c87ddb1ad629e05e7fcdc672d56637104cab72332948049effdebffa0cf5275",
+          "valid_tokens": 40
+        },
+        {
+          "full_token_count": 612,
+          "post_bos_token_count": 611,
+          "public_record_sha256": "03cabc948ae4a165ca4c2050fbb318359e3b49496f92f33056c20c8c6e631da4",
+          "raw_index": 13,
+          "record_id": "pile10k-00013-03cabc948ae4a165",
+          "source_index": 13,
+          "truncated_sequence_sha256": "08340bb67309ea2d8a68778643ca9937513cb543c2ac9619c2c7504119f21e0e",
+          "valid_tokens": 40
+        },
+        {
+          "full_token_count": 151,
+          "post_bos_token_count": 150,
+          "public_record_sha256": "5b5b9681bff18b11c21e39c63a6ca6a1778d5a4c881722e62c56de8310107d34",
+          "raw_index": 14,
+          "record_id": "pile10k-00014-5b5b9681bff18b11",
+          "source_index": 14,
+          "truncated_sequence_sha256": "4223a60eaac2db413f42cf9fe2b547ff4095476ac99e44d598bee529d7a86ecb",
+          "valid_tokens": 40
+        },
+        {
+          "full_token_count": 351,
+          "post_bos_token_count": 350,
+          "public_record_sha256": "a8c53de9d39a94febff18de6950524c170b63b59d67286a86f3d202c27b7139c",
+          "raw_index": 15,
+          "record_id": "pile10k-00015-a8c53de9d39a94fe",
+          "source_index": 15,
+          "truncated_sequence_sha256": "7e529dcfcadd25cfd1298100ba05bf44bd5c297a7d6ae81348d2d0b253f086e0",
+          "valid_tokens": 40
+        },
+        {
+          "full_token_count": 177,
+          "post_bos_token_count": 176,
+          "public_record_sha256": "57198a87a3830122b4df12296914f865ec4f62429627cccff732ff2098ed3cb1",
+          "raw_index": 16,
+          "record_id": "pile10k-00016-57198a87a3830122",
+          "source_index": 16,
+          "truncated_sequence_sha256": "25af7787c59f1a0808018baa7259dafc1a80d638f2a892cf390d1f8e9bc56bd9",
+          "valid_tokens": 40
+        }
+      ]
+    },
+    "selection_exclusions": {
+      "identity_counts": {
+        "finance_hashes": 32,
+        "finance_ids": 32,
+        "finance_indices": 33,
+        "pile_hashes": 224,
+        "pile_ids": 224,
+        "pile_indices": 224
+      },
+      "sources": [
+        {
+          "available": true,
+          "bytes": 88693,
+          "extracted_identity_counts": {
+            "finance_hashes": 8,
+            "finance_ids": 8,
+            "finance_indices": 9,
+            "pile_hashes": 8,
+            "pile_ids": 8,
+            "pile_indices": 0
+          },
+          "known_exact_ids": true,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0003/evidence/control/panel.json",
+          "sha256": "d1810330f53ebb7e149be45b8c07414e09d30b31b68c7c09d24df3854fec7333"
+        },
+        {
+          "available": true,
+          "bytes": 8668,
+          "extracted_identity_counts": {
+            "finance_hashes": 8,
+            "finance_ids": 8,
+            "finance_indices": 9,
+            "pile_hashes": 8,
+            "pile_ids": 8,
+            "pile_indices": 0
+          },
+          "known_exact_ids": false,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0003/evidence/control/plan.json",
+          "sha256": "1a685a8d4bf1608d8cda346ebd954c3653f00d57bea43e02fcae843af2835d83"
+        },
+        {
+          "available": true,
+          "bytes": 23919,
+          "extracted_identity_counts": {
+            "finance_hashes": 8,
+            "finance_ids": 8,
+            "finance_indices": 9,
+            "pile_hashes": 136,
+            "pile_ids": 136,
+            "pile_indices": 128
+          },
+          "known_exact_ids": true,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/fit_records.json",
+          "sha256": "7aee0f6cb452bb1df401c920ca2a628d32fb204d144d72e4419fc8bd34a3a08e"
+        },
+        {
+          "available": true,
+          "bytes": 5098,
+          "extracted_identity_counts": {
+            "finance_hashes": 8,
+            "finance_ids": 8,
+            "finance_indices": 9,
+            "pile_hashes": 160,
+            "pile_ids": 160,
+            "pile_indices": 128
+          },
+          "known_exact_ids": true,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_validation_slice_v2/public_validation_records.json",
+          "sha256": "446e6259482b730b3e22cdc693d37b406031141d7ac034de68ecaa5cc49456fb"
+        },
+        {
+          "available": true,
+          "bytes": 463510,
+          "extracted_identity_counts": {
+            "finance_hashes": 8,
+            "finance_ids": 8,
+            "finance_indices": 9,
+            "pile_hashes": 160,
+            "pile_ids": 160,
+            "pile_indices": 128
+          },
+          "known_exact_ids": false,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fit/adapter_v2/affine_fit_records.json",
+          "sha256": "3f733212efd62b19e71f60f002f4e9756b4975ebfb4dcabf0ac27935929f94ff"
+        },
+        {
+          "available": true,
+          "bytes": 16456,
+          "extracted_identity_counts": {
+            "finance_hashes": 8,
+            "finance_ids": 8,
+            "finance_indices": 9,
+            "pile_hashes": 160,
+            "pile_ids": 160,
+            "pile_indices": 128
+          },
+          "known_exact_ids": false,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fit/adapter_v2/affine_validation_records.json",
+          "sha256": "30b422b681bef5e7af4c26d339e57dfb3571ecef8077bdc4be5d960ef05c9777"
+        },
+        {
+          "available": true,
+          "bytes": 4838,
+          "extracted_identity_counts": {
+            "finance_hashes": 8,
+            "finance_ids": 8,
+            "finance_indices": 9,
+            "pile_hashes": 160,
+            "pile_ids": 160,
+            "pile_indices": 128
+          },
+          "known_exact_ids": false,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fit/adapter_v2/public_fit_manifest.json",
+          "sha256": "432285de19bde996dfd1b3b7c289d321b93e99ed0fba88303bb99331c69c118f"
+        },
+        {
+          "available": true,
+          "bytes": 691612,
+          "extracted_identity_counts": {
+            "finance_hashes": 8,
+            "finance_ids": 8,
+            "finance_indices": 9,
+            "pile_hashes": 160,
+            "pile_ids": 160,
+            "pile_indices": 128
+          },
+          "known_exact_ids": false,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/alpaca_split_plan.json",
+          "sha256": "29ca79db0f29fd5ec1e3769b5427ac1496b59ef7f88e7e921e41c13b1e07eb2e"
+        },
+        {
+          "available": true,
+          "bytes": 73510,
+          "extracted_identity_counts": {
+            "finance_hashes": 8,
+            "finance_ids": 8,
+            "finance_indices": 9,
+            "pile_hashes": 224,
+            "pile_ids": 224,
+            "pile_indices": 224
+          },
+          "known_exact_ids": true,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0002/configuration-search/public-pile/records.json",
+          "sha256": "37be9bb6d621873047a05544e4e2d8ed7c07f1160ab878093ad912306ae1dd7f"
+        },
+        {
+          "available": true,
+          "bytes": 165659,
+          "extracted_identity_counts": {
+            "finance_hashes": 32,
+            "finance_ids": 32,
+            "finance_indices": 33,
+            "pile_hashes": 224,
+            "pile_ids": 224,
+            "pile_indices": 224
+          },
+          "known_exact_ids": true,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0002/configuration-search/public-finance/records.json",
+          "sha256": "99b5c4eb1ef53f1587aceb34dd3f786a3c6f63e3ceca6b2bf37ed7a27ab1e2c2"
+        }
+      ],
+      "unknown_historical_a1_ids_do_not_block": true
+    },
+    "source_text_or_token_ids_written": false,
+    "truncated_sequence_sha256_selected": {
+      "finance": [
+        "9be720f34f525aabfe4d7144696557a59c656e5565f538882ee7a9d291cd6271",
+        "6bb7bd8edcf7916dd093ee9d23bb6d016b4cea242bae44ca0876241e50ce866f",
+        "050caa1e3373bff8f5e23c280a7876584aa4d46aec04968fa9300d9d230dd3ba",
+        "b1734d73bc5e50ff6d866cf2e7cc297802fca10d85b7e76651ef5c3eab6912f6",
+        "e5e608ef4a85dcbe1b4577514886727a148b72d0c04418d93a427243fa5afb40",
+        "9d2df7be496a8c0e8e1b96509e6c7a6b158a89bbaa26f5439c96219586adba0d",
+        "4e71f9f63e68ce62c56f646f9e72f616995d004a4aa39ade13d1fef298924494",
+        "d4dd9d39a0654d8651e1e7fc780428a11e59c700132121a74e4b3003ae2428ff",
+        "4104642af94f186aaa408f23f25b1571d89bfc0bf48dc5ab6c6dfaa0e05d40fa",
+        "ef66b62208ed3f00a093e253377e0b5cdeabedb67bf56515ad2ba2c183d996ba",
+        "9eafdf2130c8533abac189223735410a9b9ebeeefbf075730fbf21c1f77bdf73",
+        "55c5aea44010d804abf9a8dcc01edda17f6aa9a0f27cac0cbe98cd4ece0e02ee",
+        "1fe222946982188f9c6f6a3e5d96b8b20c2ac0057d68514772d0d34f9b13f3c5",
+        "4d59b438b30a235abacdc20064ef06cf05939a10c09dcd9e4534f11a059307cb",
+        "435c005c732cb45f6cd8d7bb535ecce53a1353ea8aaf853d7667a113e749287a",
+        "e7105753bc031a2b034982e6313786312061bc4ad61492b7a0fec5678efdb1f8"
+      ],
+      "pile": [
+        "e0cfa237055e71d122f888e95f65359733d411c4292685d815a1e4479d30a1a4",
+        "0179f4cda5044f90fd2acad06ff1d504facf4c28fdeee424ba919c91a4f58b37",
+        "0bedc06f36ff83f77e623b2f4277f69c2295cc236494faf8b75ac7d33569b07b",
+        "c976926be274e0696d48c24553820dc4e142cc72e6f56036f63277b4567b39ac",
+        "c8be7d629ae393366263f8913c7f8b97abe5a0e2af86f80e87d550e12828f038",
+        "5619b1d21eb525cb373bd0e3efded6d65389f425f1a209311a7d967cd24a842c",
+        "0e88a3526080374181eb77f7e5107cf829291995f2afcb30fd1045c4bf43b157",
+        "57aa2e6d7854fcd2eb59c747a586da3badbc9acecda98d5c65bfbb6491f57eb9",
+        "0cc6eec2156c79f9275b9b6360adbfc60649235ad6005541e62ca11fd1d34187",
+        "6da517f8765de1fd71bc8e9726cc76aecfc99b5b3d5a769e94247f5b15c7f37d",
+        "f9c22b179643142831725a166ac0cfbe81a8625ad591e7ca5142a3816264f9cf",
+        "9c87ddb1ad629e05e7fcdc672d56637104cab72332948049effdebffa0cf5275",
+        "08340bb67309ea2d8a68778643ca9937513cb543c2ac9619c2c7504119f21e0e",
+        "4223a60eaac2db413f42cf9fe2b547ff4095476ac99e44d598bee529d7a86ecb",
+        "7e529dcfcadd25cfd1298100ba05bf44bd5c297a7d6ae81348d2d0b253f086e0",
+        "25af7787c59f1a0808018baa7259dafc1a80d638f2a892cf390d1f8e9bc56bd9"
+      ]
+    }
+  },
+  "selection_summary": {
+    "distinct_records_total": 32,
+    "paired_conditions": [
+      "public_base",
+      "public_lora_2601"
+    ],
+    "records_per_style": 16,
+    "selected_record_hashes_sha256": "db2aadcf3d977817cc844b84231c5c7a578785e8ee0690100116a291faf302b5",
+    "selected_record_ids_sha256": "15c57acdc5cf5cc120ab9668fae358bca4df7fb117144e2914d362745516cca7",
+    "selected_sequence_hashes_sha256": "88b4aa1eb1433c471f0cbfb5a69f8ffa3f2294a663df8c3dcb3818db931777ef",
+    "styles": [
+      "pile",
+      "finance"
+    ]
+  },
+  "status": "FROZEN_PUBLIC_SELECTION_NO_TRUTH",
+  "styles": [
+    {
+      "id": "pile",
+      "input_style": "plain Pile text",
+      "minimum_post_bos_tokens": 39,
+      "records": 16,
+      "sequence_tokens": 40
+    },
+    {
+      "id": "finance",
+      "input_style": "Finance chat-template rendering",
+      "minimum_post_bos_tokens": 32,
+      "records": 16,
+      "sequence_tokens": 128
+    }
+  ],
+  "task_id": "TRR-0004",
+  "timing_contract": {
+    "accuracy_output": "first measured run after exact repeat check",
+    "cold_costs_separate": [
+      "state/config/model load",
+      "prefix/embedding load",
+      "input I/O",
+      "hashing",
+      "GPU initialization"
+    ],
+    "cuda_synchronize_boundaries": true,
+    "measured_runs_per_record_method": 3,
+    "method_specific_costs": "prefix calls and candidate simulations are measured from each method's implementation; this plan does not assume zero",
+    "shared_resources_resident": true,
+    "standalone_decoder_runtime": {
+      "a2_fallback": false,
+      "candidate_simulations": 0,
+      "prefix_calls": 0
+    },
+    "steady_interval": "CPU H input -> device preprocessing -> method prediction -> predicted IDs CPU",
+    "warmup_runs_per_record_method": 1
+  },
+  "tokenizer": {
+    "bos_token_id": 128000,
+    "id": "meta-llama/Llama-3.2-1B-Instruct",
+    "local_files_only": true,
+    "padding_token_id": 128001,
+    "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "snapshot": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6"
+  },
+  "truth_gate_contract": {
+    "load_order": [
+      "freeze receipt",
+      "panel and public observations",
+      "method registration",
+      "all prediction artifacts",
+      "truth loader"
+    ],
+    "private_sidecar_contents_not_read_before_gate": true,
+    "required_matrix": "4 cells \u00d7 every registered method",
+    "truth_loader_called_by_adapter": false
+  },
+  "uncertainty_and_coverage": {
+    "position_coverage": "Pile uses first 39 post-BOS positions; Finance reports active post-BOS positions through max128 and padding counts per row",
+    "selection_counts": "unknown until public metadata freeze",
+    "style_coverage": "one plain-text and one Finance chat-template style",
+    "target_shift_coverage": "one synthetic LoRA2601 condition; not evidence for broad target/SFT transfer"
+  }
+}

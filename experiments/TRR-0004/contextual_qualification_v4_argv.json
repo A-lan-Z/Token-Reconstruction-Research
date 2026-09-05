@@ -1,0 +1,176 @@
+{
+  "schema": "token-reconstruction.trr0004-contextual-qualification-argv.v1",
+  "task_id": "TRR-0004",
+  "status": "SUPERSEDED_NOT_RUN",
+  "purpose": "Real-data largest-geometry qualification only; no full contextual fit is authorized by this receipt.",
+  "cwd": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004",
+  "git_commit_required": "094c2c951d8aa353b8084c297e25ec78af5a598d",
+  "output_root": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/contextual_qualification_v4",
+  "output_root_create_only": true,
+  "qualification": {
+    "main_steps": 1,
+    "subset_steps": 1,
+    "subset_records": 8,
+    "record_batch_size": 8,
+    "position_budget": 512,
+    "methods": [
+      "causal_h_attention128",
+      "positionwise_mlp256"
+    ]
+  },
+  "resource_limits": {
+    "minimum_free_gib": 8,
+    "maximum_gpu_reserved_gib": 6,
+    "maximum_host_rss_gib": 16,
+    "max_seconds": 120,
+    "external_timeout_seconds": 120,
+    "threads": 8,
+    "gpu_policy": "RTX 5080 only after live preflight; no compute apps; temperature below 85 C"
+  },
+  "base_state": {
+    "method_id": "historical_affine_ce_no_vocab_bias",
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/fit_large_v1/historical_affine_ce_no_vocab_bias.safetensors",
+    "bytes": 16786108,
+    "sha256": "09c5b852373d8555b06508a79bb00c94041202702b61b121b35fa2b6f9f64e65",
+    "selected_step": 1900,
+    "frozen": true
+  },
+  "inputs": {
+    "fit_artifact": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_cut4.safetensors",
+      "bytes": 947176648,
+      "sha256": "d1c78fcf1acc91b57d51355ee11f267bf4c12f1bc7d5160164b3b6ea11b45344"
+    },
+    "fit_records": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fit/adapter_v2/affine_fit_records.json",
+      "bytes": 463510,
+      "sha256": "3f733212efd62b19e71f60f002f4e9756b4975ebfb4dcabf0ac27935929f94ff"
+    },
+    "validation_artifact": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fit/adapter_v2/validation_mixed_cut4.safetensors",
+      "bytes": 37795064,
+      "sha256": "a8e7633ffb369864af33754c5ebb2d9a4ca9a4ca9d6e7d4550731e8ff26e20c8200cf"
+    },
+    "validation_records": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fit/adapter_v2/affine_validation_records.json",
+      "bytes": 16456,
+      "sha256": "30b422b681bef5e7af4c26d339e57dfb3571ecef8077bdc4be5d960ef05c9777"
+    },
+    "validation_groups": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/track_b/contextual_validation_groups.json",
+      "bytes": 1144,
+      "sha256": "5113f266ec7c8ce2c825ca9a0a95ce36149c85aa7e5964d0377696b1b66c8f7b"
+    },
+    "registration": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/track_b/contextual_fit_registration.json",
+      "bytes": 265413,
+      "sha256": "5dec23c0c0f71385e49da0ef1efdb5a52c8101ae510a89a4542415831fee4aae"
+    },
+    "embedding_table": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+      "bytes": 1050673488,
+      "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+    }
+  },
+  "command": [
+    "env",
+    "OMP_NUM_THREADS=8",
+    "MKL_NUM_THREADS=8",
+    "OPENBLAS_NUM_THREADS=8",
+    "PYTHONPATH=src:scripts",
+    ".venv-trr0004/bin/python",
+    "scripts/trr0004_fit_contextual_extensions.py",
+    "--base-state",
+    "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/fit_large_v1/historical_affine_ce_no_vocab_bias.safetensors",
+    "--fit-artifact",
+    "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_cut4.safetensors",
+    "--fit-records",
+    "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fit/adapter_v2/affine_fit_records.json",
+    "--validation-artifact",
+    "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fit/adapter_v2/validation_mixed_cut4.safetensors",
+    "--validation-records",
+    "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fit/adapter_v2/affine_validation_records.json",
+    "--validation-groups",
+    "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/track_b/contextual_validation_groups.json",
+    "--embedding-table",
+    "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+    "--registration",
+    "experiments/TRR-0004/track_b/contextual_fit_registration.json",
+    "--output-root",
+    "outputs/TRR-0004/contextual_qualification_v4",
+    "--steps",
+    "1",
+    "--subset-steps",
+    "1",
+    "--subset-records",
+    "8",
+    "--record-batch-size",
+    "8",
+    "--position-budget",
+    "512",
+    "--validation-every",
+    "100",
+    "--learning-rate",
+    "1e-3",
+    "--weight-decay",
+    "0",
+    "--gradient-clip-norm",
+    "1",
+    "--seed",
+    "1737",
+    "--device",
+    "cuda",
+    "--minimum-free-gib",
+    "8",
+    "--maximum-gpu-reserved-gib",
+    "6",
+    "--maximum-host-rss-gib",
+    "16",
+    "--max-seconds",
+    "120"
+  ],
+  "source_hashes": {
+    "scripts/trr0004_fit_contextual_extensions.py": {
+      "bytes": 91546,
+      "sha256": "a7dfd54a8e591e83dc4d8b79383c9540af98c4912311d813802f8624731693bf"
+    },
+    "src/token_reconstruction/causal_decoder_extension.py": {
+      "bytes": 19750,
+      "sha256": "f1fb75e1feebffce5b26d0b1573f8b7a41ac1452976870027a9aa552b5736307"
+    }
+  },
+  "runtime_contract": {
+    "public_prefix_calls": 0,
+    "candidate_simulations": 0,
+    "a2_fallback": false,
+    "target_weights": false,
+    "current_evaluator_truth": false
+  },
+  "execution_receipt_requirements": [
+    "capture live GPU and compute-app preflight before loading",
+    "capture start/end git commit and source hashes",
+    "preserve runner stdout/stderr and create-only output root",
+    "retain run_evidence.json or failure.json and postflight resource snapshot",
+    "stop after qualification; do not start the 3000/600-step fit from this receipt"
+  ],
+  "verified_at": "2026-09-05T12:14:00Z",
+  "verification": {
+    "head_matches_required": true,
+    "all_declared_paths_exist": true,
+    "fresh_output_root_absent": true,
+    "tensor_payloads_not_loaded": true,
+    "declared_input_hashes_verified": false,
+    "superseded_without_execution": true
+  },
+  "superseded_by": {
+    "qualification_attempt": "contextual_qualification_v3",
+    "exit_receipt": "experiments/TRR-0004/contextual_qualification_v3_receipt/exit.json",
+    "run_evidence": "outputs/TRR-0004/contextual_qualification_v3/run_evidence.json",
+    "run_status": "complete",
+    "run_returncode": 0
+  },
+  "metadata_notes": [
+    "This v4 argv record was never executed.",
+    "The planned validation_artifact.sha256 string in this preserved record was accidentally duplicated; do not treat it as a verified payload hash. Use contextual_fit_inputs.json and the v3 run_evidence.json as authoritative input bindings."
+  ]
+}

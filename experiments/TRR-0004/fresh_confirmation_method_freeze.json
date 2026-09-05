@@ -1,0 +1,214 @@
+{
+  "schema": "token-reconstruction.trr0004-fresh-confirmation-method-freeze.v1",
+  "task_id": "TRR-0004",
+  "status": "FROZEN_METHOD_STATES",
+  "scope": "The exact five-method confirmation set is frozen before public record selection. This marker contains no selected records, observations, or truth.",
+  "method_ids": [
+    "historical_alpaca_a1",
+    "frozen_a1_a2_k256",
+    "historical_affine_ce_no_vocab_bias",
+    "causal_h_attention128",
+    "positionwise_mlp256"
+  ],
+  "code_commit": null,
+  "code_commit_policy": "The producer records the planning commit here, while register resolves and binds the full source-frozen HEAD after all source edits stop. A null value is intentional and does not authorize selection before the final source freeze.",
+  "methods": [
+    {
+      "id": "historical_alpaca_a1",
+      "track": "comparator",
+      "candidate_policy": "forbidden",
+      "rule": "retained standalone historical A1 direct argmax; top-k is diagnostic only",
+      "state": {
+        "path": "experiments/TRR-0004/evidence/comparators/public_a1_lens.pt",
+        "source_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/blind/reconstructor_input/public_a1_lens.pt",
+        "bytes": 16787653,
+        "sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742",
+        "copy_policy": "byte-identical local copy of the retained public state; no refit"
+      },
+      "fixed_config_paths": [
+        {
+          "path": "experiments/TRR-0004/bridge/registration.json",
+          "sha256": "6967bf5e15a70b9e88c621cbe7e142f6c437a07040e677ae3b392b4dd3c7ca28"
+        }
+      ],
+      "fixed_constants": {
+        "decision": "faithful direct top-1 argmax",
+        "top_k_diagnostic": 512,
+        "public_prefix_calls": 0,
+        "candidate_simulations": 0,
+        "a2_fallback": false
+      }
+    },
+    {
+      "id": "frozen_a1_a2_k256",
+      "track": "comparator",
+      "candidate_policy": "required",
+      "rule": "retained A1 proposals scored by fixed public-prefix A2 K256",
+      "state": {
+        "path": "experiments/TRR-0004/evidence/comparators/public_a1_lens.pt",
+        "source_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/blind/reconstructor_input/public_a1_lens.pt",
+        "bytes": 16787653,
+        "sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742",
+        "same_state_as": "historical_alpaca_a1"
+      },
+      "fixed_config_paths": [
+        {
+          "path": "experiments/TRR-0004/bridge/registration.json",
+          "sha256": "6967bf5e15a70b9e88c621cbe7e142f6c437a07040e677ae3b392b4dd3c7ca28"
+        },
+        {
+          "path": "experiments/TRR-0003/footing/method_registry_v2.json",
+          "sha256": "8e68a5ed48f55c1f55bef04d507b12caf12cdc906071fa49b1461b35d524adf1"
+        }
+      ],
+      "fixed_constants": {
+        "a1_proposal_k": 512,
+        "a2_k": 256,
+        "decision": "fixed public-prefix candidate scoring",
+        "public_prefix_calls": "measured by the predictor",
+        "candidate_simulations": "measured by the predictor",
+        "a2_fallback": false
+      }
+    },
+    {
+      "id": "historical_affine_ce_no_vocab_bias",
+      "track": "track_b",
+      "candidate_policy": "forbidden",
+      "rule": "fresh public-fit affine decoder without vocabulary bias; selected public-fit checkpoint step 1900",
+      "state": {
+        "path": "outputs/TRR-0004/fit_large_v1/historical_affine_ce_no_vocab_bias.safetensors",
+        "bytes": 16786108,
+        "sha256": "09c5b852373d8555b06508a79bb00c94041202702b61b121b35fa2b6f9f64e65",
+        "selected_step": 1900,
+        "fit_role": "fresh public Alpaca fit; no inherited retained A1 state"
+      },
+      "fixed_config_paths": [
+        {
+          "path": "experiments/TRR-0004/fit/registration.json",
+          "sha256": "637f43d89b15b2376d8b50f792db869a11d51efc1d0d6931fcd7b3e0f88641c7"
+        },
+        {
+          "path": "experiments/TRR-0004/track_b/contextual_extensions_registration.json",
+          "sha256": "f8e68b107ca1b678de1a7860e214ae05a94c1fc1ecf731c6d5fbd7d565604bf1"
+        },
+        {
+          "path": "outputs/TRR-0004/fit_large_v1/fit_evidence.json",
+          "sha256": "5564d86fb656a1c45c1602d47b9424a23255134a92c330733e49dd39e6fa8d91"
+        }
+      ],
+      "fixed_constants": {
+        "vocabulary_bias": false,
+        "public_prefix_calls": 0,
+        "candidate_simulations": 0,
+        "a2_fallback": false
+      }
+    },
+    {
+      "id": "causal_h_attention128",
+      "track": "track_b",
+      "candidate_policy": "forbidden",
+      "rule": "compact causal contextual decoder over activation history",
+      "state": {
+        "path": "outputs/TRR-0004/contextual_fit_v1/causal_h_attention128/selected.safetensors",
+        "bytes": 20990628,
+        "sha256": "e9f1b31b556937c71b860249e67c3e7406193fce18f2a641d8a8189eaaf38dfe",
+        "selected_step": 25,
+        "fit_role": "fresh public Alpaca extension fit"
+      },
+      "fixed_config_paths": [
+        {
+          "path": "experiments/TRR-0004/track_b/contextual_extensions_registration.json",
+          "sha256": "f8e68b107ca1b678de1a7860e214ae05a94c1fc1ecf731c6d5fbd7d565604bf1"
+        },
+        {
+          "path": "experiments/TRR-0004/track_b/contextual_fit_registration.json",
+          "sha256": "5dec23c0c0f71385e49da0ef1efdb5a52c8101ae510a89a4542415831fee4aae"
+        },
+        {
+          "path": "outputs/TRR-0004/contextual_fit_v1/run_evidence.json",
+          "sha256": "20b0d1532de93b58f0746a80f5b66780a3a6a2faf7aae794c45aa6f17fd8e468"
+        },
+        {
+          "path": "experiments/TRR-0004/evidence/contextual/argv/contextual_fit_v1_argv.json",
+          "sha256": "5a0d122a8013094276536639bb9f8baf2698169b43940ca883056caeab42aa8d"
+        }
+      ],
+      "fixed_constants": {
+        "context_width": 128,
+        "public_prefix_calls": 0,
+        "candidate_simulations": 0,
+        "a2_fallback": false
+      }
+    },
+    {
+      "id": "positionwise_mlp256",
+      "track": "track_b",
+      "candidate_policy": "forbidden",
+      "rule": "parameter-matched compact nonlinear decoder",
+      "state": {
+        "path": "outputs/TRR-0004/contextual_fit_v1/positionwise_mlp256/selected.safetensors",
+        "bytes": 20989748,
+        "sha256": "300d7184308b7a4d16bcd0a0ada612f64e5a4117e883b1f98af07e543ce1c05b",
+        "selected_step": 1200,
+        "fit_role": "fresh public Alpaca extension fit"
+      },
+      "fixed_config_paths": [
+        {
+          "path": "experiments/TRR-0004/track_b/contextual_extensions_registration.json",
+          "sha256": "f8e68b107ca1b678de1a7860e214ae05a94c1fc1ecf731c6d5fbd7d565604bf1"
+        },
+        {
+          "path": "experiments/TRR-0004/track_b/contextual_fit_registration.json",
+          "sha256": "5dec23c0c0f71385e49da0ef1efdb5a52c8101ae510a89a4542415831fee4aae"
+        },
+        {
+          "path": "outputs/TRR-0004/contextual_fit_v1/run_evidence.json",
+          "sha256": "20b0d1532de93b58f0746a80f5b66780a3a6a2faf7aae794c45aa6f17fd8e468"
+        },
+        {
+          "path": "experiments/TRR-0004/evidence/contextual/argv/contextual_fit_v1_argv.json",
+          "sha256": "5a0d122a8013094276536639bb9f8baf2698169b43940ca883056caeab42aa8d"
+        }
+      ],
+      "fixed_constants": {
+        "bottleneck_width": 256,
+        "public_prefix_calls": 0,
+        "candidate_simulations": 0,
+        "a2_fallback": false
+      }
+    }
+  ],
+  "runtime_assets": {
+    "public_embedding_table": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+      "bytes": 1050673488,
+      "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+    },
+    "public_prefix_checkpoint": {
+      "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f",
+      "bytes": 2471645608,
+      "sha256": "1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f"
+    },
+    "public_prefix_config": {
+      "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/3e3aaf51a035cb5092d9f6827a0dc074657ba88c",
+      "bytes": 877,
+      "sha256": "2febf68cea25bf4611be02b7536f2488a5ba523bb1134986e3610152abe74fdb"
+    }
+  },
+  "runtime_usage": {
+    "historical_alpaca_a1": "embedding table and retained lens only; no public model or prefix",
+    "frozen_a1_a2_k256": "public embedding table, retained lens, public prefix checkpoint/config",
+    "historical_affine_ce_no_vocab_bias": "embedding table and selected decoder state only; no public model or prefix",
+    "causal_h_attention128": "embedding table and selected decoder state only; no public model or prefix",
+    "positionwise_mlp256": "embedding table and selected decoder state only; no public model or prefix"
+  },
+  "execution_boundary": {
+    "records_selected": false,
+    "observations_generated": false,
+    "truth_opened": false,
+    "target_weights_available_to_reconstruction": false,
+    "public_lora_update_used_by_reconstruction": false,
+    "method_registration_must_be_created_after_source_freeze": true,
+    "selection_must_follow_this_marker": true
+  }
+}

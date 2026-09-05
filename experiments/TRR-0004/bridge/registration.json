@@ -1,0 +1,114 @@
+{
+  "claim_scope": "faithful retained historical A1 implementation control; no replacement claim",
+  "execution_policy": {
+    "canonical_evaluation": false,
+    "create_only_output": true,
+    "no_model_prefix_loaded": true,
+    "truth_opened": false
+  },
+  "fitting": {
+    "auxiliary_training": false,
+    "calibration": false,
+    "newly_fitted_state": false,
+    "retained_learned_state_required": true,
+    "retained_state_is_frozen": true,
+    "steps": 0
+  },
+  "fixed_algorithm": {
+    "bias_space": "hidden-space b added before vector normalization; no vocabulary bias",
+    "diagnostic_batch_size": 256,
+    "diagnostic_top_k": 512,
+    "embedding_preparation": "F.normalize(embedding.detach().float32, dim=-1), nan_to_num",
+    "hidden_size": 2048,
+    "logit_scale": "exp(s.float32)",
+    "output_dtype": "float32",
+    "prediction": "direct argmax; top-k is diagnostic only",
+    "projection": "activation.float32 @ W.float32.T + b.float32",
+    "projection_normalization": "torch.nn.functional.normalize(projected, dim=-1, eps=1e-12)",
+    "runtime_cast": "normalized_projected.to(normalized_embeddings.dtype)",
+    "runtime_embedding_input": "pre-normalized table; forward does not renormalize",
+    "weight_orientation": "rows are output hidden coordinates; activation is multiplied by W.T"
+  },
+  "method_id": "historical_inputlens_affine_bridge",
+  "public_embedding_input": {
+    "bytes": 1050673488,
+    "dtype": "torch.float32",
+    "hash_source": "experiments/TRR-0003/manifest.json; retained external resource",
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+    "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+    "shape": [
+      128256,
+      2048
+    ],
+    "tensor_key": "embeddings"
+  },
+  "public_validation_input": {
+    "bytes": 3932608,
+    "dtype": "torch.bfloat16",
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_validation_slice_v2/public_validation_observations.safetensors",
+    "positions": 40,
+    "records": 24,
+    "rows": 960,
+    "scope": "old registered public development validation only; no truth loaded by bridge diagnostic",
+    "sha256": "0a35e71995241ced0f3c4203d6fb54ddbaac90f2f49c6317cc03ead66bfaa6d6",
+    "shape": [
+      24,
+      40,
+      2048
+    ]
+  },
+  "resource_estimate": {
+    "checkpoint_state_bytes": 16785412,
+    "diagnostic_logits_bytes_per_batch_256": 131334144,
+    "estimated_gpu_working_set_upper_bound_bytes": "<=4 GiB conservative guard ceiling excluding other processes",
+    "gpu_free_margin_required_bytes": 8589934592,
+    "gpu_reserved_ceiling_bytes": 4294967296,
+    "host_rss_ceiling_bytes": 17179869184,
+    "preparation": "checkpoint and public table load; no fit",
+    "raw_embedding_tensor_bytes": 1050673152,
+    "wall_timeout_seconds": 120
+  },
+  "retained_state": {
+    "bytes": 16787653,
+    "checkpoint_keys": [
+      "sd",
+      "hidden",
+      "corpus"
+    ],
+    "corpus": "alpaca",
+    "exp_s": 35.06475067138672,
+    "file_sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742",
+    "hidden": 0,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/blind/reconstructor_input/public_a1_lens.pt",
+    "s_value": 3.5571963787078857,
+    "state_sha256": "98cd91c2dc4c5d8ac5a827672c027b7e6dad0d1acb3c45e387d118c9ad2ead04",
+    "tensors": {
+      "W": {
+        "dtype": "torch.float32",
+        "shape": [
+          2048,
+          2048
+        ]
+      },
+      "b": {
+        "dtype": "torch.float32",
+        "shape": [
+          2048
+        ]
+      },
+      "s": {
+        "dtype": "torch.float32",
+        "shape": []
+      }
+    }
+  },
+  "runtime_components": {
+    "candidate_simulations": 0,
+    "private_target_weights_required": false,
+    "public_embedding_table_required": true,
+    "public_prefix_calls": 0
+  },
+  "schema": "token-reconstruction.trr0004-historical-inputlens-registration.v1",
+  "status": "registered_diagnostic_only",
+  "task_id": "TRR-0004"
+}
