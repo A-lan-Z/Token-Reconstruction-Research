@@ -11,6 +11,8 @@ artifact before the private scorer is invoked.
 from __future__ import annotations
 
 import argparse
+import json
+import os
 from pathlib import Path
 import sys
 import time
@@ -92,6 +94,52 @@ PREDICTION_ARMS = (
 _ALLOWED_METHODS = set((*METHODS, CORRECTION_METHOD, *HISTORICAL_METHODS))
 
 
+PHASE_PROGRESS_SCHEMA = "token-reconstruction.trr-p01-phase-progress.v1"
+
+
+def _append_phase_progress(
+    path: Path,
+    *,
+    event: str,
+    method: str,
+    elapsed: float | None = None,
+    **details: Any,
+) -> None:
+    """Append one flushed phase event that survives a bounded termination."""
+
+    record: dict[str, Any] = {
+        "schema": PHASE_PROGRESS_SCHEMA,
+        "event": event,
+        "method": method,
+        "timestamp_utc": utc_now(),
+    }
+    if elapsed is not None:
+        record["elapsed_seconds"] = elapsed
+    record.update(details)
+    with path.open("a", encoding="utf-8", newline="\n") as handle:
+        handle.write(json.dumps(record, sort_keys=True, allow_nan=False))
+        handle.write("\n")
+        handle.flush()
+        os.fsync(handle.fileno())
+
+
+def _phase_start(path: Path, method: str) -> float:
+    _append_phase_progress(path, event="start", method=method)
+    return time.perf_counter()
+
+
+def _phase_end(path: Path, method: str, started: float, **details: Any) -> float:
+    elapsed = time.perf_counter() - started
+    _append_phase_progress(
+        path,
+        event="end",
+        method=method,
+        elapsed=elapsed,
+        **details,
+    )
+    return elapsed
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input-root", type=Path, required=True)
@@ -153,6 +201,8 @@ def _static_predictions(
     observations: torch.Tensor,
     table: PrototypeTable,
     embedding_table: torch.Tensor,
+    *,
+    progress_path: Path | None = None,
 ) -> tuple[dict[str, torch.Tensor], dict[str, torch.Tensor], dict[str, float]]:
     validate_contiguous_observations(observations)
     queries = observations[:, 1:, :].reshape(-1, HIDDEN_SIZE)
@@ -160,23 +210,47 @@ def _static_predictions(
     diagnostics: dict[str, torch.Tensor] = {}
     method_timings: dict[str, float] = {}
     for metric in METRICS:
+        method_name = f"boundary.{metric}"
+        if progress_path is not None:
+            _append_phase_progress(progress_path, event="start", method=method_name)
         method_started = time.perf_counter()
         nearest = table.nearest(queries, metric=metric)
         value = torch.full((observations.shape[0], SEQUENCE_TOKENS), BOS_TOKEN_ID, dtype=torch.int32)
         value[:, 1:] = nearest.predictions.view(observations.shape[0], SCORED_TOKENS).to(torch.int32)
-        result[f"boundary.{metric}"] = _prediction_matrix(value)
-        diagnostics[f"boundary.{metric}.scores"] = nearest.scores.view(observations.shape[0], SCORED_TOKENS)
-        diagnostics[f"boundary.{metric}.margins"] = nearest.margins.view(observations.shape[0], SCORED_TOKENS)
-        method_timings[f"boundary.{metric}"] = time.perf_counter() - method_started
+        result[method_name] = _prediction_matrix(value)
+        diagnostics[f"{method_name}.scores"] = nearest.scores.view(observations.shape[0], SCORED_TOKENS)
+        diagnostics[f"{method_name}.margins"] = nearest.margins.view(observations.shape[0], SCORED_TOKENS)
+        elapsed = time.perf_counter() - method_started
+        method_timings[method_name] = elapsed
+        if progress_path is not None:
+            _append_phase_progress(
+                progress_path,
+                event="end",
+                method=method_name,
+                elapsed=elapsed,
+                query_rows=int(queries.shape[0]),
+            )
     for metric in METRICS:
+        method_name = f"raw_embedding.{metric}"
+        if progress_path is not None:
+            _append_phase_progress(progress_path, event="start", method=method_name)
         method_started = time.perf_counter()
         nearest = nearest_embedding(queries, embedding_table, metric=metric)
         value = torch.full((observations.shape[0], SEQUENCE_TOKENS), BOS_TOKEN_ID, dtype=torch.int32)
         value[:, 1:] = nearest.predictions.view(observations.shape[0], SCORED_TOKENS).to(torch.int32)
-        result[f"raw_embedding.{metric}"] = _prediction_matrix(value)
-        diagnostics[f"raw_embedding.{metric}.scores"] = nearest.scores.view(observations.shape[0], SCORED_TOKENS)
-        diagnostics[f"raw_embedding.{metric}.margins"] = nearest.margins.view(observations.shape[0], SCORED_TOKENS)
-        method_timings[f"raw_embedding.{metric}"] = time.perf_counter() - method_started
+        result[method_name] = _prediction_matrix(value)
+        diagnostics[f"{method_name}.scores"] = nearest.scores.view(observations.shape[0], SCORED_TOKENS)
+        diagnostics[f"{method_name}.margins"] = nearest.margins.view(observations.shape[0], SCORED_TOKENS)
+        elapsed = time.perf_counter() - method_started
+        method_timings[method_name] = elapsed
+        if progress_path is not None:
+            _append_phase_progress(
+                progress_path,
+                event="end",
+                method=method_name,
+                elapsed=elapsed,
+                query_rows=int(queries.shape[0]),
+            )
     return result, diagnostics, method_timings
 
 
@@ -186,6 +260,7 @@ def _reference_predictions(
     table: PrototypeTable,
     *,
     device: torch.device,
+    progress_path: Path | None = None,
 ) -> tuple[dict[str, torch.Tensor], dict[str, torch.Tensor], dict[str, Any]]:
     predictions: dict[str, torch.Tensor] = {}
     diagnostics: dict[str, torch.Tensor] = {}
@@ -195,6 +270,9 @@ def _reference_predictions(
     probes = 0
     started = time.perf_counter()
     for metric in METRICS:
+        method_name = f"{CORRECTION_METHOD}.{metric}"
+        if progress_path is not None:
+            _append_phase_progress(progress_path, event="start", method=method_name)
         method_started = time.perf_counter()
         result = apply_reference_correction(
             observations=observations,
@@ -205,20 +283,29 @@ def _reference_predictions(
             bos_token_id=BOS_TOKEN_ID,
             device=device,
         )
-        predictions[f"{CORRECTION_METHOD}.{metric}"] = _prediction_matrix(result.predictions)
-        diagnostics[f"{CORRECTION_METHOD}.{metric}.scores"] = result.scores[:, 1:]
-        diagnostics[f"{CORRECTION_METHOD}.{metric}.margins"] = result.margins[:, 1:]
+        predictions[method_name] = _prediction_matrix(result.predictions)
+        diagnostics[f"{method_name}.scores"] = result.scores[:, 1:]
+        diagnostics[f"{method_name}.margins"] = result.margins[:, 1:]
         # Preserve the public probe offsets as a raw diagnostic artifact.
         # They are derived only from the public reference token and the
         # reconstructed-prefix cache, and are never used to route or score a
         # later arm.
-        diagnostics[f"{CORRECTION_METHOD}.{metric}.offsets"] = result.offsets
+        diagnostics[f"{method_name}.offsets"] = result.offsets
         # The fixed rule is run independently for each declared metric; counts
         # therefore make the two metric-specific public probe costs explicit.
         references += result.reference_evaluations
         persistent += result.persistent_cache_commits
         probes += result.probe_cache_commits
-        method_timings[f"{CORRECTION_METHOD}.{metric}"] = time.perf_counter() - method_started
+        elapsed = time.perf_counter() - method_started
+        method_timings[method_name] = elapsed
+        if progress_path is not None:
+            _append_phase_progress(
+                progress_path,
+                event="end",
+                method=method_name,
+                elapsed=elapsed,
+                reference_evaluations=int(result.reference_evaluations),
+            )
     # Each correction metric uses one scalar public-prefix call for the BOS
     # commit and one reference probe plus one reconstructed-token commit per
     # scored position.  The implementation is record-wise, so calls and
@@ -440,6 +527,10 @@ def main() -> int:
         device = torch.device("cuda:0")
     root = require_create_only_directory(args.output_root.resolve())
     started_utc = utc_now()
+    progress_path = root / "phase_progress.jsonl"
+    require_create_only_file(progress_path)
+    progress_path.open("x", encoding="utf-8", newline="\n").close()
+    preflight_started = _phase_start(progress_path, "preflight_resource_guard")
     estimate = _resource_estimate(
         prototype_path, historical_enabled=args.historical_lens is not None
     )
@@ -478,10 +569,11 @@ def main() -> int:
             },
         },
     )
+    preflight_elapsed = _phase_end(progress_path, "preflight_resource_guard", preflight_started)
     seed_everything(1701, device)
     phases: list[dict[str, Any]] = []
 
-    phase_started = time.perf_counter()
+    phase_started = _phase_start(progress_path, "load_public_prototype_table")
     table = PrototypeTable.load(
         prototype_path,
         expected_model_id=MODEL_ID,
@@ -495,9 +587,11 @@ def main() -> int:
         required_bytes=int(estimate["guard_required_bytes"]),
         allocation_bytes=0,
     )
-    phases.append({"phase": "load_public_prototype_table", "elapsed_seconds": time.perf_counter() - phase_started})
+    table_elapsed = _phase_end(progress_path, "load_public_prototype_table", phase_started)
+    phases.append({"phase": "preflight_resource_guard", "elapsed_seconds": preflight_elapsed})
+    phases.append({"phase": "load_public_prototype_table", "elapsed_seconds": table_elapsed})
 
-    phase_started = time.perf_counter()
+    phase_started = _phase_start(progress_path, "load_public_model_and_prefix")
     model = load_public_model(device=device, model_path=args.model_path)
     prefix = ContiguousPublicPrefix(model, CUT_DEPTH).to(device).eval()
     embedding_table = prefix.embed_tokens.weight.detach().cpu().contiguous()
@@ -506,13 +600,20 @@ def main() -> int:
         required_bytes=int(estimate["guard_required_bytes"]),
         allocation_bytes=0,
     )
-    phases.append({"phase": "load_public_model_and_prefix", "elapsed_seconds": time.perf_counter() - phase_started})
+    model_elapsed = _phase_end(progress_path, "load_public_model_and_prefix", phase_started)
+    phases.append({"phase": "load_public_model_and_prefix", "elapsed_seconds": model_elapsed})
 
-    phase_started = time.perf_counter()
+    phase_started = _phase_start(progress_path, "static_full_vocabulary_lookup")
     predictions, diagnostics, method_timings = _static_predictions(
-        observations, table, embedding_table
+        observations, table, embedding_table, progress_path=progress_path
     )
-    phases.append({"phase": "static_full_vocabulary_lookup", "elapsed_seconds": time.perf_counter() - phase_started})
+    static_elapsed = _phase_end(
+        progress_path,
+        "static_full_vocabulary_lookup",
+        phase_started,
+        query_rows=int(observations.shape[0]) * SCORED_TOKENS,
+    )
+    phases.append({"phase": "static_full_vocabulary_lookup", "elapsed_seconds": static_elapsed})
 
     optional_method_guard: dict[str, Any] | None = None
     if args.enable_correction or args.historical_lens is not None:
@@ -527,23 +628,40 @@ def main() -> int:
 
     correction_info: dict[str, Any] | None = None
     if args.enable_correction:
+        correction_started = _phase_start(progress_path, "reference_220_correction")
         correction_predictions, correction_diagnostics, correction_info = _reference_predictions(
-            observations, prefix, table, device=device
+            observations, prefix, table, device=device, progress_path=progress_path
         )
         predictions.update(correction_predictions)
         diagnostics.update(correction_diagnostics)
         method_timings.update(correction_info.get("method_seconds", {}))
-        phases.append({"phase": "reference_220_correction", "elapsed_seconds": correction_info["elapsed_seconds"]})
+        correction_elapsed = _phase_end(
+            progress_path,
+            "reference_220_correction",
+            correction_started,
+            methods=list(correction_predictions),
+        )
+        phases.append({"phase": "reference_220_correction", "elapsed_seconds": correction_elapsed})
 
     historical_info: dict[str, Any] | None = None
     if args.historical_lens is not None:
+        historical_started = _phase_start(progress_path, "historical_fixed_k256_geometry_port")
         historical_predictions, historical_diagnostics, historical_info = _historical_predictions(
-            observations, prefix, args.historical_lens.resolve(), device=device
+            observations,
+            prefix,
+            args.historical_lens.resolve(),
+            device=device,
         )
         predictions.update(historical_predictions)
         diagnostics.update(historical_diagnostics)
         method_timings.update(historical_info.get("method_seconds", {}))
-        phases.append({"phase": "historical_fixed_k256_geometry_port", "elapsed_seconds": historical_info["elapsed_seconds"]})
+        historical_elapsed = _phase_end(
+            progress_path,
+            "historical_fixed_k256_geometry_port",
+            historical_started,
+            methods=list(historical_predictions),
+        )
+        phases.append({"phase": "historical_fixed_k256_geometry_port", "elapsed_seconds": historical_elapsed})
 
     post_method_guard = resource_guard(
         device=device,
@@ -579,6 +697,7 @@ def main() -> int:
         },
         "prototype": file_record(prototype_path),
         "preflight": file_record(preflight_path),
+        "phase_progress": file_record(progress_path),
         "methods": list(predictions),
         "method_timings": method_timings,
         "records": int(observations.shape[0]),
@@ -649,6 +768,7 @@ def main() -> int:
         "predictions": file_record(prediction_path),
         "prediction_rows": file_record(rows_path),
         "lookup_diagnostics": file_record(scores_path),
+        "phase_progress": file_record(progress_path),
         "route": file_record(route_path),
     }
     hash_seconds = time.perf_counter() - hash_started
@@ -675,6 +795,7 @@ def main() -> int:
             "prediction_sha256": artifact_records["predictions"]["sha256"],
             "prediction_rows_sha256": artifact_records["prediction_rows"]["sha256"],
             "lookup_diagnostics_sha256": artifact_records["lookup_diagnostics"]["sha256"],
+            "phase_progress_sha256": artifact_records["phase_progress"]["sha256"],
             "truth_opened_before_finish": False,
         },
     )
