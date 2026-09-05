@@ -14,6 +14,7 @@ import hashlib
 import json
 from pathlib import Path
 from pathlib import PurePosixPath
+import re
 from typing import Any, Mapping, Sequence
 
 from safetensors import safe_open
@@ -25,6 +26,9 @@ from .freeze import FreezeError, require_truth_open_allowed
 
 PANEL_SCHEMA = "token-reconstruction.trr0003-footing-panel.v1"
 PREDICTION_SCHEMA = "token-reconstruction.trr0003-footing-prediction.v1"
+REGISTRATION_SCHEMA = "token-reconstruction.trr0003-method-registration.v1"
+TRUTH_BINDING_SCHEMA = "token-reconstruction.trr0003-truth-binding.v1"
+TRUTH_SIDECAR_SCHEMA = "token-reconstruction.trr0003-panel-truth-sidecar.v1"
 TASK_ID = "TRR-0003"
 MODEL_ID = "meta-llama/Llama-3.2-1B-Instruct"
 MODEL_REVISION = "9213176726f574b556790deb65791e0c5aa438b6"
@@ -89,6 +93,48 @@ def sha256_file(path: Path) -> str:
         for block in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
+
+
+def _canonical_json(value: Any) -> str:
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+
+
+def _json_sha256(value: Any) -> str:
+    return hashlib.sha256(_canonical_json(value).encode("utf-8")).hexdigest()
+
+
+def _valid_sha256(value: Any, *, description: str) -> str:
+    if not isinstance(value, str) or re.fullmatch(r"[0-9a-f]{64}", value) is None:
+        raise FootingError(f"{description} must be a lowercase SHA-256 digest")
+    return value
+
+
+def tensor_sha256(value: torch.Tensor) -> str:
+    """Hash tensor shape, dtype, and exact contiguous CPU bytes."""
+
+    if not isinstance(value, torch.Tensor):
+        raise FootingError("tensor digest input is not a tensor")
+    contiguous = value.detach().cpu().contiguous()
+    digest = hashlib.sha256()
+    digest.update(
+        _canonical_json({"shape": list(contiguous.shape), "dtype": str(contiguous.dtype)}).encode(
+            "utf-8"
+        )
+    )
+    digest.update(contiguous.view(torch.uint8).numpy().tobytes(order="C"))
+    return digest.hexdigest()
+
+
+def external_file_record(path: Path) -> dict[str, Any]:
+    """Record a private sidecar without requiring it to live in the repository."""
+
+    if path.is_symlink() or not path.is_file():
+        raise FootingError(f"private sidecar must be a regular file: {path}")
+    return {
+        "path": str(path.resolve()),
+        "bytes": int(path.stat().st_size),
+        "sha256": sha256_file(path),
+    }
 
 
 def file_record(path: Path, *, repository_root: Path) -> dict[str, Any]:
@@ -372,6 +418,474 @@ def load_all_cells(panel: Mapping[str, Any], *, repository_root: Path) -> tuple[
     )
 
 
+def _truth_tensor_valid(value: torch.Tensor, *, cell: PanelCell) -> None:
+    if tuple(value.shape) != cell.attention_mask.shape or value.dtype not in (
+        torch.int8,
+        torch.int16,
+        torch.int32,
+        torch.int64,
+    ):
+        raise FootingError(f"truth tensor geometry or dtype changed for {cell.cell_id}")
+    if value[:, 0].ne(BOS_TOKEN_ID).any().item():
+        raise FootingError(f"truth BOS token changed for {cell.cell_id}")
+    if value.lt(0).any().item() or value.ge(128256).any().item():
+        raise FootingError(f"truth token range changed for {cell.cell_id}")
+
+
+def _truth_digest_payload(
+    cells: Sequence[PanelCell], truth: Mapping[str, torch.Tensor]
+) -> dict[str, Any]:
+    expected_cells = tuple(cell.cell_id for cell in cells)
+    if tuple(truth) != expected_cells:
+        raise FootingError("truth cells are incomplete or out of order")
+    token_tensor_digests: dict[str, str] = {}
+    token_row_digests: dict[str, list[str]] = {}
+    shapes: dict[str, list[int]] = {}
+    record_ids: dict[str, list[str]] = {}
+    masks: dict[str, list[list[int]]] = {}
+    positions: dict[str, list[list[int]]] = {}
+    for cell in cells:
+        value = truth.get(cell.cell_id)
+        if value is None:
+            raise FootingError(f"truth cell is absent: {cell.cell_id}")
+        _truth_tensor_valid(value, cell=cell)
+        # Token IDs are integer semantics; canonicalize their dtype before
+        # committing bytes so int32/int64 sidecar serialization is equivalent.
+        canonical = value.to(torch.int64)
+        token_tensor_digests[cell.cell_id] = tensor_sha256(canonical)
+        token_row_digests[cell.cell_id] = [tensor_sha256(row) for row in canonical]
+        shapes[cell.cell_id] = list(value.shape)
+        record_ids[cell.cell_id] = list(cell.record_ids)
+        masks[cell.cell_id] = cell.attention_mask.to(torch.long).tolist()
+        positions[cell.cell_id] = cell.position_ids.to(torch.long).tolist()
+    return {
+        "cell_order": list(expected_cells),
+        "record_ids": record_ids,
+        "attention_mask": masks,
+        "position_ids": positions,
+        "token_shapes": shapes,
+        "token_tensor_sha256": token_tensor_digests,
+        "token_row_digests": token_row_digests,
+    }
+
+
+def build_truth_binding(
+    *,
+    panel_sha256: str,
+    cells: Sequence[PanelCell],
+    truth: Mapping[str, torch.Tensor],
+    preparation: Mapping[str, Any],
+    sidecar: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Build the private-sidecar commitment in a separate preparation role.
+
+    The returned object contains only hashes, geometry, and public panel record
+    identifiers.  It can be copied into the frozen registration/receipt while
+    the sidecar and its token values remain private.
+    """
+
+    _valid_sha256(panel_sha256, description="truth binding panel hash")
+    if not isinstance(preparation, Mapping):
+        raise FootingError("truth preparation record is absent")
+    preparation_record = dict(preparation)
+    preparation_sha256 = _valid_sha256(
+        preparation_record.get("sha256"), description="truth preparation hash"
+    )
+    preparation_path = preparation_record.get("path")
+    if not isinstance(preparation_path, str) or not preparation_path:
+        raise FootingError("truth preparation path is absent")
+    if not isinstance(preparation_record.get("bytes"), int) or preparation_record["bytes"] < 0:
+        raise FootingError("truth preparation byte count is invalid")
+    if not isinstance(sidecar, Mapping):
+        raise FootingError("truth sidecar record is absent")
+    sidecar_record = dict(sidecar)
+    sidecar_path = sidecar_record.get("path")
+    if not isinstance(sidecar_path, str) or not sidecar_path:
+        raise FootingError("truth sidecar path is absent")
+    if not isinstance(sidecar_record.get("bytes"), int) or sidecar_record["bytes"] < 0:
+        raise FootingError("truth sidecar byte count is invalid")
+    _valid_sha256(sidecar_record.get("sha256"), description="truth sidecar hash")
+
+    payload = _truth_digest_payload(cells, truth)
+    cell_order = payload["cell_order"]
+    record_ids = payload["record_ids"]
+    masks = payload["attention_mask"]
+    positions = payload["position_ids"]
+    token_shapes = payload["token_shapes"]
+    token_tensor_digests = payload["token_tensor_sha256"]
+    token_row_digests = payload["token_row_digests"]
+    return {
+        "schema": TRUTH_BINDING_SCHEMA,
+        "task_id": TASK_ID,
+        "panel_sha256": panel_sha256,
+        "preparation": preparation_record,
+        "preparation_sha256": preparation_sha256,
+        "sidecar": sidecar_record,
+        "cell_order_json": _canonical_json(cell_order),
+        "cell_order_sha256": _json_sha256(cell_order),
+        "record_ids_sha256": _json_sha256(record_ids),
+        "attention_mask_sha256": _json_sha256(masks),
+        "position_ids_sha256": _json_sha256(positions),
+        "token_shapes_json": _canonical_json(token_shapes),
+        "token_tensor_sha256_json": _canonical_json(token_tensor_digests),
+        "token_row_digests_json": _canonical_json(token_row_digests),
+        "token_order_sha256": _json_sha256(
+            {"cell_order": cell_order, "row_digests": token_row_digests}
+        ),
+        "required_tensor_keys_json": _canonical_json(
+            [
+                key
+                for cell_id in cell_order
+                for key in (
+                    f"{cell_id}__token_ids",
+                    f"{cell_id}__attention_mask",
+                    f"{cell_id}__position_ids",
+                )
+            ]
+        ),
+        "paired_conditions": True,
+    }
+
+
+def truth_sidecar_metadata(binding: Mapping[str, Any]) -> dict[str, str]:
+    """Return safetensors string metadata for a prepared sidecar."""
+
+    if binding.get("schema") != TRUTH_BINDING_SCHEMA or binding.get("task_id") != TASK_ID:
+        raise FootingError("truth binding identity changed")
+    fields = (
+        "panel_sha256",
+        "preparation_sha256",
+        "cell_order_json",
+        "cell_order_sha256",
+        "record_ids_sha256",
+        "attention_mask_sha256",
+        "position_ids_sha256",
+        "token_shapes_json",
+        "token_tensor_sha256_json",
+        "token_row_digests_json",
+        "token_order_sha256",
+        "required_tensor_keys_json",
+    )
+    result = {
+        "schema": TRUTH_SIDECAR_SCHEMA,
+        "task_id": TASK_ID,
+    }
+    for field in fields:
+        value = binding.get(field)
+        if not isinstance(value, str) or not value:
+            raise FootingError(f"truth binding field is absent: {field}")
+        result[field] = value
+    return result
+
+
+def _validate_truth_binding_contract(
+    binding: Mapping[str, Any], *, panel_sha256: str, cells: Sequence[PanelCell]
+) -> None:
+    if not isinstance(binding, Mapping):
+        raise FootingError("truth binding is absent")
+    if binding.get("schema") != TRUTH_BINDING_SCHEMA or binding.get("task_id") != TASK_ID:
+        raise FootingError("truth binding identity changed")
+    if binding.get("panel_sha256") != panel_sha256:
+        raise FootingError("truth binding panel changed")
+    _valid_sha256(binding.get("preparation_sha256"), description="truth preparation hash")
+    preparation = binding.get("preparation")
+    if not isinstance(preparation, Mapping):
+        raise FootingError("truth preparation record is absent")
+    if preparation.get("sha256") != binding.get("preparation_sha256"):
+        raise FootingError("truth preparation binding changed")
+    sidecar = binding.get("sidecar")
+    if not isinstance(sidecar, Mapping):
+        raise FootingError("truth sidecar record is absent")
+    if not isinstance(sidecar.get("path"), str) or not sidecar["path"]:
+        raise FootingError("truth sidecar path is absent")
+    if not isinstance(sidecar.get("bytes"), int) or sidecar["bytes"] < 0:
+        raise FootingError("truth sidecar byte count is invalid")
+    _valid_sha256(sidecar.get("sha256"), description="truth sidecar hash")
+    expected_cells = tuple(cell.cell_id for cell in cells)
+    if binding.get("cell_order_json") != _canonical_json(list(expected_cells)):
+        raise FootingError("truth cell order binding changed")
+    if binding.get("cell_order_sha256") != _json_sha256(list(expected_cells)):
+        raise FootingError("truth cell order digest changed")
+    for field in (
+        "record_ids_sha256",
+        "attention_mask_sha256",
+        "position_ids_sha256",
+        "token_order_sha256",
+    ):
+        _valid_sha256(binding.get(field), description=f"truth {field}")
+    # JSON encoded digest maps are checked for exact cell coverage and digest
+    # shape here; their values are checked against opened tensors later.
+    for field in ("token_shapes_json", "token_tensor_sha256_json", "token_row_digests_json"):
+        value = binding.get(field)
+        if not isinstance(value, str):
+            raise FootingError(f"truth binding field is absent: {field}")
+        try:
+            parsed = json.loads(value)
+        except json.JSONDecodeError as exc:
+            raise FootingError(f"truth binding field is invalid JSON: {field}") from exc
+        # The canonical JSON encoder sorts object keys.  Cell order is
+        # committed separately above; maps only need exact cell coverage here.
+        if not isinstance(parsed, Mapping) or set(parsed) != set(expected_cells):
+            raise FootingError(f"truth binding cell coverage changed: {field}")
+    required = binding.get("required_tensor_keys_json")
+    if not isinstance(required, str):
+        raise FootingError("truth required tensor key binding is absent")
+    try:
+        required_keys = json.loads(required)
+    except json.JSONDecodeError as exc:
+        raise FootingError("truth required tensor key binding is invalid JSON") from exc
+    expected_keys = [
+        key
+        for cell_id in expected_cells
+        for key in (
+            f"{cell_id}__token_ids",
+            f"{cell_id}__attention_mask",
+            f"{cell_id}__position_ids",
+        )
+    ]
+    if required_keys != expected_keys:
+        raise FootingError("truth required tensor keys changed")
+
+
+def validate_truth_sidecar(
+    path: Path,
+    *,
+    cells: Sequence[PanelCell],
+    truth_binding: Mapping[str, Any],
+) -> dict[str, torch.Tensor]:
+    """Validate a prepared sidecar after the public freeze gate has passed."""
+
+    panel_sha256 = str(truth_binding.get("panel_sha256", ""))
+    _validate_truth_binding_contract(truth_binding, panel_sha256=panel_sha256, cells=cells)
+    sidecar = truth_binding["sidecar"]
+    if path.is_symlink() or not path.is_file():
+        raise FootingError(f"truth sidecar is unavailable: {path}")
+    if str(path.resolve()) != str(Path(str(sidecar["path"])).resolve()):
+        raise FootingError("truth sidecar path binding changed")
+    if int(path.stat().st_size) != int(sidecar["bytes"]) or sha256_file(path) != sidecar["sha256"]:
+        raise FootingError("truth sidecar hash or size changed")
+    try:
+        with safe_open(path, framework="pt", device="cpu") as handle:
+            metadata = handle.metadata() or {}
+            if not isinstance(metadata, Mapping):
+                raise FootingError("truth sidecar metadata is malformed")
+            expected_metadata = truth_sidecar_metadata(truth_binding)
+            if any(metadata.get(key) != value for key, value in expected_metadata.items()):
+                raise FootingError("truth sidecar preparation or row digest binding changed")
+            expected_keys = set(json.loads(truth_binding["required_tensor_keys_json"]))
+            if set(handle.keys()) != expected_keys:
+                raise FootingError("truth sidecar tensor set changed")
+            result: dict[str, torch.Tensor] = {}
+            for cell in cells:
+                token_ids = handle.get_tensor(f"{cell.cell_id}__token_ids").to(torch.long)
+                mask = handle.get_tensor(f"{cell.cell_id}__attention_mask").to(torch.long)
+                positions = handle.get_tensor(f"{cell.cell_id}__position_ids").to(torch.long)
+                _truth_tensor_valid(token_ids, cell=cell)
+                if not torch.equal(mask, cell.attention_mask.to(torch.long)):
+                    raise FootingError(f"truth mask pairing changed for {cell.cell_id}")
+                if not torch.equal(positions, cell.position_ids.to(torch.long)):
+                    raise FootingError(f"truth position/token order pairing changed for {cell.cell_id}")
+                result[cell.cell_id] = token_ids
+    except FootingError:
+        raise
+    except (OSError, RuntimeError, ValueError) as exc:
+        raise FootingError(f"truth sidecar is unreadable: {path}") from exc
+
+    digest_payload = _truth_digest_payload(cells, result)
+    if digest_payload["token_tensor_sha256"] != json.loads(truth_binding["token_tensor_sha256_json"]):
+        raise FootingError("truth token digest changed")
+    if digest_payload["token_row_digests"] != json.loads(truth_binding["token_row_digests_json"]):
+        raise FootingError("truth row/token digest changed")
+    if digest_payload["token_shapes"] != json.loads(truth_binding["token_shapes_json"]):
+        raise FootingError("truth token geometry digest changed")
+    if _json_sha256(
+        {"cell_order": digest_payload["cell_order"], "row_digests": digest_payload["token_row_digests"]}
+    ) != truth_binding["token_order_sha256"]:
+        raise FootingError("truth token order digest changed")
+    if _json_sha256(digest_payload["record_ids"]) != truth_binding["record_ids_sha256"]:
+        raise FootingError("truth record ID digest changed")
+    if _json_sha256(digest_payload["attention_mask"]) != truth_binding["attention_mask_sha256"]:
+        raise FootingError("truth mask digest changed")
+    if _json_sha256(digest_payload["position_ids"]) != truth_binding["position_ids_sha256"]:
+        raise FootingError("truth position digest changed")
+    for style in STYLE_ORDER:
+        base = result[f"{style}__public_base"]
+        shifted = result[f"{style}__public_lora_2601"]
+        if not torch.equal(base, shifted):
+            raise FootingError(f"paired truth token order changed for {style}")
+    return result
+
+
+def _validate_binding_shape(binding: Mapping[str, Any], *, description: str) -> None:
+    if not isinstance(binding, Mapping):
+        raise FootingError(f"{description} is absent")
+    for group in ("panel", "method_state", "code"):
+        values = binding.get(group) if group != "panel" else [binding.get(group)]
+        if not isinstance(values, list) or not values or any(
+            not isinstance(value, Mapping) for value in values
+        ):
+            raise FootingError(f"{description} has no valid {group} binding")
+    if "code_commit" in binding and (
+        not isinstance(binding["code_commit"], str)
+        or re.fullmatch(r"[0-9a-f]{40}", binding["code_commit"]) is None
+    ):
+        raise FootingError(f"{description} code commit binding is invalid")
+
+
+def load_method_registry(
+    path: Path,
+    *,
+    repository_root: Path,
+    panel: Mapping[str, Any],
+    panel_path: Path,
+    require_truth_binding: bool = True,
+) -> dict[str, Any]:
+    """Load the task-local full method registration before common scoring.
+
+    A registry is a small integration manifest.  It declares every comparator,
+    Track A, and Track B method that must be present in the merged output and
+    gives the source bundle layout used by :func:`merge` in the comparator
+    runner.  It is intentionally distinct from the permanent dual-benchmark
+    registry because these methods remain exploratory for TRR-0003.
+    """
+
+    if path.is_symlink() or not path.is_file():
+        raise FootingError(f"method registry is unavailable: {path}")
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise FootingError(f"method registry is invalid JSON: {path}") from exc
+    if not isinstance(value, Mapping):
+        raise FootingError("method registry root must be an object")
+    if value.get("schema") != REGISTRATION_SCHEMA or value.get("task_id") != TASK_ID:
+        raise FootingError("method registry identity changed")
+    if value.get("status") not in (
+        "EXPLORATORY_METHOD_BUNDLE_REGISTRATION",
+        "MERGED_EXPLORATORY_METHOD_BUNDLE_REGISTRATION",
+    ):
+        raise FootingError("method registry status is not declared")
+    root = repository_root.resolve()
+    panel_record = value.get("panel")
+    if not isinstance(panel_record, Mapping):
+        raise FootingError("method registry panel binding is absent")
+    actual_panel_record = file_record(panel_path, repository_root=root)
+    if dict(panel_record) != actual_panel_record:
+        raise FootingError("method registry panel binding changed")
+    methods = value.get("methods")
+    if not isinstance(methods, list) or not methods:
+        raise FootingError("method registry has no methods")
+    method_ids: list[str] = []
+    normalized_methods: list[dict[str, Any]] = []
+    bindings: dict[str, Mapping[str, Any]] = {}
+    candidate_policies: dict[str, str] = {}
+    for row in methods:
+        if not isinstance(row, Mapping):
+            raise FootingError("method registry method row is malformed")
+        method_id = row.get("id")
+        if (
+            not isinstance(method_id, str)
+            or not method_id
+            or "/" in method_id
+            or "\\" in method_id
+            or method_id in (".", "..")
+        ):
+            raise FootingError("method registry method ID is unsafe")
+        if method_id in method_ids:
+            raise FootingError("method registry method IDs are duplicated")
+        track = row.get("track")
+        if track not in ("comparator", "track_a", "track_b"):
+            raise FootingError(f"method registry track is invalid: {method_id}")
+        binding = row.get("binding")
+        _validate_binding_shape(binding, description=f"method registry binding for {method_id}")
+        candidate_policy = row.get("candidate_policy", "optional")
+        if candidate_policy not in ("required", "optional", "forbidden"):
+            raise FootingError(f"method registry candidate policy is invalid: {method_id}")
+        bundle = row.get("bundle")
+        if not isinstance(bundle, Mapping):
+            raise FootingError(f"method registry bundle is absent: {method_id}")
+        layout = bundle.get("layout")
+        if layout == "canonical":
+            relative = _safe_relative(bundle.get("root"), description=f"{method_id} bundle")
+            bundle_root = root / relative
+            if bundle_root.is_symlink() or not bundle_root.is_dir():
+                raise FootingError(f"method registry bundle root is unavailable: {relative}")
+            normalized_bundle = {"layout": layout, "root": relative}
+        elif layout == "archive_cells":
+            cells = bundle.get("cells")
+            if not isinstance(cells, Mapping) or set(cells) != set(expected_cell_ids()):
+                raise FootingError(f"method registry archive cell set is incomplete: {method_id}")
+            normalized_cells: dict[str, dict[str, Any]] = {}
+            for cell_id in expected_cell_ids():
+                descriptor = cells.get(cell_id)
+                if not isinstance(descriptor, Mapping):
+                    raise FootingError(f"method registry archive cell is malformed: {cell_id}")
+                relative = _safe_relative(
+                    descriptor.get("path"), description=f"{method_id} archive cell"
+                )
+                archive_path = root / relative
+                if archive_path.is_symlink() or not archive_path.is_file():
+                    raise FootingError(f"method registry archive is unavailable: {relative}")
+                tensor_key = descriptor.get("tensor_key")
+                if not isinstance(tensor_key, str) or not tensor_key.startswith("prediction."):
+                    raise FootingError(f"method registry archive tensor key is invalid: {cell_id}")
+                normalized_cells[cell_id] = {
+                    "path": relative,
+                    "tensor_key": tensor_key,
+                }
+                for field in ("input_tensor_sha256", "archive_sha256"):
+                    if field in descriptor:
+                        _valid_sha256(
+                            descriptor[field],
+                            description=f"method registry {field} for {cell_id}",
+                        )
+                        normalized_cells[cell_id][field] = descriptor[field]
+                if "archive_sha256" in descriptor and sha256_file(archive_path) != descriptor["archive_sha256"]:
+                    raise FootingError(f"method registry archive hash changed: {relative}")
+                mask_padded = descriptor.get("mask_padded", False)
+                if not isinstance(mask_padded, bool):
+                    raise FootingError(f"method registry mask_padded flag is invalid: {cell_id}")
+                normalized_cells[cell_id]["mask_padded"] = mask_padded
+            normalized_bundle = {"layout": layout, "cells": normalized_cells}
+        else:
+            raise FootingError(f"method registry bundle layout is invalid: {method_id}")
+        method_ids.append(method_id)
+        bindings[method_id] = dict(binding)
+        candidate_policies[method_id] = candidate_policy
+        normalized_methods.append(
+            {
+                "id": method_id,
+                "track": track,
+                "candidate_policy": candidate_policy,
+                "binding": dict(binding),
+                "bundle": normalized_bundle,
+            }
+        )
+    declared_ids = value.get("method_ids", method_ids)
+    if declared_ids != method_ids:
+        raise FootingError("method registry method order or completeness changed")
+    truth_binding = value.get("truth_binding")
+    if require_truth_binding:
+        _validate_truth_binding_contract(
+            truth_binding, panel_sha256=actual_panel_record["sha256"], cells=load_all_cells(panel, repository_root=root)
+        )
+    elif truth_binding is not None:
+        _validate_truth_binding_contract(
+            truth_binding, panel_sha256=actual_panel_record["sha256"], cells=load_all_cells(panel, repository_root=root)
+        )
+    return {
+        "schema": REGISTRATION_SCHEMA,
+        "task_id": TASK_ID,
+        "status": value.get("status"),
+        "path": path.resolve(),
+        "method_ids": tuple(method_ids),
+        "methods": tuple(normalized_methods),
+        "bindings": bindings,
+        "candidate_policies": candidate_policies,
+        "truth_binding": dict(truth_binding) if isinstance(truth_binding, Mapping) else None,
+        "panel": dict(panel_record),
+    }
+
+
 def make_binding(
     *,
     panel_path: Path,
@@ -492,7 +1006,7 @@ def validate_prediction_artifact(
             if metadata["cell_id"] != cell.cell_id or metadata["style"] != cell.style or metadata["condition"] != cell.condition:
                 raise FootingError("prediction cell binding changed")
             method_id = metadata["method_id"]
-            if not method_id or "/" in method_id or method_id in (".", ".."):
+            if not method_id or "/" in method_id or "\\" in method_id or method_id in (".", ".."):
                 raise FootingError("prediction method ID is invalid")
             if expected_method_id is not None and method_id != expected_method_id:
                 raise FootingError("prediction method ID changed")
@@ -550,11 +1064,16 @@ def validate_prediction_artifact(
         raise
     except (OSError, RuntimeError, ValueError) as exc:
         raise FootingError(f"prediction artifact is unreadable: {path}") from exc
-    return {"method_id": method_id, "binding": binding, "metadata": metadata}
+    return {
+        "method_id": method_id,
+        "binding": binding,
+        "metadata": metadata,
+        "tensor_fields": tuple(sorted(keys)),
+    }
 
 
 def expected_prediction_path(output_root: Path, *, cell: PanelCell, method_id: str) -> Path:
-    if not method_id or "/" in method_id or method_id in (".", ".."):
+    if not method_id or "/" in method_id or "\\" in method_id or method_id in (".", ".."):
         raise FootingError("method ID is not a safe path component")
     return output_root / cell.style / cell.condition / f"{method_id}.safetensors"
 
@@ -567,6 +1086,7 @@ def validate_complete_prediction_set(
     repository_root: Path,
     method_ids: Sequence[str],
     expected_bindings: Mapping[str, Mapping[str, Any]] | None = None,
+    candidate_policies: Mapping[str, str] | None = None,
 ) -> list[dict[str, Any]]:
     """Check completeness and integrity for every method/style/condition cell."""
 
@@ -585,16 +1105,26 @@ def validate_complete_prediction_set(
             path = expected_prediction_path(output_root, cell=cell, method_id=method_id)
             expected_paths.add(path.resolve())
             binding = expected_bindings[method_id]
-            validated.append(
-                validate_prediction_artifact(
-                    path,
-                    cell=cell,
-                    panel_sha256=panel_sha,
-                    expected_method_id=method_id,
-                    expected_binding=binding,
-                    repository_root=repository_root,
-                )
+            artifact = validate_prediction_artifact(
+                path,
+                cell=cell,
+                panel_sha256=panel_sha,
+                expected_method_id=method_id,
+                expected_binding=binding,
+                repository_root=repository_root,
             )
+            if candidate_policies is not None:
+                if set(candidate_policies) != set(method_ids):
+                    raise FootingError("candidate policy registration is incomplete")
+                policy = candidate_policies[method_id]
+                if policy not in ("required", "optional", "forbidden"):
+                    raise FootingError(f"candidate policy is invalid: {method_id}")
+                has_candidates = "candidates" in artifact["tensor_fields"]
+                if policy == "required" and not has_candidates:
+                    raise FootingError(f"candidate tensors are required: {method_id}")
+                if policy == "forbidden" and has_candidates:
+                    raise FootingError(f"candidate tensors are forbidden: {method_id}")
+            validated.append(artifact)
     actual_paths = {
         path.resolve()
         for path in output_root.rglob("*.safetensors")
@@ -617,6 +1147,9 @@ def validate_before_truth(
     panel_path: Path,
     method_ids: Sequence[str],
     expected_bindings: Mapping[str, Mapping[str, Any]] | None = None,
+    candidate_policies: Mapping[str, str] | None = None,
+    registration_path: Path | None = None,
+    truth_binding: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Run every public completeness/binding check before truth may be read."""
 
@@ -630,6 +1163,8 @@ def validate_before_truth(
         raise FootingError(f"freeze receipt rejected: {exc}") from exc
     if expected_bindings is None or set(expected_bindings) != set(method_ids):
         raise FootingError("truth gate requires one binding for every expected method")
+    if candidate_policies is not None and set(candidate_policies) != set(method_ids):
+        raise FootingError("truth gate requires one candidate policy for every expected method")
     try:
         output_relative = output_root.resolve().relative_to(repository_root.resolve()).as_posix()
     except ValueError as exc:
@@ -643,6 +1178,30 @@ def validate_before_truth(
         raise FootingError("freeze receipt does not bind the requested panel")
     if metadata.get("method_ids") != list(method_ids):
         raise FootingError("freeze receipt method registration changed")
+    if registration_path is not None:
+        registration_record = file_record(
+            registration_path, repository_root=repository_root
+        )
+        if metadata.get("registration_sha256") != registration_record["sha256"]:
+            raise FootingError("freeze receipt method registry binding changed")
+    if registration_path is not None and truth_binding is None:
+        raise FootingError("common truth gate requires a truth binding")
+    if truth_binding is not None:
+        cells = load_all_cells(panel, repository_root=repository_root)
+        _validate_truth_binding_contract(
+            truth_binding,
+            panel_sha256=sha256_file(panel_path),
+            cells=cells,
+        )
+        if metadata.get("truth_binding") != dict(truth_binding):
+            raise FootingError("freeze receipt truth binding changed")
+        sidecar = truth_binding["sidecar"]
+        if str(truth_path.resolve()) != str(Path(str(sidecar["path"])).resolve()):
+            raise FootingError("truth sidecar path binding changed")
+        if truth_path.is_symlink() or not truth_path.is_file():
+            raise FootingError("truth sidecar is unavailable")
+        if int(truth_path.stat().st_size) != int(sidecar["bytes"]):
+            raise FootingError("truth sidecar size binding changed")
     validate_complete_prediction_set(
         output_root,
         panel=panel,
@@ -650,5 +1209,6 @@ def validate_before_truth(
         repository_root=repository_root,
         method_ids=method_ids,
         expected_bindings=expected_bindings,
+        candidate_policies=candidate_policies,
     )
     return payload

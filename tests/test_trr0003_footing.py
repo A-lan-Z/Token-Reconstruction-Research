@@ -10,6 +10,7 @@ from safetensors.torch import save_file
 from token_reconstruction.footing import (
     BOS_TOKEN_ID,
     CONDITION_ORDER,
+    REGISTRATION_SCHEMA,
     CUT_DEPTH,
     HIDDEN_SIZE,
     MODEL_ID,
@@ -18,14 +19,19 @@ from token_reconstruction.footing import (
     PREDICTION_SCHEMA,
     STYLE_ORDER,
     FootingError,
+    build_truth_binding,
+    external_file_record,
     expected_cell_ids,
     expected_prediction_path,
     file_record,
     load_all_cells,
+    load_method_registry,
     load_panel,
     make_binding,
     sha256_file,
+    truth_sidecar_metadata,
     validate_before_truth,
+    validate_truth_sidecar,
     validate_complete_prediction_set,
     validate_prediction_artifact,
 )
@@ -405,5 +411,254 @@ def test_comparator_score_does_not_call_truth_loader_on_gate_failure(tmp_path: P
         "result": root / "result.json",
     })()
     with pytest.raises((FootingError, compare.ComparatorError), match="incomplete|unavailable|freeze"):
+        compare.score(args)
+    assert called is False
+
+
+def _truth_sidecar_fixture(panel_path: Path, panel: dict, root: Path):
+    """Create a deterministic private-sidecar fixture and its commitment."""
+    cells = load_all_cells(panel, repository_root=root)
+    prep = root / "private" / "truth_preparation.json"
+    prep.parent.mkdir(exist_ok=True)
+    _write_json(prep, {"task_id": "TRR-0003", "role": "private sidecar preparation", "version": 1})
+    prep_record = external_file_record(prep)
+    sidecar = root / "private" / "panel_truth.safetensors"
+    truth = {}
+    tensors = {}
+    for cell in cells:
+        value = torch.ones(cell.attention_mask.shape, dtype=torch.int32)
+        value[:, 0] = BOS_TOKEN_ID
+        truth[cell.cell_id] = value
+        tensors[f"{cell.cell_id}__token_ids"] = value
+        tensors[f"{cell.cell_id}__attention_mask"] = cell.attention_mask.to(torch.int32)
+        tensors[f"{cell.cell_id}__position_ids"] = cell.position_ids.to(torch.int32)
+    placeholder = {"path": str(sidecar.resolve()), "bytes": 0, "sha256": "0" * 64}
+    binding = build_truth_binding(
+        panel_sha256=sha256_file(panel_path),
+        cells=cells,
+        truth=truth,
+        preparation=prep_record,
+        sidecar=placeholder,
+    )
+    save_file(tensors, str(sidecar), metadata=truth_sidecar_metadata(binding))
+    # The sidecar metadata intentionally omits its own hash.  Record the
+    # committed bytes after the single write; rewriting a safetensors file can
+    # change metadata ordering even when its logical metadata is unchanged.
+    binding["sidecar"] = external_file_record(sidecar)
+    assert external_file_record(sidecar) == binding["sidecar"]
+    return binding, truth, sidecar
+
+
+def _registry_fixture(
+    *,
+    panel_path: Path,
+    output: Path,
+    root: Path,
+    bindings: dict[str, dict],
+    truth_binding: dict | None = None,
+    methods: tuple[str, ...] = METHODS,
+) -> Path:
+    rows = []
+    tracks = ("comparator", "track_a", "track_b")
+    for index, method in enumerate(methods):
+        rows.append(
+            {
+                "id": method,
+                "track": tracks[index % len(tracks)],
+                "candidate_policy": "optional",
+                "binding": bindings[method],
+                "bundle": {"layout": "canonical", "root": output.relative_to(root).as_posix()},
+            }
+        )
+    payload = {
+        "schema": REGISTRATION_SCHEMA,
+        "task_id": "TRR-0003",
+        "status": "EXPLORATORY_METHOD_BUNDLE_REGISTRATION",
+        "panel": file_record(panel_path, repository_root=root),
+        "method_ids": list(methods),
+        "methods": rows,
+    }
+    if truth_binding is not None:
+        payload["truth_binding"] = truth_binding
+    path = root / "method_registry.json"
+    _write_json(path, payload)
+    return path
+
+
+def test_candidate_policy_allows_standalone_without_candidates(tmp_path: Path) -> None:
+    panel_path, panel, root = _panel_fixture(tmp_path)
+    output, bindings, _ = _prediction_set(panel_path=panel_path, panel=panel, root=root)
+    policies = {method: "optional" for method in METHODS}
+    validate_complete_prediction_set(
+        output,
+        panel=panel,
+        panel_path=panel_path,
+        repository_root=root,
+        method_ids=METHODS,
+        expected_bindings=bindings,
+        candidate_policies=policies,
+    )
+    required = dict(policies)
+    required[METHODS[0]] = "required"
+    with pytest.raises(FootingError, match="candidate tensors are required"):
+        validate_complete_prediction_set(
+            output,
+            panel=panel,
+            panel_path=panel_path,
+            repository_root=root,
+            method_ids=METHODS,
+            expected_bindings=bindings,
+            candidate_policies=required,
+        )
+
+
+def test_registered_merge_validates_all_bundles_and_writes_common_matrix(tmp_path: Path) -> None:
+    import importlib.util
+    import sys
+
+    panel_path, panel, root = _panel_fixture(tmp_path)
+    source, bindings, _ = _prediction_set(panel_path=panel_path, panel=panel, root=root)
+    registration = _registry_fixture(
+        panel_path=panel_path,
+        output=source,
+        root=root,
+        bindings=bindings,
+    )
+    module_path = Path("scripts/trr0003_footing_compare.py").resolve()
+    spec = importlib.util.spec_from_file_location("trr0003_footing_compare_merge_test", module_path)
+    assert spec is not None and spec.loader is not None
+    compare = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = compare
+    spec.loader.exec_module(compare)
+    merged = root / "merged"
+    args = type("Args", (), {"repository_root": root, "panel": panel_path, "registration": registration, "output": merged})()
+    assert compare.merge(args) == 0
+    assert sha256_file(merged / "registration.json") == sha256_file(registration)
+    embedded = load_method_registry(
+        merged / "registration.json",
+        repository_root=root,
+        panel=panel,
+        panel_path=panel_path,
+        require_truth_binding=False,
+    )
+    validate_complete_prediction_set(
+        merged,
+        panel=panel,
+        panel_path=panel_path,
+        repository_root=root,
+        method_ids=embedded["method_ids"],
+        expected_bindings=embedded["bindings"],
+        candidate_policies=embedded["candidate_policies"],
+    )
+    assert (merged / "merge_evidence.json").is_file()
+
+
+def test_truth_sidecar_commitment_checks_paired_masks_and_token_order(tmp_path: Path) -> None:
+    panel_path, panel, root = _panel_fixture(tmp_path)
+    binding, truth, sidecar = _truth_sidecar_fixture(panel_path, panel, root)
+    cells = load_all_cells(panel, repository_root=root)
+    loaded = validate_truth_sidecar(sidecar, cells=cells, truth_binding=binding)
+    assert all(torch.equal(loaded[cell.cell_id], truth[cell.cell_id]) for cell in cells)
+
+    # Preserve metadata and token digests, but alter a paired public mask.  The
+    # updated sidecar hash proves that the test reaches the post-gate pairing
+    # check rather than failing merely on stale file bytes.
+    bad_mask = cells[0].attention_mask.to(torch.int32).clone()
+    bad_mask[0, 1] = 0
+    tensors = {}
+    for cell in cells:
+        tensors[f"{cell.cell_id}__token_ids"] = truth[cell.cell_id]
+        tensors[f"{cell.cell_id}__attention_mask"] = (
+            bad_mask if cell.cell_id == cells[0].cell_id else cell.attention_mask.to(torch.int32)
+        )
+        tensors[f"{cell.cell_id}__position_ids"] = cell.position_ids.to(torch.int32)
+    save_file(tensors, str(sidecar), metadata=truth_sidecar_metadata(binding))
+    bad_binding = dict(binding)
+    bad_binding["sidecar"] = external_file_record(sidecar)
+    with pytest.raises(FootingError, match="truth mask pairing changed"):
+        validate_truth_sidecar(sidecar, cells=cells, truth_binding=bad_binding)
+
+
+def test_common_registered_gate_blocks_incomplete_other_track_before_truth_read(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import importlib.util
+    import sys
+
+    panel_path, panel, root = _panel_fixture(tmp_path)
+    output, bindings, _ = _prediction_set(panel_path=panel_path, panel=panel, root=root)
+    binding, _, truth = _truth_sidecar_fixture(panel_path, panel, root)
+    extra_method = "other_track_missing"
+    extra_state = root / f"{extra_method}.safetensors"
+    extra_state.write_bytes(b"extra")
+    code = root / "runner.py"
+    full_bindings = dict(bindings)
+    full_bindings[extra_method] = make_binding(
+        panel_path=panel_path,
+        repository_root=root,
+        method_state_paths=[extra_state],
+        code_paths=[code],
+        code_commit=COMMIT,
+    )
+    methods = METHODS + (extra_method,)
+    registration = _registry_fixture(
+        panel_path=panel_path,
+        output=output,
+        root=root,
+        bindings=full_bindings,
+        truth_binding=binding,
+        methods=methods,
+    )
+    # The embedded registration is part of the frozen common root.  Its source
+    # root is the same root, so the fourth method is deliberately missing from
+    # the Cartesian prediction set.
+    (output / "bindings.json").write_text(json.dumps(full_bindings, sort_keys=True) + "\n", encoding="utf-8")
+    shutil = __import__("shutil")
+    shutil.copyfile(registration, output / "registration.json")
+    plan = root / "plan.json"
+    plan.write_text("{\"task_id\":\"TRR-0003\"}\n", encoding="utf-8")
+    receipt = root / "receipt.json"
+    create_freeze_receipt(
+        repository_root=root,
+        frozen_root=output,
+        plan_path=plan,
+        receipt_path=receipt,
+        preregistration_commit=COMMIT,
+        created_utc="2026-09-05T00:00:00Z",
+        metadata={
+            "task_id": "TRR-0003",
+            "panel_sha256": sha256_file(panel_path),
+            "method_ids": list(methods),
+            "output_contract": "style__condition__method Cartesian complete",
+            "truth_opened": False,
+            "registration_sha256": sha256_file(output / "registration.json"),
+            "candidate_policies": {method: "optional" for method in methods},
+            "truth_binding": binding,
+        },
+    )
+    module_path = Path("scripts/trr0003_footing_compare.py").resolve()
+    spec = importlib.util.spec_from_file_location("trr0003_footing_compare_incomplete_test", module_path)
+    assert spec is not None and spec.loader is not None
+    compare = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = compare
+    spec.loader.exec_module(compare)
+    called = False
+
+    def fail_truth(*args, **kwargs):
+        nonlocal called
+        called = True
+        raise AssertionError("truth loader was called before complete cross-track validation")
+
+    monkeypatch.setattr(compare, "_truth_for_cells", fail_truth)
+    args = type("Args", (), {
+        "repository_root": root,
+        "output": output,
+        "panel": panel_path,
+        "receipt": receipt,
+        "registration": None,
+        "truth": truth,
+        "result": root / "result.json",
+    })()
+    with pytest.raises((FootingError, compare.ComparatorError), match="incomplete|unavailable"):
         compare.score(args)
     assert called is False

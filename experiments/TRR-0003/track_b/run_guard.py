@@ -19,9 +19,14 @@ FROZEN = (
     ROOT / "src/token_reconstruction/standalone_decoder.py",
     ROOT / "src/token_reconstruction/inverse.py",
     ROOT / "src/token_reconstruction/experiment_runtime.py",
+    ROOT / "src/token_reconstruction/footing.py",
     ROOT / "experiments/TRR-0003/track_b/plan.json",
     ROOT / "experiments/TRR-0003/track_b/preflight.json",
     ROOT / "experiments/TRR-0003/track_b/prepare_validation_slice.py",
+    ROOT / "experiments/TRR-0003/track_b/checkpoint_selection_amendment.json",
+    ROOT / "experiments/TRR-0003/track_b/replay_selected.py",
+    ROOT / "experiments/TRR-0003/track_b/predict_cells.py",
+    ROOT / "experiments/TRR-0003/track_b/analyze_token_transfer.py",
     ROOT / "experiments/TRR-0003/track_b/run_guard.py",
 )
 

@@ -14,10 +14,11 @@ from datetime import datetime, timezone
 import importlib.util
 import json
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import time
-from typing import Any, Callable, Mapping
+from typing import Any, Mapping
 
 from safetensors import safe_open
 from safetensors.torch import load_file, save_file
@@ -44,16 +45,23 @@ from token_reconstruction.footing import (
     MODEL_ID,
     MODEL_REVISION,
     PREDICTION_SCHEMA,
+    REGISTRATION_SCHEMA,
+    TRUTH_BINDING_SCHEMA,
     STYLE_ORDER,
+    TASK_ID,
     FootingError,
     expected_prediction_path,
     file_record,
     load_all_cells,
     load_panel,
+    load_method_registry,
     make_binding,
     sha256_file,
+    tensor_sha256,
+    validate_truth_sidecar,
     validate_complete_prediction_set,
     validate_before_truth,
+    validate_prediction_artifact,
 )
 from token_reconstruction.inverse import load_inverse
 
@@ -193,8 +201,8 @@ def _write_prediction(
     cell: Any,
     method_id: str,
     predictions: torch.Tensor,
-    candidates: torch.Tensor,
-    candidate_scores: torch.Tensor,
+    candidates: torch.Tensor | None = None,
+    candidate_scores: torch.Tensor | None = None,
     binding: Mapping[str, Any],
     panel_sha: str,
 ) -> None:
@@ -202,7 +210,13 @@ def _write_prediction(
         raise ComparatorError(f"prediction artifact already exists: {path}")
     if predictions.shape != cell.attention_mask.shape:
         raise ComparatorError(f"prediction geometry changed for {cell.cell_id}")
-    if candidates.shape[:2] != predictions.shape or candidate_scores.shape != candidates.shape:
+    if (candidates is None) != (candidate_scores is None):
+        raise ComparatorError(f"candidate tensors must be supplied together for {cell.cell_id}")
+    if candidates is not None and (
+        candidates.shape[:2] != predictions.shape
+        or candidate_scores is None
+        or candidate_scores.shape != candidates.shape
+    ):
         raise ComparatorError(f"candidate geometry changed for {cell.cell_id}")
     path.parent.mkdir(parents=True, exist_ok=True)
     metadata = {
@@ -224,15 +238,13 @@ def _write_prediction(
         ),
         "binding_json": json.dumps(dict(binding), sort_keys=True),
     }
-    save_file(
-        {
-            "predictions": predictions.detach().cpu().to(torch.int64).contiguous(),
-            "candidates": candidates.detach().cpu().to(torch.int64).contiguous(),
-            "candidate_scores": candidate_scores.detach().cpu().to(torch.float32).contiguous(),
-        },
-        str(path),
-        metadata=metadata,
-    )
+    tensors: dict[str, torch.Tensor] = {
+        "predictions": predictions.detach().cpu().to(torch.int64).contiguous(),
+    }
+    if candidates is not None and candidate_scores is not None:
+        tensors["candidates"] = candidates.detach().cpu().to(torch.int64).contiguous()
+        tensors["candidate_scores"] = candidate_scores.detach().cpu().to(torch.float32).contiguous()
+    save_file(tensors, str(path), metadata=metadata)
 
 
 def _load_public_model(
@@ -261,6 +273,244 @@ def _load_public_model(
         "model_preparation_seconds": time.perf_counter() - started,
         "model": _public_model_binding(snapshot),
     }
+
+
+def _registry_path(args: argparse.Namespace, output: Path) -> Path | None:
+    supplied = getattr(args, "registration", None)
+    if supplied is not None:
+        return Path(supplied).resolve()
+    embedded = output / "registration.json"
+    return embedded if embedded.is_file() and not embedded.is_symlink() else None
+
+
+def _evaluation_contract(
+    *,
+    args: argparse.Namespace,
+    root: Path,
+    panel: Mapping[str, Any],
+    panel_path: Path,
+    output: Path,
+    require_truth_binding: bool,
+) -> tuple[tuple[str, ...], dict[str, Mapping[str, Any]], dict[str, str] | None, dict[str, Any] | None, Path | None]:
+    registration_path = _registry_path(args, output)
+    if registration_path is None:
+        bindings_raw = _load_json(output / "bindings.json")
+        if set(bindings_raw) != set(METHOD_IDS):
+            raise ComparatorError("comparator binding set is incomplete")
+        return (
+            METHOD_IDS,
+            {method: bindings_raw[method] for method in METHOD_IDS},
+            None,
+            None,
+            None,
+        )
+    registry = load_method_registry(
+        registration_path,
+        repository_root=root,
+        panel=panel,
+        panel_path=panel_path,
+        require_truth_binding=require_truth_binding,
+    )
+    embedded = output / "registration.json"
+    if not embedded.is_file() or embedded.is_symlink():
+        raise ComparatorError("merged common output does not contain registration.json")
+    if sha256_file(embedded) != sha256_file(registration_path):
+        raise ComparatorError("embedded method registry differs from supplied registry")
+    bindings_raw = _load_json(output / "bindings.json")
+    if dict(bindings_raw) != dict(registry["bindings"]):
+        raise ComparatorError("merged common binding set differs from method registry")
+    return (
+        tuple(registry["method_ids"]),
+        dict(registry["bindings"]),
+        dict(registry["candidate_policies"]),
+        registry,
+        embedded,
+    )
+
+
+def _archive_prediction(
+    *,
+    archive_path: Path,
+    tensor_key: str,
+    method_id: str,
+    cell: Any,
+    expected_input_sha256: str | None,
+    mask_padded: bool,
+) -> tuple[torch.Tensor, dict[str, Any]]:
+    if archive_path.is_symlink() or not archive_path.is_file():
+        raise ComparatorError(f"registered archive is unavailable: {archive_path}")
+    try:
+        with safe_open(archive_path, framework="pt", device="cpu") as handle:
+            metadata = handle.metadata() or {}
+            if not isinstance(metadata, Mapping):
+                raise ComparatorError(f"archive metadata is malformed: {archive_path}")
+            if tensor_key not in set(handle.keys()):
+                raise ComparatorError(f"registered archive tensor is absent: {tensor_key}")
+            declared_methods = metadata.get("method_ids")
+            if declared_methods is not None:
+                try:
+                    methods = json.loads(declared_methods)
+                except json.JSONDecodeError as exc:
+                    raise ComparatorError("archive method registration is invalid") from exc
+                if not isinstance(methods, list) or method_id not in methods:
+                    raise ComparatorError(f"archive method registration omits {method_id}")
+            prediction = handle.get_tensor(tensor_key).to(torch.long).contiguous()
+            archive_metadata = {str(key): str(value) for key, value in metadata.items()}
+    except ComparatorError:
+        raise
+    except (OSError, RuntimeError, ValueError) as exc:
+        raise ComparatorError(f"registered archive is unreadable: {archive_path}") from exc
+    if tuple(prediction.shape) != tuple(cell.attention_mask.shape):
+        raise ComparatorError(f"archive prediction geometry changed for {cell.cell_id}")
+    if prediction[:, 0].ne(BOS_TOKEN_ID).any().item():
+        raise ComparatorError(f"archive prediction BOS changed for {cell.cell_id}")
+    if prediction.lt(0).any().item() or prediction.ge(128256).any().item():
+        raise ComparatorError(f"archive prediction token range changed for {cell.cell_id}")
+    if not mask_padded:
+        raise ComparatorError(
+            f"archive bundle must declare mask_padded=true for {cell.cell_id}"
+        )
+    prediction = prediction.clone()
+    prediction[~cell.attention_mask.to(torch.bool)] = -1
+    if expected_input_sha256 is None:
+        expected_input_sha256 = archive_metadata.get("input_sha256")
+    if expected_input_sha256 is not None:
+        actual_input_sha256 = tensor_sha256(cell.activations)
+        if expected_input_sha256 != actual_input_sha256:
+            raise ComparatorError(f"archive input binding changed for {cell.cell_id}")
+    return prediction, {
+        "path": str(archive_path),
+        "tensor_key": tensor_key,
+        "archive_metadata": archive_metadata,
+        "mask_padded": True,
+        "input_tensor_sha256": tensor_sha256(cell.activations),
+    }
+
+
+def merge(args: argparse.Namespace) -> int:
+    """Materialize one complete common matrix from all registered method bundles."""
+
+    root = args.repository_root.resolve()
+    panel_path = args.panel.resolve()
+    panel = load_panel(panel_path, repository_root=root)
+    registration_path = args.registration.resolve()
+    registry = load_method_registry(
+        registration_path,
+        repository_root=root,
+        panel=panel,
+        panel_path=panel_path,
+        require_truth_binding=False,
+    )
+    output = args.output.resolve()
+    if output.exists() or output.is_symlink():
+        if output.is_symlink() or not output.is_dir() or any(output.iterdir()):
+            raise ComparatorError("merged output must be a new empty directory")
+    else:
+        output.mkdir(parents=True)
+    cells = load_all_cells(panel, repository_root=root)
+    panel_sha = sha256_file(panel_path)
+    source_evidence: list[dict[str, Any]] = []
+    for method in registry["methods"]:
+        method_id = str(method["id"])
+        binding = method["binding"]
+        bundle = method["bundle"]
+        layout = bundle["layout"]
+        for cell in cells:
+            target = expected_prediction_path(output, cell=cell, method_id=method_id)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            if layout == "canonical":
+                source_root = root / bundle["root"]
+                source = expected_prediction_path(
+                    source_root, cell=cell, method_id=method_id
+                )
+                validate_prediction_artifact(
+                    source,
+                    cell=cell,
+                    panel_sha256=panel_sha,
+                    expected_method_id=method_id,
+                    expected_binding=binding,
+                    repository_root=root,
+                )
+                if source.resolve() == target.resolve():
+                    raise ComparatorError("registered source and merged destination coincide")
+                shutil.copyfile(source, target)
+                source_evidence.append(
+                    {
+                        "method_id": method_id,
+                        "cell_id": cell.cell_id,
+                        "layout": layout,
+                        "source": str(source.relative_to(root).as_posix()),
+                        "source_sha256": sha256_file(source),
+                    }
+                )
+            else:
+                descriptor = bundle["cells"][cell.cell_id]
+                prediction, archive_evidence = _archive_prediction(
+                    archive_path=root / descriptor["path"],
+                    tensor_key=descriptor["tensor_key"],
+                    method_id=method_id,
+                    cell=cell,
+                    expected_input_sha256=descriptor.get("input_tensor_sha256"),
+                    mask_padded=bool(descriptor.get("mask_padded", False)),
+                )
+                _write_prediction(
+                    path=target,
+                    cell=cell,
+                    method_id=method_id,
+                    predictions=prediction,
+                    binding=binding,
+                    panel_sha=panel_sha,
+                )
+                source_evidence.append(
+                    {
+                        "method_id": method_id,
+                        "cell_id": cell.cell_id,
+                        "layout": layout,
+                        "source": archive_evidence,
+                    }
+                )
+    bindings_path = output / "bindings.json"
+    _write_exclusive(bindings_path, registry["bindings"])
+    # Preserve the exact registered bytes inside the merged root.  The byte
+    # identity is then covered by the freeze receipt and can be checked again
+    # when the scorer is invoked with the original registration path.
+    embedded_registration = output / "registration.json"
+    if embedded_registration.exists() or embedded_registration.is_symlink():
+        raise ComparatorError("merged registration path already exists")
+    shutil.copyfile(registration_path, embedded_registration)
+    # Re-load the embedded copy and validate every method together before any
+    # truth path is accepted by freeze/score.
+    embedded_registry = load_method_registry(
+        output / "registration.json",
+        repository_root=root,
+        panel=panel,
+        panel_path=panel_path,
+        require_truth_binding=False,
+    )
+    validate_complete_prediction_set(
+        output,
+        panel=panel,
+        panel_path=panel_path,
+        repository_root=root,
+        method_ids=embedded_registry["method_ids"],
+        expected_bindings=embedded_registry["bindings"],
+        candidate_policies=embedded_registry["candidate_policies"],
+    )
+    _write_exclusive(
+        output / "merge_evidence.json",
+        {
+            "schema": "token-reconstruction.trr0003-common-merge-evidence.v1",
+            "task_id": TASK_ID,
+            "registration": file_record(registration_path, repository_root=root),
+            "embedded_registration": file_record(output / "registration.json", repository_root=root),
+            "method_ids": list(embedded_registry["method_ids"]),
+            "source_bundles": source_evidence,
+            "candidate_policies": embedded_registry["candidate_policies"],
+            "truth_opened": False,
+        },
+    )
+    print(json.dumps({"output": str(output), "methods": list(embedded_registry["method_ids"]), "cells": len(cells)}, indent=2))
+    return 0
 
 
 def reconstruct(args: argparse.Namespace) -> int:
@@ -410,7 +660,7 @@ def reconstruct(args: argparse.Namespace) -> int:
                 "model": model_evidence["model"],
                 "record_batch_size": 4,
                 "public_prefix_calls": 0,
-                "binding_sha256": sha256_file(path),
+                "artifact_sha256": sha256_file(path),
             }
             _write_exclusive(output / cell.style / cell.condition / f"{method_id}.evidence.json", evidence)
     validate_complete_prediction_set(
@@ -449,16 +699,38 @@ def freeze(args: argparse.Namespace) -> int:
     plan_path = args.plan.resolve()
     receipt = args.receipt.resolve()
     panel = load_panel(panel_path, repository_root=root)
-    bindings = _load_json(output / "bindings.json")
-    expected = {method: bindings[method] for method in METHOD_IDS}
+    method_ids, expected, candidate_policies, registry, embedded_registration = _evaluation_contract(
+        args=args,
+        root=root,
+        panel=panel,
+        panel_path=panel_path,
+        output=output,
+        require_truth_binding=True,
+    )
     validate_complete_prediction_set(
         output,
         panel=panel,
         panel_path=panel_path,
         repository_root=root,
-        method_ids=METHOD_IDS,
+        method_ids=method_ids,
         expected_bindings=expected,
+        candidate_policies=candidate_policies,
     )
+    metadata: dict[str, Any] = {
+        "task_id": "TRR-0003",
+        "panel_sha256": sha256_file(panel_path),
+        "method_ids": list(method_ids),
+        "output_contract": "style__condition__method Cartesian complete",
+        "truth_opened": False,
+    }
+    if registry is not None:
+        if embedded_registration is None:
+            raise ComparatorError("registered freeze is missing embedded registration")
+        metadata["registration_sha256"] = sha256_file(embedded_registration)
+        metadata["candidate_policies"] = dict(candidate_policies or {})
+        if registry.get("truth_binding") is None:
+            raise ComparatorError("registered freeze is missing truth binding")
+        metadata["truth_binding"] = registry["truth_binding"]
     commit = args.preregistration_commit or _current_commit()
     payload = create_freeze_receipt(
         repository_root=root,
@@ -467,22 +739,31 @@ def freeze(args: argparse.Namespace) -> int:
         receipt_path=receipt,
         preregistration_commit=commit,
         created_utc=utc_now(),
-        metadata={
-            "task_id": "TRR-0003",
-            "panel_sha256": sha256_file(panel_path),
-            "method_ids": list(METHOD_IDS),
-            "output_contract": "style__condition__method Cartesian complete",
-            "truth_opened": False,
-        },
+        metadata=metadata,
     )
     verify_freeze_receipt(receipt, repository_root=root)
-    print(json.dumps({"receipt": str(receipt), "entries": len(payload["entries"])}, indent=2))
+    print(json.dumps({"receipt": str(receipt), "entries": len(payload["entries"]), "methods": list(method_ids)}, indent=2))
     return 0
 
 
-def _truth_for_cells(path: Path, cells: tuple[Any, ...]) -> dict[str, torch.Tensor]:
-    """Load the private sidecar; callers invoke this only after the gate."""
+def _truth_for_cells(
+    path: Path,
+    cells: tuple[Any, ...],
+    truth_binding: Mapping[str, Any] | None = None,
+) -> dict[str, torch.Tensor]:
+    """Load and validate the private sidecar only after the public gate."""
 
+    if truth_binding is not None:
+        try:
+            return validate_truth_sidecar(
+                path,
+                cells=cells,
+                truth_binding=truth_binding,
+            )
+        except FootingError as exc:
+            raise ComparatorError(f"private sidecar commitment rejected: {exc}") from exc
+    # Legacy comparator-only invocation remains available for the historical
+    # footing tests.  Common registered scoring always supplies a binding.
     if path.is_symlink() or not path.is_file():
         raise ComparatorError(f"private sidecar unavailable: {path}")
     state = load_file(path, device="cpu")
@@ -493,7 +774,10 @@ def _truth_for_cells(path: Path, cells: tuple[Any, ...]) -> dict[str, torch.Tens
     for cell in cells:
         tensor = state[f"{cell.cell_id}__token_ids"]
         if tuple(tensor.shape) != cell.attention_mask.shape or tensor.dtype not in (
-            torch.int8, torch.int16, torch.int32, torch.int64
+            torch.int8,
+            torch.int16,
+            torch.int32,
+            torch.int64,
         ):
             raise ComparatorError(f"private sidecar geometry changed for {cell.cell_id}")
         if tensor.lt(0).any().item() or tensor.ge(128256).any().item():
@@ -509,8 +793,15 @@ def score(args: argparse.Namespace) -> int:
     output = args.output.resolve()
     panel_path = args.panel.resolve()
     panel = load_panel(panel_path, repository_root=root)
-    bindings = _load_json(output / "bindings.json")
-    expected = {method: bindings[method] for method in METHOD_IDS}
+    method_ids, expected, candidate_policies, registry, embedded_registration = _evaluation_contract(
+        args=args,
+        root=root,
+        panel=panel,
+        panel_path=panel_path,
+        output=output,
+        require_truth_binding=True,
+    )
+    truth_binding = registry.get("truth_binding") if registry is not None else None
     receipt_payload = validate_before_truth(
         receipt_path=args.receipt.resolve(),
         repository_root=root,
@@ -518,19 +809,26 @@ def score(args: argparse.Namespace) -> int:
         output_root=output,
         panel=panel,
         panel_path=panel_path,
-        method_ids=METHOD_IDS,
+        method_ids=method_ids,
         expected_bindings=expected,
+        candidate_policies=candidate_policies,
+        registration_path=embedded_registration,
+        truth_binding=truth_binding,
     )
     # This is the first private read in this process.  Keep it after the gate.
     cells = load_all_cells(panel, repository_root=root)
-    truth = _truth_for_cells(args.truth.resolve(), cells)
+    truth = _truth_for_cells(args.truth.resolve(), cells, truth_binding)
     rows: dict[str, Any] = {}
     for cell in cells:
-        for method_id in METHOD_IDS:
+        for method_id in method_ids:
             path = expected_prediction_path(output, cell=cell, method_id=method_id)
             with safe_open(path, framework="pt", device="cpu") as handle:
                 predictions = handle.get_tensor("predictions").to(torch.long)
-                candidates = handle.get_tensor("candidates").to(torch.long)
+                candidates = (
+                    handle.get_tensor("candidates").to(torch.long)
+                    if "candidates" in set(handle.keys())
+                    else None
+                )
             metrics, per_record = score_predictions(
                 predictions=predictions,
                 truth=truth[cell.cell_id],
@@ -558,17 +856,24 @@ def score(args: argparse.Namespace) -> int:
             "receipt_metadata": receipt_payload.get("metadata"),
         },
         "panel": file_record(panel_path, repository_root=root),
+        "method_ids": list(method_ids),
+        "candidate_policies": candidate_policies,
         "comparison_status": {
             "canonical_new_methods": "NOT_RUN",
             "dual_benchmark": "INCOMPLETE",
             "claim_scope": "pilot diagnostic only",
         },
         "cells": rows,
-        "truth_sidecar": {"path": str(args.truth.resolve()), "opened_after_gate": True},
+        "truth_sidecar": {
+            "path": str(args.truth.resolve()),
+            "opened_after_gate": True,
+            "commitment_bound": truth_binding is not None,
+        },
     }
     _write_exclusive(args.result.resolve(), result)
-    print(json.dumps({"result": str(args.result.resolve()), "cells": len(rows)}, indent=2))
+    print(json.dumps({"result": str(args.result.resolve()), "cells": len(rows), "methods": list(method_ids)}, indent=2))
     return 0
+
 
 
 def parse_args() -> argparse.Namespace:
@@ -583,18 +888,25 @@ def parse_args() -> argparse.Namespace:
     recon.add_argument("--lens", type=Path, default=DEFAULT_LENS)
     recon.add_argument("--inverse", type=Path, default=DEFAULT_INVERSE)
     recon.add_argument("--seed", type=int, default=3003)
+    merge_parser = sub.add_parser("merge", help="merge all registered method bundles")
+    merge_parser.add_argument("--repository-root", type=Path, default=Path("."))
+    merge_parser.add_argument("--panel", type=Path, default=Path("experiments/TRR-0003/footing/panel.json"))
+    merge_parser.add_argument("--registration", type=Path, required=True)
+    merge_parser.add_argument("--output", type=Path, required=True)
     frz = sub.add_parser("freeze")
     frz.add_argument("--repository-root", type=Path, default=Path("."))
     frz.add_argument("--panel", type=Path, default=Path("experiments/TRR-0003/footing/panel.json"))
     frz.add_argument("--plan", type=Path, default=Path("experiments/TRR-0003/footing/plan.json"))
     frz.add_argument("--output", type=Path, required=True)
     frz.add_argument("--receipt", type=Path, required=True)
+    frz.add_argument("--registration", type=Path)
     frz.add_argument("--preregistration-commit", default=None)
     scr = sub.add_parser("score")
     scr.add_argument("--repository-root", type=Path, default=Path("."))
     scr.add_argument("--panel", type=Path, default=Path("experiments/TRR-0003/footing/panel.json"))
     scr.add_argument("--output", type=Path, required=True)
     scr.add_argument("--receipt", type=Path, required=True)
+    scr.add_argument("--registration", type=Path)
     scr.add_argument("--truth", type=Path, required=True)
     scr.add_argument("--result", type=Path, required=True)
     return parser.parse_args()
@@ -605,6 +917,8 @@ def main() -> int:
     try:
         if args.command == "reconstruct":
             return reconstruct(args)
+        if args.command == "merge":
+            return merge(args)
         if args.command == "freeze":
             return freeze(args)
         return score(args)
