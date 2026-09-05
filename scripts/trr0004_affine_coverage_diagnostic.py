@@ -81,6 +81,12 @@ def _recorded_artifact(path: Path, expected: Any, *, label: str) -> dict[str, An
     return actual
 
 
+def _coverage_json_path(path: Path) -> str:
+    """Encode a filesystem path as a JSON scalar in coverage evidence."""
+
+    return str(path)
+
+
 def _git_commit(root: Path) -> str | None:
     try:
         result = subprocess.run(
@@ -416,7 +422,7 @@ def run(args: argparse.Namespace) -> int:
             "script": _file_record(Path(__file__), label="coverage diagnostic script"),
             "fit_evidence": _file_record(evidence_path, label="fit evidence"),
             "data_manifest": _file_record(manifest_path, label="fit data manifest"),
-            "selected_state": selected_path,
+            "selected_state": _coverage_json_path(selected_path),
         },
         "binding": {
             "method_id": args.method_id,
