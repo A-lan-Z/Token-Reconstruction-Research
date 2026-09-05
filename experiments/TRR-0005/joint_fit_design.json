@@ -1,0 +1,94 @@
+{
+  "schema": "token-reconstruction.trr0005-joint-fit-design.v1",
+  "task_id": "TRR-0005",
+  "status": "APPROVED_JOINT_FROM_SCRATCH_SOURCE_CONFIGURATION",
+  "parent_head": "6e8b683e404c0acb70cd59b7dd6d6868b2061f61",
+  "question": "Does broader public coverage remove the need for extra activation context?",
+  "distributions": [
+    {
+      "id": "original",
+      "label": "original-like public fit",
+      "source_contract_id": "original_like_alpaca_v1",
+      "fit_record_count": 1200,
+      "sequence_length": 192,
+      "post_bos_positions": 124371
+    },
+    {
+      "id": "enriched",
+      "label": "coverage-enriched public fit",
+      "source_contract_id": "coverage_mix_v1",
+      "fit_record_count": 1200,
+      "sequence_length": 192,
+      "post_bos_positions": 124371
+    }
+  ],
+  "methods": [
+    {
+      "state": "joint_full_affine",
+      "id_suffix": "joint_full_affine",
+      "path": "trainable W, b, and log scale",
+      "context": "none"
+    },
+    {
+      "state": "affine_causal_h_attention128",
+      "id_suffix": "affine_causal_h_attention128",
+      "path": "joint affine plus one-head causal attention over H_0 through H_i",
+      "context": "earlier and current activation vectors"
+    },
+    {
+      "state": "affine_trained_diagonal_attention128",
+      "id_suffix": "affine_trained_diagonal_attention128",
+      "path": "joint affine plus the identical attention path with a strict diagonal mask",
+      "context": "current H_i only"
+    }
+  ],
+  "initialization": {
+    "seed": 4005,
+    "affine": {"W": "identity", "b": "zero", "s": 3.0},
+    "attention_qkv": "deterministic stream seeded 4005",
+    "attention_output": "zero weight and zero bias",
+    "diagonal_control": "same Q/K/V/output parameterization; Q/K gradients are zero because each valid query has one allowed key",
+    "capacity_disclosure": "diagonal and causal parameter counts match, but diagonal Q/K are inactive and equal effective capacity is not claimed"
+  },
+  "training": {
+    "joint_base_updates": true,
+    "same_schedule_within_distribution": true,
+    "record_batch_size": 8,
+    "sequence_length": 192,
+    "post_bos_loss_draws_per_step": 512,
+    "steps": 3000,
+    "total_post_bos_exposures_per_arm": 1536000,
+    "sampler_seed": 4005,
+    "optimizer": "AdamW",
+    "learning_rate": 0.001,
+    "weight_decay": 0.0,
+    "scheduler": "CosineAnnealingLR",
+    "gradient_clip_norm": 1.0,
+    "selection_checkpoints": [0, 25, 50, 75, 100, 150, 200, "300..3000 by 100"],
+    "selection": "earliest maximum public validation style-balanced accuracy, including step 0",
+    "validation": "reused common TRR-0004 public Alpaca/Pile panel; public labels only",
+    "final_fit_evaluation": "one complete fitting-distribution evaluation at the end, selection-independent",
+    "supervision": "same-position H_i to x_i cross-entropy; BOS excluded; no source token input or future activation"
+  },
+  "diagnostic": {
+    "before_training": "evaluate identity affine and retained TRR-0004 large affine on both distributions' exact training rows",
+    "purpose": "show prior corpus memorization and establish the fresh joint initialization baseline",
+    "frequency_bins": ["unseen_0", "seen_1_4", "seen_5_19", "seen_20_plus"]
+  },
+  "runtime_safety": {
+    "largest_cell": {"records": 8, "sequence_length": 192, "hidden_size": 2048, "position_budget": 512},
+    "minimum_free_gpu_gib": 8.0,
+    "maximum_gpu_reserved_gib": 6.0,
+    "maximum_host_rss_gib": 16.0,
+    "execution": "sequential arms and distributions; preflight before public tensor load; preserve failure.json",
+    "heavy_execution": "deferred until root grants the shared resource window"
+  },
+  "final_evaluation": {
+    "loaded_by_this_runner": false,
+    "records_per_domain": 128,
+    "domains": ["pile", "finance"],
+    "target_conditions": ["public_base", "public_lora_2601"],
+    "warmup_calls_per_record": 1,
+    "measured_calls_per_record": 1
+  }
+}
