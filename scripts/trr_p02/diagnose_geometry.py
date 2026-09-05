@@ -1375,7 +1375,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     phase_started = time.perf_counter()
     figures = _make_figures(
         output_root,
-        context_names=[context.name for context in contexts],
+        context_names=[contexts[index].name for index in PRIMARY_CONTEXT_INDICES],
         offset_rows=[
             {
                 **row,
