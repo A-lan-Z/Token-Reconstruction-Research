@@ -35,7 +35,7 @@ The full Stage 1 matrix used source commit `6edb276a3a536988a1d2cc9f3aa4c29e90e1
 | Base model | Llama 3.2 1B Instruct, revision `9213176726f574b556790deb65791e0c5aa438b6`; run-plan estimate about 2.47 GB for decoder weights | Identity retained; snapshot excluded |
 | Raw boundary table | `525,337,024` bytes on disk; BF16 tensor payload `525,336,576` bytes; SHA-256 `51abc304d51134777d55347b219fe659817b9f0319add99756eeac6e9b6dd9a3` | Large construction/readout asset excluded |
 | Historical affine lens | `16,787,653` bytes; SHA-256 `33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742` | Large/fitted-origin asset excluded |
-| Projected candidate table | `1,050,673,728` bytes on disk; float32 payload `1,050,673,152` bytes; SHA-256 `8fa4e65ca5ae0c4492c16290403f38126894f5d41383bd2e2b178fbb85003ba7` | Large inferred lookup dictionary; binary excluded, identity retained |
+| Projected candidate table | `1,050,673,728` bytes on disk; float32 payload `1,050,673,152` bytes; SHA-256 `8fa4e65ca5ae0c4492c16290403f38126894f5d41383bd2e2b178fbb85003ba7` | Large inference lookup dictionary; binary excluded, identity retained |
 | Full lookup scratch | `256 * 128256 * 4 = 131,334,144` bytes at query chunk 256 | Account in runtime receipts |
 | A1+A2 anchor candidates | Native `4 × 40 × 512` int32 proposal payload is `327,680` bytes; only 256 proposals are simulated per anchor window, with a native `4 × 40 × 256` float32 selection-score payload of `163,840` bytes. Persisted full-matrix candidate tensors are padded `24 × 129 × 512` int32 (`6,340,608` byte payload; `6,341,272` bytes on disk) | Task-sized final artifacts included after freeze review |
 
@@ -76,5 +76,7 @@ Stage 2 is `NOT_RUN_GATE_FAILED`. No holdout observations, compact rank-128 or r
 
 ## Publication boundary and next decision
 
-The next decision is to deprioritize this static projected variant, retain the A1+A2 accuracy anchor as a separately labeled comparator, and make no automatic repeat of the same compression. The final publication decision remains root-controlled. The publication boundary retains the canonical metadata, reviewed source, frozen prediction and numeric score artifacts, strict validation receipt, independent gate audit, and safe watchdog receipts while excluding evaluator truth, holdout source rows and private indexes, large observation/model/prototype/construction assets, old backups, patches, and initial full-environment receipts. The complete path inventory is `experiments/TRR-P03/publication-files.json`.
+The next decision is to deprioritize this static projected variant, retain the A1+A2 accuracy anchor as a separately labeled comparator, and make no automatic repeat of the same compression. The publication boundary retains the canonical metadata, reviewed source, frozen prediction and numeric score artifacts, strict validation receipt, independent gate audit, and safe watchdog receipts while excluding evaluator truth, holdout source rows and private indexes, large observation/model/prototype/construction assets, old backups, patches, and initial full-environment receipts. The complete path inventory is `experiments/TRR-P03/publication-files.json`.
 
+
+Published as [PR #8](https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/8) on `task/TRR-P03`, against `task/TRR-P02` at `7956b4357d076abce3ccfc407d3fcac832fd34f6`. The published evidence commit is `3d19786ed1db69a30f7d1673f842e67f52dddbac`; no PR was merged.
