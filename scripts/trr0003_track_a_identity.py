@@ -23,7 +23,7 @@ import json
 import math
 import os
 from pathlib import Path
-import resource
+import resource as sys_resource
 import sys
 import time
 from typing import Any, Mapping, Sequence
@@ -572,7 +572,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
                 "public_prefix_layer_evaluations": aggregate["public_prefix_layer_evaluations"],
                 "candidate_prefix_simulations": 0,
                 "steady_state_forward_seconds": aggregate["forward_seconds"],
-                "process_max_rss_kib": int(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss),
+                "process_max_rss_kib": int(sys_resource.getrusage(sys_resource.RUSAGE_SELF).ru_maxrss),
                 "cuda_peak_allocated_bytes": int(torch.cuda.max_memory_allocated()),
                 "cuda_peak_reserved_bytes": int(torch.cuda.max_memory_reserved()),
             },

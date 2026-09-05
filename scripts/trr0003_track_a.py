@@ -18,7 +18,7 @@ import json
 import math
 import os
 from pathlib import Path, PurePosixPath
-import resource
+import resource as sys_resource
 import subprocess
 import sys
 import time
@@ -534,7 +534,7 @@ def _load_public_state(
     del full
     synchronize()
     preparation_peak = {
-        "process_max_rss_kib": int(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss),
+        "process_max_rss_kib": int(sys_resource.getrusage(sys_resource.RUSAGE_SELF).ru_maxrss),
         "cuda_peak_allocated_bytes": int(torch.cuda.max_memory_allocated()),
         "cuda_peak_reserved_bytes": int(torch.cuda.max_memory_reserved()),
     }
@@ -1163,7 +1163,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             prediction_record = _external_record(output_path)
         guard.check("before evidence")
         method_peak = {
-            "process_max_rss_kib": int(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss),
+            "process_max_rss_kib": int(sys_resource.getrusage(sys_resource.RUSAGE_SELF).ru_maxrss),
             "cuda_peak_allocated_bytes": int(torch.cuda.max_memory_allocated()),
             "cuda_peak_reserved_bytes": int(torch.cuda.max_memory_reserved()),
         }
