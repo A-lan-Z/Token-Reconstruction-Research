@@ -36,3 +36,14 @@ def test_metrics_separate_bos_and_post_bos() -> None:
 def test_metrics_reject_nonfinite_values() -> None:
     with pytest.raises(DIAGNOSTIC.DiagnosticError, match="non-finite"):
         DIAGNOSTIC._metrics(torch.tensor([[float("nan")]]), torch.ones(1, 1))
+
+
+def test_evaluation_accounting_separates_branch_calls_from_full_layers() -> None:
+    counts = DIAGNOSTIC._evaluation_counts(32)
+    assert counts["inverse_branch_evaluations_per_target"] == 512
+    assert counts["inverse_branch_calls"] == 1024
+    assert counts["full_prefix_forward_passes"] == 6
+    assert counts["full_prefix_layer_evaluations"] == 24
+    assert counts["public_prefix_layer_evaluations"] == 24
+    with pytest.raises(DIAGNOSTIC.DiagnosticError, match="positive"):
+        DIAGNOSTIC._evaluation_counts(0)
