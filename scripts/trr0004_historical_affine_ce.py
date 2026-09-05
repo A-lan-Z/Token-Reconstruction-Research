@@ -220,7 +220,9 @@ def _state_sha256(state: dict[str, torch.Tensor]) -> str:
         digest.update(encoded)
         digest.update(str(value.dtype).encode("ascii"))
         digest.update(json.dumps(list(value.shape), separators=(",", ":")).encode("ascii"))
-        digest.update(value.view(torch.uint8).numpy().tobytes(order="C"))
+        # Flatten first so scalar state entries such as learned s hash
+        # consistently with matrix/vector entries.
+        digest.update(value.reshape(-1).view(torch.uint8).numpy().tobytes(order="C"))
     return digest.hexdigest()
 
 

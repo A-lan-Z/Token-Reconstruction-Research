@@ -13,6 +13,7 @@ from trr0004_build_affine_fit_manifest import (
     AffineManifestAdapterError,
     _check_right_padded_mask,
 )
+from trr0004_historical_affine_ce import _state_sha256
 from token_reconstruction.historical_affine_ce import (
     FIT_DATA_SCHEMA,
     HistoricalAffineCEConfig,
@@ -421,6 +422,18 @@ def test_controlled_fit_records_validation_curve_and_round_trips_selected_state(
 def test_training_configuration_rejects_nonhistorical_scheduler() -> None:
     with pytest.raises(HistoricalAffineCEError, match="CosineAnnealingLR"):
         HistoricalAffineCEConfig(scheduler="linear").validate()
+
+
+def test_scalar_tensor_hashes_support_float_integer_and_bool_state() -> None:
+    values = (
+        torch.tensor(3.25, dtype=torch.float32),
+        torch.tensor(7, dtype=torch.int64),
+        torch.tensor(True, dtype=torch.bool),
+    )
+    for value in values:
+        assert len(tensor_sha256(value)) == 64
+        assert tensor_sha256(value) == tensor_sha256(value.clone())
+        assert len(_state_sha256({"scalar": value})) == 64
 
 
 def test_adapter_rejects_non_binary_integer_attention_mask() -> None:

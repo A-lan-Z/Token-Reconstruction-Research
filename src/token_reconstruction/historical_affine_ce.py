@@ -83,7 +83,9 @@ def tensor_sha256(value: torch.Tensor) -> str:
             sort_keys=True,
         ).encode("utf-8")
     )
-    digest.update(tensor.view(torch.uint8).numpy().tobytes(order="C"))
+    # Flatten first so zero-dimensional scalar tensors can be viewed as raw
+    # bytes just like higher-rank tensors.
+    digest.update(tensor.reshape(-1).view(torch.uint8).numpy().tobytes(order="C"))
     return digest.hexdigest()
 
 
