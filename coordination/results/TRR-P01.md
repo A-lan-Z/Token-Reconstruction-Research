@@ -213,7 +213,16 @@ generalization claim.
 
 ## Publication status
 
-The report, manifest, parallel state, post-score handoff, and exact curation
-list are task-local and ready for root review. Publication remains pending root
-commit, explicit task/TRR-P01 push, and pull request. Global STATE.json and the
-active dual-benchmark registry were not modified.
+Reviewed evidence commit `025fc39a1888c7cd2cc8ea9c4ac335633b79f8be` is published on
+`task/TRR-P01`. [Pull request #5](https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/5)
+is open against the actual parent `task/TRR-0002` at `6b618760f50055dc5c8a62e830ab7a9761190cfe`.
+The task-local publication metadata is recorded in a subsequent commit on the
+same branch; the PR head identifies the final handoff.
+
+Final publication checks passed: 53 JSON files parsed, 74 compact manifest/state
+path-hash bindings verified, verbatim packet and parent ancestry confirmed, and
+`git diff --cached --check` passed. The independent curation review found no
+disclosure or reproducibility blocker. The complete task-owned publication list
+contains 136 paths, including the three already committed focused test files.
+Global STATE.json, shared protocols, and the active-method registry were not
+modified. Nothing was merged.

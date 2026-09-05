@@ -1,6 +1,6 @@
 # TRR-P01 publication file list
 
-Curation status: complete task-local evidence, pending root commit/push/PR.
+Curation status: reviewed evidence published in PR #5; final publication metadata is recorded on the same task branch.
 Machine-readable newline staging list: experiments/TRR-P01/setup/publication-staging-list.txt
 The final paired matrix is scored after verified joint pre-truth freeze. This
 list contains no source plaintext or private truth tensor. The authoritative
@@ -158,5 +158,12 @@ pre-commit evaluator attempt remains provisional; neither contributes to scores.
 Recheck paths and receipt hashes at staging, force-add only compact review files,
 leave large/private payloads local, run git diff --cached --check, verify the exact
 task/TRR-P01 ref (never shared common-repository HEAD), and confirm global STATE.json
-and research/dual_benchmark_registry.json remain unchanged. Publication is pending
-root commit, push, and PR.
+and research/dual_benchmark_registry.json remain unchanged. Reviewed evidence commit `025fc39a1888c7cd2cc8ea9c4ac335633b79f8be` is pushed.
+[PR #5](https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/5) is open against `task/TRR-0002`; no merge was performed.
+
+The authoritative newline list includes all 136 task-owned branch paths,
+including the focused tests already committed with the implementation:
+
+- tests/test_trr_p01_boundary_prototype.py
+- tests/test_trr_p01_freeze_score_integrity.py
+- tests/test_trr_p01_historical_comparator.py
