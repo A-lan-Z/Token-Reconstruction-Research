@@ -552,7 +552,10 @@ def tensor_sha256(value: torch.Tensor) -> str:
     contiguous = value.detach().cpu().contiguous()
     digest = hashlib.sha256()
     digest.update(json.dumps({"shape": list(contiguous.shape), "dtype": str(contiguous.dtype)}, sort_keys=True).encode())
-    digest.update(contiguous.numpy().tobytes(order="C"))
+    # NumPy has no bfloat16 dtype.  Viewing the contiguous CPU tensor as raw
+    # bytes keeps the hash exact for bfloat16 as well as the other supported
+    # torch dtypes without a lossy cast.
+    digest.update(contiguous.view(torch.uint8).numpy().tobytes(order="C"))
     return digest.hexdigest()
 
 

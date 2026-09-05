@@ -13,6 +13,7 @@ from token_reconstruction.standalone_decoder import (
     normalized_embedding_table,
     prediction_tensor,
     train_token_decoder,
+    tensor_sha256,
     validate_embedding_table,
 )
 
@@ -184,3 +185,11 @@ def test_track_b_prepare_wires_public_dataset_and_model(monkeypatch, tmp_path) -
     }
     assert (output_root / "fit_records.json").is_file()
     assert (output_root / "prepare_evidence.json").is_file()
+
+
+def test_tensor_sha256_supports_bfloat16_without_casting() -> None:
+    value = torch.tensor([[1.0, -2.0], [3.5, 4.25]], dtype=torch.bfloat16)
+    assert tensor_sha256(value) == tensor_sha256(value.clone())
+    changed = value.clone()
+    changed[0, 0] = 1.5
+    assert tensor_sha256(value) != tensor_sha256(changed)
