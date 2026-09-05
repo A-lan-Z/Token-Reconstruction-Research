@@ -1,0 +1,99 @@
+{
+  "schema": "token-reconstruction.trr0004-public-embedding-provenance-diagnostic.v1",
+  "task_id": "TRR-0004",
+  "status": "diagnostic_only_no_truth_opened",
+  "source_commit": "2c6b21634b59adf00b641e8299818eef48bee9d9",
+  "command": {
+    "argv": [
+      "env",
+      "HF_HUB_OFFLINE=1",
+      "HF_DATASETS_OFFLINE=1",
+      "TRANSFORMERS_OFFLINE=1",
+      "OMP_NUM_THREADS=8",
+      "MKL_NUM_THREADS=8",
+      "PYTHONPATH=src:scripts",
+      ".venv-trr0004/bin/python",
+      "-"
+    ],
+    "cwd": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004",
+    "driver": "bounded inline provenance diagnostic; no committed source changes"
+  },
+  "environment": {
+    "python": "3.12.3",
+    "torch": "2.10.0+cu128",
+    "torch_cuda": "12.8",
+    "device": "NVIDIA GeForce RTX 5080",
+    "omp_threads": 8,
+    "mkl_threads": 8,
+    "offline": true
+  },
+  "inputs": {
+    "model_snapshot": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+    "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "model_dtype": "bfloat16",
+    "reference_source": "experiments/TRR-0004/evidence/comparators/round001_teacher.py",
+    "registered_embedding_table": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+    "registered_embedding_table_sha256_from_binding": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+    "public_validation_observations": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_validation_slice_v2/public_validation_observations.safetensors",
+    "lens": "experiments/TRR-0004/evidence/comparators/public_a1_lens.pt",
+    "truth_loaded": false
+  },
+  "construction": {
+    "historical_trr3_path": "model.get_input_embeddings().weight.detach().cpu() -> F.normalize(...float(), dim=-1) -> FP32 safetensors",
+    "current_a2_path": "model/P0 embed_tokens.weight (BF16 on CUDA) -> F.normalize(...float(), dim=-1) on CUDA",
+    "registered_shape": [128256, 2048],
+    "registered_dtype": "torch.float32",
+    "cpu_reconstruction_vs_registered": {
+      "exact_equal": true,
+      "different_elements": 0,
+      "elements": 262668288,
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "rmse": 0.0,
+      "relative_l2": 0.0
+    },
+    "cuda_reconstruction_vs_registered": {
+      "exact_equal": false,
+      "different_elements": 257153834,
+      "elements": 262668288,
+      "max_abs": 7.450580596923828e-08,
+      "mean_abs": 2.9008453417134206e-09,
+      "rmse": 3.964130357303475e-09,
+      "relative_l2": 1.7195098678257636e-07
+    },
+    "cuda_reconstruction_vs_cpu_reconstruction": {
+      "exact_equal": false,
+      "different_elements": 257153834,
+      "elements": 262668288,
+      "max_abs": 7.450580596923828e-08,
+      "mean_abs": 2.9008453417134206e-09,
+      "rmse": 3.964130357303475e-09,
+      "relative_l2": 1.7195098678257636e-07
+    }
+  },
+  "public_rank_diagnostic": {
+    "source": "TRR3 public validation observations only; labels/truth not loaded",
+    "records": 24,
+    "active_positions": 936,
+    "top_k": 512,
+    "top1_mismatches": 0,
+    "top1_match_rate": 1.0,
+    "top512_position_mismatches": 248,
+    "top512_position_match_rate": 0.9994825053418803,
+    "compared_rows": 936,
+    "compared_topk_positions": 479232,
+    "comparison": "same A1 projection and direct cosine ranking, CUDA-normalized runtime table versus registered CPU-normalized table; not A2 output equivalence"
+  },
+  "resources": {
+    "preflight_free_bytes": 15679356928,
+    "preflight_total_bytes": 17066033152,
+    "peak_allocated_bytes": 5362029568,
+    "peak_reserved_bytes": 5848956928,
+    "post_rank_free_bytes": 9752805376,
+    "elapsed_seconds": 5.551779270172119
+  },
+  "interpretation": {
+    "finding": "The registered table is exactly the historical CPU-normalized construction. The A2 failure is caused by a device-kernel numerical difference in FP32 normalization, not by a different public checkpoint or an invalid registered resource.",
+    "scope": "This establishes CPU/GPU embedding-table provenance and truth-free direct-A1 rank behavior only; it does not establish A2 candidate or prefix-output equivalence."
+  }
+}

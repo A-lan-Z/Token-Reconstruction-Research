@@ -1,0 +1,97 @@
+{
+  "schema": "token-reconstruction.trr0004-fresh-confirmation-numeric-port-amendment.v1",
+  "task_id": "TRR-0004",
+  "status": "READY_FOR_POST_FIX_REGISTRATION",
+  "purpose": "Record the guard-only repair after the public selection, paired capture, and separate truth preparation were complete.",
+  "source_fix": {
+    "path": "scripts/trr0004_predict_confirmation.py",
+    "source_commit_before_fix": "2c6b21634b59adf00b641e8299818eef48bee9d9",
+    "source_commit_after_fix": null,
+    "repair": "Normalize precut.embed_tokens.weight.detach().cpu() with the public reference, then exact-compare to the registered CPU-normalized table. The registered table remains the A2 runtime table.",
+    "methods_or_states_changed": false,
+    "allclose_integrity_check": false
+  },
+  "original_inputs_reused": {
+    "method_freeze_marker": {
+      "path": "experiments/TRR-0004/fresh_confirmation_method_freeze.json",
+      "bytes": 9306,
+      "sha256": "df94093504693163c90775d2c4c9ffd23c63b16d19a52a2137d805a8c16154bc"
+    },
+    "selection_plan": {
+      "path": "experiments/TRR-0004/fresh_confirmation_v1/selection_plan.json",
+      "bytes": 46018,
+      "sha256": "a01f445c67bb4cb0f462fb000dd8a46c63cceeebe4c53c1e73c08107378f3eca"
+    },
+    "panel": {
+      "path": "experiments/TRR-0004/fresh_confirmation_v1/panel_capture/panel.json",
+      "bytes": 172643,
+      "sha256": "da65242f395c2c96a25ed8e30d62415db9108c9ded0c9525d4f9358691cb44da"
+    },
+    "truth_binding": {
+      "path": "experiments/TRR-0004/fresh_confirmation_v1/panel_capture/truth_binding.json",
+      "bytes": 7061,
+      "sha256": "c45d08f4183fe0e03c2590dc529bf9ea5673d71ed340dd45501d6ed9f51803db"
+    },
+    "truth_preparation": {
+      "path": "experiments/TRR-0004/fresh_confirmation_v1/panel_capture/truth_preparation.json",
+      "bytes": 3056,
+      "sha256": "61185c3aba8af7b69640c0338e51054c064e56f956295302554fafb9efd99e66"
+    },
+    "reselect": false,
+    "recapture": false,
+    "fresh_truth_generation": false,
+    "evaluation_truth_opened": false
+  },
+  "methods": {
+    "ids": [
+      "historical_alpaca_a1",
+      "frozen_a1_a2_k256",
+      "historical_affine_ce_no_vocab_bias",
+      "causal_h_attention128",
+      "positionwise_mlp256"
+    ],
+    "rules_and_states_unchanged": true,
+    "a2_rule": "retained A1 proposals scored by fixed public-prefix A2 K256",
+    "a2_runtime_embedding": "registered TRR-0003 CPU-normalized FP32 E copied to CUDA",
+    "numeric_port_disclosure": "A2 native CUDA-normalized-table equivalence is not established; this is a declared CPU-table numerical port."
+  },
+  "prior_failure_preserved": {
+    "path": "outputs/TRR-0004/fresh_prediction_v1/frozen_a1_a2_k256/failure_receipt.json",
+    "bytes": 10240,
+    "sha256": "f968fb9790c449e2f8418b0575dfa6577b9867c6cbd4338b2e35b577b33bbdc2"
+  },
+  "provenance_diagnostic": {
+    "path": "experiments/TRR-0004/evidence/a2_embedding_provenance_diagnostic_v1.json",
+    "bytes": 4322,
+    "sha256": "98f5be3115383058db3cd97ddcf9c1d7994574851cc7325c70c76f137ffc6e77"
+  },
+  "registration_v2": {
+    "binding_spec": "experiments/TRR-0004/fresh_confirmation_method_binding_spec_v2.json",
+    "output": "experiments/TRR-0004/fresh_confirmation_v1/panel_capture/registration_v2.json",
+    "must_run_after_new_source_commit": true,
+    "argv": [
+      "env",
+      "OMP_NUM_THREADS=8",
+      "MKL_NUM_THREADS=8",
+      "OPENBLAS_NUM_THREADS=8",
+      "HF_DATASETS_OFFLINE=1",
+      "HF_HUB_OFFLINE=1",
+      "TRANSFORMERS_OFFLINE=1",
+      "PYTHONPATH=.:src:scripts",
+      ".venv-trr0004/bin/python",
+      "scripts/trr0004_produce_confirmation.py",
+      "register",
+      "--repository-root",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004",
+      "--selection-plan",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fresh_confirmation_v1/selection_plan.json",
+      "--panel",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fresh_confirmation_v1/panel_capture/panel.json",
+      "--binding-spec",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fresh_confirmation_method_binding_spec_v2.json",
+      "--output",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fresh_confirmation_v1/panel_capture/registration_v2.json"
+    ],
+    "registration_resolves_code_commit": "actual post-fix source-frozen HEAD"
+  }
+}

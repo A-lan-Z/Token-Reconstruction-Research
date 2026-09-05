@@ -1,0 +1,349 @@
+{
+  "schema": "token-reconstruction.trr0004-fresh-prediction-argv.v1",
+  "task_id": "TRR-0004",
+  "status": "PREPARED_NO_MODEL_RUN",
+  "purpose": "Exact five isolated public prediction invocations for the frozen fresh confirmation panel. This file is an execution plan only; it does not select records, load a model, generate observations, open truth, or create prediction output roots.",
+  "repository_root": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004",
+  "working_directory": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004",
+  "prepared_against": {
+    "git_commit_at_preparation": "2c6b21634b59adf00b641e8299818eef48bee9d9",
+    "source_freeze_required_before_launch": true,
+    "source_freeze_commit_verified": null,
+    "source_freeze_note": "V2 launch requires the new footing-normalization source freeze and registration_v2 binding; the replacement source commit is intentionally pending.",
+    "predictor": {
+      "path": "scripts/trr0004_predict_confirmation.py",
+      "bytes": 69321,
+      "sha256": "d92da9a9d1138c018ac825aecd2fd4a1f7b0515695fa429b3b007b44419e0187",
+      "bytes_note": "The source hash was captured before this planning record; the executable source must be rehashed by registration after the final source freeze."
+    },
+    "method_freeze": "experiments/TRR-0004/fresh_confirmation_method_freeze.json",
+    "binding_spec": "experiments/TRR-0004/fresh_confirmation_method_binding_spec.json"
+  },
+  "canonical_inputs": {
+    "selection_plan": {
+      "path": "experiments/TRR-0004/fresh_confirmation_v1/selection_plan.json",
+      "required_before_launch": true,
+      "exists_at_prepare": false,
+      "sha256_at_prepare": null
+    },
+    "panel": {
+      "path": "experiments/TRR-0004/fresh_confirmation_v1/panel_capture/panel.json",
+      "required_before_launch": true,
+      "exists_at_prepare": false,
+      "sha256_at_prepare": null
+    },
+    "registration": {
+      "path": "experiments/TRR-0004/fresh_confirmation_v1/panel_capture/registration_v2.json",
+      "required_before_launch": true,
+      "exists_at_prepare": false,
+      "sha256_at_prepare": null
+    }
+  },
+  "external_assets": {
+    "public_model_snapshot": {
+      "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+      "used_by": [
+        "frozen_a1_a2_k256"
+      ],
+      "exists_at_prepare": true,
+      "load_policy": "local_files_only; loaded only by the A2 comparator"
+    },
+    "public_prefix_reference": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/evidence/comparators/round001_teacher.py",
+      "used_by": [
+        "frozen_a1_a2_k256"
+      ],
+      "exists_at_prepare": true,
+      "load_policy": "registered byte-identical copy loaded only by the A2 comparator"
+    },
+    "retained_a1_lens": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/evidence/comparators/public_a1_lens.pt",
+      "used_by": [
+        "historical_alpaca_a1",
+        "frozen_a1_a2_k256"
+      ],
+      "exists_at_prepare": true,
+      "load_policy": "registered byte-identical retained state only; no refit"
+    }
+  },
+  "outputs": {
+    "aggregate_predictions_root": "experiments/TRR-0004/fresh_confirmation_v1/predictions_v2",
+    "aggregate_policy": "The footing driver copies validated per-method artifacts here only after all five isolated processes complete; this argv preparation record does not create it.",
+    "method_roots_create_only": true,
+    "method_roots": {
+      "historical_alpaca_a1": "outputs/TRR-0004/fresh_prediction_v2/historical_alpaca_a1",
+      "frozen_a1_a2_k256": "outputs/TRR-0004/fresh_prediction_v2/frozen_a1_a2_k256",
+      "historical_affine_ce_no_vocab_bias": "outputs/TRR-0004/fresh_prediction_v2/historical_affine_ce_no_vocab_bias",
+      "causal_h_attention128": "outputs/TRR-0004/fresh_prediction_v2/causal_h_attention128",
+      "positionwise_mlp256": "outputs/TRR-0004/fresh_prediction_v2/positionwise_mlp256"
+    },
+    "all_method_roots_exist_at_prepare": false
+  },
+  "runtime": {
+    "python": ".venv-trr0004/bin/python",
+    "python_absolute": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/.venv-trr0004/bin/python",
+    "pythonpath": "src:scripts",
+    "device": "cuda",
+    "threads": {
+      "OMP_NUM_THREADS": "8",
+      "MKL_NUM_THREADS": "8",
+      "OPENBLAS_NUM_THREADS": "8"
+    },
+    "resource_guard": {
+      "minimum_free_gpu_gib": 8,
+      "maximum_gpu_reserved_gib": 6,
+      "maximum_host_rss_gib": 16,
+      "maximum_seconds_per_process": 1800,
+      "preflight": "Each isolated process must perform live nvidia-smi/compute-app preflight, stop on a resource anomaly, and preserve a fail-closed receipt."
+    },
+    "prediction_contract": {
+      "cells": 4,
+      "records_per_cell": 8,
+      "warmup_calls_per_record": 1,
+      "measured_calls_per_record": 3,
+      "largest_cell_first": true,
+      "same_inputs_across_methods": true,
+      "target_weights": false,
+      "truth_opened": false,
+      "a2_fallback_for_standalone_methods": false,
+      "historical_a1_candidates": "forbidden; top-1 is the deployed decision and candidate ranks are omitted",
+      "historical_a1_a2_candidates": "required; native proposal/candidate artifacts are retained"
+    }
+  },
+  "methods": [
+    {
+      "method_id": "historical_alpaca_a1",
+      "track": "comparator",
+      "candidate_policy": "forbidden",
+      "runtime_components": "registered normalized public embedding table plus retained A1 lens; no public prefix model",
+      "output_root": "outputs/TRR-0004/fresh_prediction_v2/historical_alpaca_a1",
+      "output_root_absolute": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/fresh_prediction_v2/historical_alpaca_a1",
+      "command": [
+        "env",
+        "OMP_NUM_THREADS=8",
+        "MKL_NUM_THREADS=8",
+        "OPENBLAS_NUM_THREADS=8",
+        "PYTHONPATH=src:scripts",
+        ".venv-trr0004/bin/python",
+        "scripts/trr0004_predict_confirmation.py",
+        "--repository-root",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004",
+        "--panel",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fresh_confirmation_v1/panel_capture/panel.json",
+        "--selection-plan",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fresh_confirmation_v1/selection_plan.json",
+        "--registration",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fresh_confirmation_v1/panel_capture/registration_v2.json",
+        "--method",
+        "historical_alpaca_a1",
+        "--output-root",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/fresh_prediction_v2/historical_alpaca_a1",
+        "--lens",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/evidence/comparators/public_a1_lens.pt",
+        "--device",
+        "cuda",
+        "--minimum-free-gib",
+        "8",
+        "--maximum-reserved-gib",
+        "6",
+        "--maximum-rss-gib",
+        "16",
+        "--max-seconds",
+        "1800"
+      ],
+      "working_directory": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004"
+    },
+    {
+      "method_id": "frozen_a1_a2_k256",
+      "track": "comparator",
+      "candidate_policy": "required",
+      "runtime_components": "registered normalized public embedding table, retained A1 lens, public Llama snapshot, and public-prefix reference implementation",
+      "output_root": "outputs/TRR-0004/fresh_prediction_v2/frozen_a1_a2_k256",
+      "output_root_absolute": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/fresh_prediction_v2/frozen_a1_a2_k256",
+      "command": [
+        "env",
+        "OMP_NUM_THREADS=8",
+        "MKL_NUM_THREADS=8",
+        "OPENBLAS_NUM_THREADS=8",
+        "PYTHONPATH=src:scripts",
+        ".venv-trr0004/bin/python",
+        "scripts/trr0004_predict_confirmation.py",
+        "--repository-root",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004",
+        "--panel",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fresh_confirmation_v1/panel_capture/panel.json",
+        "--selection-plan",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fresh_confirmation_v1/selection_plan.json",
+        "--registration",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fresh_confirmation_v1/panel_capture/registration_v2.json",
+        "--method",
+        "frozen_a1_a2_k256",
+        "--output-root",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/fresh_prediction_v2/frozen_a1_a2_k256",
+        "--model-snapshot",
+        "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+        "--reference",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/evidence/comparators/round001_teacher.py",
+        "--lens",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/evidence/comparators/public_a1_lens.pt",
+        "--device",
+        "cuda",
+        "--minimum-free-gib",
+        "8",
+        "--maximum-reserved-gib",
+        "6",
+        "--maximum-rss-gib",
+        "16",
+        "--max-seconds",
+        "1800"
+      ],
+      "working_directory": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004"
+    },
+    {
+      "method_id": "historical_affine_ce_no_vocab_bias",
+      "track": "track_b",
+      "candidate_policy": "forbidden",
+      "runtime_components": "registered normalized public embedding table plus selected affine decoder state; no public prefix model",
+      "output_root": "outputs/TRR-0004/fresh_prediction_v2/historical_affine_ce_no_vocab_bias",
+      "output_root_absolute": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/fresh_prediction_v2/historical_affine_ce_no_vocab_bias",
+      "command": [
+        "env",
+        "OMP_NUM_THREADS=8",
+        "MKL_NUM_THREADS=8",
+        "OPENBLAS_NUM_THREADS=8",
+        "PYTHONPATH=src:scripts",
+        ".venv-trr0004/bin/python",
+        "scripts/trr0004_predict_confirmation.py",
+        "--repository-root",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004",
+        "--panel",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fresh_confirmation_v1/panel_capture/panel.json",
+        "--selection-plan",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fresh_confirmation_v1/selection_plan.json",
+        "--registration",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fresh_confirmation_v1/panel_capture/registration_v2.json",
+        "--method",
+        "historical_affine_ce_no_vocab_bias",
+        "--output-root",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/fresh_prediction_v2/historical_affine_ce_no_vocab_bias",
+        "--device",
+        "cuda",
+        "--minimum-free-gib",
+        "8",
+        "--maximum-reserved-gib",
+        "6",
+        "--maximum-rss-gib",
+        "16",
+        "--max-seconds",
+        "1800"
+      ],
+      "working_directory": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004"
+    },
+    {
+      "method_id": "causal_h_attention128",
+      "track": "track_b",
+      "candidate_policy": "forbidden",
+      "runtime_components": "registered normalized public embedding table plus selected causal attention decoder state; no public prefix model",
+      "output_root": "outputs/TRR-0004/fresh_prediction_v2/causal_h_attention128",
+      "output_root_absolute": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/fresh_prediction_v2/causal_h_attention128",
+      "command": [
+        "env",
+        "OMP_NUM_THREADS=8",
+        "MKL_NUM_THREADS=8",
+        "OPENBLAS_NUM_THREADS=8",
+        "PYTHONPATH=src:scripts",
+        ".venv-trr0004/bin/python",
+        "scripts/trr0004_predict_confirmation.py",
+        "--repository-root",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004",
+        "--panel",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fresh_confirmation_v1/panel_capture/panel.json",
+        "--selection-plan",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fresh_confirmation_v1/selection_plan.json",
+        "--registration",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fresh_confirmation_v1/panel_capture/registration_v2.json",
+        "--method",
+        "causal_h_attention128",
+        "--output-root",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/fresh_prediction_v2/causal_h_attention128",
+        "--device",
+        "cuda",
+        "--minimum-free-gib",
+        "8",
+        "--maximum-reserved-gib",
+        "6",
+        "--maximum-rss-gib",
+        "16",
+        "--max-seconds",
+        "1800"
+      ],
+      "working_directory": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004"
+    },
+    {
+      "method_id": "positionwise_mlp256",
+      "track": "track_b",
+      "candidate_policy": "forbidden",
+      "runtime_components": "registered normalized public embedding table plus selected positionwise MLP decoder state; no public prefix model",
+      "output_root": "outputs/TRR-0004/fresh_prediction_v2/positionwise_mlp256",
+      "output_root_absolute": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/fresh_prediction_v2/positionwise_mlp256",
+      "command": [
+        "env",
+        "OMP_NUM_THREADS=8",
+        "MKL_NUM_THREADS=8",
+        "OPENBLAS_NUM_THREADS=8",
+        "PYTHONPATH=src:scripts",
+        ".venv-trr0004/bin/python",
+        "scripts/trr0004_predict_confirmation.py",
+        "--repository-root",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004",
+        "--panel",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fresh_confirmation_v1/panel_capture/panel.json",
+        "--selection-plan",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fresh_confirmation_v1/selection_plan.json",
+        "--registration",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fresh_confirmation_v1/panel_capture/registration_v2.json",
+        "--method",
+        "positionwise_mlp256",
+        "--output-root",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/fresh_prediction_v2/positionwise_mlp256",
+        "--device",
+        "cuda",
+        "--minimum-free-gib",
+        "8",
+        "--maximum-reserved-gib",
+        "6",
+        "--maximum-rss-gib",
+        "16",
+        "--max-seconds",
+        "1800"
+      ],
+      "working_directory": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004"
+    }
+  ],
+  "launcher_contract": {
+    "orchestrator": "footing fresh-confirmation driver",
+    "invocation_order": [
+      "frozen_a1_a2_k256",
+      "historical_alpaca_a1",
+      "historical_affine_ce_no_vocab_bias",
+      "causal_h_attention128",
+      "positionwise_mlp256"
+    ],
+    "isolation": "one predictor process per method; do not preload other method states or public P0 into standalone processes",
+    "create_only": true,
+    "aggregate_predictions_root": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fresh_confirmation_v1/predictions_v2",
+    "complete_matrix_gate": "The aggregate/freeze path must wait for all five methods x four cells and validate prediction completeness/integrity before truth is opened.",
+    "launch_status": "not launched"
+  },
+  "verification": {
+    "future_input_paths_checked": true,
+    "future_input_paths_exist_at_prepare": false,
+    "retained_parent_assets_checked": true,
+    "retained_parent_assets_exist_at_prepare": true,
+    "prediction_output_roots_checked": true,
+    "prediction_output_roots_exist_at_prepare": false,
+    "model_or_activation_payload_loaded": false,
+    "truth_opened": false,
+    "gpu_used": false
+  }
+}

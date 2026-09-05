@@ -524,6 +524,47 @@ def _load_normalized_embeddings(
         raise PredictionRunnerError(f"public normalized embedding load failed: {path}") from exc
 
 
+def _cpu_normalized_public_embedding(reference: Any, weight: torch.Tensor) -> torch.Tensor:
+    """Recreate the registered E with the historical TRR-0003 CPU path.
+
+    TRR-0003 copied the BF16 public embedding weight to CPU before the
+    reference's FP32 normalization. Keeping that device boundary explicit
+    avoids treating CPU/CUDA reduction differences as a resource
+    mismatch while retaining an exact byte-level integrity check.
+    """
+
+    if not isinstance(weight, torch.Tensor):
+        raise PredictionRunnerError("public model embedding weight is not a tensor")
+    try:
+        normalized = reference.normalize_public_embeddings(weight.detach().cpu())
+    except Exception as exc:
+        raise PredictionRunnerError("public model embedding normalization failed") from exc
+    if not isinstance(normalized, torch.Tensor):
+        raise PredictionRunnerError("public model embedding normalization returned a non-tensor")
+    return normalized.detach().cpu().contiguous()
+
+
+def _require_exact_public_embedding_binding(
+    expected: torch.Tensor,
+    registered: torch.Tensor,
+) -> None:
+    """Require exact equality after matching the registered resource device."""
+
+    registered_cpu = registered.detach().cpu().contiguous()
+    try:
+        matches = (
+            expected.dtype == registered_cpu.dtype
+            and tuple(expected.shape) == tuple(registered_cpu.shape)
+            and torch.equal(expected, registered_cpu)
+        )
+    finally:
+        del registered_cpu
+    if not matches:
+        raise PredictionRunnerError(
+            "registered normalized embedding table differs from CPU public model embedding"
+        )
+
+
 def _load_public_prefix(
     *,
     snapshot: Path,
@@ -552,15 +593,16 @@ def _load_public_prefix(
         if int(full.config.hidden_size) != fc.HIDDEN_SIZE or int(full.config.vocab_size) != fc.VOCAB_SIZE:
             raise PredictionRunnerError("public model geometry changed")
         precut = reference.PublicP0Precut(full, (0, 1, 2, 3)).to(device).eval()
-        model_embeddings = reference.normalize_public_embeddings(precut.embed_tokens.weight).to(device).contiguous()
+        model_embeddings_cpu = _cpu_normalized_public_embedding(
+            reference, precut.embed_tokens.weight
+        )
         lens = reference.load_frozen_lens(lens_path, device=device)
         embeddings, embedding_evidence = _load_normalized_embeddings(path=embedding_path, device=device)
-        if not torch.equal(model_embeddings, embeddings):
-            raise PredictionRunnerError("registered normalized embedding table differs from public model embedding")
+        _require_exact_public_embedding_binding(model_embeddings_cpu, embeddings)
         model_embedding_state_sha256 = reference.state_sha256(
-            {"normalized_embedding": model_embeddings}, domain=b"ersoy-public-p0-normalized-embedding-v1"
+            {"normalized_embedding": model_embeddings_cpu}, domain=b"ersoy-public-p0-normalized-embedding-v1"
         )
-        del model_embeddings
+        del model_embeddings_cpu
         del full
         gc.collect()
         torch.cuda.empty_cache()
@@ -588,6 +630,12 @@ def _load_public_prefix(
                 {"embed_tokens.weight": precut.embed_tokens.weight}, domain=b"ersoy-public-p0-embedding-v1"
             ),
             "normalized_embedding_state_sha256": model_embedding_state_sha256,
+            "normalized_embedding_construction": {
+                "source": "BF16 public P0 embedding weight detached to CPU, then reference FP32 row normalization",
+                "registered_resource": "TRR-0003 public_normalized_embeddings.safetensors",
+                "runtime_table_used_by_a2": "registered CPU-normalized FP32 table copied to CUDA",
+                "numeric_port": "CPU normalization boundary is explicit; native CUDA-normalized A2 equivalence is not claimed",
+            },
             "lens_state_sha256": reference.state_sha256(
                 dict(lens.state_dict()), domain=b"ersoy-a1-lens-state-v1"
             ),

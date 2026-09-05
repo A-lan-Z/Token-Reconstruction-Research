@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 import torch
+import torch.nn.functional as F
 from safetensors.torch import load_file
 
 import trr0004_fresh_confirmation as fc
@@ -45,6 +46,38 @@ def test_batch_validation_rejects_ids_not_normalized_in_callback(tmp_path: Path)
     raw = torch.tensor([[fc.BOS_TOKEN_ID, -2, 19], [fc.BOS_TOKEN_ID, 21, fc.INVALID_TOKEN_ID]], dtype=torch.long)
     with pytest.raises(runner.PredictionRunnerError, match="invalid active token"):
         runner._validate_normalized_batch_prediction(raw, cell)
+
+
+class _CpuReference:
+    def __init__(self) -> None:
+        self.devices: list[str] = []
+
+    def normalize_public_embeddings(self, weight: torch.Tensor) -> torch.Tensor:
+        self.devices.append(weight.device.type)
+        return F.normalize(weight.detach().float(), dim=-1)
+
+
+def test_cpu_embedding_binding_reconstructs_on_cpu_and_accepts_exact_table() -> None:
+    reference = _CpuReference()
+    raw = torch.arange(1, 9, dtype=torch.float32).reshape(2, 4).to(torch.bfloat16)
+    expected = runner._cpu_normalized_public_embedding(reference, raw)
+
+    assert reference.devices == ["cpu"]
+    assert expected.dtype == torch.float32
+    assert runner._require_exact_public_embedding_binding(expected, expected.clone()) is None
+
+
+def test_cpu_embedding_binding_rejects_one_ulp_mutation() -> None:
+    reference = _CpuReference()
+    raw = torch.arange(1, 9, dtype=torch.float32).reshape(2, 4).to(torch.bfloat16)
+    expected = runner._cpu_normalized_public_embedding(reference, raw)
+    mutated = expected.clone()
+    mutated[0, 0] = torch.nextafter(
+        mutated[0, 0], torch.tensor(float("inf"), dtype=mutated.dtype)
+    )
+
+    with pytest.raises(runner.PredictionRunnerError, match="differs from CPU public model embedding"):
+        runner._require_exact_public_embedding_binding(expected, mutated)
 
 
 class _FakeLens(torch.nn.Module):
@@ -206,4 +239,3 @@ def test_peak_memory_envelope_includes_cold_and_cell_peaks() -> None:
         "cuda_peak_allocated_bytes": 250,
         "cuda_peak_reserved_bytes": 300,
     }
-
