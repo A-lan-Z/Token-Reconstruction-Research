@@ -1,0 +1,236 @@
+{
+  "schema": "token-reconstruction.trr0003-track-b-plan.v1",
+  "task_id": "TRR-0003",
+  "track": "track_b",
+  "status": "EXPLORATORY_PLAN_COMMITTED_BEFORE_FIT",
+  "classification": "pilot; not an active dual-benchmark method",
+  "research_question": "Can public-data direct token supervision replace candidate-by-candidate A2 at inference?",
+  "authority": {
+    "charter": "RESEARCH_CHARTER.md",
+    "protocol": "research/DUAL_BENCHMARK_PROTOCOL.md",
+    "active_registry_unchanged": true
+  },
+  "model": {
+    "id": "meta-llama/Llama-3.2-1B-Instruct",
+    "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "cut_depth": 4,
+    "hidden_size": 2048,
+    "vocab_size": 128256,
+    "dtype": "bfloat16",
+    "attention_implementation": "sdpa",
+    "local_files_only": true
+  },
+  "fit_data": {
+    "dataset_id": "NeelNanda/pile-10k",
+    "dataset_revision": "127bfedcd5047750df5ccf3a12979a47bfa0bafa",
+    "source_split": "TRR-0001 inverse_train",
+    "records": 128,
+    "scored_positions_per_record": 39,
+    "labels": "public token IDs",
+    "observation_condition": "public_base",
+    "disjoint_from": [
+      "public validation records",
+      "shared 16-record Track B panel",
+      "canonical benchmark records",
+      "future confirmation records"
+    ]
+  },
+  "public_validation": {
+    "source": "TRR-0002 public-calibration development records",
+    "source_records": {
+      "path": "outputs/TRR-0002/public-calibration/records.json",
+      "sha256": "37be9bb6d621873047a05544e4e2d8ed7c07f1160ab878093ad912306ae1dd7f",
+      "split": "development",
+      "row_slice": {
+        "start": 8,
+        "stop": 32,
+        "stop_is_exclusive": true,
+        "count": 24
+      },
+      "record_ids": [
+        "pile10k-03704-196fb68f1e8c8f4d",
+        "pile10k-01147-3cabb537de0307a4",
+        "pile10k-04180-4430d549ecb1f67b",
+        "pile10k-09265-665817fbc28d6ff1",
+        "pile10k-03696-25c6b18ad9bd96b7",
+        "pile10k-01684-719ed75439afac14",
+        "pile10k-05582-47de2a59e5fa098a",
+        "pile10k-06151-401b7991a508f3ec",
+        "pile10k-01135-d78d5a658f6c9fd0",
+        "pile10k-01209-76629620726a951e",
+        "pile10k-03822-895542a8f751a604",
+        "pile10k-03063-ad82c49263db1ed3",
+        "pile10k-03888-7a75c0058e70aff0",
+        "pile10k-08124-880267c79bd11e36",
+        "pile10k-07080-20db73413922f84f",
+        "pile10k-05403-a41ab559b95640a0",
+        "pile10k-02713-ab0e1382f10a2023",
+        "pile10k-02406-7c0d5a47d4213bab",
+        "pile10k-06002-268ccf5aa064ff1d",
+        "pile10k-09454-5302927b82fca808",
+        "pile10k-05767-1d9da1e2b56fd5c3",
+        "pile10k-00776-47e2e3c5766c1dfc",
+        "pile10k-04866-f8db91253ac291fa",
+        "pile10k-03011-ffc6bb6a609adb59"
+      ]
+    },
+    "observation_asset": {
+      "path": "outputs/TRR-0002/public-calibration/observations/public_base_cut4.safetensors",
+      "sha256": "34ec6dddec3edea07061725c840c4d5fa64b079190aee8f19dcac68de0297fd7",
+      "row_slice": {
+        "start": 8,
+        "stop": 32,
+        "stop_is_exclusive": true
+      }
+    },
+    "truth_asset": {
+      "path": "outputs/TRR-0002/public-calibration/truth.safetensors",
+      "sha256": "a197e65a04f0081b2ebf87e9f4770b2a9468a4ca5138ebb152265f8ccada4704",
+      "row_slice": {
+        "start": 8,
+        "stop": 32,
+        "stop_is_exclusive": true
+      }
+    },
+    "truth_role": "public auxiliary validation only",
+    "used_for": [
+      "learning curves",
+      "heldout generalization diagnostics"
+    ],
+    "never_used_for": [
+      "panel prediction",
+      "routing",
+      "stopping",
+      "state revision"
+    ],
+    "disjointness": {
+      "panel_record_ids": [
+        "finance-public-038978-e263e33587cdfc95",
+        "finance-public-038979-5ba2c4cd06535d45",
+        "finance-public-038980-0074a9962ade6ca4",
+        "finance-public-038981-7bc12e9d149ffa7c",
+        "finance-public-038982-a63525107083bfe5",
+        "finance-public-038983-fefb55b1585f86e3",
+        "finance-public-038984-f426d174c147bdbb",
+        "finance-public-038985-84af81da72dac335",
+        "pile10k-02616-2a93192f47118768",
+        "pile10k-04234-ab0ede8650fcd69c",
+        "pile10k-05128-2aef78ac5e4dec9d",
+        "pile10k-05875-e1b8be51160e0453",
+        "pile10k-06077-61a05374f5e6868b",
+        "pile10k-06874-1af2ca27a2153608",
+        "pile10k-08566-a47ac075f46c39b9",
+        "pile10k-09259-ee87dcb5e0f3713c"
+      ],
+      "fit_record_split": "TRR-0001 inverse_train",
+      "fit_record_count": 128,
+      "canonical_record_split": "TRR-0001 blind_evaluation",
+      "overlap_counts": {
+        "panel": 0,
+        "inverse_train": 0,
+        "target_update_train": 0,
+        "blind_evaluation": 0
+      },
+      "checked_before_validation_label_slice": true
+    }
+  },
+  "methods": [
+    {
+      "id": "angular_inverse_control",
+      "family": "existing residual affine inverse",
+      "objective": "one-minus-cosine to public input embeddings",
+      "steps": 600,
+      "batch_size": 512,
+      "learning_rate": 0.001,
+      "gradient_clip_norm": 1.0,
+      "inference": "direct argmax over tied public embedding projection",
+      "a2_fallback": false
+    },
+    {
+      "id": "tied_affine_token_ce",
+      "family": "standalone direct token decoder",
+      "architecture": "identity-plus-affine 2048-to-2048 residual; normalized tied public embedding projection; trainable vocabulary bias",
+      "objective": "full-vocabulary token cross-entropy",
+      "steps": 600,
+      "batch_size": 512,
+      "learning_rate": 0.001,
+      "gradient_clip_norm": 1.0,
+      "fixed_logit_scale": 16.0,
+      "inference": "direct argmax; no candidate list",
+      "a2_fallback": false
+    },
+    {
+      "id": "residual_mlp256_token_ce",
+      "family": "standalone direct token decoder",
+      "architecture": "2048-to-256 GELU-to-2048 residual; normalized tied public embedding projection; trainable vocabulary bias",
+      "trainable_bottleneck": 256,
+      "objective": "full-vocabulary token cross-entropy",
+      "steps": 600,
+      "batch_size": 512,
+      "learning_rate": 0.001,
+      "gradient_clip_norm": 1.0,
+      "fixed_logit_scale": 16.0,
+      "inference": "direct argmax; no candidate list",
+      "a2_fallback": false
+    }
+  ],
+  "optimization_diagnostic": {
+    "records": 8,
+    "scored_examples": 312,
+    "steps": 1500,
+    "purpose": "test whether the model can fit a tiny public subset before interpreting heldout failure",
+    "deployment_state": "separate diagnostic artifact; never used for panel predictions"
+  },
+  "curve_policy": {
+    "log_every_steps": 25,
+    "fixed_schedule": true,
+    "validation_slice": "development rows [8:32), selected before reading validation labels",
+    "validation_truth_opened_before_panel_prediction": true,
+    "panel_truth_opened_before_panel_prediction": false,
+    "selection_or_stopping_from_validation": false,
+    "longer_checkpoint_rule": "if any main training curve is still improving at step 600, extend that method on the same public fit/validation split to the predeclared 1800-step checkpoint before panel prediction; never choose from panel labels"
+  },
+  "inference_contract": {
+    "inputs": [
+      "cut-4 activation tensor",
+      "matching mask/positions",
+      "fixed public embedding table",
+      "frozen decoder state"
+    ],
+    "forbidden": [
+      "target weights",
+      "target prefix calls",
+      "source truth",
+      "current panel labels",
+      "candidate-by-candidate public-prefix simulation"
+    ],
+    "outputs": "one token per position, with declared BOS 128000 fixed at position zero",
+    "candidate_simulations": 0,
+    "public_prefix_calls": 0,
+    "persistent_state": false
+  },
+  "evaluation": {
+    "shared_panel": "16 retrospective records: 8 Pile-style and 8 Finance chat-style",
+    "paired_conditions": [
+      "public_base",
+      "public_lora_2601"
+    ],
+    "truth_gate": "shared TRR-0003 footing freezes all predictions before evaluator-private truth opening",
+    "metrics": [
+      "post-BOS token accuracy",
+      "exact reconstructed records",
+      "inference time",
+      "peak memory",
+      "preparation/training cost",
+      "retained model footprint"
+    ],
+    "canonical_matrix": "not run in this exploratory pilot; active registry remains unchanged"
+  },
+  "resource_policy": {
+    "device": "shared RTX 5080 after root code-freeze approval",
+    "preflight": "qualify largest training cell and retain peak memory/timing evidence before panel prediction",
+    "network": "offline local checkpoint/data only",
+    "paid_compute": false,
+    "failure_handling": "preserve failed attempts and exclude outputs with non-finite, OOM, or provenance failures"
+  }
+}
