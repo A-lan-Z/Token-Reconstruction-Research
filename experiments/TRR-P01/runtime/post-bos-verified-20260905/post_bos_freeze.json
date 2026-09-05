@@ -1,0 +1,112 @@
+{
+  "command": {
+    "argv": [
+      "scripts/trr_p01/check_post_bos.py",
+      "--build-root",
+      "experiments/TRR-P01/runtime/cpu-table-20260905",
+      "--plan",
+      "experiments/TRR-P01/pilot_plan.json",
+      "--output-root",
+      "experiments/TRR-P01/runtime/post-bos-verified-20260905",
+      "--implementation-commit",
+      "0f1b762eef2fafbc555818ecfe451909c821e98a"
+    ],
+    "cwd": "/tmp/trr-p01",
+    "selected_device": "cpu"
+  },
+  "created_utc": "2026-09-05T08:08:51Z",
+  "implementation_commit": "0f1b762eef2fafbc555818ecfe451909c821e98a",
+  "model": {
+    "bos_token_id": 128000,
+    "cut_depth": 4,
+    "hidden_size": 2048,
+    "id": "meta-llama/Llama-3.2-1B-Instruct",
+    "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "vocab_size": 128256
+  },
+  "plan": {
+    "bytes": 8902,
+    "path": "experiments/TRR-P01/pilot_plan.json",
+    "sha256": "2e68b8ce7514c9f8338d47f8c3cc56f957259453b057a4c5a3cef1273268bfce"
+  },
+  "predictions": {
+    "artifact": {
+      "bytes": 2680,
+      "path": "/tmp/trr-p01/experiments/TRR-P01/runtime/post-bos-verified-20260905/post_bos_predictions.safetensors",
+      "sha256": "7ab0cdcec857968072049216fa93c90f9f4f19be1ef331c4b23b25d83b08d83e"
+    },
+    "dtype": "int32",
+    "keys": [
+      "cosine",
+      "l2"
+    ],
+    "prototype_chunk_size": 8192,
+    "query_chunk_size": 256,
+    "shape": [
+      256
+    ],
+    "truth_opened": false
+  },
+  "preflight": {
+    "memory": {
+      "MemAvailable": 23619223552,
+      "MemTotal": 32411611136,
+      "process_max_rss_bytes": 801595392
+    },
+    "query_bytes": 1048576,
+    "raw_required_bytes": 533725632,
+    "required_bytes": 762465188,
+    "safety_fraction": 0.7,
+    "status": "PASS",
+    "table_bytes": 525337024
+  },
+  "probe_labels_loaded": false,
+  "prototype": {
+    "bytes": 525337024,
+    "path": "/tmp/trr-p01/experiments/TRR-P01/runtime/cpu-table-20260905/boundary_prototypes.safetensors",
+    "sha256": "51abc304d51134777d55347b219fe659817b9f0319add99756eeac6e9b6dd9a3"
+  },
+  "qualification": {
+    "output": {
+      "bytes": 1048816,
+      "path": "/tmp/trr-p01/experiments/TRR-P01/runtime/cpu-table-20260905/qualification_chosen.safetensors",
+      "sha256": "117f5cc826c55d5f97bcc17e04e979f1b8ea59e12f8dbf5d7b474be7271bd375"
+    },
+    "query_digest": "fad9fafeed647055e944391bd244ef32c96a481c76d99a1c02709588a193d497",
+    "query_dtype": "bfloat16",
+    "query_shape": [
+      256,
+      2048
+    ],
+    "report": {
+      "bytes": 4475,
+      "path": "/tmp/trr-p01/experiments/TRR-P01/runtime/cpu-table-20260905/qualification.json",
+      "sha256": "1c4f7ce680c1570c984eb8c881ff4ee06b84672fe83d7372e329746d6a0dedaf"
+    }
+  },
+  "runtime": {
+    "cuda_allocated": false,
+    "kernel": {
+      "machine": "x86_64",
+      "node": "PC",
+      "processor": "x86_64",
+      "release": "6.6.87.2-microsoft-standard-WSL2",
+      "system": "Linux",
+      "version": "#1 SMP PREEMPT_DYNAMIC Thu Jun  5 18:30:46 UTC 2025"
+    },
+    "pid": 38172,
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "python": "3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]",
+    "selected_device": "cpu",
+    "torch": "2.10.0+cu128"
+  },
+  "schema": "token-reconstruction.trr-p01-post-bos-freeze.v1",
+  "status": "POST_BOS_PREDICTIONS_FROZEN_BEFORE_LABELS",
+  "task_id": "TRR-P01",
+  "timing": {
+    "lookup_seconds": 1.5966075810010807,
+    "pre_freeze_seconds": 2.0007707459990343,
+    "table_and_query_load_seconds": 0.17310120899855974
+  },
+  "truth_opened": false
+}

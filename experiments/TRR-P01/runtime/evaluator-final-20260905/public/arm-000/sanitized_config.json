@@ -1,0 +1,106 @@
+{
+  "execution": {
+    "attention_mask": "all ones",
+    "condition_label_visible_to_attack": false,
+    "position_ids": "0..39",
+    "prototype_chunk_size": 8192,
+    "query_chunk_size": 256,
+    "record_batch_size": 8,
+    "seed": 1701,
+    "stopping": "all 39 post-BOS positions",
+    "target_callable_visible_to_attack": false,
+    "truth_or_source_inputs": 0
+  },
+  "geometry": {
+    "cut_depth": 4,
+    "hidden_size": 2048,
+    "records": 16,
+    "scored_tokens": 39,
+    "sequence_tokens": 40
+  },
+  "methods": [
+    "boundary",
+    "raw_embedding",
+    "reference_corrected",
+    "historical_a1",
+    "historical_a1_a2_port"
+  ],
+  "metric_order": [
+    "cosine",
+    "l2"
+  ],
+  "model": {
+    "attention_implementation": "sdpa",
+    "bos_token_id": 128000,
+    "cut_depth": 4,
+    "dtype": "bfloat16",
+    "hidden_size": 2048,
+    "id": "meta-llama/Llama-3.2-1B-Instruct",
+    "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "vocab_size": 128256
+  },
+  "observation": {
+    "bytes": 2621656,
+    "path": "observations.safetensors",
+    "sha256": "674687912af11a496db37343f65f99f1e775fded828a8b8a8ac8fd6f54c276bf"
+  },
+  "observation_index": {
+    "bytes": 6072,
+    "path": "observation_index.json",
+    "sha256": "a76d9cde765585f2db1c69f9f7cd0c5c92bc1b13b2cbef7ff8236aaf02e903b7"
+  },
+  "prediction_arms": [
+    "boundary.cosine",
+    "boundary.l2",
+    "raw_embedding.cosine",
+    "raw_embedding.l2",
+    "reference_corrected.cosine",
+    "reference_corrected.l2",
+    "historical_a1.cosine",
+    "historical_a1_a2_port.cosine"
+  ],
+  "prediction_policy": {
+    "historical_metrics": [
+      "cosine"
+    ],
+    "status": "all_declared_arms_must_be_serialized_before_truth"
+  },
+  "prototype": {
+    "bytes": 525337024,
+    "cut_depth": 4,
+    "hidden_size": 2048,
+    "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+    "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "path": "/tmp/trr-p01/experiments/TRR-P01/runtime/cpu-table-20260905/boundary_prototypes.safetensors",
+    "sha256": "51abc304d51134777d55347b219fe659817b9f0319add99756eeac6e9b6dd9a3",
+    "vocab_size": 128256
+  },
+  "record_order": [
+    "p01-r0001",
+    "p01-r0002",
+    "p01-r0003",
+    "p01-r0004",
+    "p01-r0005",
+    "p01-r0006",
+    "p01-r0007",
+    "p01-r0008",
+    "p01-r0009",
+    "p01-r0010",
+    "p01-r0011",
+    "p01-r0012",
+    "p01-r0013",
+    "p01-r0014",
+    "p01-r0015",
+    "p01-r0016"
+  ],
+  "reference_correction": {
+    "candidate_simulations": 0,
+    "prefix_rule": "already committed reconstructed prefix only",
+    "reference_token_id": 220,
+    "status": "predeclared_after_static_evidence"
+  },
+  "schema": "token-reconstruction.trr-p01-public-config.v1",
+  "source_truth_included": false,
+  "task_id": "TRR-P01",
+  "truth_opened": false
+}

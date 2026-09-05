@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+set -o pipefail
+env CUDA_VISIBLE_DEVICES='' PYTHONPATH=src:scripts/trr_p01 /usr/bin/python3 scripts/trr_p01/freeze_score.py score --public-dir experiments/TRR-P01/runtime/evaluator-final-20260905/public/arm-000 --predictions experiments/TRR-P01/runtime/reconstruct-final-r2-arm-000/predictions.safetensors --receipt experiments/TRR-P01/runtime/reconstruct-final-r2-arm-000/freeze_receipt.json --evidence experiments/TRR-P01/runtime/reconstruct-final-r2-arm-000/reconstructor_evidence.json --truth experiments/TRR-P01/runtime/panel-20260905/private_truth.safetensors --private-manifest experiments/TRR-P01/runtime/panel-20260905/panel_manifest.json --condition matched_public --output experiments/TRR-P01/runtime/reconstruct-final-r2-arm-000-score.json
