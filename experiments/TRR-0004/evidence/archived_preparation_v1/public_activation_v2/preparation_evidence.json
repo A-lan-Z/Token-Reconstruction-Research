@@ -1,0 +1,376 @@
+{
+  "access_contract": {
+    "confirmation_records_generated": false,
+    "current_token_alignment": "activations[record,position] predicts token_ids[record,position]",
+    "evaluator_private_truth_accessed": false,
+    "public_alpaca_labels_read": true,
+    "public_prefix_only": true,
+    "target_weights_accessed": false
+  },
+  "execution": {
+    "argv": [
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/scripts/trr0004_prepare_public_activations.py",
+      "--split-plan",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/alpaca_split_plan.json",
+      "--dataset-arrow",
+      "/home/alanz/.cache/huggingface/datasets/tatsu-lab___alpaca/default/0.0.0/dce01c9b08f87459cf36a430d809084718273017/alpaca-train.arrow",
+      "--dataset-info",
+      "/home/alanz/.cache/huggingface/datasets/tatsu-lab___alpaca/default/0.0.0/dce01c9b08f87459cf36a430d809084718273017/dataset_info.json",
+      "--tokenizer",
+      "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+      "--model",
+      "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+      "--pile-receipt",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_validation_slice_v2/validation_slice_evidence.json",
+      "--output-root",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/public_activation_v2",
+      "--device",
+      "cuda",
+      "--batch-records",
+      "8",
+      "--min-free-gpu-bytes",
+      "8589934592",
+      "--max-reserved-gpu-bytes",
+      "8589934592",
+      "--max-host-rss-bytes",
+      "17179869184"
+    ],
+    "batch_records": 8,
+    "cuda_runtime": "12.8",
+    "cut_depth": 4,
+    "device": "cuda",
+    "device_name": "NVIDIA GeForce RTX 5080",
+    "ended_utc": "2026-09-05T11:24:10Z",
+    "git_commit_start_and_end": "3a7206ec6440b3344b3c4db72b543c17152bfac7",
+    "network_used": false,
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "python": "3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]",
+    "started_utc": "2026-09-05T11:24:00Z",
+    "torch": "2.10.0+cu128",
+    "wall_seconds": 9.764313294999738,
+    "working_directory": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004"
+  },
+  "geometry": {
+    "hidden_size": 2048,
+    "padded_tokens": 192,
+    "train_large": {
+      "activations": [
+        1200,
+        192,
+        2048
+      ],
+      "attention_mask": [
+        1200,
+        192
+      ],
+      "nested_small_positions": 5000,
+      "position_ids": [
+        1200,
+        192
+      ],
+      "post_bos_positions": 124371,
+      "records": 1200,
+      "token_ids": [
+        1200,
+        192
+      ]
+    },
+    "validation_alpaca": {
+      "activations": [
+        24,
+        192,
+        2048
+      ],
+      "attention_mask": [
+        24,
+        192
+      ],
+      "position_ids": [
+        24,
+        192
+      ],
+      "post_bos_positions": 2197,
+      "records": 24,
+      "token_ids": [
+        24,
+        192
+      ]
+    },
+    "vocab_size": 128256
+  },
+  "outputs": {
+    "train_large": {
+      "bytes": 947176648,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_cut4.safetensors",
+      "role": "public fit activations and labels; nested selectors included",
+      "sha256": "d1c78fcf1acc91b57d51355ee11f267bf4c12f1bc7d5160164b3b6ea11b45344"
+    },
+    "train_records": {
+      "bytes": 726532,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_records.json",
+      "sha256": "34e10ddc7c502b30822730b84c6f3a48b6285888b8ef92fc9e1aef65ecca29df"
+    },
+    "validation_alpaca": {
+      "bytes": 18945712,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/public_activation_v2/validation_alpaca_cut4.safetensors",
+      "role": "public continuation validation activations and labels",
+      "sha256": "9f0d051252ec4a2f9d48a48d7500049c4a10710244572e82d2d122bc7b0c3337"
+    },
+    "validation_records": {
+      "bytes": 12943,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/public_activation_v2/validation_alpaca_records.json",
+      "sha256": "b31cbdecbaf5b2617e8e20b3d32d7840316a7daf9e35ccf92870d15b189d190f"
+    }
+  },
+  "peak_memory": {
+    "cuda_peak_allocated_bytes": 2472678400,
+    "cuda_peak_reserved_bytes": 2480930816,
+    "host_max_rss_bytes": 6173032448
+  },
+  "phases": [
+    {
+      "elapsed_seconds": 0.0007795100027578883,
+      "ended_utc": "2026-09-05T11:24:00Z",
+      "exit_status": 0,
+      "phase": "public_resource_guard",
+      "started_utc": "2026-09-05T11:24:00Z"
+    },
+    {
+      "elapsed_seconds": 0.6106296189973364,
+      "ended_utc": "2026-09-05T11:24:01Z",
+      "exit_status": 0,
+      "phase": "load_public_alpaca_cache_and_tokenizer",
+      "started_utc": "2026-09-05T11:24:00Z"
+    },
+    {
+      "elapsed_seconds": 0.5398158019997936,
+      "ended_utc": "2026-09-05T11:24:02Z",
+      "exit_status": 0,
+      "phase": "materialize_registered_public_token_sequences",
+      "started_utc": "2026-09-05T11:24:01Z"
+    },
+    {
+      "elapsed_seconds": 3.0466276129991456,
+      "ended_utc": "2026-09-05T11:24:05Z",
+      "exit_status": 0,
+      "phase": "load_public_model_and_prefix",
+      "started_utc": "2026-09-05T11:24:02Z"
+    },
+    {
+      "elapsed_seconds": 0.599315105999267,
+      "ended_utc": "2026-09-05T11:24:05Z",
+      "exit_status": 0,
+      "phase": "qualify_public_prefix_batch8_x_192_padding",
+      "started_utc": "2026-09-05T11:24:05Z"
+    },
+    {
+      "elapsed_seconds": 2.8680388360007782,
+      "ended_utc": "2026-09-05T11:24:08Z",
+      "exit_status": 0,
+      "phase": "capture_public_train_large_cut4_activations",
+      "started_utc": "2026-09-05T11:24:05Z"
+    },
+    {
+      "elapsed_seconds": 0.046758223001234,
+      "ended_utc": "2026-09-05T11:24:08Z",
+      "exit_status": 0,
+      "phase": "capture_public_alpaca_validation_cut4_activations",
+      "started_utc": "2026-09-05T11:24:08Z"
+    },
+    {
+      "elapsed_seconds": 0.9426876360012102,
+      "ended_utc": "2026-09-05T11:24:10Z",
+      "exit_status": 0,
+      "phase": "serialize_public_activation_artifacts",
+      "started_utc": "2026-09-05T11:24:09Z"
+    }
+  ],
+  "qualification": {
+    "batching_substitution_allowed": false,
+    "measured_peak_after_phase": {
+      "cuda_peak_allocated_bytes": 2472678400,
+      "cuda_peak_reserved_bytes": 2480930816,
+      "host_max_rss_bytes": 3774595072
+    },
+    "primary_geometry": {
+      "active_output_bit_exact": true,
+      "batch_records": 8,
+      "changed_future_pad_tokens": 433,
+      "decision_rule": "torch.equal on native active outputs; no tolerance",
+      "future_pad_token_id": 0,
+      "maximum_absolute_difference": 0.0,
+      "path": "fixed batch-8 x 192 ContiguousPublicPrefix.forward_full",
+      "same_batch_shape": true,
+      "sequence_tokens": 192
+    },
+    "status": "passed",
+    "unpadded_batch1_diagnostic": {
+      "active_output_bit_exact": false,
+      "batch_records": 8,
+      "compared_active_values": 2258944,
+      "decision_rule": "diagnostic only; no tolerance gate and no batching substitution",
+      "maximum_absolute_difference": 2.0,
+      "reference_path": "ContiguousPublicPrefix.forward_full on each unpadded active record",
+      "relative_l2": 0.003597538511118046,
+      "status": "non_equivalent_not_used",
+      "used_for_capture": false
+    }
+  },
+  "reproducibility": {
+    "common_metadata": {
+      "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+      "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "source_dataset_arrow_sha256": "f45103036ed651f4c06d0a3c3e0fb7d53acb3074ed5c8e804a69c1efc1cea794",
+      "source_dataset_info_sha256": "25fae40b04375187311d88f1c4cb9f7c262fae1cc3212354c3075b6ad5db4f67",
+      "source_plan_sha256": "29ca79db0f29fd5ec1e3769b5427ac1496b59ef7f88e7e921e41c13b1e07eb2e"
+    },
+    "fit_record_ids_sha256": "a7ed5ca7c0c4b4242218a18049266d5a12c295dcfe3492513e098389f21147f9",
+    "fit_validation_disjoint": true,
+    "nested_selector": "first 5,000 post-BOS positions in the registered ordered fit stream",
+    "source_code": {
+      "activation_module": {
+        "bytes": 20009,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/src/token_reconstruction/public_activation.py",
+        "resolved_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/src/token_reconstruction/public_activation.py",
+        "role": "executed activation_module source",
+        "sha256": "3be43dd5b6a5918a48f289971ab2a833977a7f9d87094e6001c5c7cdc60ab76f",
+        "symlink": false
+      },
+      "public_prefix_module": {
+        "bytes": 8297,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/src/token_reconstruction/public_prefix.py",
+        "resolved_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/src/token_reconstruction/public_prefix.py",
+        "role": "executed public_prefix_module source",
+        "sha256": "b9dca1d8d56c7c07413015aea4bde79e8ceac827c32ee9bc0d1a236ea1dd35f6",
+        "symlink": false
+      },
+      "runner": {
+        "bytes": 40779,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/scripts/trr0004_prepare_public_activations.py",
+        "resolved_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/scripts/trr0004_prepare_public_activations.py",
+        "role": "executed runner source",
+        "sha256": "6f1a9b6d7ee4aad89ee8152021e6e431b8652a6f7c162167a6180229feed70e8",
+        "symlink": false
+      },
+      "runtime_module": {
+        "bytes": 8587,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/src/token_reconstruction/experiment_runtime.py",
+        "resolved_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/src/token_reconstruction/experiment_runtime.py",
+        "role": "executed runtime_module source",
+        "sha256": "9bfe8ba34fe473faf1ace17f16ea0e5e363728822bd715ddcf21c33c4ffc2177",
+        "symlink": false
+      },
+      "split_module": {
+        "bytes": 18999,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/src/token_reconstruction/alpaca_split.py",
+        "resolved_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/src/token_reconstruction/alpaca_split.py",
+        "role": "executed split_module source",
+        "sha256": "fa9a15fd4cf92ffa06be3bd77888324536180e8a2fd2c43ae14f20e470a3626a",
+        "symlink": false
+      }
+    },
+    "validation_record_ids_sha256": "004d1a0acbd0d6128a55215604de2fe36e39c043328a501bdbfe857704f58010"
+  },
+  "resource_guard": {
+    "device": "cuda",
+    "failure_policy": "stop and preserve failure on OOM, non-finite activation, allocator/driver anomaly, or source mismatch",
+    "free_bytes": 15679356928,
+    "maximum_host_rss_bytes": 17179869184,
+    "maximum_reserved_bytes": 8589934592,
+    "minimum_free_bytes": 8589934592,
+    "status": "passed",
+    "total_bytes": 17066033152
+  },
+  "runtime_components": {
+    "candidate_simulations": 0,
+    "padding": "right padded to 192; padded activation rows zeroed; active rows retain causal current-token alignment",
+    "private_target_prefix_calls": 0,
+    "public_prefix": "ContiguousPublicPrefix.forward_full; public embedding + layers[0:4]"
+  },
+  "schema": "token-reconstruction.trr0004-public-activation-preparation.v1",
+  "source": {
+    "dataset_arrow": {
+      "bytes": 46230248,
+      "path": "/home/alanz/.cache/huggingface/datasets/tatsu-lab___alpaca/default/0.0.0/dce01c9b08f87459cf36a430d809084718273017/alpaca-train.arrow",
+      "resolved_path": "/home/alanz/.cache/huggingface/datasets/tatsu-lab___alpaca/default/0.0.0/dce01c9b08f87459cf36a430d809084718273017/alpaca-train.arrow",
+      "role": "public Alpaca Arrow cache",
+      "sha256": "f45103036ed651f4c06d0a3c3e0fb7d53acb3074ed5c8e804a69c1efc1cea794",
+      "symlink": false
+    },
+    "dataset_info": {
+      "bytes": 815,
+      "path": "/home/alanz/.cache/huggingface/datasets/tatsu-lab___alpaca/default/0.0.0/dce01c9b08f87459cf36a430d809084718273017/dataset_info.json",
+      "resolved_path": "/home/alanz/.cache/huggingface/datasets/tatsu-lab___alpaca/default/0.0.0/dce01c9b08f87459cf36a430d809084718273017/dataset_info.json",
+      "role": "public Alpaca dataset metadata",
+      "sha256": "25fae40b04375187311d88f1c4cb9f7c262fae1cc3212354c3075b6ad5db4f67",
+      "symlink": false
+    },
+    "model_config": {
+      "cut_depth": 4,
+      "hidden_size": 2048,
+      "num_hidden_layers": 16,
+      "torch_dtype": "torch.bfloat16",
+      "vocab_size": 128256
+    },
+    "model_snapshot": {
+      "config": {
+        "bytes": 877,
+        "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6/config.json",
+        "resolved_path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/3e3aaf51a035cb5092d9f6827a0dc074657ba88c",
+        "role": "public model config",
+        "sha256": "2febf68cea25bf4611be02b7536f2488a5ba523bb1134986e3610152abe74fdb",
+        "symlink": true
+      },
+      "generation_config": {
+        "bytes": 189,
+        "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6/generation_config.json",
+        "resolved_path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/75ae08310d6d23df373ee2644b497192b3cce6d8",
+        "role": "public generation config",
+        "sha256": "88effbb63300dbbc7390143fbbdd9d9fa50587b37e8bfd16c8c90d4970a74a36",
+        "symlink": true
+      },
+      "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+      "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "snapshot_path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+      "weights": {
+        "bytes": 2471645608,
+        "hash_scope": "full model.safetensors read before model load",
+        "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6/model.safetensors",
+        "resolved_path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f",
+        "role": "public model weights",
+        "sha256": "1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f",
+        "sha256_expected": "1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f",
+        "symlink": true,
+        "verified_during_run": true
+      }
+    },
+    "public_pile_validation_reference": {
+      "expected_records": 24,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_validation_slice_v2/validation_slice_evidence.json",
+      "role": "existing public Pile24 validation reference; not regenerated or read for this preparation",
+      "sha256": "d7dbfccc70f6a60b92ca4849870fea077c068584fd1eeca119e560c69600d22c"
+    },
+    "split_plan": {
+      "bytes": 691612,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/alpaca_split_plan.json",
+      "resolved_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/alpaca_split_plan.json",
+      "role": "registered public Alpaca split plan",
+      "sha256": "29ca79db0f29fd5ec1e3769b5427ac1496b59ef7f88e7e921e41c13b1e07eb2e",
+      "symlink": false
+    }
+  },
+  "status": "PUBLIC_ACTIVATION_PREPARATION_COMPLETE_NO_CONFIRMATION",
+  "task_id": "TRR-0004",
+  "tensor_hashes": {
+    "train_activations": "6c56af87704e2481fc5a259ab4cb471006993e6f43dd10e0dbc3ee22fb7b296f",
+    "train_attention_mask": "e2ee7f711107a8a887a053657bc5b53bb210cc4735247108df08540a5a9ebb76",
+    "train_position_ids": "7937dcf9463cfda24117a2d1f6e8d1a74a627711757ad4985bbe5b18936cb997",
+    "train_selector_large": "b41ccdc40c1be73bba19908ca7a69cc6e3a4d218ba20cfd5f6374abd88ae8561",
+    "train_selector_small": "f5928ff7c1a0b42f3adca216b2138fbdf81ba02908082b085fd0b7c12543ca99",
+    "train_token_ids": "63e4e98a1c3984e48ea6b28252648927084b88ed5b9b4ad1dd59786eab04f84f",
+    "validation_activations": "f828c4e23762171f03cbcf3a58d501d3ece716356ee87d1a4e7cdb6ab17af0c5",
+    "validation_attention_mask": "165629aa01ee1260ca5811929bb66e46a078cbfa4569c4289b2c85cf127b63a5",
+    "validation_position_ids": "13fba48b12fd47fe097918583c02b4b84bda04817b8fdc8b656e983ec7e19cee",
+    "validation_token_ids": "ac2162d17f51b3f6f1ec4eed5c259cf790247802472d5ea080d42ba9d82f6c50"
+  }
+}

@@ -1,0 +1,1815 @@
+{
+  "claim_scope": "one selected method across four fresh public cells; no truth scoring or replacement claim",
+  "cold_costs": {
+    "candidate_diagnostics": "A1 top-k is omitted; A2 first-measured candidate arrays are serialized as required and their proposal time is included in A2 steady timing",
+    "cold_peak_memory": {
+      "cuda_peak_allocated_bytes": 2889351168,
+      "cuda_peak_reserved_bytes": 2896166912,
+      "process_max_rss_bytes": 3612336128
+    },
+    "method_state_load_seconds": 0.016728648995922413,
+    "overall_peak_memory": {
+      "cuda_peak_allocated_bytes": 2889351168,
+      "cuda_peak_reserved_bytes": 2902458368,
+      "process_max_rss_bytes": 3612336128
+    },
+    "public_model_or_embedding_load": {
+      "embedding_seconds": 0.9987228559984942,
+      "model_seconds": 0.0,
+      "public_prefix_loaded": false
+    },
+    "startup_boundary": "entry to _run through immediately before the first run_warmed_prediction call",
+    "startup_seconds": 9.460094688998652,
+    "steady_state": "only the per-record warmed timing rows; no cold cost is folded into token accuracy"
+  },
+  "cold_peak_memory": {
+    "cuda_peak_allocated_bytes": 2889351168,
+    "cuda_peak_reserved_bytes": 2896166912,
+    "process_max_rss_bytes": 3612336128
+  },
+  "command": {
+    "argv": [
+      "scripts/trr0004_predict_confirmation.py",
+      "--repository-root",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004",
+      "--panel",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fresh_confirmation_v1/panel_capture/panel.json",
+      "--selection-plan",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fresh_confirmation_v1/selection_plan.json",
+      "--registration",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fresh_confirmation_v1/panel_capture/registration_v2.json",
+      "--method",
+      "positionwise_mlp256",
+      "--output-root",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/fresh_prediction_v2/positionwise_mlp256",
+      "--device",
+      "cuda",
+      "--minimum-free-gib",
+      "8",
+      "--maximum-reserved-gib",
+      "6",
+      "--maximum-rss-gib",
+      "16",
+      "--max-seconds",
+      "1800"
+    ],
+    "cwd": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004",
+    "environment": {
+      "MKL_NUM_THREADS": "8",
+      "OMP_NUM_THREADS": "8",
+      "PYTHONPATH": "src:scripts"
+    },
+    "python": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/.venv-trr0004/bin/python"
+  },
+  "ended_utc": "2026-09-05T14:33:14Z",
+  "geometry_and_preflight": {
+    "before_resource_load": {
+      "cuda_free_bytes": 15679356928,
+      "cuda_reserved_bytes": 0,
+      "cuda_total_bytes": 17066033152,
+      "host_rss_bytes": 613289984,
+      "limits": {
+        "maximum_gpu_reserved_bytes": 6442450944,
+        "maximum_host_rss_bytes": 17179869184,
+        "maximum_wall_seconds": 1800.0,
+        "minimum_free_gpu_bytes": 8589934592
+      },
+      "nvidia_smi_compute_apps": [],
+      "nvidia_smi_compute_apps_all": [
+        {
+          "pid": "89813",
+          "process_name": "[Not Found]",
+          "used_memory": "[N/A]"
+        }
+      ],
+      "nvidia_smi_gpu": [
+        {
+          "index": "0",
+          "memory.free": "11910",
+          "memory.used": "4068",
+          "temperature.gpu": "38",
+          "utilization.gpu": "0"
+        }
+      ],
+      "stage": "before_positionwise_mlp256_resource_load",
+      "status": "PASS",
+      "temperatures_c": [
+        38.0
+      ]
+    },
+    "execution_order": [
+      "finance__public_base",
+      "finance__public_lora_2601",
+      "pile__public_base",
+      "pile__public_lora_2601"
+    ],
+    "geometry": {
+      "a2_candidate_budget": 256,
+      "a2_proposal_budget": 512,
+      "calculation": "embedding V*H*4 + largest-cell BF16 H + one-record V*S*4 logits, with public-prefix/cache and allocator workspace covered by the conservative 6 GiB CUDA reservation guard",
+      "embedding_table_float32_bytes": 1050673152,
+      "largest_bf16_activation_bytes": 8388608,
+      "largest_cell": "finance__public_base",
+      "largest_shape": [
+        16,
+        128,
+        2048
+      ],
+      "one_record_full_float32_logits_bytes": 65667072,
+      "qualification_requirement": "largest 128-position A2 K256 cell must pass before the four-cell matrix",
+      "record_batch_size": 1,
+      "working_set_guard_ceiling_bytes": 6442450944
+    },
+    "largest_cell_first": true,
+    "largest_cell_qualification": "reused exact registered 128-position geometry; largest cell executes first under the live guard",
+    "limits": {
+      "maximum_gpu_reserved_bytes": 6442450944,
+      "maximum_host_rss_bytes": 17179869184,
+      "maximum_wall_seconds": 1800.0,
+      "minimum_free_gpu_bytes": 8589934592
+    }
+  },
+  "git": {
+    "commit_end": "a11b37bbe11b429b07ba82074906c1698295bd3f",
+    "commit_start": "a11b37bbe11b429b07ba82074906c1698295bd3f",
+    "source_files_unchanged": true,
+    "status_end": " M experiments/TRR-0004/fresh_prediction_v2_argv.json\n M experiments/TRR-0004/status.json\n?? coordination/results/TRR-0004.md\n?? experiments/TRR-0004/contextual_fit_v1_argv.json\n?? experiments/TRR-0004/contextual_fit_v1_receipt/compute_apps_postflight.csv\n?? experiments/TRR-0004/contextual_fit_v1_receipt/compute_apps_preflight.csv\n?? experiments/TRR-0004/contextual_fit_v1_receipt/exit.json\n?? experiments/TRR-0004/contextual_fit_v1_receipt/gpu_postflight.csv\n?? experiments/TRR-0004/contextual_fit_v1_receipt/gpu_preflight.csv\n?? experiments/TRR-0004/contextual_fit_v1_receipt/host_memory_preflight.txt\n?? experiments/TRR-0004/contextual_fit_v1_receipt/launch.json\n?? experiments/TRR-0004/contextual_fit_v1_receipt/pid.json\n?? experiments/TRR-0004/contextual_fit_v1_receipt/source_hashes.json\n?? experiments/TRR-0004/contextual_qualification_v2_receipt/compute_apps_postflight.csv\n?? experiments/TRR-0004/contextual_qualification_v2_receipt/compute_apps_preflight.csv\n?? experiments/TRR-0004/contextual_qualification_v2_receipt/exit.json\n?? experiments/TRR-0004/contextual_qualification_v2_receipt/gpu_postflight.csv\n?? experiments/TRR-0004/contextual_qualification_v2_receipt/gpu_preflight.csv\n?? experiments/TRR-0004/contextual_qualification_v2_receipt/host_memory_preflight.txt\n?? experiments/TRR-0004/contextual_qualification_v2_receipt/launch.json\n?? experiments/TRR-0004/contextual_qualification_v2_receipt/source_hashes_end.sha256\n?? experiments/TRR-0004/contextual_qualification_v2_receipt/source_hashes_start.sha256\n?? experiments/TRR-0004/contextual_qualification_v3_receipt/compute_apps_postflight.csv\n?? experiments/TRR-0004/contextual_qualification_v3_receipt/compute_apps_preflight.csv\n?? experiments/TRR-0004/contextual_qualification_v3_receipt/exit.json\n?? experiments/TRR-0004/contextual_qualification_v3_receipt/gpu_postflight.csv\n?? experiments/TRR-0004/contextual_qualification_v3_receipt/gpu_preflight.csv\n?? experiments/TRR-0004/contextual_qualification_v3_receipt/host_memory_preflight.txt\n?? experiments/TRR-0004/contextual_qualification_v3_receipt/launch.json\n?? experiments/TRR-0004/contextual_qualification_v3_receipt/source_hashes_end.sha256\n?? experiments/TRR-0004/contextual_qualification_v3_receipt/source_hashes_start.sha256\n?? experiments/TRR-0004/contextual_qualification_v4_argv.json\n?? experiments/TRR-0004/evidence/affine/affine_copy_map_v1.json\n?? experiments/TRR-0004/evidence/affine/affine_learning_curves_v1.svg\n?? experiments/TRR-0004/evidence/affine/build_affine_learning_curve.py\n?? experiments/TRR-0004/evidence/affine/failed/qualification_full_v1.preflight.json\n?? experiments/TRR-0004/evidence/affine/failed/qualification_full_v1.receipt.json\n?? experiments/TRR-0004/evidence/affine/failed/qualification_full_v1.resource_failure.json\n?? experiments/TRR-0004/evidence/affine/fit_evidence/fit_large_v1.fit_evidence.json\n?? experiments/TRR-0004/evidence/affine/fit_evidence/fit_small_v1.fit_evidence.json\n?? experiments/TRR-0004/evidence/affine/fit_evidence/qualification_full_v2.fit_evidence.json\n?? experiments/TRR-0004/evidence/affine/launch/fit_large_v1.preflight.json\n?? experiments/TRR-0004/evidence/affine/launch/fit_large_v1.receipt.json\n?? experiments/TRR-0004/evidence/affine/launch/fit_small_v1.preflight.json\n?? experiments/TRR-0004/evidence/affine/launch/fit_small_v1.receipt.json\n?? experiments/TRR-0004/evidence/affine/launch/qualification_full_v2.preflight.json\n?? experiments/TRR-0004/evidence/affine/launch/qualification_full_v2.receipt.json\n?? experiments/TRR-0004/evidence/contextual/contextual_learning_curves.png\n?? experiments/TRR-0004/evidence/contextual/contextual_learning_curves_receipt.json\n?? experiments/TRR-0004/evidence/contextual/copy_hashmap.json\n?? experiments/TRR-0004/evidence/contextual/fit/causal_h_attention128/main_curve.json\n?? experiments/TRR-0004/evidence/contextual/fit/causal_h_attention128/subset_curve.json\n?? experiments/TRR-0004/evidence/contextual/fit/positionwise_mlp256/main_curve.json\n?? experiments/TRR-0004/evidence/contextual/fit/positionwise_mlp256/subset_curve.json\n?? experiments/TRR-0004/evidence/contextual/fit/run_evidence.json\n?? experiments/TRR-0004/evidence/contextual/receipt/compute_apps_postflight.csv\n?? experiments/TRR-0004/evidence/contextual/receipt/compute_apps_preflight.csv\n?? experiments/TRR-0004/evidence/contextual/receipt/exit.json\n?? experiments/TRR-0004/evidence/contextual/receipt/gpu_postflight.csv\n?? experiments/TRR-0004/evidence/contextual/receipt/gpu_preflight.csv\n?? experiments/TRR-0004/evidence/contextual/receipt/launch.json\n?? experiments/TRR-0004/evidence/contextual/receipt/pid.json\n?? experiments/TRR-0004/evidence/contextual/receipt/source_hashes.json\n?? experiments/TRR-0004/evidence/coverage/fit_small_v1/historical_affine_ce_no_vocab_bias/launch_receipt.json\n?? experiments/TRR-0004/evidence/coverage_retry_v1/fit_large_v1/historical_affine_ce_no_vocab_bias/coverage.json\n?? experiments/TRR-0004/evidence/coverage_retry_v1/fit_large_v1/historical_affine_ce_no_vocab_bias/launch_receipt.json\n?? experiments/TRR-0004/evidence/coverage_retry_v1/fit_large_v1/historical_affine_ce_vocab_bias/coverage.json\n?? experiments/TRR-0004/evidence/coverage_retry_v1/fit_large_v1/historical_affine_ce_vocab_bias/launch_receipt.json\n?? experiments/TRR-0004/evidence/coverage_retry_v1/fit_small_v1/historical_affine_ce_no_vocab_bias/coverage.json\n?? experiments/TRR-0004/evidence/coverage_retry_v1/fit_small_v1/historical_affine_ce_no_vocab_bias/launch_receipt.json\n?? experiments/TRR-0004/evidence/coverage_retry_v1/fit_small_v1/historical_affine_ce_vocab_bias/coverage.json\n?? experiments/TRR-0004/evidence/coverage_retry_v1/fit_small_v1/historical_affine_ce_vocab_bias/launch_receipt.json\n?? experiments/TRR-0004/evidence/coverage_retry_v1/launcher_failure_malformed_invocation.json\n?? experiments/TRR-0004/evidence/fresh_prediction_failures/affine_wrong_selection_path_v1.json\n?? experiments/TRR-0004/evidence/fresh_prediction_failures/affine_wrong_selection_path_v1/failure_receipt.json\n?? experiments/TRR-0004/evidence/producer_v1/capture/argv.txt\n?? experiments/TRR-0004/evidence/producer_v1/capture/capture_receipt.json\n?? experiments/TRR-0004/evidence/producer_v1/capture/pid.txt\n?? experiments/TRR-0004/evidence/producer_v1/capture/start_utc.txt\n?? experiments/TRR-0004/evidence/producer_v1/capture/time.txt\n?? experiments/TRR-0004/evidence/producer_v1/register/argv.txt\n?? experiments/TRR-0004/evidence/producer_v1/register/pid.txt\n?? experiments/TRR-0004/evidence/producer_v1/register/register_receipt.json\n?? experiments/TRR-0004/evidence/producer_v1/register/start_utc.txt\n?? experiments/TRR-0004/evidence/producer_v1/register_v2/argv.json\n?? experiments/TRR-0004/evidence/producer_v1/register_v2/end_utc.txt\n?? experiments/TRR-0004/evidence/producer_v1/register_v2/pid.txt\n?? experiments/TRR-0004/evidence/producer_v1/register_v2/receipt.json\n?? experiments/TRR-0004/evidence/producer_v1/register_v2/source_hashes.json\n?? experiments/TRR-0004/evidence/producer_v1/register_v2/start_utc.txt\n?? experiments/TRR-0004/evidence/producer_v1/selection/argv.txt\n?? experiments/TRR-0004/evidence/producer_v1/selection/pid.txt\n?? experiments/TRR-0004/evidence/producer_v1/selection/selection_receipt.json\n?? experiments/TRR-0004/evidence/producer_v1/selection/start_utc.txt\n?? experiments/TRR-0004/fit/affine_fit_records.json\n?? experiments/TRR-0004/fit/affine_validation_records.json\n?? experiments/TRR-0004/fit/public_fit_manifest.json\n?? experiments/TRR-0004/fresh_confirmation_v1/panel_capture/capture_evidence.json\n?? experiments/TRR-0004/fresh_confirmation_v1/panel_capture/panel.json\n?? experiments/TRR-0004/fresh_confirmation_v1/panel_capture/registration.json\n?? experiments/TRR-0004/fresh_confirmation_v1/panel_capture/registration_v2.json\n?? experiments/TRR-0004/fresh_confirmation_v1/panel_capture/truth_binding.json\n?? experiments/TRR-0004/fresh_confirmation_v1/panel_capture/truth_preparation.json\n?? experiments/TRR-0004/fresh_confirmation_v1/selection_plan.json\n?? experiments/TRR-0004/fresh_prediction_v1_argv.json\n?? experiments/TRR-0004/manifest.json\n?? scripts/trr0004_postscore_method_differences.py\n?? tests/test_trr0004_postscore_method_differences.py\n",
+    "status_start": " M experiments/TRR-0004/fresh_prediction_v2_argv.json\n M experiments/TRR-0004/status.json\n?? coordination/results/TRR-0004.md\n?? experiments/TRR-0004/contextual_fit_v1_argv.json\n?? experiments/TRR-0004/contextual_fit_v1_receipt/compute_apps_postflight.csv\n?? experiments/TRR-0004/contextual_fit_v1_receipt/compute_apps_preflight.csv\n?? experiments/TRR-0004/contextual_fit_v1_receipt/exit.json\n?? experiments/TRR-0004/contextual_fit_v1_receipt/gpu_postflight.csv\n?? experiments/TRR-0004/contextual_fit_v1_receipt/gpu_preflight.csv\n?? experiments/TRR-0004/contextual_fit_v1_receipt/host_memory_preflight.txt\n?? experiments/TRR-0004/contextual_fit_v1_receipt/launch.json\n?? experiments/TRR-0004/contextual_fit_v1_receipt/pid.json\n?? experiments/TRR-0004/contextual_fit_v1_receipt/source_hashes.json\n?? experiments/TRR-0004/contextual_qualification_v2_receipt/compute_apps_postflight.csv\n?? experiments/TRR-0004/contextual_qualification_v2_receipt/compute_apps_preflight.csv\n?? experiments/TRR-0004/contextual_qualification_v2_receipt/exit.json\n?? experiments/TRR-0004/contextual_qualification_v2_receipt/gpu_postflight.csv\n?? experiments/TRR-0004/contextual_qualification_v2_receipt/gpu_preflight.csv\n?? experiments/TRR-0004/contextual_qualification_v2_receipt/host_memory_preflight.txt\n?? experiments/TRR-0004/contextual_qualification_v2_receipt/launch.json\n?? experiments/TRR-0004/contextual_qualification_v2_receipt/source_hashes_end.sha256\n?? experiments/TRR-0004/contextual_qualification_v2_receipt/source_hashes_start.sha256\n?? experiments/TRR-0004/contextual_qualification_v3_receipt/compute_apps_postflight.csv\n?? experiments/TRR-0004/contextual_qualification_v3_receipt/compute_apps_preflight.csv\n?? experiments/TRR-0004/contextual_qualification_v3_receipt/exit.json\n?? experiments/TRR-0004/contextual_qualification_v3_receipt/gpu_postflight.csv\n?? experiments/TRR-0004/contextual_qualification_v3_receipt/gpu_preflight.csv\n?? experiments/TRR-0004/contextual_qualification_v3_receipt/host_memory_preflight.txt\n?? experiments/TRR-0004/contextual_qualification_v3_receipt/launch.json\n?? experiments/TRR-0004/contextual_qualification_v3_receipt/source_hashes_end.sha256\n?? experiments/TRR-0004/contextual_qualification_v3_receipt/source_hashes_start.sha256\n?? experiments/TRR-0004/contextual_qualification_v4_argv.json\n?? experiments/TRR-0004/evidence/affine/affine_copy_map_v1.json\n?? experiments/TRR-0004/evidence/affine/affine_learning_curves_v1.svg\n?? experiments/TRR-0004/evidence/affine/build_affine_learning_curve.py\n?? experiments/TRR-0004/evidence/affine/failed/qualification_full_v1.preflight.json\n?? experiments/TRR-0004/evidence/affine/failed/qualification_full_v1.receipt.json\n?? experiments/TRR-0004/evidence/affine/failed/qualification_full_v1.resource_failure.json\n?? experiments/TRR-0004/evidence/affine/fit_evidence/fit_large_v1.fit_evidence.json\n?? experiments/TRR-0004/evidence/affine/fit_evidence/fit_small_v1.fit_evidence.json\n?? experiments/TRR-0004/evidence/affine/fit_evidence/qualification_full_v2.fit_evidence.json\n?? experiments/TRR-0004/evidence/affine/launch/fit_large_v1.preflight.json\n?? experiments/TRR-0004/evidence/affine/launch/fit_large_v1.receipt.json\n?? experiments/TRR-0004/evidence/affine/launch/fit_small_v1.preflight.json\n?? experiments/TRR-0004/evidence/affine/launch/fit_small_v1.receipt.json\n?? experiments/TRR-0004/evidence/affine/launch/qualification_full_v2.preflight.json\n?? experiments/TRR-0004/evidence/affine/launch/qualification_full_v2.receipt.json\n?? experiments/TRR-0004/evidence/contextual/contextual_learning_curves.png\n?? experiments/TRR-0004/evidence/contextual/contextual_learning_curves_receipt.json\n?? experiments/TRR-0004/evidence/contextual/copy_hashmap.json\n?? experiments/TRR-0004/evidence/contextual/fit/causal_h_attention128/main_curve.json\n?? experiments/TRR-0004/evidence/contextual/fit/causal_h_attention128/subset_curve.json\n?? experiments/TRR-0004/evidence/contextual/fit/positionwise_mlp256/main_curve.json\n?? experiments/TRR-0004/evidence/contextual/fit/positionwise_mlp256/subset_curve.json\n?? experiments/TRR-0004/evidence/contextual/fit/run_evidence.json\n?? experiments/TRR-0004/evidence/contextual/receipt/compute_apps_postflight.csv\n?? experiments/TRR-0004/evidence/contextual/receipt/compute_apps_preflight.csv\n?? experiments/TRR-0004/evidence/contextual/receipt/exit.json\n?? experiments/TRR-0004/evidence/contextual/receipt/gpu_postflight.csv\n?? experiments/TRR-0004/evidence/contextual/receipt/gpu_preflight.csv\n?? experiments/TRR-0004/evidence/contextual/receipt/launch.json\n?? experiments/TRR-0004/evidence/contextual/receipt/pid.json\n?? experiments/TRR-0004/evidence/contextual/receipt/source_hashes.json\n?? experiments/TRR-0004/evidence/coverage/fit_small_v1/historical_affine_ce_no_vocab_bias/launch_receipt.json\n?? experiments/TRR-0004/evidence/coverage_retry_v1/fit_large_v1/historical_affine_ce_no_vocab_bias/coverage.json\n?? experiments/TRR-0004/evidence/coverage_retry_v1/fit_large_v1/historical_affine_ce_no_vocab_bias/launch_receipt.json\n?? experiments/TRR-0004/evidence/coverage_retry_v1/fit_large_v1/historical_affine_ce_vocab_bias/coverage.json\n?? experiments/TRR-0004/evidence/coverage_retry_v1/fit_large_v1/historical_affine_ce_vocab_bias/launch_receipt.json\n?? experiments/TRR-0004/evidence/coverage_retry_v1/fit_small_v1/historical_affine_ce_no_vocab_bias/coverage.json\n?? experiments/TRR-0004/evidence/coverage_retry_v1/fit_small_v1/historical_affine_ce_no_vocab_bias/launch_receipt.json\n?? experiments/TRR-0004/evidence/coverage_retry_v1/fit_small_v1/historical_affine_ce_vocab_bias/coverage.json\n?? experiments/TRR-0004/evidence/coverage_retry_v1/fit_small_v1/historical_affine_ce_vocab_bias/launch_receipt.json\n?? experiments/TRR-0004/evidence/coverage_retry_v1/launcher_failure_malformed_invocation.json\n?? experiments/TRR-0004/evidence/fresh_prediction_failures/affine_wrong_selection_path_v1.json\n?? experiments/TRR-0004/evidence/fresh_prediction_failures/affine_wrong_selection_path_v1/failure_receipt.json\n?? experiments/TRR-0004/evidence/producer_v1/capture/argv.txt\n?? experiments/TRR-0004/evidence/producer_v1/capture/capture_receipt.json\n?? experiments/TRR-0004/evidence/producer_v1/capture/pid.txt\n?? experiments/TRR-0004/evidence/producer_v1/capture/start_utc.txt\n?? experiments/TRR-0004/evidence/producer_v1/capture/time.txt\n?? experiments/TRR-0004/evidence/producer_v1/register/argv.txt\n?? experiments/TRR-0004/evidence/producer_v1/register/pid.txt\n?? experiments/TRR-0004/evidence/producer_v1/register/register_receipt.json\n?? experiments/TRR-0004/evidence/producer_v1/register/start_utc.txt\n?? experiments/TRR-0004/evidence/producer_v1/register_v2/argv.json\n?? experiments/TRR-0004/evidence/producer_v1/register_v2/end_utc.txt\n?? experiments/TRR-0004/evidence/producer_v1/register_v2/pid.txt\n?? experiments/TRR-0004/evidence/producer_v1/register_v2/receipt.json\n?? experiments/TRR-0004/evidence/producer_v1/register_v2/source_hashes.json\n?? experiments/TRR-0004/evidence/producer_v1/register_v2/start_utc.txt\n?? experiments/TRR-0004/evidence/producer_v1/selection/argv.txt\n?? experiments/TRR-0004/evidence/producer_v1/selection/pid.txt\n?? experiments/TRR-0004/evidence/producer_v1/selection/selection_receipt.json\n?? experiments/TRR-0004/evidence/producer_v1/selection/start_utc.txt\n?? experiments/TRR-0004/fit/affine_fit_records.json\n?? experiments/TRR-0004/fit/affine_validation_records.json\n?? experiments/TRR-0004/fit/public_fit_manifest.json\n?? experiments/TRR-0004/fresh_confirmation_v1/panel_capture/capture_evidence.json\n?? experiments/TRR-0004/fresh_confirmation_v1/panel_capture/panel.json\n?? experiments/TRR-0004/fresh_confirmation_v1/panel_capture/registration.json\n?? experiments/TRR-0004/fresh_confirmation_v1/panel_capture/registration_v2.json\n?? experiments/TRR-0004/fresh_confirmation_v1/panel_capture/truth_binding.json\n?? experiments/TRR-0004/fresh_confirmation_v1/panel_capture/truth_preparation.json\n?? experiments/TRR-0004/fresh_confirmation_v1/selection_plan.json\n?? experiments/TRR-0004/fresh_prediction_v1_argv.json\n?? experiments/TRR-0004/manifest.json\n?? scripts/trr0004_postscore_method_differences.py\n?? tests/test_trr0004_postscore_method_differences.py\n"
+  },
+  "method_timings": {
+    "positionwise_mlp256": [
+      {
+        "active_tokens": 2048,
+        "artifact": "outputs/TRR-0004/fresh_prediction_v2/positionwise_mlp256/finance/public_base/positionwise_mlp256.safetensors",
+        "cell_id": "finance__public_base",
+        "cold_costs_separate": true,
+        "measured_runs_per_record": 3,
+        "measured_seconds_sum": 0.160039873997448,
+        "method_id": "positionwise_mlp256",
+        "method_specific": {
+          "a2_fallback": false,
+          "calls": 64,
+          "candidate_simulations": 0,
+          "public_prefix_calls": 0
+        },
+        "peak_memory": {
+          "cuda_peak_allocated_bytes": 1279807488,
+          "cuda_peak_reserved_bytes": 2902458368,
+          "process_max_rss_bytes": 3612336128
+        },
+        "per_record_measured_mean_seconds": [
+          0.003437880334483149,
+          0.0032817256651469506,
+          0.003283567998247842,
+          0.0033916516670918404,
+          0.003419080998961969,
+          0.0033735993347363546,
+          0.0034294983318735226,
+          0.0032798076693628295,
+          0.003302197663288098,
+          0.003282867335656192,
+          0.00325906200062794,
+          0.0033202299988867403,
+          0.0032994616655438827,
+          0.0033174003353148387,
+          0.0033159193335450254,
+          0.0033526743330488293
+        ],
+        "per_record_measured_seconds": [
+          0.010313641003449447,
+          0.009845176995440852,
+          0.009850703994743526,
+          0.01017495500127552,
+          0.010257242996885907,
+          0.010120798004209064,
+          0.010288494995620567,
+          0.009839423008088488,
+          0.009906592989864293,
+          0.009848602006968576,
+          0.00977718600188382,
+          0.009960689996660221,
+          0.009898384996631648,
+          0.009952201005944517,
+          0.009947758000635076,
+          0.010058022999146488
+        ],
+        "per_record_timing_records": [
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.003667905999463983,
+              0.003364235999470111,
+              0.0032814990045153536
+            ],
+            "mismatch_runs": [],
+            "record_index": 0,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.1383720119993086
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.003283059995737858,
+              0.003295223999884911,
+              0.003266892999818083
+            ],
+            "mismatch_runs": [],
+            "record_index": 1,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.0033775100018829107
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0033125219997600652,
+              0.003254160998039879,
+              0.003284020996943582
+            ],
+            "mismatch_runs": [],
+            "record_index": 2,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.003374906998942606
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0034785860043484718,
+              0.003417351996176876,
+              0.003279017000750173
+            ],
+            "mismatch_runs": [],
+            "record_index": 3,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.00324211799306795
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0034163410018663853,
+              0.0035472399977152236,
+              0.003293661997304298
+            ],
+            "mismatch_runs": [],
+            "record_index": 4,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.003259786004491616
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0034880969978985377,
+              0.003327508005895652,
+              0.0033051930004148744
+            ],
+            "mismatch_runs": [],
+            "record_index": 5,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.0034247699950356036
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.003236452001146972,
+              0.0033489199995528907,
+              0.0037031229949207045
+            ],
+            "mismatch_runs": [],
+            "record_index": 6,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.0036051200004294515
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0032772750055301003,
+              0.003213276999304071,
+              0.0033488710032543167
+            ],
+            "mismatch_runs": [],
+            "record_index": 7,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.0032741110044298694
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0032900179940043017,
+              0.003278865995525848,
+              0.0033377090003341436
+            ],
+            "mismatch_runs": [],
+            "record_index": 8,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.003210564005712513
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0032959250020212494,
+              0.0032812490026117302,
+              0.003271428002335597
+            ],
+            "mismatch_runs": [],
+            "record_index": 9,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.003374356994754635
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0032610370035399683,
+              0.0032820790002006106,
+              0.003234069998143241
+            ],
+            "mismatch_runs": [],
+            "record_index": 10,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.0032331690017599612
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0033552169988979585,
+              0.0033621149996179156,
+              0.0032433579981443472
+            ],
+            "mismatch_runs": [],
+            "record_index": 11,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.0032000029968912713
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0033328339995932765,
+              0.003266092993726488,
+              0.0032994580033118837
+            ],
+            "mismatch_runs": [],
+            "record_index": 12,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.003353553998749703
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.003286484003183432,
+              0.0033622740011196584,
+              0.0033034430016414262
+            ],
+            "mismatch_runs": [],
+            "record_index": 13,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.003370373000507243
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.003228644003684167,
+              0.0033953599995584227,
+              0.0033237539973924868
+            ],
+            "mismatch_runs": [],
+            "record_index": 14,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.003301540004031267
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0032610380003461614,
+              0.003385668998816982,
+              0.0034113159999833442
+            ],
+            "mismatch_runs": [],
+            "record_index": 15,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.0032786060037324205
+            ]
+          }
+        ],
+        "per_record_total_seconds": 0.02181416418761728,
+        "per_record_warmup_seconds": [
+          0.1383720119993086,
+          0.0033775100018829107,
+          0.003374906998942606,
+          0.00324211799306795,
+          0.003259786004491616,
+          0.0034247699950356036,
+          0.0036051200004294515,
+          0.0032741110044298694,
+          0.003210564005712513,
+          0.003374356994754635,
+          0.0032331690017599612,
+          0.0032000029968912713,
+          0.003353553998749703,
+          0.003370373000507243,
+          0.003301540004031267,
+          0.0032786060037324205
+        ],
+        "prediction_sha256": "8a47c354553cba8f6f3dc3b875e1387f15078590b86646ca2c0f392fb9c42de6",
+        "records": 16,
+        "scored_tokens": 2032,
+        "steady_interval": "CPU activation H -> device preprocessing -> method prediction -> predicted IDs CPU",
+        "timed_interval_total_seconds": 0.3490266270018765,
+        "warmup_runs_per_record": 1,
+        "warmup_seconds_sum": 0.18825250000372762
+      },
+      {
+        "active_tokens": 2048,
+        "artifact": "outputs/TRR-0004/fresh_prediction_v2/positionwise_mlp256/finance/public_lora_2601/positionwise_mlp256.safetensors",
+        "cell_id": "finance__public_lora_2601",
+        "cold_costs_separate": true,
+        "measured_runs_per_record": 3,
+        "measured_seconds_sum": 0.15793907602346735,
+        "method_id": "positionwise_mlp256",
+        "method_specific": {
+          "a2_fallback": false,
+          "calls": 64,
+          "candidate_simulations": 0,
+          "public_prefix_calls": 0
+        },
+        "peak_memory": {
+          "cuda_peak_allocated_bytes": 1279807488,
+          "cuda_peak_reserved_bytes": 2902458368,
+          "process_max_rss_bytes": 3612336128
+        },
+        "per_record_measured_mean_seconds": [
+          0.003307675001754736,
+          0.0032557973318034783,
+          0.003267482000713547,
+          0.0033211740010301583,
+          0.0033117173346302784,
+          0.003282838333689142,
+          0.0032892656648376337,
+          0.0033011813308500373,
+          0.003292719333937081,
+          0.0032617996645664484,
+          0.003270355002314318,
+          0.00327472133358242,
+          0.003317563003899219,
+          0.0033074513363923566,
+          0.0032817996664865254,
+          0.003302818334001737
+        ],
+        "per_record_measured_seconds": [
+          0.009923025005264208,
+          0.009767391995410435,
+          0.009802446002140641,
+          0.009963522003090475,
+          0.009935152003890835,
+          0.009848515001067426,
+          0.0098677969945129,
+          0.009903543992550112,
+          0.009878158001811244,
+          0.009785398993699346,
+          0.009811065006942954,
+          0.00982416400074726,
+          0.009952689011697657,
+          0.00992235400917707,
+          0.009845398999459576,
+          0.009908455002005212
+        ],
+        "per_record_timing_records": [
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.00329457000043476,
+              0.0033118870051112026,
+              0.003316567999718245
+            ],
+            "mismatch_runs": [],
+            "record_index": 0,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.003987969001173042
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.003259796001657378,
+              0.0032444929966004565,
+              0.0032631029971526004
+            ],
+            "mismatch_runs": [],
+            "record_index": 1,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.003288568004791159
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.003247700005886145,
+              0.0032703179967938922,
+              0.003284427999460604
+            ],
+            "mismatch_runs": [],
+            "record_index": 2,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.0033947549964068457
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0033840330070233904,
+              0.0033319599970127456,
+              0.0032475289990543388
+            ],
+            "mismatch_runs": [],
+            "record_index": 3,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.0032674719986971468
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0032994310022331774,
+              0.0033121880042017438,
+              0.0033235329974559136
+            ],
+            "mismatch_runs": [],
+            "record_index": 4,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.0032598249963484704
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0033136909987661056,
+              0.003199366001354065,
+              0.0033354580009472556
+            ],
+            "mismatch_runs": [],
+            "record_index": 5,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.003332561995193828
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.003222324994567316,
+              0.0032491430029040202,
+              0.0033963289970415644
+            ],
+            "mismatch_runs": [],
+            "record_index": 6,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.00344152600155212
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.003276992996688932,
+              0.0033130999945569783,
+              0.0033134510013042018
+            ],
+            "mismatch_runs": [],
+            "record_index": 7,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.0032289700029650703
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0033146330024464987,
+              0.0033136810016003437,
+              0.003249843997764401
+            ],
+            "mismatch_runs": [],
+            "record_index": 8,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.003294791000371333
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.003256818999943789,
+              0.0032684339967090636,
+              0.003260145997046493
+            ],
+            "mismatch_runs": [],
+            "record_index": 9,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.003234623000025749
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0033161760002258234,
+              0.0032784270006231964,
+              0.003216462006093934
+            ],
+            "mismatch_runs": [],
+            "record_index": 10,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.0031967800023267046
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0032512479956494644,
+              0.003283628000644967,
+              0.0032892880044528283
+            ],
+            "mismatch_runs": [],
+            "record_index": 11,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.0032865030007087626
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.003351032006321475,
+              0.003263564001827035,
+              0.0033380930035491474
+            ],
+            "mismatch_runs": [],
+            "record_index": 12,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.003280398996139411
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0033188430024893023,
+              0.003270769004302565,
+              0.003332742002385203
+            ],
+            "mismatch_runs": [],
+            "record_index": 13,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.0032804989969008602
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.003267421998316422,
+              0.0032390810010838322,
+              0.0033388960000593215
+            ],
+            "mismatch_runs": [],
+            "record_index": 14,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.003282675002992619
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0033080690045608208,
+              0.003244703999371268,
+              0.0033556819980731234
+            ],
+            "mismatch_runs": [],
+            "record_index": 15,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.0033402779954485595
+            ]
+          }
+        ],
+        "per_record_total_seconds": 0.0132449237498804,
+        "per_record_warmup_seconds": [
+          0.003987969001173042,
+          0.003288568004791159,
+          0.0033947549964068457,
+          0.0032674719986971468,
+          0.0032598249963484704,
+          0.003332561995193828,
+          0.00344152600155212,
+          0.0032289700029650703,
+          0.003294791000371333,
+          0.003234623000025749,
+          0.0031967800023267046,
+          0.0032865030007087626,
+          0.003280398996139411,
+          0.0032804989969008602,
+          0.003282675002992619,
+          0.0033402779954485595
+        ],
+        "prediction_sha256": "a3aa50fc8423791e3770ee64c058a1d8fc44f22f8c77e60ac7849acf4f32a316",
+        "records": 16,
+        "scored_tokens": 2032,
+        "steady_interval": "CPU activation H -> device preprocessing -> method prediction -> predicted IDs CPU",
+        "timed_interval_total_seconds": 0.2119187799980864,
+        "warmup_runs_per_record": 1,
+        "warmup_seconds_sum": 0.05339819499204168
+      },
+      {
+        "active_tokens": 640,
+        "artifact": "outputs/TRR-0004/fresh_prediction_v2/positionwise_mlp256/pile/public_base/positionwise_mlp256.safetensors",
+        "cell_id": "pile__public_base",
+        "cold_costs_separate": true,
+        "measured_runs_per_record": 3,
+        "measured_seconds_sum": 0.132550395996077,
+        "method_id": "positionwise_mlp256",
+        "method_specific": {
+          "a2_fallback": false,
+          "calls": 64,
+          "candidate_simulations": 0,
+          "public_prefix_calls": 0
+        },
+        "peak_memory": {
+          "cuda_peak_allocated_bytes": 1143286784,
+          "cuda_peak_reserved_bytes": 2902458368,
+          "process_max_rss_bytes": 3612336128
+        },
+        "per_record_measured_mean_seconds": [
+          0.002805086665224129,
+          0.002783770331006963,
+          0.002753761667311968,
+          0.0027650573319988325,
+          0.0026846453329198994,
+          0.0027702083316398785,
+          0.002757493668468669,
+          0.0027647633348048353,
+          0.002795032332263266,
+          0.0027737363343476318,
+          0.0027474860010746247,
+          0.0027226423311124868,
+          0.0027883113337641894,
+          0.0027614196684832373,
+          0.002767868999702235,
+          0.0027421816679028175
+        ],
+        "per_record_measured_seconds": [
+          0.008415259995672386,
+          0.008351310993020888,
+          0.008261285001935903,
+          0.008295171995996498,
+          0.008053935998759698,
+          0.008310624994919635,
+          0.008272481005406007,
+          0.008294290004414506,
+          0.008385096996789798,
+          0.008321209003042895,
+          0.008242458003223874,
+          0.00816792699333746,
+          0.008364934001292568,
+          0.008284259005449712,
+          0.008303606999106705,
+          0.008226545003708452
+        ],
+        "per_record_timing_records": [
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0028579270001500845,
+              0.002785995995509438,
+              0.0027713370000128634
+            ],
+            "mismatch_runs": [],
+            "record_index": 0,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.01154512199718738
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.002831600999343209,
+              0.0027422989951446652,
+              0.002777410998533014
+            ],
+            "mismatch_runs": [],
+            "record_index": 1,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.0027233610016992316
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0027822909978567623,
+              0.0028019900055369362,
+              0.0026770039985422045
+            ],
+            "mismatch_runs": [],
+            "record_index": 2,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.002712699002586305
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.002730028994847089,
+              0.0027561239985516295,
+              0.002809019002597779
+            ],
+            "mismatch_runs": [],
+            "record_index": 3,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.0027587959993979894
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.002658268000232056,
+              0.0027074779936810955,
+              0.002688190004846547
+            ],
+            "mismatch_runs": [],
+            "record_index": 4,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.002720671000133734
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.002727778999542352,
+              0.0027872360005858354,
+              0.002795609994791448
+            ],
+            "mismatch_runs": [],
+            "record_index": 5,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.0028604469989659265
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0027824310018331744,
+              0.002727478997258004,
+              0.002762571006314829
+            ],
+            "mismatch_runs": [],
+            "record_index": 6,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.0027657130049192347
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0027446480016806163,
+              0.0027865890006069094,
+              0.0027630530021269806
+            ],
+            "mismatch_runs": [],
+            "record_index": 7,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.0027642169952741824
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0028752680009347387,
+              0.002791457998682745,
+              0.0027183709971723147
+            ],
+            "mismatch_runs": [],
+            "record_index": 8,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.0027519680006662384
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.002706865001528058,
+              0.0028510900010587648,
+              0.0027632540004560724
+            ],
+            "mismatch_runs": [],
+            "record_index": 9,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.002710589993512258
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0026991240010829642,
+              0.002783937001368031,
+              0.0027593970007728785
+            ],
+            "mismatch_runs": [],
+            "record_index": 10,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.002730822001467459
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.002738251998380292,
+              0.0027315949992043898,
+              0.002698079995752778
+            ],
+            "mismatch_runs": [],
+            "record_index": 11,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.002638899997691624
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.002732870001636911,
+              0.0026963819982483983,
+              0.002935682001407258
+            ],
+            "mismatch_runs": [],
+            "record_index": 12,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.002729908999754116
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.002737197995884344,
+              0.002746898004261311,
+              0.002800163005304057
+            ],
+            "mismatch_runs": [],
+            "record_index": 13,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.0027083710010629147
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0027616879960987717,
+              0.0027491459986777045,
+              0.002792773004330229
+            ],
+            "mismatch_runs": [],
+            "record_index": 14,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.0027137630022480153
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.002734136003709864,
+              0.0027058310006395914,
+              0.0027865779993589967
+            ],
+            "mismatch_runs": [],
+            "record_index": 15,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.002794038002321031
+            ]
+          }
+        ],
+        "per_record_total_seconds": 0.011610494500018831,
+        "per_record_warmup_seconds": [
+          0.01154512199718738,
+          0.0027233610016992316,
+          0.002712699002586305,
+          0.0027587959993979894,
+          0.002720671000133734,
+          0.0028604469989659265,
+          0.0027657130049192347,
+          0.0027642169952741824,
+          0.0027519680006662384,
+          0.002710589993512258,
+          0.002730822001467459,
+          0.002638899997691624,
+          0.002729908999754116,
+          0.0027083710010629147,
+          0.0027137630022480153,
+          0.002794038002321031
+        ],
+        "prediction_sha256": "1d74875058ced1409ff3ae913b66b3da0a235ceeb43814e166c01aa0636f5342",
+        "records": 16,
+        "scored_tokens": 624,
+        "steady_interval": "CPU activation H -> device preprocessing -> method prediction -> predicted IDs CPU",
+        "timed_interval_total_seconds": 0.1857679120003013,
+        "warmup_runs_per_record": 1,
+        "warmup_seconds_sum": 0.05262938699888764
+      },
+      {
+        "active_tokens": 640,
+        "artifact": "outputs/TRR-0004/fresh_prediction_v2/positionwise_mlp256/pile/public_lora_2601/positionwise_mlp256.safetensors",
+        "cell_id": "pile__public_lora_2601",
+        "cold_costs_separate": true,
+        "measured_runs_per_record": 3,
+        "measured_seconds_sum": 0.13148647399793845,
+        "method_id": "positionwise_mlp256",
+        "method_specific": {
+          "a2_fallback": false,
+          "calls": 64,
+          "candidate_simulations": 0,
+          "public_prefix_calls": 0
+        },
+        "peak_memory": {
+          "cuda_peak_allocated_bytes": 1143286784,
+          "cuda_peak_reserved_bytes": 2902458368,
+          "process_max_rss_bytes": 3612336128
+        },
+        "per_record_measured_mean_seconds": [
+          0.0027719066662636274,
+          0.002850383333376764,
+          0.00272590732978036,
+          0.00271542033199997,
+          0.002704310667468235,
+          0.0027165260010709367,
+          0.0026978786675802744,
+          0.002707162665804693,
+          0.002708999001091191,
+          0.0027056446682157307,
+          0.0028180060010830252,
+          0.002712742665607948,
+          0.0027181553329379917,
+          0.0027212293328678547,
+          0.0028103486668745368,
+          0.0027442033339563445
+        ],
+        "per_record_measured_seconds": [
+          0.008315719998790883,
+          0.008551150000130292,
+          0.00817772198934108,
+          0.00814626099599991,
+          0.008112932002404705,
+          0.00814957800321281,
+          0.008093636002740823,
+          0.008121487997414079,
+          0.008126997003273573,
+          0.008116934004647192,
+          0.008454018003249075,
+          0.008138227996823844,
+          0.008154465998813976,
+          0.008163687998603564,
+          0.00843104600062361,
+          0.008232610001869034
+        ],
+        "per_record_timing_records": [
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0028026630025124177,
+              0.002721976001339499,
+              0.002791080994938966
+            ],
+            "mismatch_runs": [],
+            "record_index": 0,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.0035256299961474724
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0027480270000523888,
+              0.0027127360008307733,
+              0.00309038699924713
+            ],
+            "mismatch_runs": [],
+            "record_index": 1,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.002662605002115015
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0027087540001957677,
+              0.0026951209947583266,
+              0.002773846994386986
+            ],
+            "mismatch_runs": [],
+            "record_index": 2,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.002942546001577284
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.00277006599935703,
+              0.0026561900012893602,
+              0.00272000499535352
+            ],
+            "mismatch_runs": [],
+            "record_index": 3,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.002718427000218071
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0026671189989428967,
+              0.002676711003005039,
+              0.002769102000456769
+            ],
+            "mismatch_runs": [],
+            "record_index": 4,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.002757557995209936
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0027006099990103394,
+              0.002715711001656018,
+              0.002733257002546452
+            ],
+            "mismatch_runs": [],
+            "record_index": 5,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.002702712001337204
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0027629879987216555,
+              0.0026647560007404536,
+              0.0026658920032787137
+            ],
+            "mismatch_runs": [],
+            "record_index": 6,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.0028217059953021817
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0027118209982290864,
+              0.002670959998795297,
+              0.002738707000389695
+            ],
+            "mismatch_runs": [],
+            "record_index": 7,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.002732201995968353
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0026848050038097426,
+              0.0027461770005174913,
+              0.002696014998946339
+            ],
+            "mismatch_runs": [],
+            "record_index": 8,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.002652953000506386
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0027125049964524806,
+              0.002694166003493592,
+              0.002710263004701119
+            ],
+            "mismatch_runs": [],
+            "record_index": 9,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.0026951809995807707
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0026963970012729988,
+              0.0028753869992215186,
+              0.002882234002754558
+            ],
+            "mismatch_runs": [],
+            "record_index": 10,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.002764244993159082
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.002701806995901279,
+              0.0026996750020771287,
+              0.0027367459988454357
+            ],
+            "mismatch_runs": [],
+            "record_index": 11,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.0026995250009349547
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0027267319965176284,
+              0.0027349660012987442,
+              0.002692768000997603
+            ],
+            "mismatch_runs": [],
+            "record_index": 12,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.0026836390024982393
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0027865160009241663,
+              0.002687621003133245,
+              0.0026895509945461527
+            ],
+            "mismatch_runs": [],
+            "record_index": 13,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.0027558599977055565
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0028195550039527006,
+              0.002799204994516913,
+              0.0028122860021539964
+            ],
+            "mismatch_runs": [],
+            "record_index": 14,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.002766174999123905
+            ]
+          },
+          {
+            "designated_measured_run": 1,
+            "measured_runs": 3,
+            "measured_seconds": [
+              0.0027635509977699257,
+              0.0027043710069847293,
+              0.002764687997114379
+            ],
+            "mismatch_runs": [],
+            "record_index": 15,
+            "repeated_prediction_exact": true,
+            "shared_resources_resident": true,
+            "steady_interval": "CPU activation H->device preprocessing + predictor + predicted IDs device->CPU",
+            "warmup_runs": 1,
+            "warmup_seconds": [
+              0.002677324002434034
+            ]
+          }
+        ],
+        "per_record_total_seconds": 0.011039994687507715,
+        "per_record_warmup_seconds": [
+          0.0035256299961474724,
+          0.002662605002115015,
+          0.002942546001577284,
+          0.002718427000218071,
+          0.002757557995209936,
+          0.002702712001337204,
+          0.0028217059953021817,
+          0.002732201995968353,
+          0.002652953000506386,
+          0.0026951809995807707,
+          0.002764244993159082,
+          0.0026995250009349547,
+          0.0026836390024982393,
+          0.0027558599977055565,
+          0.002766174999123905,
+          0.002677324002434034
+        ],
+        "prediction_sha256": "cebcff2bc9530788f5f28d0338b22d3c2a587821f80c787870e95045f7b4023a",
+        "records": 16,
+        "scored_tokens": 624,
+        "steady_interval": "CPU activation H -> device preprocessing -> method prediction -> predicted IDs CPU",
+        "timed_interval_total_seconds": 0.17663991500012344,
+        "warmup_runs_per_record": 1,
+        "warmup_seconds_sum": 0.044558287983818445
+      }
+    ]
+  },
+  "model": {
+    "cold_peak_memory": {
+      "cuda_peak_allocated_bytes": 2889351168,
+      "cuda_peak_reserved_bytes": 2896166912,
+      "process_max_rss_bytes": 3612336128
+    },
+    "loader_scope": "selected method positionwise_mlp256 plus normalized public embedding table; no public model or P0 prefix instantiated",
+    "method_state_load_seconds": 0.016728648995922413,
+    "model": {
+      "id": "meta-llama/Llama-3.2-1B-Instruct",
+      "loaded": false,
+      "revision": "9213176726f574b556790deb65791e0c5aa438b6"
+    },
+    "model_load_seconds": 0.0,
+    "public_embedding_load_seconds": 0.9987228559984942,
+    "public_prefix_loaded": false,
+    "public_resources": {
+      "normalized_embedding": {
+        "bytes": 1050673488,
+        "dtype": "torch.float32",
+        "load_seconds": 0.9987228559984942,
+        "loader_scope": "normalized public embedding table only; no public model or prefix instantiated",
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+        "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+        "shape": [
+          128256,
+          2048
+        ],
+        "tensor_sha256": "656fa55881813ff6768011943cdd1d5bc0abfe43ad58e3cba5eb0b19af578c64"
+      },
+      "retained_lens": null
+    },
+    "selected_method": "positionwise_mlp256",
+    "selected_method_state": {
+      "bytes": 20989748,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/contextual_fit_v1/positionwise_mlp256/selected.safetensors",
+      "sha256": "300d7184308b7a4d16bcd0a0ada612f64e5a4117e883b1f98af07e543ce1c05b"
+    }
+  },
+  "panel": {
+    "cells": [
+      "finance__public_base",
+      "finance__public_lora_2601",
+      "pile__public_base",
+      "pile__public_lora_2601"
+    ],
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fresh_confirmation_v1/panel_capture/panel.json",
+    "sha256": "da65242f395c2c96a25ed8e30d62415db9108c9ded0c9525d4f9358691cb44da"
+  },
+  "peak_memory": {
+    "cuda_peak_allocated_bytes": 2889351168,
+    "cuda_peak_reserved_bytes": 2902458368,
+    "process_max_rss_bytes": 3612336128
+  },
+  "per_cell_peak_memory": {
+    "finance__public_base": {
+      "cuda_peak_allocated_bytes": 1279807488,
+      "cuda_peak_reserved_bytes": 2902458368,
+      "process_max_rss_bytes": 3612336128
+    },
+    "finance__public_lora_2601": {
+      "cuda_peak_allocated_bytes": 1279807488,
+      "cuda_peak_reserved_bytes": 2902458368,
+      "process_max_rss_bytes": 3612336128
+    },
+    "pile__public_base": {
+      "cuda_peak_allocated_bytes": 1143286784,
+      "cuda_peak_reserved_bytes": 2902458368,
+      "process_max_rss_bytes": 3612336128
+    },
+    "pile__public_lora_2601": {
+      "cuda_peak_allocated_bytes": 1143286784,
+      "cuda_peak_reserved_bytes": 2902458368,
+      "process_max_rss_bytes": 3612336128
+    }
+  },
+  "prediction_artifacts": {
+    "count": 4,
+    "expected_cells": 4,
+    "full_five_method_gate_deferred": true,
+    "truth_opened": false,
+    "validated_count": 4
+  },
+  "registration": {
+    "executed_method_id": "positionwise_mlp256",
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fresh_confirmation_v1/panel_capture/registration_v2.json",
+    "registered_method_ids": [
+      "historical_alpaca_a1",
+      "frozen_a1_a2_k256",
+      "historical_affine_ce_no_vocab_bias",
+      "causal_h_attention128",
+      "positionwise_mlp256"
+    ],
+    "sha256": "543af6d1c57854996c420d2a342e9121cf01b8b444599aa93c514ba18bd968bb"
+  },
+  "runtime_components": {
+    "positionwise_mlp256": {
+      "a2_fallback": false,
+      "candidate_policy": "forbidden",
+      "candidate_simulations": 0,
+      "public_prefix_calls": 0,
+      "public_prefix_loaded": false
+    }
+  },
+  "schema": "token-reconstruction.trr0004-fresh-confirmation-run.v1",
+  "selection_plan": {
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fresh_confirmation_v1/selection_plan.json",
+    "sha256": "a01f445c67bb4cb0f462fb000dd8a46c63cceeebe4c53c1e73c08107378f3eca"
+  },
+  "source_records": {
+    "scripts/trr0003_footing_compare.py": {
+      "bytes": 44976,
+      "path": "scripts/trr0003_footing_compare.py",
+      "sha256": "bb3690a481014f3ea12b411a3ec6eb58d7c888ef6c4135f9e03908027857f98e"
+    },
+    "scripts/trr0004_fresh_confirmation.py": {
+      "bytes": 89002,
+      "path": "scripts/trr0004_fresh_confirmation.py",
+      "sha256": "482c3a75d2fc641f90fe9c531584e2be14aefe914d97b246fe3633bdaa3d2945"
+    },
+    "scripts/trr0004_predict_confirmation.py": {
+      "bytes": 71405,
+      "path": "scripts/trr0004_predict_confirmation.py",
+      "sha256": "36f6aa7b4493c60b257b3896c975f523595da912e14a97dba3f6440d419e8427"
+    },
+    "src/token_reconstruction/a1a2_configuration_search.py": {
+      "bytes": 29969,
+      "path": "src/token_reconstruction/a1a2_configuration_search.py",
+      "sha256": "608bead6291353cacaa700a85f3dd619fb3261375e6fd5ba19cbc43fd738315b"
+    },
+    "src/token_reconstruction/causal_decoder_extension.py": {
+      "bytes": 19750,
+      "path": "src/token_reconstruction/causal_decoder_extension.py",
+      "sha256": "f1fb75e1feebffce5b26d0b1573f8b7a41ac1452976870027a9aa552b5736307"
+    },
+    "src/token_reconstruction/component_crossover.py": {
+      "bytes": 20708,
+      "path": "src/token_reconstruction/component_crossover.py",
+      "sha256": "2cd03fda1f29f30d0a92246252ba2d2d89d3890abc6739ae0c8bae0a5c105b7d"
+    },
+    "src/token_reconstruction/dual_benchmark.py": {
+      "bytes": 16153,
+      "path": "src/token_reconstruction/dual_benchmark.py",
+      "sha256": "30819a438482149431ddc110cd22c389ead905c49399b88a0c4985afd62514e8"
+    },
+    "src/token_reconstruction/footing.py": {
+      "bytes": 56490,
+      "path": "src/token_reconstruction/footing.py",
+      "sha256": "9adfb838b2f42c936c7d6397579dd5477f0063cf61c8d5a0a6d7e21a1d2a9b36"
+    },
+    "src/token_reconstruction/historical_affine_ce.py": {
+      "bytes": 64326,
+      "path": "src/token_reconstruction/historical_affine_ce.py",
+      "sha256": "ec0b0644870041b93871245ecdeb84071de7a9864229709d4ad5999d920399d7"
+    },
+    "src/token_reconstruction/historical_inputlens_bridge.py": {
+      "bytes": 16979,
+      "path": "src/token_reconstruction/historical_inputlens_bridge.py",
+      "sha256": "9280b223e25119295efc9a4af10724d90a93af8e0a52ead127562b5015872b67"
+    }
+  },
+  "started_utc": "2026-09-05T14:32:52Z",
+  "startup": {
+    "boundary": "entry to _run through immediately before the first run_warmed_prediction call",
+    "boundary_utc": "2026-09-05T14:33:01Z",
+    "excludes": [
+      "Python interpreter and module-import time",
+      "CLI parsing and argument/default resolution",
+      "the first timed warmup and measured prediction calls"
+    ],
+    "includes": [
+      "git/panel/selection/registration validation and hashing",
+      "public resource loading",
+      "selected method state loading",
+      "CUDA initialization and resource probes",
+      "largest-cell preflight"
+    ],
+    "seconds": 9.460094688998652,
+    "started_utc": "2026-09-05T14:32:52Z"
+  },
+  "status": "PUBLIC_PREDICTIONS_COMPLETE_NO_TRUTH_OPENED",
+  "status_before_truth": "four cells for the selected method validated; full five-method gate deferred to the footing orchestrator",
+  "task_id": "TRR-0004",
+  "wall_seconds": 22.191600872996787
+}
