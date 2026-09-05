@@ -1,0 +1,92 @@
+{
+  "artifacts": {
+    "outer-receipt.txt": {
+      "bytes": 74,
+      "path": "outer-receipt.txt",
+      "sha256": "aa8211d69dcf16188475153c441ea87080ab7696ec070ec638540a06198f0c5b"
+    },
+    "outer-stderr.txt": {
+      "bytes": 1163,
+      "path": "outer-stderr.txt",
+      "sha256": "630956438f80f251b1fb3f815461b04787cb9927d07dd1930de0397ef7047a04"
+    },
+    "outer-stdout.txt": {
+      "bytes": 0,
+      "path": "outer-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "outer-time-v.txt": {
+      "bytes": 1536,
+      "path": "outer-time-v.txt",
+      "sha256": "115783ba7506525047bc7bd6c737241df2ddd1088d4b79fa6eda2d48f3214baa"
+    },
+    "preflight.json": {
+      "bytes": 2283,
+      "path": "preflight.json",
+      "sha256": "34426cec309081e1b38945059e2f7a1d57246808bdbfbe6bd276edcc7f5c38a9"
+    }
+  },
+  "command_argv": [
+    "env",
+    "CUDA_VISIBLE_DEVICES=",
+    "OMP_NUM_THREADS=8",
+    "MKL_NUM_THREADS=8",
+    "TOKENIZERS_PARALLELISM=false",
+    "/usr/bin/time",
+    "-v",
+    "-o",
+    "/tmp/trr-p02-time-20260905-run1.txt",
+    "timeout",
+    "--foreground",
+    "660s",
+    "python3",
+    "scripts/trr_p02/diagnose_geometry.py",
+    "--plan",
+    "experiments/TRR-P02/plan.json",
+    "--prototype",
+    "/tmp/trr-p01/experiments/TRR-P01/runtime/cpu-table-20260905/boundary_prototypes.safetensors",
+    "--historical-lens",
+    "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/strict-surrogate-heavy/control-assets/lens_alpaca.pt",
+    "--model-path",
+    "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+    "--output-root",
+    "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run1",
+    "--manifest-path",
+    "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run1/run_manifest.json",
+    "--implementation-commit",
+    "3110ea7fa1979e6fcaa494f7933c002d51d3c20d",
+    "--prototype-chunk-size",
+    "8192"
+  ],
+  "command_wrapper": "/usr/bin/time -v -o /tmp/trr-p02-time-20260905-run1.txt timeout --foreground 660s",
+  "end_utc": "2026-09-05T12:00:08Z",
+  "exit_status": 1,
+  "failure": {
+    "cause": "runner lacked project root on sys.path for direct invocation",
+    "exception": "ModuleNotFoundError: No module named 'reference'",
+    "fix": "include _SOURCE_ROOT in runner import paths; preserve original reference loader",
+    "traceback_location": "src/token_reconstruction/trr_p01/historical_comparators.py:120-123",
+    "wrapped_error": "HistoricalComparatorError: published strict-BOS lens loader is unavailable"
+  },
+  "implementation_commit": "3110ea7fa1979e6fcaa494f7933c002d51d3c20d",
+  "phase": {
+    "historical_lens": "not loaded; import failed before lens checkpoint load",
+    "prototype_table": "loaded and identity/hash checks passed before model load",
+    "public_forwards": "none after model load; no public geometry/panel output",
+    "public_model": "loaded from declared local snapshot; weight progress reached 146/146",
+    "qualification": "not started",
+    "resource_preflight": "passed and preflight.json written",
+    "scientific_result": "none"
+  },
+  "resource": {
+    "maximum_resident_set_size_kb": 2431792,
+    "swaps": 0,
+    "timeout_triggered": false
+  },
+  "schema": "token-reconstruction.trr-p02-failed-run.v1",
+  "source_truth_included": false,
+  "start_utc": "2026-09-05T12:00:03Z",
+  "status": "FAILED_BEFORE_PUBLIC_GEOMETRY",
+  "task_id": "TRR-P02",
+  "truth_opened": false
+}

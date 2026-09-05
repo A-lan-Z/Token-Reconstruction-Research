@@ -163,6 +163,8 @@ def capture_exclusion_record(
     source_plan_path: Path,
     cases: Sequence[PublicDiagnosticCase],
     *,
+    status: str = "CAPTURED_PUBLIC_DIAGNOSTIC_CASES",
+    case_status: str = "CAPTURED_PUBLIC_DIAGNOSTIC_CASES",
     generated_utc: str | None = None,
     model_id: str = "meta-llama/Llama-3.2-1B-Instruct",
     model_revision: str = "9213176726f574b556790deb65791e0c5aa438b6",
@@ -173,8 +175,10 @@ def capture_exclusion_record(
     """Bind exact public cases to the immutable source-plan hash.
 
     This function performs no model access and accepts no source truth.  The
-    caller must provide the exact public token IDs captured by the diagnostic
-    runner before any later confirmation truth is opened.
+    caller must provide the exact public token IDs captured or predeclared by
+    the diagnostic runner before any later confirmation truth is opened. Use
+    status and case_status to distinguish a pending plan from a runtime
+    capture; neither status opens or implies source truth.
     """
 
     source_plan_path = Path(source_plan_path)
@@ -192,10 +196,13 @@ def capture_exclusion_record(
     timestamp = generated_utc or datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
     if not isinstance(timestamp, str) or not timestamp:
         raise ExclusionCaptureError("generated_utc must be a non-empty string")
+    _identifier(status, field="status")
+    _identifier(case_status, field="case_status")
     return {
         "schema": "token-reconstruction.trr-p02.public-diagnostic-exclusion.v1",
         "task_id": "TRR-P02",
-        "status": "CAPTURED_PUBLIC_DIAGNOSTIC_CASES",
+        "status": status,
+        "case_status": case_status,
         "generated_utc": timestamp,
         "model": {
             "id": _identifier(model_id, field="model_id"),

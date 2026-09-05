@@ -1,0 +1,114 @@
+{
+  "schema": "token-reconstruction.trr-p02-failed-run.v1",
+  "task_id": "TRR-P02",
+  "status": "FAILED_DURING_ACTIVATION_SERIALIZATION",
+  "implementation_commit": "b0d8e03d0fab12842d64d5bc1ac72d1a4d4580cd",
+  "truth_opened": false,
+  "source_truth_included": false,
+  "lease_start_utc": "2026-09-05T12:13:00Z",
+  "lease_hard_end_utc": "2026-09-05T12:25:00Z",
+  "start_utc": "2026-09-05T12:17:25Z",
+  "end_utc": "2026-09-05T12:17:37Z",
+  "exit_status": 1,
+  "timeout_triggered": false,
+  "command_argv": [
+    "env",
+    "CUDA_VISIBLE_DEVICES=",
+    "OMP_NUM_THREADS=8",
+    "MKL_NUM_THREADS=8",
+    "TOKENIZERS_PARALLELISM=false",
+    "/usr/bin/time",
+    "-v",
+    "-o",
+    "/tmp/trr-p02-time-20260905-run3.txt",
+    "timeout",
+    "--foreground",
+    "300s",
+    "python3",
+    "scripts/trr_p02/diagnose_geometry.py",
+    "--plan",
+    "experiments/TRR-P02/plan.json",
+    "--prototype",
+    "/tmp/trr-p01/experiments/TRR-P01/runtime/cpu-table-20260905/boundary_prototypes.safetensors",
+    "--historical-lens",
+    "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/strict-surrogate-heavy/control-assets/lens_alpaca.pt",
+    "--model-path",
+    "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+    "--output-root",
+    "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run3",
+    "--manifest-path",
+    "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run3/run_manifest.json",
+    "--implementation-commit",
+    "b0d8e03d0fab12842d64d5bc1ac72d1a4d4580cd",
+    "--prototype-chunk-size",
+    "8192"
+  ],
+  "command_wrapper": "/usr/bin/time -v -o /tmp/trr-p02-time-20260905-run3.txt timeout --foreground 300s",
+  "failure": {
+    "cause": "activation_panel.safetensors serialization rejected a shared-memory view between primary_activations and recomputed_baseline",
+    "exception": "RuntimeError: Some tensors share memory: [{'primary_activations', 'recomputed_baseline'}]",
+    "traceback_location": "scripts/trr_p02/diagnose_geometry.py:1410",
+    "fix": "clone detached baseline before serialization; no numerical computation changes"
+  },
+  "phase": {
+    "resource_preflight": "passed and preflight.json written",
+    "public_model": "loaded from declared local snapshot; weight progress reached 146/146",
+    "prototype_table": "loaded and identity/hash checks passed",
+    "historical_lens": "loaded and frozen checks passed",
+    "longest_context_qualification": "passed exact batched-vs-single equality at C6; qualification.json written",
+    "public_panel_cache_and_geometry": "completed",
+    "full_vocab_and_lens_rankings": "completed",
+    "figures": "completed; offset_geometry.png and lens_geometry.png written",
+    "activation_serialization": "failed at safetensors save_file due shared view",
+    "diagnostics_manifest": "not written",
+    "scientific_result": "none retained; no diagnostics or run_manifest.json"
+  },
+  "resource": {
+    "maximum_resident_set_size_kb": 6325872,
+    "swaps": 0,
+    "available_memory_guard_gib": 10,
+    "rss_reservation_ceiling_gib": 8
+  },
+  "artifacts": {
+    "lens_geometry.png": {
+      "bytes": 77999,
+      "path": "lens_geometry.png",
+      "sha256": "fc03d6f48d19c694ac7bc5bbac716b08ad85e9bc95881a61a2265cb217698cc7"
+    },
+    "offset_geometry.png": {
+      "bytes": 44740,
+      "path": "offset_geometry.png",
+      "sha256": "6796c56602983dac2340e6ae8992e7adc2246ff621908bbb0c3b46d07129e721"
+    },
+    "outer-receipt.txt": {
+      "bytes": 74,
+      "path": "outer-receipt.txt",
+      "sha256": "f24f310c645e50209d2ca5bfdd68ffd560529de8f7f5fca3495915a156e7f61c"
+    },
+    "outer-stderr.txt": {
+      "bytes": 1132,
+      "path": "outer-stderr.txt",
+      "sha256": "e0634e46dae01e4221aa503e1838d20df3a54cb9cc89a192d1e0484a120127fc"
+    },
+    "outer-stdout.txt": {
+      "bytes": 0,
+      "path": "outer-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "outer-time-v.txt": {
+      "bytes": 1539,
+      "path": "outer-time-v.txt",
+      "sha256": "d7b86aada52e0b46f4a86725492944d8a2152063af25d84d4ecf22cdfe94e4c6"
+    },
+    "preflight.json": {
+      "bytes": 2283,
+      "path": "preflight.json",
+      "sha256": "1f318a493f403ca88c3adf33b0fbf6c582737adbefd674f4f33410ee717357b8"
+    },
+    "qualification.json": {
+      "bytes": 884,
+      "path": "qualification.json",
+      "sha256": "eabf455bbb5ea1fe0f2b3bebd110231f07377cf24892a1da0e621bf2de60c9d3"
+    }
+  }
+}

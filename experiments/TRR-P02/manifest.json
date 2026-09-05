@@ -1,0 +1,489 @@
+{
+  "schema": "token-reconstruction.trr-p02.manifest.v1",
+  "task_id": "TRR-P02",
+  "status": "COMPLETE_PUBLIC_DIAGNOSTIC_EXPLORATORY",
+  "claim_status": "public teacher-prefix component diagnosis only; no reconstruction or benchmark claim",
+  "created_utc": "2026-09-05T11:06:09Z",
+  "updated_utc": "2026-09-05T12:53:15Z",
+  "purpose": "Diagnose whether TRR-P01 early fixed-reference failure is consistent with wiring or context-dependent representation geometry before advancing a decoder family.",
+  "authority": {
+    "charter": {
+      "path": "RESEARCH_CHARTER.md",
+      "sha256": "ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d"
+    },
+    "control_packet": {
+      "path": "coordination/requests/TRR-P02.md",
+      "sha256": "e16db54941ba85dd7f9f9e930578e9412ee18d348b1dc4c8746a9a25e103cad5"
+    },
+    "parent_result": {
+      "path": "coordination/results/TRR-P01.md",
+      "sha256": "0b70c268af2ad224453e96372ee91304e708d835bfa13fb09ec5af2eceb4226d"
+    },
+    "parent_audit": {
+      "path": "experiments/TRR-P01/review/final-results-audit.md",
+      "sha256": "cb20ce0fdf63e35c60d91e74f989d6017c7b44eb14bb89b4e36b82cc0c783a74"
+    }
+  },
+  "git": {
+    "worktree": "/tmp/trr-p02",
+    "branch": "task/TRR-P02",
+    "base_commit": "e3e8a1de020598fb68c1ed8b64c0e155823817f5",
+    "initial_source_commit": "3110ea7fa1979e6fcaa494f7933c002d51d3c20d",
+    "implementation_commit": "470b6f1becfaa6da110048302938feddd7204c30",
+    "run4_source_commit": "470b6f1becfaa6da110048302938feddd7204c30",
+    "ancestry_verified": true,
+    "global_coordination_files_unchanged": true,
+    "active_method_registry_unchanged": true,
+    "shared_protocols_unchanged": true,
+    "source_files": [
+      {
+        "path": "scripts/trr_p02/diagnose_geometry.py",
+        "bytes": 73740,
+        "sha256": "ff7e11223efc3316eda7aa206519ec68791259d43ac312f932345977160f9dfc"
+      },
+      {
+        "path": "src/token_reconstruction/trr_p02/geometry.py",
+        "bytes": 20085,
+        "sha256": "80967a3c738efdca64d716763b52ecc00a8795ab61be0527926b7b8734bdeaf2"
+      },
+      {
+        "path": "src/token_reconstruction/public_prefix.py",
+        "bytes": 8297,
+        "sha256": "b9dca1d8d56c7c07413015aea4bde79e8ceac827c32ee9bc0d1a236ea1dd35f6"
+      },
+      {
+        "path": "src/token_reconstruction/trr_p01/boundary_prototype.py",
+        "bytes": 22750,
+        "sha256": "25ad6b2075eefc44bd9e4d2c17a7919fca1fa0245a46ac577f54a8160c421efe"
+      },
+      {
+        "path": "src/token_reconstruction/trr_p01/historical_comparators.py",
+        "bytes": 23236,
+        "sha256": "1129249895efc819f9889391f9edbbd1c38c2d0d57a2b823cccb842649313b25"
+      },
+      {
+        "path": "reference/strict_bos/round001_teacher.py",
+        "bytes": 31291,
+        "sha256": "10532a746cb8c30eb2caf338e206e1fa9d85e708d4db43a0d8fd4a2ff1a6f8bd"
+      }
+    ]
+  },
+  "coordination": {
+    "truth_opened": false,
+    "source_truth_included": false,
+    "other_workstream_outputs_opened": false,
+    "root_owns_commit_push_pr": true
+  },
+  "scope": {
+    "claim_class": "exploratory public teacher-prefix component diagnosis",
+    "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+    "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "cut_depth": 4,
+    "hidden_size": 2048,
+    "vocab_size": 128256,
+    "bos_token_id": 128000,
+    "candidate_endpoint_ids": [13, 32, 198, 220, 2048, 4096, 16384, 29871],
+    "reference_endpoint_id": 220,
+    "primary_activation_rows": 46,
+    "targeted_full_v_rows": 12,
+    "contexts": [
+      "C0_bos_baseline",
+      "C1_same_length_13",
+      "C2_same_length_198",
+      "C3_same_length_1024",
+      "C4_same_length_29871",
+      "C5_repeat_13_length_2",
+      "C6_repeat_13_length_3"
+    ]
+  },
+  "control_labels": {
+    "teacher_prefix": "known public [BOS,u,v] control for wiring and representation only; not reconstruction",
+    "oracle_panel_centering": "public-panel label-informed diagnostic; non-deployable and excluded from method claims",
+    "restricted_local_dictionary": "N9 diagnostic: true token plus eight nearest other reused P01 BOS prototypes; not full-vocabulary quality",
+    "full_vocabulary": "12 predeclared targeted rows only; report separately with full-V cost and rank rule; no full table rebuilt",
+    "fitted_lens": "historical Alpaca affine lens and one projected-prototype comparator; fitted and not a no-fit method"
+  },
+  "assets": {
+    "model_snapshot": {
+      "id": "meta-llama/Llama-3.2-1B-Instruct",
+      "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+      "config_sha256": "2febf68cea25bf4611be02b7536f2488a5ba523bb1134986e3610152abe74fdb",
+      "tokenizer_config_sha256": "9823dcfdc1121869029da45192238e85cf44f0b232a6d9dc20e4fe6f4242a14e"
+    },
+    "prototype_table": {
+      "path": "/tmp/trr-p01/experiments/TRR-P01/runtime/cpu-table-20260905/boundary_prototypes.safetensors",
+      "bytes": 525337024,
+      "sha256": "51abc304d51134777d55347b219fe659817b9f0319add99756eeac6e9b6dd9a3",
+      "use": "read-only reused P01 boundary prototypes"
+    },
+    "historical_fitted_lens": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/strict-surrogate-heavy/control-assets/lens_alpaca.pt",
+      "bytes": 16787653,
+      "sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742",
+      "use": "fitted comparator only"
+    },
+    "plan": {
+      "path": "experiments/TRR-P02/plan.json",
+      "bytes": 6923,
+      "sha256": "9f191d0376d29a9bd46241060f5466738d55b375beb1baf78cb920b72594e030"
+    }
+  },
+  "retained_run": {
+    "run_id": "cpu-public-geometry-20260905-run4",
+    "status": "COMPLETE_PUBLIC_DIAGNOSTIC",
+    "implementation_commit": "470b6f1becfaa6da110048302938feddd7204c30",
+    "start_utc": "2026-09-05T12:23:25Z",
+    "end_utc": "2026-09-05T12:23:37Z",
+    "exit_status": 0,
+    "timeout": false,
+    "truth_opened": false,
+    "source_truth_included": false,
+    "seed": 314159,
+    "device": "cpu",
+    "threads": {
+      "torch_intra_op": 8,
+      "torch_inter_op": 1,
+      "cuda_visible_devices": ""
+    },
+    "model": {
+      "id": "meta-llama/Llama-3.2-1B-Instruct",
+      "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "config_commit": "9213176726f574b556790deb65791e0c5aa438b6",
+      "dtype": "bfloat16",
+      "cut_depth": 4,
+      "hidden_size": 2048,
+      "vocab_size": 128256
+    },
+    "command_argv": [
+      "scripts/trr_p02/diagnose_geometry.py",
+      "--plan",
+      "experiments/TRR-P02/plan.json",
+      "--prototype",
+      "/tmp/trr-p01/experiments/TRR-P01/runtime/cpu-table-20260905/boundary_prototypes.safetensors",
+      "--historical-lens",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/strict-surrogate-heavy/control-assets/lens_alpaca.pt",
+      "--model-path",
+      "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+      "--output-root",
+      "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run4",
+      "--manifest-path",
+      "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run4/run_manifest.json",
+      "--implementation-commit",
+      "470b6f1becfaa6da110048302938feddd7204c30",
+      "--prototype-chunk-size",
+      "8192"
+    ],
+    "cwd": "/tmp/trr-p02",
+    "cost": {
+      "public_prefix_calls": 106,
+      "public_prefix_input_token_evaluations": 336,
+      "full_forward_calls": 30,
+      "full_forward_input_token_evaluations": 251,
+      "cached_forward_calls": 76,
+      "cached_forward_input_token_evaluations": 85,
+      "candidate_simulations": 0,
+      "target_model_calls": 0
+    },
+    "timing_seconds": {
+      "preflight": 0.2248035720003827,
+      "load_table_model_lens": 3.0052441970001382,
+      "public_panel_and_cache": 1.481750678998651,
+      "local_and_targeted_raw_rankings": 2.4270717059989693,
+      "projected_table_and_lens_rankings": 2.595475439000438,
+      "qualification": 0.1801244090020191,
+      "figures": 0.2608978520001983,
+      "serialization": 0.0013046089989074972,
+      "total": 10.804054403000919
+    },
+    "resource": {
+      "outer_max_rss_kb": 6324564,
+      "internal_peak_rss_bytes": 6476353536,
+      "expected_peak_rss_bytes": 8589934592,
+      "rss_checks_passed": 5,
+      "available_memory_guard_bytes": 10737418240,
+      "swap_events": 0,
+      "preflight_status": "PASS"
+    },
+    "evidence_files": [
+      {
+        "path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run4/preflight.json",
+        "bytes": 2283,
+        "sha256": "62edea9f94579b527ed89ac8f9c0aee5bc54555aadcc3df2c251a56bc5147431"
+      },
+      {
+        "path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run4/qualification.json",
+        "bytes": 884,
+        "sha256": "d9351b137fb62f0d6d9f7c7b02b10d8758e92f26eb775d97ae0924abef5500ca"
+      },
+      {
+        "path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run4/activation_panel.safetensors",
+        "bytes": 2046040,
+        "sha256": "e63026f56063083fe009fe3211548875310dd3295e7c205f0e3759f1ae5a15ca"
+      },
+      {
+        "path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run4/offset_geometry.png",
+        "bytes": 44740,
+        "sha256": "6796c56602983dac2340e6ae8992e7adc2246ff621908bbb0c3b46d07129e721"
+      },
+      {
+        "path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run4/lens_geometry.png",
+        "bytes": 77999,
+        "sha256": "fc03d6f48d19c694ac7bc5bbac716b08ad85e9bc95881a61a2265cb217698cc7"
+      },
+      {
+        "path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run4/diagnostics.json",
+        "bytes": 635370,
+        "sha256": "7352573df457804b2702a419571a9feb100ae5863d32238eab6f38f19a9586c4"
+      },
+      {
+        "path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run4/run_manifest.json",
+        "bytes": 5816,
+        "sha256": "2ad5a6049c988940acbe0e1ef4b62320ad094c1b2e1673ca6f8e5edcc7f7f710"
+      },
+      {
+        "path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run4/outer-receipt.txt",
+        "bytes": 74,
+        "sha256": "91c1d5653039db559f8a710a245cae307af9041722a7ed14d745aef6106ef045"
+      },
+      {
+        "path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run4/outer-stderr.txt",
+        "bytes": 147,
+        "sha256": "0831a5ae240e73da475a9b4470763a2a137998e5467e742e753edf00a2158f48"
+      },
+      {
+        "path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run4/outer-stdout.txt",
+        "bytes": 394,
+        "sha256": "97691608a98e69832682d11e82ba4d6d5e8b6e2a961b99a1f2cb30302f0ad2b3"
+      },
+      {
+        "path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run4/outer-time-v.txt",
+        "bytes": 1502,
+        "sha256": "a450d15bc32093eae8933a004509e71064115559add11d2af43f07842155bed1"
+      }
+    ]
+  },
+  "results": {
+    "decision_summary": {
+      "position_two_cause": "Context-dependent, token-specific deformation is the most plausible explanation consistent with the controlled probes, not a unique proof of every P01 failure; cache wiring is not grossly broken but lacks rank-level equivalence evidence.",
+      "cheap_context_correction": "No deployable cheap fitting-free correction is supported; the public-panel oracle uses known public labels only as a diagnostic and does not transfer to full-V rows.",
+      "learned_decoder_implication": "Frozen-lens projection supports further geometry/learned-readout investigation; compactness, generalization, and context/position-feature necessity remain unproven, and both comparisons are fitted diagnostics.",
+      "next_mechanism_and_stop_condition": "Try one low-rank compression of the existing frozen affine metric/projected prototypes, without a new fit or A2 campaign; on a separately predeclared public holdout, stop this low-rank compression variant if projected-rank or margin gain is lost or the declared rank/margin check fails."
+    },
+    "restricted_n9": {
+      "dictionary": "known true ID plus eight nearest other reused P01 BOS prototypes",
+      "rank_rule": "strict rank = 1 + count(score > true_score); ties retained in true_equal_count",
+      "rows": 40,
+      "raw_boundary_top1": 35,
+      "reference_subtraction_top1": 36,
+      "opposite_sign_top1": 30,
+      "oracle_mean_centered_top1": 40
+    },
+    "targeted_full_v": {
+      "rows": 12,
+      "row_definition": "C1-C4 crossed with endpoint IDs {220, 2048, 4096}; same public dictionary and strict rank rule",
+      "raw_boundary_top1": 7,
+      "reference_subtraction_top1": 8,
+      "projected_frozen_lens_prototype_top1": 11,
+      "historical_A1_top1": 9,
+      "oracle_mean_centered_top1": 0,
+      "raw_boundary_mean_rank": 5.0,
+      "reference_subtraction_mean_rank": 1.8333334,
+      "projected_frozen_lens_prototype_mean_rank": 1.0833334,
+      "historical_A1_mean_rank": 1.4166667,
+      "oracle_mean_centered_mean_rank": 1261.8334,
+      "historical_lens_native_exp_s": 35.0647507,
+      "historical_lens_native_s": 3.5571964,
+      "reference_self_rows": 4,
+      "reference_self_top1": 4,
+      "non_reference_rows": 8,
+      "raw_boundary_non_reference_top1": 5,
+      "reference_subtraction_non_reference_top1": 4,
+      "reference_split_note": "The aggregate reference-subtraction result is inflated by four self-reference rows; non-reference rows do not improve.",
+      "reported_margin_units": "cosine-equivalent; divide A1 scores and margins by positive exp(s); ranks are unchanged and native scaled values are retained separately"
+    },
+    "equal_position_geometry_C1_C4": {
+      "raw_same_token_cross_context_l2_mean": 3.3608024,
+      "raw_different_token_within_context_l2_mean": 4.1701951,
+      "projected_same_token_cross_context_l2_mean": 4.3329992,
+      "projected_different_token_within_context_l2_mean": 5.9581399,
+      "raw_same_token_cross_context_cosine_distance_mean": 0.4820422,
+      "raw_different_token_within_context_cosine_distance_mean": 0.7070280,
+      "projected_same_token_cross_context_cosine_distance_mean": 0.4652874,
+      "projected_different_token_within_context_cosine_distance_mean": 0.8557954,
+      "raw_same_to_different_l2_ratio": 0.8059101,
+      "projected_same_to_different_l2_ratio": 0.7272403,
+      "raw_same_to_different_cosine_ratio": 0.6817865,
+      "projected_same_to_different_cosine_ratio": 0.5436899,
+      "token_13_offset_norm_by_context": [53.568, 54.146, 53.638, 53.685],
+      "other_token_offset_norm_range": [1.778, 4.070],
+      "without_token_13_pair_count": 84,
+      "without_token_13_relative_pair_deformation_mean": 0.881,
+      "without_token_13_relative_pair_deformation_median": 0.873,
+      "without_token_13_deformation_norm_mean": 3.909,
+      "without_token_13_deformation_norm_median": 3.906,
+      "c0_scope": "C0 is the position-1 baseline and excluded from these decision aggregates"
+    },
+    "shared_offset_C1_C4": {
+      "definition": "delta(C,v)=z(C,v)-b_v, b_v=z(C0,v)",
+      "mean_offset_norm_by_context": [6.83305, 6.89992, 6.89984, 6.87319],
+      "mean_residual_norm_by_context": [12.1375, 12.1530, 12.1539, 12.2845],
+      "relative_pair_deformation_mean_by_context": [0.9044, 0.8260, 0.9141, 0.9990],
+      "pair_cosine_to_baseline_mean_by_context": [0.4755, 0.5165, 0.4313, 0.3277]
+    },
+    "wiring_and_cache": {
+      "recomputed_c0_rows": 8,
+      "recomputed_c0_torch_equal_after_dtype_match": true,
+      "recomputed_c0_max_abs_difference": 0.0,
+      "full_context_cache_block_max_abs_difference": 0.0,
+      "incremental_cache_max_abs_difference_by_context": [0.0, 0.001953125, 0.002197265625, 0.0029296875, 0.001953125, 0.00341796875, 0.00390625],
+      "endpoint_cache_max_abs_difference_over_contexts": 0.0078125,
+      "persistent_cache_clone_unchanged_all_probes": true,
+      "cache_rank_equivalence_recorded": false,
+      "interpretation": "absolute differences and cache-length/clone checks only; no claim of global bitwise or rank-level cache equivalence"
+    },
+    "qualification": {
+      "context": "C6_repeat_13_length_3",
+      "endpoints": 8,
+      "batch_forward_calls": 1,
+      "alternate_forward_calls": 8,
+      "torch_equal": true,
+      "maximum_absolute_difference": 0.0,
+      "mean_absolute_difference": 0.0
+    }
+  },
+  "excluded_attempts": [
+    {
+      "run_id": "cpu-public-geometry-20260905-run1",
+      "status": "FAILED_BEFORE_PUBLIC_GEOMETRY",
+      "implementation_commit": "3110ea7fa1979e6fcaa494f7933c002d51d3c20d",
+      "start_utc": "2026-09-05T12:00:03Z",
+      "end_utc": "2026-09-05T12:00:08Z",
+      "exit_status": 1,
+      "cause": "runner lacked project root on sys.path; ModuleNotFoundError: No module named 'reference' during fitted-lens import",
+      "public_geometry_rows": 0,
+      "truth_opened": false,
+      "receipt": {
+        "path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run1/failure-receipt.json",
+        "bytes": 3530,
+        "sha256": "de13ed7fa7b24973d7141bb3130a773f07c0e3def6269b9af9ba879e884af43b"
+      },
+      "artifacts": [
+        {"path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run1/preflight.json", "bytes": 2283, "sha256": "34426cec309081e1b38945059e2f7a1d57246808bdbfbe6bd276edcc7f5c38a9"},
+        {"path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run1/outer-receipt.txt", "bytes": 74, "sha256": "aa8211d69dcf16188475153c441ea87080ab7696ec070ec638540a06198f0c5b"},
+        {"path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run1/outer-stderr.txt", "bytes": 1163, "sha256": "630956438f80f251b1fb3f815461b04787cb9927d07dd1930de0397ef7047a04"},
+        {"path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run1/outer-stdout.txt", "bytes": 0, "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+        {"path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run1/outer-time-v.txt", "bytes": 1536, "sha256": "115783ba7506525047bc7bd6c737241df2ddd1088d4b79fa6eda2d48f3214baa"}
+      ]
+    },
+    {
+      "run_id": "cpu-public-geometry-20260905-run2",
+      "status": "FAILED_BEFORE_DIAGNOSTIC_SERIALIZATION",
+      "implementation_commit": "da818f7a08f70a04a93fc1d627812925b5d42fb1",
+      "start_utc": "2026-09-05T12:14:10Z",
+      "end_utc": "2026-09-05T12:14:22Z",
+      "exit_status": 1,
+      "cause": "figure generation paired seven context labels with five primary offset rows",
+      "scientific_result_retained": false,
+      "receipt": {
+        "path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run2/failure-receipt.json",
+        "bytes": 4140,
+        "sha256": "59fc9ba3b1805ef6961580ddecf9a89895b0eedb3fac6e253924fe453a514600"
+      },
+      "artifacts": [
+        {"path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run2/preflight.json", "bytes": 2283, "sha256": "46199ced846a057cc767b6b12dea548ffbe8ecd07ca1540c87d65cc5ae40a7c0"},
+        {"path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run2/qualification.json", "bytes": 884, "sha256": "b0b7e70236b8a3c0090ee8212ae8790a47cef6a7174d34db07a0a93b558d4fbc"},
+        {"path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run2/outer-receipt.txt", "bytes": 74, "sha256": "96d5bafe457ea203335598deebc88bb1be05f1aa9af8d0f3e45ba0372b0479f7"},
+        {"path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run2/outer-stderr.txt", "bytes": 1514, "sha256": "ab34b967440ce26e05b9201aa1ba77f5025364d6a6d1fa8640be4f73bf5b2745"},
+        {"path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run2/outer-stdout.txt", "bytes": 0, "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+        {"path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run2/outer-time-v.txt", "bytes": 1538, "sha256": "d752c3ff266bd2248beff120a46e87bb553910931542167e81be29308e08895c"}
+      ]
+    },
+    {
+      "run_id": "cpu-public-geometry-20260905-run3",
+      "status": "FAILED_DURING_ACTIVATION_SERIALIZATION",
+      "implementation_commit": "b0d8e03d0fab12842d64d5bc1ac72d1a4d4580cd",
+      "start_utc": "2026-09-05T12:17:25Z",
+      "end_utc": "2026-09-05T12:17:37Z",
+      "exit_status": 1,
+      "cause": "safetensors rejected shared storage between primary_activations and recomputed_baseline",
+      "scientific_result_retained": false,
+      "receipt": {
+        "path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run3/failure-receipt.json",
+        "bytes": 4521,
+        "sha256": "308052ed547a4266671d6172f4c5a4fdbaef4c475465b6b6432743dc630106aa"
+      },
+      "artifacts": [
+        {"path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run3/preflight.json", "bytes": 2283, "sha256": "1f318a493f403ca88c3adf33b0fbf6c582737adbefd674f4f33410ee717357b8"},
+        {"path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run3/qualification.json", "bytes": 884, "sha256": "eabf455bbb5ea1fe0f2b3bebd110231f07377cf24892a1da0e621bf2de60c9d3"},
+        {"path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run3/offset_geometry.png", "bytes": 44740, "sha256": "6796c56602983dac2340e6ae8992e7adc2246ff621908bbb0c3b46d07129e721"},
+        {"path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run3/lens_geometry.png", "bytes": 77999, "sha256": "fc03d6f48d19c694ac7bc5bbac716b08ad85e9bc95881a61a2265cb217698cc7"},
+        {"path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run3/outer-receipt.txt", "bytes": 74, "sha256": "f24f310c645e50209d2ca5bfdd68ffd560529de8f7f5fca3495915a156e7f61c"},
+        {"path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run3/outer-stderr.txt", "bytes": 1132, "sha256": "e0634e46dae01e4221aa503e1838d20df3a54cb9cc89a192d1e0484a120127fc"},
+        {"path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run3/outer-stdout.txt", "bytes": 0, "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+        {"path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run3/outer-time-v.txt", "bytes": 1539, "sha256": "d7b86aada52e0b46f4a86725492944d8a2152063af25d84d4ecf22cdfe94e4c6"}
+      ]
+    },
+    {
+      "run_id": "cpu-public-geometry-20260905-run4-launch",
+      "status": "FAILED_BEFORE_PROCESS_START",
+      "implementation_commit": "470b6f1becfaa6da110048302938feddd7204c30",
+      "start_utc": "2026-09-05T12:21:00Z",
+      "end_utc": "2026-09-05T12:21:00Z",
+      "exit_status": 1,
+      "cause": "shell redirection targeted the runner create-only output root before Python started",
+      "model_or_table_process_started": false,
+      "receipt": {
+        "path": "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run4-launch-failure.json",
+        "bytes": 676,
+        "sha256": "6295147889eb6a8aa980d59af7255f9cf2eca7b8f9a81ce9f79490447370c273"
+      }
+    }
+  ],
+  "exclusion_capture": {
+    "path": "experiments/TRR-P02/setup/public-diagnostic-exclusion.final.json",
+    "bytes": 42997,
+    "sha256": "3b671dea06371834dfaf8863fd2b667fb2894f82d171d29d314236ec7abaa6dc",
+    "status": "EXECUTED_PUBLIC_DIAGNOSTIC_CASES",
+    "case_status": "EXECUTED_RUN4_PUBLIC_ONLY_TRUTH_FREE",
+    "source_plan_path": "experiments/TRR-P02/plan.json",
+    "source_plan_sha256": "9f191d0376d29a9bd46241060f5466738d55b375beb1baf78cb920b72594e030",
+    "unique_cases": 51,
+    "scientific_cases": 46,
+    "qualification_cases": 8,
+    "qualification_only_cases": 5,
+    "match_rule": "exclude only exact case_id/context_id/endpoint_id/sequence_token_ids tuples",
+    "global_token_type_exclusion": false,
+    "global_token_id_exclusion": false,
+    "truth_opened": false
+  },
+  "evidence": {
+    "result_path": "coordination/results/TRR-P02.md",
+    "result_sha256": "7e65f3181efffc8bc6233ef3b572f1d970afd873d603a33f68c5da983293c917",
+    "pr_body_path": "experiments/TRR-P02/setup/pull-request-body.md",
+    "pr_body_sha256": "aa7988b2aa4e7d580ffb2570793c4b2b38afcfe5aaedde66cfab1f3a855a81b9",
+    "state_path": "coordination/parallel/TRR-P02.json",
+    "publication_inventory_path": "experiments/TRR-P02/setup/publication-file-list.md",
+    "review_summary_path": "experiments/TRR-P02/review/run4-summary.md",
+    "review_summary_sha256": "4274204c8bdd87f312724b871679065ff43ffb5300d02572331fe620b6c907aa",
+    "final_results_audit_path": "experiments/TRR-P02/review/final-results-audit.md",
+    "final_results_audit_sha256": "4ff16c2fb10a4e3d4e3916ce0d6c923afbc995f214601b2b3ec6959800fdc0f3",
+    "summary_figure_path": "experiments/TRR-P02/review/summary_geometry.png",
+    "summary_figure_sha256": "0f4160a97590ef0ab56813ef8dca954d587e872fe6e27b4896701b043341f7e1",
+    "design_path": "experiments/TRR-P02/review/design.md",
+    "design_sha256": "0bf075e992065d8f07d74ceae208f1f0ab3e5fe65196aa0565867f57fb6068f1",
+    "validation_path": "experiments/TRR-P02/review/validation.md",
+    "validation_sha256": "13cffa78dd72f04a53e79f24872b83842dd0098bcf3cd8f33c279c52f3afdaf6",
+    "retry_validation_path": "experiments/TRR-P02/review/retry-validation.md",
+    "retry_validation_sha256": "f50c6799e1ff039465c10ab4f04a7f820ba9a92ced4fc112d2fa364425e36ef0",
+    "resource_preflight_path": "experiments/TRR-P02/setup/resource-preflight.md",
+    "resource_preflight_sha256": "c1b38e47ca693e607d179a4147a7b7dec3bbf5c0e4b258436c7a848503be08de",
+    "exclusion_helper_path": "src/token_reconstruction/trr_p02/exclusion.py",
+    "exclusion_helper_sha256": "c5dbf59c521818cbcac566f0b0232e7ecf0adebaca8f5363e2d066c0932ff08d",
+    "exclusion_template_path": "experiments/TRR-P02/setup/public-diagnostic-exclusion.template.json",
+    "exclusion_template_sha256": "0e9741f499da03ec1451bf5e11f5f2dab6cc1119a7c1f761daa30782530c62e4",
+    "preflight_historical_table_peak_bytes": 3721547776,
+    "preflight_historical_table_peak_gib": 3.47,
+    "preflight_historical_grouped_final_peak_gib": 5.0
+  }
+}
