@@ -1,0 +1,171 @@
+{
+  "schema": "token-reconstruction.trr-p02-geometry-plan.v2",
+  "task_id": "TRR-P02",
+  "status": "PREDECLARED_PUBLIC_DIAGNOSTIC",
+  "truth_opened": false,
+  "source_truth_included": false,
+  "purpose": "Diagnose context-dependent representation geometry on fully known public teacher-prefix pairs before proposing another no-fit decoder.",
+  "model": {
+    "id": "meta-llama/Llama-3.2-1B-Instruct",
+    "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "cut_depth": 4,
+    "hidden_size": 2048,
+    "vocab_size": 128256,
+    "dtype": "bfloat16",
+    "bos_token_id": 128000
+  },
+  "runtime": {
+    "device": "cpu",
+    "torch_threads": 8,
+    "inter_op_threads": 1,
+    "seed": 314159,
+    "ranking_score_buffer_max_bytes": 8208384,
+    "deterministic_algorithms": true,
+    "expected_peak_rss_bytes": 8589934592,
+    "rss_ceiling_bytes": 8589934592,
+    "resource_guard_required_bytes": 10737418240,
+    "estimated_exclusive_seconds": {
+      "low": 180,
+      "high": 480
+    },
+    "qualification": "qualify longest declared C6_repeat_13_length_3 public short cell with all eight endpoints by batched-vs-single exact equality before retaining the batched path; no target model or private truth"
+  },
+  "tokens": {
+    "candidate_ids": [
+      13,
+      32,
+      198,
+      220,
+      2048,
+      4096,
+      16384,
+      29871
+    ],
+    "reference_id": 220,
+    "position_control_ids": [
+      220,
+      2048,
+      4096
+    ],
+    "source": "fixed public token IDs declared before the diagnostic; all labels are teacher-prefix controls"
+  },
+  "contexts": [
+    {
+      "name": "C0_bos_baseline",
+      "token_ids": [
+        128000
+      ],
+      "role": "baseline prototype context b_v = z([BOS],v); endpoint position 1"
+    },
+    {
+      "name": "C1_same_length_13",
+      "token_ids": [
+        128000,
+        13
+      ],
+      "role": "primary same-length earlier-content control; endpoint position 2; reused repeat-13 length 1"
+    },
+    {
+      "name": "C2_same_length_198",
+      "token_ids": [
+        128000,
+        198
+      ],
+      "role": "primary same-length earlier-content control; endpoint position 2"
+    },
+    {
+      "name": "C3_same_length_1024",
+      "token_ids": [
+        128000,
+        1024
+      ],
+      "role": "primary same-length earlier-content control; endpoint position 2"
+    },
+    {
+      "name": "C4_same_length_29871",
+      "token_ids": [
+        128000,
+        29871
+      ],
+      "role": "primary same-length earlier-content control; endpoint position 2"
+    },
+    {
+      "name": "C5_repeat_13_length_2",
+      "token_ids": [
+        128000,
+        13,
+        13
+      ],
+      "role": "repeated-13 context-length control; endpoint position 3; position-control IDs only"
+    },
+    {
+      "name": "C6_repeat_13_length_3",
+      "token_ids": [
+        128000,
+        13,
+        13,
+        13
+      ],
+      "role": "repeated-13 context-length control; endpoint position 4; position-control IDs only"
+    }
+  ],
+  "panel": {
+    "primary_context_indices": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "primary_candidate_count": 8,
+    "repeated_context_indices": [
+      0,
+      1,
+      5,
+      6
+    ],
+    "repeated_endpoint_ids": [
+      220,
+      2048,
+      4096
+    ],
+    "total_activation_rows": 46,
+    "endpoint_definition": "z(C,v) is the public prefix last hidden state for C+[v]",
+    "baseline": "b_v = z(C0,v)"
+  },
+  "checks": {
+    "cache": "full forward, one-block cached, and one-token incremental cached outputs are compared for every context and declared endpoint; cloned reference probes must not mutate the persistent cache",
+    "reference": "probe r=220 after each known C; cloned-cache output is compared with full C+[r]",
+    "sign": "q_minus = z(C,v) - (z(C,r)-b_r) is the P01 subtraction rule; q_plus is an explicit opposite-sign wiring control",
+    "position": "position indices are recorded from context lengths; same-length controls are endpoint-position matched, while repeated-13 rows are explicitly context-length/relative-position controls and never position-only",
+    "table_recompute": "P02 recomputes b_v at eight intra-op threads and reports max difference against reused P01 table rows; no bitwise equivalence is assumed"
+  },
+  "shared_offset": {
+    "mean_offset": "mean_v delta(C,v) for C1..C4; C0 is retained as the explicit zero baseline but excluded from C1..C4 decision aggregates; public teacher-prefix oracle/public-panel centering diagnostic only",
+    "pair_deformation": "[z(C,v)-z(C,w)] - [z(C0,v)-z(C0,w)] for C1..C4; C0 rows are retained only as the explicit zero baseline",
+    "local_dictionary": "restricted-dictionary control: fixed N=9 entries for each candidate ID, the ID itself plus eight nearest other reused P01 BOS prototypes (N8-other), with deterministic token-ID ties; rank every primary query within its declared local dictionary",
+    "targeted_full_vocab_rows": "exactly 12 primary rows: each of C1..C4 with endpoint IDs {220,4096,2048}; raw, mean-centered oracle, and reference-corrected variants use the same public dictionary",
+    "restriction": "no full table is rebuilt and no per-context projected table is materialized; full-vocabulary scans are limited to the predeclared 12 endpoint rows"
+  },
+  "lens": {
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/strict-surrogate-heavy/control-assets/lens_alpaca.pt",
+    "sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742",
+    "role": "frozen fitted-lens diagnostic control; never a fitting-free method",
+    "comparisons": [
+      "g(h) against g(b_v) projected prototypes",
+      "original frozen historical A1 g(h) against the raw public input-embedding dictionary",
+      "same-token cross-context variation and different-token separation in raw and projected geometry for the C1-C4 equal-endpoint-position panel, with any C0-inclusive summary labelled separately",
+      "same 12 targeted rows and same public dictionary for raw/projection/A1 ranking comparisons"
+    ]
+  },
+  "assets": {
+    "prototype_path": "/tmp/trr-p01/experiments/TRR-P01/runtime/cpu-table-20260905/boundary_prototypes.safetensors",
+    "prototype_sha256": "51abc304d51134777d55347b219fe659817b9f0319add99756eeac6e9b6dd9a3",
+    "prototype_construction": "public_prefix([BOS,v])[1] from P01 publication head e3e8a1de020598fb68c1ed8b64c0e155823817f5",
+    "p01_public_head": "e3e8a1de020598fb68c1ed8b64c0e155823817f5"
+  },
+  "stopping_rule": {
+    "advance_only_if": "a deterministic context correction is supported by small residual-to-delta ratios and improves true-token ranking margins in the public-panel oracle diagnostic",
+    "stop_if": "offset residuals remain token-dependent or centered/reference corrections do not improve margins; this task then deprioritizes the dictionary family and supplies diagnostics to the learned-decoder workstream"
+  }
+}
