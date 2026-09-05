@@ -13,8 +13,13 @@ The canonical registration schema is
 token-reconstruction.trr0005-confirmation-registration.v1. Its status is
 FROZEN_METHOD_REGISTRATION, method_ids is the exact eight METHOD_IDS order,
 and code_commit is a full lowercase 40-character commit. Each state_bindings
-entry uses the TRR4 core groups panel, method_state (one path/bytes/sha256
-record), code (one or more path/bytes/sha256 records), and code_commit.
+entry uses the driver-compatible core groups panel (one descriptor),
+method_state (a list containing exactly one path/bytes/sha256 descriptor),
+method_config (a nonempty list containing the frozen decision-plan descriptor
+and any frozen attention-amendment descriptor), code (a nonempty list of
+path/bytes/sha256 descriptors), and code_commit. The prediction runner
+requires registration.code_commit to equal executable HEAD, so replay checks
+out the bound commit before running and restores compact evidence afterward.
 
 Runtime assets are part of every state binding. All methods bind exactly one
 absolute external descriptor under runtime_assets.public_embedding_table
@@ -63,6 +68,18 @@ invoking the truth loader. The scorer CLI is
 scripts/trr0005_score_confirmation.py and accepts prediction/timing
 descriptor manifests, observations, truth, receipt, and optional paired
 frequency references.
+
+The producer truth preparation writes a label-free descriptor with schema
+token-reconstruction.trr0005-fresh-confirmation-truth-preparation.v1 and
+status PUBLIC_TRUTH_PREPARED_OUTSIDE_RECONSTRUCTION_ROOT. Before the public
+matrix freeze, copy that descriptor into the frozen output root under the
+path evaluator_binding.json (the core freeze path policy excludes filenames
+containing truth). The supplied --truth-binding path must be this exact
+receipt-bound entry under output_root. After the complete public gate, the
+CLI verifies its path, bytes, and SHA-256 through the freeze receipt, checks
+its panel/selection/observation/ordered-record bindings and that its
+method_freeze_sha256 equals the selection plan marker, and only then hashes
+or opens the external truth sidecar.
 
 Ownership is intentionally split: coverage edits only its producer and
 panel/capture outputs; decoders edit only the prediction driver and timing
