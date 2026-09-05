@@ -1261,6 +1261,57 @@
       "cause": "public validation preparation wiring failure",
       "resolution": "dedicated validation slice v2",
       "truth_opened": false
+    },
+    {
+      "artifact": {
+        "bytes": 2010,
+        "path": "experiments/TRR-0003/track_b/public_fit_prepare_guard.json",
+        "sha256": "913e6ecbc3e6aa948918483e5784ed41d88fb4d03838e75ced8d4655fd698907"
+      },
+      "cause": "tuple-unpacking failure: not enough values to unpack (expected 3, got 2)",
+      "resolution": "corrected preparation tuple handling; public_fit_v2 preparation then succeeded",
+      "returncode": 2,
+      "status": "FAILED_PRESERVED_EXCLUDED",
+      "truth_opened": false
+    },
+    {
+      "artifact": {
+        "bytes": 4615,
+        "path": "experiments/TRR-0003/track_b/qualification_affine_guard.json",
+        "sha256": "3ebca1d8a314e116c79609231c29ab491ea140430e80b387e6e10e3bb3447eb8"
+      },
+      "cause": "BF16 tensor hashing failure: TypeError: Got unsupported ScalarType BFloat16",
+      "resolution": "added BF16-safe byte hashing; qualification_affine_guard_v2 then passed",
+      "guard_passed": false,
+      "resource_preflight": "PASS",
+      "returncode": 1,
+      "status": "FAILED_PRESERVED_EXCLUDED",
+      "truth_opened": false
+    },
+    {
+      "artifact": {
+        "bytes": 6314,
+        "path": "experiments/TRR-0003/footing/comparator_matrix_guard_v1.json",
+        "sha256": "985b20acbacb1061b818cf5724a7f39d1843b1cb911a34b774c5c23df6760963"
+      },
+      "cause": "BOS candidate validation rejected an invalid or out-of-vocabulary placeholder token (-1)",
+      "resolution": "normalized the intentionally unused BOS candidate in the output adapter; comparator_matrix_v2 then passed",
+      "guard_process_completed": true,
+      "returncode": 1,
+      "status": "FAILED_PRESERVED_EXCLUDED",
+      "truth_opened": false
+    },
+    {
+      "artifact": {
+        "bytes": 541,
+        "path": "outputs/TRR-0003/track_a_bos_forward_diagnostic/public_bos_forward_v2.failure.json",
+        "sha256": "4a6b5705d17f3e465acbd578440d02d61f56dc657d77d439a5eee7163aff0468"
+      },
+      "cause": "malformed model/resource-manifest path binding: TrackAError: resource manifest does not bind the requested model path",
+      "resolution": "corrected the model/resource-manifest path binding before the successful v2 diagnostic",
+      "status": "FAILED_CLOSED",
+      "truth_opened": false,
+      "shared_panel_loaded": false
     }
   ],
   "last_accepted_task": "TRR-0001",
@@ -1973,9 +2024,16 @@
     "sha256": "9fd0ab2a786dd7884c72dcb0d724ba10dc3912518c05cff7a69267132beefb94"
   },
   "pull_request": {
-    "number": 3,
-    "status": "unmerged",
-    "new_pr": "pending root creation"
+    "number": 4,
+    "url": "https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/4",
+    "status": "OPEN_AWAITING_OWNER_REVIEW",
+    "base": "task/TRR-0002",
+    "head": "task/TRR-0003",
+    "historical_pr": {
+      "number": 3,
+      "status": "OPEN_UNMERGED",
+      "accepted_by_this_task": false
+    }
   },
   "resources": {
     "hardware": "NVIDIA GeForce RTX 5080, 16 GiB development GPU; serialized GPU runs",
@@ -1999,7 +2057,7 @@
     "predictions_complete_before_truth_scoring": true,
     "scorer_opened_truth_after_freeze": true
   },
-  "status": "READY_FOR_REVIEW_RETROSPECTIVE_PANEL_SCORED",
+  "status": "AWAITING_OWNER_REVIEW_RETROSPECTIVE_PANEL_SCORED",
   "task_id": "TRR-0003",
   "tests": {
     "final_repository_validation": {
@@ -2145,6 +2203,31 @@
     "comparison_source_file_count": 19,
     "external_large_artifacts": "public model, Track-B embedding/fit tensors, selected decoder states, and private truth remain at recorded paths"
   },
-  "updated_utc": "2026-09-05T09:22:36Z",
-  "scientific_execution_commit_scope": "Track A and Track B selected panel prediction phase only; preparation, fitting, comparator, freeze, and diagnostics are listed in phase_commits."
+  "updated_utc": "2026-09-05T09:43:46.623244+00:00",
+  "scientific_execution_commit_scope": "Track A and Track B selected panel prediction phase only; preparation, fitting, comparator, freeze, and diagnostics are listed in phase_commits.",
+  "excluded_attempts": [
+    {
+      "artifact": {
+        "bytes": 8316,
+        "path": "experiments/TRR-0003/footing/truth_preparation.json",
+        "sha256": "d7f9aa44314c0a3046804ad2f468b84d382ea24f139091d648943cca0f40e505"
+      },
+      "cause": "superseded by final truth_preparation_v2 metadata; retained only as a provisional uncommitted source receipt",
+      "scientific_success": false,
+      "evaluation_truth_opened": false,
+      "status": "EXCLUDED_SUPERSEDED_PROVISIONAL",
+      "superseded_by": {
+        "bytes": 8570,
+        "path": "experiments/TRR-0003/footing/truth_preparation_v2.json",
+        "sha256": "9402c019c6ba203eb1014aba48db93e84d70d3df4fe3e60608ba3c2e2129a118"
+      }
+    }
+  ],
+  "scientific_evidence_commit": "1da29c5467f74166265209bceeaa873b941f0a76",
+  "publication_checks": {
+    "source_and_prose_whitespace": "passed; git diff --cached --check -- . ':(exclude)*.svg'",
+    "generated_svg_policy": "Matplotlib SVG bytes retain their original formatting and hashes; whitespace-only SVG diagnostics are not source/prose defects.",
+    "private_truth_archived": false,
+    "paid_compute_used": false
+  }
 }
