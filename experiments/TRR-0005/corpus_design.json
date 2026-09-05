@@ -1,0 +1,161 @@
+{
+  "schema": "token-reconstruction.trr0005-public-corpus-design.v1",
+  "task_id": "TRR-0005",
+  "status": "APPROVED_DESIGN_METADATA_ONLY",
+  "parent_reviewed_head": "6e8b683e404c0acb70cd59b7dd6d6868b2061f61",
+  "heavy_execution_authorized": false,
+  "question": "Does broader public coverage remove the need for extra activation context?",
+  "geometry": {
+    "record_count": 1200,
+    "max_sequence_length": 192,
+    "hidden_size": 2048,
+    "cut_depth": 4,
+    "bos_token_id": 128000,
+    "pad_token_id": 128001,
+    "stored_rows_including_bos": 125571,
+    "post_bos_positions": 124371,
+    "length_source": "experiments/TRR-0004/alpaca_split_plan.json registration.fit.records",
+    "length_matching": "coverage_mix_v1 uses the exact ordered target length vector from TRR-0004; padded masks and position IDs are identical",
+    "capture_batch_records": 8
+  },
+  "arms": {
+    "original_like_alpaca_v1": {
+      "record_count": 1200,
+      "post_bos_positions": 124371,
+      "source": "TRR-0004 public Alpaca fit bank, exact 1200-record length/ordering metadata and reusable public activation artifact",
+      "domain_counts": {
+        "alpaca_instruction": 1200
+      },
+      "unique_public_source_rows": 1200,
+      "controlled_replacement_positions": 0,
+      "coverage_reference": {
+        "legacy_fit_public_distinct_post_bos": 11265,
+        "legacy_fit_public_distinct_including_bos": 11266,
+        "bos_excluded_for_primary_coverage": true,
+        "source": "TRR-0004 coverage diagnostic fit-label stream"
+      }
+    },
+    "coverage_mix_v1": {
+      "record_count": 1200,
+      "post_bos_positions": 124371,
+      "domain_counts": {
+        "alpaca_instruction": 600,
+        "pile_natural": 300,
+        "finance_instruction": 180,
+        "controlled_pile_context": 60,
+        "controlled_finance_context": 60
+      },
+      "natural_record_count": 1080,
+      "controlled_record_count": 120,
+      "unique_public_parent_rows": 1200,
+      "controlled_replacement_positions": 3600,
+      "controlled_fraction_of_post_bos_positions": 0.028949443963622112,
+      "coverage_acceptance": {
+        "minimum_enriched_distinct_token_ids": 13000,
+        "minimum_selected_legacy_absent_ids": 1800,
+        "selected_id_target": 2000,
+        "legacy_frequency_threshold": 1,
+        "failure_policy": "preserve_failed_contrast_and_report; do not silently lower thresholds"
+      }
+    }
+  },
+  "public_sources": {
+    "alpaca": {
+      "dataset_id": "tatsu-lab/alpaca",
+      "split": "train",
+      "revision": "dce01c9b08f87459cf36a430d809084718273017",
+      "arrow_path": "/home/alanz/.cache/huggingface/datasets/tatsu-lab___alpaca/default/0.0.0/dce01c9b08f87459cf36a430d809084718273017/alpaca-train.arrow",
+      "role": "original-like bank and optional documented fresh Alpaca fallback"
+    },
+    "pile": {
+      "dataset_id": "NeelNanda/pile-10k",
+      "split": "train",
+      "revision": "127bfedcd5047750df5ccf3a12979a47bfa0bafa",
+      "arrow_path": "/home/alanz/.cache/huggingface/datasets/NeelNanda___pile-10k/default/0.0.0/127bfedcd5047750df5ccf3a12979a47bfa0bafa/pile-10k-train.arrow",
+      "fit_frequency_rows": "2000 <= index < 7000",
+      "future_holdout_reserve": "7000 <= index < 10000",
+      "role": "natural coverage source and controlled public-context parents"
+    },
+    "finance": {
+      "dataset_id": "Josephgflowers/Finance-Instruct-500k",
+      "split": "train",
+      "revision": "583a98fb0ec14d904e9423b671d9d0fea88891b6",
+      "arrow_paths": [
+        "/home/alanz/.cache/huggingface/datasets/Josephgflowers___finance-instruct-500k/default/0.0.0/583a98fb0ec14d904e9423b671d9d0fea88891b6/finance-instruct-500k-train-00000-of-00002.arrow",
+        "/home/alanz/.cache/huggingface/datasets/Josephgflowers___finance-instruct-500k/default/0.0.0/583a98fb0ec14d904e9423b671d9d0fea88891b6/finance-instruct-500k-train-00001-of-00002.arrow"
+      ],
+      "fit_frequency_rows": "2000 <= index < 12000",
+      "future_holdout_reserve": "12000 <= index < 20000",
+      "role": "natural finance-domain coverage source and controlled public-context parents"
+    }
+  },
+  "controlled_supplement": {
+    "construction": "tokenize one unique public Pile/Finance parent, retain its natural public context and target length, replace 30 ordinary post-BOS positions with selected ordinary vocabulary IDs, then run a fresh public-prefix forward over the complete constructed sequence",
+    "parent_allocation": {
+      "pile": 60,
+      "finance": 60
+    },
+    "replacement_positions_per_record": 30,
+    "replacement_positions": "evenly spaced ordinary positions in the first target window; controlled slots prefer >=128 post-BOS tokens (fallback >=64 only if the frozen vector lacks 120 such slots); BOS, padding, and tokenizer special/header IDs are excluded",
+    "token_selection": "public fit/frequency rows only; candidate IDs have legacy fit frequency <= 1, positive Pile/Finance fit frequency, and are sorted by legacy frequency, descending public frequency, and token ID",
+    "special_id_policy": "exclude tokenizer all_special_ids plus BOS 128000 and PAD/EOT 128001",
+    "hidden_state_policy": "no activation-row splicing; every constructed sequence receives a real P0/public-prefix forward"
+  },
+  "partitions": {
+    "frequency_selection_must_not_scan_holdout": true,
+    "pile": {
+      "fit_frequency": [
+        2000,
+        7000
+      ],
+      "holdout_reserve": [
+        7000,
+        10000
+      ]
+    },
+    "finance": {
+      "fit_frequency": [
+        2000,
+        12000
+      ],
+      "holdout_reserve": [
+        12000,
+        20000
+      ]
+    },
+    "holdout_use": "reserved contents remain unopened until footing selects 128 records per domain after method choices freeze"
+  },
+  "exposure": {
+    "steps": 3000,
+    "batch_size": 512,
+    "draws_per_arm": 1536000,
+    "position_scope": "post_bos_only",
+    "post_bos_positions": 124371,
+    "bos_positions_drawn": 0,
+    "expected_draws_per_post_bos_position": 12.350145934341606,
+    "sampler": "one shared deterministic schedule over valid post-BOS positions; BOS excluded",
+    "seed": 4005,
+    "arm_fairness": "affine, causal H-attention128, and trained diagonal-attention128 receive the same sampled post-BOS position schedule within each distribution"
+  },
+  "preparation_guard": {
+    "max_seconds": 300,
+    "phase": "public metadata, source-row tokenization, public frequency counting, and plan assembly only",
+    "no_model_loaded": true,
+    "no_private_truth": true,
+    "no_network": true,
+    "cache_access": "named public Arrow/tokenizer/legacy-label paths are opened read-only; holdout reserve contents remain unopened",
+    "required_measurements": [
+      "source rows partition-checked and dataset-accessed per Pile/Finance fit-frequency pool",
+      "eligible-row post-BOS token occurrences and unique public token IDs",
+      "phase wall time, user/system CPU time, and peak RSS",
+      "fail closed at <=300 seconds"
+    ],
+    "large_file_hashing": "deferred; metadata phase records path, size, and revision without GB hashing"
+  },
+  "known_limitations": [
+    "The enriched arm changes domain and rendering mix as well as token coverage; the result is a coverage-plus-diversity intervention, not a vocabulary-only causal estimate.",
+    "The controlled rows are public counterfactual token combinations and must remain separately identified in analysis.",
+    "The retained TRR-0004 Alpaca activation/state artifact remains a public development resource; new confirmation records are selected later from reserved Pile/Finance pools.",
+    "A canonical dual-benchmark comparison remains out of scope for this screening pilot."
+  ]
+}
