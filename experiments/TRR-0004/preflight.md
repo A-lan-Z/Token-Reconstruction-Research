@@ -1,6 +1,6 @@
 # TRR-0004 setup and preflight
 
-Status: **setup complete; no experiment has run**.
+Status: **setup complete; first preparation attempt failed before model load; corrected retry not run**.
 
 Recorded at 2026-09-05T10:09:56.574088+00:00. The isolated worktree is `/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004` on `task/TRR-0004`, exactly at `eab3fc21fdae67fe628a42620029e25829a188b1`. The incoming packet is preserved byte-for-byte at `coordination/requests/TRR-0004.md` (8,551 bytes; SHA256 `7eb85bc38225b253fe4a0410961539130882277d64dff5e6ba295766a4b197d0`).
 
@@ -48,7 +48,7 @@ uses the pinned public Arrow cache, tokenizer/model snapshot, the existing
 public Pile validation receipt, and `--batch-records 8`:
 
 ```text
-timeout --signal=TERM 600s env HF_DATASETS_OFFLINE=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false PYTHONPATH=src:scripts .venv-trr0004/bin/python scripts/trr0004_prepare_public_activations.py --split-plan experiments/TRR-0004/alpaca_split_plan.json --dataset-arrow /home/alanz/.cache/huggingface/datasets/tatsu-lab___alpaca/default/0.0.0/dce01c9b08f87459cf36a430d809084718273017/alpaca-train.arrow --dataset-info /home/alanz/.cache/huggingface/datasets/tatsu-lab___alpaca/default/0.0.0/dce01c9b08f87459cf36a430d809084718273017/dataset_info.json --tokenizer /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6 --model /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6 --pile-receipt /home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_validation_slice_v2/validation_slice_evidence.json --output-root outputs/TRR-0004/public_activation_v1 --device cuda --batch-records 8 --min-free-gpu-bytes 8589934592 --max-reserved-gpu-bytes 8589934592 --max-host-rss-bytes 17179869184
+timeout --signal=TERM 600s env HF_DATASETS_OFFLINE=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false PYTHONPATH=src:scripts .venv-trr0004/bin/python scripts/trr0004_prepare_public_activations.py --split-plan experiments/TRR-0004/alpaca_split_plan.json --dataset-arrow /home/alanz/.cache/huggingface/datasets/tatsu-lab___alpaca/default/0.0.0/dce01c9b08f87459cf36a430d809084718273017/alpaca-train.arrow --dataset-info /home/alanz/.cache/huggingface/datasets/tatsu-lab___alpaca/default/0.0.0/dce01c9b08f87459cf36a430d809084718273017/dataset_info.json --tokenizer /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6 --model /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6 --pile-receipt /home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_validation_slice_v2/validation_slice_evidence.json --output-root outputs/TRR-0004/public_activation_v2 --device cuda --batch-records 8 --min-free-gpu-bytes 8589934592 --max-reserved-gpu-bytes 8589934592 --max-host-rss-bytes 17179869184
 ```
 
 The planned train artifact is 1,200 records × 192 positions × 2,048 hidden
@@ -84,3 +84,23 @@ any overlapping dataset and current fit/validation records. Exact retained
 historical A1 row IDs are unavailable; that provenance uncertainty is recorded
 and does not block a dataset-disjoint confirmation on the planned Pile/Finance
 records. No private truth contents are used to construct this public split.
+
+## First guarded preparation attempt (excluded)
+
+The first create-only attempt used the frozen runner at commit
+`32b042793a1bd7012ab0e2c0d9cbf5d463ea98c2` and exited before model load with
+`ActivationPreparationError: tokenizer has no declared public padding fallback`.
+The pinned tokenizer has `pad_token_id=None` and scalar `eos_token_id=128009`,
+but its public vocabulary maps `<|end_of_text|>` to ID `128001`; the model
+configuration also lists that ID among its EOS IDs. GPU peak allocation and
+reservation were both zero, and target weights/private truth were not accessed.
+The failure receipt and launcher logs are retained at
+`outputs/TRR-0004/public_activation_v1/failure.json` and
+`experiments/TRR-0004/evidence/public_activation_launch_v1/`.
+
+The corrected loader accepts this fallback only when
+`convert_tokens_to_ids("<|end_of_text|>") == 128001`, the ID is in the
+`128256`-entry vocabulary, and `convert_ids_to_tokens(128001)` round-trips to
+`<|end_of_text|>`. The tokenizer is not mutated. The local snapshot check and
+mocked fallback test pass; root must commit this correction before the retry,
+which uses the new create-only output root `public_activation_v2`.

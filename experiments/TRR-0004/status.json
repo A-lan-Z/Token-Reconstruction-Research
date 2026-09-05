@@ -273,7 +273,22 @@
   },
   "public_activation_preparation": {
     "actual_run": false,
-    "exact_invocation_template": "timeout --signal=TERM 600s env HF_DATASETS_OFFLINE=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false PYTHONPATH=src:scripts .venv-trr0004/bin/python scripts/trr0004_prepare_public_activations.py --split-plan experiments/TRR-0004/alpaca_split_plan.json --dataset-arrow /home/alanz/.cache/huggingface/datasets/tatsu-lab___alpaca/default/0.0.0/dce01c9b08f87459cf36a430d809084718273017/alpaca-train.arrow --dataset-info /home/alanz/.cache/huggingface/datasets/tatsu-lab___alpaca/default/0.0.0/dce01c9b08f87459cf36a430d809084718273017/dataset_info.json --tokenizer /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6 --model /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6 --pile-receipt /home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_validation_slice_v2/validation_slice_evidence.json --output-root outputs/TRR-0004/public_activation_v1 --device cuda --batch-records 8",
+    "attempted": true,
+    "exact_invocation_template": "timeout --signal=TERM 600s env HF_DATASETS_OFFLINE=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false PYTHONPATH=src:scripts .venv-trr0004/bin/python scripts/trr0004_prepare_public_activations.py --split-plan experiments/TRR-0004/alpaca_split_plan.json --dataset-arrow /home/alanz/.cache/huggingface/datasets/tatsu-lab___alpaca/default/0.0.0/dce01c9b08f87459cf36a430d809084718273017/alpaca-train.arrow --dataset-info /home/alanz/.cache/huggingface/datasets/tatsu-lab___alpaca/default/0.0.0/dce01c9b08f87459cf36a430d809084718273017/dataset_info.json --tokenizer /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6 --model /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6 --pile-receipt /home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_validation_slice_v2/validation_slice_evidence.json --output-root outputs/TRR-0004/public_activation_v2 --device cuda --batch-records 8",
+    "first_attempt": {
+      "cuda_peak_allocated_bytes": 0,
+      "cuda_peak_reserved_bytes": 0,
+      "failure": "tokenizer has no declared public padding fallback",
+      "failure_receipt": "outputs/TRR-0004/public_activation_v1/failure.json",
+      "launcher_receipt": "experiments/TRR-0004/evidence/public_activation_launch_v1/launch.json",
+      "model_loaded": false,
+      "resolution": "accept the pinned public EOT token ID 128001 only after explicit token-to-ID and round-trip checks",
+      "retry_output_root": "outputs/TRR-0004/public_activation_v2",
+      "returncode": 1,
+      "source_commit": "32b042793a1bd7012ab0e2c0d9cbf5d463ea98c2",
+      "status": "FAILED_PRE_MODEL_LOAD",
+      "target_weights_accessed": false
+    },
     "geometry": {
       "current_token_alignment": "activations[record,position] predicts token_ids[record,position]; BOS retained at position zero and selectors exclude BOS",
       "dtype": {
@@ -341,7 +356,7 @@
       "validation_activation_bytes_bfloat16": 18874368
     },
     "script": "scripts/trr0004_prepare_public_activations.py",
-    "script_sha256": "8d01e288123594bc3e095a4b353f5c59b029f783a0f4a5de01a51393a20c348e",
+    "script_sha256": "6f1a9b6d7ee4aad89ee8152021e6e431b8652a6f7c162167a6180229feed70e8",
     "source_binding": {
       "cut_depth": 4,
       "dataset_arrow_sha256": "f45103036ed651f4c06d0a3c3e0fb7d53acb3074ed5c8e804a69c1efc1cea794",
@@ -353,10 +368,20 @@
       "prefix_source": "token_reconstruction.public_prefix.ContiguousPublicPrefix.forward_full",
       "split_plan_sha256": "29ca79db0f29fd5ec1e3769b5427ac1496b59ef7f88e7e921e41c13b1e07eb2e"
     },
-    "status": "IMPLEMENTED_NOT_RUN",
+    "status": "RETRY_READY_AFTER_PRE_MODEL_LOAD_FAILURE",
     "target_or_private_truth_accessed": false,
-    "test_result": "6 public activation tests plus 6 split tests passed",
-    "tests": "tests/test_public_activation.py"
+    "test_result": "7 public activation tests plus 6 split tests passed",
+    "tests": "tests/test_public_activation.py",
+    "tokenizer_padding_fallback": {
+      "configured_eos_token_id": 128009,
+      "configured_pad_token_id": null,
+      "declared_public_token": "<|end_of_text|>",
+      "local_snapshot_check": true,
+      "mocked_unit_check": true,
+      "range_checked_against_vocab_size": 128256,
+      "resolution_rule": "convert_tokens_to_ids(<|end_of_text|>) == 128001 and convert_ids_to_tokens(128001) round-trips; tokenizer state is not mutated",
+      "resolved_id": 128001
+    }
   },
   "public_alpaca_split": {
     "dataset_arrow_bytes": 46230248,

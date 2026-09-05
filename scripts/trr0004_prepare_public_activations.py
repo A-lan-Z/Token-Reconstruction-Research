@@ -124,6 +124,32 @@ def _git_commit(root: Path) -> str | None:
     return result.stdout.strip() or None
 
 
+def _public_padding_id(tokenizer: Any) -> int:
+    """Resolve the declared public EOT fallback without mutating the tokenizer."""
+
+    configured = tokenizer.pad_token_id
+    if configured is not None:
+        if configured != PAD_TOKEN_ID:
+            raise ActivationPreparationError("tokenizer padding ID changed")
+        return PAD_TOKEN_ID
+    try:
+        resolved = tokenizer.convert_tokens_to_ids("<|end_of_text|>")
+        token = tokenizer.convert_ids_to_tokens(PAD_TOKEN_ID)
+    except Exception as exc:
+        raise ActivationPreparationError(
+            "tokenizer has no declared public padding fallback"
+        ) from exc
+    if (
+        not isinstance(resolved, int)
+        or resolved < 0
+        or resolved >= VOCAB_SIZE
+        or resolved != PAD_TOKEN_ID
+        or token != "<|end_of_text|>"
+    ):
+        raise ActivationPreparationError("tokenizer has no declared public padding fallback")
+    return PAD_TOKEN_ID
+
+
 def _device(raw: str) -> torch.device:
     if raw == "auto":
         raw = "cuda" if torch.cuda.is_available() else "cpu"
@@ -234,10 +260,7 @@ def _check_plan_and_sources(
         raise ActivationPreparationError("tokenizer snapshot path differs from registered plan")
     if tokenizer.bos_token_id != DEFAULT_BOS_TOKEN_ID:
         raise ActivationPreparationError("tokenizer BOS ID changed")
-    if tokenizer.pad_token_id not in (None, PAD_TOKEN_ID) and tokenizer.eos_token_id != PAD_TOKEN_ID:
-        raise ActivationPreparationError("tokenizer padding/eos ID changed")
-    if tokenizer.pad_token_id is None and tokenizer.eos_token_id != PAD_TOKEN_ID:
-        raise ActivationPreparationError("tokenizer has no declared public padding fallback")
+    _public_padding_id(tokenizer)
     if not getattr(tokenizer, "chat_template", None):
         raise ActivationPreparationError("tokenizer chat template is unavailable")
     split_info = _load_json(info_path, role="public Alpaca dataset metadata").get("splits", {}).get("train", {})
@@ -592,9 +615,7 @@ def _run(args: argparse.Namespace) -> int:
                 raise ActivationPreparationError("registered nested fit position count changed")
             if set(row["record_id"] for row in fit_rows) & set(row["record_id"] for row in validation_rows):
                 raise ActivationPreparationError("public fit and validation records overlap")
-            pad_token_id = tokenizer.pad_token_id if tokenizer.pad_token_id is not None else tokenizer.eos_token_id
-            if pad_token_id != PAD_TOKEN_ID:
-                raise ActivationPreparationError("public tokenizer padding ID changed")
+            pad_token_id = _public_padding_id(tokenizer)
             fit_manifest = _record_manifest(fit_rows, fit_batch, split="train_large")
             validation_manifest = _record_manifest(validation_rows, validation_batch, split="validation_alpaca")
         with _phase(phases, "load_public_model_and_prefix", device):

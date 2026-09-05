@@ -135,3 +135,26 @@ def test_padding_qualification_requires_bit_exact_future_pad_causality() -> None
     assert result["unpadded_batch1_diagnostic"]["status"] == "equivalent_bit_exact"
     assert result["batching_substitution_allowed"] is False
     assert prefix.calls[:2] == [(2, 192), (2, 192)]
+
+
+
+def test_public_padding_fallback_accepts_declared_eot() -> None:
+    from scripts.trr0004_prepare_public_activations import _public_padding_id
+
+    class DeclaredEotTokenizer:
+        pad_token_id = None
+
+        def convert_tokens_to_ids(self, token: str) -> int:
+            return PAD_TOKEN_ID if token == "<|end_of_text|>" else -1
+
+        def convert_ids_to_tokens(self, token_id: int) -> str:
+            return "<|end_of_text|>" if token_id == PAD_TOKEN_ID else "other"
+
+    assert _public_padding_id(DeclaredEotTokenizer()) == PAD_TOKEN_ID
+
+    class WrongFallback(DeclaredEotTokenizer):
+        def convert_tokens_to_ids(self, token: str) -> int:
+            return 128009
+
+    with pytest.raises(RuntimeError, match="declared public padding"):
+        _public_padding_id(WrongFallback())
