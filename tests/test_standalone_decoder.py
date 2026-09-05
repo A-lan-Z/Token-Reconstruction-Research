@@ -104,3 +104,83 @@ def test_embedding_validation_is_explicit_and_fails_closed() -> None:
     bad[0, 0] = float("nan")
     with pytest.raises(StandaloneDecoderError, match="non-finite"):
         validate_embedding_table(bad, hidden_size=4, vocab_size=4)
+
+
+def test_track_b_prepare_wires_public_dataset_and_model(monkeypatch, tmp_path) -> None:
+    import argparse
+    from types import SimpleNamespace
+
+    import trr0003_track_b as runner
+
+    source_plan = tmp_path / "plan.json"
+    source_plan.write_text("{}\n")
+    output_root = tmp_path / "prepared"
+    calls: dict[str, object] = {}
+
+    class _FakeModel(nn.Module):
+        def __init__(self) -> None:
+            super().__init__()
+            self.anchor = nn.Parameter(torch.zeros(()))
+            self._embedding = SimpleNamespace(weight=torch.ones(3, 3))
+
+        def get_input_embeddings(self):
+            return self._embedding
+
+    fake_model = _FakeModel()
+    fake_tokenizer = SimpleNamespace()
+    fake_dataset = object()
+    records = [
+        {
+            "record_id": f"fit-{index}",
+            "dataset_index": index,
+            "text_sha256": f"hash-{index}",
+            "token_ids": [128000] + [index % 17] * 39,
+        }
+        for index in range(128)
+    ]
+
+    def fake_model_loader():
+        calls["model"] = True
+        return fake_tokenizer, fake_dataset, fake_model
+
+    def fake_records(plan, split, *, tokenizer, dataset):
+        calls["split"] = (split, tokenizer is fake_tokenizer, dataset is fake_dataset)
+        return records
+
+    def fake_capture(model, rows, batch_size):
+        calls["capture"] = (model is fake_model, len(rows), batch_size)
+        return torch.zeros((128, 40, 2048), dtype=torch.bfloat16)
+
+    written: list[Path] = []
+
+    def fake_save_file(tensors, path, metadata=None):
+        del tensors, metadata
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b"mock safetensors")
+        written.append(path)
+
+    monkeypatch.setattr(runner, "_model", fake_model_loader)
+    monkeypatch.setattr(runner, "records_for_split", fake_records)
+    monkeypatch.setattr(runner, "_capture_cut4", fake_capture)
+    monkeypatch.setattr(runner, "normalized_embedding_table", lambda value: torch.zeros((1, 1)))
+    monkeypatch.setattr(runner, "validate_embedding_table", lambda *args, **kwargs: None)
+    monkeypatch.setattr(runner, "save_file", fake_save_file)
+    monkeypatch.setattr(runner, "seed_everything", lambda seed: None)
+    monkeypatch.setattr(runner, "peak_memory", lambda: {})
+
+    args = argparse.Namespace(
+        source_plan=source_plan,
+        output_root=output_root,
+        record_batch_size=8,
+    )
+    assert runner._prepare(args) == 0
+    assert calls["model"] is True
+    assert calls["split"] == ("inverse_train", True, True)
+    assert calls["capture"] == (True, 128, 8)
+    assert {path.name for path in written} == {
+        "fit_observations.safetensors",
+        "fit_truth.safetensors",
+        "public_normalized_embeddings.safetensors",
+    }
+    assert (output_root / "fit_records.json").is_file()
+    assert (output_root / "prepare_evidence.json").is_file()

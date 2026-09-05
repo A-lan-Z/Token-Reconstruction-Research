@@ -1,0 +1,91 @@
+{
+  "execution_policy": {
+    "candidate_simulations": 0,
+    "paid_compute": false,
+    "panel_truth_opened": false,
+    "public_prefix_calls": 0,
+    "shared_gpu_slot": "exclusive RTX 5080"
+  },
+  "frozen_source_hashes": {
+    "experiments/TRR-0003/track_b/plan.json": "3297cb3fb5324cdd444103f83c926242205b8e6c4d775c86525ef27470fa16e7",
+    "scripts/trr0003_track_b.py": "232546b25f4d25e9ffade92bbf8c31eb24f233076eba1929d1649a79c2f1dc78",
+    "src/token_reconstruction/standalone_decoder.py": "e84d649d8e1184e83192d51632a440c5e1fd5881970f54a467637ad107a073ff",
+    "tests/test_standalone_decoder.py": "574ce3c2b6e178c7fdf337f7a96a20a7e0e53cbd8d7d346b60b27e4a31ef8efd"
+  },
+  "geometry": {
+    "batch_size": 512,
+    "fit_examples": 4992,
+    "fit_records": 128,
+    "fit_scored_positions": 39,
+    "fit_sequence_tokens": 40,
+    "hidden_size": 2048,
+    "mlp_bottleneck": 256,
+    "validation_examples": 936,
+    "validation_records": 24,
+    "vocab_size": 128256
+  },
+  "git_commit": "085a8643748fd7cace23fbf39ee2b84298b66ab2",
+  "hardware_snapshot": {
+    "query": "NVIDIA GeForce RTX 5080, 16303 MiB, 12191 MiB, 51, 14 %"
+  },
+  "notes": [
+    "Preparation envelope includes full bf16 model, transient model-load duplicate, CPU bf16 embedding, FP32 normalized embedding and save copy, capture logits, and allocator allowance."
+  ],
+  "predicted_bytes": {
+    "affine_adam_moments_float32": 34596864,
+    "affine_parameters_float32": 17298432,
+    "batch_logits_float32": 262668288,
+    "fit_flat_float32": 40894464,
+    "fit_observations_bfloat16": 20971520,
+    "mlp_adam_moments_float32": 9433088,
+    "mlp_parameters_float32": 4716544,
+    "public_embedding_table_float32": 1050673152,
+    "validation_flat_float32": 7667712
+  },
+  "predicted_peak_envelope": {
+    "affine_training_bytes": 2800734208,
+    "affine_training_gib": 2.608386993408203,
+    "assumptions": [
+      "public embedding table retained once as float32 GPU runtime resource",
+      "full-vocabulary logits materialized for one batch",
+      "two-logit temporary/autograd multiplier",
+      "fit batch and parameters/Adam/grads resident",
+      "1 GiB allocator/autograd safety allowance"
+    ]
+  },
+  "public_preparation_peak_envelope": {
+    "assumptions": [
+      "full pinned Llama model remains bfloat16 on GPU during capture",
+      "conservative duplicate bfloat16 model-load allowance",
+      "temporary CPU bfloat16 embedding and normalized FP32 table coexist with one FP32 save copy",
+      "capture batch of 8 includes a conservative full logits tensor allowance",
+      "one GiB allocator/runtime safety allowance"
+    ],
+    "capture_batch_records": 8,
+    "capture_logits_bfloat16_bytes": 82083840,
+    "capture_sequence_tokens": 40,
+    "gpu_envelope_bytes": 3627454464,
+    "gpu_envelope_gib": 3.3783302307128906,
+    "host_envelope_bytes": 8725766144,
+    "host_envelope_gib": 8.126502990722656,
+    "model_bfloat16_bytes": 2471628800,
+    "model_bfloat16_gib": 2.3018836975097656,
+    "model_parameter_count": 1235814400,
+    "public_embedding_bfloat16_cpu_bytes": 525336576,
+    "public_embedding_fp32_normalized_bytes": 1050673152,
+    "public_embedding_fp32_save_copy_bytes": 1050673152
+  },
+  "qualification_rule": {
+    "abort_if": "CUDA OOM, non-finite loss, allocator/driver/thermal anomaly, or measured peak leaves less than 25% of free memory",
+    "free_host_memory_snapshot": "28 GiB available at preflight",
+    "free_memory_required_bytes": 2800734208,
+    "largest_representative_cell": "full 512-row full-vocabulary training batch with the 128256-token projection; qualify affine then MLP before main 600-step fits",
+    "minimum_margin_fraction": 0.25,
+    "public_preparation": "qualify pinned model load, batch-8 cut-4 capture, and FP32 embedding extraction before decoder training; require measured GPU peak below the predicted envelope and >=25% of the initial free-memory margin; require host peak below 28 GiB available margin"
+  },
+  "schema": "token-reconstruction.trr0003-track-b-resource-preflight.v1",
+  "status": "QUALIFICATION_REQUIRED_BEFORE_MAIN_MATRIX",
+  "task_id": "TRR-0003",
+  "timestamp_utc": "2026-09-05T06:43:26Z",
+  "track": "track_b"
+}

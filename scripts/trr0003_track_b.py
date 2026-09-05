@@ -208,10 +208,13 @@ def _file_record(path: Path, *, root: Path | None = None) -> dict[str, Any]:
     return {"path": label, "bytes": path.stat().st_size, "sha256": sha256_file(path)}
 
 
-def _model() -> tuple[Any, torch.nn.Module]:
+def _model() -> tuple[Any, Any, torch.nn.Module]:
     if not torch.cuda.is_available():
         raise StandaloneDecoderError("prepare requires the pinned CUDA model")
     tokenizer = AutoTokenizer.from_pretrained(MODEL_ID, revision=MODEL_REVISION, local_files_only=True)
+    from datasets import load_dataset
+
+    dataset = load_dataset(DATASET_ID, revision=DATASET_REVISION, split="train")
     if tokenizer.bos_token_id != BOS_TOKEN_ID:
         raise StandaloneDecoderError("pinned tokenizer BOS changed")
     model = AutoModelForCausalLM.from_pretrained(
@@ -224,7 +227,7 @@ def _model() -> tuple[Any, torch.nn.Module]:
     if model.config.hidden_size != HIDDEN_SIZE or model.config.vocab_size != VOCAB_SIZE:
         raise StandaloneDecoderError("pinned model geometry changed")
     model.requires_grad_(False)
-    return tokenizer, model
+    return tokenizer, dataset, model
 
 
 def _token_tensor(records: list[dict[str, Any]], device: torch.device) -> torch.Tensor:
