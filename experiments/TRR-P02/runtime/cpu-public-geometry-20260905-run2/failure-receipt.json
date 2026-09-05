@@ -1,0 +1,103 @@
+{
+  "artifacts": {
+    "outer-receipt.txt": {
+      "bytes": 74,
+      "path": "outer-receipt.txt",
+      "sha256": "96d5bafe457ea203335598deebc88bb1be05f1aa9af8d0f3e45ba0372b0479f7"
+    },
+    "outer-stderr.txt": {
+      "bytes": 1514,
+      "path": "outer-stderr.txt",
+      "sha256": "ab34b967440ce26e05b9201aa1ba77f5025364d6a6d1fa8640be4f73bf5b2745"
+    },
+    "outer-stdout.txt": {
+      "bytes": 0,
+      "path": "outer-stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "outer-time-v.txt": {
+      "bytes": 1538,
+      "path": "outer-time-v.txt",
+      "sha256": "d752c3ff266bd2248beff120a46e87bb553910931542167e81be29308e08895c"
+    },
+    "preflight.json": {
+      "bytes": 2283,
+      "path": "preflight.json",
+      "sha256": "46199ced846a057cc767b6b12dea548ffbe8ecd07ca1540c87d65cc5ae40a7c0"
+    },
+    "qualification.json": {
+      "bytes": 884,
+      "path": "qualification.json",
+      "sha256": "b0b7e70236b8a3c0090ee8212ae8790a47cef6a7174d34db07a0a93b558d4fbc"
+    }
+  },
+  "command_argv": [
+    "env",
+    "CUDA_VISIBLE_DEVICES=",
+    "OMP_NUM_THREADS=8",
+    "MKL_NUM_THREADS=8",
+    "TOKENIZERS_PARALLELISM=false",
+    "/usr/bin/time",
+    "-v",
+    "-o",
+    "/tmp/trr-p02-time-20260905-run2.txt",
+    "timeout",
+    "--foreground",
+    "640s",
+    "python3",
+    "scripts/trr_p02/diagnose_geometry.py",
+    "--plan",
+    "experiments/TRR-P02/plan.json",
+    "--prototype",
+    "/tmp/trr-p01/experiments/TRR-P01/runtime/cpu-table-20260905/boundary_prototypes.safetensors",
+    "--historical-lens",
+    "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/strict-surrogate-heavy/control-assets/lens_alpaca.pt",
+    "--model-path",
+    "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+    "--output-root",
+    "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run2",
+    "--manifest-path",
+    "experiments/TRR-P02/runtime/cpu-public-geometry-20260905-run2/run_manifest.json",
+    "--implementation-commit",
+    "da818f7a08f70a04a93fc1d627812925b5d42fb1",
+    "--prototype-chunk-size",
+    "8192"
+  ],
+  "command_wrapper": "/usr/bin/time -v -o /tmp/trr-p02-time-20260905-run2.txt timeout --foreground 640s",
+  "end_utc": "2026-09-05T12:14:22Z",
+  "exit_status": 1,
+  "failure": {
+    "cause": "_make_figures received C0..C6 labels (7) with primary C0..C4 offset rows (5)",
+    "exception": "ValueError: shape mismatch: objects cannot be broadcast to a single shape",
+    "fix": "pass contexts indexed by PRIMARY_CONTEXT_INDICES to the offset figure; no numerical code changed",
+    "traceback_location": "scripts/trr_p02/diagnose_geometry.py:898"
+  },
+  "implementation_commit": "da818f7a08f70a04a93fc1d627812925b5d42fb1",
+  "lease_hard_end_utc": "2026-09-05T12:25:00Z",
+  "lease_start_utc": "2026-09-05T12:13:00Z",
+  "phase": {
+    "activation_serialization": "not started",
+    "diagnostics_manifest": "not written",
+    "figures": "started; failed on first offset-figure axis.bar call because seven context labels were paired with five primary offset rows",
+    "full_vocab_and_lens_rankings": "completed before figure generation traceback",
+    "historical_lens": "loaded and frozen checks passed",
+    "longest_context_qualification": "passed exact batched-vs-single equality at C6; qualification.json written",
+    "prototype_table": "loaded and identity/hash checks passed",
+    "public_model": "loaded from declared local snapshot; weight progress reached 146/146",
+    "public_panel_cache_and_geometry": "completed before figure generation traceback",
+    "resource_preflight": "passed and preflight.json written",
+    "scientific_result": "none serialized"
+  },
+  "resource": {
+    "maximum_resident_set_size_kb": 6324828,
+    "swaps": 0,
+    "timeout_triggered": false
+  },
+  "schema": "token-reconstruction.trr-p02-failed-run.v1",
+  "source_truth_included": false,
+  "start_utc": "2026-09-05T12:14:10Z",
+  "status": "FAILED_BEFORE_DIAGNOSTIC_SERIALIZATION",
+  "task_id": "TRR-P02",
+  "timeout_triggered": false,
+  "truth_opened": false
+}

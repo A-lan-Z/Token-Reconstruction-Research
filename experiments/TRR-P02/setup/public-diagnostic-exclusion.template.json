@@ -1,0 +1,48 @@
+{
+  "schema": "token-reconstruction.trr-p02.public-diagnostic-exclusion.v1",
+  "task_id": "TRR-P02",
+  "status": "PENDING_RUNTIME_CAPTURE",
+  "purpose": "Bind exact public diagnostic cases to the source probe plan so later confirmation excludes only those opened cases.",
+  "generated_utc": null,
+  "model": {
+    "id": "meta-llama/Llama-3.2-1B-Instruct",
+    "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "cut_depth": 4,
+    "bos_token_id": 128000,
+    "vocab_size": 128256
+  },
+  "source_plan": {
+    "path": "PENDING_EXACT_PUBLIC_PROBE_PLAN_PATH",
+    "sha256": null
+  },
+  "case_schema": {
+    "case_id": "stable exact diagnostic case identifier",
+    "context_id": "stable public context identifier",
+    "endpoint_id": "stable public endpoint/query identifier",
+    "context_token_ids": "exact known public context token IDs, including BOS",
+    "endpoint_token_ids": "exact public token IDs supplied at the endpoint",
+    "sequence_token_ids": "exact concatenation of context_token_ids and endpoint_token_ids",
+    "sequence_length": "derived integer",
+    "position_ids": "exact positions if recorded; otherwise []",
+    "attention_mask": "exact mask if recorded; otherwise []",
+    "artifact_path": "optional public diagnostic artifact path",
+    "artifact_sha256": "optional lowercase SHA-256 of that artifact"
+  },
+  "cases": [],
+  "exclusion_rule": {
+    "match_fields": [
+      "case_id",
+      "context_id",
+      "endpoint_id",
+      "sequence_token_ids"
+    ],
+    "future_confirmation": "exclude only exact listed case/context/endpoint tuples and sequences",
+    "global_token_type_exclusion": false,
+    "token_ids_are_global_exclusions": false
+  },
+  "metrics": {
+    "status": "PENDING_SEPARATE_DIAGNOSTIC_ANALYSIS",
+    "values": []
+  },
+  "truth_access": "none; public diagnostic metadata only"
+}
