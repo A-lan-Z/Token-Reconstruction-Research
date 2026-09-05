@@ -1,0 +1,351 @@
+{
+  "schema": "token-reconstruction.trr-p03-stage1-stage2-plan.v2",
+  "task_id": "TRR-P03",
+  "status": "PREDECLARED_STAGE1_WITH_OPTIONAL_STAGE2",
+  "truth_opened": false,
+  "source_truth_included": false,
+  "claim_class": "broader_stratified_public_natural_diagnostic_and_optional_compactness_diagnostic",
+  "purpose": "Test whether P02's full-vocabulary frozen-lens projected readout generalizes beyond its twelve controlled public rows before testing a compact scorer.",
+  "parent": {
+    "task_id": "TRR-P02",
+    "publication_head": "7956b4357d076abce3ccfc407d3fcac832fd34f6",
+    "publication_head_verified": true,
+    "report": {
+      "path": "coordination/results/TRR-P02.md",
+      "sha256": "7e65f3181efffc8bc6233ef3b572f1d970afd873d603a33f68c5da983293c917"
+    },
+    "plan": {
+      "path": "experiments/TRR-P02/plan.json",
+      "sha256": "9f191d0376d29a9bd46241060f5466738d55b375beb1baf78cb920b72594e030"
+    }
+  },
+  "authority": {
+    "charter": {
+      "path": "RESEARCH_CHARTER.md",
+      "sha256": "ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d"
+    },
+    "control_packet": {
+      "path": "coordination/requests/TRR-P03.md",
+      "sha256": "a9a2bc41277de3c6da8d70b1379f5fb66c23564f817ac992d7991d22fa771d0b"
+    },
+    "dual_benchmark_protocol": {
+      "path": "research/DUAL_BENCHMARK_PROTOCOL.md",
+      "role": "context_only; this exploratory panel does not add an active method or canonical cell"
+    }
+  },
+  "scope_boundaries": [
+    "Stage 1 is a broader stratified public natural diagnostic, not a universal public-source representativeness claim, canonical benchmark replacement, or overall-best claim.",
+    "The historical affine lens and projected prototypes retain their fitted public Alpaca provenance; no fitting-free claim is made.",
+    "P02 controlled cases are excluded by exact BOS-anchored prefix tuple identity only. Their token IDs are not globally excluded.",
+    "Stage 2 is limited to the predeclared ranks 128 and 256 with no adaptive rank, threshold, decomposition, or rescue sweep."
+  ],
+  "process_separation": {
+    "current_incident": "Source task 01a071d9-7943-7301-9eaa-1bff9e7d4d50 accidentally sent P03 panel/interface planning to independent TRR-0004 during setup.",
+    "disclosure": "The message contained no records, source truth, scores, or private data.",
+    "receiver_response": "The receiving task reported that its methods and fresh records were already frozen and that it would not use the message for its own work or this task's next decision.",
+    "routing": "Only root task 01a07061-9c25-7e13-bcac-12d57c41c666 receives P03 scientific messages.",
+    "use_rule": "P03 uses no scientific output from the misrouted message or TRR-0004 and verifies that unrelated-task content cannot enter observation generation, method choice, scoring, or interpretation."
+  },
+  "model": {
+    "id": "meta-llama/Llama-3.2-1B-Instruct",
+    "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "cut_depth": 4,
+    "hidden_size": 2048,
+    "vocab_size": 128256,
+    "dtype": "bfloat16",
+    "bos_token_id": 128000,
+    "tokenizer_id": "meta-llama/Llama-3.2-1B-Instruct",
+    "tokenizer_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "attention_implementation": "sdpa",
+    "local_files_only": true
+  },
+  "conditions": {
+    "matched_public": {
+      "condition_id": "matched_public",
+      "required_for_stage1": true,
+      "target_model_id": "meta-llama/Llama-3.2-1B-Instruct",
+      "target_model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "role": "primary matched target"
+    },
+    "shifted_full_sft": {
+      "condition_id": "shifted_full_sft",
+      "required_for_stage1": true,
+      "target_model_id": "Vikhrmodels/Vikhr-Llama-3.2-1B-Instruct",
+      "target_model_revision": "7fa9d06a59246629244cdd3b6b92e4fc756baa0f",
+      "role": "paired target-weight shift diagnostic",
+      "lineage": "verified full-SFT derivative of the pinned Meta Llama checkpoint",
+      "resource_rule": "an unavailable compute window delays this arm; it does not authorize dropping the condition or weakening the Stage 1 gate"
+    }
+  },
+  "assets": {
+    "boundary_prototypes": {
+      "path": "/tmp/trr-p01/experiments/TRR-P01/runtime/cpu-table-20260905/boundary_prototypes.safetensors",
+      "sha256": "51abc304d51134777d55347b219fe659817b9f0319add99756eeac6e9b6dd9a3",
+      "bytes": 525337024,
+      "dtype": "bfloat16",
+      "construction": "public_prefix([BOS,v])[position 1] for v=0..128255",
+      "role": "read-only raw boundary candidate table"
+    },
+    "historical_affine_lens": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/strict-surrogate-heavy/control-assets/lens_alpaca.pt",
+      "sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742",
+      "role": "frozen public Alpaca fitted comparator and projection map",
+      "fitting_provenance": "public Alpaca only; no target or evaluation truth; no new fitting in TRR-P03",
+      "map": "g(h)=W h + a; query and candidate normalization is float32"
+    },
+    "p02_exact_tuple_exclusion": {
+      "path": "experiments/TRR-P02/setup/public-diagnostic-exclusion.final.json",
+      "sha256": "3b671dea06371834dfaf8863fd2b667fb2894f82d171d29d314236ec7abaa6dc",
+      "rule": "reject any candidate whose BOS-anchored early scored prefix through an endpoint exactly equals a listed P02 sequence/context/endpoint tuple; do not reject token IDs globally",
+      "note": "Longer natural prompts can contain a P02 tuple in their early scored positions, so the prefix collision filter is applied after each declared truncation/window."
+    },
+    "prior_overlap_audit": {
+      "rule": "audit exact prompt_id, prompt hash, and selected token-window overlap against previously opened panels before observation freeze; exclude only exact overlapping records",
+      "dataset_reason": "the new no_robots dataset is distinct from P01's Pile source, but the audit is retained and recorded rather than assumed"
+    }
+  },
+  "panel": {
+    "dataset": {
+      "id": "HuggingFaceH4/no_robots",
+      "split": "train",
+      "revision": "e6f9a4ac5c37faeb744ba9ecf0473184d7f8105b",
+      "cached_arrow_path": "/home/alanz/.cache/huggingface/datasets/HuggingFaceH4___no_robots/default/0.0.0/e6f9a4ac5c37faeb744ba9ecf0473184d7f8105b/no_robots-train.arrow",
+      "cached_arrow_sha256": "5a9193e927d899d167fd40553d0b403499f5f9cf9a9254db19399a4d0b3550fb",
+      "records_available": 9500,
+      "source_fields": ["prompt", "prompt_id", "messages", "category"],
+      "selection_seed_stage1": 20260906,
+      "selection_seed_stage2_holdout": 20260907,
+      "selection_order": "sha256(TRR-P03|dataset_revision|stage|length|style|dataset_index|selection_seed), then dataset index",
+      "prompt_policy": "use natural dataset prompts as supplied; no generated or semantically rewritten text; for a declared length window, prepend BOS and retain the first requested tokenizer tokens without added specials"
+    },
+    "style_metadata": {
+      "coding": ["Coding"],
+      "question_answer": ["Open QA", "Closed QA", "Classify", "Extract"],
+      "creative_generation": ["Generation", "Brainstorm", "Chat", "Rewrite", "Summarize"],
+      "source": "dataset category metadata; exact category-to-style mapping is frozen here and copied to the selector receipt"
+    },
+    "stage1": {
+      "panel_id": "trr-p03-natural-stage1",
+      "records": 24,
+      "post_bos_lengths": [16, 39, 64, 128],
+      "records_per_length": 6,
+      "sequence_slots_including_bos": {
+        "16": 17,
+        "39": 40,
+        "64": 65,
+        "128": 129
+      },
+      "scored_tokens_total_per_target": 1482,
+      "style_counts_total": {
+        "coding": 8,
+        "question_answer": 8,
+        "creative_generation": 8
+      },
+      "style_targets_by_length_in_record_order": {
+        "16": ["coding", "coding", "question_answer", "question_answer", "creative_generation", "creative_generation"],
+        "39": ["coding", "coding", "question_answer", "question_answer", "creative_generation", "creative_generation"],
+        "64": ["coding", "coding", "question_answer", "question_answer", "creative_generation", "creative_generation"],
+        "128": ["coding", "coding", "question_answer", "question_answer", "creative_generation", "creative_generation"]
+      },
+      "record_order": "length-major, then style-major with two records per style as listed above",
+      "selection": "scan the seeded public permutation for the first unused row matching the requested category-derived style and minimum token length, excluding exact overlap and BOS-anchored P02 prefix collisions; fail closed if any slot cannot be filled",
+      "target_observation_contract": "the selected source sequence, order, valid length, mask, and positions are identical across matched_public and shifted_full_sft; only target weights change"
+    },
+    "stage2_holdout": {
+      "panel_id": "trr-p03-natural-stage2-holdout",
+      "records": 24,
+      "post_bos_lengths": [16, 39, 64, 128],
+      "records_per_length": 6,
+      "scored_tokens_total_per_target": 1482,
+      "style_counts_total": {
+        "coding": 8,
+        "question_answer": 8,
+        "creative_generation": 8
+      },
+      "selection": "same length/style slots and exact-overlap rules as Stage 1, independent seed 20260907, excluding every Stage 1 row",
+      "truth_status": "holdout truth and observations may be prepared and hashed before Stage 1 scoring, but holdout truth remains unopened and unscored until Stage 1 disposition and Stage 2 compact-method freeze",
+      "use": "only if the Stage 1 gate advances"
+    },
+    "a1_a2_anchor": {
+      "record_ids": ["p03-s1-r0007", "p03-s1-r0009", "p03-s1-r0011", "p03-s1-r0012"],
+      "record_order_indices_zero_based": [0, 2, 4, 5],
+      "selection_definition": "length-39 Stage 1 records at zero-based stratum indices [0, 2, 4, 5], fixed before truth and observations",
+      "style_counts": {"coding": 1, "question_answer": 1, "creative_generation": 2},
+      "style_slots_in_length_39": ["coding", "coding", "question_answer", "question_answer", "creative_generation", "creative_generation"],
+      "ids_are_resolved_by": "the deterministic stage-local selector; these opaque IDs are fixed by the declared ordering before truth and observations",
+      "post_bos_length": 39,
+      "sequence_slots_including_bos": 40,
+      "scored_tokens_per_condition": 156,
+      "candidate_budget": 256,
+      "expected_candidate_simulations_per_condition": 39936,
+      "purpose": "retain a modest A1+A2 accuracy/cost target without reshaping its native 40-slot policy",
+      "gate_role": "anchor only; never used to promote a projected readout"
+    }
+  },
+  "readouts": {
+    "raw_boundary_full_vocab": {
+      "method_id": "p03_raw_boundary_full_vocab",
+      "query": "h at each active post-BOS position",
+      "candidate": "b_v for v=0..128255 from the read-only boundary table",
+      "score": "dot(normalize_fp32(h), normalize_fp32(b_v))",
+      "fitted_origin": "none; public boundary prototypes only",
+      "stage1_required": true
+    },
+    "projected_frozen_lens_full_vocab": {
+      "method_id": "p03_projected_frozen_lens_full_vocab",
+      "query": "normalize_fp32(g(h))",
+      "candidate": "normalize_fp32(g(b_v)) for v=0..128255, streamed or persisted once",
+      "score": "dot(normalize_fp32(g(h)), normalize_fp32(g(b_v)))",
+      "fitted_origin": "historical public Alpaca affine lens; fitted comparator",
+      "stage1_required": true,
+      "parent_for_stage2": "uncompressed projected full-vocabulary scorer"
+    },
+    "historical_native_a1_full_vocab": {
+      "method_id": "p03_historical_native_a1_full_vocab",
+      "query": "normalize_fp32(g(h))",
+      "candidate": "normalize_fp32(public_input_embedding_v) for v=0..128255",
+      "score": "native FP32 FrozenAffineLens exp(s)-scaled cosine logits from g(h) against E_v; use these logits for top-1 decisions, then optionally divide by exp(s) for cosine-equivalent reporting",
+      "fitted_origin": "historical public Alpaca affine lens; fitted comparator",
+      "stage1_required": true,
+      "comparison_role": "primary comparator for projected full-vocabulary readout"
+    },
+    "historical_native_a1_a2_40slot_anchor": {
+      "method_id": "p03_historical_native_a1_a2_40slot_anchor",
+      "scope": "four predeclared length-39 records under each required target condition",
+      "policy_id": "a1a2_43ea0bb737bc075531ca",
+      "rule": "published fixed K=256 historical A1 proposals, direct public-prefix cosine for each candidate, no immediate A1 shortcut, adaptivity, gate, centering, or abstention, always commit",
+      "geometry": "exact 40 slots including BOS and 39 scored positions; no reshape",
+      "fitted_origin": "historical public Alpaca A1 and public-prefix A2; fitted comparator only",
+      "stage1_required": true,
+      "tie_policy": "preserve native torch.topk candidate ordering and first-argmax tie behavior"
+    }
+  },
+  "tie_policy": {
+    "standalone_full_vocab": "float32 score descending then smallest token ID ascending; use this deterministic order for raw, projected, and standalone historical A1 top-1",
+    "strict_rank": "1 + count(score > true_score); equal-score count is retained separately and is not silently scored as a win",
+    "native_a1_scale": "native FP32 logits retain positive exp(s) for decisions; divide by exp(s) only for reporting after decisions, and do not infer finite-precision tie equivalence from rescaling",
+    "native_a1_a2": "published torch.topk/native-order and first-argmax ties are preserved and reported separately; do not silently unify with standalone ID-ascending ties",
+    "nonfinite": "fail closed on any nonfinite query, candidate, or score"
+  },
+  "observation_and_freeze": {
+    "evaluator": "source-aware target builder is separate and may use source sequences to generate observations and private truth",
+    "attack_input": ["activation tensor", "attention mask", "position IDs", "cut depth", "opaque record ID", "public asset identities", "fixed method configuration"],
+    "attack_exclusions": ["source plaintext", "source token IDs", "prompt_id", "dataset index", "prompt hash", "category/style", "target condition label", "target model or target callable", "truth/correctness signal", "opened P01/P02 results"],
+    "representation": "right-pad only for batch transport; masks and positions identify valid slots; all methods see identical observation bytes within a condition",
+    "freeze_order": [
+      "freeze plan, method source/configuration, asset hashes, selection, and target-condition map",
+      "generate and hash both matched and shifted target observation bundles",
+      "run raw, projected, historical A1, and the four-record A1+A2 anchor for both conditions",
+      "freeze and hash-validate every per-condition/per-method receipt and the complete matrix before any Stage 1 truth is opened or scored",
+      "open truth once and score only the immutable predictions"
+    ],
+    "truth_after_freeze": "truth cannot revise predictions, candidate sets, routes, timing, thresholds, state, or method selection",
+    "stage2_holdout": "holdout truth is opened only after a passing Stage 1 gate and after ranks, factorization, quality target, and footprint target are frozen"
+  },
+  "metrics": {
+    "required": {
+      "token_accuracy": "correct post-BOS predictions divided by 1482 valid positions per target condition",
+      "exact_records": "count/rate with every valid post-BOS token correct; BOS is not scored",
+      "paired_changes": "projected-minus-A1 token delta and exact-record delta on identical record IDs",
+      "gain_loss": "record counts with projected correct-token count greater than, equal to, or less than A1; report median and worst record-level losses descriptively",
+      "deterministic_predictions": "top-1 IDs, selected scores when available, ties, and tie-policy IDs"
+    },
+    "strata": ["target_condition", "post_bos_length", "style", "position", "method"],
+    "per_record": ["correct_token_count", "valid_token_count", "token_accuracy", "exact_record", "first_error_position", "projected_minus_a1_correct_count"],
+    "optional_posttruth_diagnostics": ["true_score", "runner_up_score", "strict_rank", "equal_score_count", "margin"],
+    "cost": ["candidate_simulations", "public_prefix_calls", "public_prefix_input_token_evaluations", "query_projection_calls", "preparation_seconds", "adaptation_seconds", "inference_seconds", "synchronization_seconds", "freeze_hash_seconds", "I/O_seconds", "wall_seconds", "peak_RSS", "peak_CUDA_memory"],
+    "no_pooling": "matched and shifted conditions, natural Stage 1, P02 controls, prior opened panels, and the A1+A2 anchor remain separate"
+  },
+  "uncertainty": {
+    "method": "paired record-cluster percentile bootstrap stratified by post-BOS length",
+    "draws": 10000,
+    "seed": 20260905,
+    "sampling": "sample six records with replacement independently within each of four length strata and reuse the sampled records for projected and A1",
+    "primary_statistic": "micro token-accuracy difference over the sampled record multiset",
+    "secondary_statistics": ["macro per-record accuracy difference", "exact-record-rate difference"],
+    "interval": "two-sided percentile 95% interval at 0.025 and 0.975",
+    "report": "point estimate, CI, per-length estimates, and record gain/tie/loss counts; exact-record CI is descriptive and not an additional gate",
+    "unit": "tokens are not treated as independent bootstrap units"
+  },
+  "stage1_gate": {
+    "name": "representative_projected_readout_gate",
+    "comparison": "projected_frozen_lens_full_vocab versus historical_native_a1_full_vocab on identical Stage 1 observations",
+    "matched_public": {
+      "token_delta_min_pp": 1.0,
+      "point_condition": "projected_minus_A1 token accuracy >= +1.0 percentage point",
+      "cluster_ci_condition": "lower endpoint of the 95% length-stratified paired record-cluster CI > 0",
+      "exact_condition": "projected exact-record count >= A1 exact-record count"
+    },
+    "shifted_full_sft": {
+      "point_condition": "projected_minus_A1 token accuracy >= 0.0 percentage point",
+      "exact_condition": "projected exact-record count >= A1 exact-record count",
+      "ci_role": "report the same bootstrap CI; the nonnegative point and nonlower exact-record conditions are the continuation checks"
+    },
+    "advance": "all matched and shifted conditions pass their predeclared checks",
+    "stop_clear_regression": "matched point estimate is at least 1 pp below A1, or its CI is wholly below zero with fewer projected exact records; an available shifted condition regression also stops",
+    "stop_no_representative_advantage": "any other gate failure, including a small positive gain or an interval spanning zero; no Stage 2 truth is opened",
+    "interpretation": "These are bounded exploratory decisions, not universal claims. P02's 11/12 versus 9/12 controlled-row difference cannot bypass this gate, and a failure does not prove that all no-fit methods or all compression mechanisms fail."
+  },
+  "stage2": {
+    "status": "OPTIONAL_ONLY_IF_ALL_STAGE1_GATES_PASS",
+    "holdout": "trr-p03-natural-stage2-holdout",
+    "ranks": [128, 256],
+    "methods": {
+      "projected_parent": "uncompressed Stage 1 projected full-vocabulary scorer",
+      "projected_compact": "rank-r approximation of normalized projected candidate matrix",
+      "a1_compact_control": "same-rank approximation of normalized public input-embedding candidate matrix with identical factor precision, score kernel, and query count"
+    },
+    "decomposition": {
+      "projected_matrix": "C_proj[v,:] = normalize_fp32(g(b_v))",
+      "a1_matrix": "C_a1[v,:] = normalize_fp32(E_v)",
+      "algorithm": "deterministic float32 randomized range finder, oversampling 16, two power iterations, fixed seed 8675309, QR, and small SVD",
+      "factorization": "C approximately U_r Sigma_r V_r^T; persist A=U_r Sigma_r, B=V_r, and row norms ||A[v,:]||",
+      "score": "q=normalize_fp32(g(h)); score_r(v)=dot(q B_r, A_r[v,:]/||A_r[v,:]||)",
+      "bias": "the affine bias remains in g(h) and g(b_v) before normalization",
+      "freeze": "ranks, seed, oversampling, iterations, precision, and tie rule are fixed before holdout truth; no failed rank may trigger a rescue"
+    },
+    "quality_target": {
+      "token_accuracy_loss_max_pp_vs_parent": 1.0,
+      "exact_record_loss_max": 1,
+      "paired_cluster_ci_lower_bound_min_pp": -1.0,
+      "same_budget_control": "report compact projected-minus-compact A1 token and exact-record deltas at each rank"
+    },
+    "practical_target": {
+      "candidate_factor_storage_ratio_max": 0.25,
+      "resident_readout_storage_ratio_max": 0.35,
+      "runtime_reduction_min": 0.20,
+      "accounting": "report full candidate/parent assets, factor bytes, lens/query assets, construction workspace, deployed resident storage, model memory, scratch, and I/O separately"
+    },
+    "outcomes": {
+      "compact_success": "quality, storage, and runtime targets pass",
+      "quality_retained_without_runtime_benefit": "quality and storage pass but runtime reduction is below 20%; footprint-only diagnostic",
+      "quality_failure": "accuracy loss exceeds 1 pp or exact-record loss exceeds 1; reject the tested rank and run no rescue",
+      "not_run": "Stage 1 gate or resource preflight fails; holdout truth remains unopened"
+    },
+    "scope": "Any success is a fitted-origin, A2-free scorer diagnostic and does not remove historical fitting, establish a canonical replacement, or settle no-fit research."
+  },
+  "resource_preflight": {
+    "default_device": "cpu_only_unless_root_grants_exclusive_public_window",
+    "torch_intra_op_threads": 8,
+    "torch_inter_op_threads": 1,
+    "deterministic_algorithms": true,
+    "tf32": false,
+    "prototype_chunk_size": 8192,
+    "query_chunk_size": 256,
+    "record_batch_size": 4,
+    "guards": {
+      "minimum_available_host_memory_bytes": 10737418240,
+      "maximum_process_rss_bytes": 8589934592,
+      "swap_events": 0,
+      "qualification": "qualify the length-128 observation/readout and largest full-vocabulary lookup before the matrix"
+    },
+    "equivalence": "a batch-size or numerical workaround requires exact output and prediction equivalence on a fixed public fixture; differing attempts are retained and excluded",
+    "no_heavy_pre_gate": "do not run Stage 2 decomposition or holdout scoring before Stage 1 gate review"
+  },
+  "evidence": {
+    "required_paths": ["coordination/requests/TRR-P03.md", "experiments/TRR-P03/plan.json", "experiments/TRR-P03/manifest.json", "coordination/results/TRR-P03.md", "experiments/TRR-P03/review/"],
+    "identity": ["task_id", "full_source_commit", "parent_commit", "plan_hash", "method_source_hashes", "model/tokenizer revision", "dataset revision", "panel selection hash", "target observation hashes", "asset hashes", "seeds", "hardware", "timestamps"],
+    "run_records": ["exact command", "environment/dependency identifier", "preparation/inference/synchronization/freeze/I-O timing", "candidate counts", "peak memory", "prediction and receipt hashes", "truth-opening order", "failed/excluded runs"],
+    "publication_order": "publish the complete uncompressed Stage 1 finding and gate disposition before optional Stage 2 holdout truth is opened"
+  }
+}
