@@ -29,7 +29,11 @@ import torch.nn.functional as F
 
 from token_reconstruction.trr0005_contract import POSITION_BINS
 from token_reconstruction.trr0005_joint_decoder import (
+    ATTENTION_SCORE_MODE_COSINE_SCALE4,
+    ATTENTION_SCORE_MODE_DOT_PRODUCT,
+    ATTENTION_SCORE_MODES,
     CAUSAL_ATTENTION_METHOD,
+    COSINE_ATTENTION_SCORE_SCALE,
     DATA_SCHEMA,
     DEFAULT_CONTEXT_WIDTH,
     DEFAULT_HIDDEN_SIZE,
@@ -248,6 +252,14 @@ def _state_metadata(path: Path, *, distribution: str) -> dict[str, str]:
             metadata = dict(handle.metadata() or {})
     except Exception as exc:
         raise AttentionDiagnosticError(f"cannot read decoder-state metadata: {path}") from exc
+    score_mode = metadata.get(
+        "attention_score_mode", ATTENTION_SCORE_MODE_DOT_PRODUCT
+    )
+    if score_mode not in ATTENTION_SCORE_MODES:
+        raise AttentionDiagnosticError(
+            f"{path} has unsupported attention score mode: {score_mode!r}"
+        )
+    metadata.setdefault("attention_score_mode", score_mode)
     expected = {
         "schema": DECODER_SCHEMA,
         "task_id": TASK_ID,
@@ -292,7 +304,16 @@ def _causal_attention_weights(
     positions = torch.arange(int(activation.shape[1]), device=activation.device)
     allowed = positions[None, :] <= positions[:, None]
     allowed = allowed.unsqueeze(0) & mask[:, None, :]
-    scores = query @ key.transpose(-1, -2) / math.sqrt(model.context_width)
+    if model.attention_score_mode == ATTENTION_SCORE_MODE_COSINE_SCALE4:
+        query = F.normalize(query, dim=-1)
+        key = F.normalize(key, dim=-1)
+        scores = (query @ key.transpose(-1, -2)) * COSINE_ATTENTION_SCORE_SCALE
+    elif model.attention_score_mode == ATTENTION_SCORE_MODE_DOT_PRODUCT:
+        scores = query @ key.transpose(-1, -2) / math.sqrt(model.context_width)
+    else:
+        raise AttentionDiagnosticError(
+            f"unsupported attention score mode: {model.attention_score_mode!r}"
+        )
     masked_scores = scores.masked_fill(~allowed, float("-inf"))
     valid_query = mask.unsqueeze(-1)
     has_key = allowed.any(dim=-1, keepdim=True)
@@ -438,6 +459,7 @@ def run_attention_diagnostic(
             "metadata": metadata,
             "method_id": CAUSAL_ATTENTION_METHOD,
             "attention_mode": "causal",
+            "attention_score_mode": model.attention_score_mode,
             "summary": summary,
         }
         del weights, model

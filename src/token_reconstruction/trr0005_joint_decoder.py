@@ -62,6 +62,13 @@ AFFINE_METHOD = "joint_full_affine"
 CAUSAL_ATTENTION_METHOD = "affine_causal_h_attention128"
 DIAGONAL_ATTENTION_METHOD = "affine_trained_diagonal_attention128"
 METHODS = (AFFINE_METHOD, CAUSAL_ATTENTION_METHOD, DIAGONAL_ATTENTION_METHOD)
+ATTENTION_SCORE_MODE_DOT_PRODUCT = "dot_product"
+ATTENTION_SCORE_MODE_COSINE_SCALE4 = "cosine_scale4"
+ATTENTION_SCORE_MODES = (
+    ATTENTION_SCORE_MODE_DOT_PRODUCT,
+    ATTENTION_SCORE_MODE_COSINE_SCALE4,
+)
+COSINE_ATTENTION_SCORE_SCALE = 4.0
 AttentionMode = Literal["causal", "diagonal"]
 
 
@@ -150,6 +157,7 @@ class JointAffineAttentionDecoder(nn.Module):
         *,
         context_width: int = DEFAULT_CONTEXT_WIDTH,
         seed: int = DEFAULT_SEED,
+        attention_score_mode: str = ATTENTION_SCORE_MODE_DOT_PRODUCT,
     ) -> None:
         super().__init__()
         _validate_method(method_id)
@@ -159,6 +167,21 @@ class JointAffineAttentionDecoder(nn.Module):
         self.vocabulary_size = int(vocabulary_size)
         self.context_width = int(context_width)
         self.method_id = method_id
+        if method_id == AFFINE_METHOD:
+            if attention_score_mode not in (
+                ATTENTION_SCORE_MODE_DOT_PRODUCT,
+                "none",
+            ):
+                raise JointDecoderError(
+                    "the affine arm cannot use an attention score mode"
+                )
+            self.attention_score_mode = "none"
+        else:
+            if attention_score_mode not in ATTENTION_SCORE_MODES:
+                raise JointDecoderError(
+                    f"unknown attention score mode: {attention_score_mode}"
+                )
+            self.attention_score_mode = str(attention_score_mode)
 
         self.W = nn.Parameter(torch.eye(self.hidden_size, dtype=torch.float32))
         self.b = nn.Parameter(torch.zeros(self.hidden_size, dtype=torch.float32))
@@ -232,7 +255,16 @@ class JointAffineAttentionDecoder(nn.Module):
         query = self.query(value)
         key = self.key(value)
         projected_value = self.value(value)
-        scores = query @ key.transpose(-1, -2) / math.sqrt(self.context_width)
+        if self.attention_score_mode == ATTENTION_SCORE_MODE_COSINE_SCALE4:
+            # The repair bounds score magnitude while retaining the same
+            # trainable Q/K/V/output parameterization.  In the diagonal
+            # control the allowed set still has one key, so its probability
+            # remains exactly one and Q/K remain gradient-inactive.
+            query = F.normalize(query, dim=-1)
+            key = F.normalize(key, dim=-1)
+            scores = (query @ key.transpose(-1, -2)) * COSINE_ATTENTION_SCORE_SCALE
+        else:
+            scores = query @ key.transpose(-1, -2) / math.sqrt(self.context_width)
         positions = torch.arange(int(activation.shape[1]), device=activation.device)
         if self.attention_mode == "causal":
             allowed = positions[None, :] <= positions[:, None]
@@ -348,6 +380,7 @@ def build_decoder(
     vocabulary_size: int,
     context_width: int = DEFAULT_CONTEXT_WIDTH,
     seed: int = DEFAULT_SEED,
+    attention_score_mode: str = ATTENTION_SCORE_MODE_DOT_PRODUCT,
 ) -> JointAffineAttentionDecoder:
     """Build one registered arm with the fixed TRR-0005 initialisation."""
 
@@ -357,6 +390,7 @@ def build_decoder(
         method_id,
         context_width=context_width,
         seed=seed,
+        attention_score_mode=attention_score_mode,
     )
 
 
@@ -866,6 +900,7 @@ def save_decoder_state(
         "method_id": model.method_id,
         "selected_step": int(selected_step),
         "attention_mode": model.attention_mode or "none",
+        "attention_score_mode": model.attention_score_mode,
         "context_width": int(model.context_width),
         "qkv_init_seed": DEFAULT_SEED,
     }
@@ -897,13 +932,28 @@ def load_decoder_state(
     path = _regular_file(path, label="decoder state")
     try:
         state = load_file(str(path), device="cpu")
+        with safe_open(str(path), framework="pt", device="cpu") as handle:
+            metadata = dict(handle.metadata() or {})
     except Exception as exc:
         raise JointDecoderError(f"cannot load decoder state: {path}") from exc
+    default_score_mode = (
+        "none" if method_id == AFFINE_METHOD else ATTENTION_SCORE_MODE_DOT_PRODUCT
+    )
+    attention_score_mode = metadata.get("attention_score_mode", default_score_mode)
+    if not isinstance(attention_score_mode, str):
+        raise JointDecoderError("decoder state attention score mode is malformed")
+    if method_id == AFFINE_METHOD and attention_score_mode not in ("none", ATTENTION_SCORE_MODE_DOT_PRODUCT):
+        raise JointDecoderError("affine decoder state has an attention score mode")
+    if method_id != AFFINE_METHOD and attention_score_mode not in ATTENTION_SCORE_MODES:
+        raise JointDecoderError(
+            f"decoder state attention score mode is unsupported: {attention_score_mode}"
+        )
     model = build_decoder(
         method_id,
         hidden_size=hidden_size,
         vocabulary_size=vocabulary_size,
         context_width=context_width,
+        attention_score_mode=attention_score_mode,
     )
     expected = set(model.state_dict())
     if set(state) != expected:

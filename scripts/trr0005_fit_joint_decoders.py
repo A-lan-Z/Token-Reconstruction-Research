@@ -36,6 +36,9 @@ from token_reconstruction.trr0005_joint_decoder import (
     AFFINE_METHOD,
     BOS_TOKEN_ID,
     CAUSAL_ATTENTION_METHOD,
+    ATTENTION_SCORE_MODE_COSINE_SCALE4,
+    ATTENTION_SCORE_MODE_DOT_PRODUCT,
+    ATTENTION_SCORE_MODES,
     DATA_SCHEMA,
     DEFAULT_CONTEXT_WIDTH,
     DEFAULT_GRADIENT_CLIP_NORM,
@@ -586,6 +589,19 @@ def _validate_args(args: argparse.Namespace) -> None:
         raise JointFitRunnerError("TRR-0005 requires gradient clipping 1")
     if args.context_width != DEFAULT_CONTEXT_WIDTH:
         raise JointFitRunnerError("TRR-0005 requires attention width 128")
+    if args.attention_score_mode not in ATTENTION_SCORE_MODES:
+        raise JointFitRunnerError(
+            f"unsupported attention score mode: {args.attention_score_mode}"
+        )
+    causal_only = bool(getattr(args, "causal_only", False))
+    if causal_only and args.attention_score_mode != ATTENTION_SCORE_MODE_COSINE_SCALE4:
+        raise JointFitRunnerError(
+            "--causal-only is reserved for the cosine-scale4 repair mode"
+        )
+    if args.attention_score_mode == ATTENTION_SCORE_MODE_COSINE_SCALE4 and not causal_only:
+        raise JointFitRunnerError(
+            "cosine-scale4 repair must run exactly the two causal arms with --causal-only"
+        )
     preflight_only = bool(getattr(args, "preflight_only", False))
     qualification_only = bool(getattr(args, "qualification_only", False))
     if preflight_only and qualification_only:
@@ -717,6 +733,7 @@ def _train_arm(
         vocabulary_size=data.vocabulary_size,
         context_width=args.context_width,
         seed=args.seed,
+        attention_score_mode=args.attention_score_mode,
     ).to(device)
     trainable = list(model.parameters())
     if not trainable or any(not parameter.requires_grad for parameter in trainable):
@@ -832,13 +849,18 @@ def _train_arm(
         vocabulary_size=data.vocabulary_size,
         context_width=args.context_width,
         seed=args.seed,
+        attention_score_mode=args.attention_score_mode,
     )
     selected_model.load_state_dict(best_state, strict=True)
     state_record = save_decoder_state(
         output_dir / "selected.safetensors",
         selected_model,
         selected_step=best_step,
-        metadata={"distribution": output_dir.parent.name, "canonical_method_id": f"{output_dir.parent.name}__{method_id}"},
+        metadata={
+            "distribution": output_dir.parent.name,
+            "canonical_method_id": f"{output_dir.parent.name}__{method_id}",
+            "attention_score_mode": args.attention_score_mode,
+        },
     )
     state_io_seconds = time.perf_counter() - state_io_started
     gradient_disclosure = {
@@ -966,7 +988,8 @@ def _run_distribution(
     _json_write(distribution_root / "pretraining_diagnostic.json", diagnostic)
     diagnostic_seconds = time.perf_counter() - diagnostic_started
     method_results: dict[str, Any] = {}
-    for method_id in METHODS:
+    active_methods = (CAUSAL_ATTENTION_METHOD,) if args.causal_only else METHODS
+    for method_id in active_methods:
         method_root = distribution_root / method_id
         method_root.mkdir(parents=True, exist_ok=False)
         method_results[method_id] = _train_arm(
@@ -1003,6 +1026,8 @@ def _run_distribution(
         "sampler_receipt": sampler_receipt,
         "schedule": schedule_record,
         "methods": method_results,
+        "active_methods": list(active_methods),
+        "attention_score_mode": args.attention_score_mode,
         "pretraining_diagnostic": {
             "path": str(distribution_root / "pretraining_diagnostic.json"),
             "sha256": file_sha256(distribution_root / "pretraining_diagnostic.json"),
@@ -1056,6 +1081,7 @@ def _run_qualification_distribution(
         vocabulary_size=data.vocabulary_size,
         context_width=args.context_width,
         seed=args.seed,
+        attention_score_mode=args.attention_score_mode,
     ).to(device)
     optimizer = torch.optim.AdamW(
         model.parameters(),
@@ -1214,6 +1240,7 @@ def _run_qualification_distribution(
             "contract_distribution_id": DISTRIBUTION_CONTRACT_IDS[name],
             "method_id": method_id,
             "canonical_method_id": f"{name}__{method_id}",
+            "attention_score_mode": args.attention_score_mode,
             "status": (
                 "QUALIFIED_CAUSAL_LARGEST_CELL"
                 if forecast_passed
@@ -1591,8 +1618,10 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
                 "env": _safe_environment(),
             },
             "fixed_settings": {
-                "methods": list(METHODS),
+                "methods": list((CAUSAL_ATTENTION_METHOD,) if args.causal_only else METHODS),
                 "distributions": ["original", "enriched"],
+                "attention_score_mode": args.attention_score_mode,
+                "causal_only": bool(args.causal_only),
                 "distribution_contract_ids": dict(DISTRIBUTION_CONTRACT_IDS),
                 "seed": args.seed,
                 "qkv_init_seed": args.seed,
@@ -1671,6 +1700,17 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--gradient-clip-norm", type=float, default=DEFAULT_GRADIENT_CLIP_NORM)
     parser.add_argument("--context-width", type=int, default=DEFAULT_CONTEXT_WIDTH)
     parser.add_argument("--seed", type=int, default=DEFAULT_SEED)
+    parser.add_argument(
+        "--attention-score-mode",
+        choices=ATTENTION_SCORE_MODES,
+        default=ATTENTION_SCORE_MODE_DOT_PRODUCT,
+        help="metadata-bound attention score rule; cosine_scale4 is the single causal repair",
+    )
+    parser.add_argument(
+        "--causal-only",
+        action="store_true",
+        help="run only both causal arms; required for cosine_scale4 repair",
+    )
     parser.add_argument("--device", choices=("auto", "cpu", "cuda"), default="auto")
     parser.add_argument("--minimum-free-gib", type=float, default=DEFAULT_MINIMUM_FREE_GIB)
     parser.add_argument("--maximum-gpu-reserved-gib", type=float, default=DEFAULT_MAXIMUM_GPU_RESERVED_GIB)

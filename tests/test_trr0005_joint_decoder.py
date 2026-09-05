@@ -11,6 +11,8 @@ import torch.nn.functional as F
 
 from token_reconstruction.trr0005_joint_decoder import (
     AFFINE_METHOD,
+    ATTENTION_SCORE_MODE_COSINE_SCALE4,
+    ATTENTION_SCORE_MODE_DOT_PRODUCT,
     CAUSAL_ATTENTION_METHOD,
     DIAGONAL_ATTENTION_METHOD,
     BOS_TOKEN_ID,
@@ -20,6 +22,8 @@ from token_reconstruction.trr0005_joint_decoder import (
     checkpoint_steps,
     evaluate_dataset,
     load_public_joint_data,
+    load_decoder_state,
+    save_decoder_state,
     schedule_metadata,
     train_step,
 )
@@ -68,6 +72,101 @@ def test_zero_output_contextual_initialization_matches_affine(method_id: str) ->
         expected = affine(activation, mask, table)
         actual = model(activation, mask, table)
     assert torch.equal(actual, expected)
+
+
+def test_cosine_diagonal_forward_gradient_and_adam_update_match_dot_product():
+    activation, truth, mask, table = _inputs(records=2, positions=6, hidden=8, vocab=17)
+    old = build_decoder(
+        DIAGONAL_ATTENTION_METHOD,
+        hidden_size=8,
+        vocabulary_size=17,
+        attention_score_mode=ATTENTION_SCORE_MODE_DOT_PRODUCT,
+    )
+    repaired = build_decoder(
+        DIAGONAL_ATTENTION_METHOD,
+        hidden_size=8,
+        vocabulary_size=17,
+        attention_score_mode=ATTENTION_SCORE_MODE_COSINE_SCALE4,
+    )
+    with torch.no_grad():
+        old.output.weight.normal_(0.0, 0.05)
+        old.output.bias.normal_(0.0, 0.05)
+    repaired.load_state_dict(old.state_dict(), strict=True)
+    selected = mask.clone()
+    selected[:, 0] = False
+    with torch.inference_mode():
+        old_logits = old.selected_logits(activation, mask, selected, table)
+        repaired_logits = repaired.selected_logits(activation, mask, selected, table)
+    assert torch.equal(old_logits, repaired_logits)
+
+    # Use the real model graph for the gradient/update comparison.
+    old.zero_grad(set_to_none=True)
+    repaired.zero_grad(set_to_none=True)
+    old_loss = F.cross_entropy(old.selected_logits(activation, mask, selected, table), truth[selected])
+    repaired_loss = F.cross_entropy(repaired.selected_logits(activation, mask, selected, table), truth[selected])
+    old_loss.backward()
+    repaired_loss.backward()
+    for (old_name, old_parameter), (new_name, new_parameter) in zip(
+        old.named_parameters(), repaired.named_parameters()
+    ):
+        assert old_name == new_name
+        assert old_parameter.grad is not None
+        assert new_parameter.grad is not None
+        assert torch.equal(old_parameter.grad, new_parameter.grad), old_name
+    assert torch.equal(
+        repaired.query.weight.grad, torch.zeros_like(repaired.query.weight.grad)
+    )
+    assert torch.equal(
+        repaired.key.weight.grad, torch.zeros_like(repaired.key.weight.grad)
+    )
+    old_optimizer = torch.optim.AdamW(old.parameters(), lr=1e-3, weight_decay=0.0)
+    repaired_optimizer = torch.optim.AdamW(repaired.parameters(), lr=1e-3, weight_decay=0.0)
+    old_optimizer.step()
+    repaired_optimizer.step()
+    for (old_name, old_parameter), (new_name, new_parameter) in zip(
+        old.named_parameters(), repaired.named_parameters()
+    ):
+        assert old_name == new_name
+        assert torch.equal(old_parameter, new_parameter), old_name
+
+
+def test_decoder_state_score_mode_is_metadata_bound_and_old_states_default_to_dot(tmp_path: Path):
+    repaired = build_decoder(
+        CAUSAL_ATTENTION_METHOD,
+        hidden_size=8,
+        vocabulary_size=17,
+        attention_score_mode=ATTENTION_SCORE_MODE_COSINE_SCALE4,
+    )
+    repaired_path = tmp_path / "repaired.safetensors"
+    saved = save_decoder_state(repaired_path, repaired, selected_step=2)
+    assert saved["metadata"]["attention_score_mode"] == ATTENTION_SCORE_MODE_COSINE_SCALE4
+    loaded = load_decoder_state(
+        repaired_path,
+        method_id=CAUSAL_ATTENTION_METHOD,
+        hidden_size=8,
+        vocabulary_size=17,
+    )
+    assert loaded.attention_score_mode == ATTENTION_SCORE_MODE_COSINE_SCALE4
+
+    old_path = tmp_path / "old.safetensors"
+    from safetensors.torch import save_file
+
+    save_file(
+        {name: value.detach().cpu() for name, value in repaired.state_dict().items()},
+        str(old_path),
+        metadata={
+            "schema": "token-reconstruction.trr0005-joint-decoder.v1",
+            "task_id": "TRR-0005",
+            "method_id": CAUSAL_ATTENTION_METHOD,
+        },
+    )
+    old_loaded = load_decoder_state(
+        old_path,
+        method_id=CAUSAL_ATTENTION_METHOD,
+        hidden_size=8,
+        vocabulary_size=17,
+    )
+    assert old_loaded.attention_score_mode == ATTENTION_SCORE_MODE_DOT_PRODUCT
 
 
 def test_causal_attention_cannot_read_future_activation() -> None:
