@@ -12,8 +12,8 @@ publication commit and pull request.
 | `coordination/requests/TRR-P02.md` | preserved incoming packet; byte-identical to source | 9156 | `e16db54941ba85dd7f9f9e930578e9412ee18d348b1dc4c8746a9a25e103cad5` |
 | `experiments/TRR-P02/setup/pull-request-body.md` | root-owned final PR body | 2229 | `aa7988b2aa4e7d580ffb2570793c4b2b38afcfe5aaedde66cfab1f3a855a81b9` |
 | `coordination/results/TRR-P02.md` | final four-decision result | 8482 | `7e65f3181efffc8bc6233ef3b572f1d970afd873d603a33f68c5da983293c917` |
-| `coordination/parallel/TRR-P02.json` | compact completion state/index | 6457 | `5299d3e866bfa40a4768a2837cddaf56ae4e1e4b48819002beb2ef4d1f0bc528` |
-| `experiments/TRR-P02/manifest.json` | aggregate structured evidence manifest | 26050 | `c73ec0c8216ff6fc256e7efd2902dc0df5c094714150694f2d64b044c2d7ef3b` |
+| `coordination/parallel/TRR-P02.json` | compact completion state/index | 10160 | `f1617501bf975c7b792b2be7f1c02f07956d6fc456780f2434f5dbd289dccb95` |
+| `experiments/TRR-P02/manifest.json` | aggregate structured evidence manifest | 27624 | `b3bbced66d9b6cd314471d2c641fe3d54b502f493ab58d005e695bc586a6f1e7` |
 | `experiments/TRR-P02/plan.json` | frozen execution plan used by run4 and case capture | 6923 | `9f191d0376d29a9bd46241060f5466738d55b375beb1baf78cb920b72594e030` |
 | `experiments/TRR-P02/setup/resource-preflight.md` | host/resource/public-asset preflight | 5559 | `c1b38e47ca693e607d179a4147a7b7dec3bbf5c0e4b258436c7a848503be08de` |
 | `experiments/TRR-P02/setup/public-diagnostic-exclusion.template.json` | empty helper template | 1833 | `0e9741f499da03ec1451bf5e11f5f2dab6cc1119a7c1f761daa30782530c62e4` |
@@ -64,6 +64,7 @@ publication commit and pull request.
 | `src/token_reconstruction/trr_p02/geometry.py` | reviewed diagnostic source or focused test | 20085 | `80967a3c738efdca64d716763b52ecc00a8795ab61be0527926b7b8734bdeaf2` |
 | `src/token_reconstruction/trr_p02/__init__.py` | reviewed diagnostic source or focused test | 697 | `585eb453394b59b9f0d432ca35acda1a47aeeddf1eb01c625179ce816a9637be` |
 | `tests/test_trr_p02_geometry.py` | reviewed diagnostic source or focused test | 6263 | `ff808e793f6b0bc9e44ea6294436eadac0292ae4b2f195e2b74c230500bba72d` |
+| `experiments/TRR-P02/setup/publication.json` | sanitized PR publication and verification receipt | 1182 | `78a1f0c55429f87ae8ca845e03f762cb762fa0d07f279c5b2774635a2a4826fb` |
 
 The inventory intentionally omits its own digest because a file cannot contain
 a stable self-hash. Record the inventory SHA-256 externally in the publication
