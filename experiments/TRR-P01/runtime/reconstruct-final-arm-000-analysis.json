@@ -1,0 +1,55 @@
+{
+  "attempt": "reconstruct-final-arm-000",
+  "cleanup": {
+    "arm_001_started": false,
+    "output_files": [
+      "preflight.json"
+    ],
+    "predictions_written": false,
+    "process_absent": true,
+    "truth_opened": false
+  },
+  "exit_code": 124,
+  "implementation_commit": "6e05feeade57593cdadea2d4db4ce40085a51f59",
+  "intended_final_static_geometry": {
+    "arms": [
+      "boundary.cosine",
+      "boundary.l2",
+      "raw_embedding.cosine",
+      "raw_embedding.l2"
+    ],
+    "full_vocabulary_metric_calls": 4,
+    "note": "Boundary and raw-embedding table lookups each process the same 624 rows but use distinct tables.",
+    "post_bos_positions_per_record": 39,
+    "prototype_chunk_size": 8192,
+    "query_chunk_size": 256,
+    "query_rows_per_static_arm": 624,
+    "records": 16
+  },
+  "observed_exit_utc": "2026-09-05T08:48:28.985094Z",
+  "phase_observation": {
+    "basis": "The attempt predates phase-progress instrumentation. The preserved outer log has only a transformers Loading weights progress line; absence of prediction files does not identify the active phase.",
+    "preserved_log": "reconstruct-final-arm-000.log",
+    "preserved_preflight": "reconstruct-final-arm-000/preflight.json",
+    "status": "UNKNOWN"
+  },
+  "qualifier_geometry": {
+    "evidence": "method-qualification-cpu-20260905/qualification_evidence.json",
+    "full_vocabulary_metric_calls": 2,
+    "metrics": [
+      "cosine",
+      "l2"
+    ],
+    "note": "The qualifier does not exercise the raw-embedding table or 39-position static matrix.",
+    "positions": 1,
+    "query_rows_per_metric": 8,
+    "records": 8,
+    "table": "boundary prototype table only"
+  },
+  "runtime_estimate_limit": "The 8-row two-metric qualifier is not a sufficient end-to-end predictor for the final four-arm 624-row static phase; model loading, per-table lookup scaling, and historical/correction phases remain separately measurable. No phase attribution is made for this timeout.",
+  "schema": "token-reconstruction.trr-p01-timeout-analysis.v1",
+  "status": "INCOMPLETE_EXCLUDED",
+  "task_id": "TRR-P01",
+  "timeout_deadline_utc": "2026-09-05T08:46:50Z",
+  "truth_opened": false
+}
