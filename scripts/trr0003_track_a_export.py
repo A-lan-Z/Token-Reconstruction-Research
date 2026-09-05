@@ -338,24 +338,24 @@ def _alias_binding(
     root: Path,
     adapter_path: Path,
     commit: str,
-    source_artifact: Path,
-    source_evidence: Path,
     source_iteration: int,
-    source_tensor_sha256: Mapping[str, str],
+    source_provenance: Mapping[str, Mapping[str, Any]],
 ) -> dict[str, Any]:
     normalized = _normalize_source_binding(
         source_binding, root=root, adapter_path=adapter_path, commit=commit
     )
+    # The common registry has one expected binding per method.  Keep the
+    # selected source/evidence commitment for every cell inside one canonical
+    # map so all four prediction artifacts have byte-identical bindings.
     normalized["track_a_export"] = {
         "schema": EXPORT_SCHEMA,
         "serialization_only": True,
         "source_method_id": BASE_METHOD_ID,
         "source_iteration": source_iteration,
-        "source_artifact": _record_for_any_path(source_artifact, root=root),
-        "source_artifact_sha256": sha256_file(source_artifact),
-        "source_evidence": _record_for_any_path(source_evidence, root=root),
-        "source_evidence_sha256": sha256_file(source_evidence),
-        "source_tensor_sha256": dict(source_tensor_sha256),
+        "source_artifacts_by_cell": {
+            cell_id: dict(source_provenance[cell_id])
+            for cell_id in sorted(source_provenance)
+        },
         "exporter": file_record(adapter_path, repository_root=root),
         "exporter_execution_commit": commit,
     }
@@ -439,19 +439,40 @@ def _export(args: argparse.Namespace) -> int:
     for alias, iteration in zip(aliases, iterations):
         method_cells: dict[str, Any] = {}
         method_bindings: dict[str, dict[str, Any]] = {}
+        source_provenance: dict[str, dict[str, Any]] = {}
+        source_binding: Mapping[str, Any] | None = None
+        normalized_binding: dict[str, Any] | None = None
         for cell in cells:
             evidence_path, evidence = source_by_cell[cell.cell_id]
             artifact_path, tensors, metadata, extra = source_artifacts[cell.cell_id][iteration]
-            binding = _alias_binding(
-                source_binding=extra["binding"],
-                root=root,
-                adapter_path=adapter_path,
-                commit=commit,
-                source_artifact=artifact_path,
-                source_evidence=evidence_path,
-                source_iteration=iteration,
-                source_tensor_sha256=extra["tensor_sha256"],
+            candidate_binding = _normalize_source_binding(
+                extra["binding"], root=root, adapter_path=adapter_path, commit=commit
             )
+            if source_binding is None:
+                source_binding = extra["binding"]
+                normalized_binding = candidate_binding
+            elif json.dumps(normalized_binding, sort_keys=True) != json.dumps(candidate_binding, sort_keys=True):
+                raise ExportError(f"Track A normalized binding changed across cells: {alias}")
+            source_provenance[cell.cell_id] = {
+                "source_artifact": _record_for_any_path(artifact_path, root=root),
+                "source_artifact_sha256": sha256_file(artifact_path),
+                "source_evidence": _record_for_any_path(evidence_path, root=root),
+                "source_evidence_sha256": sha256_file(evidence_path),
+                "source_tensor_sha256": dict(extra["tensor_sha256"]),
+            }
+        if source_binding is None:
+            raise ExportError(f"Track A source binding is absent: {alias}")
+        binding = _alias_binding(
+            source_binding=source_binding,
+            root=root,
+            adapter_path=adapter_path,
+            commit=commit,
+            source_iteration=iteration,
+            source_provenance=source_provenance,
+        )
+        for cell in cells:
+            evidence_path, evidence = source_by_cell[cell.cell_id]
+            artifact_path, tensors, metadata, extra = source_artifacts[cell.cell_id][iteration]
             target = expected_prediction_path(output_root, cell=cell, method_id=alias)
             if target.exists() or target.is_symlink():
                 raise ExportError(f"refusing to overwrite Track A alias: {target}")
