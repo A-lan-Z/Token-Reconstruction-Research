@@ -1,0 +1,60 @@
+{
+  "command": [
+    "env",
+    "CUDA_VISIBLE_DEVICES=",
+    "OMP_NUM_THREADS=8",
+    "MKL_NUM_THREADS=8",
+    "TOKENIZERS_PARALLELISM=false",
+    "HF_HUB_OFFLINE=1",
+    "HF_DATASETS_OFFLINE=1",
+    "TRANSFORMERS_OFFLINE=1",
+    "PYTHONPATH=.:src:scripts/trr_p01",
+    "python3",
+    "scripts/trr_p03/prepare_projected.py",
+    "--prototype",
+    "/tmp/trr-p01/experiments/TRR-P01/runtime/cpu-table-20260905/boundary_prototypes.safetensors",
+    "--historical-lens",
+    "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/strict-surrogate-heavy/control-assets/lens_alpaca.pt",
+    "--output-root",
+    "/tmp/trr-p03/experiments/TRR-P03/runtime/projected-preparation-r1",
+    "--prototype-chunk-size",
+    "8192",
+    "--implementation-commit",
+    "23933e65868dcdfa58a44ce47b87a8f5a7455c51"
+  ],
+  "created_utc": "2026-09-05T15:09:23.874101Z",
+  "cwd": "/tmp/trr-p03",
+  "environment": {
+    "CUDA_VISIBLE_DEVICES": "",
+    "HF_DATASETS_OFFLINE": "1",
+    "HF_HUB_OFFLINE": "1",
+    "MKL_NUM_THREADS": "8",
+    "OMP_NUM_THREADS": "8",
+    "PYTHONPATH": ".:src:scripts/trr_p01",
+    "TOKENIZERS_PARALLELISM": "false",
+    "TRANSFORMERS_OFFLINE": "1"
+  },
+  "environment_allowlist": [
+    "CUDA_VISIBLE_DEVICES",
+    "OMP_NUM_THREADS",
+    "MKL_NUM_THREADS",
+    "TOKENIZERS_PARALLELISM",
+    "PYTHONPATH",
+    "HF_HUB_OFFLINE",
+    "HF_DATASETS_OFFLINE",
+    "TRANSFORMERS_OFFLINE"
+  ],
+  "environment_redacted": true,
+  "label": "projected-preparation-r1",
+  "process_group": "new_session_start_new_session_true",
+  "schema": "token-reconstruction.trr-p03-resource-watchdog-command.v1",
+  "shell_command": "env CUDA_VISIBLE_DEVICES= OMP_NUM_THREADS=8 MKL_NUM_THREADS=8 TOKENIZERS_PARALLELISM=false HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONPATH=.:src:scripts/trr_p01 python3 scripts/trr_p03/prepare_projected.py --prototype /tmp/trr-p01/experiments/TRR-P01/runtime/cpu-table-20260905/boundary_prototypes.safetensors --historical-lens /home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/strict-surrogate-heavy/control-assets/lens_alpaca.pt --output-root /tmp/trr-p03/experiments/TRR-P03/runtime/projected-preparation-r1 --prototype-chunk-size 8192 --implementation-commit 23933e65868dcdfa58a44ce47b87a8f5a7455c51",
+  "task_id": "TRR-P03",
+  "thresholds": {
+    "kill_grace_seconds": 2.0,
+    "max_rss_bytes": 8589934592,
+    "min_available_bytes": 10737418240,
+    "poll_seconds": 0.5,
+    "timeout_seconds": 120.0
+  }
+}

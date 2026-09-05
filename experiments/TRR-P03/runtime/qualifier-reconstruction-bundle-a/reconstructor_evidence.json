@@ -1,0 +1,196 @@
+{
+  "candidate_simulations": 39936,
+  "code_files": [
+    {
+      "bytes": 37099,
+      "path": "/tmp/trr-p03/scripts/trr_p03/reconstruct.py",
+      "sha256": "1788a2a4a2e0252d6e86ce6315cacef262c5190177318c3e6a383f51023c9d48"
+    },
+    {
+      "bytes": 29075,
+      "path": "/tmp/trr-p03/src/token_reconstruction/trr_p03/io.py",
+      "sha256": "736626059f24fbb20d77fd67c03e28225469e9285f10700459da488d6896f11b"
+    },
+    {
+      "bytes": 11515,
+      "path": "/tmp/trr-p03/src/token_reconstruction/trr_p03/ranking.py",
+      "sha256": "37a123c46cb5a2ed68d1216a64ccf74fbbcf26e3ba64034f9717dd5f99558e61"
+    },
+    {
+      "bytes": 12518,
+      "path": "/tmp/trr-p03/src/token_reconstruction/trr_p03/readouts.py",
+      "sha256": "08c6f2d596528c2e4309600567c7900c3fde90a93075b6ee39dccc10af1e15e5"
+    },
+    {
+      "bytes": 23236,
+      "path": "/tmp/trr-p03/src/token_reconstruction/trr_p01/historical_comparators.py",
+      "sha256": "1129249895efc819f9889391f9edbbd1c38c2d0d57a2b823cccb842649313b25"
+    }
+  ],
+  "command": {
+    "argv": [
+      "scripts/trr_p03/reconstruct.py",
+      "--observation-index",
+      "experiments/TRR-P03/runtime/qualifier-observations-bundle-a/public/observation_index.json",
+      "--prototype",
+      "/tmp/trr-p01/experiments/TRR-P01/runtime/cpu-table-20260905/boundary_prototypes.safetensors",
+      "--historical-lens",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/strict-surrogate-heavy/control-assets/lens_alpaca.pt",
+      "--projected-prototype",
+      "experiments/TRR-P03/runtime/projected-preparation-r1/projected_prototypes.safetensors",
+      "--model-path",
+      "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+      "--anchor-records",
+      "experiments/TRR-P03/review/anchor-record-ids.json",
+      "--methods",
+      "raw_boundary.cosine,projected_boundary.cosine,historical_a1.cosine,historical_a1_a2_anchor.cosine",
+      "--output-root",
+      "experiments/TRR-P03/runtime/qualifier-reconstruction-bundle-a",
+      "--device",
+      "cpu",
+      "--query-chunk-size",
+      "256",
+      "--prototype-chunk-size",
+      "8192",
+      "--plan",
+      "experiments/TRR-P03/plan.json",
+      "--seed",
+      "20260906",
+      "--implementation-commit",
+      "de0fcae6b9e17b1a0d41017a77e662c3bb0f06ed"
+    ],
+    "cwd": "/tmp/trr-p03",
+    "environment": {
+      "CUDA_VISIBLE_DEVICES": "",
+      "HF_DATASETS_OFFLINE": "1",
+      "HF_HUB_OFFLINE": "1",
+      "PYTHONPATH": ".:src:scripts/trr_p01",
+      "TRANSFORMERS_OFFLINE": "1"
+    }
+  },
+  "decision_predeclaration": {
+    "bytes": 23434,
+    "path": "/tmp/trr-p03/experiments/TRR-P03/plan.json",
+    "sha256": "f9c4d4bfa0fd8649891154326b32f5ad1e29d53d33af606fd4d53534d6debcb5"
+  },
+  "ended_utc": "2026-09-05T15:47:55Z",
+  "environment": {
+    "cuda_runtime": "12.8",
+    "device": "cpu",
+    "kernel": {
+      "machine": "x86_64",
+      "node": "PC",
+      "processor": "x86_64",
+      "release": "6.6.87.2-microsoft-standard-WSL2",
+      "system": "Linux",
+      "version": "#1 SMP PREEMPT_DYNAMIC Thu Jun  5 18:30:46 UTC 2025"
+    },
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "python": "3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]",
+    "seed": 20260906,
+    "torch": "2.10.0+cu128",
+    "torch_interop_threads": 1,
+    "torch_threads": 8
+  },
+  "historical_lens": {
+    "bytes": 16787653,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/strict-surrogate-heavy/control-assets/lens_alpaca.pt",
+    "sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742"
+  },
+  "implementation_commit": "de0fcae6b9e17b1a0d41017a77e662c3bb0f06ed",
+  "method_metadata": {
+    "historical_a1.cosine": {
+      "cosine_equivalent_units": "cosine",
+      "score_scale_exp_s": 35.06475067138672,
+      "score_units": "native_lens_exp_s_cosine"
+    },
+    "historical_a1_a2_anchor.cosine": {
+      "a1_forward_calls": 1,
+      "anchor_record_ids": [
+        "p03-s1-r0007",
+        "p03-s1-r0009",
+        "p03-s1-r0011",
+        "p03-s1-r0012"
+      ],
+      "candidate_budget": 256,
+      "candidate_simulations": 39936,
+      "coverage_records": 4,
+      "executed_candidate_simulations": 39936,
+      "native_a1_topk_tie_rule": "published torch.topk proposal order",
+      "native_policy_id": "a1a2_43ea0bb737bc075531ca",
+      "proposal_budget": 512,
+      "public_prefix_calls": 79,
+      "score_units": "public_prefix_candidate_cosine"
+    },
+    "projected_boundary.cosine": {
+      "score_units": "projected_cosine"
+    },
+    "raw_boundary.cosine": {
+      "score_units": "cosine"
+    }
+  },
+  "methods": [
+    "raw_boundary.cosine",
+    "projected_boundary.cosine",
+    "historical_a1.cosine",
+    "historical_a1_a2_anchor.cosine"
+  ],
+  "observation_index": {
+    "bytes": 2697,
+    "path": "/tmp/trr-p03/experiments/TRR-P03/runtime/qualifier-observations-bundle-a/public/observation_index.json",
+    "sha256": "3c44243ce9394bc60d51f5aecd404b633ee65c7c296bb863de7c175c9800af31"
+  },
+  "peak_memory": {
+    "process_max_rss_kib": 7802188
+  },
+  "phase_progress": {
+    "bytes": 2100,
+    "path": "/tmp/trr-p03/experiments/TRR-P03/runtime/qualifier-reconstruction-bundle-a/phase_progress.jsonl",
+    "sha256": "8feed5533c21238056ec77e6fe41dd4d900c25b020d595588dba302200bb8279"
+  },
+  "prediction_artifacts": {
+    "candidate_sets": {
+      "bytes": 2642344,
+      "path": "/tmp/trr-p03/experiments/TRR-P03/runtime/qualifier-reconstruction-bundle-a/candidate_sets.safetensors",
+      "sha256": "2f1fa23a9c1b8833d3bbcc5127f9c5d46967ed5775e24b5fb475f11fc5a50e85"
+    },
+    "diagnostics": {
+      "bytes": 63488,
+      "path": "/tmp/trr-p03/experiments/TRR-P03/runtime/qualifier-reconstruction-bundle-a/lookup_diagnostics.safetensors",
+      "sha256": "75b00849d13bae37623686fdcaa3f507344eb91b066804d576e64a6c087b5551"
+    },
+    "prediction_rows": {
+      "bytes": 157027,
+      "path": "/tmp/trr-p03/experiments/TRR-P03/runtime/qualifier-reconstruction-bundle-a/predictions.jsonl",
+      "sha256": "d2214ff2072e1108294d3bbf0020cf53961c3c3e316e2803c22eae541a2f7965"
+    },
+    "predictions": {
+      "bytes": 21984,
+      "path": "/tmp/trr-p03/experiments/TRR-P03/runtime/qualifier-reconstruction-bundle-a/predictions.safetensors",
+      "sha256": "68b1cc031760fe3d2c873700a1d9c0651bb382a9706738a7e111a0bfbdd330f4"
+    }
+  },
+  "preflight": {
+    "bytes": 1967,
+    "path": "/tmp/trr-p03/experiments/TRR-P03/runtime/qualifier-reconstruction-bundle-a/preflight.json",
+    "sha256": "74a8ce56ea46dd5d335d3eaae30fbcb495233161fe7a180fd89635e95668a727"
+  },
+  "projected_prototype": {
+    "bytes": 1050673728,
+    "path": "/tmp/trr-p03/experiments/TRR-P03/runtime/projected-preparation-r1/projected_prototypes.safetensors",
+    "sha256": "8fa4e65ca5ae0c4492c16290403f38126894f5d41383bd2e2b178fbb85003ba7"
+  },
+  "prototype": {
+    "bytes": 525337024,
+    "path": "/tmp/trr-p01/experiments/TRR-P01/runtime/cpu-table-20260905/boundary_prototypes.safetensors",
+    "sha256": "51abc304d51134777d55347b219fe659817b9f0319add99756eeac6e9b6dd9a3"
+  },
+  "records": 10,
+  "schema": "token-reconstruction.trr-p03-reconstructor-evidence.v1",
+  "scored_tokens": 924,
+  "source_truth_included": false,
+  "started_utc": "2026-09-05T15:47:35Z",
+  "status": "PREDICTIONS_READY_FOR_FREEZE",
+  "task_id": "TRR-P03",
+  "truth_opened": false
+}
