@@ -5,6 +5,8 @@ import json
 from pathlib import Path
 
 import pytest
+import torch
+from safetensors import safe_open
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -111,6 +113,65 @@ def test_measured_peak_uses_largest_nested_cuda_peak(tmp_path: Path) -> None:
     assert result["cuda_peak_allocated_bytes"] == 7
     assert result["cuda_peak_reserved_bytes"] == 11
     assert result["observations"] == 2
+
+
+def test_comparator_serializes_bos_candidate_placeholder_without_changing_scored_rows(tmp_path: Path) -> None:
+    spec = importlib.util.spec_from_file_location(
+        "trr0003_footing_compare_serialization_test",
+        ROOT / "scripts/trr0003_footing_compare.py",
+    )
+    assert spec is not None and spec.loader is not None
+    comparator = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(comparator)
+
+    cell = type(
+        "Cell",
+        (),
+        {
+            "cell_id": "pile__public_base",
+            "style": "pile",
+            "condition": "public_base",
+            "records": 2,
+            "sequence_tokens": 4,
+            "attention_mask": torch.ones((2, 4), dtype=torch.int64),
+        },
+    )()
+    predictions = torch.full((2, 4), comparator.BOS_TOKEN_ID, dtype=torch.int64)
+    candidates = torch.full((2, 4, 3), -1, dtype=torch.int64)
+    candidates[:, 1:, :] = torch.arange(3, dtype=torch.int64)
+    scores = torch.full((2, 4, 3), float("-inf"), dtype=torch.float32)
+    scores[:, 1:, :] = torch.arange(3, dtype=torch.float32)
+    scored_candidates = candidates[:, 1:, :].clone()
+    scored_scores = scores[:, 1:, :].clone()
+    path = tmp_path / "prediction.safetensors"
+
+    comparator._write_prediction(
+        path=path,
+        cell=cell,
+        method_id="fixture",
+        predictions=predictions,
+        candidates=candidates,
+        candidate_scores=scores,
+        binding={},
+        panel_sha="panel",
+    )
+
+    with safe_open(path, framework="pt", device="cpu") as handle:
+        written_candidates = handle.get_tensor("candidates")
+        written_scores = handle.get_tensor("candidate_scores")
+        metadata = handle.metadata()
+    assert torch.equal(written_candidates[:, 1:, :], scored_candidates)
+    assert torch.equal(written_scores[:, 1:, :], scored_scores)
+    assert torch.equal(
+        written_candidates[:, 0, :],
+        torch.full((2, 3), comparator.BOS_TOKEN_ID, dtype=torch.int64),
+    )
+    assert torch.equal(written_scores[:, 0, :], torch.zeros((2, 3), dtype=torch.float32))
+    assert json.loads(metadata["candidate_serialization_json"]) == {
+        "bos_candidate_placeholder": "repeated_known_bos",
+        "bos_candidate_score_placeholder": "finite_zero",
+        "bos_row_excluded_from_scoring": True,
+    }
 
 
 def test_comparator_does_not_hardcode_zero_prefix_calls() -> None:

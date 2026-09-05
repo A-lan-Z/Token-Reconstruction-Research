@@ -242,8 +242,26 @@ def _write_prediction(
         "predictions": predictions.detach().cpu().to(torch.int64).contiguous(),
     }
     if candidates is not None and candidate_scores is not None:
-        tensors["candidates"] = candidates.detach().cpu().to(torch.int64).contiguous()
-        tensors["candidate_scores"] = candidate_scores.detach().cpu().to(torch.float32).contiguous()
+        # Proposal tensors use INVALID_TOKEN_ID at BOS because candidate
+        # selection starts at the first scored position.  The shared artifact
+        # validator checks active candidate slots, so serialize this unused row
+        # as known BOS with a finite neutral score.  Every post-BOS candidate
+        # value remains byte-for-byte unchanged; the metadata records that the
+        # row is a serialization placeholder excluded from scoring.
+        serialized_candidates = candidates.detach().cpu().to(torch.int64).contiguous()
+        serialized_scores = candidate_scores.detach().cpu().to(torch.float32).contiguous()
+        serialized_candidates[:, 0, :] = BOS_TOKEN_ID
+        serialized_scores[:, 0, :] = 0.0
+        metadata["candidate_serialization_json"] = json.dumps(
+            {
+                "bos_candidate_placeholder": "repeated_known_bos",
+                "bos_candidate_score_placeholder": "finite_zero",
+                "bos_row_excluded_from_scoring": True,
+            },
+            sort_keys=True,
+        )
+        tensors["candidates"] = serialized_candidates
+        tensors["candidate_scores"] = serialized_scores
     save_file(tensors, str(path), metadata=metadata)
 
 
