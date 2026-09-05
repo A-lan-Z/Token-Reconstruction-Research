@@ -32,7 +32,7 @@ from safetensors.torch import save_file
 
 
 _SOURCE_ROOT = Path(__file__).resolve().parents[2]
-for _path in (_SOURCE_ROOT / "src", _SOURCE_ROOT / "scripts" / "trr_p01"):
+for _path in (_SOURCE_ROOT, _SOURCE_ROOT / "src", _SOURCE_ROOT / "scripts" / "trr_p01"):
     if str(_path) not in sys.path:
         sys.path.insert(0, str(_path))
 
