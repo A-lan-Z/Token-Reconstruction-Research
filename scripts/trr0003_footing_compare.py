@@ -553,7 +553,22 @@ def reconstruct(args: argparse.Namespace) -> int:
     )
     model_evidence["model_load_wall_seconds"] = time.perf_counter() - model_started
     policy = _fixed_k256_policy()
-    cells = load_all_cells(panel, repository_root=root)
+    all_cells = load_all_cells(panel, repository_root=root)
+    selected_cell_id = getattr(args, "cell_id", None)
+    if selected_cell_id is None:
+        cells = all_cells
+    else:
+        cells = tuple(cell for cell in all_cells if cell.cell_id == selected_cell_id)
+        if len(cells) != 1:
+            raise ComparatorError(f"unknown comparator cell: {selected_cell_id}")
+    record_batch_size = int(getattr(args, "record_batch_size", 4))
+    if record_batch_size != 4:
+        raise ComparatorError("the frozen footing comparator record batch size is 4")
+    compare_record_batch_size = getattr(args, "compare_record_batch_size", None)
+    if compare_record_batch_size is not None:
+        compare_record_batch_size = int(compare_record_batch_size)
+        if not 0 < compare_record_batch_size <= 16 or compare_record_batch_size == record_batch_size:
+            raise ComparatorError("reference record batch size must differ and lie in [1,16]")
     method_timings: dict[str, list[dict[str, Any]]] = {method: [] for method in METHOD_IDS}
     for cell_index, cell in enumerate(cells):
         observations = cell.activations
@@ -563,6 +578,7 @@ def reconstruct(args: argparse.Namespace) -> int:
             if torch.cuda.is_available():
                 torch.cuda.reset_peak_memory_stats(device)
             synchronize()
+            prefix_call_start = int(getattr(precut, "checked_cache_transitions", 0))
             started = time.perf_counter()
             if method_id == "historical_alpaca_a1":
                 proposal = propose_public_a1(
@@ -611,7 +627,7 @@ def reconstruct(args: argparse.Namespace) -> int:
                     precut=precut,
                     device=device,
                     policy=policy,
-                    record_batch_size=4,
+                    record_batch_size=record_batch_size,
                 )
                 predictions = decoded.predictions
                 candidates = proposal.candidates[:, :, :256].contiguous()
@@ -621,6 +637,49 @@ def reconstruct(args: argparse.Namespace) -> int:
                 rule = "fixed_k256_public_prefix"
             synchronize()
             elapsed = time.perf_counter() - started
+            prefix_calls = int(getattr(precut, "checked_cache_transitions", 0)) - prefix_call_start
+            if prefix_calls < 0:
+                raise ComparatorError("public prefix transition counter moved backwards")
+            batch_equivalence: dict[str, Any] | None = None
+            if compare_record_batch_size is not None:
+                equivalence_started = time.perf_counter()
+                if method_id == "frozen_a1_a2_k256":
+                    reference_prefix_start = int(getattr(precut, "checked_cache_transitions", 0))
+                    reference_decoded = decode_policy(
+                        observations=observations,
+                        attention_mask=mask,
+                        position_ids=positions,
+                        candidates=proposal.candidates[:, :, :256].contiguous(),
+                        a1_confidence=proposal.top1_confidence,
+                        precut=precut,
+                        device=device,
+                        policy=policy,
+                        record_batch_size=compare_record_batch_size,
+                    )
+                    if not torch.equal(predictions, reference_decoded.predictions):
+                        raise ComparatorError(
+                            f"record batch equivalence failed for {cell.cell_id}/{method_id}"
+                        )
+                    batch_equivalence = {
+                        "verified": True,
+                        "primary_record_batch_size": record_batch_size,
+                        "reference_record_batch_size": compare_record_batch_size,
+                        "reference_public_prefix_calls": int(
+                            getattr(precut, "checked_cache_transitions", 0)
+                        ) - reference_prefix_start,
+                        "reference_candidate_simulations": int(
+                            reference_decoded.executed_candidate_simulations
+                        ),
+                        "comparison_seconds": time.perf_counter() - equivalence_started,
+                    }
+                else:
+                    batch_equivalence = {
+                        "verified": True,
+                        "primary_record_batch_size": record_batch_size,
+                        "reference_record_batch_size": compare_record_batch_size,
+                        "basis": "rank-one proposal is independent of causal record batching",
+                        "comparison_seconds": time.perf_counter() - equivalence_started,
+                    }
             path = expected_prediction_path(output, cell=cell, method_id=method_id)
             _write_prediction(
                 path=path,
@@ -645,8 +704,17 @@ def reconstruct(args: argparse.Namespace) -> int:
                 "proposal_seconds": float(getattr(proposal, "elapsed_seconds", elapsed)),
                 "candidate_budget": int(candidates.shape[2]),
                 "candidate_simulations": int(simulations),
+                "logical_candidate_simulations": int(
+                    getattr(decoded, "candidate_simulations", simulations)
+                ) if method_id == "frozen_a1_a2_k256" else int(simulations),
+                "executed_candidate_simulations": int(
+                    getattr(decoded, "executed_candidate_simulations", simulations)
+                ) if method_id == "frozen_a1_a2_k256" else int(simulations),
                 "prefix_commit_tokens": int(prefix_tokens),
+                "public_prefix_calls": prefix_calls,
                 "peak_memory": peak_memory(),
+                "record_batch_size": record_batch_size,
+                "batch_equivalence": batch_equivalence,
                 "rule": rule,
                 "artifact": str(path.relative_to(root).as_posix()),
             }
@@ -658,34 +726,62 @@ def reconstruct(args: argparse.Namespace) -> int:
                 "cell": {"id": cell.cell_id, "style": cell.style, "condition": cell.condition, "shape": list(cell.shape)},
                 "method": timing,
                 "model": model_evidence["model"],
-                "record_batch_size": 4,
-                "public_prefix_calls": 0,
+                "record_batch_size": record_batch_size,
+                "public_prefix_calls": prefix_calls,
+                "candidate_simulations": int(simulations),
+                "prefix_commit_tokens": int(prefix_tokens),
+                "batch_equivalence": batch_equivalence,
                 "artifact_sha256": sha256_file(path),
             }
             _write_exclusive(output / cell.style / cell.condition / f"{method_id}.evidence.json", evidence)
-    validate_complete_prediction_set(
-        output,
-        panel=panel,
-        panel_path=panel_path,
-        repository_root=root,
-        method_ids=METHOD_IDS,
-        expected_bindings=bindings,
-    )
-    evidence = {
-        "schema": "token-reconstruction.trr0003-footing-run-evidence.v1",
-        "task_id": "TRR-0003",
-        "created_utc": utc_now(),
-        "panel": file_record(panel_path, repository_root=root),
-        "model": model_evidence,
-        "method_ids": list(METHOD_IDS),
-        "timing": method_timings,
-        "preparation_and_steady_state": {
-            "cold_start": "model preparation plus first cell per method",
-            "steady_state": "subsequent cells of each method; no cross-cell state is reused",
-        },
-        "status": "PUBLIC_PREDICTIONS_COMPLETE_BEFORE_FREEZE",
-    }
-    _write_exclusive(output / "run_evidence.json", evidence)
+    if selected_cell_id is None:
+        validate_complete_prediction_set(
+            output,
+            panel=panel,
+            panel_path=panel_path,
+            repository_root=root,
+            method_ids=METHOD_IDS,
+            expected_bindings=bindings,
+        )
+        evidence = {
+            "schema": "token-reconstruction.trr0003-footing-run-evidence.v1",
+            "task_id": "TRR-0003",
+            "created_utc": utc_now(),
+            "panel": file_record(panel_path, repository_root=root),
+            "model": model_evidence,
+            "method_ids": list(METHOD_IDS),
+            "timing": method_timings,
+            "selected_cell_id": None,
+            "record_batch_size": record_batch_size,
+            "preparation_and_steady_state": {
+                "cold_start": "model preparation plus first cell per method",
+                "steady_state": "subsequent cells of each method; no cross-cell state is reused",
+            },
+            "status": "PUBLIC_PREDICTIONS_COMPLETE_BEFORE_FREEZE",
+        }
+        _write_exclusive(output / "run_evidence.json", evidence)
+    else:
+        evidence = {
+            "schema": "token-reconstruction.trr0003-footing-qualification-evidence.v1",
+            "task_id": "TRR-0003",
+            "created_utc": utc_now(),
+            "panel": file_record(panel_path, repository_root=root),
+            "model": model_evidence,
+            "method_ids": list(METHOD_IDS),
+            "timing": method_timings,
+            "selected_cell_id": selected_cell_id,
+            "qualification": {
+                "cell_id": selected_cell_id,
+                "sequence_tokens": int(cells[0].sequence_tokens),
+                "records": int(cells[0].records),
+                "candidate_budget": 256,
+                "record_batch_size": record_batch_size,
+                "reference_record_batch_size": compare_record_batch_size,
+                "truth_opened": False,
+            },
+            "status": "QUALIFICATION_ONLY_PREDICTIONS_COMPLETE",
+        }
+        _write_exclusive(output / "qualification_evidence.json", evidence)
     print(json.dumps({"output": str(output), "cells": len(cells), "methods": list(METHOD_IDS)}, indent=2))
     return 0
 
@@ -888,6 +984,9 @@ def parse_args() -> argparse.Namespace:
     recon.add_argument("--lens", type=Path, default=DEFAULT_LENS)
     recon.add_argument("--inverse", type=Path, default=DEFAULT_INVERSE)
     recon.add_argument("--seed", type=int, default=3003)
+    recon.add_argument("--cell-id", default=None, help="run one cell for guarded qualification")
+    recon.add_argument("--record-batch-size", type=int, default=4)
+    recon.add_argument("--compare-record-batch-size", type=int, default=None)
     merge_parser = sub.add_parser("merge", help="merge all registered method bundles")
     merge_parser.add_argument("--repository-root", type=Path, default=Path("."))
     merge_parser.add_argument("--panel", type=Path, default=Path("experiments/TRR-0003/footing/panel.json"))
