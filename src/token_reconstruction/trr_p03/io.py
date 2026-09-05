@@ -211,9 +211,10 @@ def _validate_group_descriptor(group: Mapping[str, Any]) -> dict[str, Any]:
         "bytes",
         "sha256",
     }
+    optional = {"mask_digest", "position_digest"}
     if not required.issubset(group):
         raise P03IOError("observation bundle descriptor is incomplete")
-    if set(group) - required:
+    if set(group) - required - optional:
         raise P03IOError("observation bundle descriptor exposes unexpected fields")
     bundle_id = group.get("bundle_id")
     stage = group.get("stage")
@@ -249,6 +250,10 @@ def _validate_group_descriptor(group: Mapping[str, Any]) -> dict[str, Any]:
     digest = group.get("sha256")
     if not isinstance(digest, str) or len(digest) != 64:
         raise P03IOError("observation bundle hash is invalid")
+    for name in ("mask_digest", "position_digest"):
+        value = group.get(name)
+        if value is not None and (not isinstance(value, str) or len(value) != 64):
+            raise P03IOError(f"observation bundle {name} is invalid")
     return dict(group)
 
 
@@ -307,8 +312,8 @@ def validate_observation_index(index: Mapping[str, Any]) -> list[dict[str, Any]]
                     "sha256": str(group["sha256"]),
                     "shape": [1, length, HIDDEN_SIZE],
                     "dtype": "bfloat16",
-                    "mask_digest": "",
-                    "position_digest": "",
+                    "mask_digest": str(group.get("mask_digest", "")),
+                    "position_digest": str(group.get("position_digest", "")),
                     "_bundle_row": row_index,
                 }
             )
@@ -483,6 +488,10 @@ def _load_grouped_file(
         raise P03IOError("observation bundle positions changed")
     if not mask.to(torch.bool).all().item():
         raise P03IOError("observation bundle contains inactive rows")
+    for name, tensor in (("mask_digest", mask), ("position_digest", positions)):
+        expected_digest = str(descriptor.get(name, ""))
+        if expected_digest and _digest_tensor(tensor) != expected_digest:
+            raise P03IOError(f"observation bundle {name} changed")
     return activation, mask.to(torch.int64), positions.to(torch.int64)
 
 
