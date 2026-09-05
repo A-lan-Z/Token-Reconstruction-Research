@@ -31,7 +31,6 @@ from common import (  # noqa: E402
     CUT_DEPTH,
     HIDDEN_SIZE,
     METRICS,
-    METHODS,
     MODEL_ID,
     MODEL_REVISION,
     OBSERVATION_INDEX_SCHEMA,
@@ -65,6 +64,28 @@ PRIVATE_TRUTH_SCHEMA = "token-reconstruction.trr-p01-private-truth.v1"
 EVALUATOR_SCHEMA = "token-reconstruction.trr-p01-evaluator-evidence.v1"
 TARGET_CONFIG_SHA256 = "7510055506497971937a3b247c853e664fdc1b1bbeece4cafc03107fa5e6fae7"
 TARGET_MODEL_SHA256 = "389c73748a00a8a006a4a4a26fa473319676c25672aa188f8337981cd0cc8850"
+
+# The blind prediction matrix is fixed before either arm is reconstructed or
+# any private truth is opened.  ``prediction_arms`` is explicit because the
+# historical controls intentionally expose cosine only; declaring the
+# Cartesian product would incorrectly require historical L2 predictions.
+PREDICTION_ARMS = (
+    "boundary.cosine",
+    "boundary.l2",
+    "raw_embedding.cosine",
+    "raw_embedding.l2",
+    "reference_corrected.cosine",
+    "reference_corrected.l2",
+    "historical_a1.cosine",
+    "historical_a1_a2_port.cosine",
+)
+PREDICTION_METHODS = (
+    "boundary",
+    "raw_embedding",
+    "reference_corrected",
+    "historical_a1",
+    "historical_a1_a2_port",
+)
 
 
 def parse_args() -> argparse.Namespace:
@@ -245,7 +266,9 @@ def _write_arm(
             },
             "record_order": [f"p01-r{i:04d}" for i in range(1, 17)],
             "metric_order": list(METRICS),
-            "methods": list(METHODS),
+            # Keep the general method list for human-readable configuration,
+            # and bind the actual non-Cartesian arm matrix separately.
+            "methods": list(PREDICTION_METHODS),
             "prototype": {
                 "path": str(prototype_path),
                 "bytes": prototype_path.stat().st_size,
@@ -257,10 +280,15 @@ def _write_arm(
                 "hidden_size": HIDDEN_SIZE,
             },
             "reference_correction": {
-                "status": "optional_after_static_evidence",
+                "status": "predeclared_after_static_evidence",
                 "reference_token_id": 220,
                 "candidate_simulations": 0,
                 "prefix_rule": "already committed reconstructed prefix only",
+            },
+            "prediction_arms": list(PREDICTION_ARMS),
+            "prediction_policy": {
+                "status": "all_declared_arms_must_be_serialized_before_truth",
+                "historical_metrics": ["cosine"],
             },
             "execution": {
                 "seed": 1701,
@@ -403,7 +431,11 @@ def main() -> int:
             "target_weights_visible_to_attack": False,
             "condition_label_visible_to_attack": False,
             "truth_opened_by_attack": False,
-            "public_prefix_token_evaluations": 2 * 16 * 2,
+            # Observation preparation runs the two full public/shifted model
+            # arms.  Keep forward invocations distinct from model input-token
+            # instances; this is not reconstruction-prefix simulation.
+            "public_model_forward_calls": 2 * ((16 + args.record_batch_size - 1) // args.record_batch_size),
+            "public_model_input_token_evaluations": 2 * 16 * SEQUENCE_TOKENS,
             "candidate_simulations": 0,
             "phases": timer_records,
             "elapsed_seconds": time.perf_counter() - phases_started,
