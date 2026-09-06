@@ -1,0 +1,80 @@
+{
+  "command": "env CUDA_VISIBLE_DEVICES='' PYTHONPATH=src OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 OPENBLAS_NUM_THREADS=4 HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false python3 scripts/trr0004_p05_diagnostic.py sample --correction-observations /tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/correction_cut4.safetensors --correction-records /tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/correction_records.json --replay-observations /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_cut4.safetensors --replay-records /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fit/affine_fit_records.json --teacher-evidence /tmp/trr-p04/experiments/TRR-P04/runtime/teacher-qualification-r3/teacher_evidence.safetensors --schedule 1737=/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-1737/position_schedule.safetensors --schedule 2711=/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-2711/position_schedule.safetensors --output /tmp/trr-p05/experiments/TRR-P05/runtime/public-sample-r1/sample_index.json",
+  "phase_timing_seconds": {
+    "inner_phase_seconds": null,
+    "note": "The direct model-free invocation was not wrapped by an inner timer; no finer timing is claimed.",
+    "outer_tool_wall_seconds_rounded": 12.5
+  },
+  "qualifier_batch_preselection": {
+    "rule": "max teacher_rows, then max selected_rows, then lower seed, then lower step",
+    "selected_rows": 512,
+    "selected_seed": 2711,
+    "selected_step": 1999,
+    "selection_made_from_frozen_schedule_metadata_before_model_load": true,
+    "teacher_rows": 4
+  },
+  "runtime": {
+    "cuda_visible_devices": "",
+    "device": "cpu",
+    "embedding_table_loaded": false,
+    "environment": {},
+    "model_loaded": false,
+    "torch_interop_threads": 1,
+    "torch_threads": 4,
+    "truth_accessed": false
+  },
+  "sample_index": {
+    "bytes": 276536,
+    "forward_count": 768,
+    "gradient_batch_count": 8,
+    "path": "/tmp/trr-p05/experiments/TRR-P05/runtime/public-sample-r1/sample_index.json",
+    "schedule_steps": [
+      0,
+      999,
+      1999,
+      2999
+    ],
+    "selection_sha256": "7afe1c0b41bea3b974f4a037636fb73144e5deb1989406e41efe414eb4118f24",
+    "sha256": "77b11bd3a1a9e2a7a3302f5a7df2b186cc99994da9d2a6b7e728639e684e9988",
+    "status": "PUBLIC_SAMPLE_FROZEN_NO_MODEL_LOADED",
+    "teacher_partition": {
+      "difficult_a1_error": 256,
+      "uniform_audit": 128
+    }
+  },
+  "schema": "token-reconstruction.trr-p05-sample-freeze-receipt.v1",
+  "source_commit": "3d5098f9f722ebe050ca6de627ed95c934c0e6d1",
+  "source_descriptors": {
+    "combined_record_order_sha256": "b53f032dfaf2f69e2a26a55f71ce6da2ccf3e746c0079bb3d3b92ae4c88b89b3",
+    "correction_observations": {
+      "bytes": 202066296,
+      "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/correction_cut4.safetensors",
+      "sha256": "c9eb10065ee765a95aa0d30bae91f3061fecf3bfa5aa52c56a3eaa62d4c216b4"
+    },
+    "correction_record_order_sha256": "0c22e5f09396e51e0500baa651f32529529658dd4a5e3248fc2eaaf1ba9b53a0",
+    "correction_records": {
+      "bytes": 218657,
+      "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/correction_records.json",
+      "sha256": "3f993ef70ef153d0f2e13dc86748378b93ccfd0b85d1c8bd0f033c53b3f1484d"
+    },
+    "schedule_paths": {
+      "1737": {
+        "bytes": 4800600,
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-1737/position_schedule.safetensors",
+        "sha256": "7392122efd9eaf1250ceeabdc84843daea61f2bc1b9e8360dfe016fe5a7285bb"
+      },
+      "2711": {
+        "bytes": 4800600,
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-2711/position_schedule.safetensors",
+        "sha256": "a1079f71d4a468b0c0a5c2b7587dbf2260e7f0069378e2f61cc640864fe6145f"
+      }
+    },
+    "teacher_evidence": {
+      "bytes": 928536,
+      "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/teacher-qualification-r3/teacher_evidence.safetensors",
+      "sha256": "0f15a16978d0daa6bbf8a7771109350a633a7fc03a108db5fd8d782255ba84f9"
+    }
+  },
+  "status": "PASS",
+  "task_id": "TRR-P05"
+}
