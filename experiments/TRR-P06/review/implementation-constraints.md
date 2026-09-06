@@ -132,13 +132,19 @@ source commit, assets, and timing; prior measurements are an estimate only.
 ## Runner interface (source only; no P06 fit has run)
 
 The authoritative executable is `scripts/trr0006_fit_visibility.py`. It has
-three create-only modes. `preflight` reads manifest metadata plus the pinned
-affine state and writes `preflight.json`; `probe` requires that passing receipt,
+four create-only modes. `preflight` reads manifest metadata plus the pinned
+affine state and writes `preflight.json`; `qualify` requires that source-only
+receipt and runs a disposable two-update full-record backward cell at the
+registered 8-record x H128 x 512-draw full-vocabulary geometry. Qualification
+trains every affine and attention parameter, requires Adam state for every
+parameter tensor, checks that the zero-initialized output and query paths become
+active, and retains no decoder state. `probe` requires both prior receipts,
 loads only the public fit/validation bank, builds the 256-error ledger and
 fixed 300-update probe, and writes `capacity_probe_receipt.json`; `main`
-requires both receipts and runs the six 3,000-update fits. Probe/main reject
-any direct-affine hash other than the registered value and reject a preflight
-whose manifest or H128 geometry binding differs.
+requires all three receipts and runs the six 3,000-update fits. Probe/main
+reject any direct-affine hash other than the registered value and reject a
+preflight or qualification whose manifest, direct state, or H128 geometry
+binding differs.
 
 The source-only command shape is:
 
@@ -146,9 +152,20 @@ The source-only command shape is:
 PYTHONPATH=src:scripts python3 scripts/trr0006_fit_visibility.py --mode preflight --fit-manifest experiments/TRR-0005/public_activation_v1/enriched_manifest.json --direct-affine-state experiments/TRR-0004/evidence/affine/selected_states/fit_large_v1.historical_affine_ce_no_vocab_bias.safetensors --output-root <fresh-preflight-root> --device cpu
 ```
 
-Probe and main use the same arguments plus `--preflight-receipt`, with fresh
-output roots and `--device cuda` only after the declared resource window and
-largest-cell qualification are approved. Main additionally supplies the PASS
-`--probe-receipt`. Both execution modes default to four Torch intra-op and one
-inter-op thread, 8 GiB minimum free GPU, 6 GiB maximum reserved GPU, 16 GiB
-process RSS, 10 GiB host available memory, and an 1,800-second deadline.
+After the source-only receipt passes, qualify the actual largest backward cell
+with a fresh create-only root:
+
+```text
+PYTHONPATH=src:scripts python3 scripts/trr0006_fit_visibility.py --mode qualify --fit-manifest experiments/TRR-0005/public_activation_v1/enriched_manifest.json --direct-affine-state experiments/TRR-0004/evidence/affine/selected_states/fit_large_v1.historical_affine_ce_no_vocab_bias.safetensors --preflight-receipt <fresh-preflight-root>/preflight.json --output-root <fresh-qualification-root> --device cuda
+```
+
+Probe and main use the same arguments plus `--preflight-receipt` and the PASS
+`--qualification-receipt`, with fresh output roots and `--device cuda` only
+after the declared resource window and qualification are approved. Main
+additionally supplies the PASS `--probe-receipt`. The runner exposes
+`--selection-metric {token_accuracy,style_balanced_token_accuracy}`; its
+default is the registered plan's `token_accuracy`, and a style-balanced choice
+must be passed explicitly and recorded before main fitting. Execution modes
+default to four Torch intra-op and one inter-op thread, 8 GiB minimum free GPU,
+6 GiB maximum reserved GPU, 16 GiB process RSS, 10 GiB host available memory,
+and an 1,800-second deadline.

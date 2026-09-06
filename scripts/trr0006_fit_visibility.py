@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Fit the bounded TRR-P06 visibility-mask decoder family.
 
-This runner has three explicit modes:
+This runner has four explicit modes:
 
 ``preflight``
     Read only public manifest metadata and the pinned affine initializer.  It
@@ -11,10 +11,16 @@ This runner has three explicit modes:
     the competent direct W/b/s path, and run the fixed 300-update capacity
     probe on a public-fit error ledger.  Probe states are diagnostic and are
     never used to initialize or select the main fits.
+``qualify``
+    Run a disposable two-update, full-record backward cell at the registered
+    8-record x H128 x 512-draw full-vocabulary geometry. This is an actual
+    largest-cell qualification: all affine and attention parameters are
+    trainable and Adam state must be allocated for every tensor before the
+    probe or main fits can run.
 ``main``
     Load the same public bank, crop to H128, and run six sequential fits (three
     masks x two registered seeds) with one shared 3,000-update schedule per
-    seed.  Each arm selects the earliest maximum public-validation accuracy.
+    seed. Each arm selects the earliest maximum public-validation accuracy.
 
 No fresh panel, target condition, private truth, guessed token, candidate
 search, or A2 resource is loaded by this script.
@@ -76,6 +82,7 @@ TASK_ID = "TRR-P06"
 SCRIPT_SCHEMA = "token-reconstruction.trr-p06-visibility-fit.v1"
 PREFLIGHT_SCHEMA = "token-reconstruction.trr-p06-visibility-preflight.v1"
 PROBE_SCHEMA = "token-reconstruction.trr-p06-capacity-probe.v1"
+QUALIFICATION_SCHEMA = "token-reconstruction.trr-p06-largest-cell-qualification.v1"
 MAIN_SCHEMA = "token-reconstruction.trr-p06-main-fit.v1"
 FAILURE_SCHEMA = "token-reconstruction.trr-p06-visibility-fit-failure.v1"
 
@@ -86,9 +93,11 @@ VOCABULARY_SIZE = DEFAULT_VOCABULARY_SIZE
 CONTEXT_WIDTH = DEFAULT_CONTEXT_WIDTH
 RECORD_BATCH_SIZE = 8
 POSITION_BUDGET = 512
+QUALIFICATION_STEPS = 2
 PROBE_STEPS = 300
 MAIN_STEPS = 3000
 VALIDATION_EVERY = 100
+SELECTION_METRICS = ("token_accuracy", "style_balanced_token_accuracy")
 PROBE_SEED = 6106
 MAIN_SEEDS = (6106, 6107)
 LEARNING_RATE = 1e-3
@@ -850,6 +859,12 @@ def run_capacity_probe(args: argparse.Namespace) -> dict[str, Any]:
         fit_manifest=Path(args.fit_manifest).expanduser().resolve(),
         validation_manifest=(None if args.validation_manifest is None else Path(args.validation_manifest).expanduser().resolve()),
     )
+    qualification_receipt = _validate_qualification_receipt(
+        Path(args.qualification_receipt).expanduser().resolve(),
+        direct_hash=direct_descriptor["sha256"],
+        fit_manifest=Path(args.fit_manifest).expanduser().resolve(),
+        validation_manifest=(None if args.validation_manifest is None else Path(args.validation_manifest).expanduser().resolve()),
+    )
     data, data_receipt = _load_cropped_public_data(
         args, device, deadline=deadline, guards=guards
     )
@@ -905,6 +920,11 @@ def run_capacity_probe(args: argparse.Namespace) -> dict[str, Any]:
             "sha256": file_sha256(Path(args.preflight_receipt).expanduser().resolve()),
             "status": preflight_receipt["status"],
         },
+        "qualification_receipt": {
+            "path": str(Path(args.qualification_receipt).expanduser().resolve()),
+            "sha256": file_sha256(Path(args.qualification_receipt).expanduser().resolve()),
+            "status": qualification_receipt["status"],
+        },
         "data": data_receipt,
         "geometry": {
             "fit": list(data.fit_observations.shape),
@@ -945,6 +965,17 @@ def _validation_steps(steps: int) -> tuple[int, ...]:
     return tuple(range(0, int(steps) + 1, VALIDATION_EVERY)) if steps % VALIDATION_EVERY == 0 else tuple([0, *range(VALIDATION_EVERY, steps, VALIDATION_EVERY), steps])
 
 
+def _selection_metric_name(args: argparse.Namespace) -> str:
+    """Resolve the predeclared validation metric without a hidden default."""
+
+    value = str(getattr(args, "selection_metric", "token_accuracy"))
+    if value not in SELECTION_METRICS:
+        raise VisibilityFitError(
+            f"selection metric must be one of {SELECTION_METRICS}, observed {value!r}"
+        )
+    return value
+
+
 def _train_main_arm(
     method_id: str,
     seed: int,
@@ -963,6 +994,7 @@ def _train_main_arm(
     if device.type == "cuda":
         torch.cuda.reset_peak_memory_stats(device)
     started = time.perf_counter()
+    selection_metric = _selection_metric_name(args)
     torch.manual_seed(seed)
     if device.type == "cuda":
         torch.cuda.manual_seed_all(seed)
@@ -1014,7 +1046,7 @@ def _train_main_arm(
                 "validation_wall_seconds": elapsed,
             }
             curve.append(point)
-            metric = float(metrics["style_balanced_token_accuracy"])
+            metric = float(metrics[selection_metric])
             if metric > best_metric:
                 best_metric = metric
                 best_step = int(step_index)
@@ -1056,7 +1088,7 @@ def _train_main_arm(
             "task_id": TASK_ID,
             "method_id": method_id,
             "seed": seed,
-            "selection_metric": "validation_style_balanced_token_accuracy",
+            "selection_metric": f"validation_{selection_metric}",
             "selection_rule": "earliest maximum, validation every 100 steps including step 0",
             "curve": curve,
         },
@@ -1069,7 +1101,7 @@ def _train_main_arm(
             "fit_seed": seed,
             "schedule_sha256": schedule_record["schedule_sha256"],
             "direct_affine_sha256": str(args.direct_affine_sha256),
-            "selection_metric": "validation_style_balanced_token_accuracy",
+            "selection_metric": f"validation_{selection_metric}",
             "selection_rule": "earliest maximum, validation every 100 steps including step 0",
         },
     )
@@ -1082,7 +1114,8 @@ def _train_main_arm(
         "steps": MAIN_STEPS,
         "checkpoint_steps": list(checkpoints),
         "selected_step": best_step,
-        "best_validation_style_balanced_token_accuracy": best_metric,
+        "selection_metric": f"validation_{selection_metric}",
+        "best_validation_metric": best_metric,
         "initial_state_sha256": initial_digest,
         "learning_curve": {"path": str(curve_path), "bytes": curve_path.stat().st_size, "sha256": file_sha256(curve_path)},
         "state": state_record,
@@ -1101,6 +1134,174 @@ def _train_main_arm(
     if device.type == "cuda":
         torch.cuda.empty_cache()
     return result
+
+
+def _validate_qualification_receipt(
+    path: Path,
+    *,
+    direct_hash: str,
+    fit_manifest: Path,
+    validation_manifest: Path | None,
+) -> Mapping[str, Any]:
+    receipt = _json_read(path, label="P06 largest-cell qualification receipt")
+    if receipt.get("schema") != QUALIFICATION_SCHEMA:
+        raise VisibilityFitError("largest-cell qualification schema is not recognized")
+    if receipt.get("status") != "PASS":
+        raise VisibilityFitError("probe/main mode requires a PASS largest-cell qualification")
+    if receipt.get("method_id") != FULL_RECORD_METHOD:
+        raise VisibilityFitError("largest-cell qualification did not use the full-record arm")
+    if int(receipt.get("updates", 0)) < QUALIFICATION_STEPS:
+        raise VisibilityFitError("largest-cell qualification used fewer than two updates")
+    if receipt.get("all_parameters_trainable") is not True:
+        raise VisibilityFitError("largest-cell qualification did not train the full parameter set")
+    if receipt.get("finite_parameters") is not True:
+        raise VisibilityFitError("largest-cell qualification has non-finite parameters")
+    if receipt.get("output_residual_became_active") is not True or receipt.get("q_path_became_active") is not True:
+        raise VisibilityFitError("largest-cell qualification did not activate the zero-initialized paths")
+    if receipt.get("optimizer_state_parameter_count") != receipt.get("parameter_tensor_count"):
+        raise VisibilityFitError("largest-cell qualification did not allocate Adam state for every parameter tensor")
+    direct = receipt.get("direct_affine")
+    if not isinstance(direct, Mapping) or direct.get("sha256") != direct_hash:
+        raise VisibilityFitError("largest-cell qualification direct-affine hash does not match this run")
+    data = receipt.get("data")
+    if not isinstance(data, Mapping):
+        raise VisibilityFitError("largest-cell qualification has no public data binding")
+    expected_fit = _file_record(fit_manifest)
+    expected_validation = _file_record(validation_manifest or fit_manifest)
+    if data.get("fit_manifest") != expected_fit or data.get("validation_manifest") != expected_validation:
+        raise VisibilityFitError("largest-cell qualification public manifests differ from this run")
+    if data.get("fit_geometry") != [1200, 128, 2048]:
+        raise VisibilityFitError("largest-cell qualification was not run on H128 fit geometry")
+    geometry = receipt.get("geometry")
+    if not isinstance(geometry, Mapping) or geometry.get("record_batch_size") != RECORD_BATCH_SIZE or geometry.get("sequence_length") != DECLARED_SEQUENCE_LENGTH or geometry.get("query_draws_per_step") != POSITION_BUDGET:
+        raise VisibilityFitError("largest-cell qualification geometry is not the registered 8x128x512 cell")
+    return receipt
+
+
+def run_qualification(args: argparse.Namespace) -> dict[str, Any]:
+    output_root = Path(args.output_root).expanduser().resolve()
+    if output_root.exists() or output_root.is_symlink():
+        raise VisibilityFitError(f"qualification output root is create-only: {output_root}")
+    output_root.mkdir(parents=True)
+    repository_root = Path(args.repository_root).expanduser().resolve()
+    device = _device(args.device)
+    deadline = time.perf_counter() + float(args.max_seconds)
+    guards: list[dict[str, Any]] = []
+    direct_state, direct_descriptor = _direct_state(args)
+    preflight_receipt = _validate_preflight_receipt(
+        Path(args.preflight_receipt).expanduser().resolve(),
+        direct_hash=direct_descriptor["sha256"],
+        fit_manifest=Path(args.fit_manifest).expanduser().resolve(),
+        validation_manifest=(None if args.validation_manifest is None else Path(args.validation_manifest).expanduser().resolve()),
+    )
+    data, data_receipt = _load_cropped_public_data(args, device, deadline=deadline, guards=guards)
+    schedule = build_position_schedule(
+        data.fit_valid_mask,
+        steps=QUALIFICATION_STEPS,
+        record_batch_size=RECORD_BATCH_SIZE,
+        position_budget=POSITION_BUDGET,
+        seed=PROBE_SEED,
+    )
+    schedule_record = save_schedule(output_root / "qualification_schedule.safetensors", schedule)
+    if device.type == "cuda":
+        torch.cuda.reset_peak_memory_stats(device)
+    model = build_visibility_decoder(
+        FULL_RECORD_METHOD,
+        hidden_size=HIDDEN_SIZE,
+        vocabulary_size=VOCABULARY_SIZE,
+        context_width=CONTEXT_WIDTH,
+        qkv_seed=PROBE_SEED,
+        direct_state=direct_state,
+        direct_init_label="competent_public_affine",
+    ).to(device)
+    all_parameters_trainable = all(parameter.requires_grad for parameter in model.parameters())
+    if not all_parameters_trainable:
+        raise VisibilityFitError("qualification model has a frozen parameter")
+    parameter_tensor_count = len(tuple(model.parameters()))
+    initial_state = {name: value.detach().cpu().clone() for name, value in model.state_dict().items()}
+    optimizer = torch.optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=QUALIFICATION_STEPS)
+    runtime_embedding = data.embedding_table.to(device=device, dtype=torch.float32)
+    model.validate_embedding_table(runtime_embedding)
+    train_points: list[dict[str, Any]] = []
+    for step_index in range(QUALIFICATION_STEPS):
+        guards.append(_resource_guard(args, device, stage=f"qualification:before_step_{step_index}", deadline=deadline))
+        update_started = time.perf_counter()
+        point = train_step(
+            model,
+            data.fit_observations,
+            data.fit_truth,
+            data.fit_valid_mask,
+            runtime_embedding,
+            schedule,
+            step_index,
+            device=device,
+            optimizer=optimizer,
+            gradient_clip_norm=GRADIENT_CLIP_NORM,
+        )
+        scheduler.step()
+        point.update({"step": step_index + 1, "wall_seconds": time.perf_counter() - update_started})
+        train_points.append(point)
+        guards.append(_resource_guard(args, device, stage=f"qualification:after_step_{step_index}", deadline=deadline))
+    final_state = {name: value.detach().cpu().clone() for name, value in model.state_dict().items()}
+    output_changed = not torch.equal(initial_state["output.weight"], final_state["output.weight"])
+    q_changed = not torch.equal(initial_state["query.weight"], final_state["query.weight"])
+    optimizer_state_parameter_count = len(optimizer.state)
+    finite = all(torch.isfinite(value).all().item() for value in model.state_dict().values())
+    status = bool(finite and output_changed and q_changed and optimizer_state_parameter_count == parameter_tensor_count)
+    peak = _peak_snapshot(model, device)
+    receipt = {
+        "schema": QUALIFICATION_SCHEMA,
+        "task_id": TASK_ID,
+        "status": "PASS" if status else "FAIL",
+        "created_utc": _utc_now(),
+        "source_commit": _git_commit(repository_root),
+        "command": list(sys.argv),
+        "environment": _safe_environment(),
+        "device": str(device),
+        "method_id": FULL_RECORD_METHOD,
+        "updates": QUALIFICATION_STEPS,
+        "all_parameters_trainable": all_parameters_trainable,
+        "parameter_tensor_count": parameter_tensor_count,
+        "optimizer_state_parameter_count": optimizer_state_parameter_count,
+        "output_residual_became_active": output_changed,
+        "q_path_became_active": q_changed,
+        "finite_parameters": finite,
+        "direct_affine": direct_descriptor,
+        "preflight_receipt": {
+            "path": str(Path(args.preflight_receipt).expanduser().resolve()),
+            "sha256": file_sha256(Path(args.preflight_receipt).expanduser().resolve()),
+            "status": preflight_receipt["status"],
+        },
+        "data": data_receipt,
+        "geometry": {
+            "fit": list(data.fit_observations.shape),
+            "validation": list(data.validation_observations.shape),
+            "sequence_length": DECLARED_SEQUENCE_LENGTH,
+            "record_batch_size": RECORD_BATCH_SIZE,
+            "query_draws_per_step": POSITION_BUDGET,
+        },
+        "schedule": schedule_record,
+        "train_points": train_points,
+        "peak_memory": peak,
+        "resource_policy": {
+            "minimum_free_gpu_gib": float(args.minimum_free_gib),
+            "maximum_gpu_reserved_gib": float(args.maximum_gpu_reserved_gib),
+            "maximum_host_rss_gib": float(args.maximum_host_rss_gib),
+            "minimum_host_available_gib": float(args.minimum_host_available_gib),
+            "max_seconds": float(args.max_seconds),
+        },
+        "resource_guards": guards,
+        "state_role": "disposable qualification only; no decoder state file is retained",
+    }
+    _json_write_create(output_root / "qualification_receipt.json", receipt)
+    del model, optimizer, scheduler, runtime_embedding
+    gc.collect()
+    if device.type == "cuda":
+        torch.cuda.empty_cache()
+    if not status:
+        raise VisibilityFitError("largest-cell qualification did not activate all expected paths")
+    return receipt
 
 
 def _validate_preflight_receipt(
@@ -1161,9 +1362,16 @@ def run_main(args: argparse.Namespace) -> dict[str, Any]:
     device = _device(args.device)
     deadline = time.perf_counter() + float(args.max_seconds)
     guards: list[dict[str, Any]] = []
+    selection_metric = _selection_metric_name(args)
     direct_state, direct_descriptor = _direct_state(args)
     preflight_receipt = _validate_preflight_receipt(
         Path(args.preflight_receipt).expanduser().resolve(),
+        direct_hash=direct_descriptor["sha256"],
+        fit_manifest=Path(args.fit_manifest).expanduser().resolve(),
+        validation_manifest=(None if args.validation_manifest is None else Path(args.validation_manifest).expanduser().resolve()),
+    )
+    qualification_receipt = _validate_qualification_receipt(
+        Path(args.qualification_receipt).expanduser().resolve(),
         direct_hash=direct_descriptor["sha256"],
         fit_manifest=Path(args.fit_manifest).expanduser().resolve(),
         validation_manifest=(None if args.validation_manifest is None else Path(args.validation_manifest).expanduser().resolve()),
@@ -1220,6 +1428,11 @@ def run_main(args: argparse.Namespace) -> dict[str, Any]:
             "sha256": file_sha256(Path(args.preflight_receipt).expanduser().resolve()),
             "status": preflight_receipt["status"],
         },
+        "qualification_receipt": {
+            "path": str(Path(args.qualification_receipt).expanduser().resolve()),
+            "sha256": file_sha256(Path(args.qualification_receipt).expanduser().resolve()),
+            "status": qualification_receipt["status"],
+        },
         "capacity_probe_receipt": {
             "path": str(Path(args.probe_receipt).expanduser().resolve()),
             "sha256": file_sha256(Path(args.probe_receipt).expanduser().resolve()),
@@ -1245,7 +1458,8 @@ def run_main(args: argparse.Namespace) -> dict[str, Any]:
             "max_seconds": float(args.max_seconds),
         },
         "resource_guards": guards,
-        "selection": "earliest maximum public-validation style-balanced token accuracy, checked every 100 steps including step 0",
+        "selection": f"earliest maximum public-validation {selection_metric}, checked every 100 steps including step 0",
+        "selection_metric": f"validation_{selection_metric}",
         "runtime_components": {
             "source_token_access": False,
             "target_truth_access": False,
@@ -1315,7 +1529,7 @@ def run_preflight(args: argparse.Namespace) -> dict[str, Any]:
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--mode", choices=("preflight", "probe", "main"), required=True)
+    parser.add_argument("--mode", choices=("preflight", "qualify", "probe", "main"), required=True)
     parser.add_argument("--repository-root", type=Path, default=Path(__file__).resolve().parents[1])
     parser.add_argument("--fit-manifest", type=Path, required=True)
     parser.add_argument("--validation-manifest", type=Path)
@@ -1323,6 +1537,7 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--direct-affine-state", type=Path, required=True)
     parser.add_argument("--direct-affine-sha256", default=DIRECT_AFFINE_SHA256)
     parser.add_argument("--preflight-receipt", type=Path)
+    parser.add_argument("--qualification-receipt", type=Path)
     parser.add_argument("--probe-receipt", type=Path)
     parser.add_argument("--output-root", type=Path, required=True)
     parser.add_argument("--device", choices=("cpu", "cuda"), default="cpu")
@@ -1332,15 +1547,25 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--maximum-gpu-reserved-gib", type=float, default=MAXIMUM_GPU_RESERVED_GIB)
     parser.add_argument("--maximum-host-rss-gib", type=float, default=MAXIMUM_HOST_RSS_GIB)
     parser.add_argument("--minimum-host-available-gib", type=float, default=MINIMUM_HOST_AVAILABLE_GIB)
+    parser.add_argument(
+        "--selection-metric",
+        choices=SELECTION_METRICS,
+        default="token_accuracy",
+        help="predeclared public-validation metric used for earliest-maximum selection",
+    )
     parser.add_argument("--max-seconds", type=float, default=MAX_SECONDS)
     return parser
 
 
 def _validate_args(args: argparse.Namespace) -> None:
-    if args.mode in ("probe", "main") and args.preflight_receipt is None:
+    if args.mode in ("qualify", "probe", "main") and args.preflight_receipt is None:
         raise VisibilityFitError(f"{args.mode} mode requires --preflight-receipt from a source-only PASS")
-    if args.mode == "preflight" and args.preflight_receipt is not None:
-        raise VisibilityFitError("--preflight-receipt is valid only after preflight mode")
+    if args.mode == "preflight" and (args.preflight_receipt is not None or args.qualification_receipt is not None or args.probe_receipt is not None):
+        raise VisibilityFitError("preflight mode cannot consume execution receipts")
+    if args.mode in ("probe", "main") and args.qualification_receipt is None:
+        raise VisibilityFitError(f"{args.mode} mode requires --qualification-receipt from a PASS largest-cell run")
+    if args.mode in ("preflight", "qualify") and args.qualification_receipt is not None:
+        raise VisibilityFitError("--qualification-receipt is valid only for probe/main modes")
     if args.mode == "main" and args.probe_receipt is None:
         raise VisibilityFitError("main mode requires --probe-receipt from a PASS capacity probe")
     if args.mode != "main" and args.probe_receipt is not None:
@@ -1367,6 +1592,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         _set_runtime_threads(args)
         if args.mode == "preflight":
             run_preflight(args)
+        elif args.mode == "qualify":
+            run_qualification(args)
         elif args.mode == "probe":
             run_capacity_probe(args)
         else:
