@@ -1,0 +1,386 @@
+{
+  "candidate_sample_sizes": {
+    "finance": [
+      512,
+      1024,
+      1536,
+      2048
+    ],
+    "pile": [
+      256,
+      384,
+      512
+    ]
+  },
+  "created_utc": "2026-09-06T11:58:20Z",
+  "endpoint": {
+    "final_interval": "exact paired discordance CP gain-minus-loss lower bound for exact records; paired record bootstrap for token accuracy; alpha 0.025 per quality route",
+    "positive_margin_pp": 0.0,
+    "practical_exact_margin_pp": 5.0,
+    "practical_token_margin_pp": 1.0,
+    "primary": "finance__public_base exact-record paired candidate-minus-reference",
+    "quality_route_alpha": 0.025,
+    "record_unit": "matched natural source record; public_base and public_lora_2601 are paired target conditions",
+    "scored_post_bos_tokens_per_record": 127
+  },
+  "interpretation": {
+    "alternative_interpretation": "Report candidate-versus-current-residual explicitly; if the candidate is inferior to current_residual on a declared cell, state that result rather than calling it a global winner.",
+    "bounded_stopping": "No outcome-driven expansion or partial-score stopping is allowed; source availability may reduce a predeclared safeguard size only before selection and must be owner-frozen.",
+    "near_boundary": "The 5.47-point pilot effect is close to the +5-point practical margin; even Finance n=2048 has low power to prove a lower bound above +5 at that effect. Do not promise threshold confirmation near the boundary.",
+    "positive_vs_practical": "A positive lower bound above 0 is reported separately from a practical lower bound at +5 exact points or +1 token point; an exact/token route that clears only 0 is positive evidence, not a practical replacement claim.",
+    "smaller_effects": "The 0.5-point and 2-point rows make clear that a bounded study is not powered to certify tiny practical changes; an inconclusive result retains the reference."
+  },
+  "model": {
+    "caveat": "Prospective multinomial sensitivity is conditional on pilot discordance q and does not assume future source outcomes; it is not a guarantee and is not used to alter a frozen sample after truth.",
+    "component_alpha": 0.0125,
+    "distribution": "Y in {-1,0,+1} per matched record; q=P(Y!=0) fixed at pilot 19/128",
+    "engine": {
+      "finance": "scipy.stats.beta.ppf_clopper_pearson",
+      "pile": "scipy.stats.beta.ppf_clopper_pearson"
+    },
+    "formula": "p_gain=(q+d)/2, p_loss=(q-d)/2; exact CP lower(p_gain)-upper(p_loss) >= margin",
+    "q": 0.1484375,
+    "quality_route_alpha": 0.025
+  },
+  "pilot": {
+    "exact_gains": 13,
+    "exact_losses": 6,
+    "net_effect_pp": 5.46875,
+    "records": 128,
+    "source": "TRR-0007 paired_student_vs_reference finance__public_base",
+    "total_discordance_pp": 14.84375
+  },
+  "rows": [
+    {
+      "domain": "finance",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.0020930659170300455,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 3.4808808804712997e-09,
+      "records_per_domain": 512,
+      "true_effect_pp": 0.5
+    },
+    {
+      "domain": "finance",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.02343476608158314,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 4.3738660461607945e-07,
+      "records_per_domain": 512,
+      "true_effect_pp": 2.0
+    },
+    {
+      "domain": "finance",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.5379474006482482,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 0.0019467694015140543,
+      "records_per_domain": 512,
+      "true_effect_pp": 5.46875
+    },
+    {
+      "domain": "finance",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.9578463629118819,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 0.08917540713196771,
+      "records_per_domain": 512,
+      "true_effect_pp": 8.0
+    },
+    {
+      "domain": "finance",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.9991751518642039,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 0.4804257874592617,
+      "records_per_domain": 512,
+      "true_effect_pp": 10.0
+    },
+    {
+      "domain": "finance",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.0033702484967517263,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 3.658791012746124e-12,
+      "records_per_domain": 1024,
+      "true_effect_pp": 0.5
+    },
+    {
+      "domain": "finance",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.07154869618399061,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 1.0022975620091064e-08,
+      "records_per_domain": 1024,
+      "true_effect_pp": 2.0
+    },
+    {
+      "domain": "finance",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.9322972390934786,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 0.003157170276759338,
+      "records_per_domain": 1024,
+      "true_effect_pp": 5.46875
+    },
+    {
+      "domain": "finance",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.9999302412064394,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 0.2934267805020701,
+      "records_per_domain": 1024,
+      "true_effect_pp": 8.0
+    },
+    {
+      "domain": "finance",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.9999999973040664,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 0.9043559219705414,
+      "records_per_domain": 1024,
+      "true_effect_pp": 10.0
+    },
+    {
+      "domain": "finance",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.0045967881122007895,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 8.357940483647516e-15,
+      "records_per_domain": 1536,
+      "true_effect_pp": 0.5
+    },
+    {
+      "domain": "finance",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.14054614762063694,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 3.7719340659857915e-10,
+      "records_per_domain": 1536,
+      "true_effect_pp": 2.0
+    },
+    {
+      "domain": "finance",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.9946378182352649,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 0.004346957246824951,
+      "records_per_domain": 1536,
+      "true_effect_pp": 5.46875
+    },
+    {
+      "domain": "finance",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.9999999659570811,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 0.5224619679401226,
+      "records_per_domain": 1536,
+      "true_effect_pp": 8.0
+    },
+    {
+      "domain": "finance",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.9999999999999983,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 0.9898078480438547,
+      "records_per_domain": 1536,
+      "true_effect_pp": 10.0
+    },
+    {
+      "domain": "finance",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.005884564630219199,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 2.8879564305836194e-17,
+      "records_per_domain": 2048,
+      "true_effect_pp": 0.5
+    },
+    {
+      "domain": "finance",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.2252432339133263,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 1.8608165727791196e-11,
+      "records_per_domain": 2048,
+      "true_effect_pp": 2.0
+    },
+    {
+      "domain": "finance",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.9997084024580117,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 0.00560906130044111,
+      "records_per_domain": 2048,
+      "true_effect_pp": 5.46875
+    },
+    {
+      "domain": "finance",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.9999999999913817,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 0.7118115795866486,
+      "records_per_domain": 2048,
+      "true_effect_pp": 8.0
+    },
+    {
+      "domain": "finance",
+      "positive_margin_pp": 0.0,
+      "positive_power": 1.0000000000000002,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 0.9992328440168448,
+      "records_per_domain": 2048,
+      "true_effect_pp": 10.0
+    },
+    {
+      "domain": "pile",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.0014099087026396163,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 1.923149517080097e-07,
+      "records_per_domain": 256,
+      "true_effect_pp": 0.5
+    },
+    {
+      "domain": "pile",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.008852246446709244,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 4.0617540415817755e-06,
+      "records_per_domain": 256,
+      "true_effect_pp": 2.0
+    },
+    {
+      "domain": "pile",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.18040153931074404,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 0.001193747283410615,
+      "records_per_domain": 256,
+      "true_effect_pp": 5.46875
+    },
+    {
+      "domain": "pile",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.5886550129289867,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 0.025000090492793538,
+      "records_per_domain": 256,
+      "true_effect_pp": 8.0
+    },
+    {
+      "domain": "pile",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.8876246941553746,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 0.14628020737298203,
+      "records_per_domain": 256,
+      "true_effect_pp": 10.0
+    },
+    {
+      "domain": "pile",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.0017839104829601503,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 2.5414564884665208e-08,
+      "records_per_domain": 384,
+      "true_effect_pp": 0.5
+    },
+    {
+      "domain": "pile",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.015473101473450731,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 1.345307405658625e-06,
+      "records_per_domain": 384,
+      "true_effect_pp": 2.0
+    },
+    {
+      "domain": "pile",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.3597675615354699,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 0.001651709753827637,
+      "records_per_domain": 384,
+      "true_effect_pp": 5.46875
+    },
+    {
+      "domain": "pile",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.8533355891946437,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 0.05405964164381311,
+      "records_per_domain": 384,
+      "true_effect_pp": 8.0
+    },
+    {
+      "domain": "pile",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.9886927698017356,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 0.3140522233569253,
+      "records_per_domain": 384,
+      "true_effect_pp": 10.0
+    },
+    {
+      "domain": "pile",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.0020930659170300455,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 3.4808808804712997e-09,
+      "records_per_domain": 512,
+      "true_effect_pp": 0.5
+    },
+    {
+      "domain": "pile",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.02343476608158314,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 4.3738660461607945e-07,
+      "records_per_domain": 512,
+      "true_effect_pp": 2.0
+    },
+    {
+      "domain": "pile",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.5379474006482482,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 0.0019467694015140543,
+      "records_per_domain": 512,
+      "true_effect_pp": 5.46875
+    },
+    {
+      "domain": "pile",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.9578463629118819,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 0.08917540713196771,
+      "records_per_domain": 512,
+      "true_effect_pp": 8.0
+    },
+    {
+      "domain": "pile",
+      "positive_margin_pp": 0.0,
+      "positive_power": 0.9991751518642039,
+      "practical_exact_margin_pp": 5.0,
+      "practical_exact_power": 0.4804257874592617,
+      "records_per_domain": 512,
+      "true_effect_pp": 10.0
+    }
+  ],
+  "schema": "token-reconstruction.trr0008-power-analysis.v1",
+  "selected_sample_size_proposal": {
+    "finance_records_per_domain": 1024,
+    "pile_records_per_domain": 384,
+    "reason": "finance uses a moderate decision panel with ample inventory; pile uses a bounded natural-text safeguard panel and is fixed only after the identity inventory confirms capacity",
+    "status": "PROPOSAL_PENDING_INVENTORY_AND_OWNER_FREEZE"
+  },
+  "sensitivity_effects_pp": [
+    0.5,
+    2.0,
+    5.46875,
+    8.0,
+    10.0
+  ],
+  "status": "PROSPECTIVE_EXACT_CP_POWER_CALCULATION_COMPLETE",
+  "task_id": "TRR-0008"
+}

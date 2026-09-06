@@ -1,0 +1,125 @@
+{
+  "code_commit": "53f661751eddb4cdae8ea1c69393c8b5859d92e8",
+  "decision": "RESOURCE_FEASIBLE_AT_MEAN_AND_P95_WITH_NO_CONTENTION; retain the 600 s fail-closed limit and stop if live guards report an anomaly or the time guard expires.",
+  "existing_evidence": {
+    "decision_contract": {
+      "path": "experiments/TRR-0008/planning/decision_contract.json",
+      "sha256": "141a3a506e20e1eadd3be1beb53c2f01508e9b651c93d19b2f3d9ff72344bcf3",
+      "status": "FROZEN_DECISION_CONTRACT_BEFORE_SOURCE_SELECTION"
+    },
+    "precision_timing": {
+      "code_commit": "e6dc96d43460e477c9a6a505f8397b91ac46398b",
+      "elapsed_seconds": 322.19845957400685,
+      "maximum_seconds": 600,
+      "measured_decoder_calls": 25600,
+      "measured_seconds_sum": 106.17423437227262,
+      "path": "experiments/TRR-0008/timing/precision40_result.json",
+      "sha256": "a5d923bb9254f0ba0ec917dc6ede9e22d7b566e47e79408cf188f679c6b30c02",
+      "status": "TIMING_COMPLETE",
+      "warmup_seconds_sum": 107.0170362926001
+    },
+    "qualifier": {
+      "cell_count": 4,
+      "decoder_calls": 2048,
+      "elapsed_seconds": 26.663876891005202,
+      "guard_checks": 279,
+      "matrix_records_per_method": 512,
+      "method_count": 4,
+      "path": "experiments/TRR-0008/evaluation/qualifier/runner_qualifier.json",
+      "sha256": "351113f462bedd6d5be955a3cf328984c23c3c12790f0fb311d13f068e3dcf75",
+      "status": "RUNNER_PATH_EXACT_EQUIVALENCE_PASS"
+    }
+  },
+  "guard_measurement": {
+    "checks": 24,
+    "initial_check_seconds": 0.3105480579979485,
+    "one_nvidia_smi_compute_apps_query_per_check": true,
+    "passes": 24,
+    "steady_checks": 23,
+    "steady_max_seconds": 0.04354646199499257,
+    "steady_mean_seconds": 0.026775681738913787,
+    "steady_median_seconds": 0.02459041099064052,
+    "steady_p95_seconds": 0.03516269300598651,
+    "steady_stdev_seconds": 0.005296551471119146,
+    "total_probe_wall_seconds": 0.9264049049961613
+  },
+  "live_hardware": {
+    "cpu_count": 32,
+    "cuda_allocated_bytes": 0,
+    "cuda_available": true,
+    "cuda_free_bytes": 15679356928,
+    "cuda_reserved_bytes": 0,
+    "cuda_total_bytes": 17066033152,
+    "gpu_compute_apps": [],
+    "host_available_bytes": 20916621312,
+    "nvidia_smi": "0, NVIDIA GeForce RTX 5080, 32, 0, 3262, 12716, 16303",
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "process_rss_bytes": 677720064
+  },
+  "measurement_window": {
+    "command": "env OMP_NUM_THREADS=8 MKL_NUM_THREADS=8 OPENBLAS_NUM_THREADS=8 PYTHONPATH=.:src:scripts python3 <guard-only probe>",
+    "ended_utc": "2026-09-06T13:28:17Z",
+    "python_script_scope": "import runner; call runner._guard(device=cuda, guard=registered_limits, stage=resource_preflight_i) 24 times; read nvidia-smi/CUDA/host telemetry; no model/data access",
+    "started_utc": "2026-09-06T13:28:16Z",
+    "wall_seconds": 0.9264049049961613
+  },
+  "model_time_estimate": {
+    "measured_seconds": 46.716663123799954,
+    "precision40_measured_seconds_per_call": 0.004147431030166899,
+    "precision40_warmup_seconds_per_call": 0.004180352980179691,
+    "warmup_plus_measured_seconds": 93.80415909254398,
+    "warmup_seconds": 47.08749596874404
+  },
+  "planned_matrix": {
+    "measured_calls": 11264,
+    "methods": 4,
+    "observations_per_method": 2816,
+    "per_record_guards": 11264,
+    "row_iterations": 11264,
+    "setup_guards": 2,
+    "total_decoder_calls": 22528,
+    "total_guard_checks": 11266,
+    "warmup_calls": 11264
+  },
+  "previous_guard_measurement": {
+    "checks": 24,
+    "initial_check_seconds": 0.2945333740062779,
+    "note": "Earlier 24-check probe retained because the timestamped repeat had ordinary telemetry variance; neither probe accessed models or data.",
+    "runtime_estimate_seconds": {
+      "decoder_plus_guard_max": 554.8161269032879,
+      "decoder_plus_guard_mean": 394.6153619427323,
+      "decoder_plus_guard_p95": 407.3051200600911,
+      "guard_max_plus_initial": 461.01196781074395,
+      "guard_mean_plus_initial": 300.81120285018835,
+      "guard_p95_plus_initial": 313.50096096754714
+    },
+    "steady_checks": 23,
+    "steady_max_seconds": 0.040898129998822697,
+    "steady_mean_seconds": 0.026677023477690374,
+    "steady_median_seconds": 0.02621679900039453,
+    "steady_p95_seconds": 0.027803500008303672,
+    "steady_stdev_seconds": 0.0033239716306198695
+  },
+  "registration_limit": {
+    "default_maximum_seconds": 600,
+    "source": "scripts/trr0008_eval_contract.py:132",
+    "timing_receipt_maximum_seconds": 600
+  },
+  "runner_source": {
+    "path": "scripts/trr0008_eval_runner.py",
+    "sha256": "fc84d09c7563b2c27a665b182902f1a76952a506b98cbbb25c37a9e6e6fe9409"
+  },
+  "runtime_estimate_seconds": {
+    "decoder_plus_guard_max": 584.6656015241332,
+    "decoder_plus_guard_mean": 395.7427619394058,
+    "decoder_plus_guard_p95": 490.22244386297996,
+    "guard_max_plus_initial": 490.86144243158924,
+    "guard_mean_plus_initial": 301.9386028468618,
+    "guard_p95_plus_initial": 396.418284770436,
+    "interpretation": "The first three values exclude model startup and I/O. Central and p95 estimates leave substantial margin under 600 s; the measured maximum guard stress case leaves only about 45 s before startup/I/O and is not a hard guarantee."
+  },
+  "schema": "token-reconstruction.trr0008-resource-preflight.v1",
+  "scope": "Read-only guard overhead and resource estimate. No model, observation, prediction, selection, or truth access occurred in this preflight.",
+  "status": "PREFLIGHT_COMPLETE_NO_EVALUATION",
+  "task_id": "TRR-0008"
+}

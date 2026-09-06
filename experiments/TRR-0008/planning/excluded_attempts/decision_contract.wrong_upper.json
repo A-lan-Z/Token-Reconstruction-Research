@@ -1,0 +1,99 @@
+{
+  "advance_rule": {
+    "cost": "candidate warmed runtime/reference warmed runtime <= 1.25 under the same synchronized boundary on the primary cell; report all paired LoRA/Pile cells and fail deployment if any declared cost gate fails",
+    "cost_threshold": 1.25,
+    "inconclusive": "If quality, safeguard, or cost bounds do not clear their predeclared gates, retain the frozen reference and label the practical decision unresolved.",
+    "memory": "peak memory and deployed footprint are reported; no unregistered memory threshold is introduced",
+    "positive_vs_practical": "A lower bound >0 but below the practical margin is positive evidence only and does not establish a practical replacement claim.",
+    "quality": "primary exact practical lower bound >= +5 percentage points OR primary token practical lower bound >= +1 percentage point; exact and token quality routes each use one-sided alpha 0.025, and the report must identify which route passed"
+  },
+  "created_utc": "2026-09-06T11:55:54Z",
+  "methods": {
+    "a1_a2_fresh_run": false,
+    "a1_a2_reason": "TRR-0007's bounded anchor already quantifies the remaining A1+A2 gap; this task selects among frozen standalone checkpoints.",
+    "candidate": "improved_public_bank__residual_mlp512",
+    "credible_alternative": "current_enriched__residual_mlp512",
+    "diagnostic": "improved_public_bank__trained_diagonal",
+    "reference": "trr6__enriched_trained_diagonal_attention128"
+  },
+  "multiplicity": {
+    "pooling": "do not pool domains, target conditions, methods, or token positions into a single overall score",
+    "primary_family": "one candidate/reference Finance P0 contrast with two predeclared quality routes (exact and token), alpha 0.025 per route; no 64-direction family",
+    "secondary": "token endpoint, paired target/domain safeguards, current residual, and improved diagonal are predeclared descriptive/gate reports; no pooled winner"
+  },
+  "panel": {
+    "clip_tokens_including_bos": 128,
+    "finance_records_per_domain": 1024,
+    "natural_ranges_half_open": {
+      "finance": [
+        12000,
+        20000
+      ],
+      "pile": [
+        7000,
+        10000
+      ]
+    },
+    "pairing": "identical source records are paired across public_base and public_lora_2601; target conditions are not independent sources",
+    "pile_records_per_domain": 384,
+    "scored_post_bos_tokens": 127,
+    "selection_seed": 5005,
+    "target_conditions": [
+      "public_base",
+      "public_lora_2601"
+    ]
+  },
+  "primary": {
+    "cell": "finance__public_base",
+    "contrast": "candidate minus frozen reference",
+    "endpoint": "record_exact_recovery",
+    "interval": "exact paired discordance: lower Clopper-Pearson bound for gains minus upper Clopper-Pearson bound for losses, with route alpha/2 allocated to each component",
+    "positive_rule": "one-sided 97.5% paired exact lower confidence bound > 0 percentage points",
+    "practical_rule": "one-sided 97.5% paired exact lower confidence bound >= +5 percentage points",
+    "record_unit": "one 128-token including-BOS source row; exact means all 127 post-BOS positions correct",
+    "route_alpha": 0.025
+  },
+  "provenance": {
+    "p06_underlying_provenance_opened": false,
+    "power_analysis": "experiments/TRR-0008/planning/power_analysis.json",
+    "trr7_method_freeze": "experiments/TRR-0007/method_freeze.json",
+    "trr7_score": "experiments/TRR-0007/scored/result.json"
+  },
+  "roles": {
+    "current_residual": "credible alternative, descriptive comparison only",
+    "finance_public_base": "primary deployment decision (P0 exact endpoint)",
+    "finance_public_lora": "paired target-shift replication and harm safeguard; not pooled with P0",
+    "improved_diagonal": "same-bank rescue diagnostic, descriptive only",
+    "pile_public_base": "natural-text generalization safeguard",
+    "pile_public_lora": "paired natural-text target-shift safeguard"
+  },
+  "safeguards": {
+    "cells": [
+      "finance__public_base",
+      "finance__public_lora_2601",
+      "pile__public_base",
+      "pile__public_lora_2601"
+    ],
+    "endpoint_rules": {
+      "exact": "in every safeguard cell, the one-sided 95% paired exact lower bound must be >= -5 percentage points (material exact harm excluded)",
+      "token": "in every safeguard cell, the one-sided 95% paired token lower bound must be >= -1 percentage point (material token harm excluded)"
+    },
+    "interpretation": "A safeguard lower bound that remains below its harm margin leaves deployment unresolved; a point estimate alone cannot clear the gate."
+  },
+  "schema": "token-reconstruction.trr0008-decision-contract.v1",
+  "status": "PROSPECTIVE_DRAFT_PENDING_OWNER_FREEZE",
+  "task_id": "TRR-0008",
+  "token_endpoint": {
+    "endpoint": "post_bos_token_accuracy",
+    "interval": "paired record bootstrap, fixed seed declared by evaluator before truth; token positions are nested within records and are not independent records",
+    "positive_rule": "one-sided 97.5% paired record-level lower confidence bound > 0 percentage points",
+    "practical_rule": "one-sided 97.5% paired record-level lower confidence bound >= +1 percentage point",
+    "role": "second predeclared quality route for practical advance; exact and token routes share a split alpha family and remain separately labelled",
+    "route_alpha": 0.025
+  },
+  "truth_and_freeze": {
+    "after_truth": "truth is used only to score frozen predictions; no refit, routing, model swap, sample expansion, or timing change",
+    "before_truth": "freeze source identities, observations, all four method outputs, timing blocks, and validation receipts",
+    "source_selection": "not started by this planning artifact"
+  }
+}
