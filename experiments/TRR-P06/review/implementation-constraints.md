@@ -149,14 +149,22 @@ binding differs.
 The source-only command shape is:
 
 ```text
-PYTHONPATH=src:scripts python3 scripts/trr0006_fit_visibility.py --mode preflight --fit-manifest experiments/TRR-0005/public_activation_v1/enriched_manifest.json --direct-affine-state experiments/TRR-0004/evidence/affine/selected_states/fit_large_v1.historical_affine_ce_no_vocab_bias.safetensors --output-root <fresh-preflight-root> --device cpu
+PYTHONPATH=src:scripts python3 scripts/trr0006_fit_visibility.py --mode preflight --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --direct-affine-state experiments/TRR-0004/evidence/affine/selected_states/fit_large_v1.historical_affine_ce_no_vocab_bias.safetensors --output-root <fresh-preflight-root> --device cpu
 ```
+
+`public_fit_manifest_resolved.json` is a task-local copy of the immutable
+published P05 manifest with every resource path made absolute.  The resolver
+receipt at `experiments/TRR-P06/setup/public_fit_manifest_resolution.json`
+verified all 13 logical resource/source bindings against their declared bytes
+and SHA-256 digests (seven unique files) without opening a safetensors tensor.
+A later runner must use this resolved manifest or the canonical external
+manifest itself; it must not reconstruct paths relative to `/tmp/trr-p06`.
 
 After the source-only receipt passes, qualify the actual largest backward cell
 with a fresh create-only root:
 
 ```text
-PYTHONPATH=src:scripts python3 scripts/trr0006_fit_visibility.py --mode qualify --fit-manifest experiments/TRR-0005/public_activation_v1/enriched_manifest.json --direct-affine-state experiments/TRR-0004/evidence/affine/selected_states/fit_large_v1.historical_affine_ce_no_vocab_bias.safetensors --preflight-receipt <fresh-preflight-root>/preflight.json --output-root <fresh-qualification-root> --device cuda
+PYTHONPATH=src:scripts python3 scripts/trr0006_fit_visibility.py --mode qualify --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --direct-affine-state experiments/TRR-0004/evidence/affine/selected_states/fit_large_v1.historical_affine_ce_no_vocab_bias.safetensors --preflight-receipt <fresh-preflight-root>/preflight.json --output-root <fresh-qualification-root> --device cuda
 ```
 
 Probe and main use the same arguments plus `--preflight-receipt` and the PASS
