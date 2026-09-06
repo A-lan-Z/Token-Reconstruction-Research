@@ -1,0 +1,163 @@
+{
+  "argv": [
+    "/tmp/trr-p04/scripts/trr0004_p04_teacher.py",
+    "--correction-observations",
+    "/tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/correction_cut4.safetensors",
+    "--correction-records",
+    "/tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/correction_records.json",
+    "--lens-path",
+    "/tmp/trr-p04/experiments/TRR-0004/evidence/comparators/public_a1_lens.pt",
+    "--reference-path",
+    "/tmp/trr-p04/experiments/TRR-0004/evidence/comparators/round001_teacher.py",
+    "--candidate-preparation",
+    "/tmp/trr-p04/experiments/TRR-P04/runtime/candidate-preparation-r2/candidate_preparation.safetensors",
+    "--embedding-table",
+    "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+    "--model-identity",
+    "/tmp/trr-p04/experiments/TRR-P04/runtime/public-teacher-identity-r1.json",
+    "--output-root",
+    "/tmp/trr-p04/experiments/TRR-P04/runtime/teacher-qualification-r3",
+    "--selection-seed",
+    "20260906",
+    "--threads",
+    "4",
+    "--interop-threads",
+    "1"
+  ],
+  "ended_utc": "2026-09-06T02:29:59Z",
+  "inputs": {
+    "candidate_preparation": {
+      "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/candidate-preparation-r2/candidate_preparation.safetensors",
+      "sha256": "ecf031a606a8bce22116b65d2dcbf5bc25596c80961767a40924081f8f03b1e5"
+    },
+    "correction_observations": {
+      "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/correction_cut4.safetensors",
+      "sha256": "c9eb10065ee765a95aa0d30bae91f3061fecf3bfa5aa52c56a3eaa62d4c216b4"
+    },
+    "correction_records": {
+      "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/correction_records.json",
+      "sha256": "3f993ef70ef153d0f2e13dc86748378b93ccfd0b85d1c8bd0f033c53b3f1484d"
+    },
+    "embedding_table": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+      "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+    },
+    "lens": {
+      "path": "/tmp/trr-p04/experiments/TRR-0004/evidence/comparators/public_a1_lens.pt",
+      "sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742"
+    },
+    "model_identity": {
+      "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/public-teacher-identity-r1.json",
+      "sha256": "6ac2a54fddd53ecce61ecfab7f9126f1c8c91cc4d0d750d07fb795114ab292b7"
+    },
+    "reference": {
+      "path": "/tmp/trr-p04/experiments/TRR-0004/evidence/comparators/round001_teacher.py",
+      "sha256": "10532a746cb8c30eb2caf338e206e1fa9d85e708d4db43a0d8fd4a2ff1a6f8bd"
+    }
+  },
+  "model_spec": {
+    "attention_implementation": "sdpa",
+    "dtype": "bfloat16",
+    "id": "meta-llama/Llama-3.2-1B-Instruct",
+    "local_files_only": true,
+    "prefix_layers": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "revision": "9213176726f574b556790deb65791e0c5aa438b6"
+  },
+  "output": {
+    "evidence": {
+      "bytes": 928536,
+      "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/teacher-qualification-r3/teacher_evidence.safetensors",
+      "sha256": "0f15a16978d0daa6bbf8a7771109350a633a7fc03a108db5fd8d782255ba84f9"
+    },
+    "identity": {
+      "embedding_weight_sha256": "0ac64ad2853844acf525ff043957e73a334860c41da224998e6f32f2defa253f",
+      "lens_state_sha256": "98cd91c2dc4c5d8ac5a827672c027b7e6dad0d1acb3c45e387d118c9ad2ead04",
+      "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+      "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "normalized_embedding_sha256": "791a8477688f1adbc18dcda68b6baf59f53a3abb805a88fdf53b4db96768f350",
+      "prefix_layers_sha256": "3c897c5ad27073c85496ca24a4a11f2c37de1e5695f65535d7ceeb68e3f1c9ba",
+      "runtime": {
+        "device": "NVIDIA GeForce RTX 5080",
+        "device_total_memory_bytes": 17066033152,
+        "python": "3.12.3",
+        "torch": "2.10.0+cu128",
+        "torch_cuda": "12.8"
+      }
+    },
+    "metrics": {
+      "a1_accuracy": 0.2994791666666667,
+      "candidate_recall_k32": 0.9765625,
+      "candidate_recall_k512": 0.9973958333333334,
+      "candidate_simulations": 12288,
+      "candidate_tensor_sha256": "ac70fb6b6cba26e7ca1a4771d6c0a6d4df38f37eefb7e6325d614f5a091c60ed",
+      "finite_rows": 384,
+      "informative_gate": {
+        "all_finite": true,
+        "proposal_miss_at_most_half": true,
+        "status": "PASS",
+        "two_non_gold_pairs_at_least_half": true
+      },
+      "omitted_non_gold_tie_pairs": 86,
+      "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/teacher-qualification-r3/teacher_qualification.json",
+      "proposal_miss_rate": 0.0234375,
+      "proposal_miss_rate_k32": 0.0234375,
+      "proposal_miss_rate_k512": 0.0026041666666666665,
+      "proposal_tensor_sha256": "ced77d4aad3f87814d1a010102e67128ef728e55090362652c987c9d3667ce28",
+      "rank_weight_max": 1.0,
+      "rank_weight_min": 0.010229360316135456,
+      "retained_non_gold_pairs": 11443,
+      "rows": 384,
+      "rows_with_two_non_gold_pairs_above_tie": 384,
+      "score_max": 0.9999356865882874,
+      "score_mean": 0.003228089539334178,
+      "score_min": -0.7933205366134644,
+      "score_tensor_sha256": "b71490ae0c33ddaeaa7fa922b22aa6eb1b687d75b7a2fd6a8a580696160a37f9",
+      "sha256": "d5519e12ba6e0e12b6cb06beec1285468fa8dc07187d095fa1b78f4fd8a21996",
+      "sigma_q": 0.014523349702358246,
+      "teacher_accuracy": 0.9765625,
+      "teacher_fixes": 260,
+      "teacher_introduced_errors": 0,
+      "tie_tolerance": 0.00014523349702358246,
+      "wall_seconds": 81.70263381699624
+    }
+  },
+  "peak_rss_bytes": 3669938176,
+  "phase_timing_seconds": {
+    "process_total": 88.08765988299274,
+    "public_pool_load": 0.22240725399751682,
+    "teacher_qualification": 86.22920398900169
+  },
+  "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "python": "3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]",
+  "resource_guard": {
+    "host_max_rss_bytes": 3669938176,
+    "maximum_host_rss_bytes": 17179869184,
+    "maximum_reserved_gpu_bytes": 6442450944,
+    "minimum_free_gpu_bytes": 8589934592,
+    "post": {
+      "free_bytes": 13259243520,
+      "max_memory_allocated_bytes": 5362029568,
+      "max_memory_reserved_bytes": 5368709120,
+      "total_bytes": 17066033152
+    },
+    "preflight": {
+      "free_bytes": 15679356928,
+      "max_memory_allocated_bytes": 0,
+      "max_memory_reserved_bytes": 0,
+      "total_bytes": 17066033152
+    },
+    "status": "PASS"
+  },
+  "schema": "token-reconstruction.trr-p04-teacher-receipt.v1",
+  "source_commit": "f22d3b05295bff9e3879bb7544502f881054ed9f",
+  "started_utc": "2026-09-06T02:28:31Z",
+  "status": "PASS",
+  "task_id": "TRR-P04",
+  "torch": "2.10.0+cu128",
+  "wall_seconds": 88.08766280999407
+}
