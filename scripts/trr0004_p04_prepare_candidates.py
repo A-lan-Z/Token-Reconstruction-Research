@@ -16,7 +16,13 @@ import time
 from safetensors.torch import load_file
 import torch
 
-from token_reconstruction.p04_teacher import P04TeacherError, prepare_candidate_ids
+from token_reconstruction.p04_teacher import (
+    CANDIDATE_PROPOSER_ID,
+    CANDIDATE_PROPOSER_RESOURCE,
+    CANDIDATE_TIE_POLICY,
+    P04TeacherError,
+    prepare_candidate_ids,
+)
 from token_reconstruction.p04_training import canonical_hash, file_sha256, combine_public_pools, load_embedding_table, load_public_pool
 
 
@@ -138,7 +144,9 @@ def main() -> int:
             "affine_state": {"path": str(args.affine_state.resolve()), "sha256": file_sha256(args.affine_state)},
         },
         "output": result,
-        "tie_policy": "descending_score_then_ascending_token_id",
+        "proposer_id": CANDIDATE_PROPOSER_ID,
+        "proposer_resource": CANDIDATE_PROPOSER_RESOURCE,
+        "tie_policy": CANDIDATE_TIE_POLICY,
         "wall_seconds": time.perf_counter() - started,
         "peak_rss_bytes": int(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss) * 1024,
     }

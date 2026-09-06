@@ -48,6 +48,9 @@ from .p04_training import (
 
 
 TEACHER_SCHEMA = TEACHER_EVIDENCE_SCHEMA
+CANDIDATE_PROPOSER_ID = "p04_public_affine"
+CANDIDATE_PROPOSER_RESOURCE = "pr7_public_affine_state"
+CANDIDATE_TIE_POLICY = "descending_score_then_ascending_token_id"
 PUBLIC_MODEL_SPEC = {
     "id": "meta-llama/Llama-3.2-1B-Instruct",
     "revision": "9213176726f574b556790deb65791e0c5aa438b6",
@@ -123,8 +126,9 @@ def prepare_candidate_ids(
     metadata = {
         "schema": CANDIDATE_PREPARATION_SCHEMA,
         "task_id": "TRR-P04",
-        "proposer_id": "pr7_public_affine",
-        "tie_policy": "descending_score_then_ascending_token_id",
+        "proposer_id": CANDIDATE_PROPOSER_ID,
+        "proposer_resource": CANDIDATE_PROPOSER_RESOURCE,
+        "tie_policy": CANDIDATE_TIE_POLICY,
         "candidate_k": str(candidate_k),
         "proposal_k": str(proposal_k),
         "a1_ranked_k": str(proposal_k),
@@ -157,7 +161,9 @@ def prepare_candidate_ids(
         "candidate_tensor_sha256": tensor_sha256(candidate_tensor),
         "proposal_tensor_sha256": tensor_sha256(proposal_tensor),
         "confidence_tensor_sha256": tensor_sha256(confidence_tensor),
-        "tie_policy": "descending_score_then_ascending_token_id",
+        "proposer_id": CANDIDATE_PROPOSER_ID,
+        "proposer_resource": CANDIDATE_PROPOSER_RESOURCE,
+        "tie_policy": CANDIDATE_TIE_POLICY,
         "rows": pool.rows,
         "positions": pool.positions,
         "candidate_k": candidate_k,
@@ -192,9 +198,11 @@ def _load_candidate_preparation(
         raise P04TeacherError(f"cannot load candidate preparation: {path}") from exc
     if metadata.get("schema") != CANDIDATE_PREPARATION_SCHEMA:
         raise P04TeacherError("candidate preparation schema changed")
-    if metadata.get("proposer_id") != "pr7_public_affine":
-        raise P04TeacherError("candidate preparation proposer identity is not the frozen PR7 affine resource")
-    if metadata.get("tie_policy") != "descending_score_then_ascending_token_id":
+    if metadata.get("proposer_id") != CANDIDATE_PROPOSER_ID:
+        raise P04TeacherError("candidate preparation proposer identity is not the frozen P04 affine proposer")
+    if metadata.get("proposer_resource") != CANDIDATE_PROPOSER_RESOURCE:
+        raise P04TeacherError("candidate preparation proposer resource is not the frozen PR7 affine state")
+    if metadata.get("tie_policy") != CANDIDATE_TIE_POLICY:
         raise P04TeacherError("candidate preparation tie policy changed")
     if metadata.get("candidate_k") != str(candidate_k) or metadata.get("proposal_k") != "512":
         raise P04TeacherError("candidate preparation budgets changed")
@@ -500,6 +508,8 @@ def qualify_teacher(
         "candidate_prefix_k": str(DEFAULT_CANDIDATE_K),
         "proposal_k": "512",
         "a1_ranked_k": "512",
+        "candidate_proposer_id": preparation_metadata.get("proposer_id", ""),
+        "candidate_proposer_resource": preparation_metadata.get("proposer_resource", ""),
         "candidate_tie_policy": preparation_metadata.get("tie_policy", ""),
         "rows_json": json.dumps(rows_json, separators=(",", ":"), sort_keys=True),
         "sigma_q": repr(sigma_q),
@@ -583,6 +593,9 @@ def qualify_teacher(
 __all__ = [
     "P04TeacherError",
     "PUBLIC_MODEL_SPEC",
+    "CANDIDATE_PROPOSER_ID",
+    "CANDIDATE_PROPOSER_RESOURCE",
+    "CANDIDATE_TIE_POLICY",
     "TEACHER_SCHEMA",
     "prepare_candidate_ids",
     "qualify_teacher",

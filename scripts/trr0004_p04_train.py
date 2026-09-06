@@ -50,6 +50,11 @@ from token_reconstruction.p04_training import (
     tensor_sha256,
     train_arm,
 )
+from token_reconstruction.p04_teacher import (
+    CANDIDATE_PROPOSER_ID,
+    CANDIDATE_PROPOSER_RESOURCE,
+    CANDIDATE_TIE_POLICY,
+)
 
 
 TASK_ID = "TRR-P04"
@@ -130,9 +135,11 @@ def _load_candidates(path: Path, *, rows: int, positions: int, candidate_k: int)
         raise P04TrainingError(f"cannot load candidate identities: {path}") from exc
     if metadata.get("schema") != CANDIDATE_PREPARATION_SCHEMA:
         raise P04TrainingError("training requires the canonical PR7-affine candidate preparation schema")
-    if metadata.get("proposer_id") != "pr7_public_affine":
-        raise P04TrainingError("candidate preparation proposer identity is not the frozen PR7 affine resource")
-    if metadata.get("tie_policy") != "descending_score_then_ascending_token_id":
+    if metadata.get("proposer_id") != CANDIDATE_PROPOSER_ID:
+        raise P04TrainingError("candidate preparation proposer identity is not the frozen P04 affine proposer")
+    if metadata.get("proposer_resource") != CANDIDATE_PROPOSER_RESOURCE:
+        raise P04TrainingError("candidate preparation proposer resource is not the frozen PR7 affine state")
+    if metadata.get("tie_policy") != CANDIDATE_TIE_POLICY:
         raise P04TrainingError("candidate preparation tie policy changed")
     if metadata.get("candidate_k") != str(candidate_k) or metadata.get("proposal_k") != "512":
         raise P04TrainingError("candidate preparation budgets do not match the fixed P04 contract")
@@ -260,6 +267,7 @@ def main() -> int:
                 "candidate_k": args.candidate_k,
                 "schema": candidate_metadata.get("schema"),
                 "proposer_id": candidate_metadata.get("proposer_id"),
+                "proposer_resource": candidate_metadata.get("proposer_resource"),
                 "tie_policy": candidate_metadata.get("tie_policy"),
                 "pool_record_order_sha256": candidate_metadata.get("pool_record_order_sha256"),
                 "affine_file_sha256": candidate_metadata.get("affine_file_sha256"),
