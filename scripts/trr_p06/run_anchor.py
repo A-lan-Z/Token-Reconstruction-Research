@@ -390,6 +390,11 @@ def _run_domain(*, adapter: Any, observation: Mapping[str, Any], domain: str, de
             "proposal_budget": PROPOSAL_K,
             "candidate_budget": SELECTOR_K,
             "port_label": "CPU-normalized public embedding table; published parent public-prefix A2 selector",
+            "peak_memory": {
+                "process_max_rss_bytes": int(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss) * 1024,
+                "cuda_peak_allocated_bytes": int(torch.cuda.max_memory_allocated(device)) if device.type == "cuda" else None,
+                "cuda_peak_reserved_bytes": int(torch.cuda.max_memory_reserved(device)) if device.type == "cuda" else None,
+            },
         }
     )
     return torch.stack(rows, dim=0), evidence
@@ -445,6 +450,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         if args.device != "cuda" or not torch.cuda.is_available():
             raise AnchorError("the published A1+A2 anchor requires CUDA for its public-prefix selector")
         device = torch.device("cuda")
+        torch.cuda.reset_peak_memory_stats(device)
         selection_path = Path(args.selection).expanduser().resolve()
         selection = _load_selection(selection_path, root=root)
         observation_manifest_path = Path(args.observation_manifest).expanduser().resolve()
