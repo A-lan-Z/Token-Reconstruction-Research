@@ -20,9 +20,9 @@ The common direct path starts from the published public TRR-0004
 `historical_affine_ce_no_vocab_bias` fit, selected at public-fit step 1900:
 `experiments/TRR-0004/evidence/affine/selected_states/fit_large_v1.historical_affine_ce_no_vocab_bias.safetensors`, SHA-256
 `09c5b852373d8555b06508a79bb00c94041202702b61b121b35fa2b6f9f64e65`.
-Its `W`, `b`, and `s` tensors are loaded identically into all three P06 arms;
-it is a public trained affine baseline, rather than an unqualified identity
-map. Q/K/V are deterministic and shared within each replicate, and the
+Its `W`, `b`, and inherited `s` (3.5380859375 in the pinned F32 state)
+are loaded identically into all three P06 arms; it is a public trained affine
+baseline, rather than an unqualified identity map. Q/K/V are deterministic and shared within each replicate, and the
 attention output weight and bias are zero initialized. The initializer is
 public-only and does not load a target checkpoint or evaluator resource.
 
@@ -66,9 +66,10 @@ public-only ledger of exactly 256 positions where its prediction is wrong,
 with 64 positions in each scored-position bin `[1,15]`, `[16,39]`, `[40,79]`,
 and `[80,127]`. If a bin cannot supply 64 errors, fail closed. Freeze the
 direct affine path and train only each arm's added attention path for 300 fixed
-updates, 512 query draws per update, seed 6106, the same draw order and
-full-vocabulary same-position CE for all masks. The actual diagonal, past-only,
-and full masks remain active during this probe. Every arm must stay finite and
+updates, using fixed 8-record batches and 512 query draws **with replacement**
+from the ledger errors belonging to each batch, seed 6106, and the same ordered
+batch/draw schedule for all masks. The actual diagonal, past-only, and full
+masks remain active during this probe. Every arm must stay finite and
 correct at least 52/256 of these initially wrong public-fit positions. Probe
 states are discarded and cannot select or initialize the six main fits. This
 qualifies added-path trainability on known public-fit errors; it does not claim
@@ -80,12 +81,19 @@ records, labels, H128 crop, 8-record/512-query schedule, and validation records
 for each arm. Use AdamW at learning rate `1e-3`, zero weight decay, gradient
 clip norm 1.0, cosine scheduling, and 3,000 updates. Replicates use seeds 6106
 and 6107 with the same schedule seed across arms within each replicate.
-Validation is checked every 100 updates; each arm/replicate selects its
-earliest maximum full-vocabulary public token accuracy, including step zero.
+Validation is checked every 100 updates; with the explicit
+`--selection-metric token_accuracy` setting, each arm/replicate selects its
+earliest maximum full-vocabulary micro token accuracy over all valid public
+validation positions, including step zero.
 No fresh answer or changed-target result enters selection.
 
-The largest qualification is the actual full-mask backward cell at 8 records x
-128 positions with 512 post-BOS draws and the full-vocabulary readout. The
+After a source-only resource preflight, run a disposable two-update
+full-record backward qualifier on the actual 8-record x 128-position cell with
+all direct and attention parameters trainable. Discard its state and require
+finite loss/gradients and live resource receipts. Only then run the frozen-direct
+public-fit-error probe and release the six main fits. The largest qualification
+is the same actual full-mask backward cell with 512 post-BOS draws and the
+full-vocabulary readout. The
 resident normalized public embedding table is 1,050,673,488 F32 bytes; the
 H128 activation batch is 8,388,608 bytes and the dense attention score tensor
 is 524,288 bytes. The selected-logit matrix remains 262,668,288 bytes, model
@@ -104,9 +112,9 @@ duplicate source identities. Require 128 valid positions including BOS and
 score positions 1 through 127. Reuse each source record under paired
 `public_base` and `public_lora_2601` target conditions; the changed target is a
 transfer condition, not an independent source sample. Capture the same H128
-observations, validity masks, and positions for all arms. Natural-length and
-context strata are fixed before prediction, and no target label or fresh answer
-enters selection.
+observations, validity masks, and positions for all arms. The source universe is stratified by frozen domain only; setup binds the exact
+source universe and exclusion ledger before prediction. No target label or fresh
+answer enters selection.
 
 The primary contrast is Full minus Past. Secondary contrasts are Past minus
 Positionwise and Full minus Positionwise. Report micro token accuracy,
@@ -119,24 +127,24 @@ cannot affect valid predictions. Full-record activation computation and
 retained state are included in timing and memory costs.
 
 Uncertainty uses 10,000 source-record cluster bootstrap draws (seed 6306),
-stratified by frozen domain and natural-length/context stratum. For each
-source stratum, one resampled source-index vector is reused for both target
-conditions, keeping base and changed targets paired. The target conditions are
-never independently resampled. Two fixed training replicates are averaged
+stratified by frozen domain only. For each domain, one resampled source-index
+vector is reused for both target conditions, keeping base and changed targets
+paired; the target conditions are never independently resampled. Two fixed training replicates are averaged
 within each resampled source, rather than counted as new natural records.
 
 The registered exploratory progression gate is a Full-Past gain of at least
 +1.0 percentage point token accuracy or +5.0 percentage points exact recovery,
 with a 95-percent paired-bootstrap lower bound above zero in at least one
-public-base domain. Every other public-base domain/outcome must stay above
--1.0 pp token and -5.0 pp exact harm limits. Changed-target cells are reported
-separately. The threshold is a practical decision criterion for this panel,
+public-base domain. Every public-base domain/outcome must have a 95-percent CI
+lower bound greater than -1.0 pp token and -5.0 pp exact, and changed-target
+cells are reported separately. The threshold is a practical decision criterion for this panel,
 family, public fit, target pair, and H128 geometry, not a universal benchmark
 or equivalence test.
 
 A bounded published-parent A1+A2 K=256 quality anchor uses the first 64 panel
-records per domain under public-base only (128 clips, 16,256 scored tokens,
-exact denominator 128). It is the reviewed CPU embedding port of parent method
+records per domain under public-base only: report pile and finance separately
+with 64 clips and 8,128 scored tokens each (128 clips and 16,256 tokens total;
+exact denominator 64 per domain). It is the reviewed CPU embedding port of parent method
 `frozen_a1_a2_k256`, state SHA-256
 `33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742`. The
 report must call it a benchmark-compatible port, state its adaptations, and
@@ -148,16 +156,21 @@ from all student arms.
 A public-base gain meeting the benefit and harm limits supports advancing this
 tested later-activation observation model. A gain that fails under the paired
 changed target is a transfer limitation, not a broad success claim. A finite,
-well-qualified negative result supports retaining the simpler model within the
-tested scope. An uninformative fit or an imprecise interval is inconclusive;
-it is not evidence that later activations contain no useful information. No
-large confirmation, architecture sweep, or redesign launches automatically
-after this pilot; the handoff returns one evidence-backed next decision.
+well-qualified negative result means that every public-base token and exact
+95-percent CI upper bound is below its registered +1 pp or +5 pp benefit
+margin; it supports retaining the simpler model within the tested scope. If no
+promotion gate passes and any such upper bound reaches its benefit margin, the
+result is imprecise/inconclusive, not evidence that later activations contain
+no useful information. No large confirmation, architecture sweep, or redesign
+launches automatically after this pilot; the handoff returns one
+evidence-backed next decision.
 
 A missing public-fit error quota, failed residual capacity probe, incomplete
 arm, changed mask/geometry, unpaired target/source panel, failed resource
 margin, or truth access before freeze stops the run without opening fresh
-truth. The diagonal effective-capacity limitation, offline full-record status,
-and changed-target transfer interpretation must remain explicit. No P03
+truth. This is an exploratory task-local P06 natural-panel study, not a canonical
+dual-benchmark replacement or an overall-best claim; no active registry update
+is made. The diagonal effective-capacity limitation, offline full-record
+status, and changed-target transfer interpretation must remain explicit. No P03
 holdout, P04 teacher/ranking objective, TRR-0007 result, private target
 resource, or A2 student fallback is part of this study.
