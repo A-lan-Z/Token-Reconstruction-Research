@@ -1,0 +1,69 @@
+{
+  "access_assertions": {
+    "capture_started": false,
+    "model_loaded": false,
+    "panel_selected": false,
+    "payload_read": false,
+    "truth_opened": false
+  },
+  "code_bindings": {
+    "capture_adapter_path": "scripts/trr_p06/capture_public.py",
+    "capture_adapter_sha256": "e49672dee36d0e7ffccb2fba66319da5b12c9447e0376f753acdefab3a9861cd",
+    "git_head": "95e904ccfcbd91a6555f98fcfcfe9b1bd1879660",
+    "plan_path": "experiments/TRR-P06/plan.json",
+    "plan_sha256": "80c51201dfd3f291bce2a6a33c4b58cdea72a2c1fd85d0520983a367fd3a3832",
+    "source_universe_path": "experiments/TRR-P06/setup/source_universe.json",
+    "source_universe_sha256": "b9393d42c64f289235f1c2dc2d73b854eefda9c5ccbbfb1e9ce60b38b0a9cd7d"
+  },
+  "geometry": {
+    "capture_sequence_tokens_including_bos": 192,
+    "dtype": "float32 accounting only",
+    "forward_hidden_activation_bytes": 12582912,
+    "hidden_size": 2048,
+    "note": "These are lower-bound geometry terms; published full-model baseline is used for peak planning.",
+    "padded_positions_beyond_retained_h128": 64,
+    "records_per_batch": 8,
+    "retained_h128_bytes": 8388608,
+    "retained_h128_plus_per_position_mask_bytes": 8392704,
+    "retained_hidden_positions": 128
+  },
+  "guard_plan": {
+    "exclusive_gpu_recheck_required": true,
+    "full_capture_before_inference": true,
+    "maximum_host_rss_gib": 16.0,
+    "maximum_reserved_gpu_gib": 6.0,
+    "minimum_free_gpu_gib": 8.0,
+    "minimum_host_available_gib": 10.0,
+    "watchdog_required": true
+  },
+  "live_snapshot": {
+    "free_headroom_over_8gib_mib": 4720,
+    "gpu": {
+      "free_mib": 12912,
+      "index": 0,
+      "name": "NVIDIA GeForce RTX 5080",
+      "source_command": "nvidia-smi --query-gpu=index,name,memory.total,memory.used,memory.free --format=csv,noheader,nounits",
+      "total_mib": 16303,
+      "used_mib": 3066
+    },
+    "host_headroom_over_10gib_gib": 10.041,
+    "host_memory": {
+      "mem_available_bytes": 21518909440,
+      "mem_available_gib": 20.041,
+      "mem_total_bytes": 32411611136,
+      "source_command": "/proc/meminfo"
+    }
+  },
+  "observed_utc": "2026-09-06T11:02:00Z",
+  "published_baseline": {
+    "causal_peak_allocated_bytes": 2503377920,
+    "interpretation": "P06 capture is inference-only with longer input sequence but H128 retention; this is an estimate, not a qualification.",
+    "source": "experiments/TRR-P06/setup/resource_preflight.json published_parent_fit_reference",
+    "worst_peak_reserved_bytes": 2959081472,
+    "worst_process_rss_bytes": 6975275008
+  },
+  "purpose": "metadata-only parent public capture estimate for batch 8 x 192 full forward retaining H0..H127; no model, source panel, observation, or truth payload opened",
+  "schema": "token-reconstruction.trr-p06-capture-preflight.v1",
+  "status": "READ_ONLY_ESTIMATE_NO_CAPTURE",
+  "task_id": "TRR-P06"
+}
