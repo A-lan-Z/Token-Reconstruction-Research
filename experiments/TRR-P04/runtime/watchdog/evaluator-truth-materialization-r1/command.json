@@ -1,0 +1,48 @@
+{
+  "command": [
+    "env",
+    "HF_HUB_OFFLINE=1",
+    "HF_DATASETS_OFFLINE=1",
+    "TRANSFORMERS_OFFLINE=1",
+    "TOKENIZERS_PARALLELISM=false",
+    "OMP_NUM_THREADS=4",
+    "MKL_NUM_THREADS=4",
+    "PYTHONPATH=.:src",
+    "python3",
+    "scripts/trr_p04/materialize_evaluator_truth.py",
+    "--selection",
+    "experiments/TRR-P04/setup/public_selection-r2.json",
+    "--freeze",
+    "experiments/TRR-P04/runtime/freeze.json",
+    "--truth-dir",
+    "/tmp/trr-p04-evaluator-truth-v1",
+    "--tokenizer",
+    "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6"
+  ],
+  "created_utc": "2026-09-06T04:16:37.682751Z",
+  "cwd": "/tmp/trr-p04",
+  "environment": {},
+  "environment_allowlist": [
+    "CUDA_VISIBLE_DEVICES",
+    "OMP_NUM_THREADS",
+    "MKL_NUM_THREADS",
+    "TOKENIZERS_PARALLELISM",
+    "PYTHONPATH",
+    "HF_HUB_OFFLINE",
+    "HF_DATASETS_OFFLINE",
+    "TRANSFORMERS_OFFLINE"
+  ],
+  "environment_redacted": true,
+  "label": "evaluator-truth-materialization-r1",
+  "process_group": "new_session_start_new_session_true",
+  "schema": "token-reconstruction.trr-p04-resource-watchdog-command.v1",
+  "shell_command": "env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 PYTHONPATH=.:src python3 scripts/trr_p04/materialize_evaluator_truth.py --selection experiments/TRR-P04/setup/public_selection-r2.json --freeze experiments/TRR-P04/runtime/freeze.json --truth-dir /tmp/trr-p04-evaluator-truth-v1 --tokenizer /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+  "task_id": "TRR-P04",
+  "thresholds": {
+    "kill_grace_seconds": 2.0,
+    "max_rss_bytes": 8589934592,
+    "min_available_bytes": 10737418240,
+    "poll_seconds": 0.5,
+    "timeout_seconds": 900.0
+  }
+}
