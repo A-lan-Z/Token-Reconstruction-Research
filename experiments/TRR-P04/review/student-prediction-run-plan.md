@@ -1,16 +1,16 @@
 # P04 student prediction and timing run plan
 
 The implementation-owned runner is `scripts/trr0004_p04_prediction_runner.py` at
-source commit `b7e33b13c3f54aaf46934834a7bc8a712b4a8e87`.  It consumes the
+source commit `a8ff578f2d68b93243adf8debd2ace7af0b0d3cb`.  It consumes the
 setup-owned paired observation index and activation artifacts, the frozen
 selection metadata, the selected-state manifest, and the immutable public
 normalized embedding table.  It does not open source text, token IDs, target
 weights, teacher artifacts, or evaluator truth.
 
 The selected-state manifest is
-`experiments/TRR-P04/runtime/training-r1/selected_state_manifest-r2.json`,
-78,480 bytes, SHA256
-`5d2c2467d16f991ed540adec72438e74192a19e452e494dc2d6d1d34b3bce95d`.  Its
+`experiments/TRR-P04/runtime/training-r1/selected_state_manifest-r3.json`,
+78,479 bytes, SHA256
+`2595faa316bcadb1262cddb97acfa92deefa10b840a90f59d798f34ec7fd9f47`.  Its
 `states` list is exactly the 8 method/seed checkpoints used by prediction.  Its
 `excluded_final_states` list binds the corresponding 8 final checkpoints for
 provenance and explicitly marks them as ineligible inputs.  It retains the
@@ -47,12 +47,12 @@ env CUDA_VISIBLE_DEVICES=0 HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_O
   --observation-index experiments/TRR-P04/runtime/evaluator-observations-r1/observation_index.json \
   --observation-root experiments/TRR-P04/runtime/evaluator-observations-r1 \
   --selection experiments/TRR-P04/setup/public_selection-r2.json \
-  --state-manifest experiments/TRR-P04/runtime/training-r1/selected_state_manifest-r2.json \
+  --state-manifest experiments/TRR-P04/runtime/training-r1/selected_state_manifest-r3.json \
   --embedding-table /home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors \
   --output-root PREDICT_ROOT \
   --device cuda --warmup-repeats 1 --measurement-repeats 3 \
   --record-batch-size 8 --projection-chunk 512 --threads 4 --interop-threads 1 \
-  --implementation-commit b7e33b13c3f54aaf46934834a7bc8a712b4a8e87
+  --implementation-commit a8ff578f2d68b93243adf8debd2ace7af0b0d3cb
 ```
 
 The wrapper’s host RSS/available-memory receipt is retained beside the runner
