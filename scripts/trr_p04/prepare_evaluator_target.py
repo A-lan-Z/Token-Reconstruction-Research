@@ -1031,7 +1031,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             value = execute_target(mode="qualify" if args.qualify_only else "execute", plan_path=args.plan, selection_path=args.selection, arrow_path=args.dataset_arrow, tokenizer_path=args.tokenizer, model_snapshot=args.model_snapshot, output_root=args.output_root, device=torch.device(args.device), argv=effective_argv)
         print(json.dumps({"status": value["status"], "output_root": str(args.output_root.expanduser().resolve())}, sort_keys=True))
         return 0
-    except (TargetPreparationError, RuntimeError) as exc:
+    except Exception as exc:
         output = args.output_root.expanduser().resolve()
         if output.is_dir() and not (output / "failure.json").exists():
             try:
