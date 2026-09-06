@@ -1,0 +1,372 @@
+{
+  "computation": {
+    "cpu_only": true,
+    "numpy": "1.26.4",
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "python": "3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]",
+    "runtime_seconds": 2.7441303429950494,
+    "scipy": "1.17.1",
+    "single_thread_environment": {
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    }
+  },
+  "created_utc": "2026-09-06T03:59:49Z",
+  "limitations": [
+    "Each target's G/L/N events are modeled as IID mutually exclusive multinomial categories.",
+    "Target dependence is not collapsed into a product; joint target claims require the parent paired-pattern simulation or Frechet bounds.",
+    "Plug-in bounds use rounded expected counts and are descriptive, not decision probabilities.",
+    "No new truth, model state, fitting, selection, or registration was performed."
+  ],
+  "published_finance_counts": {
+    "public_base": {
+      "beneficial": 5,
+      "harmful": 4,
+      "records": 128
+    },
+    "public_lora_2601": {
+      "beneficial": 5,
+      "harmful": 6,
+      "records": 128
+    }
+  },
+  "rule": {
+    "bound": "U_CP(p_gain)-L_CP(p_loss)",
+    "exact_margin_pp": 5.0,
+    "sample_sizes": [
+      128,
+      768,
+      1024,
+      1536,
+      2048
+    ],
+    "tail_alpha_each": 0.0015625
+  },
+  "scenarios": {
+    "finance_lora_observed": {
+      "sample_sizes": {
+        "1024": {
+          "exclude_probability": 0.9814356992569678,
+          "expected_count_round": {
+            "beneficial": 40,
+            "harmful": 48
+          },
+          "plug_in_net_upper_pp": 3.075912614251382,
+          "point_net_at_least_5pp_probability": 1.3561836575942141e-10
+        },
+        "128": {
+          "exclude_probability": 0.01686161491364912,
+          "expected_count_round": {
+            "beneficial": 5,
+            "harmful": 6
+          },
+          "plug_in_net_upper_pp": 10.893454169885235,
+          "point_net_at_least_5pp_probability": 0.011585164802398825
+        },
+        "1536": {
+          "exclude_probability": 0.999780316122958,
+          "expected_count_round": {
+            "beneficial": 60,
+            "harmful": 72
+          },
+          "plug_in_net_upper_pp": 2.3491514207368946,
+          "point_net_at_least_5pp_probability": 8.830286037210007e-15
+        },
+        "2048": {
+          "exclude_probability": 0.9999987932992711,
+          "expected_count_round": {
+            "beneficial": 80,
+            "harmful": 96
+          },
+          "plug_in_net_upper_pp": 1.920249199349818,
+          "point_net_at_least_5pp_probability": 3.119986657478195e-19
+        },
+        "768": {
+          "exclude_probability": 0.892141112356171,
+          "expected_count_round": {
+            "beneficial": 30,
+            "harmful": 36
+          },
+          "plug_in_net_upper_pp": 3.695943170072441,
+          "point_net_at_least_5pp_probability": 2.4405595673979458e-08
+        }
+      },
+      "true_beneficial_rate": 0.0390625,
+      "true_harmful_rate": 0.046875,
+      "true_net_rate": -0.0078125
+    },
+    "finance_p0_observed": {
+      "sample_sizes": {
+        "1024": {
+          "exclude_probability": 0.8048387158295901,
+          "expected_count_round": {
+            "beneficial": 40,
+            "harmful": 32
+          },
+          "plug_in_net_upper_pp": 4.2857265226738415,
+          "point_net_at_least_5pp_probability": 2.296901824855185e-07
+        },
+        "128": {
+          "exclude_probability": 0.007950610544985543,
+          "expected_count_round": {
+            "beneficial": 5,
+            "harmful": 4
+          },
+          "plug_in_net_upper_pp": 11.47068714311527,
+          "point_net_at_least_5pp_probability": 0.03377929067021969
+        },
+        "1536": {
+          "exclude_probability": 0.9768773519602741,
+          "expected_count_round": {
+            "beneficial": 60,
+            "harmful": 48
+          },
+          "plug_in_net_upper_pp": 3.6245305465885815,
+          "point_net_at_least_5pp_probability": 5.210364394089365e-10
+        },
+        "2048": {
+          "exclude_probability": 0.9983930398590823,
+          "expected_count_round": {
+            "beneficial": 80,
+            "harmful": 64
+          },
+          "plug_in_net_upper_pp": 3.234591463191573,
+          "point_net_at_least_5pp_probability": 6.976427434316309e-13
+        },
+        "768": {
+          "exclude_probability": 0.5711456515303165,
+          "expected_count_round": {
+            "beneficial": 30,
+            "harmful": 24
+          },
+          "plug_in_net_upper_pp": 4.8503613512104415,
+          "point_net_at_least_5pp_probability": 6.698592675665688e-06
+        }
+      },
+      "true_beneficial_rate": 0.0390625,
+      "true_harmful_rate": 0.03125,
+      "true_net_rate": 0.0078125
+    },
+    "higher_discordance_net_plus_3": {
+      "sample_sizes": {
+        "1024": {
+          "exclude_probability": 0.011075078897207371,
+          "expected_count_round": {
+            "beneficial": 82,
+            "harmful": 51
+          },
+          "plug_in_net_upper_pp": 7.625899195673391,
+          "point_net_at_least_5pp_probability": 0.035682500729234
+        },
+        "128": {
+          "exclude_probability": 0.00020713035692206558,
+          "expected_count_round": {
+            "beneficial": 10,
+            "harmful": 6
+          },
+          "plug_in_net_upper_pp": 16.377123855944557,
+          "point_net_at_least_5pp_probability": 0.2540316948553062
+        },
+        "1536": {
+          "exclude_probability": 0.029856755770056656,
+          "expected_count_round": {
+            "beneficial": 123,
+            "harmful": 77
+          },
+          "plug_in_net_upper_pp": 6.741809710029884,
+          "point_net_at_least_5pp_probability": 0.015614677152197642
+        },
+        "2048": {
+          "exclude_probability": 0.061627282992828485,
+          "expected_count_round": {
+            "beneficial": 164,
+            "harmful": 102
+          },
+          "plug_in_net_upper_pp": 6.261295543892106,
+          "point_net_at_least_5pp_probability": 0.005917101415859942
+        },
+        "768": {
+          "exclude_probability": 0.005804274857265466,
+          "expected_count_round": {
+            "beneficial": 61,
+            "harmful": 38
+          },
+          "plug_in_net_upper_pp": 8.302781111228756,
+          "point_net_at_least_5pp_probability": 0.06055370979941656
+        }
+      },
+      "true_beneficial_rate": 0.08,
+      "true_harmful_rate": 0.05,
+      "true_net_rate": 0.03
+    },
+    "higher_discordance_net_plus_5": {
+      "sample_sizes": {
+        "1024": {
+          "exclude_probability": 2.855958356174315e-05,
+          "expected_count_round": {
+            "beneficial": 102,
+            "harmful": 51
+          },
+          "plug_in_net_upper_pp": 9.823787000244543,
+          "point_net_at_least_5pp_probability": 0.4892353131796731
+        },
+        "128": {
+          "exclude_probability": 2.0454833776039185e-05,
+          "expected_count_round": {
+            "beneficial": 13,
+            "harmful": 6
+          },
+          "plug_in_net_upper_pp": 19.423738370916357,
+          "point_net_at_least_5pp_probability": 0.48780087585311666
+        },
+        "1536": {
+          "exclude_probability": 2.9093570608447212e-05,
+          "expected_count_round": {
+            "beneficial": 154,
+            "harmful": 77
+          },
+          "plug_in_net_upper_pp": 8.96860301839646,
+          "point_net_at_least_5pp_probability": 0.5071215843735455
+        },
+        "2048": {
+          "exclude_probability": 2.9465482933815195e-05,
+          "expected_count_round": {
+            "beneficial": 205,
+            "harmful": 102
+          },
+          "plug_in_net_upper_pp": 8.443770830412152,
+          "point_net_at_least_5pp_probability": 0.4969828219843207
+        },
+        "768": {
+          "exclude_probability": 2.8320712885842446e-05,
+          "expected_count_round": {
+            "beneficial": 77,
+            "harmful": 38
+          },
+          "plug_in_net_upper_pp": 10.684363412363687,
+          "point_net_at_least_5pp_probability": 0.49506722490279853
+        }
+      },
+      "true_beneficial_rate": 0.1,
+      "true_harmful_rate": 0.05,
+      "true_net_rate": 0.05
+    },
+    "higher_discordance_net_plus_5b": {
+      "sample_sizes": {
+        "1024": {
+          "exclude_probability": 3.08981163703781e-05,
+          "expected_count_round": {
+            "beneficial": 123,
+            "harmful": 72
+          },
+          "plug_in_net_upper_pp": 10.408743281750818,
+          "point_net_at_least_5pp_probability": 0.49080116519085687
+        },
+        "128": {
+          "exclude_probability": 2.1451894768338495e-05,
+          "expected_count_round": {
+            "beneficial": 15,
+            "harmful": 9
+          },
+          "plug_in_net_upper_pp": 20.256818314864645,
+          "point_net_at_least_5pp_probability": 0.49020958419056365
+        },
+        "1536": {
+          "exclude_probability": 3.211285755559602e-05,
+          "expected_count_round": {
+            "beneficial": 184,
+            "harmful": 108
+          },
+          "plug_in_net_upper_pp": 9.368006419525324,
+          "point_net_at_least_5pp_probability": 0.5065989454462945
+        },
+        "2048": {
+          "exclude_probability": 3.256712850171364e-05,
+          "expected_count_round": {
+            "beneficial": 246,
+            "harmful": 143
+          },
+          "plug_in_net_upper_pp": 8.849157041341199,
+          "point_net_at_least_5pp_probability": 0.4975694534393051
+        },
+        "768": {
+          "exclude_probability": 2.9608335620228452e-05,
+          "expected_count_round": {
+            "beneficial": 92,
+            "harmful": 54
+          },
+          "plug_in_net_upper_pp": 11.223149625493088,
+          "point_net_at_least_5pp_probability": 0.49602790961804455
+        }
+      },
+      "true_beneficial_rate": 0.12,
+      "true_harmful_rate": 0.07,
+      "true_net_rate": 0.04999999999999999
+    },
+    "higher_discordance_zero_net": {
+      "sample_sizes": {
+        "1024": {
+          "exclude_probability": 0.3265893587172108,
+          "expected_count_round": {
+            "beneficial": 102,
+            "harmful": 102
+          },
+          "plug_in_net_upper_pp": 5.6267438151801965,
+          "point_net_at_least_5pp_probability": 0.00016125961982098913
+        },
+        "128": {
+          "exclude_probability": 0.002101274954189413,
+          "expected_count_round": {
+            "beneficial": 13,
+            "harmful": 13
+          },
+          "plug_in_net_upper_pp": 16.481231197040252,
+          "point_net_at_least_5pp_probability": 0.098889657333324
+        },
+        "1536": {
+          "exclude_probability": 0.6417324687569386,
+          "expected_count_round": {
+            "beneficial": 154,
+            "harmful": 154
+          },
+          "plug_in_net_upper_pp": 4.593284949250304,
+          "point_net_at_least_5pp_probability": 6.459141307959405e-06
+        },
+        "2048": {
+          "exclude_probability": 0.8527409053457161,
+          "expected_count_round": {
+            "beneficial": 205,
+            "harmful": 205
+          },
+          "plug_in_net_upper_pp": 3.9678107551507664,
+          "point_net_at_least_5pp_probability": 2.091075714604677e-07
+        },
+        "768": {
+          "exclude_probability": 0.17287251810164972,
+          "expected_count_round": {
+            "beneficial": 77,
+            "harmful": 77
+          },
+          "plug_in_net_upper_pp": 6.532010819051558,
+          "point_net_at_least_5pp_probability": 0.0009511894098758867
+        }
+      },
+      "true_beneficial_rate": 0.1,
+      "true_harmful_rate": 0.1,
+      "true_net_rate": 0.0
+    }
+  },
+  "schema": "token-reconstruction.trr0006-sample-size-sensitivity.v1",
+  "source_binding": {
+    "decision_plan_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/decision_plan.json",
+    "decision_plan_sha256": "d4ae0da99ae5c0a00e454c16b539441e193cb76b9e52673c8e674bfdd2df1245",
+    "parent_commit_requested": "3a7e8f579e713c3e41d02639237042ca26fd019b",
+    "published_result_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/fresh_confirmation_v1/result.json",
+    "published_result_sha256": "b3366bc65a8cff7b44920a3f778c33f2229f1d780cb256fb2731aa450f830389",
+    "trr5_git_head": "3a7e8f579e713c3e41d02639237042ca26fd019b",
+    "trr5_root": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005"
+  },
+  "status": "PROVISIONAL_PRETRUTH_NO_REGISTRATION",
+  "task_id": "TRR-0006"
+}
