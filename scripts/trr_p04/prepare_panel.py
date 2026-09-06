@@ -53,7 +53,7 @@ STYLE_REVISION = {
     "alpaca_instruction": "dce01c9b08f87459cf36a430d809084718273017",
 }
 STYLE_SOURCE_HASHES = {
-    "pile10k-train.arrow": "77ddf02e2a69373a944bc8bc8ac8f7b9926f5c62203d727341a24d709bf81113",
+    "pile-10k-train.arrow": "77ddf02e2a69373a944bc8bc8ac8f7b9926f5c62203d727341a24d709bf81113",
     "finance-instruct-500k-train-00000-of-00002.arrow": "b49ca0980a0b02fecbef2220eee0ef5d3c3c893ae42b4e1910edec993c3d164e",
     "finance-instruct-500k-train-00001-of-00002.arrow": "ce4b0786646cd68561da736f145fd5df7ba2f4e754e0caa3ae646d6be9900bd3",
     "alpaca-train.arrow": "f45103036ed651f4c06d0a3c3e0fb7d53acb3074ed5c8e804a69c1efc1cea794",
