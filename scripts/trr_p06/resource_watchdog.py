@@ -222,6 +222,48 @@ def _process_group_members(pgid: int, *, require_member: bool) -> list[dict[str,
     return sorted(members, key=lambda row: row["pid"])
 
 
+def _has_live_process_group_member(pgid: int) -> bool:
+    """Return whether a non-zombie process remains in ``pgid``.
+
+    This check is used only after the leader has been re-polled as exited and
+    a resource sample raced with process teardown.  It deliberately reads
+    process state, rather than RSS, so a missing VmRSS on an already exited
+    leader does not become a false live-resource failure.  A still-live
+    descendant keeps the guard fail-closed.
+    """
+
+    proc = Path("/proc")
+    try:
+        entries = list(proc.iterdir())
+    except OSError as exc:
+        raise ResourceReadError("cannot enumerate live process table") from exc
+    for entry in entries:
+        if not entry.name.isdigit():
+            continue
+        pid = int(entry.name)
+        try:
+            if _pid_group(pid) != pgid:
+                continue
+        except ResourceReadError as exc:
+            if not entry.exists():
+                continue
+            raise exc
+        stat_path = entry / "stat"
+        try:
+            stat_text = stat_path.read_text(encoding="ascii")
+        except (OSError, UnicodeError) as exc:
+            if not entry.exists():
+                continue
+            raise ResourceReadError(f"cannot read live process state: {stat_path}") from exc
+        try:
+            state = stat_text.rsplit(")", 1)[1].strip().split()[0]
+        except (IndexError, ValueError) as exc:
+            raise ResourceReadError(f"live process stat is malformed: {stat_path}") from exc
+        if state != "Z":
+            return True
+    return False
+
+
 def _sample(pgid: int, *, require_member: bool, elapsed_seconds: float) -> dict[str, Any]:
     available = _read_mem_available_bytes()
     members = _process_group_members(pgid, require_member=require_member)
@@ -414,13 +456,28 @@ def main(argv: list[str] | None = None) -> int:
                     try:
                         sample = _sample(pgid, require_member=False, elapsed_seconds=elapsed)
                     except ResourceReadError as retry_exc:
-                        if "no readable live members" in str(retry_exc):
-                            sample = None
-                        else:
+                        # The leader has exited, but a final /proc sample can
+                        # still race with reaping.  Ignore that sample only
+                        # when no non-zombie process remains in the group.  A
+                        # live descendant, or an unreadable state check, stays
+                        # fail-closed so the guard cannot lose coverage.
+                        try:
+                            live_member = _has_live_process_group_member(pgid)
+                        except ResourceReadError as member_exc:
+                            termination_reason = "live_resource_data_unreadable"
+                            errors.extend([str(retry_exc), str(member_exc)])
+                            termination_actions = _terminate_group(process, pgid, options.kill_grace_seconds)
+                            break
+                        if live_member:
                             termination_reason = "live_resource_data_unreadable"
                             errors.append(str(retry_exc))
                             termination_actions = _terminate_group(process, pgid, options.kill_grace_seconds)
                             break
+                        sample = None
+                        errors.append(
+                            "post_exit_resource_sample_ignored: "
+                            + str(retry_exc)
+                        )
                 else:
                     termination_reason = "live_resource_data_unreadable"
                     errors.append(str(exc))
