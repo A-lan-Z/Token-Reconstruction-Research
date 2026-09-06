@@ -55,6 +55,10 @@ STYLE_ORDER = panel.STYLE_ORDER
 CELL_ORDER = tuple(f"{style}__{condition}" for style in STYLE_ORDER for condition in CONDITION_ORDER)
 MODEL_ID = "meta-llama/Llama-3.2-1B-Instruct"
 MODEL_REVISION = "9213176726f574b556790deb65791e0c5aa438b6"
+MIN_FREE_GPU_BYTES = 8 * 1024**3
+MAX_RESERVED_GPU_BYTES = 6 * 1024**3
+MAX_HOST_RSS_BYTES = 16 * 1024**3
+MIN_HOST_AVAILABLE_BYTES = 10 * 1024**3
 
 
 class CapturePreparationError(RuntimeError):
@@ -339,6 +343,38 @@ def _save_observation(
     return descriptor
 
 
+def _p06_live_resource_guard(device: torch.device) -> dict[str, Any]:
+    preflight, _ceiling = trusted._guard_helpers()
+    try:
+        result = preflight(
+            device,
+            min_free_gpu_bytes=MIN_FREE_GPU_BYTES,
+            max_reserved_gpu_bytes=MAX_RESERVED_GPU_BYTES,
+            max_host_rss_bytes=MAX_HOST_RSS_BYTES,
+        )
+    except Exception as exc:
+        raise CapturePreparationError("P06 public capture resource preflight failed") from exc
+    try:
+        import psutil
+
+        available = int(psutil.virtual_memory().available)
+    except Exception as exc:
+        raise CapturePreparationError("P06 live host memory guard is unavailable") from exc
+    if available < MIN_HOST_AVAILABLE_BYTES:
+        raise CapturePreparationError(
+            f"only {available} host bytes are available; need at least {MIN_HOST_AVAILABLE_BYTES}"
+        )
+    result["host_available_bytes"] = available
+    result["minimum_host_available_bytes"] = MIN_HOST_AVAILABLE_BYTES
+    result["p06_resource_policy"] = {
+        "minimum_free_gpu_bytes": MIN_FREE_GPU_BYTES,
+        "maximum_reserved_gpu_bytes": MAX_RESERVED_GPU_BYTES,
+        "maximum_host_rss_bytes": MAX_HOST_RSS_BYTES,
+        "minimum_host_available_bytes": MIN_HOST_AVAILABLE_BYTES,
+    }
+    return result
+
+
 def _capture_condition(
     *,
     condition: str,
@@ -369,7 +405,7 @@ def _capture_condition(
             device=device,
             batch_size=CAPTURE_BATCH_RECORDS,
         )
-        trusted._live_resource_guard(device)
+        _p06_live_resource_guard(device)
         _preflight, ceiling = trusted._guard_helpers()
     except Exception as exc:
         raise CapturePreparationError(f"{condition} public-prefix qualification failed") from exc
@@ -388,8 +424,8 @@ def _capture_condition(
                 batch_size=CAPTURE_BATCH_RECORDS,
                 resource_check=lambda: ceiling(
                     device,
-                    max_reserved_gpu_bytes=trusted.MAX_RESERVED_GPU_BYTES,
-                    max_host_rss_bytes=trusted.MAX_HOST_RSS_BYTES,
+                    max_reserved_gpu_bytes=MAX_RESERVED_GPU_BYTES,
+                    max_host_rss_bytes=MAX_HOST_RSS_BYTES,
                 ),
             )
             if tuple(activations.shape) != (records_per_domain, CAPTURE_SEQUENCE_TOKENS, HIDDEN_SIZE):
@@ -406,8 +442,8 @@ def _capture_condition(
             )
             ceiling(
                 device,
-                max_reserved_gpu_bytes=trusted.MAX_RESERVED_GPU_BYTES,
-                max_host_rss_bytes=trusted.MAX_HOST_RSS_BYTES,
+                max_reserved_gpu_bytes=MAX_RESERVED_GPU_BYTES,
+                max_host_rss_bytes=MAX_HOST_RSS_BYTES,
             )
         except CapturePreparationError:
             raise
@@ -639,6 +675,12 @@ def capture_public(args: argparse.Namespace) -> dict[str, Any]:
                 "source_text_written": False,
                 "token_ids_written": False,
                 "network_used": False,
+                "resource_policy": {
+                    "minimum_free_gpu_bytes": MIN_FREE_GPU_BYTES,
+                    "maximum_reserved_gpu_bytes": MAX_RESERVED_GPU_BYTES,
+                    "maximum_host_rss_bytes": MAX_HOST_RSS_BYTES,
+                    "minimum_host_available_bytes": MIN_HOST_AVAILABLE_BYTES,
+                },
             },
         }
         capture_record = _write_create_only(output_root / "capture.json", capture)
