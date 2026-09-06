@@ -478,10 +478,18 @@ def _tokenizer_descriptor(tokenizer_path: Path) -> dict[str, Any]:
         "chat_template.jinja",
     ):
         candidate = path / name
-        if candidate.is_file() and not candidate.is_symlink():
+        # Hugging Face snapshot directories conventionally contain symlinks
+        # into their content-addressed blob store. Resolve and record those
+        # links rather than rejecting a valid pinned snapshot; an absent or
+        # broken link remains unavailable and is not silently substituted.
+        if candidate.is_file():
+            resolved = candidate.resolve()
             files.append(
                 {
                     "name": name,
+                    "path": str(candidate),
+                    "resolved_path": str(resolved),
+                    "symlink": candidate.is_symlink(),
                     "bytes": int(candidate.stat().st_size),
                     "sha256": sha256_file(candidate),
                 }
@@ -782,6 +790,13 @@ def build_selection(
             "source_pool": "correction",
             "target_condition": "public_base",
             "generated": False,
+            "qualification_gate": {
+                "status": "PENDING_PUBLIC_CAPACITY_PROBE",
+                "minimum_step0_affine_errors": 256,
+                "required_initial_accuracy_below": 0.99,
+                "must_pass_before_teacher": True,
+                "selection_does_not_use_evaluation_truth": True,
+            },
         },
         "training_seeds": [1737, 2711],
         "exclusions": {
@@ -866,6 +881,10 @@ def main(argv: Sequence[str] | None = None) -> int:
                 "ended_utc": _utc_now(),
                 "elapsed_seconds": round(time.monotonic() - started, 6),
                 "max_rss_bytes": _max_rss_bytes(),
+                "source_code": {
+                    "path": str(Path(__file__).resolve()),
+                    "sha256": sha256_file(Path(__file__).resolve()),
+                },
             }
         )
         output = args.output.expanduser().resolve()
