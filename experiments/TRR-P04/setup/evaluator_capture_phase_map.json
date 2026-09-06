@@ -246,12 +246,30 @@
       "id": "P3",
       "name": "student_and_reference_predictions",
       "owner": "implementation",
-      "status": "PENDING_IMPLEMENTATION_FREEZE",
+      "status": "PASS_STUDENT_PREDICTIONS_FROZEN_NO_TRUTH",
       "truth_opened": false,
       "requires": [
         "P2 observation index",
         "all eight method/seed states"
-      ]
+      ],
+      "outputs": [
+        "runtime/training-r1/selected_state_manifest-r3.json",
+        "runtime/training-r1/training_state_binding_check.json",
+        "runtime/student-predictions-r3/student_prediction_freeze.json",
+        "runtime/student-predictions-r3/predictions/<condition>/<method-seed>/predictions.jsonl",
+        "runtime/student-predictions-r3/timing/<condition>/<method-seed>.json"
+      ],
+      "freeze_binding": {
+        "freeze_receipt_sha256": "6f9c1c80580319f649ccb563d6346ec1b498917c4638f8326ce9218ca4daa9af",
+        "state_manifest_sha256": "2595faa316bcadb1262cddb97acfa92deefa10b840a90f59d798f34ec7fd9f47",
+        "record_count": 72,
+        "conditions": [
+          "public_base",
+          "p04_evaluator_target_update_v1"
+        ],
+        "groups_per_condition": 8,
+        "truth_opened": false
+      }
     },
     {
       "id": "P4",
@@ -361,11 +379,12 @@
     "target_update_accessed": true,
     "observation_capture_run": true,
     "native_anchor_run": false,
-    "student_predictions_read": false
+    "student_predictions_read": false,
+    "student_predictions_metadata_read": true
   },
   "resource_release": {
-    "status": "GPU_RELEASED_TO_IMPLEMENTATION",
-    "after": "paired observation capture",
+    "status": "GPU_RELEASED_AFTER_STUDENT_PREDICTION_FREEZE",
+    "release_evidence": "runtime/student-predictions-r3/student_prediction_freeze.json",
     "anchor_started": false
   },
   "drift_summary": {
@@ -387,5 +406,30 @@
     "anchor_records": 12,
     "scored_positions_per_target": 384,
     "truth_opened": false
+  },
+  "student_freeze": {
+    "status": "STUDENT_PREDICTIONS_FROZEN_BEFORE_JOINT_FREEZE",
+    "freeze_receipt": {
+      "path": "experiments/TRR-P04/runtime/student-predictions-r3/student_prediction_freeze.json",
+      "bytes": 48620,
+      "sha256": "6f9c1c80580319f649ccb563d6346ec1b498917c4638f8326ce9218ca4daa9af"
+    },
+    "state_manifest": {
+      "path": "experiments/TRR-P04/runtime/training-r1/selected_state_manifest-r3.json",
+      "bytes": 78479,
+      "sha256": "2595faa316bcadb1262cddb97acfa92deefa10b840a90f59d798f34ec7fd9f47"
+    },
+    "state_binding_check": {
+      "path": "experiments/TRR-P04/runtime/training-r1/training_state_binding_check.json",
+      "bytes": 6820,
+      "sha256": "6d1a74504c7b773693013fc56bec678db3768fe0f1453bbb59d88ae9fd9d0d12"
+    },
+    "selected_state_count": 8,
+    "student_prediction_groups": 16,
+    "timing_groups": 16,
+    "all_predictions_repeat_exact": true,
+    "all_anchor_slices_exact": true,
+    "evaluation_truth_opened": false,
+    "implementation_git_commit": "124ce70723c28a4d26bb1f6d123962c7c4f116f2"
   }
 }
