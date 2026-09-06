@@ -3,8 +3,8 @@
   "task_id": "TRR-P05",
   "branch": "task/TRR-P05",
   "worktree": "/tmp/trr-p05",
-  "status": "PREFLIGHT_READY_DIAGNOSTICS_PENDING",
-  "updated_utc": "2026-09-06T07:24:17Z",
+  "status": "SCIENTIFIC_COMPLETE_PUBLICATION_PENDING",
+  "updated_utc": "2026-09-06T08:01:13Z",
   "parent": {
     "task_id": "TRR-P04",
     "branch": "task/TRR-P04",
@@ -20,8 +20,9 @@
     "byte_identical_to_supplied_attachment": true
   },
   "ownership": {
-    "setup_provenance_inventory": "P04 setup/evidence owner",
-    "implementation_and_design_coordination": "root-coordinated",
+    "setup_provenance_inventory": "P05 setup/evidence owner",
+    "implementation": "implementation owner; runtime outputs recorded at source/evidence commit",
+    "design_report": "completed and approved at f4d6cc7",
     "publication_owner": "root",
     "pr_merge_allowed": false
   },
@@ -32,114 +33,177 @@
     "other_agent_mutable_work_inspected": false,
     "agent_one_workspace_or_science_accessed": false,
     "p03_holdout_accessed": false,
+    "p04_compact_metadata_read": true,
+    "p04_public_tensor_payloads_loaded_for_authorized_diagnostic": true,
+    "private_evaluator_target_or_holdout_accessed": false,
+    "evaluation_truth_opened": false,
     "optimizer_steps_started": false,
     "student_fits_started": false,
     "target_preparation_started": false,
     "hidden_evaluation_started": false,
     "trajectory_reconstruction_attempted": false,
-    "p04_compact_metadata_read": true,
-    "p04_tensor_payload_contents_opened_by_p05": false
+    "source_plaintext_or_token_values_persisted_here": false,
+    "diagnostic_outputs_truth_free": true
   },
   "resource_gate": {
-    "status": "CPU_ONLY_SETUP_NO_HEAVY_JOBS",
-    "gpu_jobs_started": false,
+    "status": "DIAGNOSTIC_COMPLETE_GPU_RELEASED_LIGHT_DOCS_ONLY",
+    "gpu_jobs_started": true,
+    "diagnostic_only": true,
+    "qualifier_status": "PASS_R2",
+    "full_status": "PASS_R1",
+    "gpu_released_after_diagnostic": true,
     "paid_compute": false,
-    "optimizer_or_forward_sweeps_authorized": false,
-    "initial_inventory_scope": "metadata/provenance and compact public asset discovery only"
+    "no_optimizer_steps": true,
+    "no_truth_access": true,
+    "full_child_peak_rss_bytes": 5961519104,
+    "full_child_peak_max_allocated_gpu_bytes": 2869093888,
+    "full_child_peak_max_reserved_gpu_bytes": 2998927360,
+    "full_watchdog_peak_group_rss_bytes": 5264146432,
+    "full_watchdog_minimum_host_mem_available_bytes": 19031261184,
+    "watchdog_thresholds": {
+      "timeout_seconds": 900.0,
+      "poll_seconds": 0.5,
+      "min_available_bytes": 10737418240,
+      "max_rss_bytes": 17179869184,
+      "child_min_free_gpu_bytes": 8589934592,
+      "child_max_reserved_gpu_bytes": 6442450944
+    }
+  },
+  "diagnostic": {
+    "source_commit": "e022b56ff92b4987b88a47418b4df76ccd296cea",
+    "status": "PASS",
+    "forward_states": 13,
+    "forward_rows_per_state": 768,
+    "gradient_cells": 24,
+    "gradient_methods": {
+      "student_d": 16,
+      "student_h": 8
+    },
+    "gradient_steps": [
+      0,
+      999,
+      1999,
+      2999
+    ],
+    "selected_rows_per_gradient_cell": 512,
+    "teacher_rows_per_gradient_cell": [
+      0,
+      1,
+      2,
+      4
+    ],
+    "unavailable_states": 0,
+    "truth_access": false,
+    "optimizer_step": false,
+    "full_wall_seconds": 40.60715087399876,
+    "qualifier_r2_wall_seconds": 9.887169032997917
   },
   "setup_artifacts": {
     "control_packet": "coordination/requests/TRR-P05.md",
-    "task_state": "coordination/parallel/TRR-P05.json",
     "asset_inventory": "experiments/TRR-P05/setup/asset_inventory.json",
-    "diagnostic_plan": "experiments/TRR-P05/setup/diagnostic_plan.json",
     "authoritative_plan": "experiments/TRR-P05/plan.json",
     "diagnostic_review": "experiments/TRR-P05/review/diagnostic-plan.md",
-    "manifest": "experiments/TRR-P05/manifest.json",
-    "publication_inventory": "experiments/TRR-P05/publication-files.json",
+    "qualifier_handoff": "experiments/TRR-P05/review/qualifier-command.md",
+    "implementation_audit": "experiments/TRR-P05/review/implementation-audit.md",
     "resource_preflight": "experiments/TRR-P05/setup/resource_preflight.json",
-    "diagnostic_commands": "experiments/TRR-P05/setup/diagnostic_commands.txt"
+    "diagnostic_commands": "experiments/TRR-P05/setup/diagnostic_commands.txt",
+    "runtime_index": "experiments/TRR-P05/runtime/diagnostic-index-r1.json",
+    "manifest": "experiments/TRR-P05/manifest.json",
+    "publication_inventory": "experiments/TRR-P05/publication-files.json"
   },
-  "preservation": {
-    "p03_status": "STOP_VARIANT_HOLDOUT_SEALED",
-    "p04_status": "PRESERVE_EVIDENCE_AND_PR_UNMERGED",
-    "prior_prs_merged": false,
-    "new_truth_or_target_data": false
-  },
-  "pending": [
-    "root approval and exclusive resource reservation for the nonexecuting preflight contract",
-    "qualifier run from the clean candidate/state-provenance source head",
-    "bounded full diagnostic only after qualifier PASS",
-    "final manifest/publication inventory/result report refresh after diagnostics"
-  ],
   "evidence_pointers": {
-    "asset_inventory": {
-      "path": "experiments/TRR-P05/setup/asset_inventory.json",
-      "role": "read-only P04 public asset and checkpoint provenance inventory",
-      "status": "COMPLETE_READ_ONLY",
-      "bytes": 49501,
-      "sha256": "6220ef09ff0665042f656736b6e6accf71c2fd95d6bbbbb7dd495adabcfea493"
+    "runtime_index": {
+      "path": "experiments/TRR-P05/runtime/diagnostic-index-r1.json",
+      "status": "PASS"
     },
-    "diagnostic_plan": {
-      "path": "experiments/TRR-P05/setup/diagnostic_plan.json",
-      "role": "fixed score-independent diagnostic input contract",
-      "status": "SUPERSEDED_BY_AUTHORITATIVE_PLAN_AND_REVIEW",
-      "bytes": 2210,
-      "sha256": "7e437c0d804a481954bfb795bc2331e5e0e185e584f9599e340a5eee868eef8d"
+    "qualifier_failure_r1": {
+      "path": "experiments/TRR-P05/runtime/qualifier-r1/failure.json",
+      "status": "EXCLUDED_MODE_FAILURE_RETAINED"
     },
-    "authoritative_plan": {
-      "path": "experiments/TRR-P05/plan.json",
-      "role": "authoritative score-independent diagnostic plan",
-      "status": "ROOT_DESIGN_REVIEW_SNAPSHOT_REFRESH_BEFORE_FINALIZATION",
-      "bytes": 4486,
-      "sha256": "1aba843dcdb421dffc4a400b2e9a2d2561511e50ae949f5f7aa80fdcafab98c7",
-      "hash_note": "The plan/review may change during root review; refresh this descriptor before publication."
+    "qualifier_pass_r2": {
+      "path": "experiments/TRR-P05/runtime/qualifier-r2/diagnostic_receipt.json",
+      "status": "PASS"
     },
-    "diagnostic_review": {
-      "path": "experiments/TRR-P05/review/diagnostic-plan.md",
-      "role": "human-readable diagnostic-plan companion",
-      "status": "ROOT_DESIGN_REVIEW_SNAPSHOT_REFRESH_BEFORE_FINALIZATION",
-      "bytes": 11073,
-      "sha256": "eeaee782773102c1188424db45271fdc089603ab7bfe9a30afb4b8ee83e3fae3",
-      "hash_note": "The plan/review may change during root review; refresh this descriptor before publication."
+    "full_diagnostic_r1": {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/diagnostic_receipt.json",
+      "status": "PASS"
+    },
+    "full_watchdog": {
+      "path": "experiments/TRR-P05/runtime/watchdog-diagnostic-r1/finish.json",
+      "status": "PASS"
+    },
+    "focused_tests": {
+      "path": "experiments/TRR-P05/runtime/tests-r1/validation_receipt.json",
+      "status": "PASS_7_OF_7"
+    },
+    "derived_metrics": {
+      "path": "experiments/TRR-P05/review/diagnostic-derived.json",
+      "role": "post-run compact derived diagnostic metrics",
+      "status": "COMPLETED_POST_RUN",
+      "bytes": 58914,
+      "sha256": "81f1d79e81bf89d55ca42589a927cbc8ff17c8ba06189d7d266cb7b8ad296e91"
     },
     "manifest": {
       "path": "experiments/TRR-P05/manifest.json",
-      "role": "compact task manifest scaffold",
-      "status": "PENDING_DIAGNOSTIC_RUN_AND_REPORT"
+      "status": "FINAL_METADATA"
     },
     "publication_inventory": {
       "path": "experiments/TRR-P05/publication-files.json",
-      "role": "curated publication allowlist scaffold",
-      "status": "PENDING_DIAGNOSTIC_RUN_AND_REPORT"
+      "status": "FINAL_ALLOWLIST_PENDING_ROOT_REVIEW"
     },
-    "resource_preflight": {
-      "path": "experiments/TRR-P05/setup/resource_preflight.json",
-      "role": "static resource/geometry preflight and exact command record",
-      "status": "COMPLETE_NO_DIAGNOSTIC_EXECUTED"
+    "result_report": {
+      "path": "coordination/results/TRR-P05.md",
+      "role": "approved human-readable P05 result report",
+      "status": "COMPLETED",
+      "bytes": 9540,
+      "sha256": "c5f7236e6ea036a495f4bd1107a7054327d4f6cb960620675b2374d8991efac5"
     },
-    "diagnostic_commands": {
-      "path": "experiments/TRR-P05/setup/diagnostic_commands.txt",
-      "role": "exact sample/qualifier/full command text",
-      "status": "RECORDED_NOT_EXECUTED"
+    "derivation_helper": {
+      "path": "experiments/TRR-P05/review/summarize_diagnostic.py",
+      "role": "post-run compact derivation helper",
+      "status": "SOURCE_COMMITTED",
+      "bytes": 14033,
+      "sha256": "56ae715d275caa6da74357e89ec3e80509f499c2bf4e3beef5742ea90f20039c"
     }
   },
   "inventory_summary": {
     "selected_states": 8,
     "final_states": 8,
+    "affine_initial_function_reference": 1,
+    "forward_states": 13,
+    "gradient_cells": 24,
+    "unavailable_states": 0,
     "seeds": [
       1737,
       2711
     ],
-    "learning_curves": 8,
-    "position_schedules": 2,
-    "public_correction_records": 256,
-    "public_validation_records": 192,
-    "teacher_rows": 384,
-    "teacher_difficult_rows": 256,
-    "teacher_uniform_audit_rows": 128,
-    "serialized_initial_state_available": false,
-    "p04_payload_contents_opened_by_p05": false,
-    "states_in_p05_worktree": 8,
-    "states_in_parent_worktree": 16
+    "schedule_steps": [
+      0,
+      999,
+      1999,
+      2999
+    ],
+    "focused_tests": "7/7 PASS",
+    "runtime_files": 89,
+    "runtime_bytes": 9897650,
+    "serialized_initial_gru_state_available": false
+  },
+  "preservation": {
+    "p03_status": "PRESERVE_SEALED_HOLDOUT",
+    "p04_status": "PRESERVE_EVIDENCE_AND_PR_UNMERGED",
+    "prior_prs_merged": false,
+    "new_truth_or_target_data": false,
+    "no_new_fits_or_sweeps": true
+  },
+  "pending": [
+    "root final metadata review and publication; existing parent PRs remain open and unmerged"
+  ],
+  "publication": {
+    "status": "PENDING_ROOT_PUBLICATION_REVIEW",
+    "manifest_path": "experiments/TRR-P05/manifest.json",
+    "inventory_path": "experiments/TRR-P05/publication-files.json",
+    "merge_allowed": false,
+    "inventory_sha256": "ca11d546061b2c202b3d387bfd0fe4e67ea275aad2e5dd568a61c264f121fd43",
+    "inventory_bytes": 36687
   }
 }

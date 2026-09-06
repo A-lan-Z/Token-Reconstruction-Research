@@ -1,14 +1,23 @@
 {
   "schema": "token-reconstruction.trr-p05-publication-inventory.v1",
   "task_id": "TRR-P05",
-  "status": "PREFLIGHT_READY_DIAGNOSTICS_PENDING",
-  "generated_utc": "2026-09-06T07:24:17Z",
+  "status": "SCIENTIFIC_COMPLETE_PUBLICATION_PENDING",
+  "generated_utc": "2026-09-06T08:01:13Z",
   "git": {
     "branch": "task/TRR-P05",
+    "evidence_commit": "a0d7ae2be1dc62593756b5c89619f6be775f2f92",
+    "diagnostic_source_commit": "e022b56ff92b4987b88a47418b4df76ccd296cea",
     "parent_task": "TRR-P04",
     "parent_commit": "c3aa40abdf33b5e794b139671fcddf6fd5a2c65e",
+    "parent_pr": 10,
+    "parent_pr_state": "OPEN_UNMERGED",
     "merge_allowed": false,
     "publication_owner": "root"
+  },
+  "allowlist_policy": {
+    "include_scope": "P05 code, plans, provenance metadata, approved result report, compact runtime receipts, task-sized forward/gradient outputs, validation evidence, and derived metrics",
+    "exclude_scope": "P04 model/checkpoint/activation/table/candidate/teacher payloads, private target/evaluation/truth/holdout data, source rows/text/tokens, global state/registries, and development helpers",
+    "maximum_tracked_file_bytes": 100000000
   },
   "include": [
     {
@@ -21,92 +30,735 @@
     {
       "path": "coordination/parallel/TRR-P05.json",
       "role": "compact task-local state",
-      "status": "READY",
-      "bytes": 5901,
-      "sha256": "9a095d566102676601d313cf2565955590896b696dcf63682adfa6021f40cfbf"
+      "status": "READY_FINAL_METADATA",
+      "bytes": 7314,
+      "sha256": "32afa9151a542e9930271c56fe73288500727112e90a7c65ffa1a409baccbf53"
     },
     {
       "path": "experiments/TRR-P05/setup/asset_inventory.json",
-      "role": "read-only P04 public asset/checkpoint provenance inventory",
-      "status": "READY",
+      "role": "read-only P04 provenance and asset inventory",
+      "status": "PRE_RUN_READ_ONLY_SNAPSHOT",
       "bytes": 49501,
       "sha256": "6220ef09ff0665042f656736b6e6accf71c2fd95d6bbbbb7dd495adabcfea493"
     },
     {
       "path": "experiments/TRR-P05/plan.json",
       "role": "authoritative score-independent diagnostic plan",
-      "status": "REFRESH_BEFORE_FINALIZATION",
+      "status": "USED_FOR_COMPLETED_DIAGNOSTIC",
       "bytes": 4611,
-      "sha256": "1b7a7a44df5452854b9c975a5491a2ef4a25492743aeb645978ccba9936a6dcb",
-      "hash_note": "Current review snapshot; root/design owns the final frozen plan."
+      "sha256": "1b7a7a44df5452854b9c975a5491a2ef4a25492743aeb645978ccba9936a6dcb"
     },
     {
       "path": "experiments/TRR-P05/review/diagnostic-plan.md",
       "role": "human-readable authoritative diagnostic companion",
-      "status": "REFRESH_BEFORE_FINALIZATION",
+      "status": "USED_FOR_COMPLETED_DIAGNOSTIC",
       "bytes": 11335,
-      "sha256": "f119301a7769d9ba9d34931bede7d62a81181ea395d8efaed0a720f67e32da99",
-      "hash_note": "Current review snapshot; root/design owns the final frozen review."
+      "sha256": "f119301a7769d9ba9d34931bede7d62a81181ea395d8efaed0a720f67e32da99"
     },
     {
-      "path": "experiments/TRR-P05/manifest.json",
-      "role": "task manifest",
-      "status": "SCAFFOLD_THIS_COMMIT",
-      "sha256": null
+      "path": "experiments/TRR-P05/review/qualifier-command.md",
+      "role": "corrected qualifier command and resource handoff",
+      "status": "UPDATED_TO_EXECUTED_R2_BINDING",
+      "bytes": 8911,
+      "sha256": "f0f90bc924321cf27f1eeb71dd0d152dc4d6abfe0dedc37117d1811169d1273b"
     },
     {
-      "path": "experiments/TRR-P05/publication-files.json",
-      "role": "this curated inventory",
-      "status": "SCAFFOLD_THIS_COMMIT",
-      "sha256": null
+      "path": "experiments/TRR-P05/review/implementation-audit.md",
+      "role": "implementation provenance and focused-test audit",
+      "status": "PASS_7_OF_7",
+      "bytes": 5036,
+      "sha256": "b91dfb12e9fa250d0cf6ad7ab4b7506386eb7843031efd6e3dd3b68a3a39f6d5"
+    },
+    {
+      "path": "scripts/trr0004_p05_diagnostic.py",
+      "role": "P05 CLI runner",
+      "status": "SOURCE_COMMITTED",
+      "bytes": 4659,
+      "sha256": "5b434bedf79d28ea6075f6264246a47660d212d2f520f31cdb85378ae9ca80c0"
+    },
+    {
+      "path": "src/token_reconstruction/p05_diagnostics.py",
+      "role": "P05 diagnostic implementation",
+      "status": "SOURCE_COMMITTED",
+      "bytes": 68456,
+      "sha256": "b8af6c2462a19ab30600a0bb56122c05f72e3dbd9041c5a163c12158f466fae6"
+    },
+    {
+      "path": "tests/test_trr_p05_diagnostics.py",
+      "role": "focused P05 diagnostic tests",
+      "status": "SOURCE_COMMITTED",
+      "bytes": 13814,
+      "sha256": "37aae2135821fe5081fa4e15bcd60bb8aee3b87b8ed9dcfe5279824dcae21c52"
     },
     {
       "path": "experiments/TRR-P05/setup/resource_preflight.json",
       "role": "static resource and geometry preflight",
-      "status": "READY_NO_RUN",
+      "status": "COMPLETED_PRE_RUN_ESTIMATE",
       "bytes": 18523,
       "sha256": "a228b6fceccd6138b90743f60ea4560416985151959557df038ad377cee2f472"
     },
     {
       "path": "experiments/TRR-P05/setup/diagnostic_commands.txt",
-      "role": "exact nonexecuting command record",
-      "status": "READY_NO_RUN",
+      "role": "pre-run exact command record",
+      "status": "RECORDED_PRE_RUN",
       "bytes": 5606,
       "sha256": "393c2921425bd1d7470d644186180582c68a7f9395bf8b6249349efd0c250dc1"
     },
     {
-      "path": "/tmp/trr-p05/scripts/trr0004_p05_diagnostic.py",
-      "role": "P05 CLI runner",
-      "bytes": 4659,
-      "sha256": "5b434bedf79d28ea6075f6264246a47660d212d2f520f31cdb85378ae9ca80c0",
-      "status": "READY_SOURCE_COMMITTED"
+      "path": "experiments/TRR-P05/review/summarize_diagnostic.py",
+      "role": "post-run compact derivation helper",
+      "status": "SOURCE_COMMITTED",
+      "bytes": 14033,
+      "sha256": "56ae715d275caa6da74357e89ec3e80509f499c2bf4e3beef5742ea90f20039c"
     },
     {
-      "path": "/tmp/trr-p05/src/token_reconstruction/p05_diagnostics.py",
-      "role": "P05 diagnostic implementation",
-      "bytes": 68229,
-      "sha256": "900a09ac8f8924476ca7fe06d9168208423759cb3e2d740ac6baaa4b7835278d",
-      "status": "READY_SOURCE_COMMITTED"
+      "path": "experiments/TRR-P05/review/diagnostic-derived.json",
+      "role": "post-run compact derived diagnostic metrics",
+      "status": "COMPLETED_POST_RUN",
+      "bytes": 58914,
+      "sha256": "81f1d79e81bf89d55ca42589a927cbc8ff17c8ba06189d7d266cb7b8ad296e91"
     },
     {
-      "path": "/tmp/trr-p05/tests/test_trr_p05_diagnostics.py",
-      "role": "focused P05 diagnostics tests",
-      "bytes": 13763,
-      "sha256": "7422f77922cb1886f7b3b7f86a5ea59b9503a2c099bfbe8e5468a0b85ce75ce8",
-      "status": "READY_SOURCE_COMMITTED"
+      "path": "experiments/TRR-P05/manifest.json",
+      "role": "task manifest",
+      "status": "FINAL_METADATA_SELF_HASH_OMITTED",
+      "sha256": null
     },
     {
-      "path": "/tmp/trr-p05/experiments/TRR-P05/review/implementation-audit.md",
-      "role": "implementation provenance audit",
-      "bytes": 5036,
-      "sha256": "b91dfb12e9fa250d0cf6ad7ab4b7506386eb7843031efd6e3dd3b68a3a39f6d5",
-      "status": "READY"
+      "path": "experiments/TRR-P05/publication-files.json",
+      "role": "this curated publication inventory",
+      "status": "FINAL_METADATA_SELF_HASH_OMITTED",
+      "sha256": null
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-index-r1.json",
+      "role": "compact completed diagnostic runtime index",
+      "status": "PASS_COMPACT_RUNTIME_INDEX",
+      "bytes": 21634,
+      "sha256": "20720c73b13b6a134f1b4bbc599446fc345c1472814ada26bdacf9e3469bbc28"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/diagnostic_receipt.json",
+      "role": "child diagnostic receipt",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 41190,
+      "sha256": "07f55da1fc02fca9f2b7a65b5875f0159a54dd9171374f22896ccbda14ca6b59"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/forward-affine_initial_function.jsonl",
+      "role": "task-sized diagnostic forward output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 550830,
+      "sha256": "bb3438a31935fa9558189d671aec494f348fd8d038bd6784ee9e09b85e477998"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/forward-student_d-1737-final.jsonl",
+      "role": "task-sized diagnostic forward output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 547340,
+      "sha256": "14f167a8f7bc953107e0dc78b8fc3cac04b9ba853a4852fb0d84788c50fba874"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/forward-student_d-1737-selected.jsonl",
+      "role": "task-sized diagnostic forward output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 549968,
+      "sha256": "ba2a44fcc1e257b3fb7da1c8931c050da9e113b722091ac286be00012f1a8f85"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/forward-student_d-2711-final.jsonl",
+      "role": "task-sized diagnostic forward output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 547482,
+      "sha256": "18a3983c926d931985a4e5436a0141e2b4e171dffe0ef79a1dcf9f508cf7cfd5"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/forward-student_d-2711-selected.jsonl",
+      "role": "task-sized diagnostic forward output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 550335,
+      "sha256": "7f03f3342ebd2b9fd94858bf75dacbbaf5d9ea684d7ec9f288e5bdb89679b08b"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/forward-student_h-1737-final.jsonl",
+      "role": "task-sized diagnostic forward output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 547703,
+      "sha256": "f64027c4c92e2d4cdebfd48a425c61814c657e67b4a8a54b90c6a73e43cb616e"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/forward-student_h-1737-selected.jsonl",
+      "role": "task-sized diagnostic forward output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 549891,
+      "sha256": "0d5071bee38a2f925aa2e6822e334aeab7851235b06f2e471d3c0ba03ca600cc"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/forward-student_h-2711-final.jsonl",
+      "role": "task-sized diagnostic forward output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 547587,
+      "sha256": "0a9380451962008e33c0acd252e61127ae8a99af986ed13517135fe7a6e1d367"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/forward-student_h-2711-selected.jsonl",
+      "role": "task-sized diagnostic forward output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 549937,
+      "sha256": "1e5ef7329e2343b90654a8730fa33b9d9a178468b5727d36d44467991b306805"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/forward-student_s-1737-final.jsonl",
+      "role": "task-sized diagnostic forward output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 547462,
+      "sha256": "5510067963963e23f9d9a455f6e9fbfb776427a3a88aa9b1ab05d576b5859deb"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/forward-student_s-1737-selected.jsonl",
+      "role": "task-sized diagnostic forward output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 549533,
+      "sha256": "da2b316c2ae41be27470569193bbcbac9d8090de8f0826b38f7a5719aa5f8690"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/forward-student_s-2711-final.jsonl",
+      "role": "task-sized diagnostic forward output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 547688,
+      "sha256": "030b2d8cf67e7d704a6a33e32bd3bec794e620d2873f1bd94011744749725367"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/forward-student_s-2711-selected.jsonl",
+      "role": "task-sized diagnostic forward output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 549645,
+      "sha256": "2e27178927e16bf7873c82360973bb35627440666f9da37abb3fe74441f55427"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/gradient-student_d-1737-final-step0000.json",
+      "role": "task-sized no-update gradient diagnostic output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 2397,
+      "sha256": "9e10b0587dafe5a7253aabe773080bd80dda193a4504401a54c25e8c6a488c9b"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/gradient-student_d-1737-final-step0999.json",
+      "role": "task-sized no-update gradient diagnostic output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 2525,
+      "sha256": "5ff12409be638122e929f1dfaa43db2aa83ef5e2949b684d8d76b0dc7489f429"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/gradient-student_d-1737-final-step1999.json",
+      "role": "task-sized no-update gradient diagnostic output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 2525,
+      "sha256": "beadca8e6efd77234cc36bd77e68a625a5150355c0fbb445e55fc39283b208e0"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/gradient-student_d-1737-final-step2999.json",
+      "role": "task-sized no-update gradient diagnostic output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 2397,
+      "sha256": "2e3a9afe84fe8c1dd645ac157c38629ed17889e75308018c8b0000b2a548b216"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/gradient-student_d-1737-selected-step0000.json",
+      "role": "task-sized no-update gradient diagnostic output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 2395,
+      "sha256": "1d3dee9ec1aa8fa60457b1e0dcbbb83106c3e8c3df24134346fc5e88bc0e594c"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/gradient-student_d-1737-selected-step0999.json",
+      "role": "task-sized no-update gradient diagnostic output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 2532,
+      "sha256": "4382838cec8f07a05af3077c3f1a75ce9f8c0eafa3f3d6a2d981006e1d06ab10"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/gradient-student_d-1737-selected-step1999.json",
+      "role": "task-sized no-update gradient diagnostic output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 2533,
+      "sha256": "d169d88bacb5debb04d00cb2562eab42579d1f412dccb5f4d44ffe0dce2cd888"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/gradient-student_d-1737-selected-step2999.json",
+      "role": "task-sized no-update gradient diagnostic output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 2398,
+      "sha256": "e9eaae1b03ad936e7a1253df5ef59c5d0e46b396f4040406a7cd3f8cab318a77"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/gradient-student_d-2711-final-step0000.json",
+      "role": "task-sized no-update gradient diagnostic output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 2524,
+      "sha256": "bd21209220add83197e2e4b47e80221a6be7ff5be58edaead5b30626782c9df0"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/gradient-student_d-2711-final-step0999.json",
+      "role": "task-sized no-update gradient diagnostic output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 2403,
+      "sha256": "e1c43ee91b12e6cf9a926c3bf3e4757ed35d7b1f8ea30ff2049fdd56e8b5b0f1"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/gradient-student_d-2711-final-step1999.json",
+      "role": "task-sized no-update gradient diagnostic output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 2522,
+      "sha256": "4ddc54c5781f45f26055fd754bd802319e4558d1588c5584358bfa7feed2034d"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/gradient-student_d-2711-final-step2999.json",
+      "role": "task-sized no-update gradient diagnostic output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 2399,
+      "sha256": "ef4905ff5a1b70aafcb9a4219e2c551b41100a36713541ef6c082489f49b1095"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/gradient-student_d-2711-selected-step0000.json",
+      "role": "task-sized no-update gradient diagnostic output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 2514,
+      "sha256": "7345ce65b7ff5eb9e770456d3515d8a948529535d69e52fb116911c58aa8e8ab"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/gradient-student_d-2711-selected-step0999.json",
+      "role": "task-sized no-update gradient diagnostic output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 2389,
+      "sha256": "524c0c0b1822082fa46ce68a0a1b8cf65dfa8ca2dbf54968c90fc651f9545f31"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/gradient-student_d-2711-selected-step1999.json",
+      "role": "task-sized no-update gradient diagnostic output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 2521,
+      "sha256": "6649e0c8a088c63c34d04f1d34971a77c6d9b15d6c9ebad2866b36a5456b6329"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/gradient-student_d-2711-selected-step2999.json",
+      "role": "task-sized no-update gradient diagnostic output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 2388,
+      "sha256": "69d8195efc5672ced6bf2eacef6d6a715af56daf87cf31abdf5172b91bf5e052"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/gradient-student_h-1737-selected-step0000.json",
+      "role": "task-sized no-update gradient diagnostic output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 2410,
+      "sha256": "133db9632578058e9b9d4fb7daa3a02b533ebcf90ef291cdaac6fcf0ca7de4a4"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/gradient-student_h-1737-selected-step0999.json",
+      "role": "task-sized no-update gradient diagnostic output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 2536,
+      "sha256": "b0543cc593dad5f65bcc5c3c226e74445664b727b43038015c4ead9ae4fe2a62"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/gradient-student_h-1737-selected-step1999.json",
+      "role": "task-sized no-update gradient diagnostic output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 2542,
+      "sha256": "8b3f530ffb39ba641e841a7df228db89d9edcf59cb64ea7f2aeb4b53432f538b"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/gradient-student_h-1737-selected-step2999.json",
+      "role": "task-sized no-update gradient diagnostic output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 2412,
+      "sha256": "29d4ed2c2c31b0a8bc412c253146205ec8cd0613b8046c076eafab6b976bd6ca"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/gradient-student_h-2711-selected-step0000.json",
+      "role": "task-sized no-update gradient diagnostic output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 2536,
+      "sha256": "74e87faa7803939ad978f4f0c51f757ec5f2f4b8aed95ebcb9bc1264876ebc03"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/gradient-student_h-2711-selected-step0999.json",
+      "role": "task-sized no-update gradient diagnostic output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 2410,
+      "sha256": "c5e5495f4bc16f90f0f8f788895f03bd6955548027a82127a4501685cc7ad558"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/gradient-student_h-2711-selected-step1999.json",
+      "role": "task-sized no-update gradient diagnostic output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 2540,
+      "sha256": "02063b0136a59816dad5216d61ec7d9ff172a0b99a783bce5eb1a86548f1e3f5"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/gradient-student_h-2711-selected-step2999.json",
+      "role": "task-sized no-update gradient diagnostic output",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 2406,
+      "sha256": "3f481954c37a757201567f2187adf941536cc8e4853b64183d2ef26ec3ba1f1b"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/summary-affine_initial_function.json",
+      "role": "task-sized diagnostic summary",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 1853,
+      "sha256": "8fb840ed8d0ab556f4e46277153e7f807d95a1fb9e9030daaacb797d7063b043"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/summary-student_d-1737-final.json",
+      "role": "task-sized diagnostic summary",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 1858,
+      "sha256": "fb3aa500086201fcc492db140e81fc0f95f5f199fbea1c53ac4896bab8b1e6bb"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/summary-student_d-1737-selected.json",
+      "role": "task-sized diagnostic summary",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 1850,
+      "sha256": "8eb6884fbb51eb92bb248ac8e974aac9954973724e7d80a27de54193d4dadecd"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/summary-student_d-2711-final.json",
+      "role": "task-sized diagnostic summary",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 1837,
+      "sha256": "47739111302125b554cb192309db4f832f1bbb65f8616b19383ba2b527e42cf1"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/summary-student_d-2711-selected.json",
+      "role": "task-sized diagnostic summary",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 1863,
+      "sha256": "2ce0bb3ae9f452009ac5aec4fed737ea5cad20236a536ba5c3056eacca66ca62"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/summary-student_h-1737-final.json",
+      "role": "task-sized diagnostic summary",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 1836,
+      "sha256": "2fb2b31475acabf6a51a046804d364b3eaa17307d0b8408f98a9eece8ac14808"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/summary-student_h-1737-selected.json",
+      "role": "task-sized diagnostic summary",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 1839,
+      "sha256": "3caf5072851e2ef92f4e297260d8da1d7c2902ad7a9ea2529ba520be202426e7"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/summary-student_h-2711-final.json",
+      "role": "task-sized diagnostic summary",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 1851,
+      "sha256": "fe4efcfb4b778f24c402b9e445f160147b52e68c79c6afd5669d002b7e584fce"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/summary-student_h-2711-selected.json",
+      "role": "task-sized diagnostic summary",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 1855,
+      "sha256": "a17f359e9f656c30ece68af194a34b2de740459f6a729e930263f2d23a1463c4"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/summary-student_s-1737-final.json",
+      "role": "task-sized diagnostic summary",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 1853,
+      "sha256": "4c8627a12acea699431d896651fe7da960164a0c97c4aff0f74ae96d2f9b6f38"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/summary-student_s-1737-selected.json",
+      "role": "task-sized diagnostic summary",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 1849,
+      "sha256": "ddf0217fd95ad108b4d476c8dbf5d3c395658e3a2e7cca0e9a1cd0c3bc91ed84"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/summary-student_s-2711-final.json",
+      "role": "task-sized diagnostic summary",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 1834,
+      "sha256": "3d604bc5b4b541733d8b76484778574589ee60a5519c2477e003a5f90e00de02"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/diagnostic-r1/summary-student_s-2711-selected.json",
+      "role": "task-sized diagnostic summary",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 1853,
+      "sha256": "d4773646923b8379a807b02ab19437149a724925181e4984526f4dc63d15eec7"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/public-sample-r1/sample_freeze_receipt.json",
+      "role": "public sample freeze receipt",
+      "status": "FROZEN_PUBLIC_SAMPLE",
+      "bytes": 4280,
+      "sha256": "ba76d1337e7932a8be5d433401ecb9bb933cfd4f76af4612ad5c49efe3b5679f"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/public-sample-r1/sample_index.json",
+      "role": "frozen model-free public sample index",
+      "status": "FROZEN_PUBLIC_SAMPLE",
+      "bytes": 276536,
+      "sha256": "77b11bd3a1a9e2a7a3302f5a7df2b186cc99994da9d2a6b7e728639e684e9988"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/qualifier-r1/failure.json",
+      "role": "excluded qualifier failure receipt",
+      "status": "RETAINED_EXCLUDED_R1_MODE_FAILURE",
+      "bytes": 12929,
+      "sha256": "8965804fccef6aac3a27e979ebb681550b8f4fc9c873c814650bd3a8020fc275"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/qualifier-r1/forward-affine_initial_function.jsonl",
+      "role": "task-sized diagnostic forward output",
+      "status": "RETAINED_EXCLUDED_R1_MODE_FAILURE",
+      "bytes": 550830,
+      "sha256": "bb3438a31935fa9558189d671aec494f348fd8d038bd6784ee9e09b85e477998"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/qualifier-r1/forward-student_d-2711-selected.jsonl",
+      "role": "task-sized diagnostic forward output",
+      "status": "RETAINED_EXCLUDED_R1_MODE_FAILURE",
+      "bytes": 550335,
+      "sha256": "7f03f3342ebd2b9fd94858bf75dacbbaf5d9ea684d7ec9f288e5bdb89679b08b"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/qualifier-r1/summary-affine_initial_function.json",
+      "role": "task-sized diagnostic summary",
+      "status": "RETAINED_EXCLUDED_R1_MODE_FAILURE",
+      "bytes": 1853,
+      "sha256": "8fb840ed8d0ab556f4e46277153e7f807d95a1fb9e9030daaacb797d7063b043"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/qualifier-r1/summary-student_d-2711-selected.json",
+      "role": "task-sized diagnostic summary",
+      "status": "RETAINED_EXCLUDED_R1_MODE_FAILURE",
+      "bytes": 1863,
+      "sha256": "2ce0bb3ae9f452009ac5aec4fed737ea5cad20236a536ba5c3056eacca66ca62"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/qualifier-r2/diagnostic_receipt.json",
+      "role": "child diagnostic receipt",
+      "status": "PASS_QUALIFIER_R2",
+      "bytes": 13501,
+      "sha256": "4ca98816181692a7b999dfaa2cc2578af1a52bc80c934e658f8865fbcc360f50"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/qualifier-r2/forward-affine_initial_function.jsonl",
+      "role": "task-sized diagnostic forward output",
+      "status": "PASS_QUALIFIER_R2",
+      "bytes": 550830,
+      "sha256": "bb3438a31935fa9558189d671aec494f348fd8d038bd6784ee9e09b85e477998"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/qualifier-r2/forward-student_d-2711-selected.jsonl",
+      "role": "task-sized diagnostic forward output",
+      "status": "PASS_QUALIFIER_R2",
+      "bytes": 550335,
+      "sha256": "7f03f3342ebd2b9fd94858bf75dacbbaf5d9ea684d7ec9f288e5bdb89679b08b"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/qualifier-r2/gradient-student_d-2711-selected-step1999.json",
+      "role": "task-sized no-update gradient diagnostic output",
+      "status": "PASS_QUALIFIER_R2",
+      "bytes": 2521,
+      "sha256": "6649e0c8a088c63c34d04f1d34971a77c6d9b15d6c9ebad2866b36a5456b6329"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/qualifier-r2/summary-affine_initial_function.json",
+      "role": "task-sized diagnostic summary",
+      "status": "PASS_QUALIFIER_R2",
+      "bytes": 1853,
+      "sha256": "8fb840ed8d0ab556f4e46277153e7f807d95a1fb9e9030daaacb797d7063b043"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/qualifier-r2/summary-student_d-2711-selected.json",
+      "role": "task-sized diagnostic summary",
+      "status": "PASS_QUALIFIER_R2",
+      "bytes": 1863,
+      "sha256": "2ce0bb3ae9f452009ac5aec4fed737ea5cad20236a536ba5c3056eacca66ca62"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/tests-r1/stderr.txt",
+      "role": "captured diagnostic or watchdog stream",
+      "status": "PASS_FOCUSED_VALIDATION",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/tests-r1/stdout.txt",
+      "role": "captured diagnostic or watchdog stream",
+      "status": "PASS_FOCUSED_VALIDATION",
+      "bytes": 98,
+      "sha256": "7d887e809a42836fb3fe47250fca4bc0e926a251011f8d2b7d67ff41e7701163"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/tests-r1/validation_receipt.json",
+      "role": "focused CPU validation receipt",
+      "status": "PASS_FOCUSED_VALIDATION",
+      "bytes": 1368,
+      "sha256": "21e49164963f9d6f27ceae8125068ddec09cf2187a6fee14f34951c5c8f0f29f"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/watchdog-diagnostic-r1/command.json",
+      "role": "external watchdog command receipt with safe environment metadata",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 4721,
+      "sha256": "764d7ebe9c81d48018ebe5be6f54e226089518aef8c17a695d5ad37fc0477443"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/watchdog-diagnostic-r1/finish.json",
+      "role": "external watchdog finish receipt",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 1090,
+      "sha256": "f454ee789ef8e988c13cd21437c838469e5cd4f872d6791d57721daaf816c0b6"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/watchdog-diagnostic-r1/resource_guard.json",
+      "role": "external watchdog resource guard receipt",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 25700,
+      "sha256": "bb3c53794b0ca24f7dac98b1a6d224a5351fa1941ea55f26aa091b956233578e"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/watchdog-diagnostic-r1/resource_samples.jsonl",
+      "role": "external watchdog resource samples",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 18488,
+      "sha256": "16549a051a987d74e32d60a715e1ee0d52ec3e7c8b1d9fcd7f0da90fa4cfbea4"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/watchdog-diagnostic-r1/stderr.txt",
+      "role": "captured diagnostic or watchdog stream",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/watchdog-diagnostic-r1/stdout.txt",
+      "role": "captured diagnostic or watchdog stream",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 152,
+      "sha256": "476639f0f98113cd0512ca4562279462ea7a4e55504fb9c8ee41a339ec5db11a"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/watchdog-diagnostic-r1/time.json",
+      "role": "external watchdog timing receipt",
+      "status": "PASS_FULL_DIAGNOSTIC_R1",
+      "bytes": 2576,
+      "sha256": "24eec3d3c950ecfda3695390302f5e48bcb10c7199c455a7fd11b8faf290f440"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/watchdog-qualifier-r1/command.json",
+      "role": "external watchdog command receipt with safe environment metadata",
+      "status": "RETAINED_EXCLUDED_R1_MODE_FAILURE",
+      "bytes": 4721,
+      "sha256": "5227a13a8da3eb716e735ed3820cd3d792820170a8de7c551ba895a699850daa"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/watchdog-qualifier-r1/finish.json",
+      "role": "external watchdog finish receipt",
+      "status": "RETAINED_EXCLUDED_R1_MODE_FAILURE",
+      "bytes": 1103,
+      "sha256": "f69de3598cbe44072554b8d52cc6c3ff0744e54b489cfe474585f852ee72888e"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/watchdog-qualifier-r1/resource_guard.json",
+      "role": "external watchdog resource guard receipt",
+      "status": "RETAINED_EXCLUDED_R1_MODE_FAILURE",
+      "bytes": 7771,
+      "sha256": "e333bb5e7555f5cdeb68b01733dac5c0f57aaed5a7f9258f80e9aab81ad0cd3b"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/watchdog-qualifier-r1/resource_samples.jsonl",
+      "role": "external watchdog resource samples",
+      "status": "RETAINED_EXCLUDED_R1_MODE_FAILURE",
+      "bytes": 5283,
+      "sha256": "f404926524987b5e4db4c157454b9eb232684c407acc9eb32395ca1942219b5c"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/watchdog-qualifier-r1/stderr.txt",
+      "role": "captured diagnostic or watchdog stream",
+      "status": "RETAINED_EXCLUDED_R1_MODE_FAILURE",
+      "bytes": 85,
+      "sha256": "6d1dea79aff2f0044cd87785ca2b0557d2dca006aeebb97c9db5955cbc65e896"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/watchdog-qualifier-r1/stdout.txt",
+      "role": "captured diagnostic or watchdog stream",
+      "status": "RETAINED_EXCLUDED_R1_MODE_FAILURE",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/watchdog-qualifier-r1/time.json",
+      "role": "external watchdog timing receipt",
+      "status": "RETAINED_EXCLUDED_R1_MODE_FAILURE",
+      "bytes": 2596,
+      "sha256": "105907bc4335861228d4fc4dfe2dcab7580e0ce103c8443857c91df98dbe90c1"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/watchdog-qualifier-r2/command.json",
+      "role": "external watchdog command receipt with safe environment metadata",
+      "status": "PASS_QUALIFIER_R2",
+      "bytes": 4724,
+      "sha256": "224f18e13eed35528b4f548c83f1185043af49c0a5db7ea6fc1892bbdeef785f"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/watchdog-qualifier-r2/finish.json",
+      "role": "external watchdog finish receipt",
+      "status": "PASS_QUALIFIER_R2",
+      "bytes": 1088,
+      "sha256": "771f91beaa6fba81ca689bf07eb130cf62a24d5d84169d2d24cee88389a698fb"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/watchdog-qualifier-r2/resource_guard.json",
+      "role": "external watchdog resource guard receipt",
+      "status": "PASS_QUALIFIER_R2",
+      "bytes": 7405,
+      "sha256": "d6bf87af89db77756d1aac4caab072feeec43579e1778e1f9ea22930f5b24746"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/watchdog-qualifier-r2/resource_samples.jsonl",
+      "role": "external watchdog resource samples",
+      "status": "PASS_QUALIFIER_R2",
+      "bytes": 5012,
+      "sha256": "67104cefb2c3cc9e717f72ba30a81b0bf2f53168970ebd6d3f0c20936c73a729"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/watchdog-qualifier-r2/stderr.txt",
+      "role": "captured diagnostic or watchdog stream",
+      "status": "PASS_QUALIFIER_R2",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/watchdog-qualifier-r2/stdout.txt",
+      "role": "captured diagnostic or watchdog stream",
+      "status": "PASS_QUALIFIER_R2",
+      "bytes": 152,
+      "sha256": "0b08933518434ac84e67d5c704f8b6ea678c6bcfd94fbf9dc40b2c1af55a6a92"
+    },
+    {
+      "path": "experiments/TRR-P05/runtime/watchdog-qualifier-r2/time.json",
+      "role": "external watchdog timing receipt",
+      "status": "PASS_QUALIFIER_R2",
+      "bytes": 2578,
+      "sha256": "b13c158544ad5b070f60622d3946333a09186a218b41ed9075c6295bd45d1193"
     },
     {
       "path": "coordination/results/TRR-P05.md",
-      "role": "final human-readable result",
-      "status": "PENDING_RUN_AND_REPORT",
-      "sha256": null
+      "role": "approved human-readable P05 result report",
+      "status": "COMPLETED",
+      "bytes": 9540,
+      "sha256": "c5f7236e6ea036a495f4bd1107a7054327d4f6cb960620675b2374d8991efac5"
     }
   ],
   "exclude": [
@@ -115,49 +767,83 @@
       "reason": "superseded setup draft; authoritative plan is plan.json plus review/diagnostic-plan.md"
     },
     {
-      "path": "experiments/TRR-P05/runtime/",
-      "reason": "diagnostic receipts/results are not present yet; add only task-sized final evidence after the run"
-    },
-    {
       "path": "P04 state/checkpoint payloads",
-      "reason": "large inherited scientific inputs; retain externally with provenance, do not duplicate in P05 publication"
+      "reason": "large inherited scientific inputs; retain externally with provenance only"
     },
     {
-      "path": "P04 public activation/candidate/teacher payloads",
-      "reason": "large inherited inputs; retain externally with hashes and aggregate metadata only"
+      "path": "P04 public activation, candidate, teacher, and embedding-table payloads",
+      "reason": "large inherited inputs; runtime receipts bind them by identity without copying payloads"
     },
     {
-      "path": "P04 private target/evaluation/holdout material",
-      "reason": "outside P05 public diagnostic scope; do not publish or open"
+      "path": "P04 private target/evaluation/truth/holdout material",
+      "reason": "outside P05 public diagnostic scope; not opened or published"
     },
     {
       "path": "P03 holdout and agent-one workspaces",
-      "reason": "sealed/out of scope"
+      "reason": "sealed and out of scope"
     },
     {
       "path": "unrecorded P04 initialization or initial GRU trajectory",
-      "reason": "not reconstructible; P05 records the single public affine initial-function reference only"
-    },
-    {
-      "path": "large model/table/activation assets",
-      "reason": "external dependencies; publication should contain compact provenance pointers, not payload copies"
+      "reason": "not reconstructible; only the recorded affine initial-function reference is used"
     },
     {
       "path": "global coordination/STATE.json and active registries",
       "reason": "P05 task-local ownership only"
     }
   ],
-  "pending_final_additions": [
-    "13-state forward diagnostic receipts: one affine initial-function reference plus 12 S/H/D selected/final states",
-    "24 no-update gradient-cell outputs over the four predeclared schedule batches for each seed",
-    "exact replay/correction input availability and source hashes, with no truth content",
-    "final report, compact metrics, and root-reviewed frozen-plan hashes",
-    "final inventory hashes after report and evidence are stable"
+  "failed_attempts": [
+    {
+      "path": "experiments/TRR-P05/runtime/qualifier-r1/failure.json",
+      "status": "EXCLUDED_RETAINED",
+      "reason": "cuDNN RNN backward was invoked in evaluation mode; no scientific result accepted",
+      "source_commit": "f9661f5971184ed1cb8406c9272c17cf2b57ff18",
+      "replacement": "qualifier-r2 under e022b56ff92b4987b88a47418b4df76ccd296cea passed with unchanged geometry"
+    }
+  ],
+  "validation": {
+    "focused_cpu_tests": "7/7 PASS",
+    "receipt": {
+      "path": "experiments/TRR-P05/runtime/tests-r1/validation_receipt.json",
+      "role": "focused CPU validation receipt",
+      "status": "PASS_7_OF_7",
+      "bytes": 1368,
+      "sha256": "21e49164963f9d6f27ceae8125068ddec09cf2187a6fee14f34951c5c8f0f29f"
+    },
+    "mode_regression": {
+      "failure": {
+        "path": "experiments/TRR-P05/runtime/qualifier-r1/failure.json",
+        "role": "retained r1 mode failure",
+        "status": "EXCLUDED_FAILURE",
+        "bytes": 12929,
+        "sha256": "8965804fccef6aac3a27e979ebb681550b8f4fc9c873c814650bd3a8020fc275"
+      },
+      "pass": {
+        "path": "experiments/TRR-P05/runtime/qualifier-r2/diagnostic_receipt.json",
+        "role": "r2 unchanged-geometry qualifier pass",
+        "status": "PASS",
+        "bytes": 13501,
+        "sha256": "4ca98816181692a7b999dfaa2cc2578af1a52bc80c934e658f8865fbcc360f50"
+      },
+      "watchdog": {
+        "path": "experiments/TRR-P05/runtime/watchdog-qualifier-r2/finish.json",
+        "role": "r2 watchdog pass",
+        "status": "PASS",
+        "bytes": 1088,
+        "sha256": "771f91beaa6fba81ca689bf07eb130cf62a24d5d84169d2d24cee88389a698fb"
+      }
+    }
+  },
+  "pending": [
+    {
+      "path": "root publication review",
+      "role": "root-owned final PR metadata/publication",
+      "status": "PENDING"
+    }
   ],
   "integrity_notes": [
-    "This scaffold contains no diagnostic metrics and makes no scientific claim.",
-    "No P05 model or tensor payload was opened while preparing this scaffold.",
-    "The final inventory must preserve truth/access boundaries and must not include private evaluator, target, holdout, or source-text payloads.",
-    "The two plan descriptors are review snapshots and are intentionally marked for refresh before finalization."
+    "The full public diagnostic passed after the qualifier gate with 13 forward states, 24 no-update gradient cells, and zero unavailable states.",
+    "The child and watchdog receipts report no truth access and no optimizer step; runtime evidence is retained without rewriting immutable commands or receipts.",
+    "The initial GRU checkpoint/trajectory is unavailable and was not reconstructed; the affine initial-function reference remains explicitly separate.",
+    "The manifest and inventory self-hashes are omitted to avoid a recursive metadata cycle; their containing commit provides integrity."
   ]
 }
