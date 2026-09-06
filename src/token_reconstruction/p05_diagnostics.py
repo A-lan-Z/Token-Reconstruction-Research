@@ -1004,6 +1004,8 @@ def _validate_candidate_binding(
     *,
     embedding_file_sha256: str,
     affine_file_sha256: str,
+    embedding_tensor_sha256: str | None = None,
+    affine_state_tensor_sha256: str | None = None,
 ) -> dict[str, Any]:
     """Bind cached candidates to the exact public pool and proposer inputs.
 
@@ -1031,6 +1033,10 @@ def _validate_candidate_binding(
         "embedding_file_sha256": str(embedding_file_sha256),
         "affine_file_sha256": str(affine_file_sha256),
     }
+    if embedding_tensor_sha256 is not None:
+        expected["embedding_tensor_sha256"] = str(embedding_tensor_sha256)
+    if affine_state_tensor_sha256 is not None:
+        expected["affine_state_tensor_sha256"] = str(affine_state_tensor_sha256)
     metadata_checks: dict[str, dict[str, str]] = {}
     for key, expected_value in expected.items():
         actual_value = candidate_metadata.get(key)
@@ -1141,6 +1147,13 @@ def run_diagnostics(
         if regenerated["selection_sha256"] != sample.get("selection_sha256"):
             raise P05DiagnosticError("P05 sample index does not match public inputs or schedule ledgers")
         candidate, candidate_metadata = _load_candidate_ids(candidate_preparation)
+        table = load_file(str(regular_file(embedding_table_path, label="public embedding table")), device="cpu").get("embeddings")
+        if table is None:
+            raise P05DiagnosticError("public embedding table lacks embeddings")
+        table = table.contiguous().float()
+        validate_embedding_table(table, hidden_size=EXPECTED_HIDDEN, vocab_size=EXPECTED_VOCAB, require_unit_norm=True)
+        affine_state_for_binding = _load_affine_state(affine_initial_path, hidden_size=EXPECTED_HIDDEN)
+        affine_state_digest = canonical_hash({key: tensor_sha256(value) for key, value in sorted(affine_state_for_binding.items())})
         candidate_binding = _validate_candidate_binding(
             candidate,
             candidate_metadata,
@@ -1149,12 +1162,9 @@ def run_diagnostics(
             evidence,
             embedding_file_sha256=file_sha256(embedding_table_path),
             affine_file_sha256=file_sha256(affine_initial_path),
+            embedding_tensor_sha256=tensor_sha256(table),
+            affine_state_tensor_sha256=affine_state_digest,
         )
-        table = load_file(str(regular_file(embedding_table_path, label="public embedding table")), device="cpu").get("embeddings")
-        if table is None:
-            raise P05DiagnosticError("public embedding table lacks embeddings")
-        table = table.contiguous().float()
-        validate_embedding_table(table, hidden_size=EXPECTED_HIDDEN, vocab_size=EXPECTED_VOCAB, require_unit_norm=True)
         table_device = table.to(device=device, dtype=torch.float32)
         config = StudentArchitectureConfig(hidden_size=EXPECTED_HIDDEN, vocab_size=EXPECTED_VOCAB, gru_width=256)
         state_specs, unavailable = collect_state_specs(state_manifest_path)
