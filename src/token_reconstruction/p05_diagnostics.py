@@ -858,7 +858,10 @@ def gradient_cell(
     rank_mask = extra["rank_mask"]
     for parameter in model.parameters():
         parameter.requires_grad_(True)
-    model.eval()
+    # P04's GRU uses cuDNN's training descriptor during backward even though
+    # this diagnostic never performs an optimizer step. Keep the model in
+    # training mode for the forward/backward graph, matching the fit path.
+    model.train()
     before_digest = state_tensor_digest(model.state_dict())
     projected = model.projected_hidden(activation)
     logits = projected[selected] @ table.transpose(0, 1)

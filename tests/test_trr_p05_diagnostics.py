@@ -164,6 +164,7 @@ def test_h_checkpoint_reports_counterfactual_rank_without_update() -> None:
         "teacher_kind_counts": {"difficult_a1_error": 1},
     }
     table = F.normalize(torch.randn((40, 2), generator=torch.Generator().manual_seed(8)), dim=-1)
+    model.eval()
     before = {key: value.detach().clone() for key, value in model.state_dict().items()}
     cell = gradient_cell(
         model,
@@ -178,6 +179,7 @@ def test_h_checkpoint_reports_counterfactual_rank_without_update() -> None:
         state_id="synthetic-h",
     )
     after = model.state_dict()
+    assert model.training is True
     assert all(torch.equal(before[key], after[key]) for key in before)
     assert cell["teacher_rows"] == 1
     assert cell["losses"]["rank"] > 0.0
