@@ -136,10 +136,11 @@ SAFE_ENVIRONMENT_KEYS = (
     "TRANSFORMERS_OFFLINE",
 )
 # The target update uses the full-vocabulary causal loss at the worst fixed
-# geometry.  These are conservative process-level bounds for the P04 window;
-# the measured qualification receipt remains authoritative.
-MIN_FREE_GPU_BYTES = 8 * 2**30
-MAX_RESERVED_GPU_BYTES = 8 * 2**30
+# geometry.  The internal GPU bounds were approved after a complete one-step
+# Adam qualification measured 8.505 GiB peak reserved and 6.014 GiB free; the
+# revised 10/5 GiB bounds retain approximately 1.495/1.014 GiB margin.
+MIN_FREE_GPU_BYTES = 5 * 2**30
+MAX_RESERVED_GPU_BYTES = 10 * 2**30
 MAX_HOST_RSS_BYTES = 16 * 2**30
 MIN_HOST_AVAILABLE_BYTES = 10 * 2**30
 

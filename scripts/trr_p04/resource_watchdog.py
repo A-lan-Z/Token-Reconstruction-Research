@@ -371,11 +371,23 @@ def main(argv: list[str] | None = None) -> int:
                 else:
                     sample = _sample(pgid, require_member=False, elapsed_seconds=elapsed)
             except ResourceReadError as exc:
-                # If the leader is already reaped and the group has no members,
-                # there is no live resource state left to observe.  Otherwise
-                # fail closed as required.
-                if leader_returncode is not None and "no readable live members" in str(exc):
-                    sample = None
+                # A child can disappear between the poll and /proc status
+                # reads.  Re-poll before treating that race as an unreadable
+                # live resource.  If the leader has exited, descendants are
+                # still sampled with require_member=False; only a genuinely
+                # live unreadable group fails closed.
+                leader_returncode = process.poll()
+                if leader_returncode is not None:
+                    try:
+                        sample = _sample(pgid, require_member=False, elapsed_seconds=elapsed)
+                    except ResourceReadError as retry_exc:
+                        if "no readable live members" in str(retry_exc):
+                            sample = None
+                        else:
+                            termination_reason = "live_resource_data_unreadable"
+                            errors.append(str(retry_exc))
+                            termination_actions = _terminate_group(process, pgid, options.kill_grace_seconds)
+                            break
                 else:
                     termination_reason = "live_resource_data_unreadable"
                     errors.append(str(exc))
