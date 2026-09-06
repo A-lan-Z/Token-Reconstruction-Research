@@ -271,29 +271,43 @@ def _selection_rows(path: Path | None) -> list[dict[str, Any]] | None:
     return result
 
 
-def _default_selection(pool: PublicPool, *, lens: Any, normalized_embeddings: torch.Tensor, device: torch.device, seed: int) -> list[dict[str, Any]]:
-    """Select 256 public A1-error rows plus a seeded 128-row audit."""
+def _default_selection(
+    pool: PublicPool,
+    *,
+    prepared_proposals: torch.Tensor,
+    prepared_index: Mapping[str, int],
+    seed: int,
+) -> list[dict[str, Any]]:
+    """Select fixed public rows from the sole frozen P04 proposer artifact.
 
-    active_x = pool.observations[:, 1:][pool.valid_mask[:, 1:]]
-    if active_x.numel() == 0:
-        raise P04TeacherError("correction pool has no active post-BOS rows")
-    reference = getattr(lens, "forward", None)
-    if not callable(reference):
-        raise P04TeacherError("teacher lens has no forward method")
-    with torch.inference_mode():
-        logits = reference(active_x.to(device=device, dtype=torch.float32), normalized_embeddings)
-        top1 = logits.argmax(dim=-1).cpu()
-    labels = pool.labels[:, 1:][pool.valid_mask[:, 1:]].cpu()
-    wrong_flat = torch.nonzero(top1.ne(labels), as_tuple=False).reshape(-1).tolist()
+    The proposal tensor already contains the PR7-affine-state top-512 rows.
+    Reading its top-1 column avoids materializing a full correction-pool by
+    vocabulary score matrix (which would be tens of GiB) and makes difficult
+    row selection use exactly the proposer that feeds H/D.
+    """
+
+    if prepared_proposals.ndim != 3 or prepared_proposals.shape[2] != 512:
+        raise P04TeacherError("candidate preparation proposal geometry changed")
+    try:
+        prepared_rows = [int(prepared_index[record_id]) for record_id in pool.record_ids]
+    except KeyError as exc:
+        raise P04TeacherError("candidate preparation is missing a correction record") from exc
+    row_indices = torch.tensor(prepared_rows, dtype=torch.long)
+    top1 = prepared_proposals[row_indices, :, 0].to(dtype=torch.int64, device="cpu")
+    labels = pool.labels.to(device="cpu", dtype=torch.int64)
+    valid = pool.valid_mask.to(device="cpu", dtype=torch.bool).clone()
+    valid[:, 0] = False
+    wrong = top1.ne(labels) & valid
+    wrong_flat = torch.nonzero(wrong, as_tuple=False).tolist()
     if len(wrong_flat) < 256:
-        raise P04TeacherError(f"correction pool has only {len(wrong_flat)} frozen A1 errors; need 256")
-    coords = pool.valid_mask[:, 1:].nonzero(as_tuple=False)
-    difficult = [coords[int(flat)] for flat in wrong_flat[:256]]
-    difficult_keys = {(int(row), int(position) + 1) for row, position in difficult}
+        raise P04TeacherError(f"correction pool has only {len(wrong_flat)} frozen P04 proposer errors; need 256")
+    difficult = [(int(row), int(position)) for row, position in wrong_flat[:256]]
+    difficult_keys = set(difficult)
+    coords = torch.nonzero(valid, as_tuple=False).tolist()
     remaining = [
-        (int(row), int(position) + 1)
-        for row, position in coords.tolist()
-        if (int(row), int(position) + 1) not in difficult_keys
+        (int(row), int(position))
+        for row, position in coords
+        if (int(row), int(position)) not in difficult_keys
     ]
     if len(remaining) < 128:
         raise P04TeacherError("correction pool has fewer than 128 non-difficult audit rows")
@@ -399,7 +413,12 @@ def qualify_teacher(
         raise P04TeacherError("candidate preparation pool row metadata is inconsistent")
     selection = _selection_rows(selection_path)
     if selection is None:
-        selection = _default_selection(pool, lens=lens, normalized_embeddings=normalized_embeddings, device=device, seed=selection_seed)
+        selection = _default_selection(
+            pool,
+            prepared_proposals=prepared_proposals,
+            prepared_index=prepared_index,
+            seed=selection_seed,
+        )
     selection = _validate_selection(pool, selection)
     index_by_id = {record_id: row for row, record_id in enumerate(pool.record_ids)}
     candidate_rows: list[torch.Tensor] = []
@@ -515,6 +534,7 @@ def qualify_teacher(
         "sigma_q": repr(sigma_q),
         "tie_tolerance": repr(tie_tolerance),
         "selection_seed": str(selection_seed),
+        "selection_basis": "p04_public_affine_proposal_top1_from_frozen_candidate_artifact",
         "selection_sha256": canonical_hash(rows_json),
         "reference_path": str(reference_path.expanduser().resolve()),
         "reference_sha256": file_sha256(reference_path),
