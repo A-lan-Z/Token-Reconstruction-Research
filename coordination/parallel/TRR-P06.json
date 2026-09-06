@@ -3,27 +3,34 @@
   "task_id": "TRR-P06",
   "branch": "task/TRR-P06",
   "worktree": "/tmp/trr-p06",
-  "status": "SETUP_PACKET_TRUNCATED_HOLD",
-  "updated_utc": "2026-09-06T09:06:49Z",
+  "status": "SETUP_READY_RESOURCE_PREFLIGHT_PENDING",
+  "updated_utc": "2026-09-06T09:19:45Z",
   "parent": {
     "task_id": "TRR-0006",
     "branch": "task/TRR-0006",
     "verified_commit": "f10f8ba438973b3cb260d41707fbb14293db9cd3",
     "parent_state": "PUBLISHED_REVIEWED_PARENT",
-    "merge_allowed": false
+    "merge_allowed": false,
+    "parent_pr": 11,
+    "parent_pr_state": "OPEN_UNMERGED"
   },
   "control_packet": {
     "path": "coordination/requests/TRR-P06.md",
-    "bytes": 5122,
-    "sha256": "cc8241b9db46e60a52070a23127dc783862c93e38668df15b2fa3e3e6e475e57",
+    "bytes": 6162,
+    "sha256": "6f2883f1ec078877358c78fe5d05566ef845a1329f4e8f7a4a96aa69c5c5f992",
     "byte_identical_to_supplied_packet": true,
-    "truncated": true,
-    "truncation_marker": "A well-trained negative result support",
-    "clarification_status": "PENDING_USER_PACKET_TAIL"
+    "truncated": false,
+    "clarification_status": "COMPLETE_PACKET_RECEIVED",
+    "previous_truncated_packet": {
+      "path": "coordination/requests/TRR-P06-TRUNCATED.md",
+      "bytes": 5122,
+      "sha256": "cc8241b9db46e60a52070a23127dc783862c93e38668df15b2fa3e3e6e475e57",
+      "status": "PRESERVED_ORIGINAL_TRUNCATED_CANONICAL"
+    }
   },
   "ownership": {
     "setup_provenance_evidence": "P05 setup/evidence owner",
-    "implementation_and_design": "root-coordinated after packet clarification",
+    "implementation_and_design": "root-coordinated after resource preflight and plan review",
     "publication_owner": "root",
     "pr_merge_allowed": false
   },
@@ -43,11 +50,12 @@
     "packet_tail_inferred": false
   },
   "resource_gate": {
-    "status": "HOLD_TRUNCATED_PACKET_NO_COMPUTE",
+    "status": "RESOURCE_COORDINATION_AND_PREFLIGHT_PENDING",
     "gpu_jobs_started": false,
     "heavy_cpu_jobs_started": false,
     "paid_compute": false,
-    "reservation": "none"
+    "reservation": "none",
+    "preflight_required_before_run": true
   },
   "setup_artifacts": {
     "control_packet": "coordination/requests/TRR-P06.md",
@@ -60,8 +68,8 @@
     "global_state_and_registry": "UNCHANGED"
   },
   "pending": [
-    "user clarification or complete packet tail",
-    "root/design review of the completed P06 plan after clarification",
-    "no experiment, data selection, model loading, or GPU reservation before clarification"
+    "resource coordination and documented CPU/GPU preflight",
+    "fixed task-local design/selection and exclusion plan review",
+    "no experiment, data selection, model loading, or GPU reservation before preflight and root clearance"
   ]
 }
