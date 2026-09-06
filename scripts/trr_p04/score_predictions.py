@@ -585,6 +585,184 @@ def _anchor_table(
     return result
 
 
+def _anchor_pair_summary(
+    left_predictions: Mapping[str, list[int]],
+    right_predictions: Mapping[str, list[int]],
+    truths: Mapping[str, list[int]],
+    anchor_ids: Sequence[str],
+    *,
+    left_label: str,
+    right_label: str,
+) -> dict[str, Any]:
+    """Summarize paired native-anchor outcomes without returning truth tokens."""
+
+    left_correct_tokens = 0
+    right_correct_tokens = 0
+    token_gains = 0
+    token_losses = 0
+    token_ties = 0
+    left_exact_records = 0
+    right_exact_records = 0
+    exact_record_gains = 0
+    exact_record_losses = 0
+    exact_record_ties = 0
+    records: list[dict[str, Any]] = []
+    for record_id in anchor_ids:
+        expected = truths[record_id]
+        left = left_predictions[record_id]
+        right = right_predictions[record_id]
+        if len(left) != len(expected) or len(right) != len(expected):
+            raise ScoreError(f"anchor comparison length changed for {record_id}")
+        left_matches = [int(predicted == truth) for predicted, truth in zip(left, expected)]
+        right_matches = [int(predicted == truth) for predicted, truth in zip(right, expected)]
+        left_count = sum(left_matches)
+        right_count = sum(right_matches)
+        left_exact = left_count == len(expected)
+        right_exact = right_count == len(expected)
+        left_correct_tokens += left_count
+        right_correct_tokens += right_count
+        token_gains += sum(left_ok and not right_ok for left_ok, right_ok in zip(left_matches, right_matches))
+        token_losses += sum(right_ok and not left_ok for left_ok, right_ok in zip(left_matches, right_matches))
+        token_ties += sum(left_ok == right_ok for left_ok, right_ok in zip(left_matches, right_matches))
+        left_exact_records += int(left_exact)
+        right_exact_records += int(right_exact)
+        exact_record_gains += int(left_exact and not right_exact)
+        exact_record_losses += int(right_exact and not left_exact)
+        exact_record_ties += int(left_exact == right_exact)
+        records.append(
+            {
+                "record_id": record_id,
+                "scored_tokens": len(expected),
+                "left_correct_tokens": left_count,
+                "right_correct_tokens": right_count,
+                "left_exact": left_exact,
+                "right_exact": right_exact,
+            }
+        )
+    scored_tokens = sum(len(truths[record_id]) for record_id in anchor_ids)
+    if scored_tokens <= 0:
+        raise ScoreError("anchor comparison has no scored tokens")
+    return {
+        "left": left_label,
+        "right": right_label,
+        "left_correct_tokens": left_correct_tokens,
+        "right_correct_tokens": right_correct_tokens,
+        "left_token_accuracy": left_correct_tokens / scored_tokens,
+        "right_token_accuracy": right_correct_tokens / scored_tokens,
+        "token_accuracy_delta": (left_correct_tokens - right_correct_tokens) / scored_tokens,
+        "token_gains": token_gains,
+        "token_losses": token_losses,
+        "token_ties": token_ties,
+        "left_exact_records": left_exact_records,
+        "right_exact_records": right_exact_records,
+        "exact_record_gain": exact_record_gains,
+        "exact_record_loss": exact_record_losses,
+        "exact_record_ties": exact_record_ties,
+        "exact_record_rate_delta": (left_exact_records - right_exact_records) / len(anchor_ids),
+        "records": records,
+    }
+
+
+def _native_anchor_subset_diagnostics(
+    groups: Mapping[tuple[str, int | None, str, bool], Mapping[str, list[int]]],
+    truths: Mapping[str, Mapping[str, list[int]]],
+    panel: Mapping[str, Mapping[str, Any]],
+    expected: Sequence[tuple[str, int | None, str, bool]],
+) -> list[dict[str, Any]]:
+    """Compare native A1+A2 with affine/D on the separate 12-record anchor.
+
+    The native group has no training seed.  Each row pairs it with the same
+    condition and seed's student affine and D groups.  Only correctness counts
+    are emitted, so this diagnostic does not disclose truth token IDs.
+    """
+
+    anchor_ids = sorted(record_id for record_id, row in panel.items() if row["anchor"])
+    if len(anchor_ids) != 12 or any(int(panel[record_id]["length_stratum"]) != 32 for record_id in anchor_ids):
+        raise ScoreError("native anchor diagnostic requires twelve 32-token records")
+    scored_tokens = sum(int(panel[record_id]["length_stratum"]) for record_id in anchor_ids)
+    if scored_tokens != 384:
+        raise ScoreError("native anchor diagnostic denominator must be 384 tokens")
+    expected_set = set(expected)
+    result: list[dict[str, Any]] = []
+    for condition in DEFAULT_CONDITIONS:
+        native_group = ("native_a1_a2", None, condition, True)
+        if native_group not in expected_set or native_group not in groups:
+            raise ScoreError(f"native anchor diagnostic group is missing: {native_group}")
+        native_predictions = groups[native_group]
+        for seed in DEFAULT_SEEDS:
+            affine_group = ("affine_same_data", seed, condition, False)
+            d_group = ("student_d", seed, condition, False)
+            for group in (affine_group, d_group):
+                if group not in expected_set or group not in groups:
+                    raise ScoreError(f"native anchor diagnostic group is missing: {group}")
+            truth = {record_id: truths[condition][record_id] for record_id in anchor_ids}
+            native_vs_affine = _anchor_pair_summary(
+                native_predictions,
+                groups[affine_group],
+                truth,
+                anchor_ids,
+                left_label="native_a1_a2",
+                right_label="affine_same_data",
+            )
+            native_vs_d = _anchor_pair_summary(
+                native_predictions,
+                groups[d_group],
+                truth,
+                anchor_ids,
+                left_label="native_a1_a2",
+                right_label="student_d",
+            )
+            native_fixed_affine_tokens = 0
+            d_recovers_native_fixed_affine_tokens = 0
+            native_fixed_affine_records = 0
+            d_recovers_native_fixed_affine_records = 0
+            for record_id in anchor_ids:
+                expected_tokens = truth[record_id]
+                native = native_predictions[record_id]
+                affine = groups[affine_group][record_id]
+                d_prediction = groups[d_group][record_id]
+                native_correct = [predicted == truth_token for predicted, truth_token in zip(native, expected_tokens)]
+                affine_correct = [predicted == truth_token for predicted, truth_token in zip(affine, expected_tokens)]
+                d_correct = [predicted == truth_token for predicted, truth_token in zip(d_prediction, expected_tokens)]
+                fixed = [native_ok and not affine_ok for native_ok, affine_ok in zip(native_correct, affine_correct)]
+                recovered = [fixed_ok and d_ok for fixed_ok, d_ok in zip(fixed, d_correct)]
+                native_fixed_affine_tokens += sum(fixed)
+                d_recovers_native_fixed_affine_tokens += sum(recovered)
+                native_exact = all(native_correct)
+                affine_exact = all(affine_correct)
+                d_exact = all(d_correct)
+                fixed_record = native_exact and not affine_exact
+                recovered_record = fixed_record and d_exact
+                native_fixed_affine_records += int(fixed_record)
+                d_recovers_native_fixed_affine_records += int(recovered_record)
+            result.append(
+                {
+                    "condition": condition,
+                    "seed": seed,
+                    "anchor_records": len(anchor_ids),
+                    "scored_tokens": scored_tokens,
+                    "denominator_scope": "12 predeclared 32-token native-anchor records; separate from 72-record student panel",
+                    "native_vs_affine": native_vs_affine,
+                    "native_vs_d": native_vs_d,
+                    "native_fixed_affine_error_tokens": native_fixed_affine_tokens,
+                    "student_d_recovers_native_fixed_affine_error_tokens": d_recovers_native_fixed_affine_tokens,
+                    "student_d_recovery_rate_on_native_fixed_affine_tokens": (
+                        d_recovers_native_fixed_affine_tokens / native_fixed_affine_tokens
+                        if native_fixed_affine_tokens
+                        else None
+                    ),
+                    "native_fixed_affine_error_records": native_fixed_affine_records,
+                    "student_d_recovers_native_fixed_affine_error_records": d_recovers_native_fixed_affine_records,
+                    "student_d_recovery_rate_on_native_fixed_affine_records": (
+                        d_recovers_native_fixed_affine_records / native_fixed_affine_records
+                        if native_fixed_affine_records
+                        else None
+                    ),
+                }
+            )
+    return result
+
+
 def _score_group(
     predictions: Mapping[str, list[int]], truth: Mapping[str, list[int]], panel: Mapping[str, Mapping[str, Any]], *, anchor_only: bool = False
 ) -> tuple[dict[str, Any], dict[str, dict[str, float]]]:
@@ -717,6 +895,7 @@ def score_predictions(
     pairwise = _pairwise(groups, truths, panel_records, expected)
     primary_pairwise = _primary_pairwise(groups, truths, panel_records, expected)
     anchor_table = _anchor_table(groups, truths, panel_records, expected)
+    native_anchor_subset = _native_anchor_subset_diagnostics(groups, truths, panel_records, expected)
     score = {
         "schema": SCORE_SCHEMA,
         "task_id": TASK_ID,
@@ -739,6 +918,7 @@ def score_predictions(
         "pairwise_record_cluster_bootstrap": pairwise,
         "primary_target_pairwise_token_bootstrap": primary_pairwise,
         "native_anchor_table": anchor_table,
+        "native_anchor_subset_diagnostics": native_anchor_subset,
         "uncertainty_contract": {
             "cluster_unit": "source_record_id",
             "paired_target_conditions_are_not_independent_clusters": True,
