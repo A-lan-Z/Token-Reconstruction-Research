@@ -78,3 +78,15 @@ weighted rank loss; the focused CPU file passes 5 tests. These two findings
 are cleared. Candidate metadata binding and fail-closed all-12-state
 validation remain pending as stated above; no GPU or truth diagnostic has
 been run.
+
+## Targeted re-review of ee77af9/09b6fe1: PASS
+
+The state check now fails closed unless all six selected and six final S/H/D
+artifacts are present. The actual P04 manifest resolves to 12 required states
+with no unavailable entries. Candidate validation now binds the combined pool
+record order, observation and record hashes, dimensions, candidate/proposer
+constants, embedding and affine file hashes, and optional tensor digests
+before diagnostic states are loaded; the synthetic mismatch test rejects a
+changed pool-order hash. The recorded affine tensor digest independently
+matches the candidate metadata. The focused P05 CPU tests pass 7/7. No GPU,
+truth, or diagnostic workload was run in this review.
