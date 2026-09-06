@@ -3,8 +3,8 @@
   "task_id": "TRR-P05",
   "branch": "task/TRR-P05",
   "worktree": "/tmp/trr-p05",
-  "status": "MANIFEST_SCAFFOLD_READY_DIAGNOSTICS_PENDING",
-  "updated_utc": "2026-09-06T06:54:55.476578+00:00",
+  "status": "PREFLIGHT_READY_DIAGNOSTICS_PENDING",
+  "updated_utc": "2026-09-06T07:24:17Z",
   "parent": {
     "task_id": "TRR-P04",
     "branch": "task/TRR-P04",
@@ -55,7 +55,9 @@
     "authoritative_plan": "experiments/TRR-P05/plan.json",
     "diagnostic_review": "experiments/TRR-P05/review/diagnostic-plan.md",
     "manifest": "experiments/TRR-P05/manifest.json",
-    "publication_inventory": "experiments/TRR-P05/publication-files.json"
+    "publication_inventory": "experiments/TRR-P05/publication-files.json",
+    "resource_preflight": "experiments/TRR-P05/setup/resource_preflight.json",
+    "diagnostic_commands": "experiments/TRR-P05/setup/diagnostic_commands.txt"
   },
   "preservation": {
     "p03_status": "STOP_VARIANT_HOLDOUT_SEALED",
@@ -64,10 +66,10 @@
     "new_truth_or_target_data": false
   },
   "pending": [
-    "root/design freeze of the authoritative plan and review document",
-    "implementation availability check for the exact six replay plus two correction schedule batches",
-    "bounded no-update diagnostic run and result report",
-    "final manifest and publication-inventory hash refresh after the run/report exist"
+    "root approval and exclusive resource reservation for the nonexecuting preflight contract",
+    "qualifier run from the clean candidate/state-provenance source head",
+    "bounded full diagnostic only after qualifier PASS",
+    "final manifest/publication inventory/result report refresh after diagnostics"
   ],
   "evidence_pointers": {
     "asset_inventory": {
@@ -109,6 +111,16 @@
       "path": "experiments/TRR-P05/publication-files.json",
       "role": "curated publication allowlist scaffold",
       "status": "PENDING_DIAGNOSTIC_RUN_AND_REPORT"
+    },
+    "resource_preflight": {
+      "path": "experiments/TRR-P05/setup/resource_preflight.json",
+      "role": "static resource/geometry preflight and exact command record",
+      "status": "COMPLETE_NO_DIAGNOSTIC_EXECUTED"
+    },
+    "diagnostic_commands": {
+      "path": "experiments/TRR-P05/setup/diagnostic_commands.txt",
+      "role": "exact sample/qualifier/full command text",
+      "status": "RECORDED_NOT_EXECUTED"
     }
   },
   "inventory_summary": {

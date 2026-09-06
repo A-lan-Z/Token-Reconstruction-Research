@@ -1,0 +1,291 @@
+{
+  "schema": "token-reconstruction.trr-p05-resource-preflight.v1",
+  "task_id": "TRR-P05",
+  "status": "PASS_STATIC_PREFLIGHT_NO_DIAGNOSTIC_EXECUTED",
+  "captured_utc": "2026-09-06T07:24:17Z",
+  "source_binding": {
+    "executable_commit": "09b6fe17e4573ce6b18943d5a2811a163d1b978f",
+    "checked_task_head": "3d5098f9f722ebe050ca6de627ed95c934c0e6d1",
+    "checked_head_delta": "3d5098f is a documentation-only provenance review descendant of the executable source commit",
+    "runner": {
+      "path": "/tmp/trr-p05/scripts/trr0004_p05_diagnostic.py",
+      "role": "P05 CLI runner",
+      "bytes": 4659,
+      "sha256": "5b434bedf79d28ea6075f6264246a47660d212d2f520f31cdb85378ae9ca80c0"
+    },
+    "module": {
+      "path": "/tmp/trr-p05/src/token_reconstruction/p05_diagnostics.py",
+      "role": "P05 diagnostic implementation",
+      "bytes": 68229,
+      "sha256": "900a09ac8f8924476ca7fe06d9168208423759cb3e2d740ac6baaa4b7835278d"
+    },
+    "tests": {
+      "path": "/tmp/trr-p05/tests/test_trr_p05_diagnostics.py",
+      "role": "focused P05 diagnostics tests; implementation reports 7 tests passing",
+      "bytes": 13763,
+      "sha256": "7422f77922cb1886f7b3b7f86a5ea59b9503a2c099bfbe8e5468a0b85ce75ce8"
+    },
+    "authoritative_plan": {
+      "path": "/tmp/trr-p05/experiments/TRR-P05/plan.json",
+      "role": "authoritative score-independent plan; refresh after root freeze",
+      "bytes": 4611,
+      "sha256": "1b7a7a44df5452854b9c975a5491a2ef4a25492743aeb645978ccba9936a6dcb"
+    },
+    "review_plan": {
+      "path": "/tmp/trr-p05/experiments/TRR-P05/review/diagnostic-plan.md",
+      "role": "human-readable plan companion; refresh after root freeze",
+      "bytes": 11335,
+      "sha256": "f119301a7769d9ba9d34931bede7d62a81181ea395d8efaed0a720f67e32da99"
+    },
+    "implementation_audit": {
+      "path": "/tmp/trr-p05/experiments/TRR-P05/review/implementation-audit.md",
+      "role": "implementation provenance audit",
+      "bytes": 5036,
+      "sha256": "b91dfb12e9fa250d0cf6ad7ab4b7506386eb7843031efd6e3dd3b68a3a39f6d5"
+    }
+  },
+  "live_resources": {
+    "snapshot_utc": "2026-09-06T07:24:17Z",
+    "gpu": {
+      "index": 0,
+      "name": "NVIDIA GeForce RTX 5080",
+      "total_mib_reported": 16303,
+      "free_mib_reported": 12870,
+      "used_mib_reported": 3108,
+      "total_bytes_estimate": 17094934528,
+      "free_bytes_estimate": 13495173120,
+      "used_bytes_estimate": 3258974208,
+      "compute_process_query": "no rows returned",
+      "read_only_commands": [
+        "nvidia-smi --query-gpu=index,name,memory.total,memory.free,memory.used --format=csv,noheader,nounits",
+        "nvidia-smi --query-compute-apps=pid,process_name,used_memory --format=csv,noheader,nounits"
+      ]
+    },
+    "cpu": {
+      "logical_cpus": 32,
+      "loadavg_1m": 0.84,
+      "loadavg_5m": 1.14,
+      "loadavg_15m": 0.95,
+      "memory_total_bytes": 32411611136,
+      "memory_used_bytes": 10621308928,
+      "memory_free_bytes": 14932320256,
+      "memory_available_bytes": 21790302208,
+      "swap_used_bytes": 19259392
+    }
+  },
+  "geometry": {
+    "record_batch_size": 8,
+    "sequence_positions": 192,
+    "hidden_size": 2048,
+    "vocab_size": 128256,
+    "selected_position_budget": 512,
+    "gru_width": 256,
+    "projection_chunk": 512,
+    "dtype_inputs": "BF16 on CPU source, FP32 for student/autograd path",
+    "candidate_k": 32,
+    "gradient_raw_components": [
+      "full CE",
+      "hard-confusion softplus",
+      "teacher-ranking softplus",
+      "negative gold-margin diagnostic"
+    ],
+    "gradient_direct_autograd_probes": [
+      "CE",
+      "hard",
+      "rank",
+      "actual P04 total",
+      "hypothetical D total",
+      "negative gold margin"
+    ],
+    "retained_flattened_gradient_vectors": 7,
+    "trainable_parameter_count": 6493697,
+    "trainable_parameter_bytes_fp32": 25974788
+  },
+  "memory_estimate": {
+    "method": "static tensor geometry plus closest measured P04 student backward; this is an estimate, not a run result",
+    "gpu_bytes_by_tensor": {
+      "embedding_table_tensor_fp32": 1050673152,
+      "largest_full_vocab_logit_chunk_fp32": 262668288,
+      "input_activation_batch_fp32": 12582912,
+      "projected_activation_batch_fp32": 12582912,
+      "selected_hidden_fp32": 4194304,
+      "gru_output_batch_fp32": 1572864,
+      "trainable_parameter_storage_fp32": 25974788,
+      "one_flattened_gradient_vector_fp32": 25974788,
+      "replay_activation_bf16": 943718400,
+      "correction_activation_bf16": 201326592,
+      "combined_activation_bf16": 1145044992,
+      "candidate_ids_i64": 71565312,
+      "combined_labels_i64": 2236416,
+      "combined_mask_bool": 279552,
+      "seven_flattened_gradient_vectors_fp32": 181823516
+    },
+    "gpu_lower_bound_bytes": 1552072736,
+    "gpu_lower_bound_gib": 1.44548,
+    "expected_peak_allocated_gib": 3.25,
+    "expected_peak_reserved_gib": 4.0,
+    "basis": {
+      "prior_p04_student_backward_peak_allocated": "2.51 GB as recorded by root",
+      "prior_p04_student_backward_peak_reserved": "2.75 GB as recorded by root",
+      "p05_difference": "no optimizer state, but six direct autograd probes and seven retained flattened FP32 vectors while the full-vocabulary logit chunk remains live",
+      "excluded_from_lower_bound": "autograd saved intermediates, CUDA kernel workspaces, allocator fragmentation, transient gradient tuples, and runtime overhead"
+    },
+    "cpu_retained_input_bytes": 3414844416,
+    "cpu_retained_input_gib": 3.180322,
+    "cpu_breakdown": {
+      "replay_source_activation_bf16": 943718400,
+      "correction_source_activation_bf16": 201326592,
+      "combined_activation_bf16": 1145044992,
+      "public_embedding_table_cpu_fp32": 1050673152,
+      "candidate_ids_only_cpu_i64": 71565312,
+      "candidate_preparation_file_bytes_not_loaded_as_whole": 609532592,
+      "note": "load_public_pool retains replay/correction and torch.cat combined tensors; candidate loader materializes candidate_ids [1456,192,32], not proposal K512; labels/masks/schedules/teacher/state metadata are small relative terms"
+    },
+    "expected_peak_host_rss_gib": 5.0,
+    "prior_closest_public_teacher_host_rss": "3,669,938,176 bytes; this is teacher qualification evidence and not used as the P05 gradient estimate"
+  },
+  "guard": {
+    "minimum_free_gpu_bytes": 8589934592,
+    "maximum_reserved_gpu_bytes": 6442450944,
+    "maximum_host_rss_bytes": 17179869184,
+    "current_free_margin_above_floor_gib": 4.568359,
+    "estimated_reserved_margin_below_cap_gib": 2.0,
+    "estimated_free_margin_after_expected_reserve_gib": 0.568359,
+    "external_watchdog_required": true,
+    "outer_timeout_seconds": 900,
+    "fail_closed_on": [
+      "free GPU below 8 GiB",
+      "PyTorch reserved above 6 GiB",
+      "host RSS above 16 GiB",
+      "allocator/driver/temperature anomaly",
+      "unreadable live resource data"
+    ]
+  },
+  "input_availability": {
+    "replay_rows": 1200,
+    "correction_rows": 256,
+    "combined_rows": 1456,
+    "replay_records_and_observations": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_cut4.safetensors",
+      "role": "P04 PR7 public replay observations",
+      "bytes": 947176648,
+      "sha256": "d1c78fcf1acc91b57d51355ee11f267bf4c12f1bc7d5160164b3b6ea11b45344",
+      "hash_status": "recorded_prior_metadata_no_new_payload_hash",
+      "record_manifest": {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fit/affine_fit_records.json",
+        "role": "P04 PR7 public replay record manifest",
+        "bytes": 463510,
+        "sha256": "3f733212efd62b19e71f60f002f4e9756b4975ebfb4dcabf0ac27935929f94ff",
+        "hash_status": "recorded_prior_metadata_no_new_payload_hash"
+      }
+    },
+    "correction_records_and_observations": {
+      "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/correction_cut4.safetensors",
+      "role": "P04 public correction observations",
+      "bytes": 202066296,
+      "sha256": "c9eb10065ee765a95aa0d30bae91f3061fecf3bfa5aa52c56a3eaa62d4c216b4",
+      "hash_status": "recorded_prior_metadata_no_new_payload_hash",
+      "record_manifest": {
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/correction_records.json",
+        "role": "P04 public correction record manifest",
+        "bytes": 218657,
+        "sha256": "3f993ef70ef153d0f2e13dc86748378b93ccfd0b85d1c8bd0f033c53b3f1484d",
+        "hash_status": "recorded_prior_metadata_no_new_payload_hash"
+      }
+    },
+    "candidate_preparation": {
+      "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/candidate-preparation-r2/candidate_preparation.safetensors",
+      "role": "P04 cached candidate IDs; only candidate_ids tensor is loaded by runner",
+      "bytes": 609532592,
+      "sha256": "ecf031a606a8bce22116b65d2dcbf5bc25596c80961767a40924081f8f03b1e5",
+      "hash_status": "recorded_prior_metadata_no_new_payload_hash"
+    },
+    "teacher_evidence": {
+      "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/teacher-qualification-r3/teacher_evidence.safetensors",
+      "role": "P04 cached public teacher evidence",
+      "bytes": 928536,
+      "sha256": "0f15a16978d0daa6bbf8a7771109350a633a7fc03a108db5fd8d782255ba84f9",
+      "hash_status": "recorded_prior_metadata_no_new_payload_hash"
+    },
+    "schedules": {
+      "1737": {
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-1737/position_schedule.safetensors",
+        "role": "P04 immutable position schedule",
+        "bytes": 4800600,
+        "sha256": "7392122efd9eaf1250ceeabdc84843daea61f2bc1b9e8360dfe016fe5a7285bb",
+        "hash_status": "recorded_prior_metadata_no_new_payload_hash"
+      },
+      "2711": {
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-2711/position_schedule.safetensors",
+        "role": "P04 immutable position schedule",
+        "bytes": 4800600,
+        "sha256": "a1079f71d4a468b0c0a5c2b7587dbf2260e7f0069378e2f61cc640864fe6145f",
+        "hash_status": "recorded_prior_metadata_no_new_payload_hash"
+      },
+      "required_batch_contract": "four predeclared zero-based steps [0,999,1999,2999], each retaining six replay plus two correction records"
+    },
+    "states_and_public_reference": {
+      "state_manifest": {
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/selected_state_manifest-r3.json",
+        "role": "P04 selected/final S/H/D state manifest; all 12 stored states required",
+        "bytes": 78479,
+        "sha256": "1d2f1ea9cf38cbf961a99d6c79ebf7b72c0e2e4f23a21d303e5db73a5f4cb3f6",
+        "hash_status": "recorded_prior_metadata_no_new_payload_hash"
+      },
+      "affine_initial": {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/fit_large_v1/historical_affine_ce_no_vocab_bias.safetensors",
+        "role": "recorded public affine initial-function reference",
+        "bytes": 16786108,
+        "sha256": "09c5b852373d8555b06508a79bb00c94041202702b61b121b35fa2b6f9f64e65",
+        "hash_status": "recorded_prior_metadata_no_new_payload_hash"
+      },
+      "scope": "13 forward states: one affine initial-function reference plus 12 selected/final S/H/D states; no initial GRU reconstruction"
+    },
+    "public_embedding_table": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+      "role": "fixed public normalized output table",
+      "bytes": 1050673488,
+      "sha256": "ad4201384d7eea4fb4da35a4dc1ecfa2bd0ea011a152f53d78e54cda57e6ddf0",
+      "hash_status": "recorded_prior_metadata_no_new_payload_hash"
+    }
+  },
+  "commands": {
+    "path": "experiments/TRR-P05/setup/diagnostic_commands.txt",
+    "status": "RECORDED_NOT_EXECUTED",
+    "sample_ledger_already_materialized": "/tmp/trr-p05/experiments/TRR-P05/runtime/public-sample-r1/sample_index.json",
+    "qualifier": {
+      "mode": "qualify",
+      "output_root": "/tmp/trr-p05/experiments/TRR-P05/runtime/qualifier-r1",
+      "selection_expected_from_frozen_metadata": {
+        "seed": 2711,
+        "step": 1999,
+        "selected_positions": 512,
+        "teacher_rows": 4
+      },
+      "command": "cd /tmp/trr-p05 && env CUDA_VISIBLE_DEVICES=0 PYTHONPATH=src OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 OPENBLAS_NUM_THREADS=4 HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false python3 scripts/trr0004_p05_diagnostic.py diagnose --correction-observations /tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/correction_cut4.safetensors --correction-records /tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/correction_records.json --replay-observations /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_cut4.safetensors --replay-records /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fit/affine_fit_records.json --teacher-evidence /tmp/trr-p04/experiments/TRR-P04/runtime/teacher-qualification-r3/teacher_evidence.safetensors --schedule 1737=/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-1737/position_schedule.safetensors --schedule 2711=/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-2711/position_schedule.safetensors --sample-index /tmp/trr-p05/experiments/TRR-P05/runtime/public-sample-r1/sample_index.json --candidate-preparation /tmp/trr-p04/experiments/TRR-P04/runtime/candidate-preparation-r2/candidate_preparation.safetensors --embedding-table /home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors --state-manifest /tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/selected_state_manifest-r3.json --affine-initial /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/fit_large_v1/historical_affine_ce_no_vocab_bias.safetensors --output-root /tmp/trr-p05/experiments/TRR-P05/runtime/qualifier-r1 --device cuda --mode qualify --threads 4 --interop-threads 1"
+    },
+    "full": {
+      "mode": "full",
+      "output_root": "/tmp/trr-p05/experiments/TRR-P05/runtime/diagnostic-r1",
+      "command": "cd /tmp/trr-p05 && env CUDA_VISIBLE_DEVICES=0 PYTHONPATH=src OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 OPENBLAS_NUM_THREADS=4 HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false python3 scripts/trr0004_p05_diagnostic.py diagnose --correction-observations /tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/correction_cut4.safetensors --correction-records /tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/correction_records.json --replay-observations /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_cut4.safetensors --replay-records /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fit/affine_fit_records.json --teacher-evidence /tmp/trr-p04/experiments/TRR-P04/runtime/teacher-qualification-r3/teacher_evidence.safetensors --schedule 1737=/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-1737/position_schedule.safetensors --schedule 2711=/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-2711/position_schedule.safetensors --sample-index /tmp/trr-p05/experiments/TRR-P05/runtime/public-sample-r1/sample_index.json --candidate-preparation /tmp/trr-p04/experiments/TRR-P04/runtime/candidate-preparation-r2/candidate_preparation.safetensors --embedding-table /home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors --state-manifest /tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/selected_state_manifest-r3.json --affine-initial /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/fit_large_v1/historical_affine_ce_no_vocab_bias.safetensors --output-root /tmp/trr-p05/experiments/TRR-P05/runtime/diagnostic-r1 --device cuda --mode full --threads 4 --interop-threads 1"
+    },
+    "sample_reproduction": {
+      "status": "ALREADY_MATERIALIZED_CREATE_ONLY_OUTPUT",
+      "command": "cd /tmp/trr-p05 && env CUDA_VISIBLE_DEVICES=0 PYTHONPATH=src OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 OPENBLAS_NUM_THREADS=4 HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false python3 scripts/trr0004_p05_diagnostic.py sample --correction-observations /tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/correction_cut4.safetensors --correction-records /tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/correction_records.json --replay-observations /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_cut4.safetensors --replay-records /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fit/affine_fit_records.json --teacher-evidence /tmp/trr-p04/experiments/TRR-P04/runtime/teacher-qualification-r3/teacher_evidence.safetensors --schedule 1737=/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-1737/position_schedule.safetensors --schedule 2711=/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-2711/position_schedule.safetensors --output /tmp/trr-p05/experiments/TRR-P05/runtime/public-sample-r1/sample_index.json"
+    }
+  },
+  "access_and_execution": {
+    "model_loaded_by_this_preflight": false,
+    "table_or_tensor_payload_loaded_by_this_preflight": false,
+    "diagnostic_executed": false,
+    "truth_opened": false,
+    "optimizer_step": false,
+    "new_fit_or_sweep": false,
+    "preflight_only": true
+  },
+  "decision": {
+    "qualifier_clearance_condition": "run only from clean source descendant containing candidate-binding and all-12-state checks; require internal/external guards to pass with measured margin before full mode",
+    "full_mode_condition": "qualifier PASS with unchanged geometry, inputs, and source; no retry with altered batching or precision",
+    "known_source_asset_note": "embedding table tensor geometry is 1,050,673,152 bytes; source artifact file is 1,050,673,488 bytes; use tensor payload for memory arithmetic and file size for provenance"
+  }
+}
