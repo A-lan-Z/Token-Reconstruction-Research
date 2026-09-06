@@ -131,6 +131,9 @@ def main() -> int:
     probe_initial = evaluate_public(initial, probe, table, device=device, record_batch_size=8, projection_chunk=512)
     probe_initial_predictions = probe_initial.pop("predictions")
     probe_initial.pop("tie_counts")
+    # evaluate_public leaves the model in eval mode; cuDNN requires training
+    # mode for the GRU backward used by the actual capacity probe.
+    initial.train()
     optimizer = torch.optim.AdamW(initial.parameters(), lr=1.0e-3, weight_decay=0.0)
     batch_x = probe.observations.to(device=device, dtype=torch.float32)
     batch_y = probe.labels.to(device=device, dtype=torch.long)
