@@ -1,149 +1,163 @@
 # TRR-P06 design review
 
-**Status: PROPOSED; execution is held.** The supplied packet is preserved at
-`coordination/requests/TRR-P06.md` and ends in the middle of its last decision
-bullet. This review therefore records a bounded design for root/setup review;
-it is not a freeze or an authorization to fit, capture, open truth, or score.
+**Status: PROPOSED; execution remains held.** The complete control packet is
+preserved at `coordination/requests/TRR-P06.md` (SHA-256
+`6f2883f1ec078877358c78fe5d05566ef845a1329f4e8f7a4a96aa69c5c5f992`). This
+review records the bounded design for root/setup approval; it is not a freeze,
+a resource grant, a fit, a capture, or a truth-scoring authorization.
 
 ## Scientific choice
 
-The informative intervention is visibility within one decoder family. Every
-arm has the same trainable direct affine path,
+The intervention is visibility within one compact decoder family. Every arm
+uses the same trainable direct affine path and one attention correction,
 
 ```text
 z_i = H_i W^T + b + O(sum_j attention(i,j) V LN(H_j)),
 ```
 
 followed by the same float32 normalization and public full-vocabulary readout.
-The direct path starts at `W=I`, `b=0`, and the added output is zero
-initialized, so the three arms share the same meaningful affine function at
-step zero. Q/K/V initialization is deterministic and shared within each
-replicate. All arms use layer-normalized Q/K cosine scores with scale 4.0;
-using the prior P04 mix of cosine causal scores and dot-product diagonal
-scores would confound visibility with normalization.
+The common direct path starts from the published public TRR-0004
+`historical_affine_ce_no_vocab_bias` fit, selected at public-fit step 1900:
+`experiments/TRR-0004/evidence/affine/selected_states/fit_large_v1.historical_affine_ce_no_vocab_bias.safetensors`, SHA-256
+`09c5b852373d8555b06508a79bb00c94041202702b61b121b35fa2b6f9f64e65`.
+Its `W`, `b`, and `s` tensors are loaded identically into all three P06 arms;
+it is a public trained affine baseline, rather than an unqualified identity
+map. Q/K/V are deterministic and shared within each replicate, and the
+attention output weight and bias are zero initialized. The initializer is
+public-only and does not load a target checkpoint or evaluator resource.
 
-The masks are the only scientific intervention:
+The masks are the sole intended visibility intervention:
 
-- `p06_positionwise_diagonal` allows only the current valid key `H_i`.
-- `p06_past_only` allows valid keys `H_0` through `H_i`.
-- `p06_full_record` allows every valid `H_j` in the declared stored record,
+- `p06_positionwise_diagonal` permits only the current valid key `H_i`.
+- `p06_past_only` permits valid keys `H_0` through `H_i`.
+- `p06_full_record` permits every valid key in the declared current record,
   including later positions.
 
-At the H128 boundary, the full arm has `127-i` later vectors for a full
-128-position clip at score position `i`; it receives no source labels or
-reconstructed-token feedback. It may precompute activation-only features for
-the whole record, then emit committed predictions left-to-right. The full
-arm is therefore an offline full-record method and its retained activation
-and attention computation must be included in cost reporting.
+All three arms use layer-normalized Q/K cosine scores with scale 4.0. This
+avoids the P04 normalization confound. At the fixed H128 boundary, a full
+valid query at scored position `i` has `127-i` later vectors available. The
+full arm receives activation observations only: it has no source labels,
+plaintext, target prefix, guessed-token feedback, or later reconstructed
+answers. It may precompute activation-only features for the whole record and
+then emit immutable predictions in order. It is an offline full-record method,
+not a token-streaming decoder.
 
-The shared-family parameter count is 5,247,361 for hidden size 2,048 and
-attention width 128. A diagonal mask makes Q and K structurally
-non-identifiable because each valid query has one allowed key; its effective
-trainable count is 4,722,817. This is a real effective-capacity difference,
-not evidence that the total parameter counts are unequal. It must be shown in
-the fit receipt and interpreted alongside the mask comparison.
+The shared parameter count is 5,247,361 for hidden size 2,048 and attention
+width 128. Under the diagonal mask, Q and K are structurally gradient-inactive
+because each valid query has one key, giving 4,722,817 effective trainable
+parameters. Total counts match, but effective capacity does not; both counts
+are reported and this difference is part of the interpretation.
 
-## Fitting and qualification
+## H128 fitting and capacity qualification
 
-Use the already public `coverage_mix_v1` fit bank and its common 48-record
-public validation split. This fixes the data distribution while the three
-masks vary. Each arm receives full-vocabulary same-position CE only, the same
-8-record/512-post-BOS-draw schedule within a replicate, the same validation
-records and 100-step validation cadence, and the same 3,000-update AdamW
-recipe (learning rate `1e-3`, zero weight decay, clip norm 1.0). Use two
-predeclared replicates, 6106 and 6107, with the same initialization and
-schedule seed for all arms within each replicate. Select each arm's earliest
-maximum public-validation token accuracy independently; no fresh panel answer
-can enter selection.
+The existing public `coverage_mix_v1` manifest is a 192-token source artifact,
+but P06 declares an H128 crop for **every** arm and every public selection
+operation. Positions 0 through 127, including BOS, are cropped before mask
+construction, schedule construction, fitting, validation, or metric
+calculation. Source positions 128 through 191 are never keys, queries, labels,
+or denominators. The resulting public fit geometry is 1,200 x 128 x 2,048 with
+112,825 valid post-BOS positions; the common 48-record validation geometry has
+2,982 valid post-BOS positions. The crop and its mask/token/record digests are
+recorded in the P06 input receipt.
 
-Before fresh panel truth, build a fixed 256-position capacity probe from the
-common validation split. It contains 64 positions in each scored-position
-bin `[1,15]`, `[16,39]`, `[40,79]`, and `[80,127]`, selected only from
-positions where the common step-zero affine path is wrong. Thus the initial
-accuracy is 0/256 and the test is not an already-perfect subset. Every one of
-the six selected arm/replicate states must correct at least 52/256 positions
-and remain finite. This is a competence gate, not a model-selection rule. If
-an arm fails, stop before fresh truth and report an underqualified
-comparison; do not change the mask, sample, or fit recipe to rescue it.
+Before the main fits, run one bounded trainability probe on public fitting data.
+Run the pinned affine `W,b,s` over the frozen H128 fit rows and construct a
+public-only ledger of exactly 256 positions where its prediction is wrong,
+with 64 positions in each scored-position bin `[1,15]`, `[16,39]`, `[40,79]`,
+and `[80,127]`. If a bin cannot supply 64 errors, fail closed. Freeze the
+direct affine path and train only each arm's added attention path for 300 fixed
+updates, 512 query draws per update, seed 6106, the same draw order and
+full-vocabulary same-position CE for all masks. The actual diagonal, past-only,
+and full masks remain active during this probe. Every arm must stay finite and
+correct at least 52/256 of these initially wrong public-fit positions. Probe
+states are discarded and cannot select or initialize the six main fits. This
+qualifies added-path trainability on known public-fit errors; it does not claim
+natural-panel transfer or serve as a validation model-selection rule.
 
-The largest resource qualification is a full-mask backward cell with the
-actual 8 x 192 batch and 512 full-vocabulary draws. The fixed geometry is
-small relative to the resident 1.05 GB F32 embedding table: an F32 activation
-batch is 12,582,912 bytes, a dense 8 x 192 x 192 score matrix is 1,179,648
-bytes, and a 512 x 128,256 selected-logit matrix is 262,668,288 bytes. The
-5.25M-parameter model is 20,989,444 bytes, with 41,978,888 bytes for Adam
-moments. These are component sizes, not a claim about peak allocator use;
-record live host/device measurements before releasing the six sequential
-fits. Use the inherited proposed guard of 8 GiB free GPU, 6 GiB maximum
-reserved GPU, 16 GiB host RSS, 10 GiB host available, and a bounded timeout.
-Do not use microbatching or mask-specific numerical shortcuts without an
-output-equivalence check.
+The six main fits then start from the same pinned affine direct path, with all
+three arms training under their actual masks. Use the same public fitting
+records, labels, H128 crop, 8-record/512-query schedule, and validation records
+for each arm. Use AdamW at learning rate `1e-3`, zero weight decay, gradient
+clip norm 1.0, cosine scheduling, and 3,000 updates. Replicates use seeds 6106
+and 6107 with the same schedule seed across arms within each replicate.
+Validation is checked every 100 updates; each arm/replicate selects its
+earliest maximum full-vocabulary public token accuracy, including step zero.
+No fresh answer or changed-target result enters selection.
 
-## Fresh evaluation
+The largest qualification is the actual full-mask backward cell at 8 records x
+128 positions with 512 post-BOS draws and the full-vocabulary readout. The
+resident normalized public embedding table is 1,050,673,488 F32 bytes; the
+H128 activation batch is 8,388,608 bytes and the dense attention score tensor
+is 524,288 bytes. The selected-logit matrix remains 262,668,288 bytes, model
+parameters 20,989,444 bytes, and Adam moments 41,978,888 bytes. These are
+component sizes, not peak-use claims. Measure live device and host margins
+with the fail-closed guard before releasing the six sequential fits. Use the
+proposed minimum 8 GiB free GPU, maximum 6 GiB reserved GPU, maximum 16 GiB
+host RSS, minimum 10 GiB host available, and 1,800-second timeout. Do not use
+microbatching or mask shortcuts without an output-equivalence check.
 
-Select 256 new natural source records per domain (`pile` and `finance`) with
-selection seed 6206, excluding fitting, validation, opened public evaluation,
-and accessible duplicate source/sequence identities. Require at least the
-128 valid positions in the declared clip, retain natural length/context
-strata in the selection ledger, and use the same 512 source records under
-both public-base and public-LoRA target conditions. Capture the same H128
-observations and position/mask sidecars for all arms. The changed target is a
-paired transfer condition, not a second independent source sample.
+## Fresh panel and metrics
 
-The primary quality comparison is `Full - Past`; `Past - Positionwise` and
-`Full - Positionwise` are secondary descriptions. Report micro token accuracy
-and per-record token accuracy over post-BOS positions 1..127, exact 127-token
-clip recovery, and token/record gains, losses, both-correct, and
-neither-correct counts. Resample source records, not tokens, with 10,000
-paired bootstrap draws seeded 6306, stratified by domain, target condition,
-and frozen natural-length stratum. If both fit replicates are scored, average
-the two fixed-seed deltas within each source resample rather than treating
-replicates as additional natural records.
+Select 256 new natural records per domain (`pile` and `finance`) with seed
+6206, excluding fitting, validation, opened public evaluation, and accessible
+duplicate source identities. Require 128 valid positions including BOS and
+score positions 1 through 127. Reuse each source record under paired
+`public_base` and `public_lora_2601` target conditions; the changed target is a
+transfer condition, not an independent source sample. Capture the same H128
+observations, validity masks, and positions for all arms. Natural-length and
+context strata are fixed before prediction, and no target label or fresh answer
+enters selection.
 
-The progression threshold is a predeclared +1.0 percentage-point token gain
-or +5.0 percentage-point exact-record gain for `Full - Past`, with a
-95-percent bootstrap lower bound above zero in at least one public-base
-domain. Every other public-base domain/outcome must stay above the retained
--1.0 pp token or -5.0 pp exact harm limit. Public-LoRA cells are reported
-separately: failure of the changed target is a transfer limitation, not proof
-that no later-position information exists. This is a bounded exploratory
-promotion criterion, not an equivalence test or a universal benchmark claim.
+The primary contrast is Full minus Past. Secondary contrasts are Past minus
+Positionwise and Full minus Positionwise. Report micro token accuracy,
+per-record token accuracy, exact 127-token clips, token gains/losses, and
+record-level both/gain/loss/neither counts. Report position bins `[1,15]`,
+`[16,39]`, `[40,79]`, and `[80,127]` with actual future-valid counts. Invalid
+and padded rows are excluded from keys, queries, losses, and denominators; a
+public padding-invariance fixture verifies that changing invalid activations
+cannot affect valid predictions. Full-record activation computation and
+retained state are included in timing and memory costs.
 
-Report position bins `[1,15]`, `[16,39]`, `[40,79]`, `[80,127]` for every
-cell, including the actual `future_valid_count` from each mask. At record ends
-that count naturally falls to zero. Invalid/padded positions are removed from
-all masks and metric denominators; a public padded-mask invariance fixture
-must verify that changing invalid activation values cannot change any valid
-prediction. The primary panel requires 128 valid positions so exact-clip
-metrics share one denominator, while natural records may still be stratified
-by their longer source lengths.
+Uncertainty uses 10,000 source-record cluster bootstrap draws (seed 6306),
+stratified by frozen domain and natural-length/context stratum. For each
+source stratum, one resampled source-index vector is reused for both target
+conditions, keeping base and changed targets paired. The target conditions are
+never independently resampled. Two fixed training replicates are averaged
+within each resampled source, rather than counted as new natural records.
 
-A bounded native A1+A2 K=256 anchor uses the predeclared first 64 panel
-records per domain under public-base only: 128 clips and 16,256 scored
-post-BOS tokens, with exact denominator 128. Its candidate/search cost and
-quality are reported separately. It does not select student arms and is not a
-fourth visibility condition; no student prediction may use A2 or candidate
-simulation.
+The registered exploratory progression gate is a Full-Past gain of at least
++1.0 percentage point token accuracy or +5.0 percentage points exact recovery,
+with a 95-percent paired-bootstrap lower bound above zero in at least one
+public-base domain. Every other public-base domain/outcome must stay above
+-1.0 pp token and -5.0 pp exact harm limits. Changed-target cells are reported
+separately. The threshold is a practical decision criterion for this panel,
+family, public fit, target pair, and H128 geometry, not a universal benchmark
+or equivalence test.
 
-## Main risks and stop conditions
+A bounded published-parent A1+A2 K=256 quality anchor uses the first 64 panel
+records per domain under public-base only (128 clips, 16,256 scored tokens,
+exact denominator 128). It is the reviewed CPU embedding port of parent method
+`frozen_a1_a2_k256`, state SHA-256
+`33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742`. The
+report must call it a benchmark-compatible port, state its adaptations, and
+not call it a native rerun. Its cost and quality denominator remain separate
+from all student arms.
 
-The key remaining confound is effective capacity: diagonal Q/K gradients are
-zero while past/full Q/K are active. The direct path and identical total
-parameterization make the quality comparison interpretable, but the report
-must not call the arms capacity-identical. Standardizing score normalization,
-initialization, fit data, schedule, validation, and readout removes the
-larger P04 normalization/data confounds.
+## Decision and stop conditions
 
-The full arm's future activations are allowed observations, but this is not a
-causal or streaming decoder. It cannot revise an earlier token using a later
-prediction, and it cannot use later source labels. Source-record pairing,
-mask digests, position IDs, end/padding invariance, and full-record timing
-must be frozen before truth. Any missing competence gate, incomplete arm,
-changed source/target pairing, or resource anomaly stops the run without
-opening truth. No TRR-0007 result, P03 holdout, P04 teacher objective, or
-private target resource is needed for this design.
+A public-base gain meeting the benefit and harm limits supports advancing this
+tested later-activation observation model. A gain that fails under the paired
+changed target is a transfer limitation, not a broad success claim. A finite,
+well-qualified negative result supports retaining the simpler model within the
+tested scope. An uninformative fit or an imprecise interval is inconclusive;
+it is not evidence that later activations contain no useful information. No
+large confirmation, architecture sweep, or redesign launches automatically
+after this pilot; the handoff returns one evidence-backed next decision.
 
-The single planned outcome is either a later-activation benefit that meets
-this practical gate or a bounded result that does not. Position-bin patterns,
-changed-target failure, and the A1+A2 gap remain descriptive and cannot be
-used to reselect a mask, checkpoint, or source panel.
+A missing public-fit error quota, failed residual capacity probe, incomplete
+arm, changed mask/geometry, unpaired target/source panel, failed resource
+margin, or truth access before freeze stops the run without opening fresh
+truth. The diagonal effective-capacity limitation, offline full-record status,
+and changed-target transfer interpretation must remain explicit. No P03
+holdout, P04 teacher/ranking objective, TRR-0007 result, private target
+resource, or A2 student fallback is part of this study.
