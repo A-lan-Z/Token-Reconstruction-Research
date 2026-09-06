@@ -45,6 +45,10 @@ if str(REPO_ROOT / "src") not in sys.path:
 TASK_ID = "TRR-P06"
 ANCHOR_METHOD_ID = "frozen_a1_a2_k256"
 ANCHOR_STATE_SHA256 = "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742"
+REFERENCE_SHA256 = "10532a746cb8c30eb2caf338e206e1fa9d85e708d4db43a0d8fd4a2ff1a6f8bd"
+MODEL_REVISION = "9213176726f574b556790deb65791e0c5aa438b6"
+EMBEDDING_SHA256 = "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+EMBEDDING_BYTES = 1050673488
 ANCHOR_SUBSET = "first64_public_base"
 ANCHOR_SCHEMA = "token-reconstruction.trr-p06-anchor-prediction-manifest.v1"
 RUN_SCHEMA = "token-reconstruction.trr-p06-anchor-run.v1"
@@ -209,6 +213,7 @@ def _load_observation(manifest_path: Path, manifest: Mapping[str, Any], *, domai
     actual = _file_record(observation_path, root=root)
     if actual["sha256"] != declared or actual["bytes"] != descriptor.get("bytes"):
         raise AnchorError(f"observation file binding changed: {domain}")
+    load_started = time.perf_counter()
     try:
         with safe_open(str(observation_path), framework="pt", device="cpu") as handle:
             if set(handle.keys()) != {"activations", "attention_mask", "position_ids"}:
@@ -241,6 +246,7 @@ def _load_observation(manifest_path: Path, manifest: Mapping[str, Any], *, domai
         "positions": positions[:ANCHOR_RECORDS_PER_DOMAIN].contiguous(),
         "attention_mask_sha256": _tensor_digest(mask[:ANCHOR_RECORDS_PER_DOMAIN].to(torch.uint8)),
         "position_ids_sha256": _tensor_digest(positions[:ANCHOR_RECORDS_PER_DOMAIN]),
+        "load_seconds": time.perf_counter() - load_started,
     }
 
 
@@ -295,32 +301,65 @@ def _guard(device: torch.device, *, started: float, args: argparse.Namespace, st
     }
 
 
+def _adapter_snapshot(adapter: Any) -> dict[str, float]:
+    return {
+        "calls": float(getattr(adapter, "calls", 0)),
+        "proposal_seconds": float(getattr(adapter, "proposal_seconds", 0.0)),
+        "candidate_simulations": float(getattr(adapter, "candidate_simulations", 0)),
+        "executed_candidate_simulations": float(getattr(adapter, "executed_candidate_simulations", 0)),
+        "prefix_commit_tokens": float(getattr(adapter, "prefix_commit_tokens", 0)),
+        "prefix_calls": float(getattr(adapter, "prefix_calls", 0)),
+    }
+
+
+def _adapter_delta(before: Mapping[str, float], after: Mapping[str, float]) -> dict[str, int | float]:
+    result: dict[str, int | float] = {}
+    for key, value in after.items():
+        delta = value - before[key]
+        result[key] = int(delta) if key != "proposal_seconds" else float(delta)
+    return result
+
+
 def _run_domain(*, adapter: Any, observation: Mapping[str, Any], domain: str, device: torch.device, started: float, args: argparse.Namespace) -> tuple[torch.Tensor, dict[str, Any]]:
     adapter.begin_cell()
     warmup_seconds = 0.0
     measured_seconds = 0.0
+    row_staging_seconds = 0.0
+    warmup_work = {key: 0 for key in ("calls", "candidate_simulations", "executed_candidate_simulations", "prefix_commit_tokens", "prefix_calls")}
+    warmup_work["proposal_seconds"] = 0.0
+    measured_work = dict(warmup_work)
     rows: list[torch.Tensor] = []
     activations = observation["activations"]
     masks = observation["mask"]
     positions = observation["positions"]
     for index in range(ANCHOR_RECORDS_PER_DOMAIN):
+        stage_started = time.perf_counter()
         row_h = activations[index].to(device=device, dtype=torch.float32)
         row_mask = masks[index].to(device=device, dtype=torch.bool)
         row_positions = positions[index].to(device=device, dtype=torch.int64)
+        row_staging_seconds += time.perf_counter() - stage_started
         if device.type == "cuda":
             torch.cuda.synchronize(device)
+        before = _adapter_snapshot(adapter)
         t0 = time.perf_counter()
         with torch.inference_mode():
             warm = _normalize_prediction(adapter(row_h, row_mask, row_positions), masks[index])
         if device.type == "cuda":
             torch.cuda.synchronize(device)
         warmup_seconds += time.perf_counter() - t0
+        after = _adapter_snapshot(adapter)
+        for key, value in _adapter_delta(before, after).items():
+            warmup_work[key] += value  # type: ignore[operator]
+        before = after
         t0 = time.perf_counter()
         with torch.inference_mode():
             measured = _normalize_prediction(adapter(row_h, row_mask, row_positions), masks[index])
         if device.type == "cuda":
             torch.cuda.synchronize(device)
         measured_seconds += time.perf_counter() - t0
+        after = _adapter_snapshot(adapter)
+        for key, value in _adapter_delta(before, after).items():
+            measured_work[key] += value  # type: ignore[operator]
         if not torch.equal(warm, measured):
             raise AnchorError(f"warmup/measured A1+A2 IDs differ: {domain}/{index}")
         rows.append(measured)
@@ -335,7 +374,13 @@ def _run_domain(*, adapter: Any, observation: Mapping[str, Any], domain: str, de
             "warmup_seconds_sum": warmup_seconds,
             "measured_seconds_sum": measured_seconds,
             "measured_ms_per_record": 1000.0 * measured_seconds / ANCHOR_RECORDS_PER_DOMAIN,
-            "timed_interval_includes_row_staging_and_cuda_synchronization": True,
+            "observation_load_seconds": float(observation["load_seconds"]),
+            "row_staging_seconds": row_staging_seconds,
+            "row_staging_excluded_from_method_interval": True,
+            "timed_interval_includes_adapter_cpu_gpu_staging_and_cuda_synchronization": True,
+            "timed_interval_definition": "A2 adapter call from device-resident H/mask/positions through CPU proposal staging, public-prefix simulation, selector, output normalization, and explicit CUDA synchronization",
+            "warmup_adapter_work": warmup_work,
+            "measured_adapter_work": measured_work,
             "warmup_output_exact_match_measured": True,
             "candidate_arrays_persisted": False,
             "truth_opened": False,
@@ -411,24 +456,33 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         for domain in DOMAINS:
             observations[domain] = _load_observation(observation_manifest_path, observation_manifest, domain=domain, root=root, expected_ids_sha=selection["record_ids_sha256"][domain])
         _guard(device, started=started_clock, args=args, stage="before_parent_resource_load")
-        if _sha256_file(Path(args.lens_path).expanduser().resolve()) != ANCHOR_STATE_SHA256:
+        lens_path = Path(args.lens_path).expanduser().resolve()
+        reference_path = Path(args.reference_path).expanduser().resolve()
+        embedding_path = Path(args.embedding_path).expanduser().resolve()
+        snapshot = Path(args.model_snapshot).expanduser().resolve()
+        if _sha256_file(lens_path) != ANCHOR_STATE_SHA256:
             raise AnchorError("retained A1 state does not match the frozen anchor SHA-256")
+        if _sha256_file(reference_path) != REFERENCE_SHA256:
+            raise AnchorError("published parent reference implementation changed")
+        embedding_record = _file_record(embedding_path)
+        if embedding_record["bytes"] != EMBEDDING_BYTES or embedding_record["sha256"] != EMBEDDING_SHA256:
+            raise AnchorError("normalized public embedding table does not match the frozen parent asset")
+        if snapshot.name != MODEL_REVISION:
+            raise AnchorError("public model snapshot revision changed")
         # Importing the published helper is deliberate: this adapter does not
         # reimplement proposal ordering, cache transitions, or A2 selection.
         import trr0004_predict_confirmation as legacy
-        reference_path = Path(args.reference_path).expanduser().resolve()
-        snapshot = Path(args.model_snapshot).expanduser().resolve()
         precut, lens, embeddings, parent_load = legacy._load_public_prefix(
             snapshot=snapshot,
             reference_path=reference_path,
-            lens_path=Path(args.lens_path).expanduser().resolve(),
-            embedding_path=Path(args.embedding_path).expanduser().resolve(),
+            lens_path=lens_path,
+            embedding_path=embedding_path,
             device=device,
         )
         policy = importlib.import_module("trr0003_footing_compare")._fixed_k256_policy()
         adapter = legacy._A2Adapter(precut=precut, lens=lens, embeddings=embeddings, device=device, policy=policy)
         adapter.method_id = ANCHOR_METHOD_ID
-        state_record = _file_record(Path(args.lens_path).expanduser().resolve(), root=root)
+        state_record = _file_record(lens_path, root=root)
         descriptors: dict[str, Any] = {}
         timings: dict[str, Any] = {}
         guards = [_guard(device, started=started_clock, args=args, stage="after_parent_resource_load")]
@@ -455,9 +509,9 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             "selection": selection["file"],
             "observation_manifest": _file_record(observation_manifest_path, root=root),
             "runtime_assets": {
-                "embedding_table": _file_record(Path(args.embedding_path).expanduser().resolve(), root=root),
+                "embedding_table": _file_record(embedding_path, root=root),
                 "retained_a1_state": state_record,
-                "public_model_snapshot": {"path": str(snapshot), "revision": "9213176726f574b556790deb65791e0c5aa438b6", "loader": "trr0004_predict_confirmation._load_public_prefix"},
+                "public_model_snapshot": {"path": str(snapshot), "revision": MODEL_REVISION, "loader": "trr0004_predict_confirmation._load_public_prefix"},
                 "parent_reference": _file_record(reference_path, root=root),
             },
             "parent_load": parent_load,
