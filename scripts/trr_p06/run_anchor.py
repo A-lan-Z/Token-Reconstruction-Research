@@ -207,7 +207,7 @@ def _load_observation(manifest_path: Path, manifest: Mapping[str, Any], *, domai
     observation_path = _resolve_file(descriptor.get("path"), root=root, description=f"observation {domain}")
     declared = descriptor.get("sha256")
     actual = _file_record(observation_path, root=root)
-    if actual["sha256"] != declared:
+    if actual["sha256"] != declared or actual["bytes"] != descriptor.get("bytes"):
         raise AnchorError(f"observation file binding changed: {domain}")
     try:
         with safe_open(str(observation_path), framework="pt", device="cpu") as handle:
@@ -404,6 +404,9 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         selection = _load_selection(selection_path, root=root)
         observation_manifest_path = Path(args.observation_manifest).expanduser().resolve()
         observation_manifest = _load_json(observation_manifest_path, description="P06 observation manifest")
+        selection_binding = observation_manifest.get("selection_plan")
+        if not isinstance(selection_binding, Mapping) or selection_binding.get("sha256") != selection["file"]["sha256"]:
+            raise AnchorError("observation manifest is bound to a different source selection")
         observations: dict[str, dict[str, Any]] = {}
         for domain in DOMAINS:
             observations[domain] = _load_observation(observation_manifest_path, observation_manifest, domain=domain, root=root, expected_ids_sha=selection["record_ids_sha256"][domain])
