@@ -1,0 +1,118 @@
+{
+  "schema": "token-reconstruction.trr-p06-manifest.v1",
+  "task_id": "TRR-P06",
+  "artifact_role": "task-local setup/provenance manifest; no experiment outputs",
+  "created_utc": "2026-09-06T09:28:17Z",
+  "updated_utc": "2026-09-06T09:28:17Z",
+  "status": "SETUP_ASSET_INVENTORY_READY_RESOURCE_PREFLIGHT_PENDING",
+  "truth_opened": false,
+  "model_loaded": false,
+  "records_selected": false,
+  "optimizer_steps_started": false,
+  "gpu_used": false,
+  "control_packet": {
+    "path": "coordination/requests/TRR-P06.md",
+    "bytes": 6162,
+    "sha256": "6f2883f1ec078877358c78fe5d05566ef845a1329f4e8f7a4a96aa69c5c5f992",
+    "status": "COMPLETE_PACKET_RECEIVED",
+    "truncated_original": {
+      "path": "coordination/requests/TRR-P06-TRUNCATED.md",
+      "bytes": 5122,
+      "sha256": "cc8241b9db46e60a52070a23127dc783862c93e38668df15b2fa3e3e6e475e57",
+      "retained": true
+    }
+  },
+  "parent": {
+    "task_id": "TRR-0006",
+    "branch": "task/TRR-0006",
+    "verified_commit": "f10f8ba438973b3cb260d41707fbb14293db9cd3",
+    "parent_pr": 11,
+    "parent_pr_state": "OPEN_UNMERGED",
+    "merge_allowed": false
+  },
+  "task_files": {
+    "plan": {
+      "path": "experiments/TRR-P06/plan.json",
+      "bytes": 18724,
+      "sha256": "5944b029192497980bcec9f589fc7bd4d379ce0b9759c69be4e25737ab2248e5",
+      "status": "PROPOSED_COMPLETE_PACKET_RESOURCE_PREFLIGHT_PENDING"
+    },
+    "asset_exclusion_inventory": {
+      "path": "experiments/TRR-P06/setup/public_asset_exclusion_inventory.json",
+      "bytes": 14964,
+      "sha256": "95e2520a66b769dba37f9d0ace4c8e96b2ee721e8d7bd4d2965e82e38c46e723",
+      "status": "READY_NO_SELECTION_NO_MODEL_NO_TRUTH"
+    },
+    "design_review": {
+      "path": "experiments/TRR-P06/review/design-review.md",
+      "status": "DESIGN_REVIEW_PENDING_REFRESH_AFTER_COMPLETE_PACKET"
+    },
+    "implementation_constraints": {
+      "path": "experiments/TRR-P06/review/implementation-constraints.md",
+      "status": "TASK_LOCAL_HANDOFF_UNCOMMITTED_BY_OTHER_OWNER"
+    }
+  },
+  "scientific_scope": {
+    "question": "incremental full-record minus past-only activation-context visibility effect beyond a positionwise control",
+    "visibility_arms": [
+      "p06_positionwise_diagonal",
+      "p06_past_only",
+      "p06_full_record"
+    ],
+    "replicates": [
+      6106,
+      6107
+    ],
+    "public_fit_records": 1200,
+    "public_validation_records": 48,
+    "fresh_panel": "not selected; proposed 512 unique records (256 per domain) paired across public_base/public_lora_2601 remains subject to fixed-plan review",
+    "anchor": "published native A1+A2 K=256 bounded anchor, proposed first 64 fresh records per domain, separate denominator",
+    "truth_gate": "freeze plan, source/observation geometry, all states and predictions, then materialize truth once; no truth access at setup"
+  },
+  "asset_inventory_pointer": {
+    "path": "experiments/TRR-P06/setup/public_asset_exclusion_inventory.json",
+    "sha256": "95e2520a66b769dba37f9d0ace4c8e96b2ee721e8d7bd4d2965e82e38c46e723",
+    "coverage": "published public fit/validation/affine/capture identities plus approved opaque exclusion ledgers; no payload copied"
+  },
+  "resource_gate": {
+    "status": "RESOURCE_COORDINATION_AND_PREFLIGHT_PENDING",
+    "gpu_jobs_started": false,
+    "heavy_cpu_jobs_started": false,
+    "paid_compute": false,
+    "reservation": "none",
+    "required_before_execution": [
+      "resource preflight with largest representative cell",
+      "root freeze of plan and exclusions",
+      "qualifier pass before matrix",
+      "truth gate before scoring"
+    ]
+  },
+  "access_and_integrity": {
+    "global_state_modified": false,
+    "active_method_registry_modified": false,
+    "shared_protocols_modified": false,
+    "other_agent_mutable_work_inspected": false,
+    "agent_one_workspace_or_science_accessed": false,
+    "trr0007_results_or_unpublished_science_accessed": false,
+    "p03_holdout_accessed": false,
+    "p04_private_truth_accessed": false,
+    "source_rows_or_plaintext_read": false,
+    "source_token_values_read": false,
+    "target_update_payload_opened": false,
+    "new_records_selected": false,
+    "model_or_large_tensor_loaded": false,
+    "diagnostic_or_reconstruction_run_started": false
+  },
+  "pending": [
+    "design refresh and root review after complete packet binding",
+    "resource coordination and documented preflight",
+    "public-only fresh source selection against the opaque P04/P05 exclusion scope",
+    "public fitting/capture and state/prediction freeze before any truth opening"
+  ],
+  "preservation": {
+    "p03_holdout": "SEALED_OUT_OF_SCOPE",
+    "p04_parent": "PRESERVE_PUBLISHED_PARENT_UNMERGED",
+    "trr0007": "DO_NOT_INSPECT_OR_DEPEND_ON",
+    "global_state_and_registry": "UNCHANGED"
+  }
+}
