@@ -1,9 +1,10 @@
 # TRR-P04 CLI and preflight review
 
-**Review status:** implementation fixes applied; qualification remains
-resource-gated. This is a static review of the teacher, qualifier, prediction,
-and training entry points on 2026-09-06. No evaluator truth, target-update
-weights, source rows, or heavy jobs were opened during this review.
+**Review status:** implementation fixes are partly applied; public qualification
+remains pending a gate correction. This is a static review of the teacher,
+qualifier, prediction, and training entry points on 2026-09-06. No evaluator
+truth, target-update weights, source rows, or heavy jobs were opened during
+this review.
 
 ## Checks that now pass
 
@@ -22,30 +23,36 @@ weights, source rows, or heavy jobs were opened during this review.
   under the current prediction helper.
 - The canonical candidate-preparation CLI and shared-artifact consumer now exist;
   the trainer rejects missing or mismatched candidate metadata before fitting.
+  The shared-artifact wiring is present; its P04 lowest-token-ID tie policy
+  must be declared in the artifact/receipt, while the native anchor retains its
+  separate native tie behavior.
 
-## Applied execution-contract fixes
+## Execution-contract findings
 
-1. **Qualifier gate applies to the actual probe.**
-   `scripts/trr0004_p04_qualify.py` now chooses exactly eight deterministic
-   correction records with initial affine errors, measures that probe's active
-   positions, and fails closed unless it has at least 256 wrong positions and
-   initial accuracy below 0.99. The all-correction error count remains a
-   diagnostic. This is a selection-feasibility gate, not a method-family
-   conclusion.
+1. **Qualifier gate correction is still pending.**
+   The visible `scripts/trr0004_p04_qualify.py` chooses eight deterministic
+   correction records, but still applies the ≥256-error and <0.99 criteria to
+   that eight-row probe. The ≥256 initial-error requirement belongs to the full
+   256-record correction pool for teacher-selection feasibility. The capacity
+   probe needs actual initial errors and measurable post-update improvement; it
+   does not need 256 probe errors. The full-pool gate and probe improvement
+   check must be recorded separately and fail closed.
 
-2. **One canonical candidate artifact is wired end to end.**
-   `scripts/trr0004_p04_prepare_candidates.py` evaluates the frozen PR7 affine
-   proposer once and writes `candidate_ids`, `proposal_ids`, and confidence with
-   pool/embedding/affine hashes. Teacher qualification consumes those exact
-   rows by record ID. H/D training requires the artifact, validates its schema,
-   proposer identity, pool order/observations, embedding hash, and candidate
-   uniqueness, and no longer regenerates candidates.
+2. **One shared candidate artifact is wired end to end.**
+   `scripts/trr0004_p04_prepare_candidates.py` writes `candidate_ids`,
+   `proposal_ids`, and confidence with pool/embedding/affine hashes; teacher
+   qualification and H/D training consume those rows rather than regenerating
+   candidates. The P04 training proposer may use its declared ascending-token-ID
+   tie rule; it need not reproduce native PR7 `torch.topk` tie ordering. The
+   artifact and receipt must state that rule, while native A1+A2 anchor ties
+   remain separate. Teacher/training loading should still bind the artifact's
+   affine/table/pool hashes, not only shape, IDs, and embedding-file equality.
 
-3. **Proposal budgets are explicit.**
-   Candidate preparation records `a1_ranked_k=512` through its `proposal_k=512`
-   tensor and the K=32 candidate prefix; teacher evidence records
-   `a1_ranked_k=512` and `candidate_k=32`. The two budgets are kept separate in
-   receipts and diagnostics.
+3. **Proposal budgets need one frozen naming convention.**
+   Candidate preparation stores `proposal_k=512` and `a1_ranked_k=512`, while the
+   current teacher metadata still writes `proposal_k=32` plus `a1_ranked_k=512`;
+   make the K=512 proposal and K=32 retained candidate explicit and consistent
+   across setup, teacher evidence, and training receipts.
 
 ## Required strict invocation checks
 
@@ -73,9 +80,9 @@ the plan; token proportions need not equal 75/25.
 
 The focused suite currently passes (`17 passed` after the latest candidate
 wiring edits), including the step-zero and prediction-schema checks and a
-synthetic shared-row binding check. It has no bounded test for the qualifier's
-probe gate, the candidate-preparation metadata/proposer contract, teacher
-qualification gate binding, or a PR7/new-affine source-equivalence check. Add only lightweight synthetic/fixture checks for these contracts before
-the public qualification command; no full-vocabulary or teacher-model fixture
-is needed.
+synthetic shared-row binding check. It still has no bounded test for the
+qualifier full-pool/probe split, candidate-preparation metadata/tie contract,
+or teacher qualification source binding. Add only lightweight synthetic/fixture
+checks for these contracts before the public qualification command; no
+full-vocabulary or teacher-model fixture is needed.
 

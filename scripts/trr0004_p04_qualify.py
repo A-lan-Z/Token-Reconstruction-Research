@@ -9,6 +9,7 @@ step-0 affine errors and the post-probe result. It never reads evaluator truth.
 from __future__ import annotations
 
 import argparse
+from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
@@ -65,6 +66,35 @@ def _load_state(path: Path, hidden: int) -> dict[str, torch.Tensor]:
     return {key: value.float().contiguous() for key, value in state.items()}
 
 
+MIN_FREE_GPU_BYTES = 8 * 1024**3
+MAX_RESERVED_GPU_BYTES = 6 * 1024**3
+MAX_HOST_RSS_BYTES = 16 * 1024**3
+
+
+def _utc_now() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
+def _source_commit() -> str:
+    try:
+        return subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+    except (OSError, subprocess.CalledProcessError) as exc:
+        raise P04TrainingError("unable to record qualifier source commit") from exc
+
+
+def _cuda_memory_snapshot() -> dict[str, int]:
+    if not torch.cuda.is_available():
+        raise P04TrainingError("CUDA memory snapshot requested without CUDA")
+    torch.cuda.synchronize()
+    free_bytes, total_bytes = torch.cuda.mem_get_info()
+    return {
+        "free_bytes": int(free_bytes),
+        "total_bytes": int(total_bytes),
+        "max_memory_allocated_bytes": int(torch.cuda.max_memory_allocated()),
+        "max_memory_reserved_bytes": int(torch.cuda.max_memory_reserved()),
+    }
+
+
 def _set_runtime(args: argparse.Namespace) -> None:
     torch.set_num_threads(args.threads)
     try:
@@ -74,6 +104,13 @@ def _set_runtime(args: argparse.Namespace) -> None:
     torch.use_deterministic_algorithms(True, warn_only=False)
     if args.device == "cuda" and not torch.cuda.is_available():
         raise P04TrainingError("CUDA requested for largest-cell qualifier but unavailable")
+    if args.device == "cuda":
+        torch.cuda.reset_peak_memory_stats()
+        preflight = _cuda_memory_snapshot()
+        if preflight["free_bytes"] < MIN_FREE_GPU_BYTES:
+            raise P04TrainingError(
+                f"qualifier requires at least {MIN_FREE_GPU_BYTES} free GPU bytes; got {preflight['free_bytes']}"
+            )
     if args.device == "cpu":
         os.environ.setdefault("CUDA_VISIBLE_DEVICES", "")
 
@@ -95,6 +132,8 @@ def _probe_mask(pool, records: list[int], budget: int = 512) -> torch.Tensor:
 
 def main() -> int:
     args = _args()
+    started_utc = _utc_now()
+    source_commit = _source_commit()
     _set_runtime(args)
     output = args.output_root.expanduser().resolve()
     if output.exists() and any(output.iterdir()):
@@ -116,6 +155,24 @@ def main() -> int:
     scored = correction.valid_mask.clone()
     scored[:, 0] = False
     wrong = initial_predictions.ne(correction.labels) & scored
+    initial_wrong_all_correction = int(wrong.sum().item())
+    scored_positions_all_correction = int(scored.sum().item())
+    initial_accuracy_all_correction = (
+        1.0 - (initial_wrong_all_correction / scored_positions_all_correction)
+        if scored_positions_all_correction
+        else 0.0
+    )
+    # The >=256-error and <0.99 criteria are the full correction-pool
+    # teacher-selection feasibility gate. They do not apply to the eight-row
+    # capacity probe below.
+    if initial_wrong_all_correction < 256:
+        raise P04TrainingError(
+            "correction pool has fewer than 256 initial affine errors; teacher qualification is infeasible"
+        )
+    if initial_accuracy_all_correction >= 0.99:
+        raise P04TrainingError(
+            f"correction-pool initial accuracy {initial_accuracy_all_correction:.6f} is not below 0.99"
+        )
     wrong_per_record = wrong.sum(dim=1)
     # The probe is fixed to the eight highest-error correction records, with
     # record order as the deterministic tie break. Measure this exact batch
@@ -126,7 +183,6 @@ def main() -> int:
     chosen = sorted(candidates, key=lambda row: (-int(wrong_per_record[row].item()), row))[:8]
     if len(chosen) < 8:
         raise P04TrainingError("capacity qualifier needs eight correction records with initial affine errors")
-    running_wrong = int(wrong_per_record[torch.tensor(chosen)].sum().item())
     selected = _probe_mask(correction, chosen)
     probe = type(correction)(
         observations=correction.observations[chosen], labels=correction.labels[chosen], valid_mask=correction.valid_mask[chosen], record_ids=tuple(correction.record_ids[row] for row in chosen), styles=tuple(correction.styles[row] for row in chosen), source_path=correction.source_path, source_sha256=correction.source_sha256, records_path=correction.records_path, records_sha256=correction.records_sha256,
@@ -134,6 +190,13 @@ def main() -> int:
     probe_initial = evaluate_public(initial, probe, table, device=device, record_batch_size=8, projection_chunk=512)
     probe_initial_predictions = probe_initial.pop("predictions")
     probe_initial.pop("tie_counts")
+    probe_scored = probe.valid_mask.clone()
+    probe_scored[:, 0] = False
+    probe_initial_wrong = int((probe_initial_predictions.ne(probe.labels) & probe_scored).sum().item())
+    probe_scored_total = int(probe_scored.sum().item())
+    probe_initial_accuracy = 1.0 - (probe_initial_wrong / probe_scored_total) if probe_scored_total else 0.0
+    if probe_initial_wrong <= 0:
+        raise P04TrainingError("capacity probe has no initial affine errors")
     # evaluate_public leaves the model in eval mode; cuDNN requires training
     # mode for the GRU backward used by the actual capacity probe.
     initial.train()
@@ -156,26 +219,51 @@ def main() -> int:
         optimizer.step()
         losses.append(float(loss.detach().cpu().item()))
     post_metrics = evaluate_public(initial, probe, table, device=device, record_batch_size=8, projection_chunk=512)
-    post_predictions = post_metrics.pop("predictions")
+    post_metrics.pop("predictions")
     post_ties = post_metrics.pop("tie_counts")
-    probe_scored = probe.valid_mask.clone()
-    probe_scored[:, 0] = False
-    probe_initial_wrong = int((probe_initial_predictions.ne(probe.labels) & probe_scored).sum().item())
-    probe_scored_total = int(probe_scored.sum().item())
-    probe_initial_accuracy = 1.0 - (probe_initial_wrong / probe_scored_total) if probe_scored_total else 0.0
-    if probe_initial_wrong < 256:
+    post_accuracy = float(post_metrics["token_accuracy"])
+    if not post_accuracy > probe_initial_accuracy:
         raise P04TrainingError(
-            f"capacity probe has only {probe_initial_wrong} initial affine errors; need at least 256 on the fixed eight-row probe"
+            f"capacity probe did not improve after the Adam probe: {probe_initial_accuracy:.6f} -> {post_accuracy:.6f}"
         )
-    if probe_initial_accuracy >= 0.99:
-        raise P04TrainingError(
-            f"capacity probe initial accuracy {probe_initial_accuracy:.6f} is not below 0.99"
-        )
+    resource_guard: dict[str, object] = {
+        "minimum_free_gpu_bytes": MIN_FREE_GPU_BYTES,
+        "maximum_reserved_gpu_bytes": MAX_RESERVED_GPU_BYTES,
+        "maximum_host_rss_bytes": MAX_HOST_RSS_BYTES,
+        "status": "not_applicable",
+    }
+    if args.device == "cuda":
+        cuda_post = _cuda_memory_snapshot()
+        host_rss_bytes = int(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss) * 1024
+        if cuda_post["free_bytes"] < MIN_FREE_GPU_BYTES:
+            raise P04TrainingError(
+                f"qualifier ended below the {MIN_FREE_GPU_BYTES}-byte GPU free margin: {cuda_post['free_bytes']}"
+            )
+        if cuda_post["max_memory_reserved_bytes"] > MAX_RESERVED_GPU_BYTES:
+            raise P04TrainingError(
+                f"qualifier peak reserved GPU memory exceeded {MAX_RESERVED_GPU_BYTES}: {cuda_post['max_memory_reserved_bytes']}"
+            )
+        if host_rss_bytes > MAX_HOST_RSS_BYTES:
+            raise P04TrainingError(
+                f"qualifier peak host RSS exceeded {MAX_HOST_RSS_BYTES}: {host_rss_bytes}"
+            )
+        resource_guard = {
+            "minimum_free_gpu_bytes": MIN_FREE_GPU_BYTES,
+            "maximum_reserved_gpu_bytes": MAX_RESERVED_GPU_BYTES,
+            "maximum_host_rss_bytes": MAX_HOST_RSS_BYTES,
+            "preflight": preflight,
+            "post": cuda_post,
+            "host_max_rss_bytes": host_rss_bytes,
+            "status": "PASS",
+        }
     receipt = {
         "schema": "token-reconstruction.trr-p04-largest-cell-qualifier.v1",
         "task_id": "TRR-P04",
         "status": "PASS",
         "argv": sys.argv,
+        "source_commit": source_commit,
+        "started_utc": started_utc,
+        "ended_utc": _utc_now(),
         "python": sys.version,
         "platform": platform.platform(),
         "torch": torch.__version__,
@@ -186,24 +274,35 @@ def main() -> int:
             "record_ids": list(probe.record_ids),
             "record_order_sha256": canonical_hash(list(probe.record_ids)),
             "selected_mask_sha256": tensor_sha256(selected),
-            "initial_wrong_positions_all_correction": int(wrong.sum().item()),
+            "initial_wrong_positions_all_correction": initial_wrong_all_correction,
+            "scored_positions_all_correction": scored_positions_all_correction,
+            "initial_accuracy_all_correction": initial_accuracy_all_correction,
+            "selection_gate": {
+                "wrong_at_least_256": initial_wrong_all_correction >= 256,
+                "accuracy_below_0_99": initial_accuracy_all_correction < 0.99,
+            },
             "initial_wrong_positions_probe": probe_initial_wrong,
             "scored_positions_probe": probe_scored_total,
             "initial_accuracy_probe": probe_initial_accuracy,
             "selection_rule": "eight_highest_initial_error_records_then_record_order",
-            "gate": {"wrong_at_least_256": True, "accuracy_below_0_99": True},
+            "capacity_gate": {
+                "has_initial_errors": probe_initial_wrong > 0,
+                "post_accuracy_improves": float(post_metrics["token_accuracy"]) > probe_initial_accuracy,
+                "accuracy_delta": float(post_metrics["token_accuracy"]) - probe_initial_accuracy,
+            },
         },
         "initial_metrics": initial_metrics,
         "probe_initial_metrics": probe_initial,
         "post_probe_metrics": post_metrics,
         "losses": losses,
         "tie_counts": {"initial_probe_total": int(initial_ties.sum().item()), "post_probe_total": int(post_ties.sum().item())},
+        "resource_guard": resource_guard,
         "peak_rss_bytes": int(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss) * 1024,
         "wall_seconds": time.perf_counter() - started,
     }
     (output / "probe_selection.json").write_text(json.dumps({"record_ids": list(probe.record_ids), "indices": chosen, "selected_mask_sha256": tensor_sha256(selected)}, indent=2, sort_keys=True) + "\n")
     (output / "qualifier_receipt.json").write_text(json.dumps(receipt, indent=2, sort_keys=True, default=str) + "\n")
-    print(json.dumps({"status": "PASS", "initial_wrong_positions": running_wrong, "probe_post_accuracy": post_metrics["token_accuracy"], "peak_rss_bytes": receipt["peak_rss_bytes"]}, sort_keys=True))
+    print(json.dumps({"status": "PASS", "source_commit": source_commit, "initial_wrong_positions_all_correction": initial_wrong_all_correction, "initial_wrong_positions_probe": probe_initial_wrong, "probe_initial_accuracy": probe_initial_accuracy, "probe_post_accuracy": post_accuracy, "peak_rss_bytes": receipt["peak_rss_bytes"], "resource_guard": resource_guard}, sort_keys=True))
     return 0
 
 

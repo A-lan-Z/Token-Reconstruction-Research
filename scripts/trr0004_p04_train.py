@@ -132,6 +132,8 @@ def _load_candidates(path: Path, *, rows: int, positions: int, candidate_k: int)
         raise P04TrainingError("training requires the canonical PR7-affine candidate preparation schema")
     if metadata.get("proposer_id") != "pr7_public_affine":
         raise P04TrainingError("candidate preparation proposer identity is not the frozen PR7 affine resource")
+    if metadata.get("tie_policy") != "descending_score_then_ascending_token_id":
+        raise P04TrainingError("candidate preparation tie policy changed")
     if metadata.get("candidate_k") != str(candidate_k) or metadata.get("proposal_k") != "512":
         raise P04TrainingError("candidate preparation budgets do not match the fixed P04 contract")
     if value.shape != (rows, positions, candidate_k):
@@ -231,6 +233,8 @@ def main() -> int:
             raise P04TrainingError("candidate preparation observations do not match training pool")
         if candidate_metadata.get("embedding_file_sha256") != file_sha256(args.embedding_table):
             raise P04TrainingError("candidate preparation embedding asset does not match training table")
+        if candidate_metadata.get("affine_file_sha256") != file_sha256(args.affine_state):
+            raise P04TrainingError("candidate preparation affine asset does not match training initialization")
     if evidence is not None and candidate_ids is None:
         raise P04TrainingError("teacher evidence cannot be bound without canonical candidate IDs")
     teacher_scores = teacher_mask = None
@@ -256,7 +260,9 @@ def main() -> int:
                 "candidate_k": args.candidate_k,
                 "schema": candidate_metadata.get("schema"),
                 "proposer_id": candidate_metadata.get("proposer_id"),
+                "tie_policy": candidate_metadata.get("tie_policy"),
                 "pool_record_order_sha256": candidate_metadata.get("pool_record_order_sha256"),
+                "affine_file_sha256": candidate_metadata.get("affine_file_sha256"),
                 "pool_observation_sha256": candidate_metadata.get("pool_observation_sha256"),
             }
             if candidate_path is not None

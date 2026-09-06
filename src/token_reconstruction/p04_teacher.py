@@ -124,6 +124,7 @@ def prepare_candidate_ids(
         "schema": CANDIDATE_PREPARATION_SCHEMA,
         "task_id": "TRR-P04",
         "proposer_id": "pr7_public_affine",
+        "tie_policy": "descending_score_then_ascending_token_id",
         "candidate_k": str(candidate_k),
         "proposal_k": str(proposal_k),
         "a1_ranked_k": str(proposal_k),
@@ -156,6 +157,7 @@ def prepare_candidate_ids(
         "candidate_tensor_sha256": tensor_sha256(candidate_tensor),
         "proposal_tensor_sha256": tensor_sha256(proposal_tensor),
         "confidence_tensor_sha256": tensor_sha256(confidence_tensor),
+        "tie_policy": "descending_score_then_ascending_token_id",
         "rows": pool.rows,
         "positions": pool.positions,
         "candidate_k": candidate_k,
@@ -192,6 +194,8 @@ def _load_candidate_preparation(
         raise P04TeacherError("candidate preparation schema changed")
     if metadata.get("proposer_id") != "pr7_public_affine":
         raise P04TeacherError("candidate preparation proposer identity is not the frozen PR7 affine resource")
+    if metadata.get("tie_policy") != "descending_score_then_ascending_token_id":
+        raise P04TeacherError("candidate preparation tie policy changed")
     if metadata.get("candidate_k") != str(candidate_k) or metadata.get("proposal_k") != "512":
         raise P04TeacherError("candidate preparation budgets changed")
     if candidates.ndim != 3 or proposals.ndim != 3 or confidence.ndim != 2:
@@ -493,8 +497,10 @@ def qualify_teacher(
         "task_id": "TRR-P04",
         "mode": "privileged_public_prefix",
         "candidate_k": str(DEFAULT_CANDIDATE_K),
-        "proposal_k": str(DEFAULT_CANDIDATE_K),
+        "candidate_prefix_k": str(DEFAULT_CANDIDATE_K),
+        "proposal_k": "512",
         "a1_ranked_k": "512",
+        "candidate_tie_policy": preparation_metadata.get("tie_policy", ""),
         "rows_json": json.dumps(rows_json, separators=(",", ":"), sort_keys=True),
         "sigma_q": repr(sigma_q),
         "tie_tolerance": repr(tie_tolerance),
@@ -505,6 +511,7 @@ def qualify_teacher(
         "candidate_preparation_path": str(candidate_preparation_path.expanduser().resolve()),
         "candidate_preparation_sha256": file_sha256(candidate_preparation_path),
         "candidate_preparation_pool_order_sha256": preparation_metadata.get("pool_record_order_sha256", ""),
+        "candidate_preparation_affine_file_sha256": preparation_metadata.get("affine_file_sha256", ""),
         "candidate_preparation_tensor_sha256": tensor_sha256(prepared_candidates),
         "candidate_preparation_proposal_tensor_sha256": tensor_sha256(prepared_proposals),
         "embedding_path": str(embedding_path.expanduser().resolve()),
