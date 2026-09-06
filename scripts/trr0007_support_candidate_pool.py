@@ -20,6 +20,7 @@ from pathlib import Path
 import platform
 import resource
 import re
+import subprocess
 import sys
 import time
 from typing import Any
@@ -45,6 +46,32 @@ VOCAB_SIZE = 128256
 
 class CandidatePoolError(RuntimeError):
     """Raised when the public candidate-pool contract cannot be met."""
+
+
+def _git_commit(root: Path) -> str | None:
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(root), "rev-parse", "HEAD"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    return result.stdout.strip() or None
+
+
+def _git_dirty(root: Path) -> bool | None:
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(root), "status", "--porcelain", "--untracked-files=all"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    return bool(result.stdout.strip())
 
 
 def _file_sha256(path: Path) -> str:
@@ -234,6 +261,8 @@ def _parser() -> argparse.ArgumentParser:
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     started = time.monotonic()
+    started_utc = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    root = Path(__file__).resolve().parents[1]
     if args.max_seconds <= 0 or args.max_seconds > 300:
         raise SystemExit("--max-seconds must be in (0, 300]")
     output = args.output.expanduser().resolve()
@@ -313,6 +342,20 @@ def main(argv: Sequence[str] | None = None) -> int:
             "pile": _canonical_map_digest(pile_frequency),
             "finance": _canonical_map_digest(finance_frequency),
             "combined": _canonical_map_digest(frequency),
+        },
+        "execution": {
+            "argv": [str(value) for value in sys.argv],
+            "started_utc": started_utc,
+            "ended_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "git_commit": _git_commit(root),
+            "working_tree_dirty": _git_dirty(root),
+            "source_code": {
+                "candidate_pool_scanner": {
+                    "path": str(Path(__file__).resolve()),
+                    "bytes": int(Path(__file__).resolve().stat().st_size),
+                    "sha256": _file_sha256(Path(__file__).resolve()),
+                },
+            },
         },
         "runtime": {
             "elapsed_seconds": time.monotonic() - started,
