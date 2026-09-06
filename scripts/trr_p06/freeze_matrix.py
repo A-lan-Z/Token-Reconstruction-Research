@@ -555,6 +555,42 @@ def _prediction_inventory(student: Mapping[str, Any], anchors: Mapping[str, Mapp
     }
 
 
+def _canonicalize_student_manifest(student: Mapping[str, Any]) -> dict[str, Any]:
+    """Adapt the prediction runner's cell map to the scorer's frozen contract.
+
+    ``run_predictions`` records each cell as ``cell_id -> seed -> method``.
+    The scorer contract deliberately wraps that map with explicit ``domain``,
+    ``target``, and ``replicates`` fields.  Keep the producer JSON as the
+    immutable source binding and construct a separate canonical view for
+    validation and the create-only frozen manifest.
+    """
+
+    raw_cells = student.get("student_cells")
+    expected_cells = set(CELL_ORDER)
+    if not isinstance(raw_cells, Mapping) or set(raw_cells) != expected_cells:
+        raise FreezeMatrixError("student prediction matrix is not exactly the four registered target cells")
+    canonical_cells: dict[str, dict[str, Any]] = {}
+    for cell_id in CELL_ORDER:
+        raw_cell = raw_cells[cell_id]
+        if not isinstance(raw_cell, Mapping):
+            raise FreezeMatrixError(f"student prediction cell is malformed: {cell_id}")
+        domain, target = cell_id.split("__", 1)
+        if isinstance(raw_cell.get("replicates"), Mapping):
+            # Already canonical: preserve its explicit identity fields and
+            # copy the wrapper so the producer object is never mutated.
+            canonical = dict(raw_cell)
+            canonical["replicates"] = dict(raw_cell["replicates"])
+        else:
+            # The production runner's no-truth manifest uses the compact
+            # seed-keyed form.  The seed/method checks remain in the scorer;
+            # this adapter only supplies the contract wrapper it requires.
+            canonical = {"domain": domain, "target": target, "replicates": dict(raw_cell)}
+        canonical_cells[cell_id] = canonical
+    result = dict(student)
+    result["student_cells"] = canonical_cells
+    return result
+
+
 def assemble_joint_freeze(
     *,
     repository_root: Path,
@@ -607,9 +643,13 @@ def assemble_joint_freeze(
     student_code_commit = _require_commit(student.get("code_commit"), description="student code commit")
     student_record = _file_record(student_manifest_path, root=root, description="student prediction manifest")
 
+    # Adapt the runner's compact cell map to the scorer's explicit contract,
+    # while retaining the raw producer manifest as an immutable source record.
+    canonical_student = _canonicalize_student_manifest(student)
+
     # Validate the complete student matrix before adding the anchor bindings.
     try:
-        normalized_students, student_meta = score_frozen._validate_student_matrix(student, root=root)
+        normalized_students, student_meta = score_frozen._validate_student_matrix(canonical_student, root=root)
     except (OSError, score_frozen.P06ScoreError, TypeError, ValueError) as exc:
         raise FreezeMatrixError(str(exc)) from exc
     if student_meta["record_ids_sha256"] != selection_identity["record_ids_sha256"]:
@@ -620,7 +660,7 @@ def assemble_joint_freeze(
 
     # The runner's manifest may use an absolute observation path.  The joint
     # manifest canonicalizes it to the root-relative record used by the scorer.
-    existing_observation = student.get("observation_manifest")
+    existing_observation = canonical_student.get("observation_manifest")
     if isinstance(existing_observation, Mapping):
         existing = _verify_file_record(existing_observation, root=root, description="student observation manifest")
         if existing["sha256"] != observation_record["sha256"]:
@@ -648,7 +688,7 @@ def assemble_joint_freeze(
         main_fit_receipt_path, root=root, role="main fit", statuses=("PASS",)
     )
     _validate_capacity(capacity)
-    state_hashes = _validate_main_fit(main_fit, student=student)
+    state_hashes = _validate_main_fit(main_fit, student=canonical_student)
     for (seed, method), state_sha in state_hashes.items():
         descriptor = normalized_students[CELL_ORDER[0]][str(seed)][method]
         if descriptor.get("state_sha256") != state_sha:
@@ -666,7 +706,7 @@ def assemble_joint_freeze(
     if any(value is not True for value in scientific_preconditions.values()):
         raise FreezeMatrixError("scientific preconditions are incomplete")
 
-    normalized_manifest = dict(student)
+    normalized_manifest = dict(canonical_student)
     normalized_manifest.update(
         {
             "schema": PREDICTION_SCHEMA,
@@ -695,7 +735,7 @@ def assemble_joint_freeze(
     # Avoid carrying a file record written by an earlier producer instance.
     normalized_manifest["code_commit"] = student_code_commit
 
-    input_bindings = _student_input_bindings(student, root=root)
+    input_bindings = _student_input_bindings(canonical_student, root=root)
     prediction_inventory = _prediction_inventory(normalized_manifest, anchors)
     prerequisite_receipts = {
         "preflight": {"file": preflight_record, "schema": preflight.get("schema"), "status": preflight.get("status"), "source_commit": preflight.get("source_commit")},

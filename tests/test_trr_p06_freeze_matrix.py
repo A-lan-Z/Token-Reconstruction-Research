@@ -348,6 +348,27 @@ def test_assembler_creates_scorer_compatible_matrix_without_truth(tmp_path: Path
 
 
 
+def test_assembler_adapts_runner_compact_student_cells(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    fixture = _fixture(tmp_path, monkeypatch)
+    payload = json.loads(fixture["student"].read_text(encoding="utf-8"))
+    for cell_id, cell in payload["student_cells"].items():
+        assert cell["domain"] == cell_id.split("__", 1)[0]
+        assert cell["target"] == cell_id.split("__", 1)[1]
+        payload["student_cells"][cell_id] = cell.pop("replicates")
+    _write_json(fixture["student"], payload)
+
+    result = _assemble(fixture, suffix="-compact")
+    manifest = json.loads(Path(result["manifest"]).read_text(encoding="utf-8"))
+    assert manifest["student_cells"]["pile__public_base"]["domain"] == "pile"
+    assert manifest["student_cells"]["pile__public_base"]["target"] == "public_base"
+    verified = score_frozen.validate_joint_freeze(
+        repository_root=fixture["root"],
+        freeze_receipt_path=Path(result["freeze"]),
+        prediction_manifest_path=Path(result["manifest"]),
+    )
+    assert verified["status"] == "JOINT_FREEZE_VALIDATED_NO_TRUTH"
+
+
 def test_assembler_merges_separate_per_domain_anchor_descriptors(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     fixture = _fixture(tmp_path, monkeypatch)
     payload = json.loads(fixture["anchor"].read_text(encoding="utf-8"))
