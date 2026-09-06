@@ -62,7 +62,7 @@ The preserved failure records are part of the evidence:
 | `capacity-qualifier-r3` | Learning pass on the eight-row high-error probe | Useful capacity evidence, but missing the later resource/source/time receipt fields. |
 | `capacity-qualifier-r5` | Pass | Corrected full-pool feasibility plus probe-improvement and resource evidence. |
 | `teacher-qualification-r1` | Fail-closed: embedding path was not a regular file in that invocation | No teacher evidence and no truth access. |
-| `teacher-qualification-r2` | Fail-closed GPU OOM during frozen-reference candidate simulation; attempted allocation 21.79 GiB on a 15.89 GiB device | Teacher qualification did not run to completion; no teacher evidence and no truth access. |
+| `teacher-qualification-r2` | Fail-closed GPU OOM during default difficult-row selection; the old path materialized a 45,596 x 128,256 FP32 logit matrix (about 21.79 GiB) on a 15.89 GiB device before candidate simulation | Teacher qualification did not run to completion; no teacher evidence and no truth access. |
 
 The auditable r5 qualifier receipt is
 `experiments/TRR-P04/runtime/capacity-qualifier-r5/qualifier_receipt.json`
@@ -74,6 +74,17 @@ GRU width 256, position budget 512, vocabulary 128,256. The guard measured
 15.679 GB free before the run and 12.840 GB after it, with 2.512 GB peak
 allocated, 2.749 GB peak reserved, and 3.891 GB peak host RSS. The GPU was
 released after the run.
+
+The OOM was an implementation path issue, not a negative teacher or student
+result. The old `_default_selection` recomputed full-vocabulary logits for the
+entire correction pool even though the frozen candidate-preparation artifact
+already contained the PR7-affine proposal rows. Commit
+`02e2b36` changes default selection to read the cached proposal top-1 column,
+which preserves the declared proposer and removes that redundant allocation.
+The next teacher qualification must use this committed path, retain candidate
+K=32 and the maximum active position 191, and record the existing GPU/RSS
+guard. It must still be treated as a new qualification attempt; r2 produced no
+teacher evidence.
 
 ## Deployment audit
 
@@ -104,7 +115,8 @@ new receipts:
   correction positions (256 difficult plus 128 random audit), with candidate
   recall, proposal misses, teacher fixes/errors, score gaps, ties, and the
   frozen ranking scale. This is training-only evidence and must not be called
-  native BOS-only reconstruction.
+  native BOS-only reconstruction. The committed cached-proposal selection fix
+  must be resource-qualified before this section can be marked complete.
 - **Eight-fit comparison:** paired seeds 1737 and 2711 for the same-data affine
   reference and S/H/D students, using the common 75/25 record schedule and
   3,000-update budget. S is full-vocabulary CE; H adds the fixed label-only
