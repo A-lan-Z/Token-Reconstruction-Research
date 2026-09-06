@@ -3,9 +3,10 @@
 
 This producer intentionally consumes only P04 metadata ledgers.  It never opens
 an observation tensor, source text/token payload, evaluator truth file, model
-weight file, or the P04 target-update tensor.  Row identifiers and fingerprints
-are held only long enough to derive aggregate digests and overlap counts; no
-row values are written to the exchange artifact.
+weight file, or the P04 target-update tensor.  Row identifiers are held only
+long enough to derive order digests and overlap counts.  The exchange writes
+per-record public fingerprints (which are already opaque SHA-256 values), but
+never writes record IDs, source text, token IDs, or any other row payload.
 """
 
 from __future__ import annotations
@@ -41,6 +42,13 @@ INPUT_FILES = {
 }
 
 EXPECTED_COUNTS = {"correction": 256, "validation": 192, "fresh_evaluation": 72}
+HASH_CONVENTION_SOURCES = (
+    Path("scripts/trr_p04/prepare_panel.py"),
+    Path("scripts/trr_p04/prepare_evaluator_target.py"),
+    Path("src/token_reconstruction/public_activation.py"),
+    Path("src/token_reconstruction/p04_training.py"),
+    Path("src/token_reconstruction/alpaca_split.py"),
+)
 
 
 def _repo_root() -> Path:
@@ -113,7 +121,7 @@ def _normalise_path(root: Path, path: Any) -> Any:
             return str(candidate.resolve().relative_to(root.resolve()))
     except (OSError, ValueError):
         pass
-    return path
+    return str(path) if isinstance(path, Path) else path
 
 
 def _ledger_descriptor(root: Path, path: Path, metadata: Mapping[str, Any]) -> dict[str, Any]:
@@ -125,6 +133,15 @@ def _ledger_descriptor(root: Path, path: Path, metadata: Mapping[str, Any]) -> d
         "schema": metadata.get("schema"),
         "status": metadata.get("status"),
         "task_id": metadata.get("task_id"),
+    }
+
+
+def _code_descriptor(root: Path, path: Path) -> dict[str, Any]:
+    resolved = (root / path).resolve() if not path.is_absolute() else path.resolve()
+    return {
+        "path": _normalise_path(root, resolved),
+        "bytes": resolved.stat().st_size,
+        "sha256": _file_sha256(resolved),
     }
 
 
@@ -159,6 +176,58 @@ def _row_count_summary(rows: Sequence[Mapping[str, Any]], *, anchor_key: str | N
     return result
 
 
+def _opaque_hash_reservation(values: Sequence[str], *, source_field: str) -> dict[str, Any]:
+    """Return ordered and set views of opaque per-record SHA-256 strings."""
+    values = [str(value) for value in values]
+    aggregate = _digest_block(values)
+    return {
+        "available": True,
+        "source_field": source_field,
+        "ordered_values": values,
+        "unique_values": sorted(set(values)),
+        **aggregate,
+    }
+
+
+def _unavailable_hash_reservation(*, source_field: str, reason: str) -> dict[str, Any]:
+    return {
+        "available": False,
+        "source_field": source_field,
+        "ordered_values": None,
+        "unique_values": None,
+        "reason": reason,
+    }
+
+
+def _individual_public_hashes(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+    public_values = [str(row["public_record_sha256"]) for row in rows]
+    sequence_values = [str(row["truncated_sequence_sha256"]) for row in rows]
+    pair_values = [
+        _canonical_sha256(
+            {
+                "public_record_sha256": public_value,
+                "truncated_sequence_sha256": sequence_value,
+            }
+        )
+        for public_value, sequence_value in zip(public_values, sequence_values)
+    ]
+    return {
+        "public_record_sha256": _opaque_hash_reservation(
+            public_values, source_field="public_record_sha256"
+        ),
+        "truncated_sequence_sha256": _opaque_hash_reservation(
+            sequence_values, source_field="truncated_sequence_sha256"
+        ),
+        "ordered_public_sequence_pair_sha256": _opaque_hash_reservation(
+            pair_values,
+            source_field=(
+                "canonical JSON pair of public_record_sha256 and "
+                "truncated_sequence_sha256"
+            ),
+        ),
+    }
+
+
 def _reservation_hashes(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     fields = {
         "opaque_record_ids": [str(row["record_id"]) for row in rows],
@@ -167,20 +236,17 @@ def _reservation_hashes(rows: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
             str(row["truncated_sequence_sha256"]) for row in rows
         ],
     }
-    blocks = {name: _digest_block(values) for name, values in fields.items()}
-    blocks["reservation_digest_sha256"] = _canonical_sha256(
-        {
-            name: {
-                key: value
-                for key, value in block.items()
-                if key.endswith("sha256") or key.endswith("count")
-            }
-            for name, block in blocks.items()
-            if isinstance(block, Mapping)
-        }
-    )
-    return blocks
-
+    aggregate = {name: _digest_block(values) for name, values in fields.items()}
+    individual = _individual_public_hashes(rows)
+    individual_digest = _canonical_sha256(individual)
+    return {
+        **aggregate,
+        "individual_opaque_hashes": individual,
+        "individual_opaque_hashes_digest_sha256": individual_digest,
+        "reservation_digest_sha256": _canonical_sha256(
+            {"aggregate": aggregate, "individual_opaque_hashes_digest_sha256": individual_digest}
+        ),
+    }
 
 def _check_public_row_schema(rows: Sequence[Mapping[str, Any]], expected_count: int) -> None:
     if len(rows) != expected_count:
@@ -331,6 +397,71 @@ def build_exchange(root: Path) -> dict[str, Any]:
 
     fit_selection = selection.get("pools", {}).get("fit_replay", {})
     fit_manifest = pool_manifest.get("replay", {}).get("record_manifest", {})
+    fit_manifest_path_value = fit_manifest.get("path")
+    fit_manifest_descriptor: dict[str, Any] = _supplied_descriptor(root, fit_manifest)
+    fit_individual: dict[str, Any]
+    replay_metadata: dict[str, Any] | None = None
+    replay_rows: list[Mapping[str, Any]] | None = None
+    if isinstance(fit_manifest_path_value, str) and fit_manifest_path_value:
+        replay_path = Path(fit_manifest_path_value).expanduser().resolve()
+        replay_metadata = _read_json(replay_path)
+        candidate_rows = replay_metadata.get("records")
+        if not isinstance(candidate_rows, list) or len(candidate_rows) != int(fit_selection.get("record_count", 1200)):
+            raise ValueError("fit replay metadata count is unavailable or inconsistent")
+        allowed_replay_fields = {
+            "active_token_count",
+            "full_token_count",
+            "padded_length",
+            "post_bos_token_count",
+            "record_id",
+            "rendered_char_count",
+            "rendered_sha256",
+            "row_index",
+        }
+        if any(
+            not isinstance(row, Mapping) or set(row) - allowed_replay_fields
+            for row in candidate_rows
+        ):
+            raise ValueError("fit replay metadata contains a non-metadata field")
+        if any(
+            not isinstance(row.get("record_id"), str)
+            or not isinstance(row.get("rendered_sha256"), str)
+            or not row.get("rendered_sha256")
+            for row in candidate_rows
+        ):
+            raise ValueError("fit replay metadata lacks opaque rendered fingerprints")
+        replay_rows = candidate_rows
+        replay_id_digest = _digest_lines(str(row["record_id"]) for row in replay_rows)
+        supplied_id_digest = fit_selection.get("record_ids_sha256")
+        if supplied_id_digest and replay_id_digest != supplied_id_digest:
+            raise ValueError("fit replay record-order digest disagrees with selection metadata")
+        fit_individual = {
+            "rendered_sha256": _opaque_hash_reservation(
+                [str(row["rendered_sha256"]) for row in replay_rows],
+                source_field="rendered_sha256",
+            ),
+            "public_record_sha256": _unavailable_hash_reservation(
+                source_field="public_record_sha256",
+                reason="replay metadata exposes rendered_sha256 rather than this P04 field name",
+            ),
+            "truncated_sequence_sha256": _unavailable_hash_reservation(
+                source_field="truncated_sequence_sha256",
+                reason="not present in the immutable replay metadata ledger",
+            ),
+        }
+        fit_manifest_descriptor = _ledger_descriptor(root, replay_path, replay_metadata)
+    else:
+        fit_individual = {
+            "rendered_sha256": _unavailable_hash_reservation(
+                source_field="rendered_sha256", reason="replay metadata path is unavailable"
+            ),
+            "public_record_sha256": _unavailable_hash_reservation(
+                source_field="public_record_sha256", reason="replay metadata path is unavailable"
+            ),
+            "truncated_sequence_sha256": _unavailable_hash_reservation(
+                source_field="truncated_sequence_sha256", reason="replay metadata path is unavailable"
+            ),
+        }
     fit_replay = {
         "counts": {
             "record_count": int(fit_selection.get("record_count", pool_manifest.get("replay", {}).get("rows", 0))),
@@ -338,11 +469,13 @@ def build_exchange(root: Path) -> dict[str, Any]:
         },
         "hashes": {
             "opaque_record_id_order_sha256": fit_selection.get("record_ids_sha256"),
+            "individual_hashes_digest_sha256": _canonical_sha256(fit_individual),
         },
+        "individual_opaque_hashes": fit_individual,
         "ledger": _ledger_descriptor(root, INPUT_FILES["fit_replay_ledger"], pool_manifest),
-        "record_manifest_descriptor": _supplied_descriptor(root, fit_manifest),
+        "record_manifest_descriptor": fit_manifest_descriptor,
         "selection_pool_descriptor": _supplied_descriptor(root, fit_selection),
-        "hash_provenance": "record_id_order_sha256 copied from the P04 selection ledger; replay rows were not opened by this producer",
+        "hash_provenance": "record_id_order_sha256 is copied from and checked against the linked replay metadata ledger; only its rendered_sha256 field is opened for individual opaque fingerprints",
     }
 
     public_pool_pairs: dict[str, Any] = {}
@@ -382,6 +515,16 @@ def build_exchange(root: Path) -> dict[str, Any]:
             "serialized_source_text": bool(target_artifact.get("serialized_source_text", False)),
             "serialized_source_tokens": bool(target_artifact.get("serialized_source_tokens", False)),
             "read_by_reservation_hash_producer": False,
+        },
+        "individual_opaque_hashes": {
+            "public_record_sha256": _unavailable_hash_reservation(
+                source_field="public_record_sha256",
+                reason="target audit and preparation receipt serialize counts only, with no per-record public fingerprint array",
+            ),
+            "truncated_sequence_sha256": _unavailable_hash_reservation(
+                source_field="truncated_sequence_sha256",
+                reason="target audit and preparation receipt serialize counts only, with no per-record sequence fingerprint array",
+            ),
         },
         "selection_audit": _ledger_descriptor(
             root, INPUT_FILES["target_selection_audit"], target_audit
@@ -428,7 +571,7 @@ def build_exchange(root: Path) -> dict[str, Any]:
             "script": _ledger_descriptor(
                 root, Path(__file__).resolve(), {"schema": "producer-script", "status": "frozen-for-replay", "task_id": TASK_ID}
             ),
-            "input_scope": "P04 metadata ledgers listed below; no observation, source, truth, model-weight, or target-update payload was opened",
+            "input_scope": "P04 metadata ledgers and the linked immutable replay record-metadata ledger listed below; no observation, source, truth, model-weight, or target-update payload was opened",
         },
         "privacy_boundary": {
             "raw_record_ids_emitted": False,
@@ -440,20 +583,47 @@ def build_exchange(root: Path) -> dict[str, Any]:
             "P03_holdout_opened": False,
         },
         "hash_conventions": {
-            "canonical_json_sha256": "SHA256(UTF-8 json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False))",
-            "ordered_opaque_value_sha256": "SHA256 of each declared opaque UTF-8 string followed by LF, in ledger order, including the final LF",
+            "canonical_json_sha256": "SHA256(UTF-8 json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False)); this is the prepare_panel canonical_json/json_sha256 convention used for exchange aggregates",
+            "metadata_json_file_serialization": "P04 metadata ledgers are written with json.dumps(value, indent=2, sort_keys=True) and a final LF; their file SHA256 descriptors hash those exact UTF-8 bytes",
+            "ordered_opaque_value_sha256": "SHA256 of each declared opaque UTF-8 string followed by LF, in ledger order, including the final LF; this is prepare_panel.digest_lines and public_activation.record_ids_sha256",
             "unique_set_canonical_json_sha256": "SHA256 of canonical JSON for the sorted unique opaque-string set",
             "opaque_fields": {
-                "record_id": "metadata record_id; treated as opaque string",
-                "public_record_fingerprint": "metadata public_record_sha256; treated as an opaque SHA256 string",
-                "truncated_sequence_fingerprint": "metadata truncated_sequence_sha256; treated as an opaque SHA256 string",
+                "record_id": "metadata record_id; treated as an opaque string and never emitted per record",
+                "public_record_fingerprint": "metadata public_record_sha256; an opaque SHA256 string, emitted only as ordered/set values",
+                "truncated_sequence_fingerprint": "metadata truncated_sequence_sha256; an opaque SHA256 string, emitted only as ordered/set values",
             },
-            "fit_replay_supplied_hash": "fit replay opaque_record_id_order_sha256 is copied from the existing P04 selection ledger; replay row contents are not opened here",
-            "targetfit_supplied_hashes": "target row-order, selection, plan, and target-update artifact SHA256 values are copied from existing P04 audit/receipt metadata; the target-update tensor is not opened here",
+            "public_text_fingerprint_generation": {
+                "pile_plain": "SHA256(raw text UTF-8 bytes); _text_value converts null to empty text and performs no trim or Unicode normalization",
+                "finance_chat": "system/user/assistant values convert null to empty text and are stripped; missing user falls back to stripped instruction plus optional '\n\n' plus stripped input, and missing assistant falls back to stripped output; hash compact JSON [system-or-null,user,assistant] with ensure_ascii=False and separators=(',', ':') as UTF-8",
+                "alpaca_instruction": "instruction/input/output values convert null to empty text; user is instruction plus optional '\n\n' plus input, capped at 1200 characters, output is capped at 1200 characters; render tokenizer.apply_chat_template([{'role':'user','content':user}], tokenize=False, add_generation_prompt=True) plus output, then SHA256 rendered UTF-8 bytes",
+            },
+            "sequence_fingerprint_generation": {
+                "public_panel": "token IDs are produced with add_special_tokens=False, include the declared BOS at index zero, and hash token_ids[:1+128] (BOS plus at most 128 post-BOS IDs)",
+                "target_update_audit": "the target preparation helper uses the same little-endian signed-int32 packing convention; no target per-record sequence values are serialized into this exchange",
+                "binary_encoding": "SHA256(struct.pack('<' + 'i'*N, *(int(value) for value in values))); no JSON wrapper and no dtype conversion beyond signed int32 representability",
+            },
+            "tensor_sha256": "For tensor digests used by P04 runtime assets: detach().cpu().contiguous(), prefix UTF-8 compact sorted JSON {'dtype': str(tensor.dtype), 'shape': list(tensor.shape)}, then append exact contiguous CPU bytes from view(torch.uint8).numpy().tobytes(order='C')",
+            "ordered_pair_sha256": "Each emitted ordered pair digest is SHA256 of canonical JSON {'public_record_sha256': value, 'truncated_sequence_sha256': value} using the exchange canonical JSON convention; the ordered arrays retain the original row pairing",
+            "fit_replay_supplied_hash": "fit replay opaque_record_id_order_sha256 is copied from the existing P04 selection ledger and checked against the linked replay metadata record order; its individual rendered_sha256 values are emitted when present, while missing P04 sequence fields are explicit unavailable markers",
+            "targetfit_supplied_hashes": "target row-order, selection, plan, and target-update artifact SHA256 values are copied from existing P04 audit/receipt metadata; per-record target public/sequence arrays are explicitly unavailable and the target-update tensor is not opened here",
+            "implementation_sources": [
+                {
+                    **_code_descriptor(root, path),
+                    "symbols": symbols,
+                }
+                for path, symbols in (
+                    (HASH_CONVENTION_SOURCES[0], ["canonical_json", "json_sha256", "digest_lines", "sequence_sha256"]),
+                    (HASH_CONVENTION_SOURCES[1], ["_digest_lines", "_sequence_hash"]),
+                    (HASH_CONVENTION_SOURCES[2], ["tensor_sha256", "record_ids_sha256"]),
+                    (HASH_CONVENTION_SOURCES[3], ["tensor_sha256", "canonical_hash"]),
+                    (HASH_CONVENTION_SOURCES[4], ["historical_user_text", "historical_rendered_text"]),
+                )
+            ],
         },
         "ledger_descriptors": {
             "selection": _ledger_descriptor(root, INPUT_FILES["selection"], selection),
             "pool_manifest": _ledger_descriptor(root, INPUT_FILES["pool_manifest"], pool_manifest),
+            "fit_replay_record_manifest": fit_replay["record_manifest_descriptor"],
             "correction": public["correction"]["ledger"],
             "validation": public["validation"]["ledger"],
             "fresh_evaluation": public["fresh_evaluation"]["ledger"],
@@ -525,7 +695,7 @@ def _assert_no_raw_row_values(output: Mapping[str, Any], loaded_rows: Mapping[st
     serialized = json.dumps(output, ensure_ascii=False, sort_keys=True)
     for rows in loaded_rows.values():
         for row in rows:
-            for key in ("record_id", "public_record_sha256", "truncated_sequence_sha256"):
+            for key in ("record_id",):
                 value = row.get(key)
                 if isinstance(value, str) and value and value in serialized:
                     raise AssertionError("reservation exchange contains a raw row value")
