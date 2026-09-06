@@ -80,3 +80,8 @@ The next decision is to deprioritize this static projected variant, retain the A
 
 
 Published as [PR #8](https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/8) on `task/TRR-P03`, against `task/TRR-P02` at `7956b4357d076abce3ccfc407d3fcac832fd34f6`. The published evidence commit is `3d19786ed1db69a30f7d1673f842e67f52dddbac`; no PR was merged.
+
+
+## Final closure
+
+TRR-P03 concludes with `STOP_VARIANT`; the published evidence is preserved and the separate Stage-2 holdout remains sealed with truth unopened. Do not run compression, reference-token sweeps, ensemble routing, or another prototype extension. Keep existing PRs unmerged and this work separate from agent one. Further experiments require a distinct hypothesis, not a continuation of this variant. The verbatim closeout instruction is `coordination/requests/TRR-P03-closeout.md`.
