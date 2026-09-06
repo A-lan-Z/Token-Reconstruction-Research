@@ -8,12 +8,14 @@
   },
   "code_bindings": {
     "capture_adapter_path": "scripts/trr_p06/capture_public.py",
-    "capture_adapter_sha256": "e49672dee36d0e7ffccb2fba66319da5b12c9447e0376f753acdefab3a9861cd",
+    "capture_adapter_sha256": "4485ee823e9d82f6e12753cb9e43a7ca6e9dd11e363173de42b0f2ae3b5060aa",
     "plan_path": "experiments/TRR-P06/plan.json",
     "plan_sha256": "80c51201dfd3f291bce2a6a33c4b58cdea72a2c1fd85d0520983a367fd3a3832",
-    "prepared_against_git_head": "55e6417255e6ee08a48f2152a912454a1e291372",
+    "prepared_against_git_head": "1ad95a67ad04842e6fb47ec2c8f8a297e9bd6f9c",
     "source_universe_path": "experiments/TRR-P06/setup/source_universe.frozen.json",
-    "source_universe_sha256": "c257acda18fbbab5e4c5d64754d8800bb7ef75a1996010d802f7846e1503198c"
+    "source_universe_sha256": "c257acda18fbbab5e4c5d64754d8800bb7ef75a1996010d802f7846e1503198c",
+    "watchdog_path": "scripts/trr_p06/resource_watchdog.py",
+    "watchdog_sha256": "ed2b234335a59d473ef9018cc5776deba53217dd884fe29793647c17606816bc"
   },
   "frozen_bindings": {
     "source_selection": {
@@ -89,7 +91,8 @@
   "notes": [
     "The previous P06 estimate cited a decoder-fit peak and was insufficient as a capture estimate; it is replaced by the published TRR-0006 capture qualification evidence above.",
     "The source universe binding is the frozen file SHA c257acda18fbbab5e4c5d64754d8800bb7ef75a1996010d802f7846e1503198c, not the earlier draft universe.",
-    "No P06 GPU capture, model load, source panel materialization, observation write, or truth access occurred while creating this record."
+    "No P06 GPU capture, model load, source panel materialization, observation write, or truth access occurred while creating this record.",
+    "The public TRR-0002 LoRA config/update were absent at relative paths in /tmp/trr-p06; the capture command binds immutable external paths and verified SHA-256 values."
   ],
   "observed_utc": "2026-09-06T11:10:44Z",
   "published_capture_reference": {
@@ -168,9 +171,9 @@
         "--model-snapshot",
         "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
         "--lora-config",
-        "outputs/TRR-0002/public-calibration/generation.json",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/public-calibration/generation.json",
         "--lora-update",
-        "outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors",
         "--output-root",
         "experiments/TRR-P06/runtime/public-capture-r1",
         "--device",
@@ -220,8 +223,14 @@
     ],
     "model_snapshot": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
     "pile_arrow": "/home/alanz/.cache/huggingface/datasets/NeelNanda___pile-10k/default/0.0.0/127bfedcd5047750df5ccf3a12979a47bfa0bafa/pile-10k-train.arrow",
-    "public_lora_config": "outputs/TRR-0002/public-calibration/generation.json",
-    "public_lora_update": "outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors",
+    "public_lora_config": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/public-calibration/generation.json",
+      "sha256": "6bed8aca6668bd749bbad03c0c85bbace306085dac3141895dad7685f03d0682"
+    },
+    "public_lora_update": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors",
+      "sha256": "eea7bb49f801b61df2e26a8f59af7c3096f6f3a2604404e16e589443bcfba595"
+    },
     "tokenizer_snapshot": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6"
   },
   "status": "READ_ONLY_ESTIMATE_NO_CAPTURE",
