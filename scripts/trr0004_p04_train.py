@@ -27,6 +27,7 @@ from safetensors.torch import load_file
 
 from token_reconstruction.p04_student import (
     ALL_METHODS,
+    P04StudentError,
     METHOD_AFFINE,
     METHOD_D,
     METHOD_H,
@@ -35,6 +36,7 @@ from token_reconstruction.p04_student import (
 )
 from token_reconstruction.p04_training import (
     CANDIDATE_PREPARATION_SCHEMA,
+    TRAINING_SCHEMA,
     DEFAULT_CANDIDATE_K,
     P04TrainingError,
     TrainingConfig,
