@@ -1,0 +1,70 @@
+{
+  "arm_execution": "sequential; one contextual or affine arm resident at a time",
+  "bytes": {
+    "activation_batch_fp32": 12582912,
+    "adamw_m_v": 41978888,
+    "attention_scores_fp32": 1179648,
+    "conservative_envelope": 2604966936,
+    "embedding_table_fp32": 1050673152,
+    "gradient_buffer": 20989444,
+    "hidden_workspace_envelope": 62914560,
+    "max_model_parameters_fp32": 20989444,
+    "raw_sum": 1736644624,
+    "resident_training_envelope": 1134630928,
+    "safety_margin_50_percent": 868322312,
+    "selected_logits_backward_workspace_fp32": 525336576,
+    "selected_logits_fp32": 262668288,
+    "training_peak_envelope": 1736644624,
+    "training_workspace_envelope": 602013696,
+    "validation_peak_envelope": 1411008004,
+    "validation_workspace_envelope": 339345408
+  },
+  "forecast_basis": {
+    "combination": "conservative sum of resident terms plus 50 percent safety margin; measured qualification peak is recorded separately",
+    "resident_embedding": "full normalized public embedding table",
+    "selected_logits_backward_multiplier": 2,
+    "training_backward": [
+      "8x192 float32 activation batch",
+      "affine and Q/K/V/output parameters",
+      "AdamW first and second moments",
+      "gradient buffers",
+      "causal attention score workspace",
+      "512xvocabulary selected-logit buffer",
+      "saved hidden/autograd workspace envelope"
+    ],
+    "training_peak_bytes": 1736644624,
+    "validation_forward": [
+      "same 8-record chunk geometry",
+      "512xvocabulary selected-logit buffer",
+      "hidden/projection workspace"
+    ],
+    "validation_peak_bytes": 1411008004,
+    "worst_case_stage": "training_backward_with_AdamW"
+  },
+  "geometry": {
+    "context_width": 128,
+    "hidden_size": 2048,
+    "position_budget": 512,
+    "record_batch_size": 8,
+    "sequence_length": 192,
+    "vocabulary_size": 128256
+  },
+  "gib": {
+    "conservative_envelope": 2.4260645136237144,
+    "embedding_table_fp32": 0.978515625,
+    "raw_sum": 1.6173763424158096,
+    "safety_margin_50_percent": 0.8086881712079048,
+    "selected_logits_fp32": 0.24462890625,
+    "training_peak_envelope": 1.6173763424158096,
+    "validation_peak_envelope": 1.3141036070883274
+  },
+  "mode": "qualification_only",
+  "qualification_requirement": "largest registered 8x192 cell passes live guard before 3000-step matrix",
+  "qualification_steps": 2,
+  "resource_policy": {
+    "maximum_gpu_reserved_gib": 6.0,
+    "maximum_host_rss_gib": 16.0,
+    "minimum_free_gpu_gib": 8.0,
+    "minimum_host_available_gib": 10.0
+  }
+}
