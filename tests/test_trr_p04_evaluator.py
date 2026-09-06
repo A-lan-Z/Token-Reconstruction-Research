@@ -7,7 +7,10 @@ from pathlib import Path
 
 import pytest
 
-from scripts.trr_p04.native_anchor_runner import build_preflight as build_anchor_preflight
+from scripts.trr_p04.native_anchor_runner import (
+    _decoder_position_ids,
+    build_preflight as build_anchor_preflight,
+)
 from scripts.trr_p04.prepare_evaluator_observations import (
     EvaluatorObservationError,
     build_preflight as build_observation_preflight,
@@ -136,3 +139,13 @@ def test_native_anchor_uses_same_public_reference_without_private_target(monkeyp
     assert "target_update_path" not in source
     assert "install_target_lora" not in source
     assert "load_target_lora" not in source
+
+
+def test_native_anchor_adapts_only_padded_position_suffix() -> None:
+    import torch
+
+    mask = torch.tensor([[1, 1, 1, 0, 0], [1, 1, 1, 1, 0]], dtype=torch.bool)
+    persisted = torch.tensor([[0, 1, 2, 0, 0], [0, 1, 2, 3, 0]], dtype=torch.long)
+    adapted = _decoder_position_ids(mask)
+    assert torch.equal(adapted[:, :3], persisted[:, :3])
+    assert adapted.tolist() == [[0, 1, 2, 2, 2], [0, 1, 2, 3, 3]]

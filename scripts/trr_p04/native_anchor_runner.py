@@ -235,6 +235,17 @@ def _synchronize(device: torch.device) -> None:
         torch.cuda.synchronize(device)
 
 
+def _decoder_position_ids(attention_mask: torch.Tensor) -> torch.Tensor:
+    """Adapt zero-padded stored positions to the PR7 decoder validator.
+
+    P04 persists right-padded position IDs with zeroes after each active
+    prefix.  PR7's causal validator instead repeats the final active position
+    through the ignored suffix.  Only padded positions are changed; active
+    positions remain byte-for-byte aligned with the frozen observation.
+    """
+    return attention_mask.to(torch.long).cumsum(dim=1).sub(1).clamp_min(0)
+
+
 def _cuda_guard(device: torch.device, *, stage: str, started: float) -> dict[str, Any]:
     if device.type != "cuda":
         raise NativeAnchorError("native A1+A2 anchor requires CUDA")
@@ -465,7 +476,11 @@ def run_anchor(
             raise NativeAnchorError("anchor activation row geometry changed")
         observations = row_h.view(1, MAXIMUM_TOKENS, HIDDEN_SIZE)
         attention_mask = row_mask.view(1, MAXIMUM_TOKENS).to(torch.long)
-        position_ids = row_positions.view(1, MAXIMUM_TOKENS).to(torch.long)
+        persisted_position_ids = row_positions.view(1, MAXIMUM_TOKENS).to(torch.long)
+        position_ids = _decoder_position_ids(attention_mask)
+        active_count = int(attention_mask.sum().item())
+        if not torch.equal(position_ids[:, :active_count], persisted_position_ids[:, :active_count]):
+            raise NativeAnchorError("stored active position IDs disagree with decoder positions")
 
         def run_pass() -> dict[str, Any]:
             _synchronize(device)
