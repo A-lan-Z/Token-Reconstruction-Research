@@ -9,61 +9,221 @@
   "code_bindings": {
     "capture_adapter_path": "scripts/trr_p06/capture_public.py",
     "capture_adapter_sha256": "e49672dee36d0e7ffccb2fba66319da5b12c9447e0376f753acdefab3a9861cd",
-    "git_head": "95e904ccfcbd91a6555f98fcfcfe9b1bd1879660",
     "plan_path": "experiments/TRR-P06/plan.json",
     "plan_sha256": "80c51201dfd3f291bce2a6a33c4b58cdea72a2c1fd85d0520983a367fd3a3832",
-    "source_universe_path": "experiments/TRR-P06/setup/source_universe.json",
-    "source_universe_sha256": "b9393d42c64f289235f1c2dc2d73b854eefda9c5ccbbfb1e9ce60b38b0a9cd7d"
+    "prepared_against_git_head": "55e6417255e6ee08a48f2152a912454a1e291372",
+    "source_universe_path": "experiments/TRR-P06/setup/source_universe.frozen.json",
+    "source_universe_sha256": "c257acda18fbbab5e4c5d64754d8800bb7ef75a1996010d802f7846e1503198c"
+  },
+  "frozen_bindings": {
+    "source_selection": {
+      "path": "experiments/TRR-P06/runtime/source-selection-r1/selection.json",
+      "records": 512,
+      "records_per_domain": 256,
+      "selection_seed": 6206,
+      "sha256": "d53ed8c972ec9ec00c6490dca22a99af833ea839fa68d9c4164ce061ee893a1a",
+      "status": "FROZEN_TRR-P06_SOURCE_SELECTION_NO_TRUTH"
+    },
+    "source_universe": {
+      "path": "experiments/TRR-P06/setup/source_universe.frozen.json",
+      "sha256": "c257acda18fbbab5e4c5d64754d8800bb7ef75a1996010d802f7846e1503198c",
+      "status": "FROZEN_ROOT_APPROVED"
+    }
   },
   "geometry": {
     "capture_sequence_tokens_including_bos": 192,
-    "dtype": "float32 accounting only",
-    "forward_hidden_activation_bytes": 12582912,
+    "conservative_model_plus_hidden_plus_full_vocab_logits_bytes": 2871939496,
+    "conservative_model_plus_hidden_plus_full_vocab_logits_gib": 2.6747020856,
+    "dtype": "bfloat16",
+    "full_hidden_activation_bytes_batch8_h192": 6291456,
+    "full_hidden_plus_full_vocab_logits_bytes_batch8_h192": 400293888,
+    "full_vocab_logits_bytes_batch8_h192_bfloat16": 394002432,
     "hidden_size": 2048,
-    "note": "These are lower-bound geometry terms; published full-model baseline is used for peak planning.",
-    "padded_positions_beyond_retained_h128": 64,
-    "records_per_batch": 8,
-    "retained_h128_bytes": 8388608,
-    "retained_h128_plus_per_position_mask_bytes": 8392704,
-    "retained_hidden_positions": 128
+    "note": "The full-vocabulary term is a conservative accounting term; the capture helper retains H128 observations and does not persist logits. Cells are processed sequentially by target and style.",
+    "records_per_capture_batch": 8,
+    "retained_hidden_activation_bytes_batch8_h128": 4194304,
+    "retained_hidden_positions": 128,
+    "vocab_size": 128256
   },
   "guard_plan": {
+    "capture_mode": "one target condition at a time; one style cell at a time; retain only H128 plus mask/position sidecars",
     "exclusive_gpu_recheck_required": true,
-    "full_capture_before_inference": true,
     "maximum_host_rss_gib": 16.0,
     "maximum_reserved_gpu_gib": 6.0,
     "minimum_free_gpu_gib": 8.0,
     "minimum_host_available_gib": 10.0,
+    "published_worst_reserved_gib": 2.328125,
+    "reserved_margin_to_6gib_gib": 3.671875,
+    "stop_on": [
+      "OOM",
+      "non-finite activation",
+      "allocator or driver anomaly",
+      "source mismatch",
+      "guard violation",
+      "timeout"
+    ],
     "watchdog_required": true
   },
   "live_snapshot": {
-    "free_headroom_over_8gib_mib": 4720,
     "gpu": {
-      "free_mib": 12912,
+      "free_gib": 12.6103515625,
+      "free_headroom_over_8gib_gib": 4.6103515625,
+      "free_mib": 12913,
+      "guard_passed_at_snapshot": true,
       "index": 0,
       "name": "NVIDIA GeForce RTX 5080",
       "source_command": "nvidia-smi --query-gpu=index,name,memory.total,memory.used,memory.free --format=csv,noheader,nounits",
       "total_mib": 16303,
-      "used_mib": 3066
+      "used_mib": 3065
     },
-    "host_headroom_over_10gib_gib": 10.041,
     "host_memory": {
-      "mem_available_bytes": 21518909440,
-      "mem_available_gib": 20.041,
+      "available_headroom_over_10gib_gib": 10.0582618713,
+      "guard_passed_at_snapshot": true,
+      "mem_available_bytes": 21537394688,
+      "mem_available_gib": 20.0582618713,
       "mem_total_bytes": 32411611136,
       "source_command": "/proc/meminfo"
+    },
+    "observed_utc": "2026-09-06T11:10:44Z"
+  },
+  "notes": [
+    "The previous P06 estimate cited a decoder-fit peak and was insufficient as a capture estimate; it is replaced by the published TRR-0006 capture qualification evidence above.",
+    "The source universe binding is the frozen file SHA c257acda18fbbab5e4c5d64754d8800bb7ef75a1996010d802f7846e1503198c, not the earlier draft universe.",
+    "No P06 GPU capture, model load, source panel materialization, observation write, or truth access occurred while creating this record."
+  ],
+  "observed_utc": "2026-09-06T11:10:44Z",
+  "published_capture_reference": {
+    "geometry": {
+      "batch_records": 8,
+      "capture_sequence_tokens": 192,
+      "hidden_size": 2048,
+      "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+      "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "model_weight_bytes": 2471645608,
+      "model_weight_sha256": "1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f",
+      "stored_sequence_tokens": 128
+    },
+    "interpretation": "This is an exact public-prefix capture-path qualification at the same batch-8 x 192 geometry. It supplies a measured GPU peak for P06 planning; it is not a P06 capture and does not authorize execution.",
+    "measured_peak_by_condition": {
+      "public_base": {
+        "cuda_peak_allocated_bytes": 2472678400,
+        "cuda_peak_reserved_bytes": 2478833664
+      },
+      "public_lora_2601": {
+        "cuda_peak_allocated_bytes": 2481656832,
+        "cuda_peak_reserved_bytes": 2499805184
+      }
+    },
+    "preflight": {
+      "bytes": 6449,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0006/capture_preflight.json",
+      "sha256": "e543f2d139ea71a4f9ce5e931b07e01402556c3845e3b628c0b46f920340df57",
+      "status": "PASSED_INHERITED_AND_FRESH_8X192_GATE_MAIN_CAPTURE_RELEASED"
+    },
+    "qualification_checks": {
+      "active_output_bit_exact": true,
+      "batching_substitution_allowed": false,
+      "maximum_absolute_difference": 0.0,
+      "truth_opened": false,
+      "unpadded_diagnostic_used_for_capture": false
+    },
+    "qualification_receipt": {
+      "bytes": 11441,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0006/capture_qualification_8/receipt.json",
+      "sha256": "d420342dcb3b7c2dcda40875609285462cc7bd8593163edf9a0521555dbc93fe",
+      "status": "QUALIFICATION_PASSED_NO_TRUTH"
+    },
+    "source_task": "TRR-0006",
+    "worst_measured_cuda_peak_allocated_bytes": 2481656832,
+    "worst_measured_cuda_peak_reserved_bytes": 2499805184
+  },
+  "purpose": "Metadata-only estimate for the frozen public capture. No P06 model, source panel, observation, or truth payload was opened by this preflight.",
+  "qualification_commands": {
+    "capture_path": {
+      "argv": [
+        "env",
+        "HF_HUB_OFFLINE=1",
+        "HF_DATASETS_OFFLINE=1",
+        "TRANSFORMERS_OFFLINE=1",
+        "TOKENIZERS_PARALLELISM=false",
+        "OMP_NUM_THREADS=4",
+        "MKL_NUM_THREADS=4",
+        "PYTHONPATH=src:scripts",
+        "/usr/bin/python3",
+        "scripts/trr_p06/capture_public.py",
+        "--execute",
+        "--repository-root",
+        "/tmp/trr-p06",
+        "--universe",
+        "experiments/TRR-P06/setup/source_universe.frozen.json",
+        "--selection",
+        "experiments/TRR-P06/runtime/source-selection-r1/selection.json",
+        "--tokenizer",
+        "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+        "--pile-arrow",
+        "/home/alanz/.cache/huggingface/datasets/NeelNanda___pile-10k/default/0.0.0/127bfedcd5047750df5ccf3a12979a47bfa0bafa/pile-10k-train.arrow",
+        "--finance-arrow",
+        "/home/alanz/.cache/huggingface/datasets/Josephgflowers___finance-instruct-500k/default/0.0.0/583a98fb0ec14d904e9423b671d9d0fea88891b6/finance-instruct-500k-train-00000-of-00002.arrow",
+        "/home/alanz/.cache/huggingface/datasets/Josephgflowers___finance-instruct-500k/default/0.0.0/583a98fb0ec14d904e9423b671d9d0fea88891b6/finance-instruct-500k-train-00001-of-00002.arrow",
+        "--model-snapshot",
+        "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+        "--lora-config",
+        "outputs/TRR-0002/public-calibration/generation.json",
+        "--lora-update",
+        "outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors",
+        "--output-root",
+        "experiments/TRR-P06/runtime/public-capture-r1",
+        "--device",
+        "cuda"
+      ],
+      "largest_cell": "internal public-prefix qualification on the finance batch, 8 records x 192 tokens, before any P06 observation writes; the adapter has no separate qualifier-only CLI",
+      "output_root": "experiments/TRR-P06/runtime/public-capture-r1",
+      "runner": "scripts/trr_p06/capture_public.py",
+      "source_binding": "The command must be run only after an exclusive-device guard and watchdog receipt are created; output root is create-only.",
+      "status": "NOT_RUN"
+    },
+    "fit_path": {
+      "argv": [
+        "env",
+        "HF_HUB_OFFLINE=1",
+        "HF_DATASETS_OFFLINE=1",
+        "TRANSFORMERS_OFFLINE=1",
+        "TOKENIZERS_PARALLELISM=false",
+        "OMP_NUM_THREADS=4",
+        "MKL_NUM_THREADS=4",
+        "PYTHONPATH=src:scripts",
+        "/usr/bin/python3",
+        "scripts/trr0006_fit_visibility.py",
+        "--mode",
+        "qualify",
+        "--fit-manifest",
+        "experiments/TRR-P06/setup/public_fit_manifest_resolved.json",
+        "--direct-affine-state",
+        "experiments/TRR-0004/evidence/affine/selected_states/fit_large_v1.historical_affine_ce_no_vocab_bias.safetensors",
+        "--preflight-receipt",
+        "<fresh-preflight-root>/preflight.json",
+        "--output-root",
+        "<fresh-qualification-root>",
+        "--device",
+        "cuda"
+      ],
+      "largest_cell": "P06 backward qualifier, 8 records x H128 x 512 draws, separate from public activation capture",
+      "runner": "scripts/trr0006_fit_visibility.py",
+      "status": "NOT_RUN_BY_THIS_PREFLIGHT"
     }
   },
-  "observed_utc": "2026-09-06T11:02:00Z",
-  "published_baseline": {
-    "causal_peak_allocated_bytes": 2503377920,
-    "interpretation": "P06 capture is inference-only with longer input sequence but H128 retention; this is an estimate, not a qualification.",
-    "source": "experiments/TRR-P06/setup/resource_preflight.json published_parent_fit_reference",
-    "worst_peak_reserved_bytes": 2959081472,
-    "worst_process_rss_bytes": 6975275008
-  },
-  "purpose": "metadata-only parent public capture estimate for batch 8 x 192 full forward retaining H0..H127; no model, source panel, observation, or truth payload opened",
   "schema": "token-reconstruction.trr-p06-capture-preflight.v1",
+  "source_assets_required_for_future_capture": {
+    "finance_arrow": [
+      "/home/alanz/.cache/huggingface/datasets/Josephgflowers___finance-instruct-500k/default/0.0.0/583a98fb0ec14d904e9423b671d9d0fea88891b6/finance-instruct-500k-train-00000-of-00002.arrow",
+      "/home/alanz/.cache/huggingface/datasets/Josephgflowers___finance-instruct-500k/default/0.0.0/583a98fb0ec14d904e9423b671d9d0fea88891b6/finance-instruct-500k-train-00001-of-00002.arrow"
+    ],
+    "model_snapshot": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+    "pile_arrow": "/home/alanz/.cache/huggingface/datasets/NeelNanda___pile-10k/default/0.0.0/127bfedcd5047750df5ccf3a12979a47bfa0bafa/pile-10k-train.arrow",
+    "public_lora_config": "outputs/TRR-0002/public-calibration/generation.json",
+    "public_lora_update": "outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors",
+    "tokenizer_snapshot": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6"
+  },
   "status": "READ_ONLY_ESTIMATE_NO_CAPTURE",
   "task_id": "TRR-P06"
 }
