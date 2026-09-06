@@ -3,8 +3,8 @@
   "task_id": "TRR-P06",
   "artifact_role": "task-local setup/provenance manifest; no experiment outputs",
   "created_utc": "2026-09-06T09:28:17Z",
-  "updated_utc": "2026-09-06T09:28:17Z",
-  "status": "SETUP_ASSET_INVENTORY_READY_RESOURCE_PREFLIGHT_PENDING",
+  "updated_utc": "2026-09-06T09:33:42Z",
+  "status": "SETUP_ASSET_INVENTORY_PREFLIGHT_RECORDED_RESOURCE_COORDINATION_PENDING",
   "truth_opened": false,
   "model_loaded": false,
   "records_selected": false,
@@ -39,8 +39,8 @@
     },
     "asset_exclusion_inventory": {
       "path": "experiments/TRR-P06/setup/public_asset_exclusion_inventory.json",
-      "bytes": 14964,
-      "sha256": "95e2520a66b769dba37f9d0ace4c8e96b2ee721e8d7bd4d2965e82e38c46e723",
+      "bytes": 16571,
+      "sha256": "06c98ea464fc80b35153c391dd2a8484b6218c51878dd105e26b8bc3eedb6c21",
       "status": "READY_NO_SELECTION_NO_MODEL_NO_TRUTH"
     },
     "design_review": {
@@ -50,6 +50,18 @@
     "implementation_constraints": {
       "path": "experiments/TRR-P06/review/implementation-constraints.md",
       "status": "TASK_LOCAL_HANDOFF_UNCOMMITTED_BY_OTHER_OWNER"
+    },
+    "capture_pipeline_skeleton": {
+      "path": "experiments/TRR-P06/setup/capture_pipeline_skeleton.json",
+      "bytes": 5423,
+      "sha256": "7e4f987f485c29e3eeedc80604e8c5af9e7062534978f5f895dc8efa3bf9308f",
+      "status": "SPEC_ONLY_NOT_RUN_NO_PANEL_SELECTION"
+    },
+    "resource_preflight": {
+      "path": "experiments/TRR-P06/setup/resource_preflight.json",
+      "bytes": 3605,
+      "sha256": "86469fc461d78ccf6c11335ff4304b39ba254a068f2d9bd99d0af285b76fb5b7",
+      "status": "READ_ONLY_ESTIMATE_NO_RUN"
     }
   },
   "scientific_scope": {
@@ -67,11 +79,21 @@
     "public_validation_records": 48,
     "fresh_panel": "not selected; proposed 512 unique records (256 per domain) paired across public_base/public_lora_2601 remains subject to fixed-plan review",
     "anchor": "published native A1+A2 K=256 bounded anchor, proposed first 64 fresh records per domain, separate denominator",
-    "truth_gate": "freeze plan, source/observation geometry, all states and predictions, then materialize truth once; no truth access at setup"
+    "truth_gate": "freeze plan, source/observation geometry, all states and predictions, then materialize truth once; no truth access at setup",
+    "public_fit_source_post_bos_positions": 124371,
+    "public_validation_source_post_bos_positions": 3133,
+    "planned_h128_fit_post_bos_positions": 112825,
+    "planned_h128_validation_post_bos_positions": 2982,
+    "planned_direct_affine_state": {
+      "source_task": "TRR-0004",
+      "state_path": "experiments/TRR-0004/evidence/affine/selected_states/fit_large_v1.historical_affine_ce_no_vocab_bias.safetensors",
+      "state_sha256": "09c5b852373d8555b06508a79bb00c94041202702b61b121b35fa2b6f9f64e65",
+      "tensor_values_verified_by_setup": false
+    }
   },
   "asset_inventory_pointer": {
     "path": "experiments/TRR-P06/setup/public_asset_exclusion_inventory.json",
-    "sha256": "95e2520a66b769dba37f9d0ace4c8e96b2ee721e8d7bd4d2965e82e38c46e723",
+    "sha256": "06c98ea464fc80b35153c391dd2a8484b6218c51878dd105e26b8bc3eedb6c21",
     "coverage": "published public fit/validation/affine/capture identities plus approved opaque exclusion ledgers; no payload copied"
   },
   "resource_gate": {
@@ -114,5 +136,18 @@
     "p04_parent": "PRESERVE_PUBLISHED_PARENT_UNMERGED",
     "trr0007": "DO_NOT_INSPECT_OR_DEPEND_ON",
     "global_state_and_registry": "UNCHANGED"
+  },
+  "resource_preflight_pointer": {
+    "path": "experiments/TRR-P06/setup/resource_preflight.json",
+    "sha256": "86469fc461d78ccf6c11335ff4304b39ba254a068f2d9bd99d0af285b76fb5b7",
+    "status": "READ_ONLY_ESTIMATE_NO_RUN",
+    "largest_reference_reserved_gib": 2.756,
+    "current_gpu_free_mib": 12880,
+    "root_recheck_required": true
+  },
+  "capture_pipeline_pointer": {
+    "path": "experiments/TRR-P06/setup/capture_pipeline_skeleton.json",
+    "sha256": "7e4f987f485c29e3eeedc80604e8c5af9e7062534978f5f895dc8efa3bf9308f",
+    "status": "SPEC_ONLY_NOT_RUN_NO_PANEL_SELECTION"
   }
 }

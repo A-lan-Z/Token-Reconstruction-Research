@@ -1,0 +1,145 @@
+{
+  "schema": "token-reconstruction.trr-p06-capture-pipeline-skeleton.v1",
+  "task_id": "TRR-P06",
+  "status": "SPEC_ONLY_NOT_RUN_NO_PANEL_SELECTION",
+  "created_utc": "2026-09-06T09:33:42Z",
+  "plan_path": "experiments/TRR-P06/plan.json",
+  "plan_status": "PROPOSED_COMPLETE_PACKET_RESOURCE_PREFLIGHT_PENDING",
+  "source_preparation_boundary": {
+    "selection_status": "no P06 source records selected",
+    "selection_seed": 6206,
+    "domains": [
+      "pile",
+      "finance"
+    ],
+    "proposed_records_per_domain": 256,
+    "proposed_unique_source_records": 512,
+    "target_pairing": [
+      "public_base",
+      "public_lora_2601"
+    ],
+    "eligibility": "at least 128 valid tokens including BOS; exact fit/validation/P04 opaque exclusion audit required before freeze",
+    "selection_inputs": "public dataset metadata and opaque digest ledgers only; no predictions, correctness, target labels, or private weights",
+    "fresh_ranges": "not selected; root/design must freeze ranges and ledger version before candidate enumeration",
+    "plaintext_boundary": "source rows/token values remain evaluator-side and are never placed in student registration, messages, or published setup metadata"
+  },
+  "stages": [
+    {
+      "stage": "candidate_pool_audit",
+      "status": "PENDING_FREEZE",
+      "inputs": [
+        "published P04 reservation hash exchange",
+        "published P04 source-selection metadata",
+        "P05 fit/validation metadata"
+      ],
+      "outputs": [
+        "opaque candidate-pool digest",
+        "overlap counts",
+        "eligible-count summary"
+      ],
+      "forbidden": [
+        "source plaintext publication",
+        "token-array publication",
+        "truth/answer access",
+        "TRR-0007 mutable/private access"
+      ]
+    },
+    {
+      "stage": "panel_freeze",
+      "status": "PENDING_FREEZE",
+      "outputs": [
+        "panel manifest with record/source digests",
+        "predeclared strata and clip geometry",
+        "paired target identity",
+        "create-only freeze receipt"
+      ],
+      "geometry": {
+        "input_tokens_including_bos": 128,
+        "stored_tokens_including_bos": 128,
+        "scored_post_bos": 127,
+        "cut_depth": 4,
+        "hidden_size": 2048
+      },
+      "pairing": "identical source-record order and masks for public_base/public_lora_2601; target condition is metadata only until public capture"
+    },
+    {
+      "stage": "public_observation_capture",
+      "status": "PENDING_ROOT_RESOURCE_GRANT",
+      "runner_reference": "scripts/trr0006_capture_public.py",
+      "inputs": [
+        "public model snapshot revision 9213176726f574b556790deb65791e0c5aa438b6",
+        "frozen panel source rows held evaluator-side"
+      ],
+      "outputs": [
+        "one observation index per target cell",
+        "H_0..H_127 activations",
+        "attention masks",
+        "position IDs",
+        "capture/watchdog receipt"
+      ],
+      "expected_cell_shape": [
+        "N",
+        128,
+        2048
+      ],
+      "truth_boundary": "capture writes no source text, token IDs, target labels, correctness, or evaluator truth into observation artifacts",
+      "qualification": "qualify fixed batch-8 x 192 full forward with active masks; retain only H128 after validating geometry and mask/position identity"
+    },
+    {
+      "stage": "public_fit_and_state_registration",
+      "status": "IMPLEMENTATION_OWNED_AFTER_FREEZE",
+      "inputs": [
+        "published H128-cropped public fit/validation observations",
+        "public labels permitted for fit/validation",
+        "frozen arm masks and pinned direct affine descriptor"
+      ],
+      "outputs": [
+        "six arm/replicate states",
+        "public validation selection receipts",
+        "state hashes and fit schedules"
+      ],
+      "methods": [
+        "p06_positionwise_diagonal",
+        "p06_past_only",
+        "p06_full_record"
+      ],
+      "student_boundary": "fresh panel observations only; no source rows, target labels, correctness feedback, A2, or guessed-token feedback"
+    },
+    {
+      "stage": "prediction_and_truth_gate",
+      "status": "PENDING_ALL_STATES",
+      "freeze_requirements": [
+        "all six arm/replicate states",
+        "both target-condition observation cells",
+        "panel source/mask/position geometry",
+        "all prediction artifacts",
+        "bounded anchor outputs"
+      ],
+      "truth_action": "only after joint freeze review may evaluator materialize fresh truth once and compute declared metrics",
+      "no_rerun_after_truth": true
+    }
+  ],
+  "artifact_contract": {
+    "observation_manifest": "experiments/TRR-P06/runtime/capture/observations.json",
+    "panel_manifest": "experiments/TRR-P06/runtime/capture/panel.json",
+    "capture_receipt": "experiments/TRR-P06/runtime/capture/receipt.json",
+    "freeze_receipt": "experiments/TRR-P06/runtime/freeze_receipt.json",
+    "private_evaluator_source": "task-local runtime only; path/hash published only after review, source content excluded",
+    "student_inputs": [
+      "H activations",
+      "attention_mask",
+      "position_ids",
+      "permitted public metadata"
+    ]
+  },
+  "access_assertions": {
+    "model_loaded": false,
+    "panel_selected": false,
+    "capture_started": false,
+    "truth_opened": false,
+    "gpu_used": false,
+    "optimizer_steps_started": false,
+    "trr0007_accessed": false,
+    "p03_holdout_accessed": false
+  }
+}

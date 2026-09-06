@@ -58,19 +58,7 @@
       "schema": "token-reconstruction.trr0005-public-fit-data.v1",
       "distribution": "coverage_mix_v1",
       "fit_records": 1200,
-      "fit_geometry": [
-        1200,
-        192,
-        2048
-      ],
-      "fit_post_bos_positions": 124371,
       "validation_records": 48,
-      "validation_geometry": [
-        48,
-        192,
-        2048
-      ],
-      "validation_post_bos_positions": 3133,
       "length_vector_digest": "b8b3392d6984e7e109ad70108cb36aaa861555eccce4b4bf14e3aea5c2846bb8",
       "fit_valid_mask_digest": "e2ee7f711107a8a887a053657bc5b53bb210cc4735247108df08540a5a9ebb76",
       "fit_token_ids_digest": "f562144cc786e5323c3d66bf0110803d43ea50d246694c1d600413e96496c37a",
@@ -83,7 +71,35 @@
         "seed": 4005,
         "bos_included": false
       },
-      "payloads": "referenced published assets only; no fit rows, token values, or tensors copied into this inventory"
+      "payloads": "referenced published assets only; no fit rows, token values, or tensors copied into this inventory",
+      "source_fit_geometry": [
+        1200,
+        192,
+        2048
+      ],
+      "source_fit_post_bos_positions": 124371,
+      "source_validation_geometry": [
+        48,
+        192,
+        2048
+      ],
+      "source_validation_post_bos_positions": 3133,
+      "planned_p06_h128_crop": {
+        "fit_geometry": [
+          1200,
+          128,
+          2048
+        ],
+        "fit_post_bos_positions": 112825,
+        "validation_geometry": [
+          48,
+          128,
+          2048
+        ],
+        "validation_post_bos_positions": 2982,
+        "crop": "positions 0..127 including BOS; positions 128..191 are not used by P06 fit/validation",
+        "source": "experiments/TRR-P06/plan.json"
+      }
     },
     "validation_selection": {
       "path": "experiments/TRR-0005/public_validation_selection.json",
@@ -117,21 +133,30 @@
     }
   },
   "affine_initialization": {
-    "design_config": {
-      "path": "experiments/TRR-0005/joint_fit_design.json",
-      "bytes": 4320,
-      "sha256": "98742037a8ab64806776a3eb7878ddc7b43a3dc8340d028563bd7b8ec66f7864",
-      "status": "APPROVED_JOINT_FROM_SCRATCH_SOURCE_CONFIGURATION"
+    "planned_p06_direct_path": {
+      "kind": "published_public_learned_affine_state",
+      "source_task": "TRR-0004",
+      "source_method_id": "historical_affine_ce_no_vocab_bias",
+      "source_method_freeze": "experiments/TRR-0004/fresh_confirmation_method_freeze.json",
+      "source_method_freeze_sha256": "df94093504693163c90775d2c4c9ffd23c63b16d19a52a2137d805a8c16154bc",
+      "state_path": "experiments/TRR-0004/evidence/affine/selected_states/fit_large_v1.historical_affine_ce_no_vocab_bias.safetensors",
+      "state_sha256": "09c5b852373d8555b06508a79bb00c94041202702b61b121b35fa2b6f9f64e65",
+      "selected_step": 1900,
+      "fit_role": "fresh public Alpaca fit; no private target or evaluator resource",
+      "declared_by_plan": "experiments/TRR-P06/plan.json",
+      "tensor_values_verified_by_setup": false,
+      "note": "This descriptor is the planned P06 direct path. Setup recorded the published path/hash only and did not open the tensor."
     },
-    "public_affine": {
+    "published_design_default_only": {
       "W": "identity",
       "b": "zero",
       "s": 3.0,
       "attention_qkv": "deterministic stream seeded 4005",
       "attention_output": "zero weight and zero bias",
-      "source": "published design config above"
+      "source": "experiments/TRR-0005/joint_fit_design.json",
+      "role": "source-design default/provisional initialization; it is not the planned P06 direct affine state"
     },
-    "checkpoint_boundary": "No serialized P06 initial GRU checkpoint is claimed. Published P05 trained states are references only; no optimizer trajectory is reconstructed."
+    "checkpoint_boundary": "P06 does not claim tensor values beyond the published descriptor hash. No optimizer trajectory is reconstructed; the six P06 arm states remain future outputs."
   },
   "published_capture_infrastructure": {
     "parent_panel": {
@@ -363,7 +388,8 @@
     "public_payloads_are_referenced_only": true
   },
   "limitations": [
-    "The fit manifest records exact geometry, valid post-BOS totals, and a length-vector digest; this inventory does not expose source lengths or rows.",
+    "The enriched source artifact has 124,371 fit and 3,133 validation post-BOS positions at [1200,192,2048]/[48,192,2048]; the planned P06 H128 crop has 112,825 and 2,982 positions at [1200,128,2048]/[48,128,2048].",
+    "The planned direct path is the published TRR-0004 learned affine descriptor; identity/zero/s=3 is retained only as the published design default, and setup did not open either tensor.",
     "The inherited public_lora_2601 condition is a published changed-target asset and is not claimed to be unseen for P06.",
     "The opaque prior ledgers cover the published P04/P05 audit scope only; no global no-overlap claim is made.",
     "The P06 fresh source pool, paired target choice, and final exclusion audit remain pending fixed-plan review and resource clearance."
