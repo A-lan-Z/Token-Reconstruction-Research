@@ -117,10 +117,13 @@ def main() -> int:
     scored[:, 0] = False
     wrong = initial_predictions.ne(correction.labels) & scored
     wrong_per_record = wrong.sum(dim=1)
-    # The probe is fixed to the first eight correction records with at least
-    # one initial affine error. Measure this exact batch before any update;
-    # do not select extra rows and then truncate a larger error accumulator.
-    chosen = [row for row, count in enumerate(wrong_per_record.tolist()) if count][:8]
+    # The probe is fixed to the eight highest-error correction records, with
+    # record order as the deterministic tie break. Measure this exact batch
+    # before any update; do not select extra rows and then truncate a larger
+    # error accumulator. This public-only feasibility selector is recorded in
+    # the receipt and is never used for student selection or scoring.
+    candidates = [row for row, count in enumerate(wrong_per_record.tolist()) if count]
+    chosen = sorted(candidates, key=lambda row: (-int(wrong_per_record[row].item()), row))[:8]
     if len(chosen) < 8:
         raise P04TrainingError("capacity qualifier needs eight correction records with initial affine errors")
     running_wrong = int(wrong_per_record[torch.tensor(chosen)].sum().item())
@@ -187,6 +190,7 @@ def main() -> int:
             "initial_wrong_positions_probe": probe_initial_wrong,
             "scored_positions_probe": probe_scored_total,
             "initial_accuracy_probe": probe_initial_accuracy,
+            "selection_rule": "eight_highest_initial_error_records_then_record_order",
             "gate": {"wrong_at_least_256": True, "accuracy_below_0_99": True},
         },
         "initial_metrics": initial_metrics,
