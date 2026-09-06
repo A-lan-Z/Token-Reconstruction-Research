@@ -170,9 +170,18 @@ def _process_group_members(pgid: int, *, require_member: bool) -> list[dict[str,
         try:
             status = status_path.read_text(encoding="ascii")
         except (OSError, UnicodeError) as exc:
-            if not entry.exists():
-                continue
-            raise ResourceReadError(f"cannot read live process RSS: {status_path}") from exc
+            # /proc can remove a just-exited member between directory
+            # enumeration and the status read. Retry once before declaring a
+            # live-resource failure; a member whose directory disappears is
+            # safe to omit, while a still-live member with unreadable status
+            # remains fail-closed.
+            time.sleep(0.02)
+            try:
+                status = status_path.read_text(encoding="ascii")
+            except (OSError, UnicodeError) as retry_exc:
+                if not entry.exists():
+                    continue
+                raise ResourceReadError(f"cannot read live process RSS: {status_path}") from retry_exc
         rss_bytes: int | None = None
         for line in status.splitlines():
             if not line.startswith("VmRSS:"):
