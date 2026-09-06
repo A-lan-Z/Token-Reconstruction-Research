@@ -1,53 +1,62 @@
 {
-  "schema": "token-reconstruction.parallel-state.v1",
-  "task_id": "TRR-P04",
-  "status": "SETUP_INITIAL_COMMITTED",
-  "worktree": "/tmp/trr-p04",
-  "branch": "task/TRR-P04",
-  "parent": {
-    "task_id": "TRR-0004",
-    "branch": "task/TRR-0004",
-    "verified_commit": "6e8b683e404c0acb70cd59b7dd6d6868b2061f61",
-    "parent_pr": 7,
-    "parent_pr_state": "OPEN_UNMERGED"
-  },
-  "control_packet": {
-    "path": "coordination/requests/TRR-P04.md",
-    "bytes": 11950,
-    "sha256": "1cd77f141bf780896848438f6a2bf8ab85b2b99e51a9a7dcf2cd73872f2ed268",
-    "byte_identical_to_supplied_attachment": true
-  },
-  "ownership": {
-    "setup_evidence_owner": "A2/P04",
-    "implementation_and_design_coordination": "root-coordinated",
-    "publication_owner": "root",
-    "pr_merge_allowed": false
-  },
   "access_and_integrity": {
-    "global_state_modified": false,
     "active_method_registry_modified": false,
-    "shared_protocols_modified": false,
-    "other_agent_mutable_work_inspected": false,
-    "heavy_jobs_started": false,
     "evaluation_truth_opened": false,
+    "global_state_modified": false,
+    "heavy_jobs_started": false,
+    "other_agent_mutable_work_inspected": false,
+    "shared_protocols_modified": false,
     "stage2_or_holdout_status": "not applicable at setup"
   },
-  "resource_gate": {
-    "status": "BLOCKED_PENDING_ROOT_RESERVATION",
-    "gpu": "not authorized",
-    "heavy_cpu_or_memory_jobs": "not authorized",
-    "no_paid_compute": true
+  "branch": "task/TRR-P04",
+  "control_packet": {
+    "byte_identical_to_supplied_attachment": true,
+    "bytes": 11950,
+    "path": "coordination/requests/TRR-P04.md",
+    "sha256": "1cd77f141bf780896848438f6a2bf8ab85b2b99e51a9a7dcf2cd73872f2ed268"
   },
-  "read_only_parent_snapshot": {
-    "result": "coordination/results/TRR-0004.md",
-    "manifest": "experiments/TRR-0004/manifest.json",
-    "status": "experiments/TRR-0004/status.json",
-    "protocol": "research/DUAL_BENCHMARK_PROTOCOL.md"
+  "ownership": {
+    "implementation_and_design_coordination": "root-coordinated",
+    "pr_merge_allowed": false,
+    "publication_owner": "root",
+    "setup_evidence_owner": "A2/P04"
+  },
+  "parent": {
+    "branch": "task/TRR-0004",
+    "parent_pr": 7,
+    "parent_pr_state": "OPEN_UNMERGED",
+    "task_id": "TRR-0004",
+    "verified_commit": "6e8b683e404c0acb70cd59b7dd6d6868b2061f61"
   },
   "pending": [
-    "root review of initial interface",
-    "public fitting/replay and correction-pool setup after resource reservation",
-    "implementation/design coordination",
-    "final evidence and report"
-  ]
+    "implementation review of experiments/TRR-P04/setup/interface.json",
+    "deterministic public fit/correction/validation and fresh-panel selection",
+    "teacher evidence qualification at K=32",
+    "implementation-owned model fitting and target-update preparation after reservation",
+    "truth-gated scoring and final evidence/report"
+  ],
+  "read_only_parent_snapshot": {
+    "manifest": "experiments/TRR-0004/manifest.json",
+    "protocol": "research/DUAL_BENCHMARK_PROTOCOL.md",
+    "result": "coordination/results/TRR-0004.md",
+    "status": "experiments/TRR-0004/status.json"
+  },
+  "resource_gate": {
+    "comparative_timing": "wait for uncontended CPU/GPU window",
+    "gpu": "available only through implementation-owned serialized P04 reservation",
+    "heavy_cpu_or_memory_jobs": "not started by setup owner; root reservation and implementation preflight required",
+    "no_paid_compute": true,
+    "setup_cpu_limit": "at most 4 threads for metadata/evaluator preparation",
+    "status": "LIGHT_CPU_SETUP_ALLOWED_GPU_SERIALIZED_IMPLEMENTATION_OWNER"
+  },
+  "schema": "token-reconstruction.parallel-state.v1",
+  "setup_artifacts": {
+    "interface": "experiments/TRR-P04/setup/interface.json",
+    "plan": "experiments/TRR-P04/setup/evaluation_and_evidence_plan.md",
+    "scorer_script": "scripts/trr_p04/score_predictions.py",
+    "selection_script": "scripts/trr_p04/prepare_panel.py"
+  },
+  "status": "SETUP_READY_INTERFACE_PROPOSED",
+  "task_id": "TRR-P04",
+  "worktree": "/tmp/trr-p04"
 }
