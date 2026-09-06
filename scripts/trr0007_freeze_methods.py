@@ -1,0 +1,21 @@
+import json,hashlib,datetime,subprocess
+from pathlib import Path
+from scripts import trr0007_eval_contract as c
+root=Path.cwd(); task=root/'experiments/TRR-0007'
+def rec(p):
+ p=Path(p).resolve(); return {'path':str(p),'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}
+def write(p,x):
+ with p.open('x') as f:json.dump(x,f,indent=2,sort_keys=True);f.write('\n')
+methods={};runs=[]
+for folder,bank in [('enriched_fit_v1','current_enriched'),('improved_fit_v1','improved_public_bank')]:
+ run=task/folder/'run_evidence.json'; br=task/folder/bank/'bank_result.json'; x=json.loads(br.read_text());runs.append(rec(run))
+ for model,cap in [('trr0007_current_positionwise','trained_diagonal'),('trr0007_residual_mlp512','residual_mlp512')]:
+  m=x['methods'][model]; s=rec(m['selected_state']['path']);assert s['sha256']==m['selected_state']['sha256'];mid=f'{bank}__{cap}'
+  methods[mid]={'state':s,'state_sha256':s['sha256'],'model_id':model,'selected_step':m['selected_step'],'selected_by':'earliest maximum public validation style-balanced accuracy including step zero','fit_steps':3000,'training_draws':1536000,'fit_post_bos_positions':124371,'parameter_count':m['parameter_count'],'fit_cost':m['runtime'],'bank_result':rec(br),'learning_curve':m['learning_curve'],'fit_manifest':x['fit_manifest'],'validation_manifest':x['validation_manifest'],'schedule_sha256':m['schedule_sha256']}
+ref=rec(root/c.REFERENCE_STATE_PATH);assert ref['sha256']==c.REFERENCE_STATE_SHA256
+exclude=[task/'support/broader_bank_v5'/n for n in ['corpus_plan.json','selected_parent_rows.json','public_parent_exclusion_manifest.json']]+[task/'support/public_fit_prefix_exclusions_v3.json',task/'coordination/p04_reservation_hashes.json']
+ledger={'schema':c.METHOD_FREEZE_SCHEMA,'task_id':'TRR-0007','status':c.METHOD_FREEZE_STATUS,'created_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'reviewed_by':'root orchestrator','parent_commit':'f10f8ba438973b3cb260d41707fbb14293db9cd3','pre_freeze_commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'method_ids':[c.REFERENCE_METHOD_ID,*c.STUDENT_METHOD_IDS,c.ANCHOR_METHOD_ID],'state_bindings':methods,'retained_reference':ref,'run_receipts':runs,'runtime_embedding':rec(c.PUBLIC_E_PATH),'frequency_reference':rec(root/c.FREQUENCY_REFERENCE_PATH),'inference_contract':'Each standalone arm uses only current H_i, fixed trained state, and full public vocabulary E argmax; no token history, earlier H, teacher, candidates, public prefix or fallback. Known BOS is fixed separately.','model_source_bindings':[rec(root/'src/token_reconstruction/trr0007_positionwise.py'),rec(root/'src/token_reconstruction/trr0005_joint_decoder.py')],'a1_a2_anchor':{'id':c.ANCHOR_METHOD_ID,'records_per_domain':32,'domains':['pile','finance'],'targets':['public_base'],'selection':'first 32 of frozen order in each domain','proposal_k':512,'proposal_chunk':256,'fixed_k':256,'policy':'legacy direct cosine with CPU normalized E; numerical port','lens':rec(root/'experiments/TRR-0004/evidence/comparators/public_a1_lens.pt'),'reference':rec(root/'experiments/TRR-0004/evidence/comparators/round001_teacher.py'),'public_model_snapshot':'/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6'},'final_additional_exclusion_bindings':[rec(p) for p in exclude],'numerical_settings':c.NUMERICAL_SETTINGS,'truth_opened':False,'fresh_evaluation_started':False,'source_accessed':False,'target_loaded':False,'target_labels_loaded':False,'private_or_truth_payload_read':False}
+path=task/'method_freeze.json';write(path,ledger)
+c.load_method_freeze(path,repository_root=root,verify_assets=True)
+p=task/'evaluation_plan.json';plan=json.loads(p.read_text());assert plan['status']=='DRAFT_PENDING_ROOT_REVIEW';plan['status']='FROZEN_EVALUATION_DESIGN_BEFORE_SOURCE_SELECTION';plan['method_freeze']=rec(path);plan['frozen_utc']=ledger['created_utc'];plan['panel']['selection']['final_additional_exclusion_bindings']=ledger['final_additional_exclusion_bindings'];c.validate_plan(plan);p.write_text(json.dumps(plan,indent=2,sort_keys=True)+'\n')
+print(json.dumps({'method_freeze':rec(path),'plan':rec(p),'student_count':len(methods)}))

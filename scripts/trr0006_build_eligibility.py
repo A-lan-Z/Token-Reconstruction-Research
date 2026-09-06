@@ -24,6 +24,7 @@ import sys
 from typing import Any
 
 from scripts import trr0005_produce_confirmation as trusted
+from scripts import trr0007_bank_ledger as bank_ledger
 from token_reconstruction.trr0005_contract import STYLE_ORDER
 from token_reconstruction.trr0005_public_corpus import (
     SOURCE_PARTITIONS,
@@ -481,6 +482,35 @@ def build_inventory(args: argparse.Namespace) -> dict[str, Any]:
     if args.requested_per_domain is not None and args.requested_per_domain <= 0:
         raise EligibilityError("requested per-domain capacity must be positive")
 
+    bank_paths = {
+        "exclusion_manifest": getattr(args, "trr0007_final_bank_exclusion_manifest", None),
+        "selected_parent_rows": getattr(args, "trr0007_final_bank_parent_ledger", None),
+        "corpus_plan": getattr(args, "trr0007_final_bank_corpus_plan", None),
+    }
+    if any(value is not None for value in bank_paths.values()) and not all(value is not None for value in bank_paths.values()):
+        raise EligibilityError("all three final TRR-0007 bank ledgers are required together")
+    final_bank = None
+    if all(value is not None for value in bank_paths.values()):
+        try:
+            final_bank = bank_ledger.load_final_bank_ledgers(
+                repository_root=root,
+                exclusion_manifest=bank_paths["exclusion_manifest"],
+                selected_parent_rows=bank_paths["selected_parent_rows"],
+                corpus_plan=bank_paths["corpus_plan"],
+            )
+        except bank_ledger.BankLedgerError as exc:
+            raise EligibilityError(str(exc)) from exc
+
+    prefix_path = getattr(args, "trr0007_public_fitting_prefix_exclusions", None)
+    prefix_ledger = None
+    if prefix_path is not None:
+        try:
+            prefix_ledger = bank_ledger.load_prefix_exclusion_ledger(
+                repository_root=root, path=prefix_path
+            )
+        except bank_ledger.BankLedgerError as exc:
+            raise EligibilityError(str(exc)) from exc
+
     tokenizer_path = args.tokenizer.expanduser().resolve()
     tokenizer = trusted._load_tokenizer(tokenizer_path)
     pile_paths = tuple(path.expanduser().resolve() for path in args.pile_arrow)
@@ -491,6 +521,8 @@ def build_inventory(args: argparse.Namespace) -> dict[str, Any]:
     }
     exclusions_paths = _known_exclusion_paths(root)
     exclusions_paths.extend(path.expanduser().resolve() for path in args.exclude_source)
+    if prefix_ledger is not None:
+        exclusions_paths.append(Path(prefix_ledger["file"]["path"]))
     exclusions = trusted._collect_exclusions(exclusions_paths)
     opaque = _load_p04_opaque_exclusions(args.p04_exchange)
     seen_public_hashes: set[str] = set()
@@ -617,6 +649,10 @@ def build_inventory(args: argparse.Namespace) -> dict[str, Any]:
             "The requested sample size remains a planning input and must be frozen once by the owner before selection.",
         ],
     }
+    if final_bank is not None:
+        result["final_bank_ledgers"] = final_bank
+    if prefix_ledger is not None:
+        result["public_fitting_prefix_exclusions"] = prefix_ledger
     output.parent.mkdir(parents=True, exist_ok=True)
     with output.open("x", encoding="utf-8", newline="\n") as handle:
         json.dump(result, handle, indent=2, sort_keys=True, allow_nan=False)
@@ -665,6 +701,10 @@ def _parser() -> argparse.ArgumentParser:
     inventory.add_argument("--tokenizer", type=Path, required=True)
     inventory.add_argument("--pile-arrow", type=Path, nargs="+", required=True)
     inventory.add_argument("--finance-arrow", type=Path, nargs="+", required=True)
+    inventory.add_argument("--trr0007-final-bank-exclusion-manifest", type=Path)
+    inventory.add_argument("--trr0007-final-bank-parent-ledger", type=Path)
+    inventory.add_argument("--trr0007-final-bank-corpus-plan", type=Path)
+    inventory.add_argument("--trr0007-public-fitting-prefix-exclusions", type=Path)
     inventory.add_argument("--exclude-source", type=Path, nargs="*", default=[])
     inventory.add_argument("--p04-exchange", type=Path, default=P04_EXCHANGE_PATH)
     inventory.add_argument("--requested-per-domain", type=int)
