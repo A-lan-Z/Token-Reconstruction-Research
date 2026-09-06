@@ -16,10 +16,14 @@ from token_reconstruction.p04_student import (
     StudentArchitectureConfig,
     build_student,
 )
-from token_reconstruction.p04_training import PublicPool, TeacherEvidence
+from token_reconstruction.p04_training import PublicPool, TeacherEvidence, combine_public_pools
 from token_reconstruction.p05_diagnostics import (
+    _record_order_hash,
     _row_rank_metric,
     _top2_metrics,
+    _validate_candidate_binding,
+    collect_state_specs,
+    P05DiagnosticError,
     forward_state,
     gradient_cell,
 )
@@ -183,6 +187,70 @@ def test_h_checkpoint_reports_counterfactual_rank_without_update() -> None:
     assert cell["parameter_update_applied"] is False
     assert cell["gradient_norms"]["clip_factor"] <= 1.0
 
+
+
+def _synthetic_pool(record_id: str, source: str) -> PublicPool:
+    observations = torch.zeros((1, 3, 2), dtype=torch.float32)
+    labels = torch.ones((1, 3), dtype=torch.long)
+    labels[:, 0] = 128000
+    valid = torch.ones((1, 3), dtype=torch.bool)
+    return PublicPool(
+        observations=observations,
+        labels=labels,
+        valid_mask=valid,
+        record_ids=(record_id,),
+        styles=("synthetic",),
+        source_path=f"{source}.safetensors",
+        source_sha256=f"{source}-observations",
+        records_path=f"{source}.json",
+        records_sha256=f"{source}-records",
+    )
+
+
+def test_candidate_binding_rejects_provenance_mismatch() -> None:
+    replay = _synthetic_pool("replay-0", "replay")
+    correction = _synthetic_pool("correction-0", "correction")
+    combined = combine_public_pools(replay, correction)
+    candidate_ids = torch.arange(32, dtype=torch.int64).reshape(1, 1, 32).expand(2, 3, 32).clone()
+    evidence = _evidence(candidate_ids=candidate_ids[1, 1][None, :], record_ids=("correction-0",), positions=(1,))
+    metadata = {
+        "task_id": "TRR-P04",
+        "pool_record_order_sha256": _record_order_hash(combined),
+        "pool_observation_sha256": combined.source_sha256,
+        "pool_records_sha256": combined.records_sha256,
+        "pool_rows": "2",
+        "pool_positions": "3",
+        "candidate_k": "32",
+        "proposal_k": "512",
+        "a1_ranked_k": "512",
+        "tie_policy": "descending_score_then_ascending_token_id",
+        "proposer_id": "p04_public_affine",
+        "proposer_resource": "pr7_public_affine_state",
+        "embedding_file_sha256": "embedding",
+        "affine_file_sha256": "affine",
+    }
+    _validate_candidate_binding(candidate_ids, metadata, combined, correction, evidence, embedding_file_sha256="embedding", affine_file_sha256="affine")
+    metadata["pool_record_order_sha256"] = "wrong"
+    with pytest.raises(P05DiagnosticError, match="pool_record_order_sha256"):
+        _validate_candidate_binding(candidate_ids, metadata, combined, correction, evidence, embedding_file_sha256="embedding", affine_file_sha256="affine")
+
+
+def test_state_collection_requires_all_twelve_stored_states(tmp_path: Path) -> None:
+    selected = []
+    final = []
+    for seed in (1737, 2711):
+        for method in ("student_s", "student_h", "student_d"):
+            selected_path = tmp_path / f"{method}-{seed}-selected.safetensors"
+            selected_path.touch()
+            selected.append({"method_id": method, "seed": seed, "path": str(selected_path)})
+            if not (seed == 2711 and method == "student_d"):
+                final_path = tmp_path / f"{method}-{seed}-final.safetensors"
+                final_path.touch()
+                final.append({"method_id": method, "seed": seed, "path": str(final_path)})
+    manifest = tmp_path / "manifest.json"
+    manifest.write_text(json.dumps({"task_id": "TRR-P04", "states": selected, "excluded_final_states": final}), encoding="utf-8")
+    with pytest.raises(P05DiagnosticError, match="all twelve"):
+        collect_state_specs(manifest)
 
 def _write_synthetic_pool(root: Path, prefix: str, rows: int) -> tuple[Path, Path]:
     positions = 192

@@ -506,11 +506,12 @@ def collect_state_specs(manifest_path: Path) -> tuple[list[StateSpec], list[dict
                 unavailable.append({"method_id": method_id, "seed": seed, "checkpoint": checkpoint, "path": str(path), "reason": "stored checkpoint unavailable"})
     specs.sort(key=lambda spec: (int(spec.seed or 0), spec.method_id, 0 if spec.checkpoint == "selected" else 1))
     if len(specs) != 12:
-        # Missing final artifacts are allowed by the packet, but selected S/H/D
-        # states must all be present for a complete bounded comparison.
         selected_count = sum(spec.checkpoint == "selected" for spec in specs)
-        if selected_count != 6:
-            raise P05DiagnosticError(f"P04 selected S/H/D state count changed: {selected_count}")
+        final_count = sum(spec.checkpoint == "final" for spec in specs)
+        raise P05DiagnosticError(
+            "P05 requires all twelve stored S/H/D states "
+            f"(selected=6, final=6), found selected={selected_count}, final={final_count}"
+        )
     return specs, unavailable
 
 
@@ -996,22 +997,65 @@ def _state_hash(path: Path) -> str:
 
 def _validate_candidate_binding(
     candidate: torch.Tensor,
+    candidate_metadata: Mapping[str, Any],
     combined: PublicPool,
     correction: PublicPool,
     evidence: TeacherEvidence,
+    *,
+    embedding_file_sha256: str,
+    affine_file_sha256: str,
 ) -> dict[str, Any]:
+    """Bind cached candidates to the exact public pool and proposer inputs.
+
+    The candidate tensor is a shared training artifact.  Matching only the
+    teacher rows would leave the replay rows and their order unconstrained, so
+    the producer metadata is checked before any model state is loaded.
+    """
+
     offset = combined.rows - correction.rows
     if tuple(candidate.shape[:2]) != (combined.rows, combined.positions):
         raise P05DiagnosticError("candidate table does not match combined public pool")
+    expected: dict[str, str] = {
+        "task_id": "TRR-P04",
+        "pool_record_order_sha256": _record_order_hash(combined),
+        "pool_observation_sha256": combined.source_sha256,
+        "pool_records_sha256": combined.records_sha256,
+        "pool_rows": str(combined.rows),
+        "pool_positions": str(combined.positions),
+        "candidate_k": str(candidate.shape[2]),
+        "proposal_k": "512",
+        "a1_ranked_k": "512",
+        "tie_policy": "descending_score_then_ascending_token_id",
+        "proposer_id": "p04_public_affine",
+        "proposer_resource": "pr7_public_affine_state",
+        "embedding_file_sha256": str(embedding_file_sha256),
+        "affine_file_sha256": str(affine_file_sha256),
+    }
+    metadata_checks: dict[str, dict[str, str]] = {}
+    for key, expected_value in expected.items():
+        actual_value = candidate_metadata.get(key)
+        if actual_value is None:
+            raise P05DiagnosticError(f"candidate metadata lacks required provenance field: {key}")
+        actual_text = str(actual_value)
+        metadata_checks[key] = {"actual": actual_text, "expected": expected_value}
+        if actual_text != expected_value:
+            raise P05DiagnosticError(
+                f"candidate metadata provenance mismatch for {key}: {actual_text!r} != {expected_value!r}"
+            )
     lookup = _teacher_lookup(correction, evidence)
     checked = 0
     for (correction_row, position), evidence_row in lookup.items():
         actual = candidate[offset + correction_row, position]
-        expected = evidence.candidate_ids[evidence_row].to(dtype=torch.int64)
-        if not torch.equal(actual, expected):
+        expected_ids = evidence.candidate_ids[evidence_row].to(dtype=torch.int64)
+        if not torch.equal(actual, expected_ids):
             raise P05DiagnosticError(f"candidate identity mismatch at public correction row {correction_row}:{position}")
         checked += 1
-    return {"candidate_shape": list(candidate.shape), "teacher_rows_checked": checked, "candidate_tensor_sha256": tensor_sha256(candidate)}
+    return {
+        "candidate_shape": list(candidate.shape),
+        "teacher_rows_checked": checked,
+        "candidate_tensor_sha256": tensor_sha256(candidate),
+        "metadata_checks": metadata_checks,
+    }
 
 
 def prepare_sample_from_paths(
@@ -1097,7 +1141,15 @@ def run_diagnostics(
         if regenerated["selection_sha256"] != sample.get("selection_sha256"):
             raise P05DiagnosticError("P05 sample index does not match public inputs or schedule ledgers")
         candidate, candidate_metadata = _load_candidate_ids(candidate_preparation)
-        candidate_binding = _validate_candidate_binding(candidate, combined, correction, evidence)
+        candidate_binding = _validate_candidate_binding(
+            candidate,
+            candidate_metadata,
+            combined,
+            correction,
+            evidence,
+            embedding_file_sha256=file_sha256(embedding_table_path),
+            affine_file_sha256=file_sha256(affine_initial_path),
+        )
         table = load_file(str(regular_file(embedding_table_path, label="public embedding table")), device="cpu").get("embeddings")
         if table is None:
             raise P05DiagnosticError("public embedding table lacks embeddings")
