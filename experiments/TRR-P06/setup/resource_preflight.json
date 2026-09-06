@@ -1,0 +1,88 @@
+{
+  "schema": "token-reconstruction.trr-p06-resource-preflight.v1",
+  "task_id": "TRR-P06",
+  "status": "READ_ONLY_ESTIMATE_NO_RUN",
+  "observed_utc": "2026-09-06T09:33:42Z",
+  "purpose": "bounded memory/resource estimate for later root-authorized qualification; no P06 model, panel, or diagnostic was run",
+  "live_snapshot": {
+    "gpu": {
+      "index": 0,
+      "name": "NVIDIA GeForce RTX 5080",
+      "total_mib": 16303,
+      "used_mib": 3098,
+      "free_mib": 12880,
+      "utilization_percent": 0,
+      "source_command": "nvidia-smi --query-gpu=index,name,memory.total,memory.used,memory.free,utilization.gpu --format=csv,noheader,nounits",
+      "note": "observed shared-device state; exclusive resource recheck is required before any run"
+    },
+    "host_memory": {
+      "mem_total_kib": 31651964,
+      "mem_available_kib": 21116288,
+      "mem_available_gib": 20.138,
+      "source_command": "/proc/meminfo"
+    }
+  },
+  "planned_geometry": {
+    "largest_qualification": "one p06_full_record backward cell",
+    "records": 8,
+    "sequence_tokens_including_bos": 128,
+    "post_bos_draws": 512,
+    "hidden_size": 2048,
+    "vocabulary_size": 128256,
+    "embedding_table_fp32_bytes": 1050673488,
+    "activation_batch_fp32_bytes": 8388608,
+    "attention_scores_fp32_bytes": 524288,
+    "selected_logits_fp32_bytes": 262668288,
+    "model_parameter_fp32_bytes": 20989444,
+    "adam_m_v_fp32_bytes": 41978888
+  },
+  "published_parent_fit_reference": {
+    "manifest": "experiments/TRR-0006/manifest.json",
+    "manifest_sha256": "1c734d1490afff34f89e48a1a6a6e59a2b951593f35ed59dd5ac4bac19d5dfd9",
+    "source": "TRR-0006 inherited selected-fit receipts",
+    "causal_reference": {
+      "cuda_peak_allocated_bytes": 2503377920,
+      "cuda_peak_reserved_bytes": 2776629248,
+      "process_max_rss_bytes": 6975275008,
+      "host_available_bytes": 21017636864
+    },
+    "diagonal_reference": {
+      "cuda_peak_allocated_bytes": 2501780480,
+      "cuda_peak_reserved_bytes": 2959081472,
+      "process_max_rss_bytes": 6906818560,
+      "host_available_bytes": 21103493120
+    },
+    "worst_observed_reference": {
+      "cuda_peak_allocated_bytes": 2503377920,
+      "cuda_peak_reserved_bytes": 2959081472,
+      "process_max_rss_bytes": 6975275008,
+      "cuda_allocated_gib": 2.331,
+      "cuda_reserved_gib": 2.756,
+      "process_rss_gib": 6.496
+    },
+    "interpretation": "conservative empirical reference from published public fits; P06 H128 geometry is different and still requires its own guarded largest-cell qualification"
+  },
+  "proposed_guards_from_plan": {
+    "minimum_free_gpu_gib": 8.0,
+    "maximum_reserved_gpu_gib": 6.0,
+    "maximum_host_rss_gib": 16.0,
+    "minimum_host_available_gib": 10.0,
+    "timeout_seconds": 1800,
+    "current_free_headroom_over_minimum_mib": 4688,
+    "current_host_available_headroom_over_minimum_gib": 10.138,
+    "projected_reference_reserved_headroom_to_6gib_gib": 3.244,
+    "qualification_decision": "estimate only; root must recheck exclusive device state and approve before launch"
+  },
+  "failure_policy": [
+    "stop and preserve receipt on OOM, non-finite outputs, allocator/driver anomaly, unreadable live resource data, or source/mask mismatch",
+    "do not use microbatching, shortened geometry, or mask shortcuts as an unverified workaround",
+    "qualify the largest representative full-record H128 backward cell before releasing sequential fits"
+  ],
+  "access_assertions": {
+    "model_loaded": false,
+    "panel_selected": false,
+    "gpu_job_started": false,
+    "truth_opened": false,
+    "payload_read": false
+  }
+}

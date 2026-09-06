@@ -1,0 +1,96 @@
+{
+  "command": [
+    "python3",
+    "scripts/trr_p06/audit_anchor_retry.py",
+    "--failed-root",
+    "/tmp/trr-p06/experiments/TRR-P06/runtime/anchor-r1",
+    "--retry-root",
+    "/tmp/trr-p06/experiments/TRR-P06/runtime/anchor-r2",
+    "--output",
+    "/tmp/trr-p06/experiments/TRR-P06/runtime/anchor-r2/retry_equivalence.json"
+  ],
+  "created_utc": "2026-09-06T12:03:17.940764Z",
+  "equivalence": {
+    "candidate_arrays_persisted": false,
+    "container_file_sha256_equal": false,
+    "data_region_sha256_equal": true,
+    "difference_scope": "safetensors header JSON metadata ordering; prediction tensor bytes are identical",
+    "dtype_equal": true,
+    "keys_equal": true,
+    "metadata_equal": true,
+    "prediction_tensor_equal": true,
+    "prediction_tensor_sha256_equal": true,
+    "shape_equal": true,
+    "source_text_loaded": false,
+    "truth_opened": false
+  },
+  "failed_r1": {
+    "error": "module 'trr0004_predict_confirmation' has no attribute '_clear_ephemeral_a2'",
+    "error_type": "AttributeError",
+    "prediction": {
+      "bytes": 65968,
+      "data_sha256": "5255337779fa9421259f01fcc12381510b22eeb1e0e1923bccca95a06a4d9103",
+      "file_sha256": "95ad9f61094c6594b985d03f8d39b77c27485ccd269c22ade2b52bdb0316d906",
+      "header_length": 424,
+      "header_sha256": "58df96ff7dceacfd7e769dd4d874ed9eab73e31a672bceedfbfa219fd71f26f9",
+      "keys": [
+        "predictions"
+      ],
+      "metadata": {
+        "candidate_arrays_persisted": "false",
+        "domain": "pile",
+        "method_id": "frozen_a1_a2_k256",
+        "schema": "token-reconstruction.trr-p06-anchor-prediction-manifest.v1",
+        "state_sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742",
+        "subset": "first64_public_base",
+        "target": "public_base",
+        "task_id": "TRR-P06",
+        "truth_opened": "false"
+      },
+      "path": "/tmp/trr-p06/experiments/TRR-P06/runtime/anchor-r1/predictions/pile/frozen_a1_a2_k256.safetensors",
+      "prediction_dtype": "torch.int64",
+      "prediction_shape": [
+        64,
+        128
+      ],
+      "prediction_tensor_sha256": "5255337779fa9421259f01fcc12381510b22eeb1e0e1923bccca95a06a4d9103"
+    },
+    "status": "FAILED_PRESERVED_NO_TRUTH"
+  },
+  "schema": "token-reconstruction.trr-p06-anchor-retry-equivalence.v1",
+  "status": "PASS",
+  "successful_r2": {
+    "code_commit": "3a65801b4b3cb29e6aee3a796a32b546677f6ecd",
+    "elapsed_seconds": 225.12542683600623,
+    "prediction": {
+      "bytes": 65968,
+      "data_sha256": "5255337779fa9421259f01fcc12381510b22eeb1e0e1923bccca95a06a4d9103",
+      "file_sha256": "d1130e925546bdd85e4800947cce7d8d6c37d8ac538993a3d797c19ec4ccb581",
+      "header_length": 424,
+      "header_sha256": "fdd154769be10e560649e76fde2523577580579204f1d973741c48f4762074ee",
+      "keys": [
+        "predictions"
+      ],
+      "metadata": {
+        "candidate_arrays_persisted": "false",
+        "domain": "pile",
+        "method_id": "frozen_a1_a2_k256",
+        "schema": "token-reconstruction.trr-p06-anchor-prediction-manifest.v1",
+        "state_sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742",
+        "subset": "first64_public_base",
+        "target": "public_base",
+        "task_id": "TRR-P06",
+        "truth_opened": "false"
+      },
+      "path": "/tmp/trr-p06/experiments/TRR-P06/runtime/anchor-r2/predictions/pile/frozen_a1_a2_k256.safetensors",
+      "prediction_dtype": "torch.int64",
+      "prediction_shape": [
+        64,
+        128
+      ],
+      "prediction_tensor_sha256": "5255337779fa9421259f01fcc12381510b22eeb1e0e1923bccca95a06a4d9103"
+    },
+    "status": "P06_ANCHOR_PREDICTIONS_COMPLETE_NO_TRUTH"
+  },
+  "task_id": "TRR-P06"
+}

@@ -1,0 +1,120 @@
+{
+  "command": [
+    "scripts/trr0006_fit_visibility.py",
+    "--mode",
+    "preflight",
+    "--repository-root",
+    "/tmp/trr-p06",
+    "--fit-manifest",
+    "experiments/TRR-0005/public_activation_v1/enriched_manifest.json",
+    "--direct-affine-state",
+    "experiments/TRR-0004/evidence/affine/selected_states/fit_large_v1.historical_affine_ce_no_vocab_bias.safetensors",
+    "--output-root",
+    "experiments/TRR-P06/runtime/preflight-r1",
+    "--device",
+    "cpu",
+    "--torch-threads",
+    "4",
+    "--torch-interop-threads",
+    "1",
+    "--selection-metric",
+    "token_accuracy"
+  ],
+  "created_utc": "2026-09-06T10:09:04.302315+00:00",
+  "declared_crop_geometry": [
+    null,
+    128,
+    2048
+  ],
+  "direct_affine": {
+    "bytes": 16786108,
+    "initialization": "competent_public_affine",
+    "path": "/tmp/trr-p06/experiments/TRR-0004/evidence/affine/selected_states/fit_large_v1.historical_affine_ce_no_vocab_bias.safetensors",
+    "sha256": "09c5b852373d8555b06508a79bb00c94041202702b61b121b35fa2b6f9f64e65",
+    "source_metadata": {
+      "alignment": "current_token",
+      "bias_mode": "none",
+      "embedding_table_sha256": "51151b86a4af915ffc6cc57740d26f78d80dad1b2fb57dfcfa14fe6982f3cbdf",
+      "fit_data_manifest_sha256": "432285de19bde996dfd1b3b7c289d321b93e99ed0fba88303bb99331c69c118f",
+      "fit_includes_bos": "True",
+      "hidden_size": "2048",
+      "method_id": "historical_affine_ce_no_vocab_bias",
+      "schema": "token-reconstruction.trr0004-historical-affine-ce.v1",
+      "selected_step": "1900",
+      "task_id": "TRR-0004",
+      "vocab_size": "128256"
+    },
+    "state_sha256": "06e142607569868d8ca07fc0321a784ce7af25f19ccd80d194074a1f8242b1c2"
+  },
+  "environment": {
+    "PYTHONPATH": "src:scripts"
+  },
+  "execution_hold": "no public tensors, fresh panel, truth, or GPU computation opened by this mode",
+  "fit_manifest": {
+    "bytes": 8171,
+    "path": "/tmp/trr-p06/experiments/TRR-0005/public_activation_v1/enriched_manifest.json",
+    "sha256": "8a8a9490e549181959711496ce9a18c63651de3f7cd849b90716d5cf4531db78"
+  },
+  "memory_preflight": {
+    "asset_note": {
+      "declared_embedding_file_bytes": 1050673488,
+      "embedding_tensor_bytes_exclude_safetensors_header": true
+    },
+    "bytes": {
+      "activation_batch_fp32": 8388608,
+      "adamw_m_v_fp32": 41978888,
+      "attention_scores_fp32": 524288,
+      "conservative_envelope": 2566235160,
+      "embedding_tensor_fp32": 1050673152,
+      "gradient_buffer_fp32": 20989444,
+      "hidden_workspace_envelope": 41943040,
+      "model_parameters_fp32": 20989444,
+      "resident_training_envelope": 1134630928,
+      "safety_margin_50_percent": 855411720,
+      "selected_logits_fp32": 262668288,
+      "training_peak_envelope": 1710823440,
+      "training_workspace_envelope": 576192512
+    },
+    "geometry": {
+      "context_width": 128,
+      "hidden_size": 2048,
+      "position_budget": 512,
+      "record_batch_size": 8,
+      "sequence_length": 128,
+      "vocabulary_size": 128256
+    },
+    "gib": {
+      "conservative_envelope": 2.3899927362799644,
+      "embedding_tensor_fp32": 0.978515625,
+      "training_peak_envelope": 1.5933284908533096
+    }
+  },
+  "resource_policy": {
+    "max_seconds": 1800.0,
+    "maximum_gpu_reserved_gib": 6.0,
+    "maximum_host_rss_gib": 16.0,
+    "minimum_free_gpu_gib": 8.0,
+    "minimum_host_available_gib": 10.0
+  },
+  "schema": "token-reconstruction.trr-p06-visibility-preflight.v1",
+  "source_commit": "63e7fd26d82e6728d0fd272bfe7327720453fd81",
+  "source_manifest_geometry": {
+    "fit": [
+      1200,
+      192,
+      2048
+    ],
+    "validation": [
+      48,
+      192,
+      2048
+    ]
+  },
+  "status": "SOURCE_ONLY_PREFLIGHT_PASS",
+  "task_id": "TRR-P06",
+  "validation_manifest": {
+    "bytes": 8171,
+    "path": "/tmp/trr-p06/experiments/TRR-0005/public_activation_v1/enriched_manifest.json",
+    "sha256": "8a8a9490e549181959711496ce9a18c63651de3f7cd849b90716d5cf4531db78"
+  }
+}
