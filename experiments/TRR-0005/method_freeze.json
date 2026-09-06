@@ -1,0 +1,1310 @@
+{
+  "attention_amendment": {
+    "bytes": 11306,
+    "path": "experiments/TRR-0005/qk_score_repair_amendment_v1.json",
+    "sha256": "dd7bbb35a57aaa8341cb6339cafa2504e82f331db0feb9eff5b11cc260bdf300"
+  },
+  "code_commit": "da82f6cac45e09ae83452198344c547553cb4433",
+  "decision_plan": {
+    "bytes": 7248,
+    "path": "experiments/TRR-0005/decision_plan.json",
+    "sha256": "d4ae0da99ae5c0a00e454c16b539441e193cb76b9e52673c8e674bfdd2df1245"
+  },
+  "decision_plan_sha256": "d4ae0da99ae5c0a00e454c16b539441e193cb76b9e52673c8e674bfdd2df1245",
+  "fresh_evaluation_started": false,
+  "method_ids": [
+    "historical_alpaca_a1",
+    "frozen_a1_a2_k256",
+    "original__joint_full_affine",
+    "original__affine_causal_h_attention128",
+    "original__affine_trained_diagonal_attention128",
+    "enriched__joint_full_affine",
+    "enriched__affine_causal_h_attention128",
+    "enriched__affine_trained_diagonal_attention128"
+  ],
+  "methods": [
+    {
+      "candidate_policy": "forbidden",
+      "distribution": "retained_trr0004_alpaca",
+      "id": "historical_alpaca_a1",
+      "rule": "retained standalone historical A1 direct argmax; top-k is diagnostic only",
+      "state": "retained_historical_a1",
+      "state_sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742",
+      "status": "FROZEN",
+      "track": "anchor"
+    },
+    {
+      "candidate_policy": "output_only",
+      "distribution": "retained_trr0004_alpaca",
+      "id": "frozen_a1_a2_k256",
+      "rule": "retained A1 proposals scored by fixed public-prefix A2 K256; candidate arrays omitted after decision",
+      "state": "retained_a1_a2_k256_cpu_embedding_port",
+      "state_sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742",
+      "status": "FROZEN",
+      "track": "anchor"
+    },
+    {
+      "candidate_policy": "forbidden",
+      "distribution": "original",
+      "id": "original__joint_full_affine",
+      "rule": "joint full-sequence affine decoder fitted on the declared public distribution",
+      "state": "joint_full_affine",
+      "state_sha256": "f9f0b3f2647feff9618fe88a905be8fe5233a985fa464d86e5483d5bdc953e91",
+      "status": "FROZEN",
+      "track": "coverage_by_context"
+    },
+    {
+      "candidate_policy": "forbidden",
+      "distribution": "original",
+      "id": "original__affine_causal_h_attention128",
+      "rule": "joint affine path plus zero-initialized causal H_0..H_i attention correction",
+      "state": "affine_causal_h_attention128",
+      "state_sha256": "76599e20eb75d0d97ab2d6933531877ba1c8ed1e65f335cb1c9fe62f3b5a9e82",
+      "status": "FROZEN",
+      "track": "coverage_by_context"
+    },
+    {
+      "candidate_policy": "forbidden",
+      "distribution": "original",
+      "id": "original__affine_trained_diagonal_attention128",
+      "rule": "joint affine path plus trained current-position-only diagonal attention correction",
+      "state": "affine_trained_diagonal_attention128",
+      "state_sha256": "28009447e9cfb2d05975f2bc9692f8491c57c542cc7e077bc50bd170e8bd15e2",
+      "status": "FROZEN",
+      "track": "coverage_by_context"
+    },
+    {
+      "candidate_policy": "forbidden",
+      "distribution": "enriched",
+      "id": "enriched__joint_full_affine",
+      "rule": "joint full-sequence affine decoder fitted on the declared public distribution",
+      "state": "joint_full_affine",
+      "state_sha256": "2664d8aa245c2cd227409eeafd161b8648da90db67d40b499aa8cfd97812da97",
+      "status": "FROZEN",
+      "track": "coverage_by_context"
+    },
+    {
+      "candidate_policy": "forbidden",
+      "distribution": "enriched",
+      "id": "enriched__affine_causal_h_attention128",
+      "rule": "joint affine path plus zero-initialized causal H_0..H_i attention correction",
+      "state": "affine_causal_h_attention128",
+      "state_sha256": "ee910b14ad6f282bb933ea44ad24453cb5cce1470c65dbc09d8bcc16f3e8abfd",
+      "status": "FROZEN",
+      "track": "coverage_by_context"
+    },
+    {
+      "candidate_policy": "forbidden",
+      "distribution": "enriched",
+      "id": "enriched__affine_trained_diagonal_attention128",
+      "rule": "joint affine path plus trained current-position-only diagonal attention correction",
+      "state": "affine_trained_diagonal_attention128",
+      "state_sha256": "696eb9fc951e85356a06575faf18a2011616692a086bdac3b2fa368e69d599a2",
+      "status": "FROZEN",
+      "track": "coverage_by_context"
+    }
+  ],
+  "public_validation_selection": {
+    "decision_plan_sha256": "d4ae0da99ae5c0a00e454c16b539441e193cb76b9e52673c8e674bfdd2df1245",
+    "distributions": {
+      "enriched": {
+        "candidate_method_ids": [
+          "enriched__joint_full_affine",
+          "enriched__affine_trained_diagonal_attention128"
+        ],
+        "candidates": [
+          {
+            "curve_file": {
+              "bytes": 229211,
+              "path": "experiments/TRR-0005/joint_fit_v1/enriched/joint_full_affine/learning_curve.json",
+              "sha256": "dd3927107338111bce5d087b9d2b0bd85091a9cb1976f7260efed7a33323b91c"
+            },
+            "method_id": "enriched__joint_full_affine",
+            "score": 0.9534940322662216,
+            "selected_step": 2600
+          },
+          {
+            "curve_file": {
+              "bytes": 240637,
+              "path": "experiments/TRR-0005/joint_fit_v1/enriched/affine_trained_diagonal_attention128/learning_curve.json",
+              "sha256": "34516cc458424d04188c624e2334ddc0f4762a8df324f2d6f910332e1e565d3f"
+            },
+            "method_id": "enriched__affine_trained_diagonal_attention128",
+            "score": 0.9547109695038689,
+            "selected_step": 1600
+          }
+        ],
+        "selected_method_id": "enriched__affine_trained_diagonal_attention128",
+        "selected_score": 0.9547109695038689,
+        "selected_step": 1600
+      },
+      "original": {
+        "candidate_method_ids": [
+          "original__joint_full_affine",
+          "original__affine_trained_diagonal_attention128"
+        ],
+        "candidates": [
+          {
+            "curve_file": {
+              "bytes": 230069,
+              "path": "experiments/TRR-0005/joint_fit_v1/original/joint_full_affine/learning_curve.json",
+              "sha256": "a9ebaf6d71bdd082e4f19a157a8c760127261c15629febcf9698794d37a0271d"
+            },
+            "method_id": "original__joint_full_affine",
+            "score": 0.9176338947049005,
+            "selected_step": 1500
+          },
+          {
+            "curve_file": {
+              "bytes": 241305,
+              "path": "experiments/TRR-0005/joint_fit_v1/original/affine_trained_diagonal_attention128/learning_curve.json",
+              "sha256": "81ab7589695f7a3cf4c8fd8668562e9c4379eb768bfbc105aade295e2900ba29"
+            },
+            "method_id": "original__affine_trained_diagonal_attention128",
+            "score": 0.9194640418752844,
+            "selected_step": 1500
+          }
+        ],
+        "selected_method_id": "original__affine_trained_diagonal_attention128",
+        "selected_score": 0.9194640418752844,
+        "selected_step": 1500
+      }
+    },
+    "fit_evidence": {
+      "bytes": 7568686,
+      "path": "experiments/TRR-0005/joint_fit_v1/run_evidence.json",
+      "sha256": "87c1901684853ab43c7ce3d5660999c02fa38744aefef89cd2ee44d89eafac0a"
+    },
+    "fresh_evaluation_accessed": false,
+    "schema": "token-reconstruction.trr0005-public-validation-selection.v1",
+    "selection_metric": "validation_style_balanced_token_accuracy",
+    "selection_rule": "Select the maximum public validation-style accuracy mean from the affine and trained diagonal contenders per distribution; ties use the earliest selected step.",
+    "selection_stage": "public_validation_before_fresh_evaluation",
+    "status": "FROZEN_PUBLIC_VALIDATION_SELECTION",
+    "task_id": "TRR-0005",
+    "truth_accessed": false
+  },
+  "public_validation_selection_file": {
+    "bytes": 3235,
+    "path": "experiments/TRR-0005/public_validation_selection.json",
+    "sha256": "c120e267f5e34e0e13981df1f67a19f8a6eab17a1a82ec54501ff10b7487ac90"
+  },
+  "schema": "token-reconstruction.trr0005-method-freeze.v1",
+  "scope": "Source-free method/state and public-validation freeze. Fresh source IDs, panel descriptors, observations, and truth are intentionally absent.",
+  "source_accessed": false,
+  "state_bindings": {
+    "enriched__affine_causal_h_attention128": {
+      "code": [
+        {
+          "bytes": 43206,
+          "path": "scripts/trr0005_bind_methods.py",
+          "sha256": "a35ec2bcf233cffb871f4f52253a8db657d242b569a91f29d36521ecfbebd6a9"
+        },
+        {
+          "bytes": 98947,
+          "path": "scripts/trr0005_run_predictions.py",
+          "sha256": "2c52662a88dfe1bb6ca92714ee1046da1a08591af2a9c2ffa71c0b41039e3802"
+        },
+        {
+          "bytes": 12575,
+          "path": "scripts/trr0005_predict_confirmation.py",
+          "sha256": "14a15a9f47e6ff3f9f4269a1842ea0c67b12b2e3711ae829ad06cb2e31e64359"
+        },
+        {
+          "bytes": 117762,
+          "path": "scripts/trr0005_score_confirmation.py",
+          "sha256": "9344d87ff6c10683c009dd1bb7d6035ac0ba6e4892222f5d0ad4d9b6426d752c"
+        },
+        {
+          "bytes": 9246,
+          "path": "scripts/trr0005_freeze_confirmation.py",
+          "sha256": "5a8765bfcba160a965fed06bec4ff6ff082cd71a77d18a0afe38f3cb3f97f85d"
+        },
+        {
+          "bytes": 27658,
+          "path": "src/token_reconstruction/trr0005_contract.py",
+          "sha256": "f92bb023644d5d5a3af28e8f308793619a42d661d80f0f9dafbe1e839ff5ae5a"
+        },
+        {
+          "bytes": 55256,
+          "path": "src/token_reconstruction/trr0005_joint_decoder.py",
+          "sha256": "9cab3cf5ad664c37d91bcd90fe1852df71da25800ddf37291a57000908d3d38f"
+        },
+        {
+          "bytes": 56490,
+          "path": "src/token_reconstruction/footing.py",
+          "sha256": "9adfb838b2f42c936c7d6397579dd5477f0063cf61c8d5a0a6d7e21a1d2a9b36"
+        },
+        {
+          "bytes": 10049,
+          "path": "src/token_reconstruction/freeze.py",
+          "sha256": "2449846bdbaf3afb520cdca24ab373afe5b8297cb82ee510780719a02c6ab35c"
+        },
+        {
+          "bytes": 71405,
+          "path": "scripts/trr0004_predict_confirmation.py",
+          "sha256": "36f6aa7b4493c60b257b3896c975f523595da912e14a97dba3f6440d419e8427"
+        },
+        {
+          "bytes": 89002,
+          "path": "scripts/trr0004_fresh_confirmation.py",
+          "sha256": "482c3a75d2fc641f90fe9c531584e2be14aefe914d97b246fe3633bdaa3d2945"
+        },
+        {
+          "bytes": 44976,
+          "path": "scripts/trr0003_footing_compare.py",
+          "sha256": "bb3690a481014f3ea12b411a3ec6eb58d7c888ef6c4135f9e03908027857f98e"
+        },
+        {
+          "bytes": 16979,
+          "path": "src/token_reconstruction/historical_inputlens_bridge.py",
+          "sha256": "9280b223e25119295efc9a4af10724d90a93af8e0a52ead127562b5015872b67"
+        },
+        {
+          "bytes": 8297,
+          "path": "src/token_reconstruction/public_prefix.py",
+          "sha256": "b9dca1d8d56c7c07413015aea4bde79e8ceac827c32ee9bc0d1a236ea1dd35f6"
+        },
+        {
+          "bytes": 20708,
+          "path": "src/token_reconstruction/component_crossover.py",
+          "sha256": "2cd03fda1f29f30d0a92246252ba2d2d89d3890abc6739ae0c8bae0a5c105b7d"
+        },
+        {
+          "bytes": 29969,
+          "path": "src/token_reconstruction/a1a2_configuration_search.py",
+          "sha256": "608bead6291353cacaa700a85f3dd619fb3261375e6fd5ba19cbc43fd738315b"
+        },
+        {
+          "bytes": 16153,
+          "path": "src/token_reconstruction/dual_benchmark.py",
+          "sha256": "30819a438482149431ddc110cd22c389ead905c49399b88a0c4985afd62514e8"
+        },
+        {
+          "bytes": 8587,
+          "path": "src/token_reconstruction/experiment_runtime.py",
+          "sha256": "9bfe8ba34fe473faf1ace17f16ea0e5e363728822bd715ddcf21c33c4ffc2177"
+        },
+        {
+          "bytes": 6236,
+          "path": "src/token_reconstruction/inverse.py",
+          "sha256": "083fd8cf8cf7dad2c8107db0c3929e67c58fc37389c07ea70c1ad82dcac5f740"
+        },
+        {
+          "bytes": 19750,
+          "path": "src/token_reconstruction/causal_decoder_extension.py",
+          "sha256": "f1fb75e1feebffce5b26d0b1573f8b7a41ac1452976870027a9aa552b5736307"
+        },
+        {
+          "bytes": 64326,
+          "path": "src/token_reconstruction/historical_affine_ce.py",
+          "sha256": "ec0b0644870041b93871245ecdeb84071de7a9864229709d4ad5999d920399d7"
+        }
+      ],
+      "code_commit": "da82f6cac45e09ae83452198344c547553cb4433",
+      "method_config": [
+        {
+          "bytes": 7248,
+          "path": "experiments/TRR-0005/decision_plan.json",
+          "sha256": "d4ae0da99ae5c0a00e454c16b539441e193cb76b9e52673c8e674bfdd2df1245"
+        },
+        {
+          "bytes": 11306,
+          "path": "experiments/TRR-0005/qk_score_repair_amendment_v1.json",
+          "sha256": "dd7bbb35a57aaa8341cb6339cafa2504e82f331db0feb9eff5b11cc260bdf300"
+        }
+      ],
+      "method_id": "enriched__affine_causal_h_attention128",
+      "method_rule": "joint affine path plus zero-initialized causal H_0..H_i attention correction",
+      "method_state": [
+        {
+          "bytes": 20990668,
+          "path": "experiments/TRR-0005/joint_fit_qknorm_v1/enriched/affine_causal_h_attention128/selected.safetensors",
+          "sha256": "ee910b14ad6f282bb933ea44ad24453cb5cce1470c65dbc09d8bcc16f3e8abfd"
+        }
+      ],
+      "runtime_assets": {
+        "public_embedding_table": {
+          "bytes": 1050673488,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+          "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+        }
+      },
+      "state_sha256": "ee910b14ad6f282bb933ea44ad24453cb5cce1470c65dbc09d8bcc16f3e8abfd",
+      "status": "FROZEN"
+    },
+    "enriched__affine_trained_diagonal_attention128": {
+      "code": [
+        {
+          "bytes": 43206,
+          "path": "scripts/trr0005_bind_methods.py",
+          "sha256": "a35ec2bcf233cffb871f4f52253a8db657d242b569a91f29d36521ecfbebd6a9"
+        },
+        {
+          "bytes": 98947,
+          "path": "scripts/trr0005_run_predictions.py",
+          "sha256": "2c52662a88dfe1bb6ca92714ee1046da1a08591af2a9c2ffa71c0b41039e3802"
+        },
+        {
+          "bytes": 12575,
+          "path": "scripts/trr0005_predict_confirmation.py",
+          "sha256": "14a15a9f47e6ff3f9f4269a1842ea0c67b12b2e3711ae829ad06cb2e31e64359"
+        },
+        {
+          "bytes": 117762,
+          "path": "scripts/trr0005_score_confirmation.py",
+          "sha256": "9344d87ff6c10683c009dd1bb7d6035ac0ba6e4892222f5d0ad4d9b6426d752c"
+        },
+        {
+          "bytes": 9246,
+          "path": "scripts/trr0005_freeze_confirmation.py",
+          "sha256": "5a8765bfcba160a965fed06bec4ff6ff082cd71a77d18a0afe38f3cb3f97f85d"
+        },
+        {
+          "bytes": 27658,
+          "path": "src/token_reconstruction/trr0005_contract.py",
+          "sha256": "f92bb023644d5d5a3af28e8f308793619a42d661d80f0f9dafbe1e839ff5ae5a"
+        },
+        {
+          "bytes": 55256,
+          "path": "src/token_reconstruction/trr0005_joint_decoder.py",
+          "sha256": "9cab3cf5ad664c37d91bcd90fe1852df71da25800ddf37291a57000908d3d38f"
+        },
+        {
+          "bytes": 56490,
+          "path": "src/token_reconstruction/footing.py",
+          "sha256": "9adfb838b2f42c936c7d6397579dd5477f0063cf61c8d5a0a6d7e21a1d2a9b36"
+        },
+        {
+          "bytes": 10049,
+          "path": "src/token_reconstruction/freeze.py",
+          "sha256": "2449846bdbaf3afb520cdca24ab373afe5b8297cb82ee510780719a02c6ab35c"
+        },
+        {
+          "bytes": 71405,
+          "path": "scripts/trr0004_predict_confirmation.py",
+          "sha256": "36f6aa7b4493c60b257b3896c975f523595da912e14a97dba3f6440d419e8427"
+        },
+        {
+          "bytes": 89002,
+          "path": "scripts/trr0004_fresh_confirmation.py",
+          "sha256": "482c3a75d2fc641f90fe9c531584e2be14aefe914d97b246fe3633bdaa3d2945"
+        },
+        {
+          "bytes": 44976,
+          "path": "scripts/trr0003_footing_compare.py",
+          "sha256": "bb3690a481014f3ea12b411a3ec6eb58d7c888ef6c4135f9e03908027857f98e"
+        },
+        {
+          "bytes": 16979,
+          "path": "src/token_reconstruction/historical_inputlens_bridge.py",
+          "sha256": "9280b223e25119295efc9a4af10724d90a93af8e0a52ead127562b5015872b67"
+        },
+        {
+          "bytes": 8297,
+          "path": "src/token_reconstruction/public_prefix.py",
+          "sha256": "b9dca1d8d56c7c07413015aea4bde79e8ceac827c32ee9bc0d1a236ea1dd35f6"
+        },
+        {
+          "bytes": 20708,
+          "path": "src/token_reconstruction/component_crossover.py",
+          "sha256": "2cd03fda1f29f30d0a92246252ba2d2d89d3890abc6739ae0c8bae0a5c105b7d"
+        },
+        {
+          "bytes": 29969,
+          "path": "src/token_reconstruction/a1a2_configuration_search.py",
+          "sha256": "608bead6291353cacaa700a85f3dd619fb3261375e6fd5ba19cbc43fd738315b"
+        },
+        {
+          "bytes": 16153,
+          "path": "src/token_reconstruction/dual_benchmark.py",
+          "sha256": "30819a438482149431ddc110cd22c389ead905c49399b88a0c4985afd62514e8"
+        },
+        {
+          "bytes": 8587,
+          "path": "src/token_reconstruction/experiment_runtime.py",
+          "sha256": "9bfe8ba34fe473faf1ace17f16ea0e5e363728822bd715ddcf21c33c4ffc2177"
+        },
+        {
+          "bytes": 6236,
+          "path": "src/token_reconstruction/inverse.py",
+          "sha256": "083fd8cf8cf7dad2c8107db0c3929e67c58fc37389c07ea70c1ad82dcac5f740"
+        },
+        {
+          "bytes": 19750,
+          "path": "src/token_reconstruction/causal_decoder_extension.py",
+          "sha256": "f1fb75e1feebffce5b26d0b1573f8b7a41ac1452976870027a9aa552b5736307"
+        },
+        {
+          "bytes": 64326,
+          "path": "src/token_reconstruction/historical_affine_ce.py",
+          "sha256": "ec0b0644870041b93871245ecdeb84071de7a9864229709d4ad5999d920399d7"
+        }
+      ],
+      "code_commit": "da82f6cac45e09ae83452198344c547553cb4433",
+      "method_config": [
+        {
+          "bytes": 7248,
+          "path": "experiments/TRR-0005/decision_plan.json",
+          "sha256": "d4ae0da99ae5c0a00e454c16b539441e193cb76b9e52673c8e674bfdd2df1245"
+        }
+      ],
+      "method_id": "enriched__affine_trained_diagonal_attention128",
+      "method_rule": "joint affine path plus trained current-position-only diagonal attention correction",
+      "method_state": [
+        {
+          "bytes": 20990652,
+          "path": "experiments/TRR-0005/joint_fit_v1/enriched/affine_trained_diagonal_attention128/selected.safetensors",
+          "sha256": "696eb9fc951e85356a06575faf18a2011616692a086bdac3b2fa368e69d599a2"
+        }
+      ],
+      "runtime_assets": {
+        "public_embedding_table": {
+          "bytes": 1050673488,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+          "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+        }
+      },
+      "state_sha256": "696eb9fc951e85356a06575faf18a2011616692a086bdac3b2fa368e69d599a2",
+      "status": "FROZEN"
+    },
+    "enriched__joint_full_affine": {
+      "code": [
+        {
+          "bytes": 43206,
+          "path": "scripts/trr0005_bind_methods.py",
+          "sha256": "a35ec2bcf233cffb871f4f52253a8db657d242b569a91f29d36521ecfbebd6a9"
+        },
+        {
+          "bytes": 98947,
+          "path": "scripts/trr0005_run_predictions.py",
+          "sha256": "2c52662a88dfe1bb6ca92714ee1046da1a08591af2a9c2ffa71c0b41039e3802"
+        },
+        {
+          "bytes": 12575,
+          "path": "scripts/trr0005_predict_confirmation.py",
+          "sha256": "14a15a9f47e6ff3f9f4269a1842ea0c67b12b2e3711ae829ad06cb2e31e64359"
+        },
+        {
+          "bytes": 117762,
+          "path": "scripts/trr0005_score_confirmation.py",
+          "sha256": "9344d87ff6c10683c009dd1bb7d6035ac0ba6e4892222f5d0ad4d9b6426d752c"
+        },
+        {
+          "bytes": 9246,
+          "path": "scripts/trr0005_freeze_confirmation.py",
+          "sha256": "5a8765bfcba160a965fed06bec4ff6ff082cd71a77d18a0afe38f3cb3f97f85d"
+        },
+        {
+          "bytes": 27658,
+          "path": "src/token_reconstruction/trr0005_contract.py",
+          "sha256": "f92bb023644d5d5a3af28e8f308793619a42d661d80f0f9dafbe1e839ff5ae5a"
+        },
+        {
+          "bytes": 55256,
+          "path": "src/token_reconstruction/trr0005_joint_decoder.py",
+          "sha256": "9cab3cf5ad664c37d91bcd90fe1852df71da25800ddf37291a57000908d3d38f"
+        },
+        {
+          "bytes": 56490,
+          "path": "src/token_reconstruction/footing.py",
+          "sha256": "9adfb838b2f42c936c7d6397579dd5477f0063cf61c8d5a0a6d7e21a1d2a9b36"
+        },
+        {
+          "bytes": 10049,
+          "path": "src/token_reconstruction/freeze.py",
+          "sha256": "2449846bdbaf3afb520cdca24ab373afe5b8297cb82ee510780719a02c6ab35c"
+        },
+        {
+          "bytes": 71405,
+          "path": "scripts/trr0004_predict_confirmation.py",
+          "sha256": "36f6aa7b4493c60b257b3896c975f523595da912e14a97dba3f6440d419e8427"
+        },
+        {
+          "bytes": 89002,
+          "path": "scripts/trr0004_fresh_confirmation.py",
+          "sha256": "482c3a75d2fc641f90fe9c531584e2be14aefe914d97b246fe3633bdaa3d2945"
+        },
+        {
+          "bytes": 44976,
+          "path": "scripts/trr0003_footing_compare.py",
+          "sha256": "bb3690a481014f3ea12b411a3ec6eb58d7c888ef6c4135f9e03908027857f98e"
+        },
+        {
+          "bytes": 16979,
+          "path": "src/token_reconstruction/historical_inputlens_bridge.py",
+          "sha256": "9280b223e25119295efc9a4af10724d90a93af8e0a52ead127562b5015872b67"
+        },
+        {
+          "bytes": 8297,
+          "path": "src/token_reconstruction/public_prefix.py",
+          "sha256": "b9dca1d8d56c7c07413015aea4bde79e8ceac827c32ee9bc0d1a236ea1dd35f6"
+        },
+        {
+          "bytes": 20708,
+          "path": "src/token_reconstruction/component_crossover.py",
+          "sha256": "2cd03fda1f29f30d0a92246252ba2d2d89d3890abc6739ae0c8bae0a5c105b7d"
+        },
+        {
+          "bytes": 29969,
+          "path": "src/token_reconstruction/a1a2_configuration_search.py",
+          "sha256": "608bead6291353cacaa700a85f3dd619fb3261375e6fd5ba19cbc43fd738315b"
+        },
+        {
+          "bytes": 16153,
+          "path": "src/token_reconstruction/dual_benchmark.py",
+          "sha256": "30819a438482149431ddc110cd22c389ead905c49399b88a0c4985afd62514e8"
+        },
+        {
+          "bytes": 8587,
+          "path": "src/token_reconstruction/experiment_runtime.py",
+          "sha256": "9bfe8ba34fe473faf1ace17f16ea0e5e363728822bd715ddcf21c33c4ffc2177"
+        },
+        {
+          "bytes": 6236,
+          "path": "src/token_reconstruction/inverse.py",
+          "sha256": "083fd8cf8cf7dad2c8107db0c3929e67c58fc37389c07ea70c1ad82dcac5f740"
+        },
+        {
+          "bytes": 19750,
+          "path": "src/token_reconstruction/causal_decoder_extension.py",
+          "sha256": "f1fb75e1feebffce5b26d0b1573f8b7a41ac1452976870027a9aa552b5736307"
+        },
+        {
+          "bytes": 64326,
+          "path": "src/token_reconstruction/historical_affine_ce.py",
+          "sha256": "ec0b0644870041b93871245ecdeb84071de7a9864229709d4ad5999d920399d7"
+        }
+      ],
+      "code_commit": "da82f6cac45e09ae83452198344c547553cb4433",
+      "method_config": [
+        {
+          "bytes": 7248,
+          "path": "experiments/TRR-0005/decision_plan.json",
+          "sha256": "d4ae0da99ae5c0a00e454c16b539441e193cb76b9e52673c8e674bfdd2df1245"
+        }
+      ],
+      "method_id": "enriched__joint_full_affine",
+      "method_rule": "joint full-sequence affine decoder fitted on the declared public distribution",
+      "method_state": [
+        {
+          "bytes": 16785924,
+          "path": "experiments/TRR-0005/joint_fit_v1/enriched/joint_full_affine/selected.safetensors",
+          "sha256": "2664d8aa245c2cd227409eeafd161b8648da90db67d40b499aa8cfd97812da97"
+        }
+      ],
+      "runtime_assets": {
+        "public_embedding_table": {
+          "bytes": 1050673488,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+          "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+        }
+      },
+      "state_sha256": "2664d8aa245c2cd227409eeafd161b8648da90db67d40b499aa8cfd97812da97",
+      "status": "FROZEN"
+    },
+    "frozen_a1_a2_k256": {
+      "code": [
+        {
+          "bytes": 43206,
+          "path": "scripts/trr0005_bind_methods.py",
+          "sha256": "a35ec2bcf233cffb871f4f52253a8db657d242b569a91f29d36521ecfbebd6a9"
+        },
+        {
+          "bytes": 98947,
+          "path": "scripts/trr0005_run_predictions.py",
+          "sha256": "2c52662a88dfe1bb6ca92714ee1046da1a08591af2a9c2ffa71c0b41039e3802"
+        },
+        {
+          "bytes": 12575,
+          "path": "scripts/trr0005_predict_confirmation.py",
+          "sha256": "14a15a9f47e6ff3f9f4269a1842ea0c67b12b2e3711ae829ad06cb2e31e64359"
+        },
+        {
+          "bytes": 117762,
+          "path": "scripts/trr0005_score_confirmation.py",
+          "sha256": "9344d87ff6c10683c009dd1bb7d6035ac0ba6e4892222f5d0ad4d9b6426d752c"
+        },
+        {
+          "bytes": 9246,
+          "path": "scripts/trr0005_freeze_confirmation.py",
+          "sha256": "5a8765bfcba160a965fed06bec4ff6ff082cd71a77d18a0afe38f3cb3f97f85d"
+        },
+        {
+          "bytes": 27658,
+          "path": "src/token_reconstruction/trr0005_contract.py",
+          "sha256": "f92bb023644d5d5a3af28e8f308793619a42d661d80f0f9dafbe1e839ff5ae5a"
+        },
+        {
+          "bytes": 55256,
+          "path": "src/token_reconstruction/trr0005_joint_decoder.py",
+          "sha256": "9cab3cf5ad664c37d91bcd90fe1852df71da25800ddf37291a57000908d3d38f"
+        },
+        {
+          "bytes": 56490,
+          "path": "src/token_reconstruction/footing.py",
+          "sha256": "9adfb838b2f42c936c7d6397579dd5477f0063cf61c8d5a0a6d7e21a1d2a9b36"
+        },
+        {
+          "bytes": 10049,
+          "path": "src/token_reconstruction/freeze.py",
+          "sha256": "2449846bdbaf3afb520cdca24ab373afe5b8297cb82ee510780719a02c6ab35c"
+        },
+        {
+          "bytes": 71405,
+          "path": "scripts/trr0004_predict_confirmation.py",
+          "sha256": "36f6aa7b4493c60b257b3896c975f523595da912e14a97dba3f6440d419e8427"
+        },
+        {
+          "bytes": 89002,
+          "path": "scripts/trr0004_fresh_confirmation.py",
+          "sha256": "482c3a75d2fc641f90fe9c531584e2be14aefe914d97b246fe3633bdaa3d2945"
+        },
+        {
+          "bytes": 44976,
+          "path": "scripts/trr0003_footing_compare.py",
+          "sha256": "bb3690a481014f3ea12b411a3ec6eb58d7c888ef6c4135f9e03908027857f98e"
+        },
+        {
+          "bytes": 16979,
+          "path": "src/token_reconstruction/historical_inputlens_bridge.py",
+          "sha256": "9280b223e25119295efc9a4af10724d90a93af8e0a52ead127562b5015872b67"
+        },
+        {
+          "bytes": 8297,
+          "path": "src/token_reconstruction/public_prefix.py",
+          "sha256": "b9dca1d8d56c7c07413015aea4bde79e8ceac827c32ee9bc0d1a236ea1dd35f6"
+        },
+        {
+          "bytes": 20708,
+          "path": "src/token_reconstruction/component_crossover.py",
+          "sha256": "2cd03fda1f29f30d0a92246252ba2d2d89d3890abc6739ae0c8bae0a5c105b7d"
+        },
+        {
+          "bytes": 29969,
+          "path": "src/token_reconstruction/a1a2_configuration_search.py",
+          "sha256": "608bead6291353cacaa700a85f3dd619fb3261375e6fd5ba19cbc43fd738315b"
+        },
+        {
+          "bytes": 16153,
+          "path": "src/token_reconstruction/dual_benchmark.py",
+          "sha256": "30819a438482149431ddc110cd22c389ead905c49399b88a0c4985afd62514e8"
+        },
+        {
+          "bytes": 8587,
+          "path": "src/token_reconstruction/experiment_runtime.py",
+          "sha256": "9bfe8ba34fe473faf1ace17f16ea0e5e363728822bd715ddcf21c33c4ffc2177"
+        },
+        {
+          "bytes": 6236,
+          "path": "src/token_reconstruction/inverse.py",
+          "sha256": "083fd8cf8cf7dad2c8107db0c3929e67c58fc37389c07ea70c1ad82dcac5f740"
+        },
+        {
+          "bytes": 19750,
+          "path": "src/token_reconstruction/causal_decoder_extension.py",
+          "sha256": "f1fb75e1feebffce5b26d0b1573f8b7a41ac1452976870027a9aa552b5736307"
+        },
+        {
+          "bytes": 64326,
+          "path": "src/token_reconstruction/historical_affine_ce.py",
+          "sha256": "ec0b0644870041b93871245ecdeb84071de7a9864229709d4ad5999d920399d7"
+        },
+        {
+          "bytes": 31291,
+          "path": "experiments/TRR-0004/evidence/comparators/round001_teacher.py",
+          "sha256": "10532a746cb8c30eb2caf338e206e1fa9d85e708d4db43a0d8fd4a2ff1a6f8bd"
+        }
+      ],
+      "code_commit": "da82f6cac45e09ae83452198344c547553cb4433",
+      "method_config": [
+        {
+          "bytes": 7248,
+          "path": "experiments/TRR-0005/decision_plan.json",
+          "sha256": "d4ae0da99ae5c0a00e454c16b539441e193cb76b9e52673c8e674bfdd2df1245"
+        }
+      ],
+      "method_id": "frozen_a1_a2_k256",
+      "method_rule": "retained A1 proposals scored by fixed public-prefix A2 K256; candidate arrays omitted after decision",
+      "method_state": [
+        {
+          "bytes": 16787653,
+          "path": "experiments/TRR-0004/evidence/comparators/public_a1_lens.pt",
+          "sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742"
+        }
+      ],
+      "runtime_assets": {
+        "public_embedding_table": {
+          "bytes": 1050673488,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+          "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+        },
+        "public_prefix_checkpoint": {
+          "bytes": 2471645608,
+          "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f",
+          "sha256": "1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f"
+        },
+        "public_prefix_config": {
+          "bytes": 877,
+          "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/3e3aaf51a035cb5092d9f6827a0dc074657ba88c",
+          "sha256": "2febf68cea25bf4611be02b7536f2488a5ba523bb1134986e3610152abe74fdb"
+        }
+      },
+      "state_sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742",
+      "status": "FROZEN"
+    },
+    "historical_alpaca_a1": {
+      "code": [
+        {
+          "bytes": 43206,
+          "path": "scripts/trr0005_bind_methods.py",
+          "sha256": "a35ec2bcf233cffb871f4f52253a8db657d242b569a91f29d36521ecfbebd6a9"
+        },
+        {
+          "bytes": 98947,
+          "path": "scripts/trr0005_run_predictions.py",
+          "sha256": "2c52662a88dfe1bb6ca92714ee1046da1a08591af2a9c2ffa71c0b41039e3802"
+        },
+        {
+          "bytes": 12575,
+          "path": "scripts/trr0005_predict_confirmation.py",
+          "sha256": "14a15a9f47e6ff3f9f4269a1842ea0c67b12b2e3711ae829ad06cb2e31e64359"
+        },
+        {
+          "bytes": 117762,
+          "path": "scripts/trr0005_score_confirmation.py",
+          "sha256": "9344d87ff6c10683c009dd1bb7d6035ac0ba6e4892222f5d0ad4d9b6426d752c"
+        },
+        {
+          "bytes": 9246,
+          "path": "scripts/trr0005_freeze_confirmation.py",
+          "sha256": "5a8765bfcba160a965fed06bec4ff6ff082cd71a77d18a0afe38f3cb3f97f85d"
+        },
+        {
+          "bytes": 27658,
+          "path": "src/token_reconstruction/trr0005_contract.py",
+          "sha256": "f92bb023644d5d5a3af28e8f308793619a42d661d80f0f9dafbe1e839ff5ae5a"
+        },
+        {
+          "bytes": 55256,
+          "path": "src/token_reconstruction/trr0005_joint_decoder.py",
+          "sha256": "9cab3cf5ad664c37d91bcd90fe1852df71da25800ddf37291a57000908d3d38f"
+        },
+        {
+          "bytes": 56490,
+          "path": "src/token_reconstruction/footing.py",
+          "sha256": "9adfb838b2f42c936c7d6397579dd5477f0063cf61c8d5a0a6d7e21a1d2a9b36"
+        },
+        {
+          "bytes": 10049,
+          "path": "src/token_reconstruction/freeze.py",
+          "sha256": "2449846bdbaf3afb520cdca24ab373afe5b8297cb82ee510780719a02c6ab35c"
+        },
+        {
+          "bytes": 71405,
+          "path": "scripts/trr0004_predict_confirmation.py",
+          "sha256": "36f6aa7b4493c60b257b3896c975f523595da912e14a97dba3f6440d419e8427"
+        },
+        {
+          "bytes": 89002,
+          "path": "scripts/trr0004_fresh_confirmation.py",
+          "sha256": "482c3a75d2fc641f90fe9c531584e2be14aefe914d97b246fe3633bdaa3d2945"
+        },
+        {
+          "bytes": 44976,
+          "path": "scripts/trr0003_footing_compare.py",
+          "sha256": "bb3690a481014f3ea12b411a3ec6eb58d7c888ef6c4135f9e03908027857f98e"
+        },
+        {
+          "bytes": 16979,
+          "path": "src/token_reconstruction/historical_inputlens_bridge.py",
+          "sha256": "9280b223e25119295efc9a4af10724d90a93af8e0a52ead127562b5015872b67"
+        },
+        {
+          "bytes": 8297,
+          "path": "src/token_reconstruction/public_prefix.py",
+          "sha256": "b9dca1d8d56c7c07413015aea4bde79e8ceac827c32ee9bc0d1a236ea1dd35f6"
+        },
+        {
+          "bytes": 20708,
+          "path": "src/token_reconstruction/component_crossover.py",
+          "sha256": "2cd03fda1f29f30d0a92246252ba2d2d89d3890abc6739ae0c8bae0a5c105b7d"
+        },
+        {
+          "bytes": 29969,
+          "path": "src/token_reconstruction/a1a2_configuration_search.py",
+          "sha256": "608bead6291353cacaa700a85f3dd619fb3261375e6fd5ba19cbc43fd738315b"
+        },
+        {
+          "bytes": 16153,
+          "path": "src/token_reconstruction/dual_benchmark.py",
+          "sha256": "30819a438482149431ddc110cd22c389ead905c49399b88a0c4985afd62514e8"
+        },
+        {
+          "bytes": 8587,
+          "path": "src/token_reconstruction/experiment_runtime.py",
+          "sha256": "9bfe8ba34fe473faf1ace17f16ea0e5e363728822bd715ddcf21c33c4ffc2177"
+        },
+        {
+          "bytes": 6236,
+          "path": "src/token_reconstruction/inverse.py",
+          "sha256": "083fd8cf8cf7dad2c8107db0c3929e67c58fc37389c07ea70c1ad82dcac5f740"
+        },
+        {
+          "bytes": 19750,
+          "path": "src/token_reconstruction/causal_decoder_extension.py",
+          "sha256": "f1fb75e1feebffce5b26d0b1573f8b7a41ac1452976870027a9aa552b5736307"
+        },
+        {
+          "bytes": 64326,
+          "path": "src/token_reconstruction/historical_affine_ce.py",
+          "sha256": "ec0b0644870041b93871245ecdeb84071de7a9864229709d4ad5999d920399d7"
+        }
+      ],
+      "code_commit": "da82f6cac45e09ae83452198344c547553cb4433",
+      "method_config": [
+        {
+          "bytes": 7248,
+          "path": "experiments/TRR-0005/decision_plan.json",
+          "sha256": "d4ae0da99ae5c0a00e454c16b539441e193cb76b9e52673c8e674bfdd2df1245"
+        }
+      ],
+      "method_id": "historical_alpaca_a1",
+      "method_rule": "retained standalone historical A1 direct argmax; top-k is diagnostic only",
+      "method_state": [
+        {
+          "bytes": 16787653,
+          "path": "experiments/TRR-0004/evidence/comparators/public_a1_lens.pt",
+          "sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742"
+        }
+      ],
+      "runtime_assets": {
+        "public_embedding_table": {
+          "bytes": 1050673488,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+          "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+        }
+      },
+      "state_sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742",
+      "status": "FROZEN"
+    },
+    "original__affine_causal_h_attention128": {
+      "code": [
+        {
+          "bytes": 43206,
+          "path": "scripts/trr0005_bind_methods.py",
+          "sha256": "a35ec2bcf233cffb871f4f52253a8db657d242b569a91f29d36521ecfbebd6a9"
+        },
+        {
+          "bytes": 98947,
+          "path": "scripts/trr0005_run_predictions.py",
+          "sha256": "2c52662a88dfe1bb6ca92714ee1046da1a08591af2a9c2ffa71c0b41039e3802"
+        },
+        {
+          "bytes": 12575,
+          "path": "scripts/trr0005_predict_confirmation.py",
+          "sha256": "14a15a9f47e6ff3f9f4269a1842ea0c67b12b2e3711ae829ad06cb2e31e64359"
+        },
+        {
+          "bytes": 117762,
+          "path": "scripts/trr0005_score_confirmation.py",
+          "sha256": "9344d87ff6c10683c009dd1bb7d6035ac0ba6e4892222f5d0ad4d9b6426d752c"
+        },
+        {
+          "bytes": 9246,
+          "path": "scripts/trr0005_freeze_confirmation.py",
+          "sha256": "5a8765bfcba160a965fed06bec4ff6ff082cd71a77d18a0afe38f3cb3f97f85d"
+        },
+        {
+          "bytes": 27658,
+          "path": "src/token_reconstruction/trr0005_contract.py",
+          "sha256": "f92bb023644d5d5a3af28e8f308793619a42d661d80f0f9dafbe1e839ff5ae5a"
+        },
+        {
+          "bytes": 55256,
+          "path": "src/token_reconstruction/trr0005_joint_decoder.py",
+          "sha256": "9cab3cf5ad664c37d91bcd90fe1852df71da25800ddf37291a57000908d3d38f"
+        },
+        {
+          "bytes": 56490,
+          "path": "src/token_reconstruction/footing.py",
+          "sha256": "9adfb838b2f42c936c7d6397579dd5477f0063cf61c8d5a0a6d7e21a1d2a9b36"
+        },
+        {
+          "bytes": 10049,
+          "path": "src/token_reconstruction/freeze.py",
+          "sha256": "2449846bdbaf3afb520cdca24ab373afe5b8297cb82ee510780719a02c6ab35c"
+        },
+        {
+          "bytes": 71405,
+          "path": "scripts/trr0004_predict_confirmation.py",
+          "sha256": "36f6aa7b4493c60b257b3896c975f523595da912e14a97dba3f6440d419e8427"
+        },
+        {
+          "bytes": 89002,
+          "path": "scripts/trr0004_fresh_confirmation.py",
+          "sha256": "482c3a75d2fc641f90fe9c531584e2be14aefe914d97b246fe3633bdaa3d2945"
+        },
+        {
+          "bytes": 44976,
+          "path": "scripts/trr0003_footing_compare.py",
+          "sha256": "bb3690a481014f3ea12b411a3ec6eb58d7c888ef6c4135f9e03908027857f98e"
+        },
+        {
+          "bytes": 16979,
+          "path": "src/token_reconstruction/historical_inputlens_bridge.py",
+          "sha256": "9280b223e25119295efc9a4af10724d90a93af8e0a52ead127562b5015872b67"
+        },
+        {
+          "bytes": 8297,
+          "path": "src/token_reconstruction/public_prefix.py",
+          "sha256": "b9dca1d8d56c7c07413015aea4bde79e8ceac827c32ee9bc0d1a236ea1dd35f6"
+        },
+        {
+          "bytes": 20708,
+          "path": "src/token_reconstruction/component_crossover.py",
+          "sha256": "2cd03fda1f29f30d0a92246252ba2d2d89d3890abc6739ae0c8bae0a5c105b7d"
+        },
+        {
+          "bytes": 29969,
+          "path": "src/token_reconstruction/a1a2_configuration_search.py",
+          "sha256": "608bead6291353cacaa700a85f3dd619fb3261375e6fd5ba19cbc43fd738315b"
+        },
+        {
+          "bytes": 16153,
+          "path": "src/token_reconstruction/dual_benchmark.py",
+          "sha256": "30819a438482149431ddc110cd22c389ead905c49399b88a0c4985afd62514e8"
+        },
+        {
+          "bytes": 8587,
+          "path": "src/token_reconstruction/experiment_runtime.py",
+          "sha256": "9bfe8ba34fe473faf1ace17f16ea0e5e363728822bd715ddcf21c33c4ffc2177"
+        },
+        {
+          "bytes": 6236,
+          "path": "src/token_reconstruction/inverse.py",
+          "sha256": "083fd8cf8cf7dad2c8107db0c3929e67c58fc37389c07ea70c1ad82dcac5f740"
+        },
+        {
+          "bytes": 19750,
+          "path": "src/token_reconstruction/causal_decoder_extension.py",
+          "sha256": "f1fb75e1feebffce5b26d0b1573f8b7a41ac1452976870027a9aa552b5736307"
+        },
+        {
+          "bytes": 64326,
+          "path": "src/token_reconstruction/historical_affine_ce.py",
+          "sha256": "ec0b0644870041b93871245ecdeb84071de7a9864229709d4ad5999d920399d7"
+        }
+      ],
+      "code_commit": "da82f6cac45e09ae83452198344c547553cb4433",
+      "method_config": [
+        {
+          "bytes": 7248,
+          "path": "experiments/TRR-0005/decision_plan.json",
+          "sha256": "d4ae0da99ae5c0a00e454c16b539441e193cb76b9e52673c8e674bfdd2df1245"
+        },
+        {
+          "bytes": 11306,
+          "path": "experiments/TRR-0005/qk_score_repair_amendment_v1.json",
+          "sha256": "dd7bbb35a57aaa8341cb6339cafa2504e82f331db0feb9eff5b11cc260bdf300"
+        }
+      ],
+      "method_id": "original__affine_causal_h_attention128",
+      "method_rule": "joint affine path plus zero-initialized causal H_0..H_i attention correction",
+      "method_state": [
+        {
+          "bytes": 20990668,
+          "path": "experiments/TRR-0005/joint_fit_qknorm_v1/original/affine_causal_h_attention128/selected.safetensors",
+          "sha256": "76599e20eb75d0d97ab2d6933531877ba1c8ed1e65f335cb1c9fe62f3b5a9e82"
+        }
+      ],
+      "runtime_assets": {
+        "public_embedding_table": {
+          "bytes": 1050673488,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+          "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+        }
+      },
+      "state_sha256": "76599e20eb75d0d97ab2d6933531877ba1c8ed1e65f335cb1c9fe62f3b5a9e82",
+      "status": "FROZEN"
+    },
+    "original__affine_trained_diagonal_attention128": {
+      "code": [
+        {
+          "bytes": 43206,
+          "path": "scripts/trr0005_bind_methods.py",
+          "sha256": "a35ec2bcf233cffb871f4f52253a8db657d242b569a91f29d36521ecfbebd6a9"
+        },
+        {
+          "bytes": 98947,
+          "path": "scripts/trr0005_run_predictions.py",
+          "sha256": "2c52662a88dfe1bb6ca92714ee1046da1a08591af2a9c2ffa71c0b41039e3802"
+        },
+        {
+          "bytes": 12575,
+          "path": "scripts/trr0005_predict_confirmation.py",
+          "sha256": "14a15a9f47e6ff3f9f4269a1842ea0c67b12b2e3711ae829ad06cb2e31e64359"
+        },
+        {
+          "bytes": 117762,
+          "path": "scripts/trr0005_score_confirmation.py",
+          "sha256": "9344d87ff6c10683c009dd1bb7d6035ac0ba6e4892222f5d0ad4d9b6426d752c"
+        },
+        {
+          "bytes": 9246,
+          "path": "scripts/trr0005_freeze_confirmation.py",
+          "sha256": "5a8765bfcba160a965fed06bec4ff6ff082cd71a77d18a0afe38f3cb3f97f85d"
+        },
+        {
+          "bytes": 27658,
+          "path": "src/token_reconstruction/trr0005_contract.py",
+          "sha256": "f92bb023644d5d5a3af28e8f308793619a42d661d80f0f9dafbe1e839ff5ae5a"
+        },
+        {
+          "bytes": 55256,
+          "path": "src/token_reconstruction/trr0005_joint_decoder.py",
+          "sha256": "9cab3cf5ad664c37d91bcd90fe1852df71da25800ddf37291a57000908d3d38f"
+        },
+        {
+          "bytes": 56490,
+          "path": "src/token_reconstruction/footing.py",
+          "sha256": "9adfb838b2f42c936c7d6397579dd5477f0063cf61c8d5a0a6d7e21a1d2a9b36"
+        },
+        {
+          "bytes": 10049,
+          "path": "src/token_reconstruction/freeze.py",
+          "sha256": "2449846bdbaf3afb520cdca24ab373afe5b8297cb82ee510780719a02c6ab35c"
+        },
+        {
+          "bytes": 71405,
+          "path": "scripts/trr0004_predict_confirmation.py",
+          "sha256": "36f6aa7b4493c60b257b3896c975f523595da912e14a97dba3f6440d419e8427"
+        },
+        {
+          "bytes": 89002,
+          "path": "scripts/trr0004_fresh_confirmation.py",
+          "sha256": "482c3a75d2fc641f90fe9c531584e2be14aefe914d97b246fe3633bdaa3d2945"
+        },
+        {
+          "bytes": 44976,
+          "path": "scripts/trr0003_footing_compare.py",
+          "sha256": "bb3690a481014f3ea12b411a3ec6eb58d7c888ef6c4135f9e03908027857f98e"
+        },
+        {
+          "bytes": 16979,
+          "path": "src/token_reconstruction/historical_inputlens_bridge.py",
+          "sha256": "9280b223e25119295efc9a4af10724d90a93af8e0a52ead127562b5015872b67"
+        },
+        {
+          "bytes": 8297,
+          "path": "src/token_reconstruction/public_prefix.py",
+          "sha256": "b9dca1d8d56c7c07413015aea4bde79e8ceac827c32ee9bc0d1a236ea1dd35f6"
+        },
+        {
+          "bytes": 20708,
+          "path": "src/token_reconstruction/component_crossover.py",
+          "sha256": "2cd03fda1f29f30d0a92246252ba2d2d89d3890abc6739ae0c8bae0a5c105b7d"
+        },
+        {
+          "bytes": 29969,
+          "path": "src/token_reconstruction/a1a2_configuration_search.py",
+          "sha256": "608bead6291353cacaa700a85f3dd619fb3261375e6fd5ba19cbc43fd738315b"
+        },
+        {
+          "bytes": 16153,
+          "path": "src/token_reconstruction/dual_benchmark.py",
+          "sha256": "30819a438482149431ddc110cd22c389ead905c49399b88a0c4985afd62514e8"
+        },
+        {
+          "bytes": 8587,
+          "path": "src/token_reconstruction/experiment_runtime.py",
+          "sha256": "9bfe8ba34fe473faf1ace17f16ea0e5e363728822bd715ddcf21c33c4ffc2177"
+        },
+        {
+          "bytes": 6236,
+          "path": "src/token_reconstruction/inverse.py",
+          "sha256": "083fd8cf8cf7dad2c8107db0c3929e67c58fc37389c07ea70c1ad82dcac5f740"
+        },
+        {
+          "bytes": 19750,
+          "path": "src/token_reconstruction/causal_decoder_extension.py",
+          "sha256": "f1fb75e1feebffce5b26d0b1573f8b7a41ac1452976870027a9aa552b5736307"
+        },
+        {
+          "bytes": 64326,
+          "path": "src/token_reconstruction/historical_affine_ce.py",
+          "sha256": "ec0b0644870041b93871245ecdeb84071de7a9864229709d4ad5999d920399d7"
+        }
+      ],
+      "code_commit": "da82f6cac45e09ae83452198344c547553cb4433",
+      "method_config": [
+        {
+          "bytes": 7248,
+          "path": "experiments/TRR-0005/decision_plan.json",
+          "sha256": "d4ae0da99ae5c0a00e454c16b539441e193cb76b9e52673c8e674bfdd2df1245"
+        }
+      ],
+      "method_id": "original__affine_trained_diagonal_attention128",
+      "method_rule": "joint affine path plus trained current-position-only diagonal attention correction",
+      "method_state": [
+        {
+          "bytes": 20990652,
+          "path": "experiments/TRR-0005/joint_fit_v1/original/affine_trained_diagonal_attention128/selected.safetensors",
+          "sha256": "28009447e9cfb2d05975f2bc9692f8491c57c542cc7e077bc50bd170e8bd15e2"
+        }
+      ],
+      "runtime_assets": {
+        "public_embedding_table": {
+          "bytes": 1050673488,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+          "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+        }
+      },
+      "state_sha256": "28009447e9cfb2d05975f2bc9692f8491c57c542cc7e077bc50bd170e8bd15e2",
+      "status": "FROZEN"
+    },
+    "original__joint_full_affine": {
+      "code": [
+        {
+          "bytes": 43206,
+          "path": "scripts/trr0005_bind_methods.py",
+          "sha256": "a35ec2bcf233cffb871f4f52253a8db657d242b569a91f29d36521ecfbebd6a9"
+        },
+        {
+          "bytes": 98947,
+          "path": "scripts/trr0005_run_predictions.py",
+          "sha256": "2c52662a88dfe1bb6ca92714ee1046da1a08591af2a9c2ffa71c0b41039e3802"
+        },
+        {
+          "bytes": 12575,
+          "path": "scripts/trr0005_predict_confirmation.py",
+          "sha256": "14a15a9f47e6ff3f9f4269a1842ea0c67b12b2e3711ae829ad06cb2e31e64359"
+        },
+        {
+          "bytes": 117762,
+          "path": "scripts/trr0005_score_confirmation.py",
+          "sha256": "9344d87ff6c10683c009dd1bb7d6035ac0ba6e4892222f5d0ad4d9b6426d752c"
+        },
+        {
+          "bytes": 9246,
+          "path": "scripts/trr0005_freeze_confirmation.py",
+          "sha256": "5a8765bfcba160a965fed06bec4ff6ff082cd71a77d18a0afe38f3cb3f97f85d"
+        },
+        {
+          "bytes": 27658,
+          "path": "src/token_reconstruction/trr0005_contract.py",
+          "sha256": "f92bb023644d5d5a3af28e8f308793619a42d661d80f0f9dafbe1e839ff5ae5a"
+        },
+        {
+          "bytes": 55256,
+          "path": "src/token_reconstruction/trr0005_joint_decoder.py",
+          "sha256": "9cab3cf5ad664c37d91bcd90fe1852df71da25800ddf37291a57000908d3d38f"
+        },
+        {
+          "bytes": 56490,
+          "path": "src/token_reconstruction/footing.py",
+          "sha256": "9adfb838b2f42c936c7d6397579dd5477f0063cf61c8d5a0a6d7e21a1d2a9b36"
+        },
+        {
+          "bytes": 10049,
+          "path": "src/token_reconstruction/freeze.py",
+          "sha256": "2449846bdbaf3afb520cdca24ab373afe5b8297cb82ee510780719a02c6ab35c"
+        },
+        {
+          "bytes": 71405,
+          "path": "scripts/trr0004_predict_confirmation.py",
+          "sha256": "36f6aa7b4493c60b257b3896c975f523595da912e14a97dba3f6440d419e8427"
+        },
+        {
+          "bytes": 89002,
+          "path": "scripts/trr0004_fresh_confirmation.py",
+          "sha256": "482c3a75d2fc641f90fe9c531584e2be14aefe914d97b246fe3633bdaa3d2945"
+        },
+        {
+          "bytes": 44976,
+          "path": "scripts/trr0003_footing_compare.py",
+          "sha256": "bb3690a481014f3ea12b411a3ec6eb58d7c888ef6c4135f9e03908027857f98e"
+        },
+        {
+          "bytes": 16979,
+          "path": "src/token_reconstruction/historical_inputlens_bridge.py",
+          "sha256": "9280b223e25119295efc9a4af10724d90a93af8e0a52ead127562b5015872b67"
+        },
+        {
+          "bytes": 8297,
+          "path": "src/token_reconstruction/public_prefix.py",
+          "sha256": "b9dca1d8d56c7c07413015aea4bde79e8ceac827c32ee9bc0d1a236ea1dd35f6"
+        },
+        {
+          "bytes": 20708,
+          "path": "src/token_reconstruction/component_crossover.py",
+          "sha256": "2cd03fda1f29f30d0a92246252ba2d2d89d3890abc6739ae0c8bae0a5c105b7d"
+        },
+        {
+          "bytes": 29969,
+          "path": "src/token_reconstruction/a1a2_configuration_search.py",
+          "sha256": "608bead6291353cacaa700a85f3dd619fb3261375e6fd5ba19cbc43fd738315b"
+        },
+        {
+          "bytes": 16153,
+          "path": "src/token_reconstruction/dual_benchmark.py",
+          "sha256": "30819a438482149431ddc110cd22c389ead905c49399b88a0c4985afd62514e8"
+        },
+        {
+          "bytes": 8587,
+          "path": "src/token_reconstruction/experiment_runtime.py",
+          "sha256": "9bfe8ba34fe473faf1ace17f16ea0e5e363728822bd715ddcf21c33c4ffc2177"
+        },
+        {
+          "bytes": 6236,
+          "path": "src/token_reconstruction/inverse.py",
+          "sha256": "083fd8cf8cf7dad2c8107db0c3929e67c58fc37389c07ea70c1ad82dcac5f740"
+        },
+        {
+          "bytes": 19750,
+          "path": "src/token_reconstruction/causal_decoder_extension.py",
+          "sha256": "f1fb75e1feebffce5b26d0b1573f8b7a41ac1452976870027a9aa552b5736307"
+        },
+        {
+          "bytes": 64326,
+          "path": "src/token_reconstruction/historical_affine_ce.py",
+          "sha256": "ec0b0644870041b93871245ecdeb84071de7a9864229709d4ad5999d920399d7"
+        }
+      ],
+      "code_commit": "da82f6cac45e09ae83452198344c547553cb4433",
+      "method_config": [
+        {
+          "bytes": 7248,
+          "path": "experiments/TRR-0005/decision_plan.json",
+          "sha256": "d4ae0da99ae5c0a00e454c16b539441e193cb76b9e52673c8e674bfdd2df1245"
+        }
+      ],
+      "method_id": "original__joint_full_affine",
+      "method_rule": "joint full-sequence affine decoder fitted on the declared public distribution",
+      "method_state": [
+        {
+          "bytes": 16785924,
+          "path": "experiments/TRR-0005/joint_fit_v1/original/joint_full_affine/selected.safetensors",
+          "sha256": "f9f0b3f2647feff9618fe88a905be8fe5233a985fa464d86e5483d5bdc953e91"
+        }
+      ],
+      "runtime_assets": {
+        "public_embedding_table": {
+          "bytes": 1050673488,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+          "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+        }
+      },
+      "state_sha256": "f9f0b3f2647feff9618fe88a905be8fe5233a985fa464d86e5483d5bdc953e91",
+      "status": "FROZEN"
+    }
+  },
+  "state_roots": {
+    "causal": "experiments/TRR-0005/joint_fit_qknorm_v1",
+    "fitted": "experiments/TRR-0005/joint_fit_v1"
+  },
+  "status": "FROZEN_METHOD_PRESELECTION",
+  "target_weights_available_to_reconstruction": false,
+  "task_id": "TRR-0005",
+  "truth_opened": false
+}

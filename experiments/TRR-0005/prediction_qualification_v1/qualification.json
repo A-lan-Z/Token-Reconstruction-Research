@@ -1,0 +1,841 @@
+{
+  "archived_a1_a2_ids_exact": true,
+  "candidate_arrays_persisted": false,
+  "command": {
+    "argv": [
+      "scripts/trr0005_run_predictions.py",
+      "--qualification-only",
+      "--repository-root",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005",
+      "--qualification-observation",
+      "experiments/TRR-0004/fresh_confirmation_v1/panel_capture/observations/finance/public_base.safetensors",
+      "--qualification-a1-archive",
+      "experiments/TRR-0004/fresh_confirmation_v1/predictions_v2/finance/public_base/historical_alpaca_a1.safetensors",
+      "--qualification-a2-archive",
+      "experiments/TRR-0004/fresh_confirmation_v1/predictions_v2/finance/public_base/frozen_a1_a2_k256.safetensors",
+      "--qualification-record-index",
+      "0",
+      "--qualification-record-id",
+      "finance-public-000001-4192a0e13e20b1ef",
+      "--embedding-table",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+      "--lens",
+      "experiments/TRR-0004/evidence/comparators/public_a1_lens.pt",
+      "--model-snapshot",
+      "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+      "--reference",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/evidence/comparators/round001_teacher.py",
+      "--p0-checkpoint",
+      "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f",
+      "--p0-config",
+      "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/3e3aaf51a035cb5092d9f6827a0dc074657ba88c",
+      "--fit-root",
+      "experiments/TRR-0005/joint_fit_v1",
+      "--causal-fit-root",
+      "experiments/TRR-0005/joint_fit_qknorm_v1",
+      "--output-root",
+      "experiments/TRR-0005/prediction_qualification_v1",
+      "--device",
+      "cuda",
+      "--minimum-free-gib",
+      "8",
+      "--maximum-reserved-gib",
+      "6",
+      "--maximum-rss-gib",
+      "16",
+      "--minimum-host-available-gib",
+      "10",
+      "--max-seconds",
+      "300"
+    ],
+    "cwd": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005",
+    "python": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/.venv-trr0005/bin/python"
+  },
+  "device": "cuda",
+  "driver": {
+    "bytes": 98947,
+    "path": "scripts/trr0005_run_predictions.py",
+    "sha256": "2c52662a88dfe1bb6ca92714ee1046da1a08591af2a9c2ffa71c0b41039e3802"
+  },
+  "elapsed_seconds": 25.033586140001717,
+  "ended_utc": "2026-09-05T19:14:38Z",
+  "fresh_panel_loaded": false,
+  "future_activation_reads": false,
+  "git_commit": "c87da65f5975c3ccc2335c84476fa7d1db0ce326",
+  "joint_method_count": 6,
+  "measured_runs_per_record": 1,
+  "method_count": 8,
+  "methods": {
+    "enriched__affine_causal_h_attention128": {
+      "active_tokens": 128,
+      "archived_exact_match": null,
+      "method_id": "enriched__affine_causal_h_attention128",
+      "method_specific": {
+        "a2_fallback": false,
+        "architecture": "enriched__affine_causal_h_attention128",
+        "calls": 2,
+        "calls_scope": "warmup plus measured calls for every record in the cell",
+        "candidate_arrays_persisted": false,
+        "candidate_output": "forbidden",
+        "candidate_simulations": 0,
+        "context_width": 128,
+        "method_id": "enriched__affine_causal_h_attention128",
+        "public_prefix_calls": 0
+      },
+      "peak_memory": {
+        "cuda_peak_allocated_bytes": 1280331264,
+        "cuda_peak_reserved_bytes": 2168455168,
+        "process_max_rss_bytes": 5546471424
+      },
+      "prediction_sha256": "7df0f27e56ba096e11ad59185167e24023a75cbc055c9a584f7aa1b62e31e4d2",
+      "prediction_shape": [
+        128
+      ],
+      "runtime_load": {
+        "loader_scope": "joint TRR5 decoder and registered normalized public E; no P0",
+        "public_prefix_loaded": false,
+        "public_resources": {
+          "normalized_embedding": {
+            "bytes": 1050673488,
+            "dtype": "torch.float32",
+            "load_seconds": 1.1198222759994678,
+            "loader_scope": "normalized public embedding table only; no public model or prefix instantiated",
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+            "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+            "shape": [
+              128256,
+              2048
+            ],
+            "tensor_sha256": "656fa55881813ff6768011943cdd1d5bc0abfe43ad58e3cba5eb0b19af578c64"
+          }
+        },
+        "runtime_load_seconds": 1.563474214002781,
+        "state": {
+          "base_method_id": "affine_causal_h_attention128",
+          "load_seconds": 0.01800187800108688,
+          "loader": "token_reconstruction.trr0005_joint_decoder.load_decoder_state",
+          "method_id": "enriched__affine_causal_h_attention128",
+          "state_bytes": 20990668,
+          "state_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/joint_fit_qknorm_v1/enriched/affine_causal_h_attention128/selected.safetensors",
+          "state_sha256": "ee910b14ad6f282bb933ea44ad24453cb5cce1470c65dbc09d8bcc16f3e8abfd"
+        }
+      },
+      "state": {
+        "bytes": 20990668,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/joint_fit_qknorm_v1/enriched/affine_causal_h_attention128/selected.safetensors",
+        "sha256": "ee910b14ad6f282bb933ea44ad24453cb5cce1470c65dbc09d8bcc16f3e8abfd"
+      },
+      "state_load_seconds": 1.5634788329989533,
+      "timing": {
+        "adapter_call_scope": "one warmup plus one measured call for this record",
+        "adapter_calls_total": 2,
+        "measured_adapter_calls": 1,
+        "measured_output_selected": true,
+        "measured_runs_per_record": 1,
+        "measured_seconds": 0.03655495500424877,
+        "records": 1,
+        "schema": "token-reconstruction.trr0005-qualification-timing.v1",
+        "sequence_tokens": 128,
+        "timed_interval_total_seconds": 0.07432683300430654,
+        "warmup_adapter_calls": 1,
+        "warmup_output_exact_match_measured": true,
+        "warmup_runs_per_record": 1,
+        "warmup_seconds": 0.03777187800005777
+      }
+    },
+    "enriched__affine_trained_diagonal_attention128": {
+      "active_tokens": 128,
+      "archived_exact_match": null,
+      "method_id": "enriched__affine_trained_diagonal_attention128",
+      "method_specific": {
+        "a2_fallback": false,
+        "architecture": "enriched__affine_trained_diagonal_attention128",
+        "calls": 2,
+        "calls_scope": "warmup plus measured calls for every record in the cell",
+        "candidate_arrays_persisted": false,
+        "candidate_output": "forbidden",
+        "candidate_simulations": 0,
+        "context_width": 128,
+        "method_id": "enriched__affine_trained_diagonal_attention128",
+        "public_prefix_calls": 0
+      },
+      "peak_memory": {
+        "cuda_peak_allocated_bytes": 1280331264,
+        "cuda_peak_reserved_bytes": 2168455168,
+        "process_max_rss_bytes": 5546471424
+      },
+      "prediction_sha256": "e1d7610447247663f5e09531d23b7b002bbb0bb78c61318ec0b4588d3dc8cd69",
+      "prediction_shape": [
+        128
+      ],
+      "runtime_load": {
+        "loader_scope": "joint TRR5 decoder and registered normalized public E; no P0",
+        "public_prefix_loaded": false,
+        "public_resources": {
+          "normalized_embedding": {
+            "bytes": 1050673488,
+            "dtype": "torch.float32",
+            "load_seconds": 1.2048540319956373,
+            "loader_scope": "normalized public embedding table only; no public model or prefix instantiated",
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+            "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+            "shape": [
+              128256,
+              2048
+            ],
+            "tensor_sha256": "656fa55881813ff6768011943cdd1d5bc0abfe43ad58e3cba5eb0b19af578c64"
+          }
+        },
+        "runtime_load_seconds": 1.6467561169993132,
+        "state": {
+          "base_method_id": "affine_trained_diagonal_attention128",
+          "load_seconds": 0.018616528999700677,
+          "loader": "token_reconstruction.trr0005_joint_decoder.load_decoder_state",
+          "method_id": "enriched__affine_trained_diagonal_attention128",
+          "state_bytes": 20990652,
+          "state_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/joint_fit_v1/enriched/affine_trained_diagonal_attention128/selected.safetensors",
+          "state_sha256": "696eb9fc951e85356a06575faf18a2011616692a086bdac3b2fa368e69d599a2"
+        }
+      },
+      "state": {
+        "bytes": 20990652,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/joint_fit_v1/enriched/affine_trained_diagonal_attention128/selected.safetensors",
+        "sha256": "696eb9fc951e85356a06575faf18a2011616692a086bdac3b2fa368e69d599a2"
+      },
+      "state_load_seconds": 1.646760235002148,
+      "timing": {
+        "adapter_call_scope": "one warmup plus one measured call for this record",
+        "adapter_calls_total": 2,
+        "measured_adapter_calls": 1,
+        "measured_output_selected": true,
+        "measured_runs_per_record": 1,
+        "measured_seconds": 0.0038829409968457185,
+        "records": 1,
+        "schema": "token-reconstruction.trr0005-qualification-timing.v1",
+        "sequence_tokens": 128,
+        "timed_interval_total_seconds": 0.00890791199344676,
+        "warmup_adapter_calls": 1,
+        "warmup_output_exact_match_measured": true,
+        "warmup_runs_per_record": 1,
+        "warmup_seconds": 0.005024970996601041
+      }
+    },
+    "enriched__joint_full_affine": {
+      "active_tokens": 128,
+      "archived_exact_match": null,
+      "method_id": "enriched__joint_full_affine",
+      "method_specific": {
+        "a2_fallback": false,
+        "architecture": "enriched__joint_full_affine",
+        "calls": 2,
+        "calls_scope": "warmup plus measured calls for every record in the cell",
+        "candidate_arrays_persisted": false,
+        "candidate_output": "forbidden",
+        "candidate_simulations": 0,
+        "context_width": 128,
+        "method_id": "enriched__joint_full_affine",
+        "public_prefix_calls": 0
+      },
+      "peak_memory": {
+        "cuda_peak_allocated_bytes": 1276127232,
+        "cuda_peak_reserved_bytes": 2164260864,
+        "process_max_rss_bytes": 5546471424
+      },
+      "prediction_sha256": "41ec11ba0e238f6b071208898150ca44dccb4fa66f09a024df1a144227b58299",
+      "prediction_shape": [
+        128
+      ],
+      "runtime_load": {
+        "loader_scope": "joint TRR5 decoder and registered normalized public E; no P0",
+        "public_prefix_loaded": false,
+        "public_resources": {
+          "normalized_embedding": {
+            "bytes": 1050673488,
+            "dtype": "torch.float32",
+            "load_seconds": 1.1490494109966676,
+            "loader_scope": "normalized public embedding table only; no public model or prefix instantiated",
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+            "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+            "shape": [
+              128256,
+              2048
+            ],
+            "tensor_sha256": "656fa55881813ff6768011943cdd1d5bc0abfe43ad58e3cba5eb0b19af578c64"
+          }
+        },
+        "runtime_load_seconds": 1.587295887999062,
+        "state": {
+          "base_method_id": "joint_full_affine",
+          "load_seconds": 0.011270699003944173,
+          "loader": "token_reconstruction.trr0005_joint_decoder.load_decoder_state",
+          "method_id": "enriched__joint_full_affine",
+          "state_bytes": 16785924,
+          "state_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/joint_fit_v1/enriched/joint_full_affine/selected.safetensors",
+          "state_sha256": "2664d8aa245c2cd227409eeafd161b8648da90db67d40b499aa8cfd97812da97"
+        }
+      },
+      "state": {
+        "bytes": 16785924,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/joint_fit_v1/enriched/joint_full_affine/selected.safetensors",
+        "sha256": "2664d8aa245c2cd227409eeafd161b8648da90db67d40b499aa8cfd97812da97"
+      },
+      "state_load_seconds": 1.587299377999443,
+      "timing": {
+        "adapter_call_scope": "one warmup plus one measured call for this record",
+        "adapter_calls_total": 2,
+        "measured_adapter_calls": 1,
+        "measured_output_selected": true,
+        "measured_runs_per_record": 1,
+        "measured_seconds": 0.004666774002544116,
+        "records": 1,
+        "schema": "token-reconstruction.trr0005-qualification-timing.v1",
+        "sequence_tokens": 128,
+        "timed_interval_total_seconds": 0.009907726001983974,
+        "warmup_adapter_calls": 1,
+        "warmup_output_exact_match_measured": true,
+        "warmup_runs_per_record": 1,
+        "warmup_seconds": 0.005240951999439858
+      }
+    },
+    "frozen_a1_a2_k256": {
+      "active_tokens": 128,
+      "archived_exact_match": true,
+      "method_id": "frozen_a1_a2_k256",
+      "method_specific": {
+        "a2_fallback": false,
+        "calls": 2,
+        "calls_scope": "warmup plus measured calls for every record in the cell",
+        "candidate_arrays_persisted": false,
+        "candidate_budget": 256,
+        "candidate_output": "omitted_after_decision",
+        "candidate_policy": "output_only",
+        "candidate_simulations": 65024,
+        "executed_candidate_simulations": 65024,
+        "input_adapter": "legacy TRR3 proposal/decode helpers receive a CPU row and move scored activations to CUDA; this staging is inside the timed interval",
+        "method_id": "frozen_a1_a2_k256",
+        "prefix_commit_tokens": 256,
+        "proposal_budget": 512,
+        "proposal_seconds_sum": 0.08303691799665103,
+        "public_prefix_calls": 510,
+        "record_batch_size": 1
+      },
+      "peak_memory": {
+        "cuda_peak_allocated_bytes": 2397560832,
+        "cuda_peak_reserved_bytes": 3185573888,
+        "process_max_rss_bytes": 5546471424
+      },
+      "prediction_sha256": "ea00868c5d09d3fdfc36275e6bf5f1ef1319b3cc64c2181fa76428f546aba80f",
+      "prediction_shape": [
+        128
+      ],
+      "runtime_load": {
+        "loader_scope": "retained A1+A2 output-only adapter with registered public P0",
+        "public_prefix_loaded": true,
+        "public_resources": {
+          "embedding_weight_state_sha256": "0ac64ad2853844acf525ff043957e73a334860c41da224998e6f32f2defa253f",
+          "lens_state_sha256": "98cd91c2dc4c5d8ac5a827672c027b7e6dad0d1acb3c45e387d118c9ad2ead04",
+          "loader_scope": "public model/P0 prefix, retained A1 lens, and registered normalized embedding table",
+          "model": {
+            "attention_implementation": "sdpa",
+            "dtype": "bfloat16",
+            "id": "meta-llama/Llama-3.2-1B-Instruct",
+            "local_files_only": true,
+            "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+            "snapshot": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6"
+          },
+          "model_load_seconds": 4.342616847003228,
+          "normalized_embedding_construction": {
+            "numeric_port": "CPU normalization boundary is explicit; native CUDA-normalized A2 equivalence is not claimed",
+            "registered_resource": "TRR-0003 public_normalized_embeddings.safetensors",
+            "runtime_table_used_by_a2": "registered CPU-normalized FP32 table copied to CUDA",
+            "source": "BF16 public P0 embedding weight detached to CPU, then reference FP32 row normalization"
+          },
+          "normalized_embedding_state_sha256": "d1a6acb31c0afcfd5cbf398ae652030fbf1b0e2239b9d3f64b8b2ac33c49ab5b",
+          "prefix_layers_state_sha256": "3c897c5ad27073c85496ca24a4a11f2c37de1e5695f65535d7ceeb68e3f1c9ba",
+          "public_embedding_load_seconds": 1.0051296410019859,
+          "public_resources": {
+            "normalized_embedding": {
+              "bytes": 1050673488,
+              "dtype": "torch.float32",
+              "load_seconds": 1.0051296410019859,
+              "loader_scope": "normalized public embedding table only; no public model or prefix instantiated",
+              "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+              "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+              "shape": [
+                128256,
+                2048
+              ],
+              "tensor_sha256": "656fa55881813ff6768011943cdd1d5bc0abfe43ad58e3cba5eb0b19af578c64"
+            },
+            "reference_implementation": {
+              "bytes": 31291,
+              "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/evidence/comparators/round001_teacher.py",
+              "sha256": "10532a746cb8c30eb2caf338e206e1fa9d85e708d4db43a0d8fd4a2ff1a6f8bd"
+            },
+            "retained_lens": {
+              "bytes": 16787653,
+              "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0004/evidence/comparators/public_a1_lens.pt",
+              "sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742"
+            },
+            "snapshot": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6"
+          },
+          "runtime": {
+            "device": "NVIDIA GeForce RTX 5080",
+            "device_total_memory_bytes": 17066033152,
+            "python": "3.12.3",
+            "torch": "2.10.0+cu128",
+            "torch_cuda": "12.8"
+          }
+        },
+        "runtime_load_seconds": 6.6022296310038655
+      },
+      "state": {
+        "bytes": 16787653,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0004/evidence/comparators/public_a1_lens.pt",
+        "sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742"
+      },
+      "state_load_seconds": 6.602236667997204,
+      "timing": {
+        "adapter_call_scope": "one warmup plus one measured call for this record",
+        "adapter_calls_total": 2,
+        "measured_adapter_calls": 1,
+        "measured_output_selected": true,
+        "measured_runs_per_record": 1,
+        "measured_seconds": 0.8655676590060466,
+        "records": 1,
+        "schema": "token-reconstruction.trr0005-qualification-timing.v1",
+        "sequence_tokens": 128,
+        "timed_interval_total_seconds": 1.9389982220018283,
+        "warmup_adapter_calls": 1,
+        "warmup_output_exact_match_measured": true,
+        "warmup_runs_per_record": 1,
+        "warmup_seconds": 1.0734305629957817
+      }
+    },
+    "historical_alpaca_a1": {
+      "active_tokens": 128,
+      "archived_exact_match": true,
+      "method_id": "historical_alpaca_a1",
+      "method_specific": {
+        "a2_fallback": false,
+        "calls": 2,
+        "calls_scope": "warmup plus measured calls for every record in the cell",
+        "candidate_arrays_persisted": false,
+        "candidate_output": "forbidden; standalone direct top-1 only",
+        "candidate_simulations": 0,
+        "method_id": "historical_alpaca_a1",
+        "public_prefix_calls": 0,
+        "scored_positions": 254
+      },
+      "peak_memory": {
+        "cuda_peak_allocated_bytes": 1323861504,
+        "cuda_peak_reserved_bytes": 1346371584,
+        "process_max_rss_bytes": 3583176704
+      },
+      "prediction_sha256": "feccaf1e2597cda8b608c2d5504ed311979cc7fa11fea839bdbdbeb9f4e6a711",
+      "prediction_shape": [
+        128
+      ],
+      "runtime_load": {
+        "loader_scope": "retained standalone A1 and registered normalized public E; no P0",
+        "public_prefix_loaded": false,
+        "public_resources": {
+          "normalized_embedding": {
+            "bytes": 1050673488,
+            "dtype": "torch.float32",
+            "load_seconds": 1.023713771995972,
+            "loader_scope": "normalized public embedding table only; no public model or prefix instantiated",
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+            "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+            "shape": [
+              128256,
+              2048
+            ],
+            "tensor_sha256": "656fa55881813ff6768011943cdd1d5bc0abfe43ad58e3cba5eb0b19af578c64"
+          },
+          "retained_lens": {
+            "bytes": 16787653,
+            "loader": "token_reconstruction.historical_inputlens_bridge.load_historical_lens_checkpoint",
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0004/evidence/comparators/public_a1_lens.pt",
+            "sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742"
+          }
+        },
+        "runtime_load_seconds": 1.4780355780021637
+      },
+      "state": {
+        "bytes": 16787653,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0004/evidence/comparators/public_a1_lens.pt",
+        "sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742"
+      },
+      "state_load_seconds": 1.4780414220003877,
+      "timing": {
+        "adapter_call_scope": "one warmup plus one measured call for this record",
+        "adapter_calls_total": 2,
+        "measured_adapter_calls": 1,
+        "measured_output_selected": true,
+        "measured_runs_per_record": 1,
+        "measured_seconds": 0.004294015001505613,
+        "records": 1,
+        "schema": "token-reconstruction.trr0005-qualification-timing.v1",
+        "sequence_tokens": 128,
+        "timed_interval_total_seconds": 0.24732601900177542,
+        "warmup_adapter_calls": 1,
+        "warmup_output_exact_match_measured": true,
+        "warmup_runs_per_record": 1,
+        "warmup_seconds": 0.2430320040002698
+      }
+    },
+    "original__affine_causal_h_attention128": {
+      "active_tokens": 128,
+      "archived_exact_match": null,
+      "method_id": "original__affine_causal_h_attention128",
+      "method_specific": {
+        "a2_fallback": false,
+        "architecture": "original__affine_causal_h_attention128",
+        "calls": 2,
+        "calls_scope": "warmup plus measured calls for every record in the cell",
+        "candidate_arrays_persisted": false,
+        "candidate_output": "forbidden",
+        "candidate_simulations": 0,
+        "context_width": 128,
+        "method_id": "original__affine_causal_h_attention128",
+        "public_prefix_calls": 0
+      },
+      "peak_memory": {
+        "cuda_peak_allocated_bytes": 1280331264,
+        "cuda_peak_reserved_bytes": 2168455168,
+        "process_max_rss_bytes": 5546471424
+      },
+      "prediction_sha256": "56051db4ab6e36896918b1c193b5ecd83cf0b61fdde0742da29199dfb29e8245",
+      "prediction_shape": [
+        128
+      ],
+      "runtime_load": {
+        "loader_scope": "joint TRR5 decoder and registered normalized public E; no P0",
+        "public_prefix_loaded": false,
+        "public_resources": {
+          "normalized_embedding": {
+            "bytes": 1050673488,
+            "dtype": "torch.float32",
+            "load_seconds": 1.1149549190013204,
+            "loader_scope": "normalized public embedding table only; no public model or prefix instantiated",
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+            "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+            "shape": [
+              128256,
+              2048
+            ],
+            "tensor_sha256": "656fa55881813ff6768011943cdd1d5bc0abfe43ad58e3cba5eb0b19af578c64"
+          }
+        },
+        "runtime_load_seconds": 1.5720787550017121,
+        "state": {
+          "base_method_id": "affine_causal_h_attention128",
+          "load_seconds": 0.020333221997134387,
+          "loader": "token_reconstruction.trr0005_joint_decoder.load_decoder_state",
+          "method_id": "original__affine_causal_h_attention128",
+          "state_bytes": 20990668,
+          "state_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/joint_fit_qknorm_v1/original/affine_causal_h_attention128/selected.safetensors",
+          "state_sha256": "76599e20eb75d0d97ab2d6933531877ba1c8ed1e65f335cb1c9fe62f3b5a9e82"
+        }
+      },
+      "state": {
+        "bytes": 20990668,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/joint_fit_qknorm_v1/original/affine_causal_h_attention128/selected.safetensors",
+        "sha256": "76599e20eb75d0d97ab2d6933531877ba1c8ed1e65f335cb1c9fe62f3b5a9e82"
+      },
+      "state_load_seconds": 1.5720826990000205,
+      "timing": {
+        "adapter_call_scope": "one warmup plus one measured call for this record",
+        "adapter_calls_total": 2,
+        "measured_adapter_calls": 1,
+        "measured_output_selected": true,
+        "measured_runs_per_record": 1,
+        "measured_seconds": 0.005374560001655482,
+        "records": 1,
+        "schema": "token-reconstruction.trr0005-qualification-timing.v1",
+        "sequence_tokens": 128,
+        "timed_interval_total_seconds": 0.023715732000709977,
+        "warmup_adapter_calls": 1,
+        "warmup_output_exact_match_measured": true,
+        "warmup_runs_per_record": 1,
+        "warmup_seconds": 0.018341171999054495
+      }
+    },
+    "original__affine_trained_diagonal_attention128": {
+      "active_tokens": 128,
+      "archived_exact_match": null,
+      "method_id": "original__affine_trained_diagonal_attention128",
+      "method_specific": {
+        "a2_fallback": false,
+        "architecture": "original__affine_trained_diagonal_attention128",
+        "calls": 2,
+        "calls_scope": "warmup plus measured calls for every record in the cell",
+        "candidate_arrays_persisted": false,
+        "candidate_output": "forbidden",
+        "candidate_simulations": 0,
+        "context_width": 128,
+        "method_id": "original__affine_trained_diagonal_attention128",
+        "public_prefix_calls": 0
+      },
+      "peak_memory": {
+        "cuda_peak_allocated_bytes": 1280331264,
+        "cuda_peak_reserved_bytes": 2168455168,
+        "process_max_rss_bytes": 5546471424
+      },
+      "prediction_sha256": "66ee286088e0ff2e647906e7e2364b2e3eb902be30ef6e396a0574eb96f75393",
+      "prediction_shape": [
+        128
+      ],
+      "runtime_load": {
+        "loader_scope": "joint TRR5 decoder and registered normalized public E; no P0",
+        "public_prefix_loaded": false,
+        "public_resources": {
+          "normalized_embedding": {
+            "bytes": 1050673488,
+            "dtype": "torch.float32",
+            "load_seconds": 1.1403988530000788,
+            "loader_scope": "normalized public embedding table only; no public model or prefix instantiated",
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+            "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+            "shape": [
+              128256,
+              2048
+            ],
+            "tensor_sha256": "656fa55881813ff6768011943cdd1d5bc0abfe43ad58e3cba5eb0b19af578c64"
+          }
+        },
+        "runtime_load_seconds": 1.5833163920033257,
+        "state": {
+          "base_method_id": "affine_trained_diagonal_attention128",
+          "load_seconds": 0.019240389003243763,
+          "loader": "token_reconstruction.trr0005_joint_decoder.load_decoder_state",
+          "method_id": "original__affine_trained_diagonal_attention128",
+          "state_bytes": 20990652,
+          "state_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/joint_fit_v1/original/affine_trained_diagonal_attention128/selected.safetensors",
+          "state_sha256": "28009447e9cfb2d05975f2bc9692f8491c57c542cc7e077bc50bd170e8bd15e2"
+        }
+      },
+      "state": {
+        "bytes": 20990652,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/joint_fit_v1/original/affine_trained_diagonal_attention128/selected.safetensors",
+        "sha256": "28009447e9cfb2d05975f2bc9692f8491c57c542cc7e077bc50bd170e8bd15e2"
+      },
+      "state_load_seconds": 1.583320420999371,
+      "timing": {
+        "adapter_call_scope": "one warmup plus one measured call for this record",
+        "adapter_calls_total": 2,
+        "measured_adapter_calls": 1,
+        "measured_output_selected": true,
+        "measured_runs_per_record": 1,
+        "measured_seconds": 0.004926463996525854,
+        "records": 1,
+        "schema": "token-reconstruction.trr0005-qualification-timing.v1",
+        "sequence_tokens": 128,
+        "timed_interval_total_seconds": 0.011417825997341424,
+        "warmup_adapter_calls": 1,
+        "warmup_output_exact_match_measured": true,
+        "warmup_runs_per_record": 1,
+        "warmup_seconds": 0.00649136200081557
+      }
+    },
+    "original__joint_full_affine": {
+      "active_tokens": 128,
+      "archived_exact_match": null,
+      "method_id": "original__joint_full_affine",
+      "method_specific": {
+        "a2_fallback": false,
+        "architecture": "original__joint_full_affine",
+        "calls": 2,
+        "calls_scope": "warmup plus measured calls for every record in the cell",
+        "candidate_arrays_persisted": false,
+        "candidate_output": "forbidden",
+        "candidate_simulations": 0,
+        "context_width": 128,
+        "method_id": "original__joint_full_affine",
+        "public_prefix_calls": 0
+      },
+      "peak_memory": {
+        "cuda_peak_allocated_bytes": 1275078656,
+        "cuda_peak_reserved_bytes": 3175088128,
+        "process_max_rss_bytes": 5546471424
+      },
+      "prediction_sha256": "66ee286088e0ff2e647906e7e2364b2e3eb902be30ef6e396a0574eb96f75393",
+      "prediction_shape": [
+        128
+      ],
+      "runtime_load": {
+        "loader_scope": "joint TRR5 decoder and registered normalized public E; no P0",
+        "public_prefix_loaded": false,
+        "public_resources": {
+          "normalized_embedding": {
+            "bytes": 1050673488,
+            "dtype": "torch.float32",
+            "load_seconds": 1.067366226001468,
+            "loader_scope": "normalized public embedding table only; no public model or prefix instantiated",
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+            "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+            "shape": [
+              128256,
+              2048
+            ],
+            "tensor_sha256": "656fa55881813ff6768011943cdd1d5bc0abfe43ad58e3cba5eb0b19af578c64"
+          }
+        },
+        "runtime_load_seconds": 1.5179441849977593,
+        "state": {
+          "base_method_id": "joint_full_affine",
+          "load_seconds": 0.012385772999550682,
+          "loader": "token_reconstruction.trr0005_joint_decoder.load_decoder_state",
+          "method_id": "original__joint_full_affine",
+          "state_bytes": 16785924,
+          "state_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/joint_fit_v1/original/joint_full_affine/selected.safetensors",
+          "state_sha256": "f9f0b3f2647feff9618fe88a905be8fe5233a985fa464d86e5483d5bdc953e91"
+        }
+      },
+      "state": {
+        "bytes": 16785924,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/joint_fit_v1/original/joint_full_affine/selected.safetensors",
+        "sha256": "f9f0b3f2647feff9618fe88a905be8fe5233a985fa464d86e5483d5bdc953e91"
+      },
+      "state_load_seconds": 1.5179484649997903,
+      "timing": {
+        "adapter_call_scope": "one warmup plus one measured call for this record",
+        "adapter_calls_total": 2,
+        "measured_adapter_calls": 1,
+        "measured_output_selected": true,
+        "measured_runs_per_record": 1,
+        "measured_seconds": 0.003691054997034371,
+        "records": 1,
+        "schema": "token-reconstruction.trr0005-qualification-timing.v1",
+        "sequence_tokens": 128,
+        "timed_interval_total_seconds": 0.01041623299533967,
+        "warmup_adapter_calls": 1,
+        "warmup_output_exact_match_measured": true,
+        "warmup_runs_per_record": 1,
+        "warmup_seconds": 0.006725177998305298
+      }
+    }
+  },
+  "record": {
+    "a1_archived_prediction": {
+      "bytes": 20872,
+      "metadata": {
+        "binding_json": "{\"code\":[{\"bytes\":71405,\"path\":\"scripts/trr0004_predict_confirmation.py\",\"sha256\":\"36f6aa7b4493c60b257b3896c975f523595da912e14a97dba3f6440d419e8427\"},{\"bytes\":89002,\"path\":\"scripts/trr0004_fresh_confirmation.py\",\"sha256\":\"482c3a75d2fc641f90fe9c531584e2be14aefe914d97b246fe3633bdaa3d2945\"},{\"bytes\":44976,\"path\":\"scripts/trr0003_footing_compare.py\",\"sha256\":\"bb3690a481014f3ea12b411a3ec6eb58d7c888ef6c4135f9e03908027857f98e\"},{\"bytes\":31291,\"path\":\"experiments/TRR-0004/evidence/comparators/round001_teacher.py\",\"sha256\":\"10532a746cb8c30eb2caf338e206e1fa9d85e708d4db43a0d8fd4a2ff1a6f8bd\"},{\"bytes\":56490,\"path\":\"src/token_reconstruction/footing.py\",\"sha256\":\"9adfb838b2f42c936c7d6397579dd5477f0063cf61c8d5a0a6d7e21a1d2a9b36\"},{\"bytes\":16153,\"path\":\"src/token_reconstruction/dual_benchmark.py\",\"sha256\":\"30819a438482149431ddc110cd22c389ead905c49399b88a0c4985afd62514e8\"},{\"bytes\":6236,\"path\":\"src/token_reconstruction/inverse.py\",\"sha256\":\"083fd8cf8cf7dad2c8107db0c3929e67c58fc37389c07ea70c1ad82dcac5f740\"},{\"bytes\":10049,\"path\":\"src/token_reconstruction/freeze.py\",\"sha256\":\"2449846bdbaf3afb520cdca24ab373afe5b8297cb82ee510780719a02c6ab35c\"},{\"bytes\":20708,\"path\":\"src/token_reconstruction/component_crossover.py\",\"sha256\":\"2cd03fda1f29f30d0a92246252ba2d2d89d3890abc6739ae0c8bae0a5c105b7d\"},{\"bytes\":29969,\"path\":\"src/token_reconstruction/a1a2_configuration_search.py\",\"sha256\":\"608bead6291353cacaa700a85f3dd619fb3261375e6fd5ba19cbc43fd738315b\"},{\"bytes\":64326,\"path\":\"src/token_reconstruction/historical_affine_ce.py\",\"sha256\":\"ec0b0644870041b93871245ecdeb84071de7a9864229709d4ad5999d920399d7\"},{\"bytes\":19750,\"path\":\"src/token_reconstruction/causal_decoder_extension.py\",\"sha256\":\"f1fb75e1feebffce5b26d0b1573f8b7a41ac1452976870027a9aa552b5736307\"},{\"bytes\":16979,\"path\":\"src/token_reconstruction/historical_inputlens_bridge.py\",\"sha256\":\"9280b223e25119295efc9a4af10724d90a93af8e0a52ead127562b5015872b67\"},{\"bytes\":8587,\"path\":\"src/token_reconstruction/experiment_runtime.py\",\"sha256\":\"9bfe8ba34fe473faf1ace17f16ea0e5e363728822bd715ddcf21c33c4ffc2177\"}],\"code_commit\":\"a11b37bbe11b429b07ba82074906c1698295bd3f\",\"method_config\":[{\"bytes\":4120,\"path\":\"experiments/TRR-0004/bridge/registration.json\",\"sha256\":\"6967bf5e15a70b9e88c621cbe7e142f6c437a07040e677ae3b392b4dd3c7ca28\"}],\"method_id\":\"historical_alpaca_a1\",\"method_rule\":\"retained standalone historical A1 direct argmax; top-k is diagnostic only\",\"method_state\":[{\"bytes\":16787653,\"path\":\"experiments/TRR-0004/evidence/comparators/public_a1_lens.pt\",\"sha256\":\"33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742\"}],\"panel\":{\"bytes\":172643,\"path\":\"experiments/TRR-0004/fresh_confirmation_v1/panel_capture/panel.json\",\"sha256\":\"da65242f395c2c96a25ed8e30d62415db9108c9ded0c9525d4f9358691cb44da\"},\"runtime_assets\":{\"public_embedding_table\":{\"bytes\":1050673488,\"path\":\"/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors\",\"sha256\":\"ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1\"},\"public_prefix_checkpoint\":{\"bytes\":2471645608,\"path\":\"/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f\",\"sha256\":\"1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f\"},\"public_prefix_config\":{\"bytes\":877,\"path\":\"/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/3e3aaf51a035cb5092d9f6827a0dc074657ba88c\",\"sha256\":\"2febf68cea25bf4611be02b7536f2488a5ba523bb1134986e3610152abe74fdb\"}}}",
+        "cell_id": "finance__public_base",
+        "condition": "public_base",
+        "geometry_json": "{\"cut_depth\":4,\"hidden_size\":2048,\"records\":16,\"sequence_tokens\":128}",
+        "method_id": "historical_alpaca_a1",
+        "observation_sha256": "843b0a490693acdf5a6a1edf598f4513e573122d3b4b3879337c92fdac830ea1",
+        "panel_sha256": "da65242f395c2c96a25ed8e30d62415db9108c9ded0c9525d4f9358691cb44da",
+        "schema": "token-reconstruction.trr0004-fresh-confirmation-prediction.v1",
+        "selection_plan_sha256": "a01f445c67bb4cb0f462fb000dd8a46c63cceeebe4c53c1e73c08107378f3eca",
+        "style": "finance",
+        "task_id": "TRR-0004"
+      },
+      "method_id": "historical_alpaca_a1",
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0004/fresh_confirmation_v1/predictions_v2/finance/public_base/historical_alpaca_a1.safetensors",
+      "record_index": 0,
+      "sha256": "756cf310d508b7e128be124f5ab715680848604dc3aa78f83ab86ff78c74c6e6",
+      "shape": [
+        16,
+        128
+      ],
+      "tensor_key": "predictions"
+    },
+    "a2_archived_prediction": {
+      "bytes": 12604368,
+      "metadata": {
+        "binding_json": "{\"code\":[{\"bytes\":71405,\"path\":\"scripts/trr0004_predict_confirmation.py\",\"sha256\":\"36f6aa7b4493c60b257b3896c975f523595da912e14a97dba3f6440d419e8427\"},{\"bytes\":89002,\"path\":\"scripts/trr0004_fresh_confirmation.py\",\"sha256\":\"482c3a75d2fc641f90fe9c531584e2be14aefe914d97b246fe3633bdaa3d2945\"},{\"bytes\":44976,\"path\":\"scripts/trr0003_footing_compare.py\",\"sha256\":\"bb3690a481014f3ea12b411a3ec6eb58d7c888ef6c4135f9e03908027857f98e\"},{\"bytes\":31291,\"path\":\"experiments/TRR-0004/evidence/comparators/round001_teacher.py\",\"sha256\":\"10532a746cb8c30eb2caf338e206e1fa9d85e708d4db43a0d8fd4a2ff1a6f8bd\"},{\"bytes\":56490,\"path\":\"src/token_reconstruction/footing.py\",\"sha256\":\"9adfb838b2f42c936c7d6397579dd5477f0063cf61c8d5a0a6d7e21a1d2a9b36\"},{\"bytes\":16153,\"path\":\"src/token_reconstruction/dual_benchmark.py\",\"sha256\":\"30819a438482149431ddc110cd22c389ead905c49399b88a0c4985afd62514e8\"},{\"bytes\":6236,\"path\":\"src/token_reconstruction/inverse.py\",\"sha256\":\"083fd8cf8cf7dad2c8107db0c3929e67c58fc37389c07ea70c1ad82dcac5f740\"},{\"bytes\":10049,\"path\":\"src/token_reconstruction/freeze.py\",\"sha256\":\"2449846bdbaf3afb520cdca24ab373afe5b8297cb82ee510780719a02c6ab35c\"},{\"bytes\":20708,\"path\":\"src/token_reconstruction/component_crossover.py\",\"sha256\":\"2cd03fda1f29f30d0a92246252ba2d2d89d3890abc6739ae0c8bae0a5c105b7d\"},{\"bytes\":29969,\"path\":\"src/token_reconstruction/a1a2_configuration_search.py\",\"sha256\":\"608bead6291353cacaa700a85f3dd619fb3261375e6fd5ba19cbc43fd738315b\"},{\"bytes\":64326,\"path\":\"src/token_reconstruction/historical_affine_ce.py\",\"sha256\":\"ec0b0644870041b93871245ecdeb84071de7a9864229709d4ad5999d920399d7\"},{\"bytes\":19750,\"path\":\"src/token_reconstruction/causal_decoder_extension.py\",\"sha256\":\"f1fb75e1feebffce5b26d0b1573f8b7a41ac1452976870027a9aa552b5736307\"},{\"bytes\":16979,\"path\":\"src/token_reconstruction/historical_inputlens_bridge.py\",\"sha256\":\"9280b223e25119295efc9a4af10724d90a93af8e0a52ead127562b5015872b67\"},{\"bytes\":8587,\"path\":\"src/token_reconstruction/experiment_runtime.py\",\"sha256\":\"9bfe8ba34fe473faf1ace17f16ea0e5e363728822bd715ddcf21c33c4ffc2177\"}],\"code_commit\":\"a11b37bbe11b429b07ba82074906c1698295bd3f\",\"method_config\":[{\"bytes\":4120,\"path\":\"experiments/TRR-0004/bridge/registration.json\",\"sha256\":\"6967bf5e15a70b9e88c621cbe7e142f6c437a07040e677ae3b392b4dd3c7ca28\"},{\"bytes\":114767,\"path\":\"experiments/TRR-0003/footing/method_registry_v2.json\",\"sha256\":\"8e68a5ed48f55c1f55bef04d507b12caf12cdc906071fa49b1461b35d524adf1\"}],\"method_id\":\"frozen_a1_a2_k256\",\"method_rule\":\"retained A1 proposals scored by fixed public-prefix A2 K256\",\"method_state\":[{\"bytes\":16787653,\"path\":\"experiments/TRR-0004/evidence/comparators/public_a1_lens.pt\",\"sha256\":\"33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742\"}],\"panel\":{\"bytes\":172643,\"path\":\"experiments/TRR-0004/fresh_confirmation_v1/panel_capture/panel.json\",\"sha256\":\"da65242f395c2c96a25ed8e30d62415db9108c9ded0c9525d4f9358691cb44da\"},\"runtime_assets\":{\"public_embedding_table\":{\"bytes\":1050673488,\"path\":\"/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors\",\"sha256\":\"ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1\"},\"public_prefix_checkpoint\":{\"bytes\":2471645608,\"path\":\"/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f\",\"sha256\":\"1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f\"},\"public_prefix_config\":{\"bytes\":877,\"path\":\"/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/3e3aaf51a035cb5092d9f6827a0dc074657ba88c\",\"sha256\":\"2febf68cea25bf4611be02b7536f2488a5ba523bb1134986e3610152abe74fdb\"}}}",
+        "candidate_serialization_json": "{\"bos_candidate_placeholder\":\"repeated_known_bos\",\"bos_candidate_score_placeholder\":\"finite_zero\",\"bos_row_excluded_from_scoring\":true,\"padded_candidates\":\"invalid_token_id\",\"padded_scores\":\"negative_infinity\"}",
+        "cell_id": "finance__public_base",
+        "condition": "public_base",
+        "geometry_json": "{\"cut_depth\":4,\"hidden_size\":2048,\"records\":16,\"sequence_tokens\":128}",
+        "method_id": "frozen_a1_a2_k256",
+        "observation_sha256": "843b0a490693acdf5a6a1edf598f4513e573122d3b4b3879337c92fdac830ea1",
+        "panel_sha256": "da65242f395c2c96a25ed8e30d62415db9108c9ded0c9525d4f9358691cb44da",
+        "schema": "token-reconstruction.trr0004-fresh-confirmation-prediction.v1",
+        "selection_plan_sha256": "a01f445c67bb4cb0f462fb000dd8a46c63cceeebe4c53c1e73c08107378f3eca",
+        "style": "finance",
+        "task_id": "TRR-0004"
+      },
+      "method_id": "frozen_a1_a2_k256",
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0004/fresh_confirmation_v1/predictions_v2/finance/public_base/frozen_a1_a2_k256.safetensors",
+      "record_index": 0,
+      "sha256": "83f0b74b609978326372df5c9f6dace040307c87f9a18b6b0f423d6e3ccc7948",
+      "shape": [
+        16,
+        128
+      ],
+      "tensor_key": "predictions"
+    },
+    "active_tokens": 128,
+    "hidden_size": 2048,
+    "observation": {
+      "bytes": 8389464,
+      "metadata": {
+        "activations_sha256": "a86a636c6dce1b7dc576898aff4e96994adf4416a247bf93a11423415f7bf0cf",
+        "attention_mask_sha256": "546bc670c1e2e90cc71986e0720a44a8ab8965c14aa1568cc30492848f5d08bc",
+        "condition": "public_base",
+        "cut_depth": "4",
+        "generation_batch_size": "8",
+        "generation_sequence_tokens": "192",
+        "hidden_size": "2048",
+        "position_ids_sha256": "bf514941afd8ad893873ba1b5f2262ffd2f46740b39f282adc4679b29f10340d",
+        "record_count": "16",
+        "schema": "token-reconstruction.trr0004-fresh-confirmation-observation.v1",
+        "selection_plan_sha256": "a01f445c67bb4cb0f462fb000dd8a46c63cceeebe4c53c1e73c08107378f3eca",
+        "sequence_tokens": "128",
+        "source_generation_path": "public_prefix.forward_full",
+        "style": "finance",
+        "target_weights_available_to_reconstructor": "true",
+        "task_id": "TRR-0004"
+      },
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0004/fresh_confirmation_v1/panel_capture/observations/finance/public_base.safetensors",
+      "record_id": "finance-public-000001-4192a0e13e20b1ef",
+      "record_index": 0,
+      "sha256": "843b0a490693acdf5a6a1edf598f4513e573122d3b4b3879337c92fdac830ea1",
+      "shape": [
+        16,
+        128,
+        2048
+      ],
+      "tensor_key": "activations"
+    },
+    "record_id": "finance-public-000001-4192a0e13e20b1ef",
+    "record_index": 0,
+    "sequence_tokens": 128
+  },
+  "runtime_assets": {
+    "causal_fit_root": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/joint_fit_qknorm_v1",
+    "fit_root": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/joint_fit_v1",
+    "normalized_embedding": {
+      "bytes": 1050673488,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+      "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+    },
+    "public_prefix_checkpoint": {
+      "bytes": 2471645608,
+      "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f",
+      "sha256": "1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f"
+    },
+    "public_prefix_config": {
+      "bytes": 877,
+      "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/3e3aaf51a035cb5092d9f6827a0dc074657ba88c",
+      "sha256": "2febf68cea25bf4611be02b7536f2488a5ba523bb1134986e3610152abe74fdb"
+    },
+    "retained_lens": {
+      "bytes": 16787653,
+      "path": "experiments/TRR-0004/evidence/comparators/public_a1_lens.pt",
+      "sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742"
+    }
+  },
+  "schema": "token-reconstruction.trr0005-archived-record-qualification.v1",
+  "started_utc": "2026-09-05T19:14:13Z",
+  "status": "ARCHIVED_FINANCE_QUALIFICATION_COMPLETE_NO_TRUTH",
+  "target_labels_loaded": false,
+  "task_id": "TRR-0005",
+  "truth_opened": false,
+  "warmup_measured_ids_exact": true,
+  "warmup_runs_per_record": 1
+}

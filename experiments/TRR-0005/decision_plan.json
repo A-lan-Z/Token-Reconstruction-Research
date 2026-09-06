@@ -1,0 +1,70 @@
+{
+  "schema": "token-reconstruction.trr0005-decision-plan.v1",
+  "task_id": "TRR-0005",
+  "status": "DECLARED_BEFORE_FITTING_AND_FRESH_EVALUATION",
+  "scope": "Exploratory coverage-by-context comparison; no canonical comparison-complete or replacement claim.",
+  "design": {
+    "distributions": ["original_like_alpaca_v1", "coverage_mix_v1"],
+    "trained_arms_per_distribution": ["joint_affine", "joint_causal_attention128", "joint_diagonal_attention128"],
+    "anchors": ["retained_historical_a1", "frozen_a1_a2_k256_cpu_embedding_port"],
+    "fit_post_bos_positions_per_distribution": 124371,
+    "fit_records_per_distribution": 1200,
+    "capture_batch_size": 8,
+    "capture_sequence_length": 192,
+    "cut": 4,
+    "initialization": "Joint training from the same identity affine path and zero-output added path; no frozen memorized affine base.",
+    "optimizer_steps": 3000,
+    "post_bos_supervision_draws_per_step": 512,
+    "total_post_bos_supervision_draws": 1536000,
+    "training_seed": 4005,
+    "selection": "Earliest maximum of the unweighted Alpaca/Pile accuracy mean on the reused common TRR-0004 public validation panel. All arms share data roles and selection opportunities. Freeze the best positionwise arm per distribution using this public metric before fresh evaluation.",
+    "context_intervention": "Train the same attention architecture with a diagonal-only mask; Q/K gradients are zero with one allowed key and effective capacity is therefore disclosed. H_i already contains contextual information. The intervention tests additional earlier activation vectors.",
+    "corpus_interpretation": "The enriched bank changes public token coverage, contexts, and domain mix at fixed fitting-position and record counts; it is not a vocabulary-only causal experiment."
+  },
+  "fresh_evaluation": {
+    "domains": ["pile", "finance"],
+    "unique_source_records_per_domain": 128,
+    "tokens_per_declared_record_including_bos": 128,
+    "target_conditions": ["public_base", "public_lora_2601"],
+    "unique_sources_total": 256,
+    "record_condition_evaluations_per_method": 512,
+    "selection_seed": 5005,
+    "selection_timing": "Only after method states, constants, and choices are frozen; source ranges are reserved in advance and excluded from training-frequency analysis.",
+    "source_ranges_half_open": {"pile": [7000, 10000], "finance": [12000, 20000]},
+    "exclusions": "Known opened public evaluation/development records, fitting/selection sources, duplicate source identities, and duplicate final token sequences. Do not inspect prior evaluator-private truth to assemble exclusions.",
+    "reporting": "Report every domain and target separately. Do not pool domains or treat paired targets as independent sources. Exact recovery refers to the declared 128-token input record, not the full original public document.",
+    "truth_gate": "All 8 methods x 4 cells and their measured timing evidence must be complete, bound, immutable, and frozen before evaluation truth is opened. No refitting, routing, or output revision after opening truth.",
+    "timing": {"warmup_calls_per_record": 1, "measured_calls_per_record": 1, "repeat_integrity": "Require warmup and measured predicted IDs to match.", "boundary": "CPU activation through preprocessing and method execution to predicted IDs on CPU; report startup, full process intervals, I/O and synchronization separately.", "contention": "Exclusive comparative measurement window; no concurrent model, training, tensor-hashing, or test workload."},
+    "candidate_exports": "A2 may omit stored candidate arrays as an output-only adaptation. Its proposal/selection rule, internal candidate computation, prefix calls, and simulation counts must remain unchanged and be reported."
+  },
+  "practical_margins": {
+    "extra_earlier_activation_token_accuracy_pp": 0.5,
+    "extra_earlier_activation_exact_record_rate_pp": 5.0,
+    "enrichment_material_token_accuracy_pp": 2.0,
+    "enrichment_material_exact_record_rate_pp": 5.0,
+    "other_domain_token_harm_margin_pp": 0.5,
+    "other_domain_exact_record_harm_margin_pp": 5.0,
+    "context_warmed_runtime_ratio_budget": 1.25,
+    "context_training_time_ratio_budget": 2.0,
+    "cost_interpretation": "These are decision margins, not fitted method parameters. Crossing a cost budget requires an explicit quality justification; near-identical runtime estimates do not establish architectural speed gains. Report retained state and shared embedding/output-table footprint without a readout-compaction experiment."
+  },
+  "uncertainty": {
+    "bootstrap_draws": 10000,
+    "bootstrap_seed": 5005,
+    "resampling_unit": "Source record within domain; use the same source resample for both target conditions and all methods.",
+    "descriptive_intervals": "Paired 95% record-bootstrap intervals for token and exact differences, plus gains and regressions. Do not treat a zero-discordance bootstrap interval as proof of no exact-record benefit.",
+    "primary_enriched_context_contrasts": ["causal versus trained diagonal", "causal versus public-validation-selected best positionwise"],
+    "practical_exclusion_family": "At most 16 endpoints: two frozen contrasts x two domains x two targets x token/exact outcomes. Use familywise alpha 0.05 for upper practical-benefit bounds.",
+    "token_upper_bound": "Paired source-bootstrap quantile 1 - 0.05/16; an exploratory bootstrap bound, not a finite-sample exact guarantee.",
+    "exact_upper_bound": "Conservative upper bound U(p_gain) - L(p_loss), using one-sided Clopper-Pearson marginal bounds with tail alpha 0.05/32. A gain/loss is an exact-record discordance between the two methods on the same source under the same target. This retains a nonzero bound when no gains are observed.",
+    "reason_for_128_sources": "With zero observed beneficial discordances and no losses, the conservative exact upper bound is 1 - (0.05/32)^(1/128), approximately 4.93 percentage points; a 16-record panel cannot exclude the planned 5-point benefit."
+  },
+  "decision_rules": {
+    "candidate_useful_effect": "The point estimate reaches a practical margin and costs are acceptable; uncertainty still determines strength of evidence.",
+    "supported_useful_effect": "The paired uncertainty bound supports an improvement of practical size, without a material regression in the other domain or exact-record quality. Report domain/target exceptions explicitly.",
+    "prioritize_positionwise": "Enrichment improves positionwise quality, and upper bounds exclude the planned token AND exact extra-context margins in every enriched primary domain/target contrast, with acceptable cost.",
+    "retain_context": "Additional earlier activations retain a useful gain under equal fitting opportunity; identify the joint frequency/position/domain error type before enlarging the model.",
+    "inconclusive": "A practical benefit is neither supported nor excluded; nonsignificance is not evidence that context is unnecessary.",
+    "neither_improves": "If neither enrichment nor extra context materially narrows the same-panel A1+A2 gap, use the remaining joint error patterns and fitting diagnostics to propose a different objective or inverse-mechanism test, not an unbounded training expansion."
+  }
+}

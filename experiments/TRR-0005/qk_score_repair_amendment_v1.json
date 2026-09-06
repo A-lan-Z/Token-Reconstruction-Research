@@ -1,0 +1,236 @@
+{
+  "amendment_id": "qk_score_repair_v1",
+  "basis": {
+    "attention_diagnostic": {
+      "bytes": 8485,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/attention_diagnostic.json",
+      "sha256": "16394bbb1cbef4bee961b06e89ddfd62cc7ddd25586f329464d7af3ae8699d6b"
+    },
+    "attention_diagnostic_execution": {
+      "bytes": 14356,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/attention_diagnostic_execution.json",
+      "sha256": "080cadb444f676456b976b19fdc9187dbd802dd79db3bde9cbff38e33b187e26"
+    },
+    "attention_diagnostic_status": "PUBLIC_VALIDATION_H_ONLY",
+    "decision_plan": {
+      "bytes": 7248,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/decision_plan.json",
+      "sha256": "d4ae0da99ae5c0a00e454c16b539441e193cb76b9e52673c8e674bfdd2df1245"
+    },
+    "decision_plan_status": "DECLARED_BEFORE_FITTING_AND_FRESH_EVALUATION",
+    "truth_accessed": false,
+    "v1_qualification_failure": {
+      "bytes": 5338,
+      "error": "original qualification measured device peak exceeds conservative forecast: 2942304256 > 2604966936",
+      "measured_peak_bytes": 2942304256,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/joint_qualification_v1/failure.json",
+      "sha256": "01c771c8b3a2213518654fa6f11a34cae69a6e6da9c6251b1843051643e87d9b",
+      "status": "FAILED_PRESERVED"
+    }
+  },
+  "comparability_and_disposition": {
+    "affine_and_trained_diagonal_states": "Retain original selected states; no cosine repair is applied to them.",
+    "capacity_disclosure": "The repaired causal arm retains the same parameter count and trainable opportunities; bounded score normalization changes the score rule and must not be described as automatic equal effective capacity.",
+    "development_compute_disclosure": "Report the original six-fit matrix, public diagnostic, and these two repair fits as cumulative development effort; no additional repair or sweep is permitted by this amendment.",
+    "diagonal_equivalence_requirement": "The trained diagonal control remains mathematically comparable: exactly one allowed key implies probability one, Q/K gradients remain zero, and a forward/gradient/Adam update equivalence test is required before reuse.",
+    "old_causal_states_are_development_evidence_only": true,
+    "old_six_fits_preserved": true,
+    "old_vs_repaired_public_score_selection": false,
+    "repaired_causal_states_become_predeclared_fresh_causal_contenders_if_valid": true
+  },
+  "diagnosis": {
+    "attention_summary_by_distribution": {
+      "enriched": {
+        "average_bos_mass": 0.9694497799869263,
+        "average_current_position_mass": 1.2501663376731326e-12,
+        "average_earlier_position_mass": 0.030550220410670032,
+        "average_entropy_nats": 0.000336649049850359,
+        "maximum_partition_error": 5.913894396414321e-08,
+        "query_count": 3133,
+        "self_mass_gt_0_99_fraction": 0.0
+      },
+      "original": {
+        "average_bos_mass": 1.0,
+        "average_current_position_mass": 3.7948528222365277e-19,
+        "average_earlier_position_mass": 2.7541335726526064e-14,
+        "average_entropy_nats": 6.402482350750517e-13,
+        "maximum_partition_error": 8.533329598492401e-11,
+        "query_count": 3133,
+        "self_mass_gt_0_99_fraction": 0.0
+      }
+    },
+    "finding": "The public H-only diagnostic shows BOS saturation with effectively zero current-position mass and near-zero entropy; it does not show self-collapse.",
+    "interpretation": "The diagnostic directly observes BOS saturation, effectively zero current-position mass, and near-zero entropy. The original attention rule uses unbounded Q\u00b7K dot-product scores divided by sqrt(128), with no independent bounded attention temperature; score range therefore remains dependent on Q/K activations. The recorded Q/K Frobenius norms are close to the Xavier-scale initialization and do not support a weight-norm explosion claim. This is a bounded score-rule optimization-failure hypothesis, not evidence that earlier H vectors are uninformative.",
+    "parameter_inspection": {
+      "enriched": {
+        "distribution": "enriched",
+        "effective_attention_score_mode": "dot_product",
+        "exp_log_scale": 42.0773596684022,
+        "key_bias_l2": 0.0017200976144522429,
+        "key_weight": {
+          "frobenius_norm": 16.424755096435547,
+          "row_l2_max": 1.528232216835022,
+          "row_l2_mean": 1.4514694213867188,
+          "row_l2_min": 1.383582592010498,
+          "shape": [
+            128,
+            2048
+          ]
+        },
+        "log_scale_parameter_role": "vocabulary classifier logit scale; not attention temperature",
+        "log_scale_parameter_s": 3.7395098209381104,
+        "metadata": {
+          "attention_mode": "causal",
+          "canonical_method_id": "enriched__affine_causal_h_attention128",
+          "context_width": "128",
+          "distribution": "enriched",
+          "method_id": "affine_causal_h_attention128",
+          "qkv_init_seed": "4005",
+          "schema": "token-reconstruction.trr0005-joint-decoder.v1",
+          "selected_step": "1800",
+          "task_id": "TRR-0005"
+        },
+        "query_bias_l2": 0.12056627124547958,
+        "query_weight": {
+          "frobenius_norm": 16.53057098388672,
+          "row_l2_max": 1.5714669227600098,
+          "row_l2_mean": 1.460644245147705,
+          "row_l2_min": 1.3857654333114624,
+          "shape": [
+            128,
+            2048
+          ]
+        },
+        "state": {
+          "bytes": 20990636,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/joint_fit_v1/enriched/affine_causal_h_attention128/selected.safetensors",
+          "sha256": "aa6b57ef13d17d35b0d35780a2e51723894387028ef4da2533281255f3a91b98"
+        }
+      },
+      "original": {
+        "distribution": "original",
+        "effective_attention_score_mode": "dot_product",
+        "exp_log_scale": 38.37548089948448,
+        "key_bias_l2": 0.0016089797718450427,
+        "key_weight": {
+          "frobenius_norm": 15.979662895202637,
+          "row_l2_max": 1.4754749536514282,
+          "row_l2_mean": 1.412196159362793,
+          "row_l2_min": 1.3570107221603394,
+          "shape": [
+            128,
+            2048
+          ]
+        },
+        "log_scale_parameter_role": "vocabulary classifier logit scale; not attention temperature",
+        "log_scale_parameter_s": 3.647418737411499,
+        "metadata": {
+          "attention_mode": "causal",
+          "canonical_method_id": "original__affine_causal_h_attention128",
+          "context_width": "128",
+          "distribution": "original",
+          "method_id": "affine_causal_h_attention128",
+          "qkv_init_seed": "4005",
+          "schema": "token-reconstruction.trr0005-joint-decoder.v1",
+          "selected_step": "2300",
+          "task_id": "TRR-0005"
+        },
+        "query_bias_l2": 0.09697664529085159,
+        "query_weight": {
+          "frobenius_norm": 16.19404411315918,
+          "row_l2_max": 1.5164823532104492,
+          "row_l2_mean": 1.4310704469680786,
+          "row_l2_min": 1.35451340675354,
+          "shape": [
+            128,
+            2048
+          ]
+        },
+        "state": {
+          "bytes": 20990636,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/joint_fit_v1/original/affine_causal_h_attention128/selected.safetensors",
+          "sha256": "e5ee2879314e7fa3199af632924012d985e61d4ed4164e943126f079acad7162"
+        }
+      }
+    }
+  },
+  "repair": {
+    "attention_score_mode": "cosine_scale4",
+    "fixed_cosine_logit_scale": 4.0,
+    "method": "affine_causal_h_attention128",
+    "output_root": "experiments/TRR-0005/joint_fit_qknorm_v1",
+    "query_key_operation": "L2-normalize each query and key row over context_width before the score matrix product.",
+    "runs": 2,
+    "scope": [
+      "original",
+      "enriched"
+    ],
+    "score_formula": "4.0 * normalize(Q, row) @ normalize(K, row).T",
+    "unchanged": {
+      "fit_manifests": [
+        "experiments/TRR-0005/public_activation_v1/original_manifest.json",
+        "experiments/TRR-0005/public_activation_v1/enriched_manifest.json"
+      ],
+      "gradient_clip_norm": 1.0,
+      "identity_affine_initialization": {
+        "W": "identity",
+        "b": "zero",
+        "s": 3.0
+      },
+      "learning_rate": 0.001,
+      "loss": "same-position current-token CE only; BOS excluded",
+      "mask": "causal; H_i through current position only; no future H",
+      "optimizer": "AdamW",
+      "output_correction_initialization": "zero weight and zero bias",
+      "position_budget": 512,
+      "post_bos_supervision_draws_per_step": 512,
+      "qkv_initialization_seed": 4005,
+      "record_batch_size": 8,
+      "scheduler": "CosineAnnealingLR(T_max=3000)",
+      "seed": 4005,
+      "selection": "same public validation rule, mechanically earliest eligible maximum including step 0",
+      "sequence_length": 192,
+      "steps": 3000,
+      "weight_decay": 0.0
+    }
+  },
+  "resource_reference": {
+    "accepted_status": [
+      "QUALIFIED_CAUSAL_LARGEST_CELL",
+      "QUALIFIED_CAUSAL_LARGEST_CELL"
+    ],
+    "conservative_forecast_bytes": 4413456384,
+    "conservative_forecast_gib": 4.1103515625,
+    "geometry": {
+      "hidden_size": 2048,
+      "position_budget": 512,
+      "record_batch_size": 8,
+      "sequence_length": 192
+    },
+    "host_available_bytes_min": 21172420608,
+    "host_available_gib_min": 19.718353271484375,
+    "maximum_host_rss_gib": 16.0,
+    "measured_device_allocated_peak_bytes_max": 2502435840,
+    "measured_device_peak_bytes_max": 2954887168,
+    "measured_device_peak_gib_max": 2.751953125,
+    "minimum_free_gpu_gib": 8.0,
+    "minimum_host_available_gib": 10.0,
+    "repair_memory_argument": "Q/K row normalization and fixed scalar multiplication add no tensor dimension; retain the accepted envelope and live guards, and record measured peaks for both repaired arms.",
+    "reserved_cap_gib": 6.0,
+    "source": {
+      "bytes": 73239,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/joint_qualification_v2/qualification_evidence.json",
+      "sha256": "bd3c9d5a537c06c456c12d67c6a6b2ea4bd51965f1bb3fbe86c54b5df091d5d4"
+    }
+  },
+  "schema": "token-reconstruction.trr0005-public-development-amendment.v1",
+  "scope": "Public-only development amendment for the two pre-holdout causal contenders; no fresh panel data or evaluator truth is opened.",
+  "state_and_diagnostic_contract": {
+    "diagnostic_reporting": "The diagnostic applies the metadata-bound score rule and reports attention_score_mode per state.",
+    "legacy_state_loading": "States without attention_score_mode load as dot_product for contextual arms and none for the affine arm.",
+    "new_state_metadata": "Saved repaired states carry attention_score_mode=cosine_scale4.",
+    "truth_accessed": false
+  },
+  "status": "DECLARED_BEFORE_REPAIR_FITS",
+  "task_id": "TRR-0005"
+}

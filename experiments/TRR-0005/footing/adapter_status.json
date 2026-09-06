@@ -1,0 +1,101 @@
+{
+  "adapters": {
+    "freeze": "scripts/trr0005_freeze_confirmation.py",
+    "predict": "scripts/trr0005_predict_confirmation.py::write_prediction_artifact (TRR4-style safetensors metadata/binding writer)",
+    "pretruth_gate": "scripts/trr0005_score_confirmation.py::validate_before_truth (receipt, JSON assets, observation/state/code hashes, 32 tensors, range/BOS/coverage)",
+    "public_gate": "all 32 actual prediction artifacts and all 32 1-plus-1 timing receipts before truth loader; all public file bindings rehashed before loader",
+    "score": "scripts/trr0005_score_confirmation.py",
+    "score_features": [
+      "per_domain_and_target cells",
+      "joint frequency x position x domain rows",
+      "paired micro token bootstrap",
+      "gains and regressions",
+      "one-sided exact gain/loss Clopper-Pearson bound"
+    ],
+    "selection": "scripts/trr0005_score_confirmation.py::validate_public_validation_selection (frozen affine-vs-diagonal per distribution)"
+  },
+  "artifacts": [
+    "experiments/TRR-0005/footing/setup_preflight.json",
+    "experiments/TRR-0005/footing/preplanned_ledger.json",
+    "tests/test_trr0005_footing.py"
+  ],
+  "contract": {
+    "a2_candidate_output": "omitted_after_decision",
+    "a2_k": 256,
+    "cell_count": 4,
+    "distribution_ids": [
+      "original",
+      "enriched"
+    ],
+    "fit_geometry": [
+      1200,
+      192,
+      2048
+    ],
+    "fit_post_bos_positions": 124371,
+    "loss_draws_per_step": 512,
+    "measured_calls_per_record": 1,
+    "method_count": 8,
+    "module": "src/token_reconstruction/trr0005_contract.py",
+    "records_per_domain": 128,
+    "source_contract_ids": {
+      "enriched": "coverage_mix_v1",
+      "original": "original_like_alpaca_v1"
+    },
+    "state_ids": [
+      "joint_full_affine",
+      "affine_causal_h_attention128",
+      "affine_trained_diagonal_attention128"
+    ],
+    "training_seed": 4005,
+    "training_steps": 3000,
+    "warmup_calls_per_record": 1
+  },
+  "corpus_preparation_observed": {
+    "commit": "b836b27daa38fe1eb135e5f9dd3de179bae1ddc3",
+    "cpu_seconds": 18.16,
+    "enriched_distinct_post_bos_ids": 15602,
+    "fresh_holdout_selected": false,
+    "matching_fit_positions": 124371,
+    "original_distinct_post_bos_ids": 11265
+  },
+  "frequency_references": [
+    "original",
+    "enriched"
+  ],
+  "handoff": {
+    "prediction_descriptor": "prediction receipt must expose prediction_artifact {path,bytes,sha256}; writer emits canonical metadata, 1-plus-1 output stability, and candidate_output omission for A2",
+    "pretruth_gate": "score_with_truth_loader requires repository_root, receipt_path, truth_path, output_root, panel_path, registration_path, selection_plan_path, observation_descriptors, and frozen public_validation_selection",
+    "root_action": "review/copy task-local adapters and ledger; commit/push only from root",
+    "state_checkpoint_binding": "<original|enriched>/<joint-method>/selected.safetensors; canonical ID is <distribution>__<joint-method>"
+  },
+  "heavy_execution_started": false,
+  "holdout_selected": false,
+  "schema": "token-reconstruction.trr0005-footing-adapters.v1",
+  "source_parent_commit": "6e8b683e404c0acb70cd59b7dd6d6868b2061f61",
+  "source_pool_contents_scanned": false,
+  "status": "READY_FOR_ROOT_REVIEW",
+  "task_id": "TRR-0005",
+  "truth_opened": false,
+  "uncertainty": {
+    "bootstrap_seed": 5005,
+    "descriptive_bootstrap_draws": 10000,
+    "exact_family_tail_alpha_each": 0.0015625,
+    "token_family_tail_alpha": 0.003125,
+    "zero_discordance_128_record_net_upper_pp": 4.922726535
+  },
+  "validation": {
+    "footing_tests": "22 passed",
+    "model_or_external_large_asset_loaded": false,
+    "negative_truth_sentinel_cases": [
+      "missing",
+      "truncated",
+      "out_of_range",
+      "shape",
+      "missing_tensor",
+      "stale_state",
+      "stale_code"
+    ],
+    "parallel_decoder_and_footing_tests": "40 passed"
+  }
+}

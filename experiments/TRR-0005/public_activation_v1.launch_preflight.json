@@ -1,0 +1,237 @@
+{
+  "command": [
+    "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/.venv-trr0005/bin/python",
+    "scripts/trr0005_prepare_public_activations.py",
+    "--mode",
+    "capture",
+    "--corpus-plan",
+    "experiments/TRR-0005/corpus/corpus_plan.json",
+    "--original-artifact",
+    "../TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_cut4.safetensors",
+    "--original-records",
+    "../TRR-0004/experiments/TRR-0004/fit/adapter_v2/affine_fit_records.json",
+    "--common-validation-artifact",
+    "../TRR-0004/experiments/TRR-0004/fit/adapter_v2/validation_mixed_cut4.safetensors",
+    "--common-validation-records",
+    "../TRR-0004/experiments/TRR-0004/fit/adapter_v2/affine_validation_records.json",
+    "--embedding-table",
+    "../../outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+    "--output-root",
+    "experiments/TRR-0005/public_activation_v1",
+    "--enriched-activation-artifact",
+    "outputs/TRR-0005/enriched_fit_cut4.safetensors",
+    "--model",
+    "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+    "--device",
+    "cuda",
+    "--batch-records",
+    "8",
+    "--cut-depth",
+    "4",
+    "--min-free-gpu-gib",
+    "8",
+    "--max-reserved-gpu-gib",
+    "8",
+    "--max-host-rss-gib",
+    "16"
+  ],
+  "created_utc": "2026-09-05T17:27:40Z",
+  "environment": {
+    "CUDA_VISIBLE_DEVICES": "inherited",
+    "HF_DATASETS_OFFLINE": "1",
+    "HF_HUB_OFFLINE": "1",
+    "MKL_NUM_THREADS": "8",
+    "OMP_NUM_THREADS": "8",
+    "OPENBLAS_NUM_THREADS": "8",
+    "PYTHONPATH": "src:scripts:.",
+    "TOKENIZERS_PARALLELISM": "false",
+    "TRANSFORMERS_OFFLINE": "1"
+  },
+  "evaluator_private_truth_accessed": false,
+  "external_guard": {
+    "failure_policy": "terminate and preserve failure on timeout, host/GPU guard violation, nvidia-smi anomaly, nonzero child status, allocator/driver/thermal anomaly",
+    "minimum_gpu_free_bytes": 8589934592,
+    "minimum_host_available_bytes": 10737418240,
+    "poll_seconds": 1,
+    "timeout_seconds": 600.0
+  },
+  "future_holdout_rows_accessed": false,
+  "live_preflight": {
+    "gpu": {
+      "gpus": [
+        {
+          "index": 0,
+          "memory_free_bytes": 12856590336,
+          "memory_total_bytes": 17094934528,
+          "memory_used_bytes": 3897556992,
+          "name": "NVIDIA GeForce RTX 5080",
+          "temperature_c": 31.0
+        }
+      ],
+      "status": "PASS"
+    },
+    "host_available_bytes": 22814703616
+  },
+  "prior_forecast": {
+    "capture_phase_seconds": {
+      "capture_public_alpaca_validation_cut4_activations": 0.046758223001234,
+      "capture_public_train_large_cut4_activations": 2.8680388360007782,
+      "qualify_public_prefix_batch8_x_192_padding": 0.599315105999267
+    },
+    "forecast_cuda_peak_reserved_bytes": 2480930816,
+    "forecast_host_rss_bytes": 6173032448,
+    "forecast_rule": "TRR5 enriched capture has the same 1200x192x2048 tensor geometry and fixed batch-8 path; reserve 600 seconds for model load, qualification, forward, serialization, and manifest hashing",
+    "forecast_wall_seconds_upper_bound": 600.0,
+    "output_bytes": 947176648,
+    "peak_memory": {
+      "cuda_peak_allocated_bytes": 2472678400,
+      "cuda_peak_reserved_bytes": 2480930816,
+      "host_max_rss_bytes": 6173032448
+    },
+    "same_geometry": {
+      "activations": [
+        1200,
+        192,
+        2048
+      ],
+      "attention_mask": [
+        1200,
+        192
+      ],
+      "nested_small_positions": 5000,
+      "position_ids": [
+        1200,
+        192
+      ],
+      "post_bos_positions": 124371,
+      "records": 1200,
+      "token_ids": [
+        1200,
+        192
+      ]
+    },
+    "source_task": "TRR-0004",
+    "wall_seconds": 9.764313294999738
+  },
+  "public_only": true,
+  "schema": "token-reconstruction.trr0005-public-activation-preflight.v1",
+  "source_bindings": [
+    {
+      "bytes": 45256,
+      "exists": true,
+      "hash_scope": "full_file",
+      "is_file": true,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/scripts/trr0005_prepare_public_activations.py",
+      "sha256": "e7d3f82df8d9f1c68eecdd7c077112eafc555acde25955549cb34836bd3b2322"
+    },
+    {
+      "bytes": 20009,
+      "exists": true,
+      "hash_scope": "full_file",
+      "is_file": true,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/src/token_reconstruction/public_activation.py",
+      "sha256": "3be43dd5b6a5918a48f289971ab2a833977a7f9d87094e6001c5c7cdc60ab76f"
+    },
+    {
+      "bytes": 8297,
+      "exists": true,
+      "hash_scope": "full_file",
+      "is_file": true,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/src/token_reconstruction/public_prefix.py",
+      "sha256": "b9dca1d8d56c7c07413015aea4bde79e8ceac827c32ee9bc0d1a236ea1dd35f6"
+    },
+    {
+      "bytes": 34636,
+      "exists": true,
+      "hash_scope": "full_file",
+      "is_file": true,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/src/token_reconstruction/trr0005_public_corpus.py",
+      "sha256": "57afda7dd872fa8dbdd61de02e5421afada8943f799b50029074ec2f138dcfff"
+    },
+    {
+      "bytes": 54339,
+      "exists": true,
+      "hash_scope": "full_file",
+      "is_file": true,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/scripts/trr0005_prepare_public_corpus.py",
+      "sha256": "c18e5c22d5332c87d632a88615d7614606e4bdb09264d645b887dd215e82d777"
+    },
+    {
+      "bytes": 2157231,
+      "exists": true,
+      "hash_scope": "full_file",
+      "is_file": true,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/corpus/corpus_plan.json",
+      "sha256": "ef8b44bf786b2f7c81e078c771072de278c6fd42b5cd0543d977a2d1ad0b5d84"
+    },
+    {
+      "bytes": 1152168,
+      "exists": true,
+      "hash_scope": "full_file",
+      "is_file": true,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/corpus/coverage_mix_v1/constructed_public_tokens.safetensors",
+      "sha256": "6c9bfd04b3bd912a0672e4e447fe0e592a0b3cefa3dbdef26e212e8816b59790"
+    },
+    {
+      "bytes": 463510,
+      "exists": true,
+      "hash_scope": "full_file",
+      "is_file": true,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0004/fit/adapter_v2/affine_fit_records.json",
+      "sha256": "3f733212efd62b19e71f60f002f4e9756b4975ebfb4dcabf0ac27935929f94ff"
+    },
+    {
+      "bytes": 16456,
+      "exists": true,
+      "hash_scope": "full_file",
+      "is_file": true,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0004/fit/adapter_v2/affine_validation_records.json",
+      "sha256": "30b422b681bef5e7af4c26d339e57dfb3571ecef8077bdc4be5d960ef05c9777"
+    },
+    {
+      "bytes": null,
+      "exists": false,
+      "expected_bytes": 947176648,
+      "expected_bytes_match": false,
+      "hash_scope": "known_pinned_hash",
+      "is_file": false,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/outputs/TRR-0004/public_activation_v2/train_large_cut4.safetensors",
+      "sha256": "d1c78fcf1acc91b57d51355ee11f267bf4c12f1bc7d5160164b3b6ea11b45344"
+    },
+    {
+      "bytes": null,
+      "exists": false,
+      "expected_bytes": 37795064,
+      "expected_bytes_match": false,
+      "hash_scope": "known_pinned_hash",
+      "is_file": false,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0004/fit/adapter_v2/validation_mixed_cut4.safetensors",
+      "sha256": "a8e7633ffb369864af33754c5ebb2d9a4ca9d6e7d4550731e8ff26e20c8200cf"
+    },
+    {
+      "bytes": null,
+      "exists": false,
+      "expected_bytes": 1050673488,
+      "expected_bytes_match": false,
+      "hash_scope": "known_pinned_hash",
+      "is_file": false,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+      "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+    },
+    {
+      "bytes": 2471645608,
+      "exists": true,
+      "expected_bytes": 2471645608,
+      "expected_bytes_match": true,
+      "hash_scope": "known_pinned_hash",
+      "is_file": true,
+      "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f",
+      "sha256": "1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f"
+    }
+  ],
+  "source_commit": "8bb7d1c69029767d4655aafa80929b32653ab2c5",
+  "status": "PASS",
+  "target_weights_accessed": false,
+  "task_id": "TRR-0005",
+  "working_directory": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005"
+}

@@ -1,0 +1,199 @@
+{
+  "development": {
+    "holdout_reuse_forbidden": true,
+    "records": 48,
+    "role": "development checkpoint selection only",
+    "source": "experiments/TRR-0004 mixed48 public validation"
+  },
+  "diagnostics": {
+    "bootstrap_seed": 5005,
+    "descriptive_bootstrap_draws": 10000,
+    "distribution_directory_ids": {
+      "enriched": "enriched",
+      "original": "original"
+    },
+    "distribution_source_contract_ids": {
+      "enriched": "coverage_mix_v1",
+      "original": "original_like_alpaca_v1"
+    },
+    "exact_family_tail_alpha_each": 0.0015625,
+    "frequency_bins": [
+      "0",
+      "1-4",
+      "5-19",
+      "20+"
+    ],
+    "joint_key": "domain/style \u00d7 target condition \u00d7 method \u00d7 frequency bin \u00d7 position bin",
+    "paired_exact_unit": "complete source record; one-sided CP gain/loss bound",
+    "paired_token_unit": "complete source record; bootstrap recomputes micro correct/scored ratio",
+    "position_bins": [
+      "1-15",
+      "16-39",
+      "40-79",
+      "80+"
+    ],
+    "primary_contrasts": [
+      "coverage_mix_v1 causal vs trained diagonal",
+      "coverage_mix_v1 causal vs public-validation-selected best positionwise"
+    ],
+    "token_family_tail_alpha": 0.003125
+  },
+  "fit_bank_invariants": {
+    "bank_count": 2,
+    "controlled_rows_require_actual_public_model_forward": true,
+    "coverage_mix_composition": "600 Alpaca + 300 Pile + 180 Finance + 60 controlled Pile + 60 controlled Finance records",
+    "joint_initialization_no_frozen_memorized_base": true,
+    "matching_length_multiset_required": true,
+    "optional_correction_diagnostic_equal_between_context_arms": true,
+    "optional_correction_diagnostic_must_be_disjoint": true,
+    "original_source": "original_like_alpaca_v1: old TRR-0004 Alpaca public fit bank",
+    "post_bos_positions_per_bank": 124371,
+    "records_per_bank": 1200,
+    "sequence_tokens": 192
+  },
+  "fit_banks": {
+    "enriched": {
+      "composition": {
+        "alpaca_instruction": 600,
+        "controlled_finance_context": 60,
+        "controlled_pile_context": 60,
+        "finance_instruction": 180,
+        "pile_natural": 300
+      },
+      "post_bos_positions": 124371,
+      "records": 1200,
+      "sequence_tokens": 192,
+      "source_contract_id": "coverage_mix_v1",
+      "source_role": "coverage_mix_v1 with actual public-model forwards"
+    },
+    "original": {
+      "composition": {
+        "alpaca": 1200
+      },
+      "post_bos_positions": 124371,
+      "records": 1200,
+      "sequence_tokens": 192,
+      "source_contract_id": "original_like_alpaca_v1",
+      "source_role": "TRR-0004 old Alpaca public fit bank"
+    }
+  },
+  "holdout": {
+    "cells": 4,
+    "conditions": [
+      "public_base",
+      "public_lora_2601"
+    ],
+    "domains": [
+      "pile",
+      "finance"
+    ],
+    "pairing": "same public record IDs across public_base and public_lora_2601 within each domain",
+    "pooled_headline": false,
+    "records_per_domain": 128,
+    "selection_seed": 5005,
+    "selection_status": "deferred_until_method_and_state_choices_freeze",
+    "sequence_tokens": 128,
+    "tokens_per_declared_record_including_bos": 128,
+    "unique_sources_total": 256
+  },
+  "inference": {
+    "a2_candidate_output": "omitted_after_decision",
+    "a2_k": 256,
+    "measured_runs_per_record": 1,
+    "steady_interval": "one record activation transfer, method call, and predicted IDs transfer; cold loads excluded",
+    "warmup_output_must_equal_measured": true,
+    "warmup_runs_per_record": 1
+  },
+  "methods": {
+    "anchor_count": 2,
+    "method_ids": [
+      "historical_alpaca_a1",
+      "frozen_a1_a2_k256",
+      "original__joint_full_affine",
+      "original__affine_causal_h_attention128",
+      "original__affine_trained_diagonal_attention128",
+      "enriched__joint_full_affine",
+      "enriched__affine_causal_h_attention128",
+      "enriched__affine_trained_diagonal_attention128"
+    ],
+    "new_state_count": 6,
+    "new_state_matrix": {
+      "enriched": [
+        "enriched__joint_full_affine",
+        "enriched__affine_causal_h_attention128",
+        "enriched__affine_trained_diagonal_attention128"
+      ],
+      "original": [
+        "original__joint_full_affine",
+        "original__affine_causal_h_attention128",
+        "original__affine_trained_diagonal_attention128"
+      ]
+    }
+  },
+  "registration_contract_sha256": "c5b18395da2d50692d9c2a3bed3633dcc8f9a459695d8e2fb6f2b99a7248134d",
+  "registration_sha256": "c5b18395da2d50692d9c2a3bed3633dcc8f9a459695d8e2fb6f2b99a7248134d",
+  "reserved_source_pools": {
+    "contents_opened": false,
+    "ranges": {
+      "finance": {
+        "future_holdout": {
+          "start": 12000,
+          "stop": 20000,
+          "stop_inclusive": false
+        },
+        "train_frequency": {
+          "start": 2000,
+          "stop": 12000,
+          "stop_inclusive": false
+        }
+      },
+      "pile": {
+        "future_holdout": {
+          "start": 7000,
+          "stop": 10000,
+          "stop_inclusive": false
+        },
+        "train_frequency": {
+          "start": 2000,
+          "stop": 7000,
+          "stop_inclusive": false
+        }
+      }
+    },
+    "reserved_before_scanning": true
+  },
+  "schema": "token-reconstruction.trr0005-preplanned-ledger.v1",
+  "selection_order": [
+    "freeze method IDs, rules, and training contract",
+    "freeze all six fitted state bindings",
+    "reserve and then select 128 paired public records per domain",
+    "capture public_base and synthetic public_lora_2601 observations",
+    "prepare truth sidecar outside the frozen reconstruction root"
+  ],
+  "status": "PREPLANNED_NO_HOLDOUT_SELECTED",
+  "task_id": "TRR-0005",
+  "training": {
+    "base_error_diagnostic": "record base error/loss on the declared public fit stream before interpreting context gains",
+    "correction_split": "joint training from one identity affine path; any optional public correction diagnostic is disjoint and shared across context arms",
+    "fit_geometry": [
+      1200,
+      192,
+      2048
+    ],
+    "gradient_clip_norm": 1.0,
+    "loss_draws_per_step": 512,
+    "loss_draws_scope": "post-BOS rows, sampled by one shared deterministic schedule for every arm",
+    "matching_length_multiset": true,
+    "same_optimizer_and_update_budget": true,
+    "seed": 4005,
+    "steps": 3000,
+    "total_post_bos_supervision_draws": 1536000,
+    "truth_accessed": false
+  },
+  "truth_policy": {
+    "prediction_uses_truth": false,
+    "selection_uses_truth": false,
+    "truth_read_requires_complete_public_matrix": true,
+    "truth_sidecar_outside_frozen_root": true
+  }
+}
