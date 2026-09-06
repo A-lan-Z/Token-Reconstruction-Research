@@ -770,7 +770,11 @@ def _load_model(snapshot: Path, *, device: torch.device) -> torch.nn.Module:
     if snapshot.is_symlink() or not snapshot.is_dir():
         raise TargetPreparationError(f"pinned target model snapshot is unavailable: {snapshot}")
     weights = snapshot / "model.safetensors"
-    if weights.is_symlink() or not weights.is_file() or int(weights.stat().st_size) != MODEL_WEIGHTS_BYTES:
+    # Hugging Face snapshots commonly expose immutable blobs through a
+    # symlink. The snapshot directory itself is pinned above; accept that
+    # representation while still requiring the resolved weight asset and
+    # declared byte size to be present.
+    if not weights.is_file() or not weights.resolve().is_file() or int(weights.stat().st_size) != MODEL_WEIGHTS_BYTES:
         raise TargetPreparationError("pinned target model weight asset changed")
     try:
         from transformers import AutoModelForCausalLM
