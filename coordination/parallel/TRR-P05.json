@@ -3,8 +3,8 @@
   "task_id": "TRR-P05",
   "branch": "task/TRR-P05",
   "worktree": "/tmp/trr-p05",
-  "status": "INVENTORY_READY_DIAGNOSTIC_PLAN_PENDING_IMPLEMENTATION",
-  "updated_utc": "2026-09-06T06:49:09.991217+00:00",
+  "status": "MANIFEST_SCAFFOLD_READY_DIAGNOSTICS_PENDING",
+  "updated_utc": "2026-09-06T06:54:55.476578+00:00",
   "parent": {
     "task_id": "TRR-P04",
     "branch": "task/TRR-P04",
@@ -51,7 +51,11 @@
     "control_packet": "coordination/requests/TRR-P05.md",
     "task_state": "coordination/parallel/TRR-P05.json",
     "asset_inventory": "experiments/TRR-P05/setup/asset_inventory.json",
-    "diagnostic_plan": "experiments/TRR-P05/setup/diagnostic_plan.json"
+    "diagnostic_plan": "experiments/TRR-P05/setup/diagnostic_plan.json",
+    "authoritative_plan": "experiments/TRR-P05/plan.json",
+    "diagnostic_review": "experiments/TRR-P05/review/diagnostic-plan.md",
+    "manifest": "experiments/TRR-P05/manifest.json",
+    "publication_inventory": "experiments/TRR-P05/publication-files.json"
   },
   "preservation": {
     "p03_status": "STOP_VARIANT_HOLDOUT_SEALED",
@@ -60,8 +64,10 @@
     "new_truth_or_target_data": false
   },
   "pending": [
-    "implementation/design review of the fixed diagnostic input contract",
-    "bounded no-update diagnostics after root resource reservation"
+    "root/design freeze of the authoritative plan and review document",
+    "implementation availability check for the exact six replay plus two correction schedule batches",
+    "bounded no-update diagnostic run and result report",
+    "final manifest and publication-inventory hash refresh after the run/report exist"
   ],
   "evidence_pointers": {
     "asset_inventory": {
@@ -74,9 +80,35 @@
     "diagnostic_plan": {
       "path": "experiments/TRR-P05/setup/diagnostic_plan.json",
       "role": "fixed score-independent diagnostic input contract",
-      "status": "DRAFT_FOR_IMPLEMENTATION_DESIGN_REVIEW",
+      "status": "SUPERSEDED_BY_AUTHORITATIVE_PLAN_AND_REVIEW",
       "bytes": 2210,
       "sha256": "7e437c0d804a481954bfb795bc2331e5e0e185e584f9599e340a5eee868eef8d"
+    },
+    "authoritative_plan": {
+      "path": "experiments/TRR-P05/plan.json",
+      "role": "authoritative score-independent diagnostic plan",
+      "status": "ROOT_DESIGN_REVIEW_SNAPSHOT_REFRESH_BEFORE_FINALIZATION",
+      "bytes": 4486,
+      "sha256": "1aba843dcdb421dffc4a400b2e9a2d2561511e50ae949f5f7aa80fdcafab98c7",
+      "hash_note": "The plan/review may change during root review; refresh this descriptor before publication."
+    },
+    "diagnostic_review": {
+      "path": "experiments/TRR-P05/review/diagnostic-plan.md",
+      "role": "human-readable diagnostic-plan companion",
+      "status": "ROOT_DESIGN_REVIEW_SNAPSHOT_REFRESH_BEFORE_FINALIZATION",
+      "bytes": 11073,
+      "sha256": "eeaee782773102c1188424db45271fdc089603ab7bfe9a30afb4b8ee83e3fae3",
+      "hash_note": "The plan/review may change during root review; refresh this descriptor before publication."
+    },
+    "manifest": {
+      "path": "experiments/TRR-P05/manifest.json",
+      "role": "compact task manifest scaffold",
+      "status": "PENDING_DIAGNOSTIC_RUN_AND_REPORT"
+    },
+    "publication_inventory": {
+      "path": "experiments/TRR-P05/publication-files.json",
+      "role": "curated publication allowlist scaffold",
+      "status": "PENDING_DIAGNOSTIC_RUN_AND_REPORT"
     }
   },
   "inventory_summary": {

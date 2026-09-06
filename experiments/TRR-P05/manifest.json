@@ -1,0 +1,112 @@
+{
+  "schema": "token-reconstruction.trr-p05-manifest.v1",
+  "task_id": "TRR-P05",
+  "status": "SCAFFOLD_PENDING_DIAGNOSTIC_RUN_AND_REPORT",
+  "generated_utc": "2026-09-06T06:54:55.476578+00:00",
+  "git": {
+    "branch": "task/TRR-P05",
+    "parent_task": "TRR-P04",
+    "parent_commit": "c3aa40abdf33b5e794b139671fcddf6fd5a2c65e",
+    "parent_pr": 10,
+    "parent_pr_state": "OPEN_UNMERGED",
+    "merge_allowed": false,
+    "publication_owner": "root"
+  },
+  "control_packet": {
+    "path": "coordination/requests/TRR-P05.md",
+    "bytes": 4744,
+    "sha256": "cc0650dc42f6cbfa85ddb3f2e63d56a4a39f39679fe3998732ce82d11f9996c5",
+    "byte_identical_to_supplied_attachment": true
+  },
+  "authoritative_inputs": {
+    "plan": {
+      "path": "experiments/TRR-P05/plan.json",
+      "role": "score-independent diagnostic plan",
+      "status": "REFRESH_BEFORE_FINALIZATION",
+      "bytes": 4486,
+      "sha256": "1aba843dcdb421dffc4a400b2e9a2d2561511e50ae949f5f7aa80fdcafab98c7",
+      "hash_note": "Current root/design review snapshot."
+    },
+    "review": {
+      "path": "experiments/TRR-P05/review/diagnostic-plan.md",
+      "role": "human-readable diagnostic plan",
+      "status": "REFRESH_BEFORE_FINALIZATION",
+      "bytes": 11073,
+      "sha256": "eeaee782773102c1188424db45271fdc089603ab7bfe9a30afb4b8ee83e3fae3",
+      "hash_note": "Current root/design review snapshot."
+    },
+    "asset_inventory": {
+      "path": "experiments/TRR-P05/setup/asset_inventory.json",
+      "role": "read-only P04 provenance and asset inventory",
+      "status": "READY",
+      "bytes": 49501,
+      "sha256": "6220ef09ff0665042f656736b6e6accf71c2fd95d6bbbbb7dd495adabcfea493"
+    },
+    "task_state": {
+      "path": "coordination/parallel/TRR-P05.json",
+      "role": "task-local state",
+      "bytes": 5341,
+      "sha256": "87d6288827bddc1a90f4753830d2dd74a5e51f54342bd81d3c680092442a38da"
+    }
+  },
+  "objective": "Diagnose whether the P04 D ranking loss produced measurable teacher-order learning and whether that signal conflicts with gold-token reconstruction, without fitting or evaluating a new model.",
+  "diagnostic_scope": {
+    "public_only": true,
+    "forward_states": 13,
+    "forward_state_breakdown": {
+      "initial_affine_function_reference": 1,
+      "selected_and_final_S_H_D_states": 12,
+      "initial_gru_reconstruction": false
+    },
+    "gradient_cells": 24,
+    "gradient_cell_definition": "selected H plus selected and final D for seeds 1737 and 2711, each at four predeclared schedule batches",
+    "schedule_steps_zero_based": [
+      0,
+      999,
+      1999,
+      2999
+    ],
+    "schedule_batches_per_seed": 4,
+    "schedule_batch_geometry": "exact original P04 schedule batches: six replay plus two correction records, with the recorded sparse teacher mask",
+    "forward_sample_positions": {
+      "teacher": 384,
+      "non_teacher": 384,
+      "total": 768
+    },
+    "teacher_split": {
+      "difficult_a1_error": 256,
+      "uniform_audit": 128
+    },
+    "updates_applied": false,
+    "new_fits": false,
+    "new_optimizer_steps": false,
+    "new_target_or_hidden_evaluation": false
+  },
+  "input_availability": {
+    "replay_schedule_and_records": "available from P04 metadata and schedule artifacts; implementation must bind the six replay plus two correction batches before any diagnostic run",
+    "public_correction_activations": "available as inherited P04 public input; external large payload, referenced by asset_inventory",
+    "public_validation_activations": "available as inherited P04 public input; external large payload, referenced by asset_inventory",
+    "teacher_pairs_and_candidate_cache": "available as inherited P04 public evidence; external large payload, referenced by asset_inventory",
+    "states": "P04 selected/final S/H/D states available; one public affine initial-function reference available; no serialized initial GRU checkpoint"
+  },
+  "access_boundary": {
+    "truth_opened": false,
+    "private_evaluation_or_target_opened": false,
+    "p03_holdout_opened": false,
+    "agent_one_workspace_accessed": false,
+    "source_text_or_token_values_persisted": false,
+    "trajectory_reconstructed": false
+  },
+  "results": {
+    "diagnostic_run": "PENDING",
+    "report": "PENDING",
+    "metrics": "PENDING",
+    "final_disposition": "PENDING_DIAGNOSTIC_RUN"
+  },
+  "publication": {
+    "inventory_path": "experiments/TRR-P05/publication-files.json",
+    "inventory_sha256": "b7460d75e535a2c49fb17ebbd2e5a68a14ce70b5ef03b044e4a23daf259d075d",
+    "inventory_bytes": 4872,
+    "finalization": "Do not publish this scaffold as final; refresh after the diagnostic run and result report exist."
+  }
+}
