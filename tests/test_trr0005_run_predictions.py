@@ -9,6 +9,7 @@ import torch
 from safetensors.torch import save_file
 
 from scripts import trr0005_fit_joint_decoders as fit_runner
+from scripts import trr0005_predict_confirmation as predictor
 from scripts import trr0005_run_predictions as runner
 from token_reconstruction import trr0005_contract as contract
 
@@ -100,6 +101,7 @@ def test_merged_driver_receipt_keeps_prediction_shape_contract():
         observation_sha256="d" * 64,
     )
     timing = {
+        "schema": predictor.SCHEMA,
         "warmup_runs_per_record": 1,
         "measured_runs_per_record": 1,
         "warmup_output_exact_match_measured": True,
@@ -126,6 +128,9 @@ def test_merged_driver_receipt_keeps_prediction_shape_contract():
         root=Path.cwd(),
     )
     descriptor.update(receipt)
+    assert timing["schema"] == predictor.SCHEMA
+    assert "schema" not in receipt
+    assert descriptor["schema"] == contract.PREDICTION_SCHEMA
     contract.validate_prediction_descriptor(
         descriptor,
         cell_id=cell.cell_id,

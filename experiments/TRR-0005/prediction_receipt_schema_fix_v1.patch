@@ -1,0 +1,56 @@
+--- a/scripts/trr0005_run_predictions.py
++++ b/scripts/trr0005_run_predictions.py
+@@ -1855,10 +1855,13 @@
+     peak: Mapping[str, Any],
+     root: Path,
+ ) -> dict[str, Any]:
+     method_specific = _adapter_evidence(adapter, method_id=method_id)
+     value = dict(timing)
++    # The warmed predictor carries a legacy timing schema; it must not
++    # overwrite the prediction descriptor schema when merged.
++    value.pop("schema", None)
+     value.update(
+         {
+             # Keep the stable prediction descriptor's ``schema`` intact
+             # when this timing mapping is merged into it.  The receipt's
+             # timing identity lives in a separate field.
+--- a/tests/test_trr0005_run_predictions.py
++++ b/tests/test_trr0005_run_predictions.py
+@@ -7,10 +7,11 @@
+ import pytest
+ import torch
+ from safetensors.torch import save_file
+ 
+ from scripts import trr0005_fit_joint_decoders as fit_runner
++from scripts import trr0005_predict_confirmation as predictor
+ from scripts import trr0005_run_predictions as runner
+ from token_reconstruction import trr0005_contract as contract
+ 
+ 
+ class _ShapeOnly:
+@@ -98,10 +99,11 @@
+         position_ids=mask.to(torch.long).cumsum(1).sub(1),
+         observation_path=Path("observation.safetensors"),
+         observation_sha256="d" * 64,
+     )
+     timing = {
++        "schema": predictor.SCHEMA,
+         "warmup_runs_per_record": 1,
+         "measured_runs_per_record": 1,
+         "warmup_output_exact_match_measured": True,
+         "measured_output_selected": True,
+         "predictions_for_digest": prediction,
+@@ -124,10 +126,13 @@
+         load_evidence={"runtime_load_seconds": 0.1},
+         peak={"process_max_rss_bytes": 1},
+         root=Path.cwd(),
+     )
+     descriptor.update(receipt)
++    assert timing["schema"] == predictor.SCHEMA
++    assert "schema" not in receipt
++    assert descriptor["schema"] == contract.PREDICTION_SCHEMA
+     contract.validate_prediction_descriptor(
+         descriptor,
+         cell_id=cell.cell_id,
+         method_id=method_id,
+     )

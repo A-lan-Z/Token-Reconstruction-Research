@@ -1857,6 +1857,9 @@ def _method_timing_receipt(
 ) -> dict[str, Any]:
     method_specific = _adapter_evidence(adapter, method_id=method_id)
     value = dict(timing)
+    # The warmed predictor carries a legacy timing schema; it must not
+    # overwrite the prediction descriptor schema when merged.
+    value.pop("schema", None)
     value.update(
         {
             # Keep the stable prediction descriptor's ``schema`` intact
