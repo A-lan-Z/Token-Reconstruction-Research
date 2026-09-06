@@ -68,3 +68,13 @@ lowest-ID full-vocabulary tie decision, exact forward rank aggregation, or
 candidate metadata mismatch; implementation should add the smallest tests for
 the fixes above before the resource-qualified run.
 
+
+## Follow-up review after implementation patches
+
+The implementation’s tie patch now uses `logits.argmax(dim=1)` and adds a
+three-way exact-tie synthetic test. Its forward rows now retain per-row rank
+weighted sums and pair-weight sums, and summaries expose the exact global
+weighted rank loss; the focused CPU file passes 5 tests. These two findings
+are cleared. Candidate metadata binding and fail-closed all-12-state
+validation remain pending as stated above; no GPU or truth diagnostic has
+been run.
