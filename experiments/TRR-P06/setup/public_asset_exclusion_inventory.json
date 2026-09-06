@@ -7,6 +7,7 @@
     "new_data_or_records_selected": false,
     "optimizer_steps_or_diagnostics_run": true,
     "p03_holdout_accessed": false,
+    "p03_selected_reservation_metadata_read": true,
     "public_fit_validation_labels_loaded": true,
     "public_payloads_are_referenced_only": true,
     "qualification_receipt": {
@@ -58,12 +59,12 @@
           7000
         ]
       },
-      "note": "A later frozen selector must complete the declared exclusion audit and record exact overlap counts; no source rows or token values have been copied.",
+      "note": "Required approved identity ledgers are bound and hash-stable; optional historical aliases are recorded separately. Selection remains unrun pending root review.",
       "records_per_domain": 256,
       "selection_seed": 6206,
       "source_universe_path": "experiments/TRR-P06/setup/source_universe.json",
-      "source_universe_sha256": "6f9bca34e3cc698847c52188ebfc9173c915312a9e5180c5384f95cb424e8181",
-      "status": "NOT_SELECTED"
+      "source_universe_sha256": "b9393d42c64f289235f1c2dc2d73b854eefda9c5ccbbfb1e9ce60b38b0a9cd7d",
+      "status": "NOT_SELECTED_REQUIRED_EXCLUSIONS_BOUND"
     },
     "p04_prior_panel_metadata": {
       "bytes": 1579,
@@ -122,20 +123,26 @@
       }
     ],
     "published_identity_catalog": {
-      "bound_identity_hash_count": 10089,
-      "bound_identity_id_count": 6563,
+      "bound_identity_hash_count": 10137,
+      "bound_identity_id_count": 6611,
       "bound_sequence_hash_count": 3616,
-      "catalog_sha256": "0c19155eeb6adb64970b5b132073ed3297aeb7031e3eeb2a94541a0c5a1d8a77",
-      "coverage_complete": false,
+      "bound_source_index_count": 4898,
+      "bound_text_hash_count": 2925,
+      "catalog_sha256": "03bb3e10f88c047ef15e0b1949960fde8ceb9d09f007e9cd2350b52d8edb1dae",
+      "coverage_complete": true,
       "descriptor_count": 69,
+      "descriptor_coverage_complete": true,
       "global_disjoint_claim_allowed": false,
-      "missing_coverage_labels": [
-        "published:experiments/TRR-0002/setup/public-diagnostic-exclusion.final.json",
-        "published:experiments/TRR-0003/track_b/public_resource_manifest.json"
-      ],
+      "identity_index_policy": "Dataset/source indices are audit-only and are not used alone for blocking because indices are not globally comparable.",
+      "missing_coverage_labels": [],
+      "optional_missing_labels": [],
       "path": "experiments/TRR-P06/setup/source_universe.json",
-      "scope": "all available explicit published TRR-0001..TRR-0006 metadata plus approved P01-P03 and TRR0007 opaque export",
-      "sha256": "6f9bca34e3cc698847c52188ebfc9173c915312a9e5180c5384f95cb424e8181"
+      "required_approved_identities_bound": true,
+      "required_missing_labels": [],
+      "scope": "all available explicit published TRR-0001..TRR-0006 metadata, approved P01-P03 identities including selected P03 records, and the TRR0007 opaque export; no universal overlap claim",
+      "selection_ready": true,
+      "sha256": "b9393d42c64f289235f1c2dc2d73b854eefda9c5ccbbfb1e9ce60b38b0a9cd7d",
+      "universal_coverage_complete": false
     }
   },
   "limitations": [
@@ -458,11 +465,11 @@
       "status": "READY_FOR_FUTURE_PUBLIC_SELECTION_HASH_ONLY"
     },
     "capture_adapter_module": {
-      "bytes": 31903,
+      "bytes": 31996,
       "path": "scripts/trr_p06/capture_public.py",
       "role": "published public-prefix capture adapter; explicit execute gate",
-      "sha256": "6a22e4d0784a65698fc243062fbbf2e5d8a71c0ac918a0520a5cbc4c68e7f3b9",
-      "status": null
+      "sha256": "e49672dee36d0e7ffccb2fba66319da5b12c9447e0376f753acdefab3a9861cd",
+      "status": "IMPLEMENTED_REQUIRED_LEDGER_GATE_AND_FROZEN_DESCRIPTOR_HASH_CHECK_NO_RUN"
     },
     "capture_skeleton": {
       "bytes": 8976,
@@ -471,20 +478,28 @@
     },
     "exclusion_scope_note": {
       "global_disjoint_claim_allowed": false,
-      "interpretation": "The approved P03 audit binds known opened predecessor identities and explicitly leaves hidden commitments unaudited; P06 makes no claim that P03 own unopened holdout records are disjoint.",
+      "interpretation": "P03 selected Stage-1 and Stage-2 records are excluded by copied ID/text-hash metadata. P03 hidden blind commitments remain unaudited; no universal disjointness claim is made.",
+      "p03_hidden_or_unopened_reservations_excluded": false,
       "p03_known_opened_record_count": 464,
       "p03_own_unopened_or_hidden_reservations_excluded": false,
       "p03_own_unopened_or_hidden_reservations_recoverable": false,
       "p03_prior_exclusion_audit_path": "/tmp/trr-p03/experiments/TRR-P03/setup/panel-20260906-frozen/prior-exclusion-audit.json",
-      "p03_prior_exclusion_audit_sha256": "1e4aa3179aa2411b4fed301374d31d9f65f5a64a3959aff9a29ca3148a276428"
+      "p03_prior_exclusion_audit_sha256": "1e4aa3179aa2411b4fed301374d31d9f65f5a64a3959aff9a29ca3148a276428",
+      "p03_selected_reservation_path": "experiments/TRR-P06/setup/approved-p03/p03_selected_reservation.json",
+      "p03_selected_reservation_records": 48,
+      "p03_selected_reservation_sha256": "47c22cae9ee6103e249ca789e5d9f421d9577d5acef320f052dcdf21ed6cba4b",
+      "p03_selected_stage1_stage2_reservations_excluded": true,
+      "trr0003_resource_manifest_equivalent_bound_path": "experiments/TRR-0003/evidence/control/public_resource_manifest.json",
+      "trr0003_resource_manifest_equivalent_sha256": "9fd0ab2a786dd7884c72dcb0d724ba10dc3912518c05cff7a69267132beefb94",
+      "trr0003_track_b_resource_manifest_missing": true
     },
     "focused_tests": {
-      "bytes": 6196,
-      "last_run": "PYTHONPATH=.:src:scripts pytest -q tests/test_trr_p06_source_capture.py",
+      "bytes": 8743,
+      "last_run": "PYTHONPATH=.:src pytest -q tests/test_trr_p06_source_capture.py",
       "loads_model_or_dataset": false,
       "path": "tests/test_trr_p06_source_capture.py",
-      "result": "7 passed",
-      "sha256": "0997ff3bee03b1845b64c0d1e91d5393b5895670be9f131b2289ddfffae3e652"
+      "result": "12 passed",
+      "sha256": "470ec38adb4acb8730b88d52db705a6e6f986f68fcb4b07f3c4e75aa6e23184f"
     },
     "future_execution_boundary": {
       "capture_not_started": true,
@@ -493,12 +508,22 @@
       "selection_requires_explicit_execute_and_frozen_universe": true,
       "truth_opened": false
     },
+    "p03_selected_reservation": {
+      "bytes": 10262,
+      "path": "experiments/TRR-P06/setup/approved-p03/p03_selected_reservation.json",
+      "reserved_records": 48,
+      "sha256": "47c22cae9ee6103e249ca789e5d9f421d9577d5acef320f052dcdf21ed6cba4b",
+      "source_rows_or_token_values_present": false,
+      "stage1_records": 24,
+      "stage2_records": 24,
+      "status": "VERIFIED_SELECTED_IDENTITY_METADATA_ONLY"
+    },
     "panel_preparation_module": {
-      "bytes": 21846,
+      "bytes": 24450,
       "path": "scripts/trr_p06/prepare_public_panel.py",
       "role": "metadata-only universe builder plus separately gated selector",
-      "sha256": "8321371cf9e328d43ce2da425a51d9d1c019e49bc7d1640fbbf5440daf6a29c0",
-      "status": null
+      "sha256": "6d9759eda589be4b2cf228f7ee94559a2992db3a0a431e52abd63607dac6485e",
+      "status": "IMPLEMENTED_REQUIRED_LEDGER_GATE_AND_FROZEN_DESCRIPTOR_HASH_CHECK_NO_SELECTION"
     },
     "public_fit_resource_resolution": {
       "all_declared_bytes_and_sha256_verified": true,
@@ -550,18 +575,19 @@
       "sha256": "39b4a941aad427a55c0e99202d9ba0b6da32d4f71f8b0654499e0275d8ff6d2d"
     },
     "source_binding_module": {
-      "bytes": 20528,
+      "bytes": 22559,
       "path": "scripts/trr_p06/source_binding.py",
-      "role": "explicit published/external identity binding; no source payload traversal",
-      "sha256": "d70c10f5ffb940fc3647bc22c038f68144a846da195e73412b2edd4b1dcfa2a1",
+      "role": "explicit published/external identity binding; no source payload traversal; required ledgers hash-checked before selection",
+      "sha256": "a9d6f0c74d687e955196e63b1dbdff088731069bcb859c76264c7bc79a5b0ebf",
       "status": null
     },
     "source_universe": {
-      "bound_identity_hash_count": 10089,
-      "bound_identity_id_count": 6563,
+      "bound_identity_hash_count": 10137,
+      "bound_identity_id_count": 6611,
       "bound_sequence_hash_count": 3616,
-      "bound_text_hash_count": 2877,
-      "bytes": 63693,
+      "bound_source_index_count": 4898,
+      "bound_text_hash_count": 2925,
+      "bytes": 65349,
       "candidate_ranges_half_open": {
         "finance": [
           20000,
@@ -574,29 +600,32 @@
       },
       "capture_sequence_tokens": 192,
       "clip_tokens_including_bos": 128,
-      "coverage_complete": false,
-      "exclusion_catalog_sha256": "0c19155eeb6adb64970b5b132073ed3297aeb7031e3eeb2a94541a0c5a1d8a77",
+      "coverage_complete": true,
+      "descriptor_coverage_complete": true,
+      "exclusion_catalog_sha256": "03bb3e10f88c047ef15e0b1949960fde8ceb9d09f007e9cd2350b52d8edb1dae",
       "exclusion_descriptor_count": 69,
       "global_disjoint_claim_allowed": false,
-      "missing_coverage_labels": [
-        "published:experiments/TRR-0002/setup/public-diagnostic-exclusion.final.json",
-        "published:experiments/TRR-0003/track_b/public_resource_manifest.json"
-      ],
+      "missing_coverage_labels": [],
+      "optional_missing_labels": [],
       "path": "experiments/TRR-P06/setup/source_universe.json",
       "range_rationale": {
         "finance": "The window starts at the published P04 Finance range stop (20000) and extends into a public-only candidate region; published identity ledgers still govern exact eligibility.",
         "pile": "A low-index public window is retained to provide a broad Pile domain; it may intersect published P05 fit identities, so every candidate remains subject to the bound opaque ID/hash/sequence exclusion index."
       },
       "records_per_domain": 256,
+      "required_approved_identities_bound": true,
+      "required_missing_labels": [],
       "scored_post_bos_tokens": 127,
+      "selection_ready": true,
       "selection_seed": 6206,
-      "sha256": "6f9bca34e3cc698847c52188ebfc9173c915312a9e5180c5384f95cb424e8181",
+      "sha256": "b9393d42c64f289235f1c2dc2d73b854eefda9c5ccbbfb1e9ce60b38b0a9cd7d",
       "source_rows_or_token_values_persisted": false,
-      "status": "PROPOSED_BEFORE_ENUMERATION"
+      "status": "PROPOSED_BEFORE_ENUMERATION_REQUIRED_EXCLUSIONS_BOUND",
+      "universal_coverage_complete": false
     },
-    "status": "IMPLEMENTED_NO_RUN_NO_SELECTION"
+    "status": "REQUIRED_EXCLUSIONS_BOUND_NO_SELECTION_NO_TRUTH"
   },
-  "status": "READY_NO_SELECTION_NO_MODEL_NO_TRUTH",
+  "status": "QUALIFIER_PASS_REQUIRED_EXCLUSIONS_BOUND_UNIVERSE_PROPOSED_NO_SELECTION",
   "task_id": "TRR-P06",
   "updated_utc": "2026-09-06T10:34:12Z"
 }

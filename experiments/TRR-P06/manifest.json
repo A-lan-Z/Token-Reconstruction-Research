@@ -12,6 +12,7 @@
     "optimizer_steps_started": true,
     "other_agent_mutable_work_inspected": false,
     "p03_holdout_accessed": false,
+    "p03_selected_reservation_metadata_read": true,
     "p04_private_truth_accessed": false,
     "public_fit_validation_labels_loaded": true,
     "published_p05_resource_hashes_verified": true,
@@ -23,9 +24,9 @@
   },
   "artifact_role": "task-local setup/provenance manifest; no experiment outputs",
   "asset_inventory_pointer": {
-    "bytes": 26825,
+    "bytes": 28771,
     "path": "experiments/TRR-P06/setup/public_asset_exclusion_inventory.json",
-    "sha256": "84b9691275d1ca4ff90088953876f1744bfdc7c43730e8269178bcfe9f6754af"
+    "sha256": "09c6b91e995d321fa5752c296316cc3d3ecd58872047ba888da758aa76861cbc"
   },
   "capture_pipeline_pointer": {
     "bytes": 8976,
@@ -110,7 +111,7 @@
       "truth gate before scoring"
     ],
     "reservation": "none",
-    "status": "QUALIFIER_PASS_SOURCE_CAPTURE_ADAPTERS_READY_UNIVERSE_PROPOSED_RESOURCE_WINDOW_PENDING"
+    "status": "QUALIFIER_PASS_REQUIRED_EXCLUSIONS_BOUND_UNIVERSE_PROPOSED_RESOURCE_WINDOW_PENDING"
   },
   "resource_preflight_pointer": {
     "current_gpu_free_mib": 12880,
@@ -163,8 +164,11 @@
       6107
     ],
     "source_universe": {
-      "bound_identity_hash_count": 10089,
+      "bound_identity_hash_count": 10137,
+      "bound_identity_id_count": 6611,
       "bound_sequence_hash_count": 3616,
+      "bound_source_index_count": 4898,
+      "bound_text_hash_count": 2925,
       "candidate_ranges_half_open": {
         "finance": [
           20000,
@@ -176,23 +180,32 @@
         ]
       },
       "capture_sequence_tokens": 192,
-      "coverage_complete": false,
-      "coverage_note": "The approved P03 audit covers known opened predecessor identities; hidden/P03-own unopened reservations and one unavailable P03 metadata descriptor remain outside certification.",
-      "exclusion_catalog_sha256": "0c19155eeb6adb64970b5b132073ed3297aeb7031e3eeb2a94541a0c5a1d8a77",
+      "coverage_complete": true,
+      "coverage_note": "Required approved P01-P03 and TRR0007 identity ledgers are bound and hash-stable. P03 selected Stage-1/Stage-2 records are excluded; P03 hidden blind commitments remain unaudited. The missing TRR0003 Track-B resource path is covered by the byte-identical published evidence/control alias. No universal disjointness claim is made.",
+      "descriptor_coverage_complete": true,
+      "exclusion_catalog_sha256": "03bb3e10f88c047ef15e0b1949960fde8ceb9d09f007e9cd2350b52d8edb1dae",
       "exclusion_descriptor_count": 69,
       "global_disjoint_claim_allowed": false,
-      "missing_coverage_labels": [
-        "published:experiments/TRR-0002/setup/public-diagnostic-exclusion.final.json",
-        "published:experiments/TRR-0003/track_b/public_resource_manifest.json"
-      ],
+      "identity_index_policy": "Dataset/source indices are audit-only and are not used alone for blocking because indices are not globally comparable.",
+      "missing_coverage_labels": [],
+      "optional_missing_labels": [],
       "p03_audit_known_opened_record_count": 464,
+      "p03_hidden_or_unopened_reservations_excluded": false,
       "p03_own_unopened_or_hidden_reservations_excluded": false,
+      "p03_selected_reservation_path": "experiments/TRR-P06/setup/approved-p03/p03_selected_reservation.json",
+      "p03_selected_reservation_records": 48,
+      "p03_selected_reservation_sha256": "47c22cae9ee6103e249ca789e5d9f421d9577d5acef320f052dcdf21ed6cba4b",
+      "p03_selected_reservations_excluded": true,
       "path": "experiments/TRR-P06/setup/source_universe.json",
       "range_rationale": {
         "finance": "The window starts at the published P04 Finance range stop (20000) and extends into a public-only candidate region; published identity ledgers still govern exact eligibility.",
         "pile": "A low-index public window is retained to provide a broad Pile domain; it may intersect published P05 fit identities, so every candidate remains subject to the bound opaque ID/hash/sequence exclusion index."
       },
       "records_per_domain": 256,
+      "required_approved_identities_bound": true,
+      "required_missing_labels": [],
+      "revision": "r2-required-ledger-and-alias-policy",
+      "selection_ready": true,
       "selection_seed": 6206,
       "selection_started": false,
       "sha256": "6f9bca34e3cc698847c52188ebfc9173c915312a9e5180c5384f95cb424e8181",
@@ -201,7 +214,8 @@
       "target_conditions": [
         "public_base",
         "public_lora_2601"
-      ]
+      ],
+      "universal_coverage_complete": false
     },
     "truth_gate": "freeze plan, source/observation geometry, all states and predictions, then materialize truth once; no truth access at setup",
     "visibility_arms": [
@@ -210,7 +224,7 @@
       "p06_full_record"
     ]
   },
-  "status": "QUALIFIER_PASS_SOURCE_CAPTURE_ADAPTERS_READY_UNIVERSE_PROPOSED_RESOURCE_COORDINATION_PENDING",
+  "status": "QUALIFIER_PASS_REQUIRED_EXCLUSIONS_BOUND_UNIVERSE_PROPOSED_NO_SELECTION",
   "task_files": {
     "approved_trr0007_export": {
       "bytes": 41283,
@@ -219,15 +233,15 @@
       "status": "VERIFIED_HASH_ONLY_OPAQUE_EXPORT"
     },
     "asset_exclusion_inventory": {
-      "bytes": 26825,
+      "bytes": 28771,
       "path": "experiments/TRR-P06/setup/public_asset_exclusion_inventory.json",
-      "sha256": "84b9691275d1ca4ff90088953876f1744bfdc7c43730e8269178bcfe9f6754af"
+      "sha256": "09c6b91e995d321fa5752c296316cc3d3ecd58872047ba888da758aa76861cbc"
     },
     "capture_adapter_module": {
-      "bytes": 31903,
+      "bytes": 31996,
       "path": "scripts/trr_p06/capture_public.py",
-      "sha256": "6a22e4d0784a65698fc243062fbbf2e5d8a71c0ac918a0520a5cbc4c68e7f3b9",
-      "status": "IMPLEMENTED_EXPLICIT_EXECUTE_GATE_NO_RUN"
+      "sha256": "e49672dee36d0e7ffccb2fba66319da5b12c9447e0376f753acdefab3a9861cd",
+      "status": "IMPLEMENTED_REQUIRED_LEDGER_GATE_AND_FROZEN_HASH_CHECK_NO_RUN"
     },
     "capture_pipeline_skeleton": {
       "bytes": 8976,
@@ -239,20 +253,27 @@
       "status": "DESIGN_REVIEW_PENDING_REFRESH_AFTER_COMPLETE_PACKET"
     },
     "focused_source_capture_tests": {
-      "bytes": 6196,
+      "bytes": 8743,
       "path": "tests/test_trr_p06_source_capture.py",
-      "sha256": "0997ff3bee03b1845b64c0d1e91d5393b5895670be9f131b2289ddfffae3e652",
-      "status": "8_PASSED_NO_MODEL_OR_DATASET"
+      "sha256": "470ec38adb4acb8730b88d52db705a6e6f986f68fcb4b07f3c4e75aa6e23184f",
+      "status": "12_PASSED_NO_MODEL_OR_DATASET"
     },
     "implementation_constraints": {
       "path": "experiments/TRR-P06/review/implementation-constraints.md",
       "status": "UPDATED_RESOLVED_MANIFEST_COMMANDS"
     },
+    "p03_selected_reservation": {
+      "bytes": 10262,
+      "path": "experiments/TRR-P06/setup/approved-p03/p03_selected_reservation.json",
+      "records": 48,
+      "sha256": "47c22cae9ee6103e249ca789e5d9f421d9577d5acef320f052dcdf21ed6cba4b",
+      "status": "VERIFIED_SELECTED_IDENTITY_METADATA_ONLY"
+    },
     "panel_preparation_module": {
-      "bytes": 21846,
+      "bytes": 24450,
       "path": "scripts/trr_p06/prepare_public_panel.py",
-      "sha256": "8321371cf9e328d43ce2da425a51d9d1c019e49bc7d1640fbbf5440daf6a29c0",
-      "status": "IMPLEMENTED_EXPLICIT_EXECUTE_GATE"
+      "sha256": "6d9759eda589be4b2cf228f7ee94559a2992db3a0a431e52abd63607dac6485e",
+      "status": "IMPLEMENTED_REQUIRED_LEDGER_GATE_AND_FROZEN_HASH_CHECK_NO_SELECTION"
     },
     "plan": {
       "bytes": 18724,
@@ -285,16 +306,16 @@
       "status": "VERIFIED_NO_TENSOR_OPEN"
     },
     "source_binding_module": {
-      "bytes": 20528,
+      "bytes": 22559,
       "path": "scripts/trr_p06/source_binding.py",
-      "sha256": "d70c10f5ffb940fc3647bc22c038f68144a846da195e73412b2edd4b1dcfa2a1",
-      "status": "IMPLEMENTED_METADATA_ONLY_NO_SELECTION"
+      "sha256": "a9d6f0c74d687e955196e63b1dbdff088731069bcb859c76264c7bc79a5b0ebf",
+      "status": "IMPLEMENTED_REQUIRED_LEDGER_BINDING_NO_SELECTION"
     },
     "source_universe": {
-      "bytes": 63693,
+      "bytes": 65349,
       "path": "experiments/TRR-P06/setup/source_universe.json",
-      "sha256": "6f9bca34e3cc698847c52188ebfc9173c915312a9e5180c5384f95cb424e8181",
-      "status": "PROPOSED_BEFORE_ENUMERATION"
+      "sha256": "b9393d42c64f289235f1c2dc2d73b854eefda9c5ccbbfb1e9ce60b38b0a9cd7d",
+      "status": "PROPOSED_BEFORE_ENUMERATION_REQUIRED_EXCLUSIONS_BOUND"
     }
   },
   "task_id": "TRR-P06",
