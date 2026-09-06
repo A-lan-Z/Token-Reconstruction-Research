@@ -611,7 +611,7 @@ def execute_plan(args: argparse.Namespace, plan: Mapping[str, Any]) -> dict[str,
     manifest_candidate["artifact_inventory"] = inventory_record
     _write_json(manifest_path, manifest_candidate)
     return {
-        "status": "SCIENTIFIC_COMPLETE_PUBLICATION_PENDING",
+        "status": state_candidate["status"],
         "state": state_record,
         "inventory": inventory_record,
         "manifest": _actual_record(root, manifest_path, description="updated P06 task manifest"),
