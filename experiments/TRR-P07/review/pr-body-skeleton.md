@@ -1,0 +1,11 @@
+# TRR-P07: frozen retrospective comparison
+
+TRR-P07 completes the registered 48-cell retrospective comparison on frozen P06 and TRR-0006 inputs. The primary past-only versus retained-positionwise contrast is positive in token accuracy in all eight cells, with 95% lower endpoints above zero, but the registered practical gate is `PANEL_DEPENDENT_OR_UNCERTAIN`: Pile gains are only +0.677 to +0.874 percentage points and the Pile domain-target coverage requirement fails. The established reference remains the working anchor; this result does not promote a new global default or trigger another run.
+
+The matrix preserves the approved P06 two-seed arms, retained positionwise and causal states, two domains, two targets, and two panel definitions. Each cell uses 256 records and 128 positions with 127 post-BOS positions scored. Predictions and tie counts were frozen before scoring; no fitting, fresh records, target preparation, or P03/TRR-0007 holdout access occurred.
+
+The primary score is [scored-r2/results.json](experiments/TRR-P07/runtime/scored-r2/results.json), with execution receipt at [execution.json](experiments/TRR-P07/runtime/scored-r2/execution.json). Frozen replay and metadata checks are recorded in [replay_manifest.json](experiments/TRR-P07/runtime/replay-r1/replay_manifest.json), [metadata_audit_final.json](experiments/TRR-P07/runtime/replay-r1/metadata_audit_final.json), and [independent-score-review.md](experiments/TRR-P07/review/independent-score-review.md). The final report is [coordination/results/TRR-P07.md](coordination/results/TRR-P07.md); checkpoint provenance differences are in [checkpoint-differences.md](experiments/TRR-P07/review/checkpoint-differences.md).
+
+Replay cost was 184.153 seconds for 48 cells. P06 batch-eight timing was 32.867 seconds over 32 cell-method timings; retained native one-record timing was 19.772 seconds over 16. These are descriptive execution-path measurements, not a pooled performance claim. Score elapsed time was not instrumented and is reported as unavailable.
+
+Raw H128 observations and private evaluator truth remain outside the repository and are represented by hashes and metadata. The first scoring attempt is preserved as an excluded metadata failure before truth-array loading; the successful scored-r2 run is the only authoritative score.

@@ -1,0 +1,461 @@
+{
+  "schema": "token-reconstruction.trr-p07-checkpoint-differences.v1",
+  "task_id": "TRR-P07",
+  "scope": {
+    "purpose": "metadata-only provenance comparison of the published P06 past/diagonal states and retained TRR-0006 enriched positionwise/causal states",
+    "read_boundary": "Only JSON/Markdown/source metadata and hashes were read. For the published fit-record metadata, only the record_id field was used to compare ordered ID digests. No text, token-id, activation, checkpoint tensor, evaluator answer, or truth payload was opened.",
+    "causal_interpretation": "These differences document non-equivalence of fit provenance; they do not attribute any prediction difference to one factor."
+  },
+  "truth_bindings": {
+    "p06": {
+      "metadata_path": "/tmp/trr-p06-evaluator-truth-v1/truth.manifest.json",
+      "bytes": 40895,
+      "sha256": "21c07d64c489e16bd9a220f4175c23d225515c786e659613ee05ec1f01770e48",
+      "metadata_stat_verified": true,
+      "payload_read": false
+    },
+    "trr0006_score_command": {
+      "path": "experiments/TRR-0006/score_command.json",
+      "bytes": 1891,
+      "sha256": "5e28a3bcac0a7093bac61cacb20cad78fb22b88cf0371e85f81f4053203318cc",
+      "metadata_read": true
+    },
+    "trr0006_truth_binding": {
+      "path": "/tmp/trr0006/private/truth_binding.json",
+      "bytes": 6311,
+      "sha256": "c2f96e87699bccb38802500566eebe9c85250165e9416b59dcf87f8857f7d930",
+      "metadata_stat_verified": true,
+      "payload_read": false,
+      "payload_path_from_binding": "/tmp/trr0006/private/truth.safetensors"
+    }
+  },
+  "shared_public_inference_contract": {
+    "embedding_table": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+      "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+      "dtype": "float32",
+      "shape": [
+        128256,
+        2048
+      ]
+    },
+    "published_prediction_boundary": {
+      "activation_input_dtype": "torch.bfloat16",
+      "decoder_compute_dtype": "torch.float32",
+      "embedding_dtype": "torch.float32",
+      "autocast": false,
+      "float32_matmul_precision": "highest",
+      "staged_mask_dtype": "torch.bool",
+      "stored_and_scored_sequence_tokens_including_bos": 128,
+      "scored_post_bos_positions": 127,
+      "source": "experiments/TRR-0006/prediction_registration.json"
+    },
+    "comparison_note": "The published prediction boundary is shared for P06 and TRR-0006 replay. The fit receipts do not independently expose every training autocast/kernel setting; no stronger training-precision equivalence is claimed."
+  },
+  "methods": [
+    {
+      "method_id": "p06_past_only",
+      "family": "P06 visibility decoder",
+      "state_bindings": {
+        "6106": {
+          "path": "experiments/TRR-P06/runtime/main-r1/seed-6106/p06_past_only/selected.safetensors",
+          "sha256": "a1406fcb43c305c375d9db88d5d4c21e8eb69c34c33c56dcf256da2913118842",
+          "selected_step": 1700,
+          "initial_state_sha256": "286033e364f0f21740a6548a6c63e7a35ae01bd0b34b411380b8cb5e5c927551"
+        },
+        "6107": {
+          "path": "experiments/TRR-P06/runtime/main-r1/seed-6107/p06_past_only/selected.safetensors",
+          "sha256": "6ad3b8e963cd958cda09496d2988c9082f6d02e85466610f32ba3d0c3b264abc",
+          "selected_step": 2000,
+          "initial_state_sha256": "62694a2036d0bc04555dff33a60268072eb2bec1d40549a14a008cd6b22435b6"
+        }
+      },
+      "fit_support": {
+        "distribution": "coverage_mix_v1",
+        "records": 1200,
+        "source_record_ids_sha256": {
+          "p06_receipt_canonical_json": "69fddbc989b9c12d5669d0f9a82f86313e139440f9c00651e96842b45b184f85",
+          "published_manifest_newline_digest": "f3e1344854f475819f563da18b788fd34a19b4730527a3959b88470ed13cfc7d",
+          "ordered_id_list_match_verified": true
+        },
+        "valid_mask_sha256": "2decc9087334178dbeb7659071f52e8af80f76b734c4d5eee834c1cf1cfd8c78",
+        "post_bos_valid_rows_after_crop": 112825,
+        "source_manifest": {
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/public_activation_v1/enriched_manifest.json",
+          "bytes": 8171,
+          "sha256": "8a8a9490e549181959711496ce9a18c63651de3f7cd849b90716d5cf4531db78"
+        },
+        "fit_source_commit": "f1b35756fc535b5e3350e4edd4feff9e46f80321",
+        "record_id_digest_audit": "fit_record_id_digest_audit"
+      },
+      "crop_and_mask": {
+        "source_geometry": [
+          1200,
+          192,
+          2048
+        ],
+        "fit_geometry": [
+          1200,
+          128,
+          2048
+        ],
+        "crop": "positions 0..127 including BOS were retained before schedule, mask, fit, and selection; source positions 128..191 were ignored",
+        "visibility": "keys j with 0 <= j <= i among valid H128 positions; invalid/padded rows excluded from keys, query outputs, loss, and metric"
+      },
+      "initialization": {
+        "direct_affine": "competent_public_affine loaded from TRR-0004 historical public state",
+        "direct_affine_file_sha256": "09c5b852373d8555b06508a79bb00c94041202702b61b121b35ba2f6f9f64e65",
+        "direct_affine_state_sha256": "06e142607569868d8ca07fc0321a784ce7af25f19ccd80d194074a1f8242b1c2",
+        "loaded_W_b_s": true,
+        "inherited_s": 3.5380859375,
+        "qkv_init": "deterministic per replicate seed 6106 or 6107",
+        "output_weight_and_bias": "zero",
+        "old_identity_reset": false
+      },
+      "training_and_selection": {
+        "optimizer": "AdamW",
+        "learning_rate": 0.001,
+        "weight_decay": 0.0,
+        "gradient_clip_norm": 1.0,
+        "scheduler": "CosineAnnealingLR(T_max=3000)",
+        "record_batch_size": 8,
+        "post_bos_draws_per_step": 512,
+        "steps": 3000,
+        "validation_every_steps": 100,
+        "selection_metric": "validation_token_accuracy (full-vocabulary micro token accuracy)",
+        "selection_rule": "earliest maximum, including step 0",
+        "schedule_sha256_by_seed": {
+          "6106": "938e392344a701d961a8fd8709a4fd4da478602da198da0bf358aa0a375b280a",
+          "6107": "ab61d30cea3519e37d1a47b3c3d59ce97f7b6abf653cf6d772c6c1b67a41e555"
+        }
+      },
+      "attention_numerics": {
+        "score_rule": "cosine_qk_normalized_scale4.0",
+        "qk_normalization": "L2-normalize query/key rows over context width before score product",
+        "model_and_logits": "float32",
+        "layer_norm": "float32 eps=1e-5",
+        "output_normalization": "float32 L2 before shared float32 embedding table"
+      }
+    },
+    {
+      "method_id": "p06_positionwise_diagonal",
+      "family": "P06 visibility decoder",
+      "state_bindings": {
+        "6106": {
+          "path": "experiments/TRR-P06/runtime/main-r1/seed-6106/p06_positionwise_diagonal/selected.safetensors",
+          "sha256": "34b9b0cf5759b329c8b40511e718e545e6cea917d08631bb536b39b8a16557b6",
+          "selected_step": 1700,
+          "initial_state_sha256": "286033e364f0f21740a6548a6c63e7a35ae01bd0b34b411380b8cb5e5c927551"
+        },
+        "6107": {
+          "path": "experiments/TRR-P06/runtime/main-r1/seed-6107/p06_positionwise_diagonal/selected.safetensors",
+          "sha256": "ab95896c1bfd0007eb47257f119382cab2df5732bcd7e83ccacb4fade2cd9362",
+          "selected_step": 900,
+          "initial_state_sha256": "62694a2036d0bc04555dff33a60268072eb2bec1d40549a14a008cd6b22435b6"
+        }
+      },
+      "fit_support": {
+        "distribution": "coverage_mix_v1",
+        "records": 1200,
+        "source_record_ids_sha256": {
+          "p06_receipt_canonical_json": "69fddbc989b9c12d5669d0f9a82f86313e139440f9c00651e96842b45b184f85",
+          "published_manifest_newline_digest": "f3e1344854f475819f563da18b788fd34a19b4730527a3959b88470ed13cfc7d",
+          "ordered_id_list_match_verified": true
+        },
+        "valid_mask_sha256": "2decc9087334178dbeb7659071f52e8af80f76b734c4d5eee834c1cf1cfd8c78",
+        "post_bos_valid_rows_after_crop": 112825,
+        "source_manifest": {
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/public_activation_v1/enriched_manifest.json",
+          "bytes": 8171,
+          "sha256": "8a8a9490e549181959711496ce9a18c63651de3f7cd849b90716d5cf4531db78"
+        },
+        "fit_source_commit": "f1b35756fc535b5e3350e4edd4feff9e46f80321",
+        "record_id_digest_audit": "fit_record_id_digest_audit"
+      },
+      "crop_and_mask": {
+        "source_geometry": [
+          1200,
+          192,
+          2048
+        ],
+        "fit_geometry": [
+          1200,
+          128,
+          2048
+        ],
+        "crop": "positions 0..127 including BOS were retained before schedule, mask, fit, and selection; source positions 128..191 were ignored",
+        "visibility": "only key j=i for each valid H128 query; invalid/padded rows excluded from keys, query outputs, loss, and metric"
+      },
+      "initialization": {
+        "direct_affine": "competent_public_affine loaded from TRR-0004 historical public state",
+        "direct_affine_file_sha256": "09c5b852373d8555b06508a79bb00c94041202702b61b121b35ba2f6f9f64e65",
+        "direct_affine_state_sha256": "06e142607569868d8ca07fc0321a784ce7af25f19ccd80d194074a1f8242b1c2",
+        "loaded_W_b_s": true,
+        "inherited_s": 3.5380859375,
+        "qkv_init": "deterministic per replicate seed 6106 or 6107",
+        "output_weight_and_bias": "zero",
+        "old_identity_reset": false
+      },
+      "training_and_selection": {
+        "optimizer": "AdamW",
+        "learning_rate": 0.001,
+        "weight_decay": 0.0,
+        "gradient_clip_norm": 1.0,
+        "scheduler": "CosineAnnealingLR(T_max=3000)",
+        "record_batch_size": 8,
+        "post_bos_draws_per_step": 512,
+        "steps": 3000,
+        "validation_every_steps": 100,
+        "selection_metric": "validation_token_accuracy (full-vocabulary micro token accuracy)",
+        "selection_rule": "earliest maximum, including step 0",
+        "schedule_sha256_by_seed": {
+          "6106": "938e392344a701d961a8fd8709a4fd4da478602da198da0bf358aa0a375b280a",
+          "6107": "ab61d30cea3519e37d1a47b3c3d59ce97f7b6abf653cf6d772c6c1b67a41e555"
+        }
+      },
+      "attention_numerics": {
+        "score_rule": "cosine_qk_normalized_scale4.0",
+        "qk_normalization": "L2-normalize query/key rows over context width before score product",
+        "diagonal_effect": "with one allowed key the attention probability is one and Q/K gradients are structurally inactive",
+        "model_and_logits": "float32",
+        "layer_norm": "float32 eps=1e-5",
+        "output_normalization": "float32 L2 before shared float32 embedding table"
+      }
+    },
+    {
+      "method_id": "enriched__affine_trained_diagonal_attention128",
+      "family": "retained TRR-0006 positionwise reference",
+      "state_binding": {
+        "path": "experiments/TRR-0005/joint_fit_v1/enriched/affine_trained_diagonal_attention128/selected.safetensors",
+        "sha256": "696eb9fc951e85356a06508a79bb00c94041202702b61b121b35ba2f6f9f64e65",
+        "selected_step": 1600
+      },
+      "fit_support": {
+        "distribution": "coverage_mix_v1",
+        "records": 1200,
+        "source_record_ids_sha256": "f3e1344854f475819f563da18b788fd34a19b4730527a3959b88470ed13cfc7d",
+        "valid_mask_sha256": "e2ee7f711107a8a887a053657bc5b53bb210cc4735247108df08540a5a9ebb76",
+        "post_bos_valid_rows": 124371,
+        "fit_geometry": [
+          1200,
+          192,
+          2048
+        ],
+        "fit_manifest": {
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/public_activation_v1/enriched_manifest.json",
+          "bytes": 8171,
+          "sha256": "8a8a9490e549181959711496ce9a18c63651de3f7cd849b90716d5cf4531db78"
+        },
+        "fit_receipt_git_commit": "10173043ae7c241293d66a16d72e182df356ec24",
+        "published_state_source_commit": "da82f6cac45e09ae83452198344c547553cb4433"
+      },
+      "crop_and_mask": {
+        "fit_crop": "none declared; full H192 source geometry remained in fit and validation",
+        "prediction_geometry": "published TRR-0006 replay stores/scored H128 prefixes, a prediction-time H128 view of a state fit on H192",
+        "visibility": "current-position-only key j=i; invalid/padded rows excluded",
+        "context_contract": "diagonal arm sees H_i only"
+      },
+      "initialization": {
+        "direct_affine": "identity W, zero b, s=3.0",
+        "pretrained_public_affine_loaded": false,
+        "old_identity_reset": true,
+        "qkv_init_seed": 4005,
+        "output_weight_and_bias": "zero"
+      },
+      "training_and_selection": {
+        "optimizer": "AdamW",
+        "learning_rate": 0.001,
+        "weight_decay": 0.0,
+        "gradient_clip_norm": 1.0,
+        "scheduler": "CosineAnnealingLR(T_max=3000)",
+        "record_batch_size": 8,
+        "post_bos_draws_per_step": 512,
+        "steps": 3000,
+        "shared_schedule_seed": 4005,
+        "schedule_sha256": "5a2daa0087b1877bb5f9be4bd59ef201a4fa6478fcd5b16a1b88808963eab472",
+        "validation_every_steps": 100,
+        "selection_metric": "validation_style_balanced_token_accuracy (unweighted mean of per-style post-BOS token accuracies)",
+        "selection_validation_records": 48,
+        "selection_validation_post_bos_rows": 3133,
+        "selection_rule": "earliest maximum, including step 0"
+      },
+      "attention_numerics": {
+        "score_rule": "legacy dot_product for retained diagonal state; amendment says original diagonal states were not cosine-repaired",
+        "diagonal_effect": "with one allowed key the probability is one, so score normalization has no forward effect and Q/K gradients are zero",
+        "model_and_logits": "published prediction boundary uses float32 decoder/logits",
+        "qk_normalization": "not applied to this retained state"
+      }
+    },
+    {
+      "method_id": "enriched__affine_causal_h_attention128",
+      "family": "retained TRR-0006 causal reference (repaired qk run)",
+      "state_binding": {
+        "path": "experiments/TRR-0005/joint_fit_qknorm_v1/enriched/affine_causal_h_attention128/selected.safetensors",
+        "sha256": "ee910b14ad6f282bb933ea44ad24453cb5cce1470c65dbc09d8bcc16f3e8abfd",
+        "selected_step": 1900
+      },
+      "fit_support": {
+        "distribution": "coverage_mix_v1",
+        "records": 1200,
+        "source_record_ids_sha256": "f3e1344854f475819f563da18b788fd34a19b4730527a3959b88470ed13cfc7d",
+        "valid_mask_sha256": "e2ee7f711107a8a887a053657bc5b53bb210cc4735247108df08540a5a9ebb76",
+        "post_bos_valid_rows": 124371,
+        "fit_geometry": [
+          1200,
+          192,
+          2048
+        ],
+        "fit_manifest": {
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/public_activation_v1/enriched_manifest.json",
+          "bytes": 8171,
+          "sha256": "8a8a9490e549181959711496ce9a18c63651de3f7cd849b90716d5cf4531db78"
+        },
+        "fit_receipt_git_commit": "a4fa0713f02cd0422979c91783ed91a9666109ff",
+        "published_state_source_commit": "da82f6cac45e09ae83452198344c547553cb4433"
+      },
+      "crop_and_mask": {
+        "fit_crop": "none declared; full H192 source geometry remained in fit and validation",
+        "prediction_geometry": "published TRR-0006 replay stores/scored H128 prefixes, a prediction-time H128 view of a state fit on H192",
+        "visibility": "causal keys 0..i through current position; no future keys; invalid/padded rows excluded",
+        "context_contract": "causal arm sees H_0...H_i; state metadata names context_width 128"
+      },
+      "initialization": {
+        "direct_affine": "identity W, zero b, s=3.0",
+        "pretrained_public_affine_loaded": false,
+        "old_identity_reset": true,
+        "qkv_init_seed": 4005,
+        "output_weight_and_bias": "zero"
+      },
+      "training_and_selection": {
+        "optimizer": "AdamW",
+        "learning_rate": 0.001,
+        "weight_decay": 0.0,
+        "gradient_clip_norm": 1.0,
+        "scheduler": "CosineAnnealingLR(T_max=3000)",
+        "record_batch_size": 8,
+        "post_bos_draws_per_step": 512,
+        "steps": 3000,
+        "shared_schedule_seed": 4005,
+        "schedule_sha256": "5a2daa0087b1877bb5f9be4bd59ef201a4fa6478fcd5b16a1b88808963eab472",
+        "validation_every_steps": 100,
+        "selection_metric": "validation_style_balanced_token_accuracy (unweighted mean of per-style post-BOS token accuracies)",
+        "selection_validation_records": 48,
+        "selection_validation_post_bos_rows": 3133,
+        "selection_rule": "earliest maximum, including step 0"
+      },
+      "attention_numerics": {
+        "score_rule": "cosine_scale4: L2-normalize each query/key row over context_width before score product, fixed scale 4.0",
+        "qk_normalization": "applied",
+        "model_and_logits": "published prediction boundary uses float32 decoder/logits"
+      }
+    }
+  ],
+  "pairwise_differences": [
+    {
+      "dimension": "fit support and source identity",
+      "p06": "1200 coverage_mix_v1 records; the P06 receipt reports canonical-JSON ID digest 69fdd..., while the published manifest reports newline digest f3e134...; the ordered 1200-ID list was verified equal from metadata.",
+      "trr0006": "1200 coverage_mix_v1 records; published manifest ID digest f3e134..., valid-mask e2ee7...",
+      "exact_difference": "The apparent source-ID hash difference is serialization, not evidence of a different record set: P06 canonical JSON digest 69fdd... and the manifest newline digest f3e134... were both computed from the same ordered 1200-ID metadata list. The valid-mask hashes differ because P06 crops to H128."
+    },
+    {
+      "dimension": "crop and visibility mask",
+      "p06": "H192 artifacts cropped to H128 before fit; past keys 0..i or diagonal key i only in H128",
+      "trr0006": "H192 fit/validation retained; diagonal key i only or causal keys 0..i; replay later uses H128 stored prefixes",
+      "exact_difference": "P06 fit geometry and support exclude source positions 128..191; old fit receipts do not declare that crop."
+    },
+    {
+      "dimension": "initial W,b,s and qkv seed",
+      "p06": "public affine W,b,s loaded, inherited s=3.5380859375; qkv seed 6106/6107",
+      "trr0006": "identity W, zero b, s=3.0; qkv seed 4005",
+      "exact_difference": "P06 is initialized from a competent public affine state; retained old states are identity/zero/3.0 starts. This is a fit-provenance difference, not a causal attribution."
+    },
+    {
+      "dimension": "selection metric",
+      "p06": "micro full-vocabulary validation_token_accuracy over 2982 H128 post-BOS rows, earliest maximum every 100 steps including step 0",
+      "trr0006": "unweighted mean of per-style post-BOS token accuracies over 3133 H192 rows (24 Alpaca + 24 Pile validation records), earliest maximum every 100 steps including step 0",
+      "exact_difference": "checkpoint selection objective and validation row geometry differ."
+    },
+    {
+      "dimension": "steps, draws, schedule",
+      "p06": "3000 steps, batch 8, 512 draws/update, AdamW lr 1e-3 wd 0, clip 1, cosine schedule; schedule seed 6106/6107; selected steps past 1700/2000 and diagonal 1700/900",
+      "trr0006": "3000 steps, batch 8, 512 draws/update, AdamW lr 1e-3 wd 0, clip 1, cosine schedule; schedule seed 4005; selected steps diagonal 1600 and repaired causal 1900",
+      "exact_difference": "optimizer family, budget, and nominal draw count match; sampler seed/schedule and selected checkpoint differ."
+    },
+    {
+      "dimension": "attention score and normalization",
+      "p06": "cosine Q/K normalization with scale 4.0 for both masks; diagonal one-key path makes score normalization behaviorally inert",
+      "trr0006": "retained diagonal kept legacy dot-product; repaired causal uses cosine_scale4; old causal dot-product development state is not the retained repaired state",
+      "exact_difference": "P06 past and repaired old causal share the declared cosine-scale rule; P06 diagonal and old diagonal have different declared score rules but one-key forward behavior is equivalent under the published mathematical contract."
+    },
+    {
+      "dimension": "precision and readout",
+      "p06": "P06 plan declares F32 layer norm/model/logits, F32 output L2, shared F32 E; published boundary consumes BF16 H, bool masks, no autocast",
+      "trr0006": "published prediction registration declares BF16 H input, F32 decoder/logits and E, bool masks, no autocast, float32 matmul precision highest",
+      "exact_difference": "prediction-time contract is shared/bound; training-time autocast/kernel equivalence is not independently proven by these receipts."
+    }
+  ],
+  "known_exactly": [
+    "All state file hashes, selected steps, fit source-ID/mask hashes, source commits, geometry declarations, initial affine declarations, seeds, optimizer budgets, score rules, and selection metrics listed above are present in published metadata.",
+    "The retained causal state is the post-amendment cosine_scale4 state selected at step 1900; the retained diagonal state is the un-repaired original state selected at step 1600.",
+    "TRR-0006 published replay is H128 at prediction time even though the retained states were fit against full H192 geometry.",
+    "The published P06 and enriched fit metadata point to the same ordered 1200-record ID list; their reported ID hashes differ because P06 uses canonical JSON-list serialization while the older manifest uses a newline-delimited digest. The valid-mask hashes differ because P06 applies the H128 crop."
+  ],
+  "unresolved_or_not_claimed": [
+    "No payload was opened here, so tensor-level equality of W, b, s, Q/K/V, masks, or observations was not tested.",
+    "The metadata does not prove an exact training-time autocast/kernel equivalence between P06 and the old fit runs beyond the published prediction boundary.",
+    "The metadata audit verified record-ID list identity only; no claim is made about equality of source text, token sequences, or activation payloads beyond the published IDs and manifest binding.",
+    "The provenance comparison alone cannot attribute a P07 score difference to crop, initialization, mask, selection metric, attention normalization, or any single factor.",
+    "The old qknorm amendment explicitly preserves old diagonal states and does not retroactively refit them under cosine normalization."
+  ],
+  "evidence_references": [
+    {
+      "path": "experiments/TRR-P06/runtime/main-r1/main_fit_receipt.json",
+      "role": "P06 fit geometry, support hashes, initialization, schedules, selected steps"
+    },
+    {
+      "path": "experiments/TRR-P06/plan.json",
+      "role": "P06 numerical recipe, masks, crop, selection contract"
+    },
+    {
+      "path": "experiments/TRR-0006/prediction_registration.json",
+      "role": "published replay precision/readout contract"
+    },
+    {
+      "path": "experiments/TRR-0005/joint_fit_v1/run_evidence.json",
+      "role": "retained original fit support, schedule, optimizer, old diagonal state metadata"
+    },
+    {
+      "path": "experiments/TRR-0005/joint_fit_qknorm_v1/run_evidence.json",
+      "role": "retained repaired causal fit support, schedule, optimizer, state metadata"
+    },
+    {
+      "path": "experiments/TRR-0005/qk_score_repair_amendment_v1.json",
+      "role": "legacy versus repaired attention rule and diagonal retention disposition"
+    },
+    {
+      "path": "experiments/TRR-0005/public_validation_selection.json",
+      "role": "old style-balanced selection rule and selected diagonal step"
+    },
+    {
+      "path": "experiments/TRR-0006/score_command.json",
+      "role": "TRR-0006 truth-binding metadata path; payload not opened"
+    }
+  ],
+  "fit_record_id_digest_audit": {
+    "record_metadata_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/public_activation_v1/enriched_fit_records.json",
+    "record_metadata_sha256": "7f197b077aa0aa66edfdd8d92c8daa5b4cb2ae36bdbb80938e4ab8f1de117943",
+    "record_count": 1200,
+    "unique_record_id_count": 1200,
+    "ordered_id_list_match_verified": true,
+    "p06_receipt_digest": {
+      "sha256": "69fddbc989b9c12d5669d0f9a82f86313e139440f9c00651e96842b45b184f85",
+      "serialization": "canonical JSON list with separators=(\",\",\":\") and sort_keys=True"
+    },
+    "canonical_manifest_digest": {
+      "sha256": "f3e1344854f475819f563da18b788fd34a19b4730527a3959b88470ed13cfc7d",
+      "serialization": "JSON list compact separators followed by a final newline-delimited record-ID digest in the published manifest"
+    },
+    "source_fields_used": "record_id only; text, token, activation, and truth fields were not opened or printed",
+    "content_or_text_equivalence_claimed": false
+  }
+}

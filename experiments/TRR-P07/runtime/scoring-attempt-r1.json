@@ -1,0 +1,31 @@
+{
+  "task_id": "TRR-P07",
+  "status": "EXCLUDED_ADAPTER_METADATA_FAILURE_BEFORE_TRUTH_ARRAY_LOAD",
+  "utc": "2026-09-06T15:01:58.051158+00:00",
+  "source_commit": "f0f9b9fb0a80bd79cffb52acae82a97b5d04973f",
+  "error": "P06 truth sidecar record order changed: pile",
+  "exit_code": 2,
+  "prediction_manifest_sha256": "229bd0aaf5080802320de58ecf28bef54af35f4140ad5916d2615c66c0061110",
+  "truth_metadata_opened": true,
+  "truth_arrays_opened": false,
+  "scored_output_created": false,
+  "resolution": "verify and preserve each producer-specific record-order digest convention; do not change source rows or frozen predictions",
+  "command": [
+    "/usr/bin/python3",
+    "scripts/trr_p07/score_frozen.py",
+    "--repository-root",
+    "/tmp/trr-p07",
+    "--replay-manifest",
+    "/tmp/trr-p07/experiments/TRR-P07/runtime/replay-r1/replay_manifest.json",
+    "--p06-truth-manifest",
+    "/tmp/trr-p06-evaluator-truth-v1/truth.manifest.json",
+    "--trr0006-truth-binding",
+    "/tmp/trr0006/private/truth_binding.json",
+    "--p06-selection",
+    "/tmp/trr-p07/experiments/TRR-P06/runtime/source-selection-r1/selection.json",
+    "--trr0006-selection",
+    "/tmp/trr-p07/experiments/TRR-0006/source_selection.json",
+    "--output",
+    "/tmp/trr-p07/experiments/TRR-P07/runtime/scored-r1/results.json"
+  ]
+}

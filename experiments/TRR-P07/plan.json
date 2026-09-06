@@ -1,0 +1,258 @@
+{
+  "schema": "token-reconstruction.trr-p07-plan.v1",
+  "task_id": "TRR-P07",
+  "status": "PROPOSED_PRE_SCORE",
+  "packet_sha256": "a0a9f02f4410f6833b8bb6caaba1b599a528d97935bd2ebd353ee470142b3dd7",
+  "parent_commit": "02c861dfbfc63e3c0b7684a48323fd476a3b268a",
+  "claim_scope": "bounded retrospective comparison of already opened P06 and TRR-0006 panels; not fresh confirmation, a canonical benchmark replacement, or a training campaign",
+  "scope_exclusions": [
+    "p06_full_record is excluded; its registered negative decision is preserved",
+    "no fitting, optimizer updates, checkpoint selection, compression, architecture or teacher changes",
+    "no P03 holdout, hidden records, TRR-0008 or TRR-0007 unpublished material, or new truth materialization"
+  ],
+  "panels": {
+    "p06_natural": {
+      "panel_role": "complete published P06 natural evaluation panel",
+      "source_selection": {
+        "path": "experiments/TRR-P06/runtime/source-selection-r1/selection.json",
+        "sha256": "d53ed8c972ec9ec00c6490dca22a99af833ea839fa68d9c4164ce061ee893a1a",
+        "records_per_domain": 256,
+        "record_ids_sha256": {
+          "pile": "df20777f118df41caa232dbc8e6cd2847892b3cf36346cc3593896d4509422fa",
+          "finance": "a68fb622db58ea54b7604155ee1013da98b38ef245a6e80b1d94c13e62fc35ce"
+        }
+      },
+      "observations": {
+        "path": "experiments/TRR-P06/runtime/public-capture-r2/observations.json",
+        "sha256": "922c63438611ed7d6d8a55ac41d7548edfd561da3370dcd4df280973f7e7c146"
+      },
+      "subset_rule": "use all 256 published P06 records per domain in frozen order"
+    },
+    "trr0006_evenly_spaced_1of6": {
+      "panel_role": "modest deterministic subset of the already opened published TRR-0006 panel",
+      "source_selection": {
+        "path": "experiments/TRR-0006/source_selection.json",
+        "sha256": "75909aaf0f9e40176c197d86c09651097010a11519855f1db3dc50fe5e754f43",
+        "published_records_per_domain": 1536,
+        "published_record_ids_sha256": {
+          "pile": "b76254217d4c173c22639f221b2bda7d6fb2274a8c877f8addb7d560252fabbd",
+          "finance": "e7e8e78bf1527252d12888b69f727bd70590d5c14cc2ed242231bee8a934c118"
+        }
+      },
+      "observations": {
+        "path": "experiments/TRR-0006/panel_capture_v1/observations.json",
+        "sha256": "abeb22804a38947ad67b7cf3a4584fcb569e7dcad7fba48234f64c773511ff0e"
+      },
+      "subset_rule": "for each domain retain published selection rows at zero based indices 6*k for k=0..255, in their original order; no correctness, prediction, truth, or score field is consulted",
+      "records_per_domain": 256,
+      "subset_record_ids_sha256": {
+        "pile": "b3b728d8fab3bf98f5c3de7d4934bed58b0445bc605587fbb6866f510c9a8a46",
+        "finance": "62c27ab0db0bb13b02deea764a84217bc6dc4028cd589368f1dff93183137fd8"
+      },
+      "subset_public_record_sha256": {
+        "pile": "91a23586348e86a37916c89ed010a5ba98d2bf631cda8008a6d8c677392d88f6",
+        "finance": "2164be3d25f5abd8f98e017c93ea2473f067460609a51555eb47882fbb66438c"
+      },
+      "subset_final_sequence_sha256": {
+        "pile": "4106f932420f7a422471a6ca59f8226820344edc5ef2f8b880214d59271440da",
+        "finance": "6f149adb168bdd044271e7a25ed03480f90fb67b3f80e7a3fa2a273fa0655825"
+      },
+      "overlap_with_p06_record_ids": {
+        "pile": 0,
+        "finance": 0
+      }
+    }
+  },
+  "common_geometry": {
+    "domains": [
+      "pile",
+      "finance"
+    ],
+    "targets": [
+      "public_base",
+      "public_lora_2601"
+    ],
+    "same_sources_across_targets": true,
+    "stored_sequence_tokens": 128,
+    "capture_sequence_tokens": 192,
+    "scored_positions": "post_bos positions 1..127",
+    "scored_post_bos_tokens_per_record": 127,
+    "observation_requirements": "within each panel all methods use the same activation tensor, binary validity mask, position IDs, row order, and 127 scored positions for each domain-target cell",
+    "target_pairing": "the same source index is paired across public_base and public_lora_2601; target conditions are not independent bootstrap records"
+  },
+  "methods": {
+    "p06_past_only": {
+      "role": "P06 past-only candidate",
+      "fit_replicates": [
+        6106,
+        6107
+      ],
+      "fit_source_commit": "f1b35756fc535b5e3350e4edd4feff9e46f80321",
+      "state_bindings": {
+        "6106": {
+          "path": "experiments/TRR-P06/runtime/main-r1/seed-6106/p06_past_only/selected.safetensors",
+          "sha256": "a1406fcb43c305c375d9db88d5d4c21e8eb69c34c33c56dcf256da2913118842"
+        },
+        "6107": {
+          "path": "experiments/TRR-P06/runtime/main-r1/seed-6107/p06_past_only/selected.safetensors",
+          "sha256": "6ad3b8e963cd958cda09496d2988c9082f6d02e85466610f32ba3d0c3b264abc"
+        }
+      },
+      "selection": "published earliest-maximum validation_token_accuracy, validation every 100 including step 0; no re-selection"
+    },
+    "p06_positionwise_diagonal": {
+      "role": "P06 diagonal local control",
+      "fit_replicates": [
+        6106,
+        6107
+      ],
+      "fit_source_commit": "f1b35756fc535b5e3350e4edd4feff9e46f80321",
+      "state_bindings": {
+        "6106": {
+          "path": "experiments/TRR-P06/runtime/main-r1/seed-6106/p06_positionwise_diagonal/selected.safetensors",
+          "sha256": "34b9b0cf5759b329c8b40511e718e545e6cea917d08631bb536b39b8a16557b6"
+        },
+        "6107": {
+          "path": "experiments/TRR-P06/runtime/main-r1/seed-6107/p06_positionwise_diagonal/selected.safetensors",
+          "sha256": "ab95896c1bfd0007eb47257f119382cab2df5732bcd7e83ccacb4fade2cd9362"
+        }
+      },
+      "selection": "published earliest-maximum validation_token_accuracy, validation every 100 including step 0; no re-selection"
+    },
+    "enriched__affine_trained_diagonal_attention128": {
+      "role": "retained TRR-0006 positionwise reference",
+      "fit_replicates": [
+        "published-single-state"
+      ],
+      "state_binding": {
+        "path": "experiments/TRR-0005/joint_fit_v1/enriched/affine_trained_diagonal_attention128/selected.safetensors",
+        "sha256": "696eb9fc951e85356a06575faf18a2011616692a086bdac3b2fa368e69d599a2"
+      },
+      "source_commit": "da82f6cac45e09ae83452198344c547553cb4433",
+      "decision_rule": "joint affine path plus trained current-position-only diagonal attention correction; published loader-default dot product"
+    },
+    "enriched__affine_causal_h_attention128": {
+      "role": "older TRR-0006 causal comparison",
+      "fit_replicates": [
+        "published-single-state"
+      ],
+      "state_binding": {
+        "path": "experiments/TRR-0005/joint_fit_qknorm_v1/enriched/affine_causal_h_attention128/selected.safetensors",
+        "sha256": "ee910b14ad6f282bb933ea44ad24453cb5cce1470c65dbc09d8bcc16f3e8abfd"
+      },
+      "source_commit": "da82f6cac45e09ae83452198344c547553cb4433",
+      "decision_rule": "joint affine path plus zero-initialized causal H_0..H_i attention correction; repaired cosine/QK-normalized implementation with cosine_scale4"
+    }
+  },
+  "prediction_matrix": {
+    "states": 6,
+    "panels": 2,
+    "cells_per_panel": 4,
+    "state_cells": 48,
+    "description": "score all six frozen states on every domain-target cell of both panels; retain both P06 seeds as separate prediction rows and average only correctness summaries within each source cluster",
+    "reuse": "reuse existing P06 and TRR-0006 predictions only after exact state, observation, row-order, mask, position, geometry, and numerical-contract checks; cross-panel cells require frozen-state prediction, not truth",
+    "excluded": [
+      "p06_full_record",
+      "any unregistered seed ensemble",
+      "any result-selected subset or checkpoint"
+    ]
+  },
+  "fixture_and_provenance_gates": {
+    "before_matrix": [
+      "run the existing P06 qualification/native fixture for the P06 decoder path and verify a bounded prediction-ID replay against the published P06 artifact",
+      "run the existing TRR-0006 stored-H native fixture for both retained states and verify prediction IDs against its published fixture; no raw-192 recapture is required",
+      "verify the P06 and TRR-0006 runners bind the same FP32 readout E, bfloat16 activation input, FP32 decoder computation, bool masks, positions 0..127, chunk/batch geometry, and published tie rule",
+      "fail closed on any state, source, observation, row-order, mask, position, numerical, or tie-policy mismatch"
+    ],
+    "native_vs_port": "label a path exact native replay only when its published runner and constants are unchanged; label a common cross-panel runner benchmark-compatible port and bind its equivalence fixture. Never pool native and port labels silently.",
+    "prediction_freeze": "write a create-only matrix manifest and freeze receipt after all 48 state-cells are complete and before any score/truth file is opened"
+  },
+  "metrics": {
+    "token": "micro correct count / (source records * 127), reported per domain, target, panel, method, and P06 seed; replicate-averaged summaries use fractional per-source correct counts",
+    "exact_clip": "all 127 post-BOS predictions correct, denominator 256 source records per domain-target-panel; P06 replicate exact indicators are averaged per source before aggregation",
+    "paired_token": "for each source, target, and scored position, compare correctness indicators; average P06 seed outcomes within that source-position, then report delta, gain mass, and loss mass without integer truncation",
+    "paired_exact": "for each source and target compare exact-clip indicators after within-source P06 replicate averaging; report gain, loss, tie, and both/neither counts",
+    "contrasts": [
+      "p06_past_only versus enriched__affine_trained_diagonal_attention128 (primary)",
+      "p06_past_only versus p06_positionwise_diagonal",
+      "p06_positionwise_diagonal versus enriched__affine_trained_diagonal_attention128",
+      "p06_past_only versus enriched__affine_causal_h_attention128"
+    ],
+    "reporting": "each domain, target, panel, P06 seed, and replicate-averaged contrast is reported; percentages from different panels are never interpreted as a model improvement"
+  },
+  "uncertainty": {
+    "bootstrap_draws": 10000,
+    "bootstrap_seed": 7007,
+    "resample_unit": "source record within each domain and panel",
+    "shared_indices": "apply identical source-index draws to both target conditions and all methods",
+    "interval": "two-sided percentile 95% source-cluster interval",
+    "effective_n": "256 source records per domain-panel; seeds and targets are not additional records"
+  },
+  "decision_gate": {
+    "cell_support": "token delta >= +1.0 pp with 95% interval lower endpoint > 0 OR exact-clip delta >= +5.0 pp with interval lower endpoint > 0, provided the other metric is not harm-classified",
+    "cell_harm": "token delta <= -1.0 pp with interval upper endpoint < 0 OR exact-clip delta <= -5.0 pp with interval upper endpoint < 0",
+    "coherent_pattern": "no harm-classified cell among the eight panel x domain x target cells; every domain-target group must contain a supported cell in at least one of the two panels; each panel must contain at least one supported cell; within each domain-target group, panel point estimates may not be materially opposite (token points cannot be >= +1.0 pp and <= -1.0 pp across panels, and exact points cannot be >= +5.0 pp and <= -5.0 pp); do not pool domains, targets, or panels",
+    "both_new_improve": "both p06_past_only versus retained positionwise and p06_diagonal versus retained positionwise have the coherent pattern; prioritize fitting/checkpoint differences and retain the reference pending a separate study",
+    "past_candidate": "p06_past_only versus retained positionwise has the coherent pattern; report a candidate for separately planned fresh confirmation only",
+    "local_control_only": "p06_past_only versus p06_diagonal has the coherent pattern but p06_past_only versus retained positionwise does not; retain the established reference",
+    "panel_dependent_or_uncertain": "otherwise, including conflicting signs, incomplete domain-target coverage, any harm cell, or inconclusive intervals; no promotion or new run",
+    "priority": "both-new, then past-candidate, then local-control, then panel-dependent/uncertain; retrospective task-local disposition"
+  },
+  "known_differences_to_report": [
+    "P06 states use two fit replicates (6106/6107), P06 H128 fitting with selected validation steps and a competent public affine direct path",
+    "TRR-0006 states are single retained enriched states from the earlier joint_fit_v1 and joint_fit_qknorm_v1 families; their fit support, selection, normalization, and attention parameterization differ",
+    "these differences are provenance explanations only; this task contains no intervention that identifies a cause"
+  ],
+  "cost": {
+    "optional": true,
+    "protocol": "if cost can affect disposition, use balanced warmed method ordering on both panels, report batch throughput separately from single-clip latency, and require exact prediction equivalence before comparing timing"
+  },
+  "state_bindings": {
+    "p06_past_only_seed6106": {
+      "path": "experiments/TRR-P06/runtime/main-r1/seed-6106/p06_past_only/selected.safetensors",
+      "sha256": "a1406fcb43c305c375d9db88d5d4c21e8eb69c34c33c56dcf256da2913118842"
+    },
+    "p06_past_only_seed6107": {
+      "path": "experiments/TRR-P06/runtime/main-r1/seed-6107/p06_past_only/selected.safetensors",
+      "sha256": "6ad3b8e963cd958cda09496d2988c9082f6d02e85466610f32ba3d0c3b264abc"
+    },
+    "p06_diagonal_seed6106": {
+      "path": "experiments/TRR-P06/runtime/main-r1/seed-6106/p06_positionwise_diagonal/selected.safetensors",
+      "sha256": "34b9b0cf5759b329c8b40511e718e545e6cea917d08631bb536b39b8a16557b6"
+    },
+    "p06_diagonal_seed6107": {
+      "path": "experiments/TRR-P06/runtime/main-r1/seed-6107/p06_positionwise_diagonal/selected.safetensors",
+      "sha256": "ab95896c1bfd0007eb47257f119382cab2df5732bcd7e83ccacb4fade2cd9362"
+    },
+    "trr0006_positionwise_reference": {
+      "path": "experiments/TRR-0005/joint_fit_v1/enriched/affine_trained_diagonal_attention128/selected.safetensors",
+      "sha256": "696eb9fc951e85356a06575faf18a2011616692a086bdac3b2fa368e69d599a2"
+    },
+    "trr0006_causal_enriched": {
+      "path": "experiments/TRR-0005/joint_fit_qknorm_v1/enriched/affine_causal_h_attention128/selected.safetensors",
+      "sha256": "ee910b14ad6f282bb933ea44ad24453cb5cce1470c65dbc09d8bcc16f3e8abfd"
+    }
+  },
+  "replay_and_freeze": {
+    "fixture_replay_before_matrix": [
+      "P06 stored-H native prediction replay on a bounded published P06 fixture; verify prediction IDs against the published artifact",
+      "TRR-0006 stored-H native prediction replay on its published fixture for both retained states; verify prediction IDs against the published artifact"
+    ],
+    "no_new_capture": true,
+    "raw_192_recapture_required": false,
+    "numerical_contract": "retain published activation dtype, decoder dtype, normalization, masks, positions, batching/chunking, and tie policy; fail closed on mismatch",
+    "matrix_freeze": "create-only freeze all six states on all four cells of both panels before any scoring/truth access",
+    "native_vs_port": "label exact native replay versus benchmark-compatible cross-panel port explicitly; never silently pool them"
+  },
+  "analysis": {
+    "primary": "p06_past_only versus trr0006_positionwise_reference",
+    "secondary": [
+      "p06_past_only versus p06_diagonal",
+      "p06_diagonal versus trr0006_positionwise_reference",
+      "p06_past_only versus trr0006_causal_enriched"
+    ],
+    "reporting": "each domain, target, panel, P06 seed, and replicate-averaged contrast separately; no cross-panel percentage is a model-improvement claim",
+    "source_cluster": "one source record is the uncertainty unit; both P06 seeds and paired target conditions remain inside that unit",
+    "replicate_average": "average correctness indicators within source before aggregation; retain fractional gains/losses; never average logits or select a seed"
+  }
+}
