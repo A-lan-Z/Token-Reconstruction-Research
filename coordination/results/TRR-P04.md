@@ -263,6 +263,32 @@ boundary, lowest-ID tie counts, and state round-trip prediction equivalence.
 No deployment blocker was found in this static audit. The training-only
 candidate artifact is not loaded by this prediction path.
 
+## Native anchor pre-execution provenance review
+
+The first static review found a source-level blocker in
+`scripts/trr_p04/native_anchor_runner.py` before any native anchor execution.
+Its shifted-condition branch still imports the private
+`token_reconstruction.target_update` module, installs the evaluator LoRA, and
+loads the private update through `_load_reference_resources`; the CLI also
+accepts `--target-update`, and the receipt records `target_update_loaded=true`.
+That contradicts the anchor contract: both `public_base` and
+`p04_evaluator_target_update_v1` must load the same pinned untouched public
+base snapshot and public/historical A1 reference resources. The evaluator
+observation-capture step is the sole component permitted to load the private
+target update. This is a provenance/deployment source bug, not an observed
+contamination result: no native anchor has run, so no anchor prediction,
+metric, or private-update exposure exists to invalidate.
+
+The anchor remains blocked until the setup-owned fix is present and reviewed.
+The minimum post-fix check is a source and receipt audit showing no private
+update import, path, hash, LoRA installation, or `target_update_loaded` field
+in the anchor runner; both conditions must point to the identical public base
+snapshot/reference assets, while the evaluator capture retains the private
+loader. The static student prediction audit above passes independently: its
+CLI and `p04_student` path accept activation/mask tensors, student state, and
+public embeddings only, with no target-update path or import.
+
+
 ## Pending first fair comparison
 
 The following sections remain intentionally open and must be filled only from
