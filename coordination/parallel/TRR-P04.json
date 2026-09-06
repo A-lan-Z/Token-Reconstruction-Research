@@ -3,10 +3,13 @@
     "active_method_registry_modified": false,
     "evaluation_truth_opened": false,
     "global_state_modified": false,
-    "heavy_jobs_started": false,
+    "heavy_jobs_started": true,
     "other_agent_mutable_work_inspected": false,
+    "public_capture_authorized_by_root": true,
+    "public_capture_model_loaded": true,
     "shared_protocols_modified": false,
-    "stage2_or_holdout_status": "not applicable at setup"
+    "stage2_or_holdout_status": "not applicable at setup",
+    "target_update_accessed": false
   },
   "branch": "task/TRR-P04",
   "control_packet": {
@@ -29,12 +32,57 @@
     "verified_commit": "6e8b683e404c0acb70cd59b7dd6d6868b2061f61"
   },
   "pending": [
-    "implementation review of experiments/TRR-P04/setup/interface.json",
-    "deterministic public fit/correction/validation and fresh-panel selection",
-    "teacher evidence qualification at K=32",
-    "implementation-owned model fitting and target-update preparation after reservation",
+    "implementation public capacity probe on correction artifact",
+    "implementation fixed K32 privileged teacher qualification if capacity gate passes",
+    "implementation-owned student/reference fitting and prediction freeze",
+    "fresh evaluator observation and target-update preparation after joint state freeze",
     "truth-gated scoring and final evidence/report"
   ],
+  "public_capture": {
+    "capture_evidence": {
+      "bytes": 10492,
+      "path": "experiments/TRR-P04/runtime/public-pool-capture-r1/capture_evidence.json",
+      "sha256": "ea430d0d98506450e4c28d1de8a1ddbf3aebc86a32514fe4f836ba5f6eeb06e7"
+    },
+    "correction_observations": {
+      "bytes": 202066296,
+      "path": "experiments/TRR-P04/runtime/public-pool-capture-r1/correction_cut4.safetensors",
+      "sha256": "c9eb10065ee765a95aa0d30bae91f3061fecf3bfa5aa52c56a3eaa62d4c216b4"
+    },
+    "correction_records": {
+      "bytes": 218657,
+      "path": "experiments/TRR-P04/runtime/public-pool-capture-r1/correction_records.json",
+      "sha256": "3f993ef70ef153d0f2e13dc86748378b93ccfd0b85d1c8bd0f033c53b3f1484d"
+    },
+    "geometry": {
+      "batch_records": 8,
+      "cut_depth": 4,
+      "hidden_size": 2048,
+      "padded_tokens": 192
+    },
+    "gpu_released_after_run": true,
+    "implementation_handoff": {
+      "bytes": 4082,
+      "path": "experiments/TRR-P04/runtime/public-pool-capture-r1/implementation_handoff.json",
+      "sha256": "7d50ac904f234c8305368446982291b6277b685275d4327947a6eb562c25e7a4"
+    },
+    "selection": {
+      "bytes": 357935,
+      "path": "experiments/TRR-P04/setup/public_selection-r2.json",
+      "sha256": "05f941e0dbcf29ea3efc47c7bc8abb3a7146a266eeea770f05052bb7728cde6a"
+    },
+    "truth_and_target_update_accessed": false,
+    "validation_observations": {
+      "bytes": 151550328,
+      "path": "experiments/TRR-P04/runtime/public-pool-capture-r1/validation_cut4.safetensors",
+      "sha256": "033f714add8d240686a10a01cb3b52e5202480b30f98106182a7bc3ec53004f0"
+    },
+    "validation_records": {
+      "bytes": 164165,
+      "path": "experiments/TRR-P04/runtime/public-pool-capture-r1/validation_records.json",
+      "sha256": "51f416d82d681b031dafddd379f2709ce07a470e571212803a1f984307df05a8"
+    }
+  },
   "read_only_parent_snapshot": {
     "manifest": "experiments/TRR-0004/manifest.json",
     "protocol": "research/DUAL_BENCHMARK_PROTOCOL.md",
@@ -42,21 +90,30 @@
     "status": "experiments/TRR-0004/status.json"
   },
   "resource_gate": {
+    "capture_peak_cuda_reserved_bytes": 2478833664,
+    "capture_peak_host_rss_bytes": 3823210496,
     "comparative_timing": "wait for uncontended CPU/GPU window",
     "gpu": "available only through implementation-owned serialized P04 reservation",
-    "heavy_cpu_or_memory_jobs": "not started by setup owner; root reservation and implementation preflight required",
+    "heavy_cpu_or_memory_jobs": "no training/teacher jobs started by setup owner; public-prefix capture completed under root authorization",
     "no_paid_compute": true,
+    "public_capture": "complete; GPU released after guarded run",
     "setup_cpu_limit": "at most 4 threads for metadata/evaluator preparation",
-    "status": "LIGHT_CPU_SETUP_ALLOWED_GPU_SERIALIZED_IMPLEMENTATION_OWNER"
+    "status": "GPU_CAPTURE_COMPLETE_RELEASED_TO_IMPLEMENTATION"
   },
   "schema": "token-reconstruction.parallel-state.v1",
   "setup_artifacts": {
+    "implementation_handoff": "experiments/TRR-P04/runtime/public-pool-capture-r1/implementation_handoff.json",
     "interface": "experiments/TRR-P04/setup/interface.json",
     "plan": "experiments/TRR-P04/setup/evaluation_and_evidence_plan.md",
+    "pool_manifest_extractor": "scripts/trr_p04/write_pool_manifests.py",
+    "public_capture_adapter": "scripts/trr_p04/capture_public_pools.py",
+    "public_capture_evidence": "experiments/TRR-P04/runtime/public-pool-capture-r1/capture_evidence.json",
+    "public_pool_manifests": "experiments/TRR-P04/setup/public-pools-r2/",
+    "public_selection": "experiments/TRR-P04/setup/public_selection-r2.json",
     "scorer_script": "scripts/trr_p04/score_predictions.py",
     "selection_script": "scripts/trr_p04/prepare_panel.py"
   },
-  "status": "SETUP_READY_INTERFACE_PROPOSED",
+  "status": "PUBLIC_POOL_CAPTURE_COMPLETE_HANDOFF_READY",
   "task_id": "TRR-P04",
   "worktree": "/tmp/trr-p04"
 }
