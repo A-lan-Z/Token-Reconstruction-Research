@@ -58,6 +58,12 @@ BOS_TOKEN_ID = 128000
 PAD_TOKEN_ID = 128001
 VOCAB_SIZE = 128256
 HIDDEN_SIZE = 2048
+NUM_KEY_VALUE_HEADS = 8
+HEAD_DIM = 64
+MODULE_OUTPUT_SIZES = {
+    "q_proj": HIDDEN_SIZE,
+    "v_proj": NUM_KEY_VALUE_HEADS * HEAD_DIM,
+}
 MAXIMUM_TOKENS = 192
 TARGET_ROWS = 256
 TARGET_SEED = 20260910
@@ -592,9 +598,40 @@ def _cuda_guard(device: torch.device, *, stage: str, started: float) -> dict[str
     }
 
 
+def _expected_lora_parameter_count() -> int:
+    return sum(
+        TARGET_RANK * (HIDDEN_SIZE + MODULE_OUTPUT_SIZES[module])
+        for _layer in TARGET_LAYERS
+        for module in TARGET_MODULES
+    )
+
+
+def _validate_target_projection_geometry(model: torch.nn.Module) -> None:
+    inner = getattr(model, "model", None)
+    layers = getattr(inner, "layers", None)
+    if layers is None:
+        raise TargetPreparationError("target model exposes no decoder layers")
+    for layer_index in TARGET_LAYERS:
+        try:
+            attention = layers[layer_index].self_attn
+        except (AttributeError, IndexError) as exc:
+            raise TargetPreparationError(f"target layer {layer_index} is unavailable") from exc
+        for module_name in TARGET_MODULES:
+            module = getattr(attention, module_name, None)
+            expected_out = MODULE_OUTPUT_SIZES[module_name]
+            if (
+                module is None
+                or int(getattr(module, "in_features", -1)) != HIDDEN_SIZE
+                or int(getattr(module, "out_features", -1)) != expected_out
+            ):
+                raise TargetPreparationError(
+                    f"target projection geometry changed for layer {layer_index}.{module_name}"
+                )
+
+
 def _preflight_estimate() -> dict[str, Any]:
     lora_modules = len(TARGET_LAYERS) * len(TARGET_MODULES)
-    lora_parameter_count = lora_modules * TARGET_RANK * (HIDDEN_SIZE + HIDDEN_SIZE)
+    lora_parameter_count = _expected_lora_parameter_count()
     logits_bf16 = TARGET_BATCH_SIZE * (MAXIMUM_TOKENS - 1) * VOCAB_SIZE * 2
     logits_fp32 = TARGET_BATCH_SIZE * (MAXIMUM_TOKENS - 1) * VOCAB_SIZE * 4
     return {
@@ -607,6 +644,7 @@ def _preflight_estimate() -> dict[str, Any]:
         },
         "model_weights_bytes": MODEL_WEIGHTS_BYTES,
         "lora_modules": lora_modules,
+        "module_output_sizes": dict(MODULE_OUTPUT_SIZES),
         "lora_parameter_count": lora_parameter_count,
         "one_step_logits_bytes_bfloat16": logits_bf16,
         "one_step_logits_bytes_float32_loss_copy": logits_fp32,
@@ -788,6 +826,7 @@ def _load_model(snapshot: Path, *, device: torch.device) -> torch.nn.Module:
         raise TargetPreparationError("pinned target base model loading failed") from exc
     if int(model.config.hidden_size) != HIDDEN_SIZE or int(model.config.vocab_size) != VOCAB_SIZE:
         raise TargetPreparationError("target model geometry changed")
+    _validate_target_projection_geometry(model)
     model.requires_grad_(False)
     model.config.use_cache = False
     return model
@@ -914,7 +953,7 @@ def execute_target(
     )
     installed = install_target_lora(model, config)
     parameters = target_lora_parameters(installed.values())
-    expected_parameters = len(TARGET_LAYERS) * len(TARGET_MODULES) * TARGET_RANK * (HIDDEN_SIZE + HIDDEN_SIZE)
+    expected_parameters = _expected_lora_parameter_count()
     if sum(int(parameter.numel()) for parameter in parameters) != expected_parameters:
         raise TargetPreparationError("target LoRA parameter geometry changed")
     guard.append(_cuda_guard(device, stage="after_target_lora_install", started=started_perf))
