@@ -208,8 +208,12 @@ def _validate_universe_binding(universe_path: Path, selection: Mapping[str, Any]
         raise CapturePreparationError("P06 source-universe hash changed")
     if binding.get("catalog_sha256") != universe.get("exclusion_binding", {}).get("catalog_sha256"):
         raise CapturePreparationError("P06 exclusion catalog binding changed")
-    if universe.get("exclusion_binding", {}).get("coverage_complete") is not True:
-        raise CapturePreparationError("P06 source-universe exclusion coverage is incomplete")
+    try:
+        panel._frozen_descriptor_paths(universe.get("exclusion_binding", {}))
+    except panel.PanelPreparationError as exc:
+        raise CapturePreparationError(
+            f"P06 required exclusion descriptor binding is not stable: {exc}"
+        ) from exc
     return universe
 
 

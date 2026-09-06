@@ -33,6 +33,7 @@ from scripts.trr_p06.source_binding import (  # noqa: E402
     ExclusionIndex,
     SourceBindingError,
     collect_exclusions,
+    sha256_file,
 )
 
 
@@ -337,6 +338,53 @@ def _selection_metadata(candidate: Any, *, style: str) -> dict[str, Any]:
     return result
 
 
+def _frozen_descriptor_paths(exclusion_meta: Mapping[str, Any]) -> tuple[Path, ...]:
+    """Verify every available frozen descriptor before any source row is read."""
+    if exclusion_meta.get("required_approved_identities_bound") is not True:
+        raise PanelPreparationError(
+            "required approved exclusion identities are not bound; selection remains fail-closed"
+        )
+    required_missing = exclusion_meta.get("required_missing_labels", ())
+    if required_missing:
+        raise PanelPreparationError(
+            "required approved exclusion metadata is missing: " + ", ".join(map(str, required_missing))
+        )
+    descriptors = exclusion_meta.get("descriptors")
+    if not isinstance(descriptors, Sequence) or not descriptors:
+        raise PanelPreparationError("source universe has no frozen exclusion descriptors")
+    paths: list[Path] = []
+    for item in descriptors:
+        if not isinstance(item, Mapping):
+            raise PanelPreparationError("frozen exclusion descriptor is malformed")
+        if item.get("available") is not True:
+            if item.get("required") is True:
+                raise PanelPreparationError(
+                    f"required frozen exclusion descriptor is unavailable: {item.get('label', '<unknown>')}"
+                )
+            continue
+        path = Path(str(item.get("path", ""))).expanduser().resolve()
+        try:
+            actual = sha256_file(path)
+        except (OSError, SourceBindingError) as exc:
+            raise PanelPreparationError(
+                f"frozen exclusion descriptor is unavailable: {path}"
+            ) from exc
+        recorded = item.get("sha256")
+        if not isinstance(recorded, str) or actual != recorded:
+            raise PanelPreparationError(
+                f"frozen exclusion descriptor hash changed: {path}"
+            )
+        expected = item.get("expected_sha256")
+        if expected is not None and actual != expected:
+            raise PanelPreparationError(
+                f"frozen approved exclusion hash changed: {path}"
+            )
+        paths.append(path)
+    if not paths:
+        raise PanelPreparationError("frozen exclusion catalog has no bound metadata inputs")
+    return tuple(paths)
+
+
 def _select_records(
     *,
     universe: Mapping[str, Any],
@@ -346,23 +394,30 @@ def _select_records(
     exclusion_meta = universe.get("exclusion_binding")
     if not isinstance(exclusion_meta, Mapping):
         raise PanelPreparationError("source universe has no exclusion binding")
-    if exclusion_meta.get("coverage_complete") is not True:
-        raise PanelPreparationError(
-            "incomplete prior exclusion coverage; bind all approved opaque reservations before selection"
-        )
-    # Rebind the metadata paths instead of trusting counts written in the
-    # universe.  The caller must provide the same catalog through the frozen
-    # universe's descriptor list; actual row selection never uses a stale set.
-    descriptor_paths = [
-        Path(str(item["path"]))
-        for item in exclusion_meta.get("descriptors", [])
-        if isinstance(item, Mapping) and item.get("available") is True
-    ]
+    # Optional historical descriptors may be absent; the selector is gated by
+    # the explicitly approved identity set above.  Every descriptor that was
+    # available at freeze is hash-checked before re-binding so a stale or
+    # substituted ledger cannot silently widen eligibility.
+    descriptor_paths = _frozen_descriptor_paths(exclusion_meta)
     exclusions = collect_exclusions(
         Path(str(universe.get("provenance", {}).get("repository_root", "."))),
         metadata_paths=descriptor_paths,
         include_default_catalog=False,
     )
+    current_by_path = {
+        str(item.get("path")): item
+        for item in exclusions.descriptors
+        if isinstance(item, Mapping)
+    }
+    for item in exclusion_meta.get("descriptors", ()):
+        if not isinstance(item, Mapping) or item.get("available") is not True:
+            continue
+        path = str(Path(str(item.get("path", ""))).expanduser().resolve())
+        current = current_by_path.get(path)
+        if current is None or current.get("sha256") != item.get("sha256"):
+            raise PanelPreparationError(
+                f"rebound exclusion descriptor differs from frozen metadata: {path}"
+            )
     selected: dict[str, list[dict[str, Any]]] = {}
     stats: dict[str, int] = {"scanned": 0, "invalid": 0, "excluded": 0, "duplicates": 0}
     seen_ids: set[str] = set()

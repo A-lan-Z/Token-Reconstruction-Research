@@ -159,3 +159,71 @@ def test_capture_adapter_matches_published_helper_keyword_contract() -> None:
     assert "lora_update_path" not in parameters
     assert capture.CAPTURE_SEQUENCE_TOKENS == 192
     assert capture.SEQUENCE_TOKENS == 128
+
+def test_p03_selected_reservation_binds_ids_hashes_and_indices_without_payload() -> None:
+    path = Path("experiments/TRR-P06/setup/approved-p03/p03_selected_reservation.json")
+    index = binding.collect_exclusions(
+        Path("."),
+        metadata_paths=[path],
+        include_default_catalog=False,
+    )
+    assert index.required_coverage_ready is True
+    assert len(index.ids) == 48
+    assert len(index.text_hashes) == 48
+    assert len(index.indices) == 48
+
+
+def test_trr0003_manifest_alias_is_published_and_obsolete_track_b_path_is_absent() -> None:
+    specs = binding.catalog_specs(Path("."))
+    paths = {spec.path for spec in specs}
+    assert "experiments/TRR-0003/evidence/control/public_resource_manifest.json" in paths
+    assert "experiments/TRR-0003/track_b/public_resource_manifest.json" not in paths
+
+
+def test_frozen_descriptor_hash_change_fails_closed(tmp_path: Path) -> None:
+    path = tmp_path / "ledger.json"
+    path.write_text(json.dumps({"record_id": "stable"}), encoding="utf-8")
+    frozen = {
+        "required_approved_identities_bound": True,
+        "required_missing_labels": [],
+        "descriptors": [
+            {
+                "label": "required-ledger",
+                "path": str(path),
+                "available": True,
+                "required": True,
+                "sha256": _digest("different"),
+                "expected_sha256": None,
+            }
+        ],
+    }
+    with pytest.raises(panel.PanelPreparationError, match="hash changed"):
+        panel._frozen_descriptor_paths(frozen)
+
+
+def test_optional_missing_descriptor_does_not_block_required_binding(tmp_path: Path) -> None:
+    path = tmp_path / "required.json"
+    path.write_text(json.dumps({"record_id": "stable"}), encoding="utf-8")
+    digest = hashlib.sha256(path.read_bytes()).hexdigest()
+    frozen = {
+        "required_approved_identities_bound": True,
+        "required_missing_labels": [],
+        "descriptors": [
+            {
+                "label": "required-ledger",
+                "path": str(path),
+                "available": True,
+                "required": True,
+                "sha256": digest,
+                "expected_sha256": None,
+            },
+            {
+                "label": "optional-historical-alias",
+                "path": str(tmp_path / "missing.json"),
+                "available": False,
+                "required": False,
+                "status": "MISSING_COVERAGE",
+            },
+        ],
+    }
+    assert panel._frozen_descriptor_paths(frozen) == (path.resolve(),)
