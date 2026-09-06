@@ -1,13 +1,13 @@
 {
   "schema": "token-reconstruction.trr-p04-native-anchor-run-contract.v1",
   "task_id": "TRR-P04",
-  "status": "IMPLEMENTATION_RELEASED_ANCHOR_PUBLIC_AUTHORIZED",
+  "status": "IMPLEMENTATION_RELEASED_ANCHOR_PUBLIC_R2_AUTHORIZED",
   "purpose": "bounded native A1+A2 K=256 anchor on the predeclared P04 12-record subset, separately per paired condition",
   "source": {
-    "git_commit": "124ce70723c28a4d26bb1f6d123962c7c4f116f2",
+    "git_commit": "2a714ef2d57699563d9b9cf60255d7aab71991ed",
     "anchor_runner": {
       "path": "scripts/trr_p04/native_anchor_runner.py",
-      "sha256": "e60ae69747549e7fa4814d436b1c7cdb0c33c8617749e4b306b6d727399169d8"
+      "sha256": "ca06671167392ab30423071da62b03018551a3b33171796cc181c719c8c9967e"
     },
     "watchdog": {
       "path": "scripts/trr_p04/resource_watchdog.py",
@@ -91,14 +91,14 @@
   "runs": {
     "public_base": {
       "condition": "public_base",
-      "output_root": "experiments/TRR-P04/runtime/native-anchor-public-r1",
-      "watchdog_root": "experiments/TRR-P04/runtime/watchdog/native-anchor-public-r1",
+      "output_root": "experiments/TRR-P04/runtime/native-anchor-public-r2",
+      "watchdog_root": "experiments/TRR-P04/runtime/watchdog/native-anchor-public-r2",
       "status": "AUTHORIZED_LARGEST_CELL_QUALIFIER"
     },
     "p04_evaluator_target_update_v1": {
       "condition": "p04_evaluator_target_update_v1",
-      "output_root": "experiments/TRR-P04/runtime/native-anchor-target-r1",
-      "watchdog_root": "experiments/TRR-P04/runtime/watchdog/native-anchor-target-r1",
+      "output_root": "experiments/TRR-P04/runtime/native-anchor-target-r2",
+      "watchdog_root": "experiments/TRR-P04/runtime/watchdog/native-anchor-target-r2",
       "status": "AUTHORIZED_AFTER_PUBLIC_QUALIFIER_PASS"
     }
   },
@@ -141,5 +141,20 @@
     "student_freeze_status": "STUDENT_PREDICTIONS_FROZEN_BEFORE_JOINT_FREEZE",
     "evaluation_truth_opened": false,
     "anchor_started": false
+  },
+  "prior_attempts": {
+    "public_base_r1": {
+      "output_root": "experiments/TRR-P04/runtime/native-anchor-public-r1",
+      "watchdog_root": "experiments/TRR-P04/runtime/watchdog/native-anchor-public-r1",
+      "status": "FAILED_CLOSED_POSITION_PADDING_VALIDATION",
+      "reason": "Persisted right-padded position IDs use zero suffixes by P04 observation contract; immutable PR7 validator expects repeated final active position in ignored suffix. No predictions or truth were written.",
+      "runner_source_head": "4a3a5e174ba1ef8d2499e3232912baa97fca363f"
+    }
+  },
+  "adapter_fix": {
+    "status": "COMMITTED_AND_TESTED",
+    "commit": "2a714ef2d57699563d9b9cf60255d7aab71991ed",
+    "behavior": "derive PR7 repeated-terminal position IDs only for decoder padding suffix; verify active positions equal persisted observations",
+    "tests": "tests/test_trr_p04_evaluator.py and tests/test_trr_p04_anchor_diagnostics.py: 6 passed"
   }
 }
