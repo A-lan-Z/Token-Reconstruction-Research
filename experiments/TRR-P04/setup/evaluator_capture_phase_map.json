@@ -1,0 +1,129 @@
+{
+  "schema": "token-reconstruction.trr-p04-evaluator-phase-map.v1",
+  "task_id": "TRR-P04",
+  "status": "PREPARED_NO_TARGET_OR_TRUTH_ACCESS",
+  "frozen_bindings": {
+    "selection": {
+      "path": "experiments/TRR-P04/setup/public_selection-r2.json",
+      "sha256": "05f941e0dbcf29ea3efc47c7bc8abb3a7146a266eeea770f05052bb7728cde6a",
+      "records": 72,
+      "record_order_sha256": "53f165364993845f217acd3ba9d066e3a76021d22741084a99bd92c5145127ae",
+      "anchors": 12,
+      "anchor_order_sha256": "906fc833e77fe677b8ba6562e2b22f0ccd9956d592441659e1c64cc035da8073"
+    },
+    "target_plan": {
+      "path": "experiments/TRR-P04/setup/evaluator_target_plan.json",
+      "lineage_id": "p04-target-lora-no-robots-v1-seed20260910",
+      "seed": 20260910
+    },
+    "observation_schema": "token-reconstruction.trr-p04-evaluator-observations.v1",
+    "native_anchor": "native_a1_a2 / frozen_a1_a2_k256 / K=256 / 384 scored positions per target"
+  },
+  "joint_freeze": {
+    "schema": "token-reconstruction.trr-p04-joint-freeze-plan.v1",
+    "status": "REQUIRED_BEFORE_TRUTH",
+    "panel_binding": {
+      "records": 72,
+      "styles": ["pile_plain", "finance_chat", "alpaca_instruction"],
+      "length_strata": [16, 32, 64, 128],
+      "records_per_style_length_cell": 6,
+      "anchor_records": 12,
+      "anchor_rule": "first four records in each style's 32-token cell",
+      "record_order_sha256": "53f165364993845f217acd3ba9d066e3a76021d22741084a99bd92c5145127ae",
+      "anchor_order_sha256": "906fc833e77fe677b8ba6562e2b22f0ccd9956d592441659e1c64cc035da8073"
+    },
+    "conditions": ["public_base", "p04_evaluator_target_update_v1"],
+    "observation_binding": {
+      "schema": "token-reconstruction.trr-p04-evaluator-observations.v1",
+      "per_condition_geometry": [72, 192, 2048],
+      "active_window": "BOS plus exactly the row length stratum; fixed right padding",
+      "required_keys": ["activations", "attention_mask", "position_ids"],
+      "condition_and_selection_metadata_must_match": true
+    },
+    "student_prediction_groups": {
+      "methods": ["affine_same_data", "student_s", "student_h", "student_d"],
+      "seeds": [1737, 2711],
+      "groups_per_condition": 8,
+      "coverage": "every method/seed pair covers all 72 records at its declared length"
+    },
+    "native_anchor_groups": {
+      "method_id": "native_a1_a2",
+      "groups": 2,
+      "coverage": "one group per condition covers exactly the 12 anchors and 384 post-BOS positions",
+      "tie_rule": "published native proposal order and first argmax; separate from P04 student lowest-ID ties"
+    },
+    "state_binding": {
+      "required_fields": ["schema", "task_id", "method_id", "seed", "architecture_json", "sha256", "bytes"],
+      "required_identities": "all eight method/seed states, with the fixed architecture and training receipt bound before predictions"
+    },
+    "receipt_checks": [
+      "freeze receipt must cross-check panel/order, observation condition/geometry, all eight state identities, all sixteen student groups, and both native anchor groups",
+      "truth_opened remains false until every check passes"
+    ]
+  },
+  "phases": [
+    {
+      "id": "P0",
+      "name": "panel_and_lineage_freeze",
+      "owner": "setup",
+      "status": "PASS",
+      "truth_opened": false,
+      "outputs": ["public_selection-r2.json", "evaluator_target_plan.json", "interface.json"]
+    },
+    {
+      "id": "P1",
+      "name": "evaluator_target_update",
+      "owner": "evaluator",
+      "status": "PENDING_TARGET_PREPARATION",
+      "truth_opened": false,
+      "required_audit": "no_robots rendered-text/token overlap with all P04 public pools and fresh panel",
+      "outputs": ["private/evaluator_target_update/p04_evaluator_target_update_v1.safetensors", "private/evaluator_target_update/target_preparation_receipt.json"]
+    },
+    {
+      "id": "P2",
+      "name": "paired_observation_capture",
+      "owner": "evaluator",
+      "status": "CODE_AND_PREFLIGHT_READY",
+      "truth_opened": false,
+      "requires": ["P1 target update", "root resource reservation"],
+      "outputs": ["runtime/evaluator-observations-r1/<condition>.safetensors", "runtime/evaluator-observations-r1/observation_index.json", "runtime/evaluator-observations-r1/capture_evidence.json"]
+    },
+    {
+      "id": "P3",
+      "name": "student_and_reference_predictions",
+      "owner": "implementation",
+      "status": "PENDING_IMPLEMENTATION_FREEZE",
+      "truth_opened": false,
+      "requires": ["P2 observation index", "all eight method/seed states"]
+    },
+    {
+      "id": "P4",
+      "name": "joint_prediction_freeze",
+      "owner": "root",
+      "status": "PENDING_ROOT_REVIEW",
+      "truth_opened": false,
+      "required_bindings": ["72-row panel and lengths", "both condition observation hashes", "eight method/seed states", "both native anchor groups"]
+    },
+    {
+      "id": "P5",
+      "name": "truth_gated_scoring",
+      "owner": "root",
+      "status": "PENDING_FREEZE_GATE",
+      "truth_opened": "only after P4",
+      "outputs": ["runtime/score/score.json", "report-only drift diagnostics"]
+    }
+  ],
+  "publication_copy": {
+    "status": "HELD_UNTIL_ROOT_PUBLICATION_REVIEW",
+    "include_compact_metadata": ["capture_evidence.json", "observation_index.json", "target_lineage_summary.json", "native_anchor_receipt.json", "native_anchor_diagnostics.json"],
+    "exclude_payloads": ["*.safetensors observations", "target update weights", "source rows", "private indexes", "evaluation truth"],
+    "no_hashes_invented_before_capture": true
+  },
+  "access": {
+    "evaluation_truth_opened": false,
+    "target_update_accessed": false,
+    "observation_capture_run": false,
+    "native_anchor_run": false,
+    "student_predictions_read": false
+  }
+}
