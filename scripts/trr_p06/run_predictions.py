@@ -402,11 +402,14 @@ def predict_batch(model: torch.nn.Module, embedding: torch.Tensor, activations: 
     projected = model.projected_hidden(staged, mask)
     ids = torch.full((activations.shape[0], SEQUENCE_TOKENS), PAD_TOKEN_ID, dtype=torch.long, device="cpu")
     ties = torch.zeros((activations.shape[0], SEQUENCE_TOKENS), dtype=torch.int64, device="cpu")
-    indices = torch.nonzero(mask, as_tuple=False)
-    if indices.numel() == 0 or not mask[:, 0].all().item():
+    if not mask[:, 0].all().item():
         raise PredictionError("observation batch has no valid BOS")
-    ids[:, 0] = BOS_TOKEN_ID
-    ties[:, 0] = 1
+    # BOS is a fixed observation prefix token.  It is emitted once below and
+    # must never enter the full-vocabulary readout; all model predictions are
+    # strictly post-BOS valid positions.
+    post_bos = mask.clone()
+    post_bos[:, 0] = False
+    indices = torch.nonzero(post_bos, as_tuple=False)
     for start in range(0, int(indices.shape[0]), projection_chunk):
         current = indices[start : start + projection_chunk]
         logits = model.logits_from_rows(projected, current[:, 0], current[:, 1], embedding)
@@ -426,7 +429,9 @@ def predict_batch(model: torch.nn.Module, embedding: torch.Tensor, activations: 
 
 
 def _predict_cell(model: torch.nn.Module, embedding: torch.Tensor, cell: Mapping[str, Any], *, device: torch.device, started: float, max_seconds: float, min_free_gib: float, max_reserved_gib: float, max_rss_gib: float, min_host_gib: float, batch_records: int, projection_chunk: int) -> tuple[torch.Tensor, torch.Tensor, dict[str, Any]]:
+    observation_load_started = time.perf_counter()
     loaded = _load_observation_cell(cell)
+    observation_load_seconds = time.perf_counter() - observation_load_started
     activations = loaded["activations"]
     mask = loaded["mask"]
     if RECORDS_PER_DOMAIN % batch_records != 0:
@@ -490,7 +495,10 @@ def _predict_cell(model: torch.nn.Module, embedding: torch.Tensor, cell: Mapping
         "measured_mean_seconds": sum(measured) / len(measured),
         "measured_ms_per_record": 1000.0 * (sum(measured) / len(measured)) / RECORDS_PER_DOMAIN,
         "repeat_prediction_exact": True,
+        "observation_load_seconds": observation_load_seconds,
         "observation_load_excluded_from_measured_interval": True,
+        "measurement_includes_resource_guard_and_device_synchronization": True,
+        "measured_interval_definition": "full-panel prediction passes including per-batch resource guards and CUDA synchronization; observation deserialization is timed separately",
         "peak_memory": {
             "process_max_rss_bytes": int(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss) * 1024,
             "cuda_peak_allocated_bytes": int(torch.cuda.max_memory_allocated(device)) if device.type == "cuda" else None,
