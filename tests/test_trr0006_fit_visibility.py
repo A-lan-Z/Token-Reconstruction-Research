@@ -149,6 +149,71 @@ def test_probe_prediction_retention_is_logging_only(tmp_path: Path) -> None:
     assert payload["initial_predictions"] == payload["final_predictions"]
 
 
+def test_probe_prediction_retention_preserves_arm_state_hash(tmp_path: Path, monkeypatch) -> None:
+    data, direct = _tiny_data()
+    monkeypatch.setattr(runner, "HIDDEN_SIZE", 8)
+    monkeypatch.setattr(runner, "VOCABULARY_SIZE", 13)
+    monkeypatch.setattr(runner, "CONTEXT_WIDTH", 4)
+    monkeypatch.setattr(runner, "RECORD_BATCH_SIZE", 2)
+    monkeypatch.setattr(runner, "POSITION_BUDGET", 4)
+    monkeypatch.setattr(runner, "PROBE_STEPS", 1)
+    ledger = [
+        {
+            "record_index": record,
+            "record_id": f"fit-{record}",
+            "position": position,
+            "bin": "1-15",
+        }
+        for record in range(8)
+        for position in (1, 2)
+    ]
+    schedule = runner.PositionSchedule(
+        batch_record_indices=torch.tensor([[0, 1]], dtype=torch.long),
+        draw_record_slots=torch.tensor([[0, 1, 0, 1]], dtype=torch.long),
+        draw_position_slots=torch.tensor([[1, 2, 1, 2]], dtype=torch.long),
+        eligible_counts=torch.tensor([4], dtype=torch.int32),
+        used_replacement=torch.tensor([True], dtype=torch.bool),
+        seed=runner.PROBE_SEED,
+        position_budget=4,
+        record_batch_size=2,
+    )
+    plain_args = _guard_args()
+    plain_args.retain_probe_predictions = False
+    retained_args = _guard_args()
+    retained_args.retain_probe_predictions = True
+    plain = runner._run_probe_arm(
+        runner.POSITIONWISE_METHOD,
+        data,
+        direct,
+        data.embedding_table,
+        schedule,
+        ledger,
+        args=plain_args,
+        device=torch.device("cpu"),
+        output_root=tmp_path / "plain",
+        deadline=None,
+        guards=[],
+    )
+    retained = runner._run_probe_arm(
+        runner.POSITIONWISE_METHOD,
+        data,
+        direct,
+        data.embedding_table,
+        schedule,
+        ledger,
+        args=retained_args,
+        device=torch.device("cpu"),
+        output_root=tmp_path / "retained",
+        deadline=None,
+        guards=[],
+    )
+    assert plain["initial_state_sha256"] == retained["initial_state_sha256"]
+    assert plain["final_state_sha256"] == retained["final_state_sha256"]
+    assert plain["initial_metrics"] == retained["initial_metrics"]
+    assert plain["final_metrics"] == retained["final_metrics"]
+    assert retained["probe_predictions"]["row_count"] == len(ledger)
+
+
 def test_probe_prediction_retention_rejects_reordered_snapshots(tmp_path: Path) -> None:
     row = {"record_index": 0, "record_id": "fit-0", "position": 1, "bin": "1-15"}
     with pytest.raises(runner.VisibilityFitError, match="ledger order"):
