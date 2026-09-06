@@ -24,25 +24,53 @@
     "status": "REQUIRED_BEFORE_TRUTH",
     "panel_binding": {
       "records": 72,
-      "styles": ["pile_plain", "finance_chat", "alpaca_instruction"],
-      "length_strata": [16, 32, 64, 128],
+      "styles": [
+        "pile_plain",
+        "finance_chat",
+        "alpaca_instruction"
+      ],
+      "length_strata": [
+        16,
+        32,
+        64,
+        128
+      ],
       "records_per_style_length_cell": 6,
       "anchor_records": 12,
       "anchor_rule": "first four records in each style's 32-token cell",
       "record_order_sha256": "53f165364993845f217acd3ba9d066e3a76021d22741084a99bd92c5145127ae",
       "anchor_order_sha256": "906fc833e77fe677b8ba6562e2b22f0ccd9956d592441659e1c64cc035da8073"
     },
-    "conditions": ["public_base", "p04_evaluator_target_update_v1"],
+    "conditions": [
+      "public_base",
+      "p04_evaluator_target_update_v1"
+    ],
     "observation_binding": {
       "schema": "token-reconstruction.trr-p04-evaluator-observations.v1",
-      "per_condition_geometry": [72, 192, 2048],
+      "per_condition_geometry": [
+        72,
+        192,
+        2048
+      ],
       "active_window": "BOS plus exactly the row length stratum; fixed right padding",
-      "required_keys": ["activations", "attention_mask", "position_ids"],
+      "required_keys": [
+        "activations",
+        "attention_mask",
+        "position_ids"
+      ],
       "condition_and_selection_metadata_must_match": true
     },
     "student_prediction_groups": {
-      "methods": ["affine_same_data", "student_s", "student_h", "student_d"],
-      "seeds": [1737, 2711],
+      "methods": [
+        "affine_same_data",
+        "student_s",
+        "student_h",
+        "student_d"
+      ],
+      "seeds": [
+        1737,
+        2711
+      ],
       "groups_per_condition": 8,
       "coverage": "every method/seed pair covers all 72 records at its declared length"
     },
@@ -53,7 +81,15 @@
       "tie_rule": "published native proposal order and first argmax; separate from P04 student lowest-ID ties"
     },
     "state_binding": {
-      "required_fields": ["schema", "task_id", "method_id", "seed", "architecture_json", "sha256", "bytes"],
+      "required_fields": [
+        "schema",
+        "task_id",
+        "method_id",
+        "seed",
+        "architecture_json",
+        "sha256",
+        "bytes"
+      ],
       "required_identities": "all eight method/seed states, with the fixed architecture and training receipt bound before predictions"
     },
     "receipt_checks": [
@@ -68,16 +104,25 @@
       "owner": "setup",
       "status": "PASS",
       "truth_opened": false,
-      "outputs": ["public_selection-r2.json", "evaluator_target_plan.json", "interface.json"]
+      "outputs": [
+        "public_selection-r2.json",
+        "evaluator_target_plan.json",
+        "interface.json"
+      ]
     },
     {
       "id": "P1",
       "name": "evaluator_target_update",
       "owner": "evaluator",
-      "status": "PENDING_TARGET_PREPARATION",
+      "status": "SELECTION_AUDIT_PASS_TARGET_ARTIFACT_PENDING",
       "truth_opened": false,
       "required_audit": "no_robots rendered-text/token overlap with all P04 public pools and fresh panel",
-      "outputs": ["private/evaluator_target_update/p04_evaluator_target_update_v1.safetensors", "private/evaluator_target_update/target_preparation_receipt.json"]
+      "outputs": [
+        "setup/target-preflight-r3/target_preparation_preflight.json",
+        "setup/target-selection-audit-r3/target_selection_audit.json",
+        "private/evaluator_target_update/p04_evaluator_target_update_v1.safetensors",
+        "private/evaluator_target_update/target_preparation_receipt.json"
+      ]
     },
     {
       "id": "P2",
@@ -85,8 +130,15 @@
       "owner": "evaluator",
       "status": "CODE_AND_PREFLIGHT_READY",
       "truth_opened": false,
-      "requires": ["P1 target update", "root resource reservation"],
-      "outputs": ["runtime/evaluator-observations-r1/<condition>.safetensors", "runtime/evaluator-observations-r1/observation_index.json", "runtime/evaluator-observations-r1/capture_evidence.json"]
+      "requires": [
+        "P1 target update",
+        "root resource reservation"
+      ],
+      "outputs": [
+        "runtime/evaluator-observations-r1/<condition>.safetensors",
+        "runtime/evaluator-observations-r1/observation_index.json",
+        "runtime/evaluator-observations-r1/capture_evidence.json"
+      ]
     },
     {
       "id": "P3",
@@ -94,7 +146,10 @@
       "owner": "implementation",
       "status": "PENDING_IMPLEMENTATION_FREEZE",
       "truth_opened": false,
-      "requires": ["P2 observation index", "all eight method/seed states"]
+      "requires": [
+        "P2 observation index",
+        "all eight method/seed states"
+      ]
     },
     {
       "id": "P4",
@@ -102,7 +157,12 @@
       "owner": "root",
       "status": "PENDING_ROOT_REVIEW",
       "truth_opened": false,
-      "required_bindings": ["72-row panel and lengths", "both condition observation hashes", "eight method/seed states", "both native anchor groups"]
+      "required_bindings": [
+        "72-row panel and lengths",
+        "both condition observation hashes",
+        "eight method/seed states",
+        "both native anchor groups"
+      ]
     },
     {
       "id": "P5",
@@ -110,7 +170,10 @@
       "owner": "root",
       "status": "PENDING_FREEZE_GATE",
       "truth_opened": "only after P4",
-      "outputs": ["runtime/score/score.json", "report-only drift diagnostics"]
+      "outputs": [
+        "runtime/score/score.json",
+        "report-only drift diagnostics"
+      ]
     }
   ],
   "preflight_receipts": {
@@ -123,12 +186,39 @@
       "path": "experiments/TRR-P04/setup/native-anchor-preflight-r3/native_anchor_preflight.json",
       "sha256": "1401485b930545b6e49c56bba80d0176640b018520aa010eba056a6341d71175",
       "expected_candidate_simulations": 98304
+    },
+    "target_preparation": {
+      "preflight": {
+        "path": "experiments/TRR-P04/setup/target-preflight-r3/target_preparation_preflight.json",
+        "sha256": "40fa39e77dd893a73493cb5d513eb79928c5a62c6677eee2a4e0c8835e527476",
+        "status": "PASS_NO_MODEL_NO_TARGET_NO_EVALUATION_TRUTH"
+      },
+      "selection_audit": {
+        "path": "experiments/TRR-P04/setup/target-selection-audit-r3/target_selection_audit.json",
+        "sha256": "aa129b63d35bc970adf03e661d22abbf93f9d42161bc045651feac23ee9662f0",
+        "status": "PASS_TARGET_SELECTION_AUDIT_NO_MODEL_NO_EVALUATION_TRUTH",
+        "dataset_arrow_sha256": "5a9193e927d899d167fd40553d0b403499f5f9cf9a9254db19399a4d0b3550fb",
+        "text_collisions": 0,
+        "sequence_collisions": 0
+      }
     }
   },
   "publication_copy": {
     "status": "HELD_UNTIL_ROOT_PUBLICATION_REVIEW",
-    "include_compact_metadata": ["capture_evidence.json", "observation_index.json", "target_lineage_summary.json", "native_anchor_receipt.json", "native_anchor_diagnostics.json"],
-    "exclude_payloads": ["*.safetensors observations", "target update weights", "source rows", "private indexes", "evaluation truth"],
+    "include_compact_metadata": [
+      "capture_evidence.json",
+      "observation_index.json",
+      "target_lineage_summary.json",
+      "native_anchor_receipt.json",
+      "native_anchor_diagnostics.json"
+    ],
+    "exclude_payloads": [
+      "*.safetensors observations",
+      "target update weights",
+      "source rows",
+      "private indexes",
+      "evaluation truth"
+    ],
     "no_hashes_invented_before_capture": true
   },
   "access": {
