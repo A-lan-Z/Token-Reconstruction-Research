@@ -261,6 +261,19 @@ def build_registration(
         observation_record=observation_record,
         capture_record=capture_record,
     )
+    reference_state = _mapping_record(
+        {
+            "path": contract.REFERENCE_STATE_PATH,
+            "bytes": contract.REFERENCE_STATE_BYTES,
+            "sha256": contract.REFERENCE_STATE_SHA256,
+        },
+        root=root,
+        description="retained reference state",
+    )
+    # File verification resolves the path, while the registration contract
+    # deliberately binds this retained legacy asset to its declared relative
+    # spelling (or to the monkeypatched spelling used by synthetic tests).
+    reference_state["path"] = contract.REFERENCE_STATE_PATH
     rows: list[dict[str, Any]] = [
         {
             "id": contract.REFERENCE_METHOD_ID,
@@ -271,15 +284,7 @@ def build_registration(
             "cells": list(contract.CELL_ORDER),
             "records_per_cell": contract.RECORDS_PER_DOMAIN,
             "candidate_policy": "forbidden",
-            "state": _mapping_record(
-                {
-                    "path": contract.REFERENCE_STATE_PATH,
-                    "bytes": contract.REFERENCE_STATE_BYTES,
-                    "sha256": contract.REFERENCE_STATE_SHA256,
-                },
-                root=root,
-                description="retained reference state",
-            ),
+            "state": reference_state,
             "loader": {
                 "module": "token_reconstruction.trr0005_joint_decoder",
                 "function": "load_decoder_state",
@@ -299,8 +304,14 @@ def build_registration(
             root=root,
             method_freeze_sha256=method_freeze_record["sha256"],
         )
-        if fit_costs and method_id in fit_costs:
-            row["fit_cost"] = fit_costs[method_id]
+        if fit_costs is not None:
+            fit_cost = fit_costs.get(method_id)
+        else:
+            bindings = method_freeze.get("state_bindings")
+            binding = bindings.get(method_id) if isinstance(bindings, Mapping) else None
+            fit_cost = binding.get("fit_cost") if isinstance(binding, Mapping) else None
+        if fit_cost is not None:
+            row["fit_cost"] = fit_cost
         rows.append(row)
     rows.append(
         {

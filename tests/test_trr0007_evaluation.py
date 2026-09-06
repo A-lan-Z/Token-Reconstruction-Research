@@ -173,6 +173,25 @@ def _registration() -> dict[str, object]:
     }
 
 
+def test_observation_binding_backfills_legacy_scored_width() -> None:
+    descriptor = {
+        "shape": [contract.RECORDS_PER_DOMAIN, contract.STORED_SEQUENCE_TOKENS, contract.HIDDEN_SIZE],
+        "stored_sequence_tokens": contract.STORED_SEQUENCE_TOKENS,
+        "scored_post_bos_tokens": contract.SCORED_POST_BOS_TOKENS,
+        "capture_batch_records": contract.CAPTURE_BATCH_RECORDS,
+        "capture_sequence_tokens": contract.CAPTURE_SEQUENCE_TOKENS,
+        "activations_key": "activations",
+        "attention_mask_key": "attention_mask",
+        "position_ids_key": "position_ids",
+        "public_full_forward": True,
+        "producer_only_lora": False,
+    }
+    parsed = contract._observation_binding(
+        descriptor, cell_id="pile__public_base", records=contract.RECORDS_PER_DOMAIN
+    )
+    assert parsed["scored_sequence_tokens"] == contract.SCORED_SEQUENCE_TOKENS
+
+
 def test_plan_is_complete_draft_with_correct_denominators() -> None:
     plan = contract.load_json(Path("experiments/TRR-0007/evaluation_plan.json"), description="plan")
     parsed = contract.validate_plan(plan)
@@ -366,6 +385,33 @@ def test_factorial_builder_uses_exact_four_primary_edges() -> None:
     assert result["improved_residual_vs_reference_endpoint"]["contrast"]["exact"]["interval_scope"].startswith("descriptive")
 
 
+def test_cost_summary_anchor_uses_matching_reference_first32_denominator() -> None:
+    registration = {
+        "methods": [
+            {"id": contract.REFERENCE_METHOD_ID},
+            {"id": contract.ANCHOR_METHOD_ID},
+        ]
+    }
+    timings = {}
+    for cell_id in contract.CELL_ORDER:
+        timings[f"{contract.REFERENCE_METHOD_ID}::{cell_id}"] = {
+            "measured_seconds_sum": 128.0,
+            "per_record_measured_seconds": [1.0] * contract.RECORDS_PER_DOMAIN,
+        }
+    for cell_id in contract.BASE_CELL_ORDER:
+        timings[f"{contract.ANCHOR_METHOD_ID}::{cell_id}"] = {
+            "records": contract.ANCHOR_RECORDS_PER_DOMAIN,
+            "measured_seconds_sum": 64.0,
+            "model_preparation_seconds": 2.0,
+        }
+    result = scorer._cost_summary(registration, timings)
+    entries = result["methods"][contract.ANCHOR_METHOD_ID]["runtime_ratio_vs_reference"]
+    assert len(entries) == len(contract.BASE_CELL_ORDER)
+    assert all(entry["reference_records"] == contract.ANCHOR_RECORDS_PER_DOMAIN for entry in entries)
+    assert all(entry["reference_measured_seconds"] == pytest.approx(32.0) for entry in entries)
+    assert all(entry["ratio"] == pytest.approx(2.0) for entry in entries)
+
+
 def test_anchor_builder_covers_five_decoders_with_explicit_32_record_gaps() -> None:
     a1 = _metric(0.30, 1)
     a2 = _metric(0.40, 2)
@@ -423,7 +469,11 @@ def test_synthetic_registration_binds_path_states_and_gate_receipts(tmp_path: Pa
         state_path = task_root / "states" / f"state_{index}.bin"
         state_record = write_bytes(state_path, f"state-{index}".encode())
         method_states[method_id] = state_record
-        state_bindings[method_id] = {"state": state_record, "state_sha256": state_record["sha256"]}
+        state_bindings[method_id] = {
+            "state": state_record,
+            "state_sha256": state_record["sha256"],
+            "fit_cost": {"fit_wall_seconds": float(index + 1)},
+        }
     method_freeze_path = task_root / "method_freeze.json"
     method_freeze_payload = {
         "schema": contract.METHOD_FREEZE_SCHEMA,
@@ -588,7 +638,9 @@ def test_synthetic_registration_binds_path_states_and_gate_receipts(tmp_path: Pa
         assert row["state"]["path"] == method_states[method]["path"]
         assert row["state"]["sha256"] == method_states[method]["sha256"]
         assert row["method_freeze_sha256"] == method_freeze_record["sha256"]
+        assert row["fit_cost"] == method_freeze_payload["state_bindings"][method]["fit_cost"]
     assert registration["frequency_reference"] == frequency_record
+    assert registration["methods"][0]["state"]["path"] == contract.REFERENCE_STATE_PATH
 
     public_metadata = gate._validate_public_metadata(registration, root=repo)
     assert public_metadata["method_freeze"]["sha256"] == method_freeze_record["sha256"]

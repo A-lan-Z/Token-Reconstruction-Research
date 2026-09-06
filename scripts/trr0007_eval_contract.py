@@ -729,8 +729,14 @@ def _observation_binding(value: Any, *, cell_id: str, records: int) -> dict[str,
         ("attention_mask_key", "attention_mask"),
         ("position_ids_key", "position_ids"),
     ):
-        if value.get(key) != expected:
+        # The trusted producer's existing public descriptors omit the
+        # redundant 128-token scored-width field.  Preserve strict checking
+        # when present and backfill this fixed geometry for parsed consumers.
+        actual = value.get(key, expected) if key == "scored_sequence_tokens" else value.get(key)
+        if actual != expected:
             raise ContractError(f"observation geometry/key changed: {cell_id}/{key}")
+    value = dict(value)
+    value.setdefault("scored_sequence_tokens", SCORED_SEQUENCE_TOKENS)
     if value.get("public_full_forward") is not True:
         raise ContractError(f"public full-forward provenance missing: {cell_id}")
     expected_lora = cell_id.endswith("__public_lora_2601")

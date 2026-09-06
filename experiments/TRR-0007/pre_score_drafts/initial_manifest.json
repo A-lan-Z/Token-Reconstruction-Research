@@ -1,0 +1,156 @@
+{
+  "artifacts": [
+    {
+      "bytes": 18152,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/src/token_reconstruction/trr0007_positionwise.py",
+      "sha256": "89fcd036a57407c8c49294aa5fd15ccef46f02b6fabcc35435d097f1213de485"
+    },
+    {
+      "bytes": 60091,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/scripts/trr0007_train_positionwise.py",
+      "sha256": "8eb80125feaf65d37336dbdce40c1bb465d84ba0e0c23ac6a853b6a7985fc823"
+    },
+    {
+      "bytes": 9010,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/tests/test_trr0007_positionwise.py",
+      "sha256": "52e1be56411324ff9550a1190a73046e213262286cf9b9a3b08f561387f377b0"
+    },
+    {
+      "bytes": 5212,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/capacity_design.md",
+      "sha256": "82f532aa109533286b12db00c084ca64e4ead25d6288b8c8121553fa82529a04"
+    },
+    {
+      "bytes": 3116,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/evaluation_interface.md",
+      "sha256": "c48679be4a4b2a9fa75cb1386ba9bf8770824281e114973a17a6c311e71f44c5"
+    },
+    {
+      "bytes": 2272,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/qualification_request.md",
+      "sha256": "3bb513eef6635a37d86733e10dffb81d2972badff988c57c134975fb7625f076"
+    },
+    {
+      "bytes": 9657,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/preflight_positionwise_v1/resource_preflight.json",
+      "sha256": "6c519770f0e7dadf9743b8ab50156ba1fe43dfdbd5fb8604df502eba2c5eaceb"
+    },
+    {
+      "bytes": 4451,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/coordination/results/TRR-0007.md",
+      "sha256": "c06f226fdbbe6336d2cafdb7d443519bf173e2b128ab2c7de4acdc54419fbb72"
+    }
+  ],
+  "base_commit": "4c4a94ac1ceb74d06fed0a2766bf357b90054cab",
+  "created_utc": "2026-09-06T08:19:53.867730+00:00",
+  "model": {
+    "attention_mode": "strict diagonal",
+    "inference": "current H_i only; fixed normalized public E; full vocabulary CE",
+    "initialization": "neutral identity W, zero b, s=3, deterministic diagonal QKV seed 4005, zero output correction; residual up zero",
+    "methods": [
+      "trr0007_current_positionwise",
+      "trr0007_residual_mlp512"
+    ],
+    "residual_geometry": [
+      2048,
+      512,
+      2048
+    ]
+  },
+  "planned_runs": {
+    "crossed_rerun": {
+      "bank_mode": "both",
+      "status": "optional_clean_reproduction",
+      "steps": 3000
+    },
+    "enriched_full": {
+      "bank_mode": "enriched",
+      "status": "blocked_until_qualifier_passes",
+      "steps": 3000
+    },
+    "improved_full": {
+      "bank_mode": "improved",
+      "status": "blocked_until_support_manifests_and_qualifier",
+      "steps": 3000
+    },
+    "qualifier": {
+      "bank_mode": "enriched",
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/qualification_request.md",
+      "requires_root_exclusive_gpu_lease": true,
+      "schedule_note": "two-step cosine is resource qualification only, not a prefix-equivalent main fit",
+      "status": "prepared_not_launched",
+      "steps": 2
+    }
+  },
+  "recipe": {
+    "bottleneck_size": 512,
+    "fit_geometry": [
+      1200,
+      192,
+      2048
+    ],
+    "gathered_batch_geometry": [
+      8,
+      192,
+      2048
+    ],
+    "gradient_clip_norm": 1.0,
+    "learning_rate": 0.001,
+    "position_budget": 512,
+    "seed": 4005,
+    "selection": "earliest maximum validation style-balanced accuracy, including step zero",
+    "steps": 3000,
+    "validation_geometry": [
+      48,
+      192,
+      2048
+    ],
+    "vocabulary_size": 128256,
+    "weight_decay": 0.0
+  },
+  "resource_preflight": {
+    "conservative_peak_bytes": 4413456384,
+    "host_available_bytes": 21487710208,
+    "largest_representative_batch_qualified": false,
+    "minimum_free_gpu_gib": 8.0,
+    "minimum_host_available_bytes": 10737418240,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/preflight_positionwise_v1/resource_preflight.json",
+    "sha256": "6c519770f0e7dadf9743b8ab50156ba1fe43dfdbd5fb8604df502eba2c5eaceb"
+  },
+  "retained_reference": {
+    "bytes": 20990652,
+    "fit_accuracy": "not yet measured by TRR-0007 trainer",
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0005/joint_fit_v1/enriched/affine_trained_diagonal_attention128/selected.safetensors",
+    "selected_step": 1600,
+    "sha256": "696eb9fc951e85356a06575faf18a2011616692a086bdac3b2fa368e69d599a2"
+  },
+  "schema": "token-reconstruction.trr0007-implementation-manifest.v1",
+  "source_curve": {
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0005/joint_fit_v1/enriched/affine_trained_diagonal_attention128/learning_curve.json",
+    "selected_step": 1600,
+    "selected_validation_style_balanced_accuracy": 0.9547109695038689,
+    "sha256": "34516cc458424d04188c624e2334ddc0f4762a8df324f2d6f910332e1e565d3f",
+    "step_3000_validation_style_balanced_accuracy": 0.9515848631972892,
+    "step_zero_validation_style_balanced_accuracy": 0.33786286855813485
+  },
+  "status": "implementation_ready_preflight_complete",
+  "task_id": "TRR-0007",
+  "tests": [
+    {
+      "command": "PYTHONPATH=src:scripts pytest -q tests/test_trr0007_positionwise.py tests/test_trr0005_joint_decoder.py",
+      "result": "30 passed"
+    },
+    {
+      "command": "PYTHONPATH=.:src:scripts pytest -q tests/test_trr0007_support_diagnostics.py",
+      "result": "6 passed"
+    },
+    {
+      "command": "PYTHONPATH=src:scripts python3 -m py_compile scripts/trr0007_train_positionwise.py src/token_reconstruction/trr0007_positionwise.py",
+      "result": "passed"
+    },
+    {
+      "command": "PYTHONPATH=src:scripts python3 scripts/trr0007_train_positionwise.py --banks improved --preflight-only ...",
+      "result": "passed; metadata only; no old-bank alias"
+    }
+  ]
+}

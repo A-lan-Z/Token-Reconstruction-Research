@@ -656,18 +656,32 @@ def _cost_summary(
             }
             continue
         ref_entries = []
-        for cell in contract.CELL_ORDER:
+        for cell in contract.expected_method_cells(method):
             ref = timings.get(f"{contract.REFERENCE_METHOD_ID}::{cell}")
             student = timings.get(f"{method}::{cell}")
             if isinstance(ref, Mapping) and isinstance(student, Mapping):
-                ref_time = float(ref["measured_seconds_sum"])
                 student_time = float(student["measured_seconds_sum"])
+                student_records = int(student.get("records", contract.RECORDS_PER_DOMAIN))
+                if method == contract.ANCHOR_METHOD_ID:
+                    per_record = ref.get("per_record_measured_seconds")
+                    if not isinstance(per_record, list) or len(per_record) < contract.ANCHOR_RECORDS_PER_DOMAIN:
+                        raise ScoreError("reference timing lacks the first-32 per-record denominator for A1+A2")
+                    reference_records = contract.ANCHOR_RECORDS_PER_DOMAIN
+                    ref_time = sum(float(value) for value in per_record[:reference_records])
+                    denominator_rule = "sum of reference per_record_measured_seconds for the matching first 32 public-base records"
+                else:
+                    reference_records = contract.RECORDS_PER_DOMAIN
+                    ref_time = float(ref["measured_seconds_sum"])
+                    denominator_rule = "same-cell reference measured_seconds_sum for all 128 records"
                 ref_entries.append({
                     "cell_id": cell,
+                    "student_records": student_records,
+                    "reference_records": reference_records,
                     "student_measured_seconds": student_time,
                     "reference_measured_seconds": ref_time,
                     "ratio": None if ref_time == 0.0 else student_time / ref_time,
                     "zero_reference_denominator": ref_time == 0.0,
+                    "denominator_rule": denominator_rule,
                 })
         fit_cost = next((_fit_cost(row) for _ in registration["methods"] if row["id"] == method), None)
         by_method[method] = {
