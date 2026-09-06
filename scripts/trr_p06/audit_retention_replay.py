@@ -291,9 +291,18 @@ def audit(original_root: Path, replay_root: Path, output: Path) -> dict[str, Any
             "retention_files": 3,
             "retained_rows_per_method": len(original_ledger),
             "retained_rows_total": len(original_ledger) * len(METHODS) * 2,
-            "additional_optimizer_updates": 0,
+            "original_probe_optimizer_updates": sum(int(row["steps"]) for row in original_methods.values()),
+            "replay_optimizer_updates": sum(int(row["steps"]) for row in replay_methods.values()),
             "additional_fit_choices": 0,
+            "additional_updates_within_original_probe_recipe": 0,
             "fresh_truth_or_source_access": False,
+        },
+        "total_p06_optimizer_updates": {
+            "main_fit_updates": 18000,
+            "original_probe_updates": sum(int(row["steps"]) for row in original_methods.values()),
+            "retention_replay_updates": sum(int(row["steps"]) for row in replay_methods.values()),
+            "qualification_updates": 2,
+            "total_updates": 18000 + sum(int(row["steps"]) for row in original_methods.values()) + sum(int(row["steps"]) for row in replay_methods.values()) + 2,
         },
     }
     if output.exists() or output.is_symlink():
