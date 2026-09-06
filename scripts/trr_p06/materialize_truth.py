@@ -327,7 +327,9 @@ def prepare_truth(args: argparse.Namespace) -> dict[str, Any]:
         "source_text_loaded_transiently": True,
         "target_labels_loaded": False,
         "model_loaded": False,
-        "truth_opened": False,
+        "truth_opened": True,
+        "truth_materialized": True,
+        "evaluator_truth_accessed": True,
         "scorer_truth_opened": False,
         "materialization_truth_read_after_joint_freeze": True,
         "code_commit": _git_commit(root),
@@ -357,7 +359,10 @@ def prepare_truth(args: argparse.Namespace) -> dict[str, Any]:
         "truth_files": files,
         "joint_freeze_sha256": freeze_record["sha256"],
         "source_selection_sha256": selection_record["sha256"],
-        "truth_opened": False,
+        "truth_opened": True,
+        "truth_materialized": True,
+        "evaluator_truth_accessed": True,
+        "scorer_truth_opened": False,
     }
 
 
