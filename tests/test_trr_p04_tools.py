@@ -282,17 +282,15 @@ def test_freezer_requires_joint_student_anchor_and_state_bindings(tmp_path: Path
     prior = json.loads(freeze_path.read_text())
     state_manifest_path = Path(prior["state_manifest"]["path"])
     output = tmp_path / "joint_freeze.json"
-    frozen = freezer.build_freeze(
-        panel_path=panel_path,
-        prediction_paths=[student_path],
-        anchor_prediction_paths=[anchor_path],
-        state_manifest_path=state_manifest_path,
-        truth_dir=truth_dir,
-        output_path=output,
-        argv=["fixture"],
-    )
-    assert frozen["status"] == "FROZEN_BEFORE_TRUTH"
-    assert frozen["truth_accessed"] is False
-    assert len(frozen["state_files"]) == 8
-    assert len(frozen["prediction_groups"]) == 18
+    with pytest.raises(freezer.FreezeError, match="student prediction freeze, observation index"):
+        freezer.build_freeze(
+            panel_path=panel_path,
+            prediction_paths=[student_path],
+            anchor_prediction_paths=[anchor_path],
+            state_manifest_path=state_manifest_path,
+            truth_dir=truth_dir,
+            output_path=output,
+            argv=["fixture"],
+        )
+    assert not output.exists()
 
