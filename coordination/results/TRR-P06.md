@@ -1,55 +1,72 @@
-# TRR-P06 pending result report
+# TRR-P06 result report
 
-**Status: public fitting complete; fresh-panel capture, prediction freeze, truth scoring, and the registered decision gate are pending.** This skeleton records only the completed public-fit, capacity, qualification, and resource evidence. No fresh-panel truth or prediction payload was opened while preparing it.
+**Status: scored; the registered public-base gate is a qualified negative for `p06_full_record` versus `p06_past_only`, and the task-local decision is to retain `p06_past_only`.** The result is exploratory evidence for this H128 natural panel and is not a canonical dual-benchmark replacement or a universal claim about later activations.
 
 ## Question and frozen scope
 
-P06 asks whether already-observed later-position activations improve reconstruction beyond a past-only activation-context decoder within the fixed H128 decoder family. The primary estimand is `p06_full_record - p06_past_only`; the positionwise diagonal arm is a competent positionwise control. The public changed target is a paired transfer condition. The study remains an exploratory task-local natural-panel result, not a canonical dual-benchmark replacement, overall-best claim, or active-registry update.
+P06 asked whether later-position activations improve reconstruction beyond a past-only activation-context decoder within one fixed H128 decoder family. The primary estimand was `p06_full_record - p06_past_only`; `p06_positionwise_diagonal` was a competent positionwise control. The public changed target was evaluated as a paired transfer condition but was excluded from the registered gate.
 
-All arms use the same public trained affine direct path from TRR-0004 (`historical_affine_ce_no_vocab_bias`, selected public step 1900; state SHA-256 `09c5b852373d8555b06508a79bb00c94041202702b61b121b35fa2b6f9f64e65`), the same normalized F32 public embedding readout, H128 crop, optimizer, fit records, labels, and validation records. The six planned fits use replicate seeds 6106 and 6107. Within each replicate, all three masks consume the same ordered position schedule.
+All three arms used the same inherited public affine direct path, normalized FP32 public embedding readout, H128 crop, optimizer, fit records, labels, validation records, and two replicate seeds (6106 and 6107). The masks and ordered position schedules were shared within each replicate. The diagonal arm has the same nominal parameterization but structurally inactive Q/K paths; its results are a control, not an equal effective-capacity claim.
 
-## Completed preconditions and public fit
+The source-only H128 preflight, disposable full-record backward qualifier, public-fit-error capacity probe, and six main fits passed. The capacity probe was diagnostic only: it used 256 frozen public-fit error positions, 512 with-replacement query draws per update, 300 updates, and discarded states. The six main fits ran 3,000 updates, selected the earliest maximum of micro token accuracy including step 0, and retained separate state and schedule receipts. The earlier missing-observation qualification attempt remains an excluded engineering failure; corrected r2 qualification supplied the release evidence.
 
-The source-only preflight passed at commit `b1bbc75cc9c58f33b96e1e278ad70c41b75a399a`. It bound the 1,200 x 192 x 2,048 source artifact to the H128 crop; positions 0..127 were used and positions 128..191 were ignored before schedule construction, fitting, validation, and metrics. The cropped fit has 112,825 valid post-BOS positions and the common 48-record validation has 2,982.
+## Freeze, scoring, and uncertainty
 
-The disposable two-update full-record backward qualifier passed at commit `925759bfbf57f4167ec6feabb1512fad47bd28d0`. It used the actual 8-record x 128-position full mask, 512 query draws, full-vocabulary readout, and all parameters trainable. Parameters and gradients remained finite, the residual output path became active, and the Q path became active. Its peak receipt reported 2,936,012,800 reserved CUDA bytes, 12,655,263,744 free CUDA bytes, and 5,641,351,168 process RSS bytes. Its state was discarded.
+The complete student matrix and the separate 64-record-per-domain A1+A2 anchor were frozen before truth materialization. The no-truth freeze validated all four domain/target cells, both fit replicates, all three student methods, identical source/mask/position bindings, and both anchor domains. The scored output is `experiments/TRR-P06/runtime/scored-r1/results.json`, SHA-256 `496100a7d00e74fcea71f9392df35b45fb57806bb147ee0b57758932cb3fe224`. Its provenance binds the prediction manifest `6bb3cfcb85b0a704e38d6116af67ba2eeebbacb8926b0e73f540aea60bffbcbb`, joint freeze receipt `d3f7d69a153d045d4b32dfd833125146e611b675b51615fd7ac8c7bc25aa26f7`, source selection `d53ed8c972ec9ec00c6490dca22a99af833ea839fa68d9c4164ce061ee893a1a`, and truth manifest `21c07d64c489e16bd9a220f4175c23d225515c786e659613ee05ec1f01770e48`.
 
-The earlier qualification attempt failed before model computation because the resolved public fit observation file was unavailable (`fit observations must be a regular file: /tmp/trr-p06/outputs/TRR-0005/enriched_fit_cut4.safetensors`). It is retained as an excluded engineering failure; the corrected r2 qualification is the release evidence.
+Each student cell has 256 source records and 127 scored tokens per record, or 32,512 scored tokens. The paired bootstrap used 10,000 draws with seed 6306, domain-only strata, and source-record clusters. The two training replicates were averaged within each source record before resampling; seeds were not treated as independent records. The same source-index schedule was reused across the two target conditions within each domain. Exact-record contrasts use denominator 256.
 
-The frozen-direct public-fit-error capacity probe passed at commit `59abe29be6adb044926b80feac21bc4a9e90e048`. It used 256 public-fit affine-error positions (64 in each declared position bin), initial correctness 0/256, seed 6106, 300 updates, 8-record batches, 512 with-replacement query draws per update, and one shared ordered schedule for all three masks. The final corrected counts were `p06_positionwise_diagonal` 256/256, `p06_past_only` 256/256, `p06_full_record` 255/256; each exceeded the 52/256 threshold. Probe states were diagnostic only and were discarded. The receipt retains hashes and aggregate metrics but not initial/after prediction arrays, so exact row-level replay remains pending; no probe state was used to initialize or select a main fit.
+### Absolute student results
 
-The six main fits passed at commit `f1b35756fc535b5e3350e4edd4feff9e46f80321`. Each ran 3,000 updates with 8-record batches and 512 post-BOS draws per update, with validation every 100 updates and earliest-maximum micro token accuracy selected including step 0. The fit geometry was 1,200 x 128 x 2,048; all six fits used the common H128 crop and full-vocabulary public CE only. The runtime receipt records no target truth access, source-token access, guessed-token feedback, candidate simulations, or A2 student fallback.
+The entries are mean percentages over the two fit replicates. Exact percentages use 256 records; token percentages use 32,512 scored tokens per seed.
 
-### Replicate schedules and initialization
+| Domain | Target | Diagonal token / exact % | Past-only token / exact % | Full-record token / exact % |
+|---|---|---:|---:|---:|
+| finance | `public_base` | 99.0373 / 44.3359 | 99.2557 / 53.1250 | 99.2249 / 51.7578 |
+| finance | `public_lora_2601` | 99.0757 / 46.6797 | 99.2864 / 54.8828 | 99.2664 / 53.9063 |
+| pile | `public_base` | 93.7085 / 3.9063 | 94.4190 / 5.2734 | 94.3544 / 4.4922 |
+| pile | `public_lora_2601` | 93.8669 / 3.7109 | 94.7096 / 4.1016 | 94.5989 / 4.8828 |
 
-- Seed 6106 used schedule SHA-256 `938e392344a701d961a8fd8709a4fd4da478602da198da0bf358aa0a375b280a`, 1,536,000 draws, and 382 repeated draws across two replacement steps; the schedule was shared by all three arms.
-- Seed 6107 used schedule SHA-256 `ab61d30cea3519e37d1a47b3c3d59ce97f7b6abf653cf6d772c6c1b67a41e555`, 1,536,000 draws, and no replacement repeats; it was likewise shared by all three arms.
-- The three seed-6106 arms share initial state SHA-256 `286033e364f0f21740a6548a6c63e7a35ae01bd0b34b411380b8cb5e5c927551`; the three seed-6107 arms share `62694a2036d0bc04555dff33a60268072eb2bec1d40549a14a008cd6b22435b6`.
-- The direct affine state and inherited logit scale were loaded identically into every arm. The diagonal arm has the same nominal parameter count but structurally inactive Q/K gradients; its effective trainable count is reported separately.
+### Registered primary contrast
 
-### Selected public-validation checkpoints
+The gain/loss column reports paired token positions where full-record was correct while past-only was wrong, and the reverse, respectively. These are descriptive rates in percentage points from the replicate-averaged source-record pairs.
 
-| Seed | Arm | Selected step | Best micro token accuracy | Style-balanced token accuracy at selected step | Exact records / 48 | Arm wall time (s) |
-|---:|---|---:|---:|---:|---:|---:|
-| 6106 | `p06_positionwise_diagonal` | 1700 | 0.967807 | 0.955673 | 23 / 48 | 92.202 |
-| 6106 | `p06_past_only` | 1700 | 0.962106 | 0.953837 | 7 / 48 | 91.507 |
-| 6106 | `p06_full_record` | 1700 | 0.962106 | 0.953837 | 7 / 48 | 91.797 |
-| 6107 | `p06_positionwise_diagonal` | 900 | 0.969819 | 0.959748 | 18 / 48 | 91.851 |
-| 6107 | `p06_past_only` | 2000 | 0.971496 | 0.960680 | 20 / 48 | 92.172 |
-| 6107 | `p06_full_record` | 1500 | 0.970490 | 0.959077 | 21 / 48 | 91.662 |
+| Domain | Target | Full − past token delta pp (95% CI) | Full − past exact delta pp (95% CI) | Gains / losses pp |
+|---|---|---:|---:|---:|
+| pile | `public_base` | −0.0646 [−0.1246, 0.0000] | −0.7813 [−1.5625, −0.1953] | 0.2045 / 0.2691 |
+| finance | `public_base` | −0.0308 [−0.0584, −0.0031] | −1.3672 [−2.9297, 0.0000] | 0.0338 / 0.0646 |
+| pile | `public_lora_2601` | −0.1107 [−0.1707, −0.0508] | +0.7813 [+0.1953, +1.5625] | 0.1907 / 0.3014 |
+| finance | `public_lora_2601` | −0.0200 [−0.0415, +0.0015] | −0.9766 [−2.5391, +0.5859] | 0.0246 / 0.0446 |
 
-The six arm wall times sum to 551.192 seconds; measured optimizer update time sums to 520.605 seconds and validation time to 18.316 seconds. The main watchdog completed in 555.367 seconds with no termination action. The child receipts report a maximum process RSS of 5,641,273,344 bytes and maximum CUDA reserved memory of 3,183,476,736 bytes; the watchdog's sampled group-RSS maximum was 4,629,921,792 bytes. These are fit costs and guards, not fresh-panel prediction latency.
+The registered public-base thresholds were a 1 percentage-point token benefit and a 5 percentage-point exact-record benefit, with corresponding −1 and −5 percentage-point harm bounds. Neither public-base arm supported the benefit threshold. Both public-base token intervals had upper bounds at or below zero, and both exact intervals had upper bounds at zero or below. The gate therefore returned `QUALIFIED_NEGATIVE_RETAIN_PAST_ONLY`; its harm bound was cleared, so this is a qualified failure to show the predeclared benefit rather than evidence of a large harmful effect.
 
-Learning-curve receipts are retained per arm under `experiments/TRR-P06/runtime/main-r1/seed-*/p06_*/learning_curve.json`; the compact hashes and selected/step-zero/final summaries are in `experiments/TRR-P06/review/training-summary.json`. The capacity curves and their hashes are recorded there as well.
+Full-record did beat the diagonal control on token accuracy in all four cells. The full-minus-diagonal token deltas were +0.1876 pp (finance base), +0.1907 pp (finance changed target), +0.6459 pp (pile base), and +0.7320 pp (pile changed target), with all four 95% intervals above zero. Exact-record improvements were less stable in the pile cells. This shows that the full path is functioning as a contextual control, while the primary comparison shows no added value over the past-only path on this panel.
 
-## Native and benchmark limits
+### Position bins
 
-The planned A1+A2 K=256 quality anchor is a benchmark-compatible CPU embedding port of the published parent decision rule. Its exact adaptations and separate per-domain denominator must be reported with the eventual anchor results; it must not be described as a native rerun. The P06 visibility arms are new task-local fits and are not a replacement for the canonical dual-benchmark matrix.
+The following are descriptive mean token deltas for full-record minus past-only across the two seeds. Bins are positions 1–15, 16–39, 40–79, and 80–127; they are not separately bootstrapped gate criteria.
 
-## Pending evidence and decision
+| Domain | Target | Early | Early-middle | Late-middle | Near-end |
+|---|---|---:|---:|---:|---:|
+| finance | `public_base` | 0.0000 | −0.0570 | −0.0635 | 0.0000 |
+| finance | `public_lora_2601` | 0.0000 | −0.0163 | −0.0098 | −0.0366 |
+| pile | `public_base` | −0.0911 | −0.0244 | +0.0244 | −0.1506 |
+| pile | `public_lora_2601` | −0.1953 | −0.1058 | −0.0732 | −0.1180 |
 
-The following remain deliberately pending: frozen natural-panel source and observation receipts, all student and anchor prediction artifacts, the create-only joint-freeze receipt, truth manifest with source-order and final-sequence binding, post-freeze metrics, paired source-record bootstrap, position-bin diagnostics, and the registered public-base Full-Past gate. The final report must keep public-base and changed-target cells separate, average the two fit replicates within each source record before bootstrap, and retain the anchor’s separate denominator.
+There is no consistent late-position recovery. The natural Pile panel shows the largest full-record losses, including the near-end bin; the changed target does not reverse that pattern.
 
-Until those receipts exist, the scientific outcome is **PENDING**. No statement about later-activation benefit, harm, qualified negative, transfer, or inconclusive scoring is made from the public-fit learning curves or capacity probe.
+## A1+A2 anchor and cost
 
-Receipt inventory and hashes are in `experiments/TRR-P06/review/training-summary.json`. The complete planned scope remains in `experiments/TRR-P06/plan.json` and the design rationale in `experiments/TRR-P06/review/design-review.md`.
+The anchor is a benchmark-compatible CPU-embedding port of the retained A1+A2 K=256 decision rule. It uses the first 64 public-base records per domain and has a separate denominator from the student matrix. Finance scored 8,119/8,128 tokens and 61/64 exact records (99.8893% and 95.3125%); Pile scored 8,104/8,128 and 58/64 (99.7047% and 90.625%). The port must not be described as a native published-parent rerun.
+
+The student prediction receipts report batch-8 throughput-derived measured costs of approximately 3.95–4.03 ms per record, with maximum CUDA reserved memory 2,661,285,888 bytes and process RSS 3,606,114,304 bytes. These are batch-throughput figures, not single-record latency. The anchor measured 53.9515 seconds for Pile and 53.9755 seconds for Finance, about 843 ms per record, with 4,161,536 candidate simulations per domain and maximum CUDA reserved memory 5,385,486,336 bytes. The six public fits summed to 551.192 seconds; these fit costs are separate from prediction and anchor costs.
+
+The public capture child returned successfully and all four inner forward qualifications passed, but its outer watchdog was retained as a `FAIL_CLOSED` post-exit `/proc` race. The report makes no clean-watchdog claim for that capture. This exception does not alter the frozen observation hashes accepted before scoring.
+
+## Decision and limits
+
+Later-position observations did not provide a useful promotion signal for this fixed H128 full-record variant: on the registered public-base comparison, full-record was slightly below past-only in both domains, and the paired intervals excluded the predeclared practical benefit. The changed-target results were supporting transfer evidence only and were not used to select a method or trigger the gate.
+
+The next decision is to stop promotion of `p06_full_record` and retain `p06_past_only` as the task-local arm for this family; do not spend another run collecting the same later-position observations under the same mask and objective. The result does not establish that every architecture or objective should ignore later positions. A future attempt would need a new, predeclared mechanism or hypothesis that explains why later observations should add information beyond the past-only path, rather than a repeat of this static full-record variant.
+
+This remains an exploratory P06 natural-panel result. It does not replace the canonical dual-benchmark matrix, establish an overall best reconstruction method, or authorize an active-registry update. The complete public-fit and resource history remains in `experiments/TRR-P06/review/training-summary.json`; the frozen design and gates remain in `experiments/TRR-P06/plan.json`.
