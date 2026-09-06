@@ -574,14 +574,26 @@ def _cuda_guard(device: torch.device, *, stage: str, started: float) -> dict[str
         raise TargetPreparationError(f"CUDA resource data unavailable at {stage}") from exc
     host_available = _read_mem_available_bytes()
     rss = _max_rss_bytes()
+    # Include a compact numeric snapshot in any fail-closed diagnostic.  The
+    # main failure receipt remains metadata-only, but this preserves the actual
+    # allocation at the boundary where a child exits before its normal peak
+    # summary can be written.
+    allocated = int(torch.cuda.memory_allocated(device))
+    peak_allocated = int(torch.cuda.max_memory_allocated(device))
+    peak_reserved = int(torch.cuda.max_memory_reserved(device))
+    snapshot = (
+        f"stage={stage} free={int(free)} total={int(total)} reserved={reserved} "
+        f"allocated={allocated} peak_allocated={peak_allocated} peak_reserved={peak_reserved} "
+        f"host_available={int(host_available)} rss={int(rss)}"
+    )
     if free < MIN_FREE_GPU_BYTES:
-        raise TargetPreparationError(f"target resource guard free GPU limit at {stage}: {free}")
+        raise TargetPreparationError(f"target resource guard free GPU limit: {snapshot}")
     if reserved > MAX_RESERVED_GPU_BYTES:
-        raise TargetPreparationError(f"target resource guard reserved GPU limit at {stage}: {reserved}")
+        raise TargetPreparationError(f"target resource guard reserved GPU limit: {snapshot}")
     if host_available < MIN_HOST_AVAILABLE_BYTES:
-        raise TargetPreparationError(f"target resource guard host availability limit at {stage}: {host_available}")
+        raise TargetPreparationError(f"target resource guard host availability limit: {snapshot}")
     if rss > MAX_HOST_RSS_BYTES:
-        raise TargetPreparationError(f"target resource guard host RSS limit at {stage}: {rss}")
+        raise TargetPreparationError(f"target resource guard host RSS limit: {snapshot}")
     return {
         "stage": stage,
         "status": "PASS",
