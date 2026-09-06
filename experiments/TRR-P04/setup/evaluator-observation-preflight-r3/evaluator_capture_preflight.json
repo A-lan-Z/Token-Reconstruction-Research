@@ -1,0 +1,95 @@
+{
+  "access": {
+    "evaluation_truth_opened": false,
+    "model_loaded": false,
+    "selection_metadata_read": true,
+    "source_rows_read": false,
+    "target_update_loaded": false
+  },
+  "created_utc": "2026-09-06T02:15:17Z",
+  "execution": {
+    "argv": [
+      "scripts/trr_p04/prepare_evaluator_observations.py",
+      "--selection",
+      "experiments/TRR-P04/setup/public_selection-r2.json",
+      "--target-plan",
+      "experiments/TRR-P04/setup/evaluator_target_plan.json",
+      "--output-root",
+      "experiments/TRR-P04/setup/evaluator-observation-preflight-r3",
+      "--preflight-only"
+    ],
+    "elapsed_seconds": 0.0073,
+    "git_commit": "81542a6ac87b22ca3a1b9a48dacf1e0e0afb1bf3",
+    "max_rss_bytes": 848445440,
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "python": "3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]",
+    "safe_environment": {
+      "PYTHONPATH": ".:src"
+    }
+  },
+  "expected_outputs": {
+    "evidence": "capture_evidence.json",
+    "index": "observation_index.json",
+    "p04_evaluator_target_update_v1": "observations/p04_evaluator_target_update_v1.safetensors",
+    "public_base": "observations/public_base.safetensors"
+  },
+  "forbidden_serialized_fields": [
+    "token_ids",
+    "input_ids",
+    "labels",
+    "source_text",
+    "truth",
+    "oracle",
+    "target_weights"
+  ],
+  "geometry": {
+    "anchor_post_bos_positions_per_target": 384,
+    "anchor_records": 12,
+    "capture_batch_size": 8,
+    "cut_depth": 4,
+    "hidden_size": 2048,
+    "padded_tokens_including_bos": 192,
+    "paired_conditions": [
+      "public_base",
+      "p04_evaluator_target_update_v1"
+    ],
+    "records_per_condition": 72
+  },
+  "schema": "token-reconstruction.trr-p04-evaluator-observations.v1-preflight.v1",
+  "selection": {
+    "anchor_count": 12,
+    "anchor_order_sha256": "906fc833e77fe677b8ba6562e2b22f0ccd9956d592441659e1c64cc035da8073",
+    "path": "/tmp/trr-p04/experiments/TRR-P04/setup/public_selection-r2.json",
+    "record_count": 72,
+    "record_order_sha256": "53f165364993845f217acd3ba9d066e3a76021d22741084a99bd92c5145127ae",
+    "sha256": "05f941e0dbcf29ea3efc47c7bc8abb3a7146a266eeea770f05052bb7728cde6a"
+  },
+  "serialized_observation_keys": [
+    "activations",
+    "attention_mask",
+    "position_ids"
+  ],
+  "status": "PASS_NO_MODEL_NO_TARGET_NO_TRUTH",
+  "target_plan": {
+    "condition_id": "p04_evaluator_target_update_v1",
+    "config": {
+      "alpha": 4.0,
+      "layers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "modules": [
+        "q_proj",
+        "v_proj"
+      ],
+      "rank": 4
+    },
+    "lineage_id": "p04-target-lora-no-robots-v1-seed20260910",
+    "path": "/tmp/trr-p04/experiments/TRR-P04/setup/evaluator_target_plan.json",
+    "seed": 20260910,
+    "sha256": "d7beca5c291a9ce6d92cf33cddde3046c9b55fc839d3a596430b862df9728188"
+  },
+  "task_id": "TRR-P04"
+}
