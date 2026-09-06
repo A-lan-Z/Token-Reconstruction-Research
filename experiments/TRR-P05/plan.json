@@ -1,0 +1,77 @@
+{
+  "schema": "token-reconstruction.trr-p05-plan.v1",
+  "task_id": "TRR-P05",
+  "status": "PROPOSED_BOUNDED_DIAGNOSTIC",
+  "objective": "Diagnose whether the P04 D ranking loss produced measurable teacher-order learning, and whether that signal conflicts with gold-token reconstruction, without fitting or evaluating a new model.",
+  "scope": {
+    "new_optimizer_steps": false,
+    "new_fits": false,
+    "coefficient_or_temperature_sweep": false,
+    "new_target_or_hidden_evaluation": false,
+    "public_only": true,
+    "p03_holdout_or_agent_one_data": false
+  },
+  "public_sample": {
+    "source_pool": "P04 public correction capture",
+    "teacher_positions": 384,
+    "teacher_position_definition": "all immutable P04 teacher-evidence rows: 256 difficult_a1_error and 128 uniform_audit",
+    "non_teacher_positions": 384,
+    "non_teacher_position_definition": "deterministic seed-20260909 sample of active correction positions absent from teacher evidence; no teacher scores or rank labels are fabricated",
+    "total_positions": 768,
+    "source_record_grouping": true,
+    "full_vocabulary": true,
+    "metrics": [
+      "token accuracy",
+      "gold-minus-best-other full-vocabulary margin",
+      "teacher non-gold adjacent-pair order agreement",
+      "original P04 weighted adjacent-pair softplus loss",
+      "retained pair and omitted near-tie counts"
+    ]
+  },
+  "states": {
+    "initial_reference": "PR7 public affine W,b,s evaluated as the zero-residual GRU step-zero function; no unrecorded GRU initial checkpoint or trajectory is reconstructed",
+    "selected": "P04 selected S, H, and D states for seeds 1737 and 2711",
+    "final": "all six P04 final S, H, and D states for seeds 1737 and 2711 are expected from the inherited public artifact; missing any required state is fail-closed",
+    "initial_affine_reference": "one PR7 public affine W,b,s state evaluated as the zero-residual GRU step-zero function",
+    "state_selection": "P04 selected states remain the primary stored checkpoint comparison; final states are descriptive only and never used to change P04 selection"
+  },
+  "gradient_diagnostic": {
+    "states": "selected H plus selected and final D states at seeds 1737 and 2711 (24 state-by-schedule cells)",
+    "batch": "four predeclared original P04 schedule batches per seed at zero-based steps [0, 999, 1999, 2999], retaining each batch's six replay/two correction record geometry and sparse teacher mask; if all four have zero teacher rows, replace only step 2999 with the first teacher-active step identified from schedule metadata",
+    "components": ["full CE", "hard-confusion softplus", "teacher-ranking softplus", "negative gold-margin direction (diagnostic only)"],
+    "reported": [
+      "raw component loss and gradient norm",
+      "weighted gradient norm using actual P04 weights",
+      "pair-weight sum, retained pair count, active row count",
+      "pairwise cosine alignment on shared trainable parameters",
+      "aggregate pre-clip norm and global clip factor for clip norm 1.0"
+    ],
+    "updates_applied": false,
+    "trajectory_claim": false
+  },
+  "frozen_objective_details": {
+    "ce_reduction": "mean over active diagnostic rows",
+    "hard_reduction": "per-row mean over candidate negatives, then mean over active rows",
+    "rank_reduction": "weighted mean over all retained adjacent non-gold pairs in active teacher rows: sum(weight*softplus)/sum(weight), not a row mean",
+    "hard_weight": 0.25,
+    "rank_weight": 0.25,
+    "rank_temperature": 1.0,
+    "rank_tie_tolerance": 0.00014523349702358246,
+    "rank_sigma_q": 0.014523349702358246,
+    "gradient_clip_norm": 1.0
+  },
+  "disposition_rules": {
+    "ranking_learned_but_harmful": "teacher-order agreement/loss improves while gold margins or accuracy move adversely; retire this objective for search-free inference",
+    "specific_conflict": "only if component gradients show reproducible opposing alignment and a concrete scaling/optimization conflict; describe one future discriminating experiment without running it",
+    "insufficient_learning": "if order agreement/loss does not improve or evidence is too sparse, retain P04 negative and leave broader teacher-transfer question unresolved"
+  },
+  "reproducibility": {
+    "sample_seed": 20260909,
+    "schedule_steps": [0, 999, 1999, 2999],
+    "threads": 4,
+    "device": "local CUDA if bounded resource check passes; otherwise CPU",
+    "deterministic_algorithms": "inherit the exact P04 runtime setting; no diagnostic-only numerical-kernel or batching change",
+    "projection_chunk": 512,
+    "no_truth_files": true
+  }
+}
