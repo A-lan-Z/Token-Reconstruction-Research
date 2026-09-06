@@ -1,0 +1,38 @@
+{
+  "schema": "token-reconstruction.trr-p05-diagnostic-plan.v1",
+  "task_id": "TRR-P05",
+  "status": "DRAFT_INPUT_FOR_IMPLEMENTATION_AND_DESIGN",
+  "inventory": "experiments/TRR-P05/setup/asset_inventory.json",
+  "scope": "Existing public P04 states, public correction/validation activations, cached teacher pairs, and logs only; no updates or new data.",
+  "questions": [
+    "Does D reproduce the teacher non-gold order and ranking loss on supervised rows?",
+    "Does any ranking improvement coexist with lower gold margins or token accuracy?",
+    "Are ranking, hard-confusion, and CE gradients aligned or competing on shared parameters?"
+  ],
+  "fixed_inputs": {
+    "states": "inventory.checkpoints.states; selected and final payloads only",
+    "public_correction": "inventory.public_pools.correction",
+    "public_validation": "inventory.public_pools.validation",
+    "teacher_cache": "inventory.candidate_and_teacher_cache.teacher_pair_cache",
+    "schedules_and_logs": "inventory.schedules and inventory.training_logs"
+  },
+  "planned_reports": [
+    "Per-state full-vocabulary accuracy and gold-versus-best-other margins on correction and validation pools.",
+    "Teacher pair-order agreement and P04 ranking loss, split by difficult_a1_error and uniform_audit rows, then fixed non-teacher complement.",
+    "Loss-specific gradient norms and pairwise cosine alignment on shared trainable parameters, with row/pair denominators and clipping threshold.",
+    "A bounded disposition that distinguishes ranking learned-but-not-useful, objective conflict, or insufficient transfer evidence while preserving P04’s negative result."
+  ],
+  "truth_boundary": {
+    "evaluation_truth_accessed": false,
+    "public_labels_allowed": true,
+    "private_target_or_holdout_allowed": false,
+    "state_or_model_selection_after_metrics": false,
+    "parameter_updates": false
+  },
+  "reproducibility": {
+    "diagnostic_seed": 20260912,
+    "sample_rule": "source-order fixed rows declared in inventory; no adaptive sampling",
+    "tie_rule": "P04 cached sigma_q/tie_tolerance and descending score then ascending token ID only inside the public cached pair artifact",
+    "trajectory_reconstruction": false
+  }
+}
