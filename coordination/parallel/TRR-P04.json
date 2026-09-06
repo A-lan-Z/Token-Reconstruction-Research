@@ -8,7 +8,7 @@
     "public_capture_authorized_by_root": true,
     "public_capture_model_loaded": true,
     "shared_protocols_modified": false,
-    "stage2_or_holdout_status": "not applicable at setup",
+    "stage2_or_holdout_status": "not applicable; P04 has no second holdout",
     "target_update_accessed": true,
     "native_anchor_run": true,
     "native_anchor_target_update_loaded": false,
@@ -37,7 +37,7 @@
     "verified_commit": "6e8b683e404c0acb70cd59b7dd6d6868b2061f61"
   },
   "pending": [
-    "root/design final report review and publication curation",
+    "root/design report review and publication curation",
     "root publication commit and PR metadata review"
   ],
   "public_capture": {
@@ -134,9 +134,11 @@
     "joint_freeze": "experiments/TRR-P04/runtime/freeze.json",
     "score": "experiments/TRR-P04/runtime/score/evaluator_score_r1.json",
     "truth_materialization_watchdog": "experiments/TRR-P04/runtime/watchdog/evaluator-truth-materialization-r1/finish.json",
-    "score_watchdog": "experiments/TRR-P04/runtime/watchdog/evaluator-score-r1/finish.json"
+    "score_watchdog": "experiments/TRR-P04/runtime/watchdog/evaluator-score-r1/finish.json",
+    "validation_receipt": "experiments/TRR-P04/runtime/task-validation-r1/validation_receipt.json",
+    "derived_result_tables": "coordination/results/TRR-P04-derived-tables.json"
   },
-  "status": "TRUTH_SCORED_FINALIZATION_PENDING",
+  "status": "SCIENTIFIC_COMPLETE_PUBLICATION_PENDING",
   "task_id": "TRR-P04",
   "worktree": "/tmp/trr-p04",
   "evaluator_anchor": {
@@ -207,7 +209,8 @@
       "status": "READY_FOR_ROOT_PUBLICATION_REVIEW"
     },
     "truth_payloads_excluded": true,
-    "score_artifact_present": true
+    "score_artifact_present": true,
+    "included_compact_artifacts": 75
   },
   "evidence_pointers": {
     "command_plan": {
@@ -228,6 +231,23 @@
       "role": "truth-gated score artifact",
       "status": "COMPLETED",
       "publication": "include"
+    },
+    "validation_receipt": {
+      "path": "experiments/TRR-P04/runtime/task-validation-r1/validation_receipt.json",
+      "role": "focused CPU-only validation and publication audit receipt",
+      "status": "PASS_34_OF_34",
+      "publication": "include",
+      "bytes": 5861,
+      "sha256": "3c0091f8bc2dbb85acdb4b66509f1e7e73b5356cd48655f4de80faff0997828e"
+    },
+    "derived_tables": {
+      "path": "coordination/results/TRR-P04-derived-tables.json",
+      "role": "compact post-score derived tables without token IDs or truth rows",
+      "status": "COMPLETED_POST_SCORE",
+      "publication": "include",
+      "bytes": 58633,
+      "sha256": "1821be64925e21fa70dc470a7505f3737eee129cdb507e1ff22b65090614cf56",
+      "truth_rows_embedded": false
     }
   }
 }

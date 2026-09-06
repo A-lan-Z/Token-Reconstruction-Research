@@ -1,10 +1,10 @@
 {
   "schema": "token-reconstruction.trr-p04.manifest.v1",
   "task_id": "TRR-P04",
-  "status": "SCORED_TRUTH_GATED_FINALIZATION_PENDING",
-  "claim_status": "Fresh paired 72-record evaluation completed after a strict joint freeze and truth gate. Student/reference predictions, native anchors, and score diagnostics are complete; root/design report and publication curation remain pending.",
+  "status": "SCIENTIFIC_COMPLETE_PUBLICATION_PENDING",
+  "claim_status": "Scientific comparison is complete on the frozen paired 72-record natural panel: D underperformed H and S in both public and evaluator target conditions, while S versus affine was near zero with intervals spanning zero. The separate PR7-compatible native A1+A2 numerical port recovered 384/384 public-anchor positions and 383/384 evaluator-target positions. Root publication curation remains pending.",
   "created_utc": "2026-09-06T03:57:29.442249Z",
-  "updated_utc": "2026-09-06T04:25:21Z",
+  "updated_utc": "2026-09-06T04:38:59Z",
   "purpose": "Evaluate whether offline hard-confusion or privileged teacher-score supervision improves a causal activation-only student on a fresh paired natural panel, with a separate PR7-compatible native A1+A2 anchor.",
   "authority": {
     "charter": {
@@ -56,11 +56,11 @@
   "coordination": {
     "task_state": {
       "path": "coordination/parallel/TRR-P04.json",
-      "role": "task-local coordination state",
-      "status": "COMPLETED",
+      "role": "compact task-local coordination state",
+      "status": "SCIENTIFIC_COMPLETE_PUBLICATION_PENDING",
       "publication": "include",
-      "bytes": 10576,
-      "sha256": "c4cbac8d952b9aff1db666e8b112f5007bcca616f2c57bc845e356eac64daf48"
+      "bytes": 11573,
+      "sha256": "5b64ac0b49701f7e269c18c12825d09f77d3f2531f8d873e7df7419262b1bdbb"
     },
     "phase_map": {
       "path": "experiments/TRR-P04/setup/evaluator_capture_phase_map.json",
@@ -80,11 +80,11 @@
     },
     "publication_files": {
       "path": "experiments/TRR-P04/publication-files.json",
-      "role": "publication allowlist",
+      "role": "curated publication allowlist and exclusions",
       "status": "READY_FOR_ROOT_PUBLICATION_REVIEW",
       "publication": "include",
-      "bytes": 29538,
-      "sha256": "7bd200ed46b2a16fb0e03f875ce24030b7fef79d56d82fe2f73faa6f0339cb0e"
+      "bytes": 30434,
+      "sha256": "b03be0ab9459ae1d84158cd3c3c5069948736fb466a0b88f8509bab92b005f00"
     },
     "global_state_modified": false,
     "active_method_registry_modified": false,
@@ -645,7 +645,7 @@
     "fresh_accuracy_metrics": "COMPLETED",
     "student_method_attribution": "COMPLETED_IN_SCORE_ARTIFACT",
     "native_anchor_truth_metrics": "COMPLETED_IN_SCORE_ARTIFACT",
-    "publication_finalization": "PENDING_ROOT_DESIGN_REVIEW"
+    "publication_finalization": "PENDING_ROOT_PUBLICATION_REVIEW"
   },
   "runtime_runs": {
     "target_qualifier_r5": "experiments/TRR-P04/runtime/evaluator-target-qualifier-r5/target_qualification_receipt.json",
@@ -658,17 +658,19 @@
     "truth_materialization_receipt": "/tmp/trr-p04-evaluator-truth-v1/truth_materialization_receipt.json",
     "truth_materialization_watchdog": "experiments/TRR-P04/runtime/watchdog/evaluator-truth-materialization-r1/finish.json",
     "score": "experiments/TRR-P04/runtime/score/evaluator_score_r1.json",
-    "score_watchdog": "experiments/TRR-P04/runtime/watchdog/evaluator-score-r1/finish.json"
+    "score_watchdog": "experiments/TRR-P04/runtime/watchdog/evaluator-score-r1/finish.json",
+    "validation_receipt": "experiments/TRR-P04/runtime/task-validation-r1/validation_receipt.json",
+    "derived_tables": "coordination/results/TRR-P04-derived-tables.json"
   },
   "artifact_inventory": {
     "publication_inventory": {
       "path": "experiments/TRR-P04/publication-files.json",
-      "role": "publication allowlist",
+      "role": "curated publication allowlist and exclusions",
       "status": "READY_FOR_ROOT_PUBLICATION_REVIEW",
-      "bytes": 29538,
-      "sha256": "7bd200ed46b2a16fb0e03f875ce24030b7fef79d56d82fe2f73faa6f0339cb0e"
+      "bytes": 30434,
+      "sha256": "b03be0ab9459ae1d84158cd3c3c5069948736fb466a0b88f8509bab92b005f00"
     },
-    "included_compact_artifacts": 73,
+    "included_compact_artifacts": 75,
     "excluded_entries": 19,
     "large_payloads_excluded": true,
     "truth_payloads_excluded": true
@@ -846,10 +848,27 @@
         "sha256": "471c0325430f800aea462f87f4e1d432a95edf653710aa447b759ecb5d982ffb",
         "role": "score watchdog finish"
       }
+    },
+    "validation_receipt": {
+      "path": "experiments/TRR-P04/runtime/task-validation-r1/validation_receipt.json",
+      "role": "focused CPU-only validation and publication audit receipt",
+      "status": "PASS_34_OF_34",
+      "publication": "include",
+      "bytes": 5861,
+      "sha256": "3c0091f8bc2dbb85acdb4b66509f1e7e73b5356cd48655f4de80faff0997828e"
+    },
+    "derived_tables": {
+      "path": "coordination/results/TRR-P04-derived-tables.json",
+      "role": "compact post-score derived tables without token IDs or truth rows",
+      "status": "COMPLETED_POST_SCORE",
+      "publication": "include",
+      "bytes": 58633,
+      "sha256": "1821be64925e21fa70dc470a7505f3737eee129cdb507e1ff22b65090614cf56",
+      "truth_rows_embedded": false
     }
   },
   "publication": {
-    "status": "READY_FOR_ROOT_PUBLICATION_REVIEW",
+    "status": "PENDING_ROOT_PUBLICATION_REVIEW",
     "inventory": "experiments/TRR-P04/publication-files.json",
     "include_compact_receipts_and_source": true,
     "include_predictions_after_joint_freeze": true,
@@ -1336,6 +1355,15 @@
       "per_target_style_length_required": true,
       "pooled_overall_inference": false
     },
-    "truth_token_rows_embedded": false
+    "truth_token_rows_embedded": false,
+    "derived_tables": {
+      "path": "coordination/results/TRR-P04-derived-tables.json",
+      "role": "compact post-score derived tables without token IDs or truth rows",
+      "status": "COMPLETED_POST_SCORE",
+      "publication": "include",
+      "bytes": 58633,
+      "sha256": "1821be64925e21fa70dc470a7505f3737eee129cdb507e1ff22b65090614cf56",
+      "truth_rows_embedded": false
+    }
   }
 }

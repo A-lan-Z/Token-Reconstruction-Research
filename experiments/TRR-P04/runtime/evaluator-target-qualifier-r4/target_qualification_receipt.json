@@ -1,0 +1,194 @@
+{
+  "access": {
+    "evaluation_truth_opened": false,
+    "source_text_serialized": false,
+    "source_tokens_serialized": false,
+    "target_update_written": false
+  },
+  "created_utc": "2026-09-06T03:21:51Z",
+  "dataset": {
+    "arrow": {
+      "bytes": 16503208,
+      "hash_recorded": true,
+      "path": "/home/alanz/.cache/huggingface/datasets/HuggingFaceH4___no_robots/default/0.0.0/e6f9a4ac5c37faeb744ba9ecf0473184d7f8105b/no_robots-train.arrow",
+      "sha256": "5a9193e927d899d167fd40553d0b403499f5f9cf9a9254db19399a4d0b3550fb"
+    },
+    "dataset_id": "HuggingFaceH4/no_robots",
+    "dataset_info": {
+      "bytes": 1158,
+      "path": "/home/alanz/.cache/huggingface/datasets/HuggingFaceH4___no_robots/default/0.0.0/e6f9a4ac5c37faeb744ba9ecf0473184d7f8105b/dataset_info.json",
+      "sha256": "5b18eaa76054da66839dd9c4bab7069504ea8072f917948d9adc1e00aec84b7d"
+    },
+    "dataset_revision": "e6f9a4ac5c37faeb744ba9ecf0473184d7f8105b",
+    "split": "train"
+  },
+  "execution": {
+    "argv": [
+      "scripts/trr_p04/prepare_evaluator_target.py",
+      "--qualify-only",
+      "--plan",
+      "experiments/TRR-P04/setup/evaluator_target_plan.json",
+      "--selection",
+      "experiments/TRR-P04/setup/public_selection-r2.json",
+      "--dataset-arrow",
+      "/home/alanz/.cache/huggingface/datasets/HuggingFaceH4___no_robots/default/0.0.0/e6f9a4ac5c37faeb744ba9ecf0473184d7f8105b/no_robots-train.arrow",
+      "--tokenizer",
+      "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+      "--model-snapshot",
+      "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+      "--output-root",
+      "experiments/TRR-P04/runtime/evaluator-target-qualifier-r4",
+      "--device",
+      "cuda"
+    ],
+    "device": "cuda",
+    "elapsed_seconds": 4.583188,
+    "git_commit": "2488c6ece1f30a219c2c881f5e75e773b473a83f",
+    "max_rss_bytes": 3705749504,
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "python": "3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]",
+    "safe_environment": {
+      "CUDA_VISIBLE_DEVICES": "0",
+      "HF_DATASETS_OFFLINE": "1",
+      "HF_HUB_OFFLINE": "1",
+      "MKL_NUM_THREADS": "4",
+      "OMP_NUM_THREADS": "4",
+      "PYTHONPATH": ".:src",
+      "TOKENIZERS_PARALLELISM": "false",
+      "TRANSFORMERS_OFFLINE": "1"
+    },
+    "torch": "2.10.0+cu128"
+  },
+  "geometry": {
+    "batch_records": 8,
+    "hidden_size": 2048,
+    "tokens_including_bos": 192,
+    "vocabulary_size": 128256
+  },
+  "mode": "qualify",
+  "plan": {
+    "condition_id": "p04_evaluator_target_update_v1",
+    "config": {
+      "alpha": 4.0,
+      "family": "evaluator_only_lora",
+      "gradient_clip_norm": 1.0,
+      "initialization_seed": 20260910,
+      "layers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "learning_rate": 0.00075,
+      "maximum_tokens_including_bos": 192,
+      "modules": [
+        "q_proj",
+        "v_proj"
+      ],
+      "optimizer": "AdamW",
+      "rank": 4,
+      "record_batch_size": 8,
+      "steps": 30,
+      "target_update_path": "experiments/TRR-P04/private/evaluator_target_update/p04_evaluator_target_update_v1.safetensors",
+      "weight_decay": 0.0
+    },
+    "lineage_id": "p04-target-lora-no-robots-v1-seed20260910",
+    "path": "/tmp/trr-p04/experiments/TRR-P04/setup/evaluator_target_plan.json",
+    "selection": {
+      "records": 256,
+      "row_order_sha256": "42fb5bb7dfc58dba8ccf9e3b288e787fd88cc1788e936ee934cfbbdc86de2fd2",
+      "seed": 20260910
+    },
+    "sha256": "55f5cc5ecc90599d8983ea1fa23d81a5a062178fd5dde6c9d19359c9fcc54fc2"
+  },
+  "resource_guard": {
+    "peak": {
+      "cuda_peak_allocated_bytes": 8920350208,
+      "cuda_peak_reserved_bytes": 9133096960,
+      "host_max_rss_bytes": 3705749504
+    },
+    "samples": [
+      {
+        "elapsed_seconds": 3.162116,
+        "free_bytes": 15679356928,
+        "host_mem_available_bytes": 21333168128,
+        "maximum_host_rss_bytes": 17179869184,
+        "maximum_reserved_gpu_bytes": 10737418240,
+        "minimum_free_gpu_bytes": 5368709120,
+        "minimum_host_available_bytes": 10737418240,
+        "reserved_bytes": 0,
+        "rss_bytes": 1218265088,
+        "stage": "before_target_model_load",
+        "status": "PASS",
+        "total_bytes": 17066033152
+      },
+      {
+        "elapsed_seconds": 3.726758,
+        "free_bytes": 13137608704,
+        "host_mem_available_bytes": 21323325440,
+        "maximum_host_rss_bytes": 17179869184,
+        "maximum_reserved_gpu_bytes": 10737418240,
+        "minimum_free_gpu_bytes": 5368709120,
+        "minimum_host_available_bytes": 10737418240,
+        "reserved_bytes": 2474639360,
+        "rss_bytes": 3705749504,
+        "stage": "after_target_model_load",
+        "status": "PASS",
+        "total_bytes": 17066033152
+      },
+      {
+        "elapsed_seconds": 3.728179,
+        "free_bytes": 13137608704,
+        "host_mem_available_bytes": 21323325440,
+        "maximum_host_rss_bytes": 17179869184,
+        "maximum_reserved_gpu_bytes": 10737418240,
+        "minimum_free_gpu_bytes": 5368709120,
+        "minimum_host_available_bytes": 10737418240,
+        "reserved_bytes": 2474639360,
+        "rss_bytes": 3705749504,
+        "stage": "after_target_lora_install",
+        "status": "PASS",
+        "total_bytes": 17066033152
+      },
+      {
+        "elapsed_seconds": 4.576537,
+        "free_bytes": 6458179584,
+        "host_mem_available_bytes": 20253335552,
+        "maximum_host_rss_bytes": 17179869184,
+        "maximum_reserved_gpu_bytes": 10737418240,
+        "minimum_free_gpu_bytes": 5368709120,
+        "minimum_host_available_bytes": 10737418240,
+        "reserved_bytes": 9133096960,
+        "rss_bytes": 3705749504,
+        "stage": "after_training_step_01",
+        "status": "PASS",
+        "total_bytes": 17066033152
+      }
+    ],
+    "status": "PASS"
+  },
+  "schema": "token-reconstruction.evaluator-target-lora.v1-qualification.v1",
+  "selection": {
+    "path": "/tmp/trr-p04/experiments/TRR-P04/setup/public_selection-r2.json",
+    "records": 256,
+    "sha256": "05f941e0dbcf29ea3efc47c7bc8abb3a7146a266eeea770f05052bb7728cde6a"
+  },
+  "status": "PASS_TARGET_WORST_GEOMETRY_QUALIFICATION_NO_ARTIFACT",
+  "task_id": "TRR-P04",
+  "training": {
+    "gradient_norms": [
+      0.4572186768054962
+    ],
+    "loss_first": 3.788069009780884,
+    "loss_last": 3.788069009780884,
+    "loss_min": 3.788069009780884,
+    "losses": [
+      3.788069009780884
+    ],
+    "mean_step_seconds": 0.8473429739970015,
+    "step_seconds": [
+      0.8473429739970015
+    ],
+    "steps": 1
+  }
+}
