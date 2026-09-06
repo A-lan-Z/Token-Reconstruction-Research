@@ -1,7 +1,7 @@
 {
   "schema": "token-reconstruction.trr-p05-publication-inventory.v1",
   "task_id": "TRR-P05",
-  "status": "SCIENTIFIC_COMPLETE_PUBLICATION_PENDING",
+  "status": "SCIENTIFIC_COMPLETE_PUBLICATION_COMPLETE",
   "generated_utc": "2026-09-06T08:04:54Z",
   "git": {
     "branch": "task/TRR-P05",
@@ -12,7 +12,8 @@
     "parent_pr": 10,
     "parent_pr_state": "OPEN_UNMERGED",
     "merge_allowed": false,
-    "publication_owner": "root"
+    "publication_owner": "root",
+    "published_evidence_commit": "7abfd6404ce1c73735d76cac98b5de036f71685a"
   },
   "allowlist_policy": {
     "include_scope": "P05 code, plans, provenance metadata, approved result report, compact runtime receipts, task-sized forward/gradient outputs, validation evidence, and derived metrics",
@@ -31,8 +32,8 @@
       "path": "coordination/parallel/TRR-P05.json",
       "role": "compact task-local state",
       "status": "READY_FINAL_METADATA",
-      "bytes": 8887,
-      "sha256": "562f21cf6c895d918e6da0abedd4bd4f1726b24676db289aae10316dbf84bf48"
+      "bytes": 9026,
+      "sha256": "ee0c3b40c5fdf9ee103f7fd7073b889535c8fe362747b55af67c0322b1f5bfbe"
     },
     {
       "path": "experiments/TRR-P05/setup/asset_inventory.json",
@@ -759,6 +760,13 @@
       "status": "COMPLETED",
       "bytes": 9540,
       "sha256": "c5f7236e6ea036a495f4bd1107a7054327d4f6cb960620675b2374d8991efac5"
+    },
+    {
+      "path": "experiments/TRR-P05/publication-receipt.json",
+      "bytes": 388,
+      "sha256": "483abf837e38709518ec4bab2b15b1ca1187eee36d6fe8568baae2eb039d3bb7",
+      "role": "sanitized initial PR publication receipt",
+      "status": "PUBLISHED"
     }
   ],
   "exclude": [
@@ -833,17 +841,16 @@
       }
     }
   },
-  "pending": [
-    {
-      "path": "root publication review",
-      "role": "root-owned final PR metadata/publication",
-      "status": "PENDING"
-    }
-  ],
+  "pending": [],
   "integrity_notes": [
     "The full public diagnostic passed after the qualifier gate with 13 forward states, 24 no-update gradient cells, and zero unavailable states.",
     "The child and watchdog receipts report no truth access and no optimizer step; runtime evidence is retained without rewriting immutable commands or receipts.",
     "The initial GRU checkpoint/trajectory is unavailable and was not reconstructed; the affine initial-function reference remains explicitly separate.",
     "The manifest and inventory self-hashes are omitted to avoid a recursive metadata cycle; their containing commit provides integrity."
-  ]
+  ],
+  "publication": {
+    "url": "https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/12",
+    "state": "OPEN_UNMERGED",
+    "receipt": "experiments/TRR-P05/publication-receipt.json"
+  }
 }
