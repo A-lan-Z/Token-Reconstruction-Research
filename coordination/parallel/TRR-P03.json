@@ -1,0 +1,138 @@
+{
+  "schema": "token-reconstruction.parallel-state.v1",
+  "task_id": "TRR-P03",
+  "status": "STAGE1_COMPLETE_STOP_VARIANT_STAGE2_NOT_RUN_GATE_FAILED",
+  "updated_utc": "2026-09-06T00:26:16.585365+00:00",
+  "worktree": "/tmp/trr-p03",
+  "branch": "task/TRR-P03",
+  "base": {
+    "task_id": "TRR-P02",
+    "verified_commit": "7956b4357d076abce3ccfc407d3fcac832fd34f6",
+    "parent_pr": 6,
+    "parent_base_branch": "task/TRR-P01",
+    "parent_base_sha": "e3e8a1de020598fb68c1ed8b64c0e155823817f5",
+    "parent_pr_state": "OPEN_UNMERGED"
+  },
+  "control_packet": {
+    "path": "coordination/requests/TRR-P03.md",
+    "sha256": "a9a2bc41277de3c6da8d70b1379f5fb66c23564f817ac992d7991d22fa771d0b"
+  },
+  "committed_sources": {
+    "selector": {
+      "path": "scripts/trr_p03/prepare_panel.py",
+      "commit": "ebb814aa04049140b3a1dc68e59272b3aff48a88",
+      "sha256": "db91435a1d3077b70c5d463e31ae0fee94f2edbc29f149679606ab1f45027afe"
+    },
+    "projected_preparation_and_watchdog": {
+      "commit": "23933e65868dcdfa58a44ce47b87a8f5a7455c51",
+      "watchdog_path": "scripts/trr_p03/resource_watchdog.py",
+      "watchdog_sha256": "540ed21e3f83d69ed3eba1eaf170d4bb3d075cd98d089c653328eceef8b43eee"
+    },
+    "numeric_matrix": "6edb276a3a536988a1d2cc9f3aa4c29e90e1a6b1",
+    "report_supplement": {
+      "commit": "090ae0446a30989c058f10ae0240feffadd891db",
+      "path": "scripts/trr_p03/supplement_scores.py",
+      "sha256": "e7a1e63e9855470397e7337403f5eba3faa816a35cec7e0c6afa2d7ad4075c1a"
+    },
+    "current_head_at_finalization": "090ae0446a30989c058f10ae0240feffadd891db"
+  },
+  "panel": {
+    "stage1_records": 24,
+    "stage1_scored_tokens_per_target": 1482,
+    "lengths_post_bos": [
+      16,
+      39,
+      64,
+      128
+    ],
+    "records_per_length": 6,
+    "records_per_style": 8,
+    "distinct_scored_truth_token_ids": 792,
+    "anchor_ids": [
+      "p03-s1-r0007",
+      "p03-s1-r0009",
+      "p03-s1-r0011",
+      "p03-s1-r0012"
+    ],
+    "anchor_scored": "156/156 in each arm over 4 records",
+    "stage1_stage2_disjoint": true,
+    "stage2_holdout_records": 24
+  },
+  "stage1": {
+    "observation_generation": "PASS_BOTH_TARGETS",
+    "reconstruction": "PASS_BOTH_TARGETS_ALL_FOUR_METHODS",
+    "prediction_freeze_before_truth": true,
+    "strict_joint_validation": "VALIDATED",
+    "scoring": "PASS_AFTER_FREEZE",
+    "matched_projected_vs_a1": "928/1482 vs 1332/1482 (-27.2605 pp; exact 0 vs 5)",
+    "shifted_projected_vs_a1": "922/1482 vs 1333/1482 (-27.7328 pp; exact 0 vs 5)",
+    "gate": "FAILED_ALL_PREDECLARED_CHECKS",
+    "disposition": "STOP_VARIANT"
+  },
+  "stage2": {
+    "status": "NOT_RUN_GATE_FAILED",
+    "holdout_truth_opened": false,
+    "holdout_source_rows_opened": false
+  },
+  "compute": {
+    "resource_status": "RELEASED",
+    "release_note": "No heavy post-release compute occurred; only root-authorized Stage1 scoring and report-only supplement/statistics work ran after 16:09 UTC.",
+    "cpu_threads": 8,
+    "gpu": false,
+    "max_rss_bytes": 8589934592,
+    "min_host_mem_available_bytes": 10737418240
+  },
+  "protected_files_initial_sha256": {
+    "RESEARCH_CHARTER.md": "ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d",
+    "coordination/STATE.json": "a7a5cc569ef461507f09c0cb032387f3c2029fdfd6b4a4bc9d9664bd9ba8076f",
+    "research/DUAL_BENCHMARK_PROTOCOL.md": "86806c33cbaab2b5f23590a06cea2945013067171984c4293daedee49e37a1f4",
+    "research/dual_benchmark_registry.json": "fafbd977e2f1b07799ffdf36e938ddac8799b15fd829ffe977b9e97c313236a9"
+  },
+  "integrity": {
+    "global_state_modified": false,
+    "active_method_registry_modified": false,
+    "shared_protocols_modified": false,
+    "common_checkout_modified": false,
+    "truth_opened_during_preparation": false,
+    "stage1_truth_opened_after_prediction_freeze": true,
+    "stage2_truth_opened": false,
+    "routing_or_environment_deviations": "Summarized in manifest; no scientific outputs disclosed or used."
+  },
+  "publication": {
+    "result": "coordination/results/TRR-P03.md",
+    "manifest": "experiments/TRR-P03/manifest.json",
+    "inventory": "experiments/TRR-P03/publication-files.json",
+    "runtime_status": "experiments/TRR-P03/runtime-status.md",
+    "pending": [],
+    "no_merge": true,
+    "status": "PUBLISHED_OPEN_UNMERGED_PR",
+    "url": "https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/8",
+    "number": 8,
+    "evidence_commit": "3d19786ed1db69a30f7d1673f842e67f52dddbac",
+    "base": "task/TRR-P02",
+    "base_sha": "7956b4357d076abce3ccfc407d3fcac832fd34f6",
+    "merge_allowed": false
+  },
+  "owner_closeout": {
+    "status": "STOP_VARIANT",
+    "request": {
+      "path": "coordination/requests/TRR-P03-closeout.md",
+      "bytes": 359,
+      "sha256": "e92c30d8242e14f61a363ed644fdae1f075150f9c7087940badbd30499112946",
+      "publication": "include"
+    },
+    "published_head": "3acf5a7931409f0d3bc5767ca84b5e3ca5063308",
+    "published_pr": {
+      "number": 8,
+      "state": "OPEN_UNMERGED",
+      "base": "task/TRR-P02",
+      "base_sha": "7956b4357d076abce3ccfc407d3fcac832fd34f6"
+    },
+    "published_evidence_preserved": true,
+    "holdout_preserved_unopened": true,
+    "prohibited_continuations": "Do not run compression, reference-token sweeps, ensemble routing, or another prototype extension.",
+    "future_experiments": "Further experiments require a distinct hypothesis, not a continuation of this variant.",
+    "separation": "Keep existing PRs unmerged and the work separate from agent one.",
+    "no_merge": true
+  }
+}

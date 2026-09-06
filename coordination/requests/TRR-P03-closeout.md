@@ -1,0 +1,1 @@
+**Conclude TRR-P03 with&#x20;****`STOP_VARIANT`****. Preserve the published evidence and unopened holdout. Do not run compression, reference-token sweeps, ensemble routing, or another prototype extension. Keep existing PRs unmerged and the work separate from agent one. Further experiments require a distinct hypothesis, not a continuation of this variant.**
