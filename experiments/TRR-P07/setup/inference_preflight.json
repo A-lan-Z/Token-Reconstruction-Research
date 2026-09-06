@@ -1,0 +1,80 @@
+{
+  "authorization": {
+    "gpu_run_started": false,
+    "root_review_required_before_prediction_or_truth": true
+  },
+  "canonical_plan": {
+    "bytes": 16135,
+    "path": "experiments/TRR-P07/plan.json",
+    "sha256": "a0a2339f1a4b77e02d7d1772459dc14d442a4ce24b5111a01e58622ca1ae7c3e",
+    "status": "PROPOSED_PRE_SCORE"
+  },
+  "created_utc": "2026-09-06T14:26:53Z",
+  "historical_basis": {
+    "p06_prediction_manifest": {
+      "availability": "declared_published",
+      "bytes": 10499529,
+      "path": "experiments/TRR-P06/runtime/prediction_manifest.json",
+      "sha256": "6bb3cfcb85b0a704e38d6116af67ba2eeebbacb8926b0e73f540aea60bffbcbb"
+    },
+    "trr0006_prediction_run": {
+      "availability": "declared_published",
+      "bytes": 4898,
+      "path": "experiments/TRR-0006/predictions_v1/run_manifest.json",
+      "sha256": "3e7de6126d0e3ada19f9886979fc37c97fcb865b013ab3941784cd9c27c20eb9"
+    },
+    "trr0006_preflight": {
+      "availability": "declared_published",
+      "bytes": 8266,
+      "path": "experiments/TRR-0006/preflight.json",
+      "sha256": "b050263291144d48559364ceeeec61d68cdb955587214e4d3b09f147a7225ef0"
+    }
+  },
+  "largest_planned_cell": {
+    "batch_records": 8,
+    "method_states": 6,
+    "panel": "p06_natural_panel_or_trr0006_subset",
+    "records_per_domain": 256,
+    "scored_post_bos_tokens": 127,
+    "stored_sequence_tokens": 128,
+    "target_conditions": 2
+  },
+  "memory_basis": {
+    "activation_payload_policy": "Use bounded indexed views of external H tensors; do not copy full four-cell matrices into the P07 repository.",
+    "p06_prior_max_cuda_reserved_bytes": 2661285888,
+    "p06_prior_max_process_rss_bytes": 3606114304,
+    "safety_margin_policy": "Repeat live resource check and largest-cell qualification before any authorized GPU inference.",
+    "shared_public_embedding_bytes": 1050673488,
+    "trr0006_prior_max_cuda_reserved_bytes": 3546284032,
+    "trr0006_prior_max_process_rss_bytes": 5816393728,
+    "trr0006_subset_row_staging_bytes_per_cell": 134217728,
+    "trr0006_subset_row_staging_note": "256 rows x 128 positions x 2048 hidden x BF16; bounded indexed view, not a repository copy."
+  },
+  "projected_work": {
+    "note": "Both panels contain 256 records per domain. Each has 24 method x domain x target cells; six bound states are evaluated on each panel.",
+    "p06_unique_records": 512,
+    "total_method_record_condition_clips": 12288,
+    "total_prediction_cells": 48,
+    "total_unique_records_across_both_panels": 1024,
+    "trr0006_subset_unique_records": 512
+  },
+  "proposed_guard": {
+    "fail_closed_on_unreadable_live_resource_data": true,
+    "maximum_gpu_reserved_gib": 8,
+    "maximum_host_rss_gib": 16,
+    "minimum_free_gpu_gib": 8,
+    "minimum_host_available_gib": 10
+  },
+  "runtime_estimate": {
+    "basis_p06_prediction_matrix_seconds": 104.19651730600162,
+    "basis_trr0006_prediction_matrix_seconds": 92.90697702299803,
+    "estimated_external_wall_seconds_with_guard_and_io": 600,
+    "estimated_p07_prediction_matrix_seconds": 180,
+    "qualification_required_before_timing": true,
+    "status": "CONSERVATIVE_SCALE_ESTIMATE_NOT_MEASURED"
+  },
+  "schema": "token-reconstruction.trr-p07-inference-preflight.v1",
+  "scope": "Inference-only replay of already-trained states on already-opened P06 and TRR-0006 activation panels; no fit, capture, target preparation, or truth materialization.",
+  "status": "METADATA_ESTIMATE_NO_GPU_RUN",
+  "task_id": "TRR-P07"
+}
