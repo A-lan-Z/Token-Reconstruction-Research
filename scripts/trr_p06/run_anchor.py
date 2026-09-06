@@ -328,6 +328,16 @@ def _adapter_delta(before: Mapping[str, float], after: Mapping[str, float]) -> d
     return result
 
 
+def _clear_ephemeral_a2(adapter: Any) -> None:
+    """Clear the parent adapter's retained proposal diagnostics between cells."""
+
+    # The published _A2Adapter exposes this list; the published cleanup helper
+    # lives in the separate TRR-0005 runner, not in trr0004_predict_confirmation.
+    values = getattr(adapter, "_record_proposals", None)
+    if isinstance(values, list):
+        values.clear()
+
+
 def _run_domain(*, adapter: Any, observation: Mapping[str, Any], domain: str, device: torch.device, started: float, args: argparse.Namespace) -> tuple[torch.Tensor, dict[str, Any]]:
     adapter.begin_cell()
     warmup_seconds = 0.0
@@ -510,7 +520,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             timings[domain] = timing
             _write_create_only(output_root / "timing" / f"{domain}.json", descriptor)
             guards.append(_guard(device, started=started_clock, args=args, stage=f"after_{domain}"))
-            legacy._clear_ephemeral_a2(adapter)
+            _clear_ephemeral_a2(adapter)
         manifest = {
             "schema": ANCHOR_SCHEMA,
             "task_id": TASK_ID,

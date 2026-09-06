@@ -57,6 +57,15 @@ def test_anchor_reads_record_hash_from_manifest_cell(tmp_path: Path) -> None:
     assert anchor._observation_descriptor(manifest, cell_id="pile__public_base")["path"] == "observations/pile.safetensors"
 
 
+def test_anchor_cleanup_uses_published_adapter_proposal_buffer() -> None:
+    class Adapter:
+        _record_proposals = [(torch.tensor([1]), torch.tensor([0.5]))]
+
+    adapter = Adapter()
+    anchor._clear_ephemeral_a2(adapter)
+    assert adapter._record_proposals == []
+
+
 def test_anchor_normalization_keeps_bos_and_padding_without_rewriting_active_ids() -> None:
     mask = torch.tensor([True, True, True] + [False] * 125)
     prediction = torch.tensor([999, 17, 23] + [-1] * 125)
