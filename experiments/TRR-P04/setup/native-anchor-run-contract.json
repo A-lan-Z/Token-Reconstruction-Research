@@ -1,7 +1,7 @@
 {
   "schema": "token-reconstruction.trr-p04-native-anchor-run-contract.v1",
   "task_id": "TRR-P04",
-  "status": "PENDING_IMPLEMENTATION_TIMING_RELEASE",
+  "status": "IMPLEMENTATION_RELEASED_ANCHOR_PUBLIC_AUTHORIZED",
   "purpose": "bounded native A1+A2 K=256 anchor on the predeclared P04 12-record subset, separately per paired condition",
   "source": {
     "git_commit": "124ce70723c28a4d26bb1f6d123962c7c4f116f2",
@@ -93,13 +93,13 @@
       "condition": "public_base",
       "output_root": "experiments/TRR-P04/runtime/native-anchor-public-r1",
       "watchdog_root": "experiments/TRR-P04/runtime/watchdog/native-anchor-public-r1",
-      "status": "PENDING_EXCLUSIVE_GPU_RELEASE"
+      "status": "AUTHORIZED_LARGEST_CELL_QUALIFIER"
     },
     "p04_evaluator_target_update_v1": {
       "condition": "p04_evaluator_target_update_v1",
       "output_root": "experiments/TRR-P04/runtime/native-anchor-target-r1",
       "watchdog_root": "experiments/TRR-P04/runtime/watchdog/native-anchor-target-r1",
-      "status": "PENDING_PUBLIC_ANCHOR_PASS"
+      "status": "AUTHORIZED_AFTER_PUBLIC_QUALIFIER_PASS"
     }
   },
   "guards": {
@@ -133,5 +133,13 @@
     "target update weights",
     "source rows",
     "evaluation truth"
-  ]
+  ],
+  "release_gate": {
+    "status": "IMPLEMENTATION_STUDENT_FREEZE_COMPLETE_GPU_RELEASED",
+    "freeze_receipt": "experiments/TRR-P04/runtime/student-predictions-r3/student_prediction_freeze.json",
+    "freeze_receipt_sha256": "6f9c1c80580319f649ccb563d6346ec1b498917c4638f8326ce9218ca4daa9af",
+    "student_freeze_status": "STUDENT_PREDICTIONS_FROZEN_BEFORE_JOINT_FREEZE",
+    "evaluation_truth_opened": false,
+    "anchor_started": false
+  }
 }
