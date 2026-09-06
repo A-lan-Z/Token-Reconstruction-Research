@@ -1,0 +1,40 @@
+{
+  "corrections_applied": [
+    "five frozen timing paths including actual current alias",
+    "ten blocks: five cyclic rotations plus reversals, exactly balanced per cell",
+    "full archived prediction equivalence before timing",
+    "executable identical-class and identical-weight alias check",
+    "per-cell candidate/reference CIs; pooled ratio descriptive only",
+    "alias PASS requires every CI fully inside [0.95,1.05]; FAIL if any CI entirely outside; otherwise INCONCLUSIVE",
+    "full resource guard at method-cell/block boundaries; lightweight between-row checks; guard overhead recorded",
+    "invalid alias control is classified separately; candidate budget failure requires alias PASS",
+    "alias INCONCLUSIVE blocks every overall candidate qualification outcome"
+  ],
+  "cpu_test_command": "PYTHONPATH=.:src:scripts pytest -q tests/test_trr0008_timing.py",
+  "cpu_test_result": "9 passed",
+  "default_trr7_root": "sibling .worktrees/TRR-0007 (explicit command remains pinned)",
+  "first_gpu_command": "PYTHONPATH=.:src python3 scripts/trr0008_timing.py --device cuda --trr7-root /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007 --records-per-cell 32 --blocks 10 --warmup-runs 1 --maximum-seconds 600 --output /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0008/experiments/TRR-0008/timing/result.json",
+  "gpu_launched": false,
+  "harness": "scripts/trr0008_timing.py",
+  "plan": "experiments/TRR-0008/timing/diagnostic_plan.md",
+  "status": "GPU_WINDOW_PENDING",
+  "task_id": "TRR-0008",
+  "unpublished_parallel_findings_used": false,
+  "cpu_compile_command": "PYTHONPATH=.:src:scripts python3 -m py_compile scripts/trr0008_timing.py tests/test_trr0008_timing.py",
+  "cpu_compile_result": "PASS",
+  "cpu_executable_readiness_command": "PYTHONPATH=.:src:scripts python3 - <<'PY' ... _validate_registration; _load_models(cpu); _verify_alias_execution_identity ... PY",
+  "cpu_executable_readiness_result": {
+    "registration": "PASS",
+    "models_loaded": 5,
+    "alias_class": "token_reconstruction.trr0005_joint_decoder.JointAffineAttentionDecoder",
+    "alias_state_tensors_exact": true
+  },
+  "comparative_timing_launched": false,
+  "unpublished_parallel_access": {
+    "read_p06_once_while_locating_parent": true,
+    "material_category_encountered": "scheduling/coordination status only",
+    "unpublished_scientific_findings_encountered": false,
+    "unpublished_scientific_findings_used": false,
+    "further_p06_reads_authorized": false
+  }
+}
