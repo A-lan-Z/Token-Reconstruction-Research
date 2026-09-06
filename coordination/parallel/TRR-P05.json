@@ -3,8 +3,8 @@
   "task_id": "TRR-P05",
   "branch": "task/TRR-P05",
   "worktree": "/tmp/trr-p05",
-  "status": "SETUP_READY_INITIAL_INVENTORY_PENDING",
-  "updated_utc": "2026-09-06T06:34:31.773631+00:00",
+  "status": "INVENTORY_READY_DIAGNOSTIC_PLAN_PENDING_IMPLEMENTATION",
+  "updated_utc": "2026-09-06T06:48:17.500136+00:00",
   "parent": {
     "task_id": "TRR-P04",
     "branch": "task/TRR-P04",
@@ -36,7 +36,9 @@
     "student_fits_started": false,
     "target_preparation_started": false,
     "hidden_evaluation_started": false,
-    "trajectory_reconstruction_attempted": false
+    "trajectory_reconstruction_attempted": false,
+    "p04_compact_metadata_read": true,
+    "p04_tensor_payload_contents_opened_by_p05": false
   },
   "resource_gate": {
     "status": "CPU_ONLY_SETUP_NO_HEAVY_JOBS",
@@ -47,7 +49,9 @@
   },
   "setup_artifacts": {
     "control_packet": "coordination/requests/TRR-P05.md",
-    "task_state": "coordination/parallel/TRR-P05.json"
+    "task_state": "coordination/parallel/TRR-P05.json",
+    "asset_inventory": "experiments/TRR-P05/setup/asset_inventory.json",
+    "diagnostic_plan": "experiments/TRR-P05/setup/diagnostic_plan.json"
   },
   "preservation": {
     "p03_status": "STOP_VARIANT_HOLDOUT_SEALED",
@@ -56,7 +60,40 @@
     "new_truth_or_target_data": false
   },
   "pending": [
-    "read-only P04 public asset and provenance inventory",
-    "implementation/design interface and bounded diagnostic plan"
-  ]
+    "implementation/design review of the fixed diagnostic input contract",
+    "bounded no-update diagnostics after root resource reservation"
+  ],
+  "evidence_pointers": {
+    "asset_inventory": {
+      "path": "experiments/TRR-P05/setup/asset_inventory.json",
+      "role": "read-only P04 public asset and checkpoint provenance inventory",
+      "status": "COMPLETE_READ_ONLY",
+      "bytes": 47077,
+      "sha256": "6fed0edd40acfcb28223c945277977df73700ef803d050e56e4347655c21bcb1"
+    },
+    "diagnostic_plan": {
+      "path": "experiments/TRR-P05/setup/diagnostic_plan.json",
+      "role": "fixed score-independent diagnostic input contract",
+      "status": "DRAFT_FOR_IMPLEMENTATION_DESIGN_REVIEW",
+      "bytes": 2210,
+      "sha256": "7e437c0d804a481954bfb795bc2331e5e0e185e584f9599e340a5eee868eef8d"
+    }
+  },
+  "inventory_summary": {
+    "selected_states": 8,
+    "final_states": 8,
+    "seeds": [
+      1737,
+      2711
+    ],
+    "learning_curves": 8,
+    "position_schedules": 2,
+    "public_correction_records": 256,
+    "public_validation_records": 192,
+    "teacher_rows": 384,
+    "teacher_difficult_rows": 256,
+    "teacher_uniform_audit_rows": 128,
+    "serialized_initial_state_available": false,
+    "p04_payload_contents_opened_by_p05": false
+  }
 }

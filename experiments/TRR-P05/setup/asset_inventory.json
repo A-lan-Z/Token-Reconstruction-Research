@@ -1,0 +1,994 @@
+{
+  "schema": "token-reconstruction.trr-p05-readonly-asset-inventory.v1",
+  "task_id": "TRR-P05",
+  "status": "READ_ONLY_INVENTORY_COMPLETE_NO_P05_COMPUTE",
+  "created_utc": "2026-09-06T06:47:10.808448+00:00",
+  "parent": {
+    "task_id": "TRR-P04",
+    "reviewed_commit": "c3aa40abdf33b5e794b139671fcddf6fd5a2c65e",
+    "worktree": "/tmp/trr-p04",
+    "publication_pr": 10,
+    "publication_pr_state": "OPEN_UNMERGED"
+  },
+  "access_scope": {
+    "inventory_read_only": true,
+    "model_loaded_by_p05": false,
+    "optimizer_steps_by_p05": false,
+    "new_fit_or_sweep_by_p05": false,
+    "new_target_preparation_by_p05": false,
+    "hidden_evaluation_by_p05": false,
+    "private_evaluator_target_or_holdout_accessed": false,
+    "p03_holdout_accessed": false,
+    "agent_one_workspace_or_science_accessed": false,
+    "p04_tensor_payload_contents_opened_by_p05": false,
+    "p04_compact_metadata_read": true,
+    "trajectory_reconstructed": false,
+    "source_plaintext_or_token_values_persisted_here": false
+  },
+  "prior_metadata": {
+    "config": {
+      "path": "experiments/TRR-P04/config/student_training.json",
+      "bytes": 3765,
+      "sha256": "680086432a6977226031c22e6d8cd7f575a4f297a178e3f3d1c93f7785ec7db3"
+    },
+    "selected_state_manifest": {
+      "path": "experiments/TRR-P04/runtime/training-r1/selected_state_manifest-r3.json",
+      "bytes": 78479,
+      "sha256": "2595faa316bcadb1262cddb97acfa92deefa10b840a90f59d798f34ec7fd9f47",
+      "state_count": 16,
+      "evaluation_state_count": 8,
+      "truth_accessed": false
+    },
+    "source_receipt": {
+      "path": "experiments/TRR-P04/runtime/training-r1/source_receipt.json",
+      "bytes": 20676,
+      "sha256": "698d91b39e211bef7ec996a42cee5d41c709995cfa44b73622c79c7949c35449",
+      "run_source_commit": "1aefc307ebdd4cd5002ac6ac0cdc5a1fc696aa68"
+    },
+    "training_result": {
+      "path": "experiments/TRR-P04/runtime/training-r1/training_result.json",
+      "bytes": 465003,
+      "sha256": "2e0f9566c33fa19c1351885d4027cd00b1f22f95c4464aa1d8be4f3a55f23d19",
+      "run_source_commit": "1aefc307ebdd4cd5002ac6ac0cdc5a1fc696aa68"
+    },
+    "training_finalization_receipt": {
+      "path": "experiments/TRR-P04/runtime/training-r1/training_finalization_receipt.json",
+      "bytes": 9351,
+      "sha256": "4ac6e3bfd482a658e62e458b5d27ec74a50350c2d6818623efc3fb645f0fba29",
+      "status": "PASS",
+      "truth_accessed": false
+    }
+  },
+  "model_and_architecture": {
+    "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+    "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "cut_depth": 4,
+    "hidden_size": 2048,
+    "vocab_size": 128256,
+    "dtype": "bfloat16 public prefix; FP32 student output table/logits where configured",
+    "architecture": {
+      "gru_width": 256,
+      "hidden_size": 2048,
+      "initial_logit_scale": 3.0,
+      "input_normalization": "F.layer_norm(x, (hidden_size,), weight=None, bias=None, eps=1e-5)",
+      "output_normalization": "F.normalize(affine(x) + gru_up(GRU(layer_norm(x))), dim=-1)",
+      "output_table": "fixed normalized public input-embedding table",
+      "vocab_size": 128256
+    },
+    "initialization_recipe": "public PR7 affine W,b,s; W,b,s remain trainable in every arm",
+    "zero_initialized_gru_up": true,
+    "trainable_affine_in_all_arms": true
+  },
+  "initial_state": {
+    "serialized_initial_checkpoint_available": false,
+    "recipe": "public PR7 affine W,b,s plus the P04 student initialization recipe; paired seeds 1737 and 2711",
+    "affine_initialization_artifact": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/fit_large_v1/historical_affine_ce_no_vocab_bias.safetensors",
+      "role": "public PR7 affine initialization W,b,s",
+      "status": "AVAILABLE_EXTERNAL_READ_ONLY",
+      "bytes": 16786108,
+      "sha256": "09c5b852373d8555b06508a79bb00c94041202702b61b121b35fa2b6f9f64e65",
+      "hash_source": "P04 source_receipt input identity",
+      "exists_at_inventory": true
+    },
+    "step_zero_logs": [
+      {
+        "seed": 1737,
+        "method_id": "affine_same_data",
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-1737/affine_same_data/learning_curve.json",
+        "sha256": "60264f485eae27698e2100dae7db6dd5179148b630a57ba7297f5c5b52d0e066"
+      },
+      {
+        "seed": 1737,
+        "method_id": "student_d",
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-1737/student_d/learning_curve.json",
+        "sha256": "f77c7cf2c15ec1bde1e56cc28829f6165e9029509aebedf26392efa072fbfc0d"
+      },
+      {
+        "seed": 1737,
+        "method_id": "student_h",
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-1737/student_h/learning_curve.json",
+        "sha256": "a3d6ed956c12cf7c3453a8a362388997bfef02250ab858e234432e283da87b96"
+      },
+      {
+        "seed": 1737,
+        "method_id": "student_s",
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-1737/student_s/learning_curve.json",
+        "sha256": "582ad00c5093a74a476a0ed619f24ce12a3f7baa19760c70ff0b13280467b6f4"
+      },
+      {
+        "seed": 2711,
+        "method_id": "affine_same_data",
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-2711/affine_same_data/learning_curve.json",
+        "sha256": "12359e5756173b360d370716d2998cb7e7efd6b3db478c41de0c7519f625ebec"
+      },
+      {
+        "seed": 2711,
+        "method_id": "student_d",
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-2711/student_d/learning_curve.json",
+        "sha256": "774214ca2e62860c0ac5f0f44aef09247929e1bd8e694a5c0d9851a82200db79"
+      },
+      {
+        "seed": 2711,
+        "method_id": "student_h",
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-2711/student_h/learning_curve.json",
+        "sha256": "d92bfb86d4948e318264684b089a0387676dfd61b4ba64321fe0084de53b2c1f"
+      },
+      {
+        "seed": 2711,
+        "method_id": "student_s",
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-2711/student_s/learning_curve.json",
+        "sha256": "18aef6808ac476b554c788f519d60e31d8fc4a60cd8457dc90146e72f86144d4"
+      }
+    ],
+    "step_zero_metrics_logged_in_each_learning_curve": true,
+    "exact_initial_tensor_replay": "unavailable without reconstructing an unrecorded initial payload/trajectory; P05 will not reconstruct it"
+  },
+  "checkpoints": {
+    "state_count": 16,
+    "selected_count": 8,
+    "final_count": 8,
+    "selected_are_p04_evaluation_inputs": true,
+    "final_states_stored_but_excluded_from_p04_evaluation": true,
+    "states": [
+      {
+        "kind": "selected",
+        "method_id": "affine_same_data",
+        "seed": 1737,
+        "evaluation_input_in_p04": true,
+        "selected_step": 1600,
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-1737/affine_same_data/selected.safetensors",
+        "original_path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-1737/affine_same_data/selected.safetensors",
+        "available_at_inventory": true,
+        "bytes": 16786380,
+        "sha256": "306f7c23040af2aa1d7a5d33be8bcd5af58755743933a7beb2999064ceea67ae",
+        "state_bytes": 16785412,
+        "state_sha256": "1039361fc40c1a9401790f417905fdb3edb59408ea501af4be0d0b137dbebae5",
+        "schedule_sha256": "887edbcef5d44ad39ad9694ef0f4e049b46ba6665a239ecc090e3febce8eedec",
+        "teacher_source": "none",
+        "state_schema": "token-reconstruction.trr-p04-student-state.v1",
+        "hash_source": "P04 selected_state_manifest-r3.json; tensor payload not opened by P05"
+      },
+      {
+        "kind": "selected",
+        "method_id": "student_s",
+        "seed": 1737,
+        "evaluation_input_in_p04": true,
+        "selected_step": 600,
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-1737/student_s/selected.safetensors",
+        "original_path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-1737/student_s/selected.safetensors",
+        "available_at_inventory": true,
+        "bytes": 25976252,
+        "sha256": "cce3966ff9f6a040ae4096b8890a07195b32ac628e42992f7965bfb3058092b4",
+        "state_bytes": 25974788,
+        "state_sha256": "4329ab1b06649d727bc46e07ad1b3fbf7f793becf35c8aee9dd655b8582a8795",
+        "schedule_sha256": "887edbcef5d44ad39ad9694ef0f4e049b46ba6665a239ecc090e3febce8eedec",
+        "teacher_source": "none",
+        "state_schema": "token-reconstruction.trr-p04-student-state.v1",
+        "hash_source": "P04 selected_state_manifest-r3.json; tensor payload not opened by P05"
+      },
+      {
+        "kind": "selected",
+        "method_id": "student_h",
+        "seed": 1737,
+        "evaluation_input_in_p04": true,
+        "selected_step": 1700,
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-1737/student_h/selected.safetensors",
+        "original_path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-1737/student_h/selected.safetensors",
+        "available_at_inventory": true,
+        "bytes": 25976252,
+        "sha256": "f085b9cc12780af61086d2346780c6c3e14f18a27c890f2220e4c54f854d53dd",
+        "state_bytes": 25974788,
+        "state_sha256": "3e283226e4181d74ae1f97be3465883d7b4a057d4540a85650ef28baa76c6697",
+        "schedule_sha256": "887edbcef5d44ad39ad9694ef0f4e049b46ba6665a239ecc090e3febce8eedec",
+        "teacher_source": "none",
+        "state_schema": "token-reconstruction.trr-p04-student-state.v1",
+        "hash_source": "P04 selected_state_manifest-r3.json; tensor payload not opened by P05"
+      },
+      {
+        "kind": "selected",
+        "method_id": "student_d",
+        "seed": 1737,
+        "evaluation_input_in_p04": true,
+        "selected_step": 1300,
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-1737/student_d/selected.safetensors",
+        "original_path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-1737/student_d/selected.safetensors",
+        "available_at_inventory": true,
+        "bytes": 25976276,
+        "sha256": "7a580531cb2c3a1b8301f0cdd2c09acab54581c930ce43cabed120bce165bcff",
+        "state_bytes": 25974788,
+        "state_sha256": "d7ef29b69e00b3ca3b07ee7accf3781ee573039facc6a8341ae17b564f60f325",
+        "schedule_sha256": "887edbcef5d44ad39ad9694ef0f4e049b46ba6665a239ecc090e3febce8eedec",
+        "teacher_source": "qualified_public_only",
+        "state_schema": "token-reconstruction.trr-p04-student-state.v1",
+        "hash_source": "P04 selected_state_manifest-r3.json; tensor payload not opened by P05"
+      },
+      {
+        "kind": "selected",
+        "method_id": "affine_same_data",
+        "seed": 2711,
+        "evaluation_input_in_p04": true,
+        "selected_step": 1900,
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-2711/affine_same_data/selected.safetensors",
+        "original_path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-2711/affine_same_data/selected.safetensors",
+        "available_at_inventory": true,
+        "bytes": 16786380,
+        "sha256": "27b93a66274ef86e35c85a58cc572843b65d040b2a7ffc2fec56cb7f828d156e",
+        "state_bytes": 16785412,
+        "state_sha256": "74fc50ffe7058fad8416f9e7ddb95594f329ddf047e768fa4bb8aa1a9e03aeee",
+        "schedule_sha256": "8fc93b18bad186cf13a20118eb4158d5e49fc5c86732ecbb9376303d7c5f7a9d",
+        "teacher_source": "none",
+        "state_schema": "token-reconstruction.trr-p04-student-state.v1",
+        "hash_source": "P04 selected_state_manifest-r3.json; tensor payload not opened by P05"
+      },
+      {
+        "kind": "selected",
+        "method_id": "student_s",
+        "seed": 2711,
+        "evaluation_input_in_p04": true,
+        "selected_step": 1200,
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-2711/student_s/selected.safetensors",
+        "original_path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-2711/student_s/selected.safetensors",
+        "available_at_inventory": true,
+        "bytes": 25976252,
+        "sha256": "d436233ff5c962c97ff7a824ec37e0d258e94f6fb2ae9fe3b0bc4a39c4a3080a",
+        "state_bytes": 25974788,
+        "state_sha256": "2d946036012198c797e79a2987bdb9b5641af5468c535c0838b4dcb5efc6dd09",
+        "schedule_sha256": "8fc93b18bad186cf13a20118eb4158d5e49fc5c86732ecbb9376303d7c5f7a9d",
+        "teacher_source": "none",
+        "state_schema": "token-reconstruction.trr-p04-student-state.v1",
+        "hash_source": "P04 selected_state_manifest-r3.json; tensor payload not opened by P05"
+      },
+      {
+        "kind": "selected",
+        "method_id": "student_h",
+        "seed": 2711,
+        "evaluation_input_in_p04": true,
+        "selected_step": 1400,
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-2711/student_h/selected.safetensors",
+        "original_path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-2711/student_h/selected.safetensors",
+        "available_at_inventory": true,
+        "bytes": 25976252,
+        "sha256": "415c3cc78925fd1e9f93c1f97e0607cc082e5c5697f7b7f375dc174d2b93248b",
+        "state_bytes": 25974788,
+        "state_sha256": "69de258b349b5a8e5a93ea701e6f152914c1e80cdd240e7f0c2e1b166b04281b",
+        "schedule_sha256": "8fc93b18bad186cf13a20118eb4158d5e49fc5c86732ecbb9376303d7c5f7a9d",
+        "teacher_source": "none",
+        "state_schema": "token-reconstruction.trr-p04-student-state.v1",
+        "hash_source": "P04 selected_state_manifest-r3.json; tensor payload not opened by P05"
+      },
+      {
+        "kind": "selected",
+        "method_id": "student_d",
+        "seed": 2711,
+        "evaluation_input_in_p04": true,
+        "selected_step": 300,
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-2711/student_d/selected.safetensors",
+        "original_path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-2711/student_d/selected.safetensors",
+        "available_at_inventory": true,
+        "bytes": 25976268,
+        "sha256": "58deff20276522ea9e3e81e093ffb4df0ab3687eb634203a723bd81e721dd4f8",
+        "state_bytes": 25974788,
+        "state_sha256": "cefd13ed5721a64e8656ca47247deee42b2f8031bd9361c2c3f88b5e82432adc",
+        "schedule_sha256": "8fc93b18bad186cf13a20118eb4158d5e49fc5c86732ecbb9376303d7c5f7a9d",
+        "teacher_source": "qualified_public_only",
+        "state_schema": "token-reconstruction.trr-p04-student-state.v1",
+        "hash_source": "P04 selected_state_manifest-r3.json; tensor payload not opened by P05"
+      },
+      {
+        "kind": "final",
+        "method_id": "affine_same_data",
+        "seed": 1737,
+        "evaluation_input_in_p04": false,
+        "selected_step": "final",
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-1737/affine_same_data/final.safetensors",
+        "original_path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-1737/affine_same_data/final.safetensors",
+        "available_at_inventory": false,
+        "bytes": 16786356,
+        "sha256": "d21d62cba2dad94341e93d76e453d96e4afbfdf888b426f572e9fc1c1fc4c0a8",
+        "state_bytes": 16785412,
+        "state_sha256": "9d3b77dd04644809af6bb4ddb14bc611f080f5850d7c606404d3dded72724e8f",
+        "schedule_sha256": "887edbcef5d44ad39ad9694ef0f4e049b46ba6665a239ecc090e3febce8eedec",
+        "teacher_source": null,
+        "state_schema": "token-reconstruction.trr-p04-student-state.v1",
+        "hash_source": "P04 selected_state_manifest-r3.json; tensor payload not opened by P05"
+      },
+      {
+        "kind": "final",
+        "method_id": "student_s",
+        "seed": 1737,
+        "evaluation_input_in_p04": false,
+        "selected_step": "final",
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-1737/student_s/final.safetensors",
+        "original_path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-1737/student_s/final.safetensors",
+        "available_at_inventory": false,
+        "bytes": 25976236,
+        "sha256": "16e79e9748b1816de0b3177949b9225102f2dab8e619358d18d6a99eafbdb5d4",
+        "state_bytes": 25974788,
+        "state_sha256": "c04faa92d2add23c2826a76feda6295cbeba050783a4324cd95d8d7991f6e603",
+        "schedule_sha256": "887edbcef5d44ad39ad9694ef0f4e049b46ba6665a239ecc090e3febce8eedec",
+        "teacher_source": null,
+        "state_schema": "token-reconstruction.trr-p04-student-state.v1",
+        "hash_source": "P04 selected_state_manifest-r3.json; tensor payload not opened by P05"
+      },
+      {
+        "kind": "final",
+        "method_id": "student_h",
+        "seed": 1737,
+        "evaluation_input_in_p04": false,
+        "selected_step": "final",
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-1737/student_h/final.safetensors",
+        "original_path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-1737/student_h/final.safetensors",
+        "available_at_inventory": false,
+        "bytes": 25976236,
+        "sha256": "a6a8a953054fb579218cda9621dd028ada3bb4ec145bc15e85a53e3862334997",
+        "state_bytes": 25974788,
+        "state_sha256": "bf94346158cac837f178977e6b045ce2dfd8177a38a5fdb9451ced0e8c55f2be",
+        "schedule_sha256": "887edbcef5d44ad39ad9694ef0f4e049b46ba6665a239ecc090e3febce8eedec",
+        "teacher_source": null,
+        "state_schema": "token-reconstruction.trr-p04-student-state.v1",
+        "hash_source": "P04 selected_state_manifest-r3.json; tensor payload not opened by P05"
+      },
+      {
+        "kind": "final",
+        "method_id": "student_d",
+        "seed": 1737,
+        "evaluation_input_in_p04": false,
+        "selected_step": "final",
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-1737/student_d/final.safetensors",
+        "original_path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-1737/student_d/final.safetensors",
+        "available_at_inventory": false,
+        "bytes": 25976236,
+        "sha256": "fa16989929630a680ea477d221f1304ba4d04a546e59cd6ed02ffb336c759437",
+        "state_bytes": 25974788,
+        "state_sha256": "964d26af5f962d2a88bed1e1d3759c1b80b35fb33275b3f9b24acf164958df04",
+        "schedule_sha256": "887edbcef5d44ad39ad9694ef0f4e049b46ba6665a239ecc090e3febce8eedec",
+        "teacher_source": null,
+        "state_schema": "token-reconstruction.trr-p04-student-state.v1",
+        "hash_source": "P04 selected_state_manifest-r3.json; tensor payload not opened by P05"
+      },
+      {
+        "kind": "final",
+        "method_id": "affine_same_data",
+        "seed": 2711,
+        "evaluation_input_in_p04": false,
+        "selected_step": "final",
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-2711/affine_same_data/final.safetensors",
+        "original_path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-2711/affine_same_data/final.safetensors",
+        "available_at_inventory": false,
+        "bytes": 16786356,
+        "sha256": "cd8bc7837c5f5758f69e48d292b99c87b22ce413ca1300ed429585527b5cbba6",
+        "state_bytes": 16785412,
+        "state_sha256": "9d1bbacdbd6eebd6aa06eb6e8908b290c2c649d1495538e17bc908bda647e7cc",
+        "schedule_sha256": "8fc93b18bad186cf13a20118eb4158d5e49fc5c86732ecbb9376303d7c5f7a9d",
+        "teacher_source": null,
+        "state_schema": "token-reconstruction.trr-p04-student-state.v1",
+        "hash_source": "P04 selected_state_manifest-r3.json; tensor payload not opened by P05"
+      },
+      {
+        "kind": "final",
+        "method_id": "student_s",
+        "seed": 2711,
+        "evaluation_input_in_p04": false,
+        "selected_step": "final",
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-2711/student_s/final.safetensors",
+        "original_path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-2711/student_s/final.safetensors",
+        "available_at_inventory": false,
+        "bytes": 25976236,
+        "sha256": "43f4345de358d37a3a3ea97cdb373d208c75390aed702655433b0c4a1a2eb47f",
+        "state_bytes": 25974788,
+        "state_sha256": "5c34540af582eb516f139758b1b7f4349d8ca93718213e1506bc670e91476b5d",
+        "schedule_sha256": "8fc93b18bad186cf13a20118eb4158d5e49fc5c86732ecbb9376303d7c5f7a9d",
+        "teacher_source": null,
+        "state_schema": "token-reconstruction.trr-p04-student-state.v1",
+        "hash_source": "P04 selected_state_manifest-r3.json; tensor payload not opened by P05"
+      },
+      {
+        "kind": "final",
+        "method_id": "student_h",
+        "seed": 2711,
+        "evaluation_input_in_p04": false,
+        "selected_step": "final",
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-2711/student_h/final.safetensors",
+        "original_path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-2711/student_h/final.safetensors",
+        "available_at_inventory": false,
+        "bytes": 25976236,
+        "sha256": "ef7d4d8b9ba99442735460706edb100bc63c5f2e56c5b02bfa5e5f09d8688d04",
+        "state_bytes": 25974788,
+        "state_sha256": "83d17ba0b725f232c409f735c76614890bdd50f3264c89a08685c5707df383c0",
+        "schedule_sha256": "8fc93b18bad186cf13a20118eb4158d5e49fc5c86732ecbb9376303d7c5f7a9d",
+        "teacher_source": null,
+        "state_schema": "token-reconstruction.trr-p04-student-state.v1",
+        "hash_source": "P04 selected_state_manifest-r3.json; tensor payload not opened by P05"
+      },
+      {
+        "kind": "final",
+        "method_id": "student_d",
+        "seed": 2711,
+        "evaluation_input_in_p04": false,
+        "selected_step": "final",
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-2711/student_d/final.safetensors",
+        "original_path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-2711/student_d/final.safetensors",
+        "available_at_inventory": false,
+        "bytes": 25976236,
+        "sha256": "e9f6d903333e8777a0f61adc02e90523b701359bb58b53121a9688fe80af6ae6",
+        "state_bytes": 25974788,
+        "state_sha256": "810b33830372784458958a925a3a3f83f4590834a894df3c8db9638397b56246",
+        "schedule_sha256": "8fc93b18bad186cf13a20118eb4158d5e49fc5c86732ecbb9376303d7c5f7a9d",
+        "teacher_source": null,
+        "state_schema": "token-reconstruction.trr-p04-student-state.v1",
+        "hash_source": "P04 selected_state_manifest-r3.json; tensor payload not opened by P05"
+      }
+    ]
+  },
+  "schedules": {
+    "paired_seeds": [
+      1737,
+      2711
+    ],
+    "common_config": {
+      "steps": 3000,
+      "record_batch_size": 8,
+      "replay_records_per_batch": 6,
+      "correction_records_per_batch": 2,
+      "replay_fraction_nominal": 0.75,
+      "selected_position_budget": 512,
+      "validation_every": 100,
+      "optimizer": "AdamW",
+      "learning_rate": 0.001,
+      "weight_decay": 0.0,
+      "gradient_clip_norm": 1.0,
+      "same_schedule_across_arms": true,
+      "checkpoint_selection": "earliest public-validation checkpoint with best style-balanced token accuracy; step zero retained on regression"
+    },
+    "position_schedule_files": [
+      {
+        "seed": 1737,
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-1737/position_schedule.safetensors",
+        "original_path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-1737/position_schedule.safetensors",
+        "bytes": 4800600,
+        "sha256": "7392122efd9eaf1250ceeabdc84843daea61f2bc1b9e8360dfe016fe5a7285bb",
+        "schedule_sha256": "887edbcef5d44ad39ad9694ef0f4e049b46ba6665a239ecc090e3febce8eedec",
+        "available_at_inventory": true,
+        "hash_source": "P04 seed_result.json; schedule tensor not opened by P05"
+      },
+      {
+        "seed": 2711,
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-2711/position_schedule.safetensors",
+        "original_path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-2711/position_schedule.safetensors",
+        "bytes": 4800600,
+        "sha256": "a1079f71d4a468b0c0a5c2b7587dbf2260e7f0069378e2f61cc640864fe6145f",
+        "schedule_sha256": "8fc93b18bad186cf13a20118eb4158d5e49fc5c86732ecbb9376303d7c5f7a9d",
+        "available_at_inventory": true,
+        "hash_source": "P04 seed_result.json; schedule tensor not opened by P05"
+      }
+    ],
+    "seed_result_files": [
+      {
+        "seed": 1737,
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-1737/seed_result.json",
+        "bytes": 184441,
+        "sha256": "e3234f66086af6ad285e8dc9ff758ca7bbcc99ae27e6b4f5c5fe93ef8ac4b270",
+        "wall_seconds": 728.7999864610028,
+        "schedule": {
+          "bytes": 4800600,
+          "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-1737/position_schedule.safetensors",
+          "schedule_sha256": "887edbcef5d44ad39ad9694ef0f4e049b46ba6665a239ecc090e3febce8eedec",
+          "sha256": "7392122efd9eaf1250ceeabdc84843daea61f2bc1b9e8360dfe016fe5a7285bb"
+        }
+      },
+      {
+        "seed": 2711,
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-2711/seed_result.json",
+        "bytes": 184438,
+        "sha256": "b20807c9f1898acd549f03a3defe327fa17b400fc9943ffc06334878cc570c44",
+        "wall_seconds": 1357.1850677979965,
+        "schedule": {
+          "bytes": 4800600,
+          "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-2711/position_schedule.safetensors",
+          "schedule_sha256": "8fc93b18bad186cf13a20118eb4158d5e49fc5c86732ecbb9376303d7c5f7a9d",
+          "sha256": "a1079f71d4a468b0c0a5c2b7587dbf2260e7f0069378e2f61cc640864fe6145f"
+        }
+      }
+    ]
+  },
+  "training_logs": {
+    "run_source_commit": "1aefc307ebdd4cd5002ac6ac0cdc5a1fc696aa68",
+    "finalizer_source_commit": "d9805ef35f7b6c35552d081d7a8893ee65e18d9f",
+    "fit_wall_seconds_sum": 1350.994774457009,
+    "per_seed_wall_seconds_sum": 2085.9850542589993,
+    "late_finalization_failure_recorded": true,
+    "learning_curves": [
+      {
+        "seed": 1737,
+        "method_id": "affine_same_data",
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-1737/affine_same_data/learning_curve.json",
+        "original_path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-1737/affine_same_data/learning_curve.json",
+        "bytes": 187297,
+        "sha256": "60264f485eae27698e2100dae7db6dd5179148b630a57ba7297f5c5b52d0e066",
+        "available_at_inventory": true,
+        "entries": 31,
+        "step_range": [
+          0,
+          3000
+        ],
+        "selected_step": 1600,
+        "selected_validation_style_balanced_accuracy": 0.9465728292259482,
+        "wall_seconds": 146.8008918800042,
+        "host_peak_rss_bytes": 5882933248,
+        "step_zero_metrics_logged": true,
+        "state_payload_at_step_zero_persisted": false
+      },
+      {
+        "seed": 1737,
+        "method_id": "student_d",
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-1737/student_d/learning_curve.json",
+        "original_path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-1737/student_d/learning_curve.json",
+        "bytes": 188240,
+        "sha256": "f77c7cf2c15ec1bde1e56cc28829f6165e9029509aebedf26392efa072fbfc0d",
+        "available_at_inventory": true,
+        "entries": 31,
+        "step_range": [
+          0,
+          3000
+        ],
+        "selected_step": 1300,
+        "selected_validation_style_balanced_accuracy": 0.9379116167170437,
+        "wall_seconds": 179.98682726500556,
+        "host_peak_rss_bytes": 5882933248,
+        "step_zero_metrics_logged": true,
+        "state_payload_at_step_zero_persisted": false
+      },
+      {
+        "seed": 1737,
+        "method_id": "student_h",
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-1737/student_h/learning_curve.json",
+        "original_path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-1737/student_h/learning_curve.json",
+        "bytes": 188047,
+        "sha256": "a3d6ed956c12cf7c3453a8a362388997bfef02250ab858e234432e283da87b96",
+        "available_at_inventory": true,
+        "entries": 31,
+        "step_range": [
+          0,
+          3000
+        ],
+        "selected_step": 1700,
+        "selected_validation_style_balanced_accuracy": 0.9455644000693105,
+        "wall_seconds": 207.0576468379877,
+        "host_peak_rss_bytes": 5882933248,
+        "step_zero_metrics_logged": true,
+        "state_payload_at_step_zero_persisted": false
+      },
+      {
+        "seed": 1737,
+        "method_id": "student_s",
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-1737/student_s/learning_curve.json",
+        "original_path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-1737/student_s/learning_curve.json",
+        "bytes": 187370,
+        "sha256": "582ad00c5093a74a476a0ed619f24ce12a3f7baa19760c70ff0b13280467b6f4",
+        "available_at_inventory": true,
+        "entries": 31,
+        "step_range": [
+          0,
+          3000
+        ],
+        "selected_step": 600,
+        "selected_validation_style_balanced_accuracy": 0.9477402658606643,
+        "wall_seconds": 189.59089909699105,
+        "host_peak_rss_bytes": 5882933248,
+        "step_zero_metrics_logged": true,
+        "state_payload_at_step_zero_persisted": false
+      },
+      {
+        "seed": 2711,
+        "method_id": "affine_same_data",
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-2711/affine_same_data/learning_curve.json",
+        "original_path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-2711/affine_same_data/learning_curve.json",
+        "bytes": 187368,
+        "sha256": "12359e5756173b360d370716d2998cb7e7efd6b3db478c41de0c7519f625ebec",
+        "available_at_inventory": true,
+        "entries": 31,
+        "step_range": [
+          0,
+          3000
+        ],
+        "selected_step": 1900,
+        "selected_validation_style_balanced_accuracy": 0.9461372880662008,
+        "wall_seconds": 118.9694368430064,
+        "host_peak_rss_bytes": 5882933248,
+        "step_zero_metrics_logged": true,
+        "state_payload_at_step_zero_persisted": false
+      },
+      {
+        "seed": 2711,
+        "method_id": "student_d",
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-2711/student_d/learning_curve.json",
+        "original_path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-2711/student_d/learning_curve.json",
+        "bytes": 188201,
+        "sha256": "774214ca2e62860c0ac5f0f44aef09247929e1bd8e694a5c0d9851a82200db79",
+        "available_at_inventory": true,
+        "entries": 31,
+        "step_range": [
+          0,
+          3000
+        ],
+        "selected_step": 300,
+        "selected_validation_style_balanced_accuracy": 0.934317310337641,
+        "wall_seconds": 180.52990139700705,
+        "host_peak_rss_bytes": 5882933248,
+        "step_zero_metrics_logged": true,
+        "state_payload_at_step_zero_persisted": false
+      },
+      {
+        "seed": 2711,
+        "method_id": "student_h",
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-2711/student_h/learning_curve.json",
+        "original_path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-2711/student_h/learning_curve.json",
+        "bytes": 188025,
+        "sha256": "d92bfb86d4948e318264684b089a0387676dfd61b4ba64321fe0084de53b2c1f",
+        "available_at_inventory": true,
+        "entries": 31,
+        "step_range": [
+          0,
+          3000
+        ],
+        "selected_step": 1400,
+        "selected_validation_style_balanced_accuracy": 0.9456691495251125,
+        "wall_seconds": 174.08505109000544,
+        "host_peak_rss_bytes": 5882933248,
+        "step_zero_metrics_logged": true,
+        "state_payload_at_step_zero_persisted": false
+      },
+      {
+        "seed": 2711,
+        "method_id": "student_s",
+        "path": "experiments/TRR-P04/runtime/training-r1/seed-2711/student_s/learning_curve.json",
+        "original_path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/seed-2711/student_s/learning_curve.json",
+        "bytes": 187195,
+        "sha256": "18aef6808ac476b554c788f519d60e31d8fc4a60cd8457dc90146e72f86144d4",
+        "available_at_inventory": true,
+        "entries": 31,
+        "step_range": [
+          0,
+          3000
+        ],
+        "selected_step": 1200,
+        "selected_validation_style_balanced_accuracy": 0.9458026185608839,
+        "wall_seconds": 153.97412004700163,
+        "host_peak_rss_bytes": 5882933248,
+        "step_zero_metrics_logged": true,
+        "state_payload_at_step_zero_persisted": false
+      }
+    ],
+    "logs_do_not_supply_initial_state_payloads": true,
+    "no_trajectory_reconstruction": true
+  },
+  "public_pools": {
+    "capture_evidence": {
+      "path": "experiments/TRR-P04/runtime/public-pool-capture-r1/capture_evidence.json",
+      "original_path": "/tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/capture_evidence.json",
+      "bytes": 10492,
+      "sha256": "ea430d0d98506450e4c28d1de8a1ddbf3aebc86a32514fe4f836ba5f6eeb06e7",
+      "status": "PUBLIC_CORRECTION_VALIDATION_CAPTURE_COMPLETE_NO_EVALUATION_TRUTH",
+      "source_code_commit": "d8c657ba834f30b6b68bf0720fbf52ca123b7509"
+    },
+    "model": {
+      "id": "meta-llama/Llama-3.2-1B-Instruct",
+      "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "config_sha256": "2febf68cea25bf4611be02b7536f2488a5ba523bb1134986e3610152abe74fdb",
+      "generation_config_sha256": "88effbb63300dbbc7390143fbbdd9d9fa50587b37e8bfd16c8c90d4970a74a36",
+      "model_weights_path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6/model.safetensors",
+      "model_weights_bytes": 2471645608,
+      "model_weights_sha256": "1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f",
+      "model_weights_hash_source": "full model.safetensors read before model load",
+      "tokenizer_snapshot": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+      "cut_depth": 4,
+      "hidden_size": 2048,
+      "vocab_size": 128256,
+      "dtype": "torch.bfloat16"
+    },
+    "capture_geometry": {
+      "batch_records": 8,
+      "cut_depth": 4,
+      "hidden_size": 2048,
+      "maximum_tokens": 192,
+      "vocab_size": 128256
+    },
+    "correction": {
+      "records": 256,
+      "truncated_records": 156,
+      "activation": {
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/correction_cut4.safetensors",
+        "bytes": 202066296,
+        "sha256": "c9eb10065ee765a95aa0d30bae91f3061fecf3bfa5aa52c56a3eaa62d4c216b4",
+        "shape": [
+          256,
+          192,
+          2048
+        ],
+        "activation_tensor_sha256": "da42249963dced77463d1929c244c30b066a3dd7b73f9854967b95622a1542dd",
+        "token_ids_tensor_sha256": "17603598892a2b13ddb0160ad8620ace74ad6446315060493454a0a8287fe7b2"
+      },
+      "record_manifest": {
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/correction_records.json",
+        "bytes": 218657,
+        "sha256": "3f993ef70ef153d0f2e13dc86748378b93ccfd0b85d1c8bd0f033c53b3f1484d"
+      },
+      "purpose": "public correction pool; labels may be read because source is public"
+    },
+    "validation": {
+      "records": 192,
+      "truncated_records": 122,
+      "activation": {
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/validation_cut4.safetensors",
+        "bytes": 151550328,
+        "sha256": "033f714add8d240686a10a01cb3b52e5202480b30f98106182a7bc3ec53004f0",
+        "shape": [
+          192,
+          192,
+          2048
+        ],
+        "activation_tensor_sha256": "499c5bd012f5a9f1912353d7ec86d7dcdaa35c55be2ba8a1d75e87a5b05b1a3f",
+        "token_ids_tensor_sha256": "8d9bb730cee1f07236fd8a7f0e700d98868d10a1c497ebb3ad2982c73ce027e2"
+      },
+      "record_manifest": {
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/validation_records.json",
+        "bytes": 164165,
+        "sha256": "51f416d82d681b031dafddd379f2709ce07a470e571212803a1f984307df05a8"
+      },
+      "purpose": "public validation pool; labels may be read because source is public"
+    },
+    "record_metadata": {
+      "pool_manifest": {
+        "path": "experiments/TRR-P04/setup/public-pools-r2/pool_manifest.json",
+        "original_path": "/tmp/trr-p04/experiments/TRR-P04/setup/public-pools-r2/pool_manifest.json",
+        "bytes": 5168,
+        "sha256": "7c7eadac2c882d9619c8465ca805ccb0e2cf0c4ca0ad98bd8e9cee037cb78509"
+      },
+      "correction_records": {
+        "path": "experiments/TRR-P04/setup/public-pools-r2/correction_records.json",
+        "original_path": "/tmp/trr-p04/experiments/TRR-P04/setup/public-pools-r2/correction_records.json",
+        "bytes": 152945,
+        "sha256": "2dad95db8f1f796a476e812e6d7eb0a232a325852e6a17ddc3187088c72c2ea2"
+      },
+      "validation_records": {
+        "path": "experiments/TRR-P04/setup/public-pools-r2/validation_records.json",
+        "original_path": "/tmp/trr-p04/experiments/TRR-P04/setup/public-pools-r2/validation_records.json",
+        "bytes": 114922,
+        "sha256": "e9aca619f9973f5131c60086f525ba899ec4788561fce68480427e9cdc26f3fc"
+      },
+      "fresh_panel_index_not_used": true
+    },
+    "access": {
+      "evaluation_truth_accessed": false,
+      "fresh_evaluation_records_accessed": false,
+      "target_weights_accessed": false,
+      "source_text_transient_only": true,
+      "public_labels_read": true
+    },
+    "run": {
+      "started_utc": "2026-09-06T01:45:34Z",
+      "ended_utc": "2026-09-06T01:45:41Z",
+      "elapsed_seconds": 6.357025,
+      "max_rss_bytes": 3823210496,
+      "cuda_peak_reserved_bytes": 2478833664,
+      "host_max_rss_bytes": 3823210496,
+      "fixed_batch_equivalence": {
+        "active_output_bit_exact": true,
+        "batch_records": 8,
+        "changed_future_pad_tokens": 258,
+        "decision_rule": "torch.equal on native active outputs; no tolerance",
+        "future_pad_token_id": 0,
+        "maximum_absolute_difference": 0.0,
+        "path": "fixed batch-8 x 192 ContiguousPublicPrefix.forward_full",
+        "same_batch_shape": true,
+        "sequence_tokens": 192
+      },
+      "non_equivalent_unpadded_diagnostic": {
+        "active_output_bit_exact": false,
+        "batch_records": 8,
+        "compared_active_values": 2617344,
+        "decision_rule": "diagnostic only; no tolerance gate and no batching substitution",
+        "maximum_absolute_difference": 2.0,
+        "reference_path": "ContiguousPublicPrefix.forward_full on each unpadded active record",
+        "relative_l2": 0.00361896571434337,
+        "status": "non_equivalent_not_used",
+        "used_for_capture": false
+      }
+    },
+    "handoff": {
+      "path": "experiments/TRR-P04/runtime/public-pool-capture-r1/implementation_handoff.json",
+      "original_path": "/tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/implementation_handoff.json",
+      "bytes": 4082,
+      "sha256": "7d50ac904f234c8305368446982291b6277b685275d4327947a6eb562c25e7a4",
+      "capture_commit": "d8c657ba834f30b6b68bf0720fbf52ca123b7509",
+      "status": "READY_FOR_PUBLIC_CAPACITY_PROBE_AND_TEACHER_QUALIFICATION"
+    }
+  },
+  "candidate_and_teacher_cache": {
+    "candidate_preparation": {
+      "canonical_metadata_receipt": {
+        "path": "experiments/TRR-P04/runtime/candidate-preparation-r2/candidate_preparation_metadata_completion_receipt.json",
+        "bytes": 1708,
+        "sha256": "25376c010d31021e5f0c3ac715d768a3a83e0b23bd75355a02350df15a0992c5"
+      },
+      "initial_receipt": {
+        "path": "experiments/TRR-P04/runtime/candidate-preparation-r1/candidate_preparation_receipt.json",
+        "bytes": 3214,
+        "sha256": "2ecc5eb2a63489505f9db4f070c2c5a71de004ae9f1c4cab11719ca391b5f706"
+      },
+      "artifact": {
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/candidate-preparation-r2/candidate_preparation.safetensors",
+        "bytes": 609532592,
+        "sha256": "ecf031a606a8bce22116b65d2dcbf5bc25596c80961767a40924081f8f03b1e5",
+        "candidate_k": 32,
+        "proposal_k": 512,
+        "positions": 192,
+        "rows": 1456,
+        "tensor_sha256": {
+          "a1_confidence": "664bd1f73730a22000cb3080e17501847bb76359a7ba364c027eff4adb56d75f",
+          "candidate_ids": "7b96a0a0348acf4e5e46b7a521a381311ccffdc97177f01630c9e02bbc238e7f",
+          "proposal_ids": "2697385f6aa1cf07c6c8820198f2640ab070d68abdf89b6f5c8b2d97f0881f30"
+        },
+        "numeric_inference_reused": true
+      },
+      "source_commit": "628c843ee127c0b5014803f8226d8f795c0c4579"
+    },
+    "teacher_pair_cache": {
+      "evidence_artifact": {
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/teacher-qualification-r3/teacher_evidence.safetensors",
+        "bytes": 928536,
+        "sha256": "0f15a16978d0daa6bbf8a7771109350a633a7fc03a108db5fd8d782255ba84f9",
+        "tensor_payload_opened_by_p05": false
+      },
+      "qualification_json": {
+        "path": "experiments/TRR-P04/runtime/teacher-qualification-r3/teacher_qualification.json",
+        "bytes": 332072,
+        "sha256": "d5519e12ba6e0e12b6cb06beec1285468fa8dc07187d095fa1b78f4fd8a21996"
+      },
+      "receipt": {
+        "path": "experiments/TRR-P04/runtime/teacher-qualification-r3/teacher_receipt.json",
+        "bytes": 6863,
+        "sha256": "8267fe11bf25db4a667bf0b6e21556d9eb6e0ca74549d3808c5e080d408d9505"
+      },
+      "source_commit": "f22d3b05295bff9e3879bb7544502f881054ed9f",
+      "pair_order": {
+        "rows": 384,
+        "difficult_rows": 256,
+        "uniform_audit_rows": 128,
+        "retained_non_gold_pairs": 11443,
+        "omitted_non_gold_tie_pairs": 86,
+        "candidate_k": 32,
+        "proposal_k": 512,
+        "sigma_q": 0.014523349702358246,
+        "tie_tolerance": 0.00014523349702358246,
+        "pair_weight": "min(abs(score_gap)/sigma_q, 1.0)",
+        "gold_in_pairs": false,
+        "teacher_order_cache_role": "public correction evidence for D ranking objective"
+      },
+      "qualification_metrics": {
+        "teacher_accuracy": 0.9765625,
+        "candidate_recall_k32": 0.9765625,
+        "candidate_recall_k512": 0.9973958333333334,
+        "teacher_fixes_total": 260,
+        "teacher_introduced_errors_total": 0,
+        "difficult_teacher_fixes": 250,
+        "uniform_teacher_fixes": 10,
+        "difficult_k32_misses": 6,
+        "uniform_k32_misses": 3,
+        "uniform_k512_misses": 1
+      },
+      "model_identity": {
+        "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+        "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+        "prefix_layers_sha256": "3c897c5ad27073c85496ca24a4a11f2c37de1e5695f65535d7ceeb68e3f1c9ba",
+        "lens_state_sha256": "98cd91c2dc4c5d8ac5a827672c027b7e6dad0d1acb3c45e387d118c9ad2ead04",
+        "normalized_embedding_sha256": "791a8477688f1adbc18dcda68b6baf59f53a3abb805a88fdf53b4db96768f350",
+        "identity_file": {
+          "path": "experiments/TRR-P04/runtime/public-teacher-identity-r1.json",
+          "bytes": 1149,
+          "sha256": "6ac2a54fddd53ecce61ecfab7f9126f1c8c91cc4d0d750d07fb795114ab292b7"
+        }
+      }
+    }
+  },
+  "diagnostic_input_contract": {
+    "purpose": "distinguish learned ranking imitation from non-transfer or objective-conflict explanations using existing public resources",
+    "state_comparison": {
+      "required_states": "all available selected and final S/H/D plus affine states listed in checkpoints",
+      "initial_state": "report unavailable serialized payload; use logged step-zero metrics only, without trajectory reconstruction",
+      "same_examples": "reuse the immutable public correction and validation activation/record manifests above"
+    },
+    "accuracy_and_margin": {
+      "outputs": [
+        "full-vocabulary token accuracy",
+        "gold-versus-best-other logit margin",
+        "teacher non-gold pair-order agreement",
+        "original teacher-ranking loss with P04 ties/weights"
+      ],
+      "segments": [
+        "all public correction positions",
+        "all public validation positions",
+        "teacher-supervised 384 rows split difficult_a1_error=256 and uniform_audit=128",
+        "fixed non-teacher complement reported separately"
+      ],
+      "no_selection_by_scores": true
+    },
+    "gradient_sample": {
+      "selection_rule": "predeclared source-order sample; no metric- or score-based selection",
+      "teacher_rows": "all 384 cached qualification rows, reported as difficult 256 and uniform 128",
+      "non_teacher_correction_rows": "first 128 canonical correction positions after excluding the predeclared teacher-row keys",
+      "validation_rows": "first 128 canonical validation positions",
+      "losses": [
+        "full-vocabulary supervised CE",
+        "P04 hard-confusion term",
+        "P04 weighted adjacent non-gold teacher-ranking term"
+      ],
+      "measurements": [
+        "gradient norm per loss",
+        "cosine/alignment on shared W,b,s and GRU parameters",
+        "gold-margin directional change from gradient dot products",
+        "active row/pair counts and reduction denominators",
+        "reported clipping norm=1.0 without applying a step"
+      ],
+      "diagnostic_seed": 20260912,
+      "parameter_updates": false
+    },
+    "frozen_constants": {
+      "candidate_k": 32,
+      "proposal_k": 512,
+      "sigma_q": 0.014523349702358246,
+      "tie_tolerance": 0.00014523349702358246,
+      "pair_weight": "min(abs(score_gap)/sigma_q,1.0)",
+      "gold_in_ranking_pairs": false,
+      "gradient_clip_norm": 1.0
+    },
+    "output_boundary": "diagnostics only; no checkpoint selection, state update, refit, or hidden-truth access"
+  },
+  "resource_and_run_evidence": {
+    "p05_compute_status": "NONE",
+    "p04_public_capture": {
+      "started_utc": "2026-09-06T01:45:34Z",
+      "ended_utc": "2026-09-06T01:45:41Z",
+      "elapsed_seconds": 6.357025,
+      "max_rss_bytes": 3823210496,
+      "cuda_peak_reserved_bytes": 2478833664,
+      "guard_status": "passed"
+    },
+    "p04_teacher_qualification": {
+      "started_utc": "2026-09-06T02:28:31Z",
+      "ended_utc": "2026-09-06T02:29:59Z",
+      "wall_seconds": 88.08766280999407,
+      "peak_rss_bytes": 3669938176,
+      "guard_status": "PASS"
+    }
+  },
+  "limitations_and_deviations": [
+    "No serialized step-zero/initial student state is available; learning curves log step-zero validation metrics, but exact initial tensor replay is intentionally not attempted.",
+    "Only selected checkpoints were P04 evaluation inputs; final checkpoints are stored and bound in the P04 manifest but were excluded from P04 predictions.",
+    "P04 public correction/validation activation and candidate/teacher payloads are large external artifacts; this inventory records provenance and hashes without copying or opening tensor contents.",
+    "The teacher qualification high gold-token accuracy is a qualification statistic, not evidence that non-gold ranking targets transfer usefully to reconstruction.",
+    "Gradient diagnostics at stored checkpoints are representative measurements and cannot establish the full original training trajectory.",
+    "P04 late finalization failure and selected/final checkpoint distinction remain preserved in prior receipts; no substitute fit is proposed."
+  ]
+}
