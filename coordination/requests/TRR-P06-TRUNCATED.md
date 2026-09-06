@@ -118,26 +118,4 @@ Define a practical benefit threshold before fresh evaluation.
 - A useful later-activation gain supports advancing this observation model.
 - A benefit that fails under target changes is a transfer question, not a
   broad success claim.
-- A well-trained negative result supports retaining the simpler model
-  within the tested scope.
-- An uninformative fit or imprecise result remains inconclusive; do not
-  equate it with proof that later activations contain no useful information.
-
-Do not launch another large confirmation or redesign automatically after
-the pilot. Return the result and one evidence-backed next decision.
-
-## Execution and handoff
-
-Use resource preflight and coordinate shared CPU/GPU access. Comparative
-timings should be uncontended. No paid compute is authorized.
-
-Save this assignment at coordination/requests/TRR-P06.md.
-Write the result to coordination/results/TRR-P06.md and structured evidence
-to experiments/TRR-P06/manifest.json, with task-local status.
-
-Preserve reproducible code, selected-state/input identities, learning
-curves, frozen predictions, costs, and failures. Open a follow-on PR against
-the actual parent without merging it.
-
-Lead the handoff with whether later observed activations add useful
-reconstruction evidence, not the number of tests passed.
+- A well-trained negative result support
