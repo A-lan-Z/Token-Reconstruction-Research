@@ -28,7 +28,6 @@ from token_reconstruction.p04_teacher import (
     PUBLIC_MODEL_SPEC,
     P04TeacherError,
     _build_known_public_cache,
-    _centered_cosine_scores,
     _load_candidate_preparation,
 )
 from token_reconstruction.p04_training import (
@@ -253,7 +252,7 @@ def main() -> int:
             position=args.position,
             device=device,
         )
-        scores = _centered_cosine_scores(simulated, activation.to(device=device)).detach().float().cpu()
+        scores = module._centered_cosine_scores(simulated, activation.to(device=device)).detach().float().cpu()
         torch.cuda.synchronize(device)
         simulation_seconds = time.perf_counter() - simulation_started
         post_cell_gpu = _cuda_snapshot()
