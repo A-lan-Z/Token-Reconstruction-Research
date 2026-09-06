@@ -1,9 +1,55 @@
-# TRR-P07 setup handoff
+# TRR-P07 retrospective comparison
 
-TRR-P07 is set up from the exact published TRR-P06 parent 02c861dfbfc63e3c0b7684a48323fd476a3b268a on branch task/TRR-P07 in /tmp/trr-p07. The incoming packet is preserved verbatim at coordination/requests/TRR-P07.md (6,158 bytes; SHA-256 a0a9f02f4410f6833b8bb6caaba1b599a528d97935bd2ebd353ee470142b3dd7).
+Status: **PENDING_PREDICTION_FREEZE_AND_SCORE**
 
-This is a metadata-only setup handoff. The P06 natural panel is bound at 256 records per domain with 128 stored positions including BOS and 127 scored post-BOS positions. The published TRR-0006 panel is bound through the canonical P07 plan at 256 records per domain, retaining source-selection rows 6*k, k=0..255, in published order. The plan records zero overlap with the P06 panel by published record-ID hashes. Both panels retain the two target conditions and paired source rows.
+This report records the bounded retrospective comparison defined in the
+approved P07 plan (plan SHA-256
+`a0a2339f1a4b77e02d7d1772459dc14d442a4ce24b5111a01e58622ca1ae7c3e`) from
+published parent commit
+`02c861dfbfc63e3c0b7684a48323fd476a3b268a`. It is exploratory and task-local;
+it is not a canonical replacement for either parent benchmark and cannot
+promote a new default automatically.
 
-The comparison binds six frozen states: P06 past-only and P06 diagonal at seeds 6106 and 6107, plus the retained TRR-0006 positionwise and causal states. It reports P06 replicates separately, uses no logits or checkpoint ensemble, and excludes the stopped P06 full-record state. The canonical plan, setup inventory, and inference preflight are experiments/TRR-P07/plan.json, experiments/TRR-P07/setup/asset_inventory.json, and experiments/TRR-P07/setup/inference_preflight.json.
+## Frozen design
 
-Published H tensors, checkpoints, shared embedding assets, and historical truth receipts remain external or local-only and are referenced by declared paths and hashes. The already-opened P06 truth metadata sidecar is /tmp/trr-p06-evaluator-truth-v1/truth.manifest.json (40,895 bytes; SHA-256 21c07d64c489e16bd9a220f4175c23d225515c786e659613ee05ec1f01770e48); the published TRR-0006 score command binds /tmp/trr0006/private/truth_binding.json (metadata file exists; 6,311 bytes; SHA-256 c2f96e87699bccb38802500566eebe9c85250165e9416b59dcf87f8857f7d930), with its public receipt at experiments/TRR-0006/scored_v1/truth_binding_public_receipt.json. The declared payload /tmp/trr0006/private/truth.safetensors was only existence-checked by metadata stat. P07 did not read either truth payload. P07 has not loaded payloads, selected fresh records, started fitting or inference, or accessed truth for selection. P03 holdout, TRR-0007 material, and other unpublished workspaces remain out of scope. A live resource check and largest-cell qualification are required before any authorized prediction run.
+The matrix compares two P06 replicate seeds (6106, 6107) with the retained
+TRR-0006 positionwise and causal states on two paired targets (`public_base`,
+`public_lora_2601`) and two domains (`pile`, `finance`). It uses the complete
+256-record/domain P06 panel and the correctness-blind TRR-0006 subset at source
+selection rows `6*k`, `k=0..255`, in published order. Every cell has 128 stored
+positions including BOS and 127 post-BOS scored positions. The P06 replicate
+joint correctness counts are averaged within each source before uncertainty
+resampling; logits and seed predictions are never averaged.
+
+The registered contrasts are P06 past minus retained positionwise reference
+(primary), P06 past minus P06 diagonal, P06 diagonal minus retained reference,
+and P06 past minus retained causal. The scorer reports each of the eight cells,
+each P06 seed, and the within-source replicate average. It uses 10,000 seeded
+source-record bootstrap draws (seed 7007), with one source-index schedule
+shared across both paired targets and all methods in each panel/domain.
+
+## Evidence and result placeholders
+
+- Prediction replay/freeze receipt: **pending**
+- Existing P06 truth sidecar and TRR-0006 truth binding: **opened only after the
+  prediction freeze; pending score receipt**
+- Per-seed and replicate-averaged paired token/exact metrics: **pending**
+- Position/gain/loss and bootstrap intervals: **pending**
+- Cellwise support/harm/inconclusive gate: **pending**
+- Cost and native-versus-compatible-port notes: **pending**
+
+The decision gate is cellwise: practical support requires either token delta at
+least +1.0 percentage point with a positive 95% lower endpoint or exact-clip
+delta at least +5.0 points with a positive lower endpoint, with no harm on the
+other metric. Harm uses the corresponding −1.0/−5.0 point upper-endpoint rule.
+A coherent contrast has no harm cell, support in every domain-target group in
+at least one panel, support in each panel, and no materially opposite panel
+point estimates within a domain-target pair. Domains, targets, and panels are
+not pooled into an overall percentage. Same-sign but inconclusive results stay
+inconclusive, and no follow-on run is automatic.
+
+The report will retain the parent P06 full-record disposition unchanged and
+will label any native/compatible-port difference, attention normalization,
+fit-support difference, initialization, crop, and checkpoint-selection
+difference as possible explanations rather than causal findings. No P03,
+TRR-0007, hidden holdout, fresh fitting, or new capture is in scope.
