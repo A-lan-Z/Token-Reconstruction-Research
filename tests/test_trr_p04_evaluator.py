@@ -63,3 +63,76 @@ def test_evaluator_plan_rejects_modified_target_seed(tmp_path: Path) -> None:
             output_root=tmp_path / "rejected",
             argv=["prepare_evaluator_observations.py", "--preflight-only"],
         )
+
+
+def test_native_anchor_uses_same_public_reference_without_private_target(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Both paired anchor conditions must differ only in observation activations."""
+    import inspect
+    import sys
+    import types
+
+    import torch
+
+    from scripts.trr_p04 import native_anchor_runner as anchor
+
+    model_calls: list[str] = []
+
+    class FakeModel:
+        config = types.SimpleNamespace(hidden_size=anchor.HIDDEN_SIZE, vocab_size=128256)
+
+        def to(self, device: torch.device) -> "FakeModel":
+            return self
+
+        def eval(self) -> "FakeModel":
+            return self
+
+        def requires_grad_(self, value: bool) -> "FakeModel":
+            return self
+
+    class FakeAutoModel:
+        @staticmethod
+        def from_pretrained(path: str, **kwargs: object) -> FakeModel:
+            model_calls.append(path)
+            return FakeModel()
+
+    fake_transformers = types.ModuleType("transformers")
+    fake_transformers.AutoModelForCausalLM = FakeAutoModel
+    monkeypatch.setitem(sys.modules, "transformers", fake_transformers)
+
+    class FakePrecut:
+        embed_tokens = types.SimpleNamespace(weight=torch.ones(2, 2))
+
+        def to(self, device: torch.device) -> "FakePrecut":
+            return self
+
+        def eval(self) -> "FakePrecut":
+            return self
+
+    fake_reference = types.SimpleNamespace(
+        PublicP0Precut=lambda model, layers: FakePrecut(),
+        normalize_public_embeddings=lambda weight: weight,
+        load_frozen_lens=lambda path, device: torch.ones(1),
+    )
+    monkeypatch.setattr(anchor, "_load_module", lambda path, name: fake_reference)
+    snapshot = tmp_path / "public-snapshot"
+    snapshot.mkdir()
+    descriptors = []
+    for condition in anchor.CONDITIONS:
+        _, _, _, descriptor = anchor._load_reference_resources(
+            model_snapshot=snapshot,
+            reference_path=tmp_path / "reference.py",
+            lens_path=tmp_path / "lens.pt",
+            condition=condition,
+            device=torch.device("cpu"),
+        )
+        descriptors.append(descriptor)
+        assert descriptor["public_reference_loaded"] is True
+        assert descriptor["evaluator_target_update_loaded"] is False
+        assert descriptor["target_update_weights_available_to_reconstructor"] is False
+
+    assert model_calls == [str(snapshot.resolve()), str(snapshot.resolve())]
+    assert descriptors[0]["public_reference_identity"] == descriptors[1]["public_reference_identity"]
+    source = inspect.getsource(anchor._load_reference_resources)
+    assert "target_update_path" not in source
+    assert "install_target_lora" not in source
+    assert "load_target_lora" not in source

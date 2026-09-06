@@ -58,6 +58,8 @@ PROPOSAL_K = 512
 PROPOSAL_CHUNK = 256
 CANDIDATE_K = 256
 RECORD_BATCH_SIZE = 1
+WARMUP_PASSES = 1
+MEASURED_PASSES = 3
 ANCHOR_RECORDS = 12
 ANCHOR_LENGTH = 32
 EXPECTED_POST_BOS_POSITIONS = ANCHOR_RECORDS * ANCHOR_LENGTH
@@ -228,6 +230,11 @@ def _load_module(path: Path, name: str) -> Any:
     return module
 
 
+def _synchronize(device: torch.device) -> None:
+    if device.type == "cuda":
+        torch.cuda.synchronize(device)
+
+
 def _cuda_guard(device: torch.device, *, stage: str, started: float) -> dict[str, Any]:
     if device.type != "cuda":
         raise NativeAnchorError("native A1+A2 anchor requires CUDA")
@@ -325,14 +332,19 @@ def _load_reference_resources(
     model_snapshot: Path,
     reference_path: Path,
     lens_path: Path,
-    target_update_path: Path | None,
-    target_plan: Mapping[str, Any],
     condition: str,
     device: torch.device,
 ) -> tuple[Any, Any, torch.Tensor, dict[str, Any]]:
-    from transformers import AutoModelForCausalLM
-    from token_reconstruction.target_update import TargetLoRAConfig, install_target_lora, load_target_lora
+    """Load the same public reference resources for both paired conditions.
 
+    The shifted observation condition is represented by its activation artifact.
+    The anchor's causal prefix scorer remains the untouched public base model;
+    it must never load or hash the private evaluator target update.
+    """
+    from transformers import AutoModelForCausalLM
+
+    if condition not in CONDITIONS:
+        raise NativeAnchorError(f"unknown target condition: {condition}")
     reference = _load_module(reference_path, "trr_p04_native_reference")
     try:
         model = AutoModelForCausalLM.from_pretrained(
@@ -344,37 +356,6 @@ def _load_reference_resources(
         if int(model.config.hidden_size) != HIDDEN_SIZE or int(model.config.vocab_size) != 128256:
             raise NativeAnchorError("native anchor model geometry changed")
         model.requires_grad_(False)
-        target_descriptor: dict[str, Any] = {"condition": condition}
-        if condition == "public_base":
-            target_descriptor["target_weights_available_to_reconstructor"] = True
-        elif condition == "p04_evaluator_target_update_v1":
-            if target_update_path is None:
-                raise NativeAnchorError("fresh target anchor requires a private target update")
-            update = target_plan["update"]
-            config = TargetLoRAConfig(
-                layers=tuple(int(value) for value in update["layers"]),
-                modules=tuple(str(value) for value in update["modules"]),
-                rank=int(update["rank"]),
-                alpha=float(update["alpha"]),
-                seed=int(update["initialization_seed"]),
-            )
-            installed = install_target_lora(model, config)
-            load_target_lora(installed, target_update_path.expanduser().resolve())
-            target_descriptor.update(
-                {
-                    "target_weights_available_to_reconstructor": False,
-                    "target_update": _descriptor(target_update_path, role="evaluator target update"),
-                    "lora_config": {
-                        "layers": list(config.layers),
-                        "modules": list(config.modules),
-                        "rank": config.rank,
-                        "alpha": config.alpha,
-                        "initialization_seed": config.seed,
-                    },
-                }
-            )
-        else:
-            raise NativeAnchorError(f"unknown target condition: {condition}")
         precut = reference.PublicP0Precut(model, (0, 1, 2, 3)).to(device).eval()
         embeddings = reference.normalize_public_embeddings(precut.embed_tokens.weight).to(device)
         lens = reference.load_frozen_lens(lens_path.expanduser().resolve(), device=device)
@@ -382,6 +363,20 @@ def _load_reference_resources(
         raise
     except Exception as exc:
         raise NativeAnchorError("native reference resource loading failed") from exc
+    target_descriptor: dict[str, Any] = {
+        "condition": condition,
+        "public_reference_loaded": True,
+        "evaluator_target_update_loaded": False,
+        "target_update_weights_available_to_reconstructor": False,
+        "public_reference_identity": {
+            "model_id": MODEL_ID,
+            "model_revision": MODEL_REVISION,
+            "model_snapshot": str(model_snapshot.expanduser().resolve()),
+            "prefix_layers": [0, 1, 2, 3],
+            "reference_path": str(reference_path.expanduser().resolve()),
+            "lens_path": str(lens_path.expanduser().resolve()),
+        },
+    }
     return precut, lens, embeddings, target_descriptor
 
 
@@ -394,7 +389,6 @@ def run_anchor(
     model_snapshot: Path,
     reference_path: Path,
     lens_path: Path,
-    target_update_path: Path | None,
     condition: str,
     output_root: Path,
     device: torch.device,
@@ -437,8 +431,6 @@ def run_anchor(
         model_snapshot=model_snapshot,
         reference_path=reference_path,
         lens_path=lens_path,
-        target_update_path=target_update_path,
-        target_plan=target_plan,
         condition=condition,
         device=device,
     )
@@ -448,11 +440,24 @@ def run_anchor(
     policy = legacy._fixed_k256_policy()
     output_lines: list[str] = []
     timing_rows: list[dict[str, Any]] = []
-    proposal_seconds_total = 0.0
-    candidate_simulations_total = 0
+    logical_proposal_seconds_total = 0.0
+    executed_proposal_seconds_total = 0.0
+    logical_candidate_simulations_total = 0
+    logical_executed_simulations_total = 0
+    executed_candidate_simulations_total = 0
     executed_simulations_total = 0
+    logical_prefix_commit_tokens_total = 0
     prefix_commit_tokens_total = 0
+    logical_prefix_calls_total = 0
     prefix_calls_total = 0
+    logical_prediction_seconds_total = 0.0
+    measured_prediction_seconds_total = 0.0
+    executed_prediction_seconds_total = 0.0
+    _synchronize(device)
+    if device.type == "cuda":
+        torch.cuda.reset_peak_memory_stats(device)
+    guards.append(_cuda_guard(device, stage="before_timed_anchor_passes", started=started_perf))
+
     for local_index, (record, row_h, row_mask, row_positions) in enumerate(
         zip(anchors, anchor_h, anchor_mask, anchor_positions)
     ):
@@ -461,41 +466,86 @@ def run_anchor(
         observations = row_h.view(1, MAXIMUM_TOKENS, HIDDEN_SIZE)
         attention_mask = row_mask.view(1, MAXIMUM_TOKENS).to(torch.long)
         position_ids = row_positions.view(1, MAXIMUM_TOKENS).to(torch.long)
-        prefix_before = int(getattr(precut, "checked_cache_transitions", 0))
-        row_started = time.perf_counter()
-        proposal = legacy.propose_public_a1(
-            observations=observations,
-            attention_mask=attention_mask,
-            lens=lens,
-            normalized_embeddings=embeddings,
-            max_k=PROPOSAL_K,
-            chunk=PROPOSAL_CHUNK,
-        )
-        decoded = legacy.decode_policy(
-            observations=observations,
-            attention_mask=attention_mask,
-            position_ids=position_ids,
-            candidates=proposal.candidates[:, :, :CANDIDATE_K].contiguous(),
-            a1_confidence=proposal.top1_confidence,
-            precut=precut,
-            device=device,
-            policy=policy,
-            record_batch_size=RECORD_BATCH_SIZE,
-        )
-        if tuple(decoded.predictions.shape) != (1, MAXIMUM_TOKENS):
-            raise NativeAnchorError("native anchor prediction geometry changed")
-        predictions = decoded.predictions[0, 1 : ANCHOR_LENGTH + 1].detach().cpu().to(torch.long).tolist()
-        if len(predictions) != ANCHOR_LENGTH or any(int(value) < 0 or int(value) >= 128256 for value in predictions):
-            raise NativeAnchorError("native anchor emitted invalid prediction IDs")
-        elapsed = time.perf_counter() - row_started
-        prefix_after = int(getattr(precut, "checked_cache_transitions", 0))
-        if prefix_after < prefix_before:
-            raise NativeAnchorError("native public-prefix transition counter moved backwards")
-        proposal_seconds_total += float(proposal.elapsed_seconds)
-        candidate_simulations_total += int(decoded.candidate_simulations)
-        executed_simulations_total += int(decoded.executed_candidate_simulations)
-        prefix_commit_tokens_total += int(decoded.prefix_commit_tokens)
-        prefix_calls_total += prefix_after - prefix_before
+
+        def run_pass() -> dict[str, Any]:
+            _synchronize(device)
+            prefix_before = int(getattr(precut, "checked_cache_transitions", 0))
+            pass_started = time.perf_counter()
+            proposal = legacy.propose_public_a1(
+                observations=observations,
+                attention_mask=attention_mask,
+                lens=lens,
+                normalized_embeddings=embeddings,
+                max_k=PROPOSAL_K,
+                chunk=PROPOSAL_CHUNK,
+            )
+            decoded = legacy.decode_policy(
+                observations=observations,
+                attention_mask=attention_mask,
+                position_ids=position_ids,
+                candidates=proposal.candidates[:, :, :CANDIDATE_K].contiguous(),
+                a1_confidence=proposal.top1_confidence,
+                precut=precut,
+                device=device,
+                policy=policy,
+                record_batch_size=RECORD_BATCH_SIZE,
+            )
+            _synchronize(device)
+            elapsed = time.perf_counter() - pass_started
+            if tuple(decoded.predictions.shape) != (1, MAXIMUM_TOKENS):
+                raise NativeAnchorError("native anchor prediction geometry changed")
+            predictions = decoded.predictions[0, 1 : ANCHOR_LENGTH + 1].detach().cpu().to(torch.long).tolist()
+            if len(predictions) != ANCHOR_LENGTH or any(int(value) < 0 or int(value) >= 128256 for value in predictions):
+                raise NativeAnchorError("native anchor emitted invalid prediction IDs")
+            prefix_after = int(getattr(precut, "checked_cache_transitions", 0))
+            if prefix_after < prefix_before:
+                raise NativeAnchorError("native public prefix transition counter moved backwards")
+            result = {
+                "predictions": [int(value) for value in predictions],
+                "elapsed_seconds": float(elapsed),
+                "proposal_seconds": float(proposal.elapsed_seconds),
+                "candidate_simulations": int(decoded.candidate_simulations),
+                "executed_candidate_simulations": int(decoded.executed_candidate_simulations),
+                "prefix_commit_tokens": int(decoded.prefix_commit_tokens),
+                "public_prefix_calls": prefix_after - prefix_before,
+            }
+            del proposal, decoded
+            return result
+
+        passes = [run_pass() for _ in range(WARMUP_PASSES + MEASURED_PASSES)]
+        baseline_predictions = passes[0]["predictions"]
+        if any(current["predictions"] != baseline_predictions for current in passes[1:]):
+            raise NativeAnchorError("native anchor predictions changed across warmup or measured repeats")
+        warmup = passes[:WARMUP_PASSES]
+        measured = passes[WARMUP_PASSES:]
+        logical = measured[0]
+        warmup_elapsed = sum(float(item["elapsed_seconds"]) for item in warmup)
+        measured_elapsed = sum(float(item["elapsed_seconds"]) for item in measured)
+        executed_elapsed = sum(float(item["elapsed_seconds"]) for item in passes)
+        logical_proposal_seconds_total += float(logical["proposal_seconds"])
+        executed_proposal_seconds_total += sum(float(item["proposal_seconds"]) for item in passes)
+        logical_candidate_simulations_total += int(logical["candidate_simulations"])
+        logical_executed_simulations_total += int(logical["executed_candidate_simulations"])
+        executed_candidate_simulations_total += sum(int(item["candidate_simulations"]) for item in passes)
+        executed_simulations_total += sum(int(item["executed_candidate_simulations"]) for item in passes)
+        logical_prefix_commit_tokens_total += int(logical["prefix_commit_tokens"])
+        prefix_commit_tokens_total += sum(int(item["prefix_commit_tokens"]) for item in passes)
+        logical_prefix_calls_total += int(logical["public_prefix_calls"])
+        prefix_calls_total += sum(int(item["public_prefix_calls"]) for item in passes)
+        logical_prediction_seconds_total += float(logical["elapsed_seconds"])
+        measured_prediction_seconds_total += measured_elapsed
+        executed_prediction_seconds_total += executed_elapsed
+
+        def timing_summary(item: Mapping[str, Any]) -> dict[str, Any]:
+            return {
+                "elapsed_seconds": float(item["elapsed_seconds"]),
+                "proposal_seconds": float(item["proposal_seconds"]),
+                "candidate_simulations": int(item["candidate_simulations"]),
+                "executed_candidate_simulations": int(item["executed_candidate_simulations"]),
+                "prefix_commit_tokens": int(item["prefix_commit_tokens"]),
+                "public_prefix_calls": int(item["public_prefix_calls"]),
+            }
+
         output_lines.append(
             json.dumps(
                 {
@@ -504,7 +554,7 @@ def run_anchor(
                     "seed": None,
                     "condition": condition,
                     "record_id": str(record["record_id"]),
-                    "predicted_token_ids": [int(value) for value in predictions],
+                    "predicted_token_ids": baseline_predictions,
                     "anchor": True,
                 },
                 sort_keys=True,
@@ -514,15 +564,19 @@ def run_anchor(
             {
                 "record_id": str(record["record_id"]),
                 "post_bos_positions": ANCHOR_LENGTH,
-                "elapsed_seconds": elapsed,
-                "proposal_seconds": float(proposal.elapsed_seconds),
-                "candidate_simulations": int(decoded.candidate_simulations),
-                "executed_candidate_simulations": int(decoded.executed_candidate_simulations),
-                "prefix_commit_tokens": int(decoded.prefix_commit_tokens),
-                "public_prefix_calls": prefix_after - prefix_before,
+                "warmup_passes": WARMUP_PASSES,
+                "measured_repeat_passes": MEASURED_PASSES,
+                "prediction_exact_repeat": True,
+                "warmup": [timing_summary(item) for item in warmup],
+                "measured_repeats": [timing_summary(item) for item in measured],
+                "logical_one_pass": timing_summary(logical),
+                "warmup_elapsed_seconds": warmup_elapsed,
+                "measured_elapsed_seconds": measured_elapsed,
+                "executed_elapsed_seconds_including_warmup_repeats": executed_elapsed,
             }
         )
         guards.append(_cuda_guard(device, stage=f"after_anchor_row_{local_index:02d}", started=started_perf))
+    _synchronize(device)
     prediction_path = output_root / "predictions.jsonl"
     _write_create_only_text(prediction_path, "\n".join(output_lines) + "\n")
     diagnostics = {
@@ -537,11 +591,19 @@ def run_anchor(
         "scored_positions": EXPECTED_POST_BOS_POSITIONS,
         "proposal_k": PROPOSAL_K,
         "candidate_k": CANDIDATE_K,
-        "candidate_simulations": candidate_simulations_total,
-        "executed_candidate_simulations": executed_simulations_total,
-        "proposal_seconds_sum": proposal_seconds_total,
-        "prefix_commit_tokens": prefix_commit_tokens_total,
-        "public_prefix_calls": prefix_calls_total,
+        "candidate_simulations": logical_candidate_simulations_total,
+        "executed_candidate_simulations": logical_executed_simulations_total,
+        "warmup_passes": WARMUP_PASSES,
+        "measured_repeat_passes": MEASURED_PASSES,
+        "prediction_exact_repeat": True,
+        "executed_candidate_simulations_including_warmup_repeats": executed_candidate_simulations_total,
+        "executed_candidate_simulations_including_warmup_repeats_actual": executed_simulations_total,
+        "logical_proposal_seconds_sum": logical_proposal_seconds_total,
+        "executed_proposal_seconds_including_warmup_repeats": executed_proposal_seconds_total,
+        "logical_prefix_commit_tokens": logical_prefix_commit_tokens_total,
+        "executed_prefix_commit_tokens_including_warmup_repeats": prefix_commit_tokens_total,
+        "logical_public_prefix_calls": logical_prefix_calls_total,
+        "executed_public_prefix_calls_including_warmup_repeats": prefix_calls_total,
         "record_batch_size": RECORD_BATCH_SIZE,
         "a2_fallback": False,
         "tie_rule": "published proposal order and first argmax",
@@ -579,8 +641,13 @@ def run_anchor(
             "candidate_k": CANDIDATE_K,
             "record_batch_size": RECORD_BATCH_SIZE,
             "expected_candidate_simulations": EXPECTED_POST_BOS_POSITIONS * CANDIDATE_K,
-            "actual_candidate_simulations": candidate_simulations_total,
-            "actual_executed_candidate_simulations": executed_simulations_total,
+            "actual_candidate_simulations": logical_candidate_simulations_total,
+            "actual_executed_candidate_simulations": logical_executed_simulations_total,
+            "warmup_passes": WARMUP_PASSES,
+            "measured_repeat_passes": MEASURED_PASSES,
+            "prediction_exact_repeat": True,
+            "executed_candidate_simulations_including_warmup_repeats": executed_candidate_simulations_total,
+            "executed_candidate_simulations_including_warmup_repeats_actual": executed_simulations_total,
             "a2_fallback": False,
             "tie_rule": "published proposal order and first argmax",
         },
@@ -598,17 +665,32 @@ def run_anchor(
         },
         "timing": {
             "resource_load_seconds": load_seconds,
-            "steady_prediction_seconds": sum(float(row["elapsed_seconds"]) for row in timing_rows),
-            "proposal_seconds_sum": proposal_seconds_total,
-            "prefix_calls": prefix_calls_total,
-            "prefix_commit_tokens": prefix_commit_tokens_total,
+            "logical_one_pass_prediction_seconds": logical_prediction_seconds_total,
+            "measured_repeat_prediction_seconds": measured_prediction_seconds_total,
+            "executed_prediction_seconds_including_warmup_repeats": executed_prediction_seconds_total,
+            "logical_one_pass_proposal_seconds": logical_proposal_seconds_total,
+            "executed_proposal_seconds_including_warmup_repeats": executed_proposal_seconds_total,
+            "logical_one_pass_public_prefix_calls": logical_prefix_calls_total,
+            "executed_public_prefix_calls_including_warmup_repeats": prefix_calls_total,
+            "logical_one_pass_prefix_commit_tokens": logical_prefix_commit_tokens_total,
+            "executed_prefix_commit_tokens_including_warmup_repeats": prefix_commit_tokens_total,
+            "warmup_passes_per_record": WARMUP_PASSES,
+            "measured_repeat_passes_per_record": MEASURED_PASSES,
+        },
+        "memory": {
+            "cuda_peak_allocated_bytes_after_timed_pass_reset": int(torch.cuda.max_memory_allocated(device)),
+            "cuda_peak_reserved_bytes_after_timed_pass_reset": int(torch.cuda.max_memory_reserved(device)),
+            "host_max_rss_bytes": _max_rss_bytes(),
+            "peak_scope": "timed anchor passes after CUDA peak-counter reset; external watchdog covers whole process group",
         },
         "guards": guards,
         "access": {
             "source_rows_read": False,
             "source_tokens_read": False,
             "evaluation_truth_opened": False,
-            "target_update_loaded": condition == "p04_evaluator_target_update_v1",
+            "public_reference_loaded": True,
+            "evaluator_target_update_loaded": False,
+            "target_update_loaded": False,
             "student_states_loaded": False,
         },
         "execution": {
@@ -652,7 +734,6 @@ def _parser() -> argparse.ArgumentParser:
     ))
     parser.add_argument("--reference", type=Path, default=DEFAULT_REFERENCE)
     parser.add_argument("--lens", type=Path, default=DEFAULT_LENS)
-    parser.add_argument("--target-update", type=Path)
     parser.add_argument("--condition", choices=CONDITIONS, default="public_base")
     parser.add_argument("--device", choices=("cuda",), default="cuda")
     parser.add_argument("--preflight-only", action="store_true")
@@ -681,7 +762,6 @@ def main(argv: Sequence[str] | None = None) -> int:
                 model_snapshot=args.model_snapshot.expanduser().resolve(),
                 reference_path=args.reference.expanduser().resolve(),
                 lens_path=args.lens.expanduser().resolve(),
-                target_update_path=(None if args.target_update is None else args.target_update.expanduser().resolve()),
                 condition=args.condition,
                 output_root=args.output_root.expanduser().resolve(),
                 device=torch.device(args.device),
