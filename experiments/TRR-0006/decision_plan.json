@@ -1,0 +1,208 @@
+{
+  "schema": "token-reconstruction.trr0006-decision-plan.v1",
+  "task_id": "TRR-0006",
+  "status": "FROZEN_BEFORE_NEW_SOURCE_SELECTION",
+  "claim_scope": "Bounded exploratory comparison of two already-trained enriched decoders on the declared natural-source panel. Conclusions are limited to these fitted states, domains, target trajectories, source ranges, and 128-token clips.",
+  "provenance": {
+    "parent_commit": "3a7e8f579e713c3e41d02639237042ca26fd019b",
+    "packet_sha256": "3611e14ba85e10b4612dedb2a64aadf6207bd6d57e43b2541595f89766fdbe46",
+    "scientific_source_commit": "da82f6cac45e09ae83452198344c547553cb4433",
+    "trr5_method_freeze_path": "experiments/TRR-0005/method_freeze.json",
+    "trr5_method_freeze_sha256": "96330c8b935ff33ab3f69600c4456e556f901084ad2958e49287d2d329caa422",
+    "trr5_decision_plan_path": "experiments/TRR-0005/decision_plan.json",
+    "trr5_decision_plan_sha256": "d4ae0da99ae5c0a00e454c16b539441e193cb76b9e52673c8e674bfdd2df1245",
+    "trr5_manifest_path": "experiments/TRR-0005/manifest.json",
+    "trr5_manifest_sha256": "ef670253241886e7d224b1c57fbdcaa9bb6974253fd24975e098f4255fe0c7d0",
+    "fixture_equivalence_path": "experiments/TRR-0006/fixture_equivalence/cuda_id_equivalence.json",
+    "fixture_scope": "Already-opened fixture only; two records per cell, two methods; no new TRR6 truth or timing claim.",
+    "sample_size_sensitivity_path": "experiments/TRR-0006/precision/sample_size_sensitivity.json",
+    "sample_size_sensitivity_sha256": "e17c13cc79cc16e28cc1f66328651be558c09b80f4c13c8621dfa5b56e4f7034",
+    "trr5_method_registration_path": "experiments/TRR-0005/fresh_confirmation_v1/method_registration.json",
+    "trr5_method_registration_sha256": "784d0ffc400a28d8fbabe98a7bb1516d7d397fcbb06da9cd78cad1521c37fa41",
+    "method_provenance_note": "The root method_freeze.json binds the selected states; fresh_confirmation_v1/method_registration.json is the published executable registration. Both are read-only inputs.",
+    "fixture_equivalence_sha256": "9c81820d6197c5e8ba6c91395d7ccbfabfc7541696b136be4a0681d48690ced0",
+    "readiness": "Decision rules reviewed by root; plan remains unselected and unfrozen until eligibility/resource preflight permits the one sample-size revision.",
+    "eligible_inventory_path": "experiments/TRR-0006/eligibility_inventory_1536_projection_v3.json",
+    "eligible_inventory_sha256": "cad1697fc575b27dcd01a80f134d31cc48c6080ebb31706fd87351dd259a67a7"
+  },
+  "methods": [
+    {
+      "method_id": "enriched__affine_causal_h_attention128",
+      "role": "causal_context",
+      "rule": "joint affine path plus zero-initialized causal H_0..H_i attention correction; repaired cosine/QK-normalized implementation",
+      "state_path": "experiments/TRR-0005/joint_fit_qknorm_v1/enriched/affine_causal_h_attention128/selected.safetensors",
+      "state_sha256": "ee910b14ad6f282bb933ea44ad24453cb5cce1470c65dbc09d8bcc16f3e8abfd",
+      "source_method_registration": "experiments/TRR-0005/method_freeze.json"
+    },
+    {
+      "method_id": "enriched__affine_trained_diagonal_attention128",
+      "role": "positionwise_control",
+      "aliases": [
+        "selected_positionwise",
+        "diagonal"
+      ],
+      "rule": "joint affine path plus trained current-position-only diagonal attention correction",
+      "state_path": "experiments/TRR-0005/joint_fit_v1/enriched/affine_trained_diagonal_attention128/selected.safetensors",
+      "state_sha256": "696eb9fc951e85356a06575faf18a2011616692a086bdac3b2fa368e69d599a2",
+      "source_method_registration": "experiments/TRR-0005/method_freeze.json"
+    }
+  ],
+  "comparison": {
+    "primary_contrast": "enriched causal context versus enriched trained diagonal positionwise control",
+    "deduplication": "causal-versus-selected-positionwise is the same contrast as causal-versus-diagonal for this task and is not a second endpoint or corroborating analysis",
+    "method_order": [
+      "enriched__affine_causal_h_attention128",
+      "enriched__affine_trained_diagonal_attention128"
+    ],
+    "pairing_unit": "one natural source record; the identical source is evaluated under public_base and synthetic-LoRA targets",
+    "source_resampling": "Use one deterministic source-resample schedule within each domain for both target conditions and both methods; do not multiply target-wise probabilities or assume target independence.",
+    "cells": [
+      "pile__public_base",
+      "pile__public_lora_2601",
+      "finance__public_base",
+      "finance__public_lora_2601"
+    ],
+    "domains": [
+      "pile",
+      "finance"
+    ],
+    "target_conditions": [
+      "public_base",
+      "public_lora_2601"
+    ]
+  },
+  "panel": {
+    "initial_records_per_domain": 1024,
+    "selection_status": "DESIGN_FROZEN_SELECTION_NOT_STARTED",
+    "source_selection": "Use the published natural sampling order (seed 5005), source formatting and existing ranges. Apply all accessible fitting/validation/opened/duplicate exclusions and available P04 opaque hashes before selecting the first 1536 eligible records per domain. No wrappers, balancing, or range extension.",
+    "source_ranges_half_open": {
+      "pile": [
+        7000,
+        10000
+      ],
+      "finance": [
+        12000,
+        20000
+      ]
+    },
+    "clip_tokens_including_bos": 128,
+    "scored_post_bos_tokens": 127,
+    "capture_tokens": 192,
+    "capture_batch_records": 8,
+    "prediction_chunk_records": 8,
+    "prediction_rows": "one source record at a time after stored H128 is prepared",
+    "source_pairing": "3,072 unique sources: 1,536 per domain, each paired across public_base and public_lora_2601. Four cells contain 6,144 source-target records per method, not 6,144 independent sources.",
+    "initial_source_accounting": "At 1024 records/domain: 2048 unique natural source records across two domains and 4096 paired source-target evaluations (two target conditions).",
+    "records_per_domain": 1536,
+    "unique_sources_total": 3072,
+    "record_condition_evaluations_per_method": 6144,
+    "selection_seed": 5005,
+    "sample_size_revision": {
+      "records_per_domain": 1536,
+      "max_revisions": 1,
+      "status": "ONE_TIME_REVISION_FROZEN_BEFORE_SELECTION",
+      "rationale": "At the published Finance public-base discordance rates (gain 5/128, loss 4/128), the registered exact-margin exclusion probability is approximately 0.977 at n=1536 versus 0.805 at n=1024. The 50% sample increase is feasible within existing source ranges and bounded chunk geometry. These are conditional IID multinomial planning scenarios, not guaranteed power on the new natural panel.",
+      "limitations": "Rates are multinomial planning scenarios from published TRR5 paired events. Cross-target dependence is retained through paired-pattern bounds/simulation; no product of marginal probabilities is a guaranteed joint claim.",
+      "source_accounting": "At 1536 records/domain: 3072 unique natural source records across two domains and 6144 paired source-target evaluations (two target conditions); these are not 4096 independent observations.",
+      "revisions_used": 1
+    }
+  },
+  "registered_margins_pp": {
+    "token_benefit": 0.5,
+    "exact_benefit": 5.0,
+    "token_harm": 0.5,
+    "exact_harm": 5.0,
+    "warmed_runtime_ratio_budget": 1.25,
+    "training_time_ratio_budget": 2.0
+  },
+  "uncertainty": {
+    "token": {
+      "method": "paired source-record bootstrap of the micro correct/scored token-rate difference",
+      "draws": 10000,
+      "seed": 5005,
+      "tail_alpha": 0.003125,
+      "lower_practical_bound": "q_0.003125(delta_token_pp)",
+      "upper_practical_bound": "q_0.996875(delta_token_pp)",
+      "coverage": "Registered exploratory practical-benefit bounds use paired bootstrap quantiles with approximate coverage, not a finite-sample exact guarantee."
+    },
+    "exact_record": {
+      "events": {
+        "both_correct": "causal exact and diagonal exact",
+        "causal_only": "causal exact and diagonal not exact; beneficial gain event",
+        "positionwise_only": "diagonal exact and causal not exact; harmful loss event",
+        "neither_correct": "neither method exact"
+      },
+      "counts": "Report all four mutually exclusive counts per domain and target; they must sum to the paired source count.",
+      "gain": "g = causal_only",
+      "loss": "h = positionwise_only",
+      "lower_practical_bound": "L_CP(g; alpha=0.05/32) - U_CP(h; alpha=0.05/32)",
+      "upper_practical_bound": "U_CP(g; alpha=0.05/32) - L_CP(h; alpha=0.05/32)",
+      "coverage": "Each Clopper-Pearson endpoint has an exact marginal one-sided guarantee under its binomial marginal; the retained allocation is conservative for the directional family."
+    },
+    "multiplicity": {
+      "directional_family": "4 cells x 2 outcomes (token, exact) x 2 directions (lower support/harm and upper exclusion) = 16 directional bounds",
+      "token_tail_alpha": "0.05/16 = 0.003125",
+      "exact_cp_tail_alpha_each": "0.05/32 = 0.0015625",
+      "duplicate_contrast_count": 0,
+      "interpretation": "Support and exclusion use the same predeclared directional family; do not add a second causal-versus-selected-positionwise family."
+    },
+    "descriptive_reporting": "Report paired 95% source-bootstrap intervals for token deltas and exact-record deltas/gain-loss rates. Descriptive intervals and a point estimate reaching a margin do not by themselves support a practical claim."
+  },
+  "decision_rules": {
+    "quality_unit": "Every one of the four domain/target cells is evaluated separately; support needs at least one prespecified cell/outcome endpoint and harm must be addressed in all remaining endpoints. No pooled headline can satisfy a cell-level rule.",
+    "candidate_useful": "A descriptive point estimate reaches +0.5 pp token or +5 pp exact and costs are reported. This is a candidate signal only, not positive-evidence power.",
+    "supported_practical_context_gain": "Support a practical context gain when at least one prespecified cell has a lower practical bound reaching its registered margin (+0.5 pp token OR +5 pp exact), every remaining cell/outcome lower bound is at least its retained harm limit (-0.5 pp token or -5 pp exact), and the cost qualification is reported. State exactly which endpoint supports the claim; this is a cell/outcome-scoped result, not a universal four-cell benefit claim.",
+    "practical_exclusion_positionwise": "Classify exclusion only when, in all four cells, the token upper practical bound is strictly below +0.5 pp AND the exact upper practical bound U_CP(g)-L_CP(h) is strictly below +5 pp. Do not add a lower-bound harm condition: if causal is worse, that strengthens the positionwise default; if the sign remains uncertain, report it as uncertainty.",
+    "material_harm": "Call evidence of material harm only when an upper practical bound is strictly below the negative harm margin (token U < -0.5 pp OR exact U < -5 pp) in a cell. A lower bound below -margin alone means harm has not been excluded; it is not evidence of harm.",
+    "inconclusive": "If neither the scoped support rule nor the all-four-cell exclusion rule holds, classify the context comparison as inconclusive. Distinguish harm_not_excluded from evidence_of_material_harm and state the remaining interval and decision relevance.",
+    "cost_qualification": "Report warmed runtime ratio and retained-state preparation/training cost separately. The cost rule is runtime ratio <=1.25 and historical training/preparation ratio <=2 when that ratio is available; no new training is permitted. Missing historical cost does not block quality inference, but a final cost-based recommendation must state cost_unqualified.",
+    "quality_support_without_cost": "Quality inference may be reported when the support rule holds even if historical preparation/training cost is unavailable; mark cost_unqualified and withhold a final cost-based recommendation until the cost rule is qualified.",
+    "harm_not_excluded": "If a lower bound is below the negative harm margin but its upper bound is not below that margin, label harm_not_excluded and make the support claim inconclusive for the affected endpoint.",
+    "cost_qualified_support": "A support result is cost-qualified only when warmed runtime ratio <=1.25 and the available retained preparation/training ratio <=2. If the historical preparation/training ratio is unavailable because no new training is run, report the quality support as cost_unqualified rather than silently treating it as qualified; the quality bounds remain valid."
+  },
+  "truth_gate": {
+    "required_before_truth": "Complete all eight cell-method prediction outputs (four cells x two methods), stored H128/output identity, one warmup and one measured timing record per source row with exact repeat IDs, frozen source/observation/input/state/code hashes, complete manifest and freeze receipt.",
+    "order": [
+      "verify packet/plan/registration/panel and source/input hashes",
+      "verify both frozen states and executable source commit",
+      "verify all eight prediction artifacts, geometry, IDs, and timing receipts",
+      "freeze the complete matrix and rehash it",
+      "open truth once",
+      "score all cells without partial result exposure"
+    ],
+    "fail_closed": "Any missing, changed, incomplete, untimed, or partially scored artifact raises before the truth loader is invoked. The scorer must not read or hash evaluator truth during this gate.",
+    "truth_status": "NOT_OPENED"
+  },
+  "reporting": {
+    "per_cell": [
+      "both_correct_count",
+      "causal_only_count",
+      "positionwise_only_count",
+      "neither_correct_count",
+      "absolute_exact_rate_by_method",
+      "paired_token_delta_and_descriptive_interval",
+      "exact_delta_and_descriptive_interval",
+      "token_lower_and_upper_practical_bounds",
+      "exact_lower_and_upper_practical_bounds",
+      "warmup/measured timing and cost qualification"
+    ],
+    "absolute_quality": "Absolute exact recovery is the declared all-127-post-BOS-token clip rate; a relative context result does not establish good reconstruction quality.",
+    "joint_claims": "If a joint statement across target conditions or domains is made, state the observed paired-pattern calculation or explicit dependence bound; do not assume independent targets or multiply marginal exclusion probabilities."
+  },
+  "frozen_at_utc": "2026-09-06T05:09:14.777942+00:00",
+  "exclusion_limitations": [
+    "P04 target-fit disjointness cannot be certified from the approved aggregate exchange because per-record IDs, source ranges, and replay sequence hashes are unavailable.",
+    "Available P04 source/sequence hashes are applied. Unavailable target-fit256 individual identities/ranges and replay sequence hashes prevent a complete cross-study disjointness certificate. No underlying private P04 ledgers were opened."
+  ],
+  "execution_preflight": {
+    "capture_batch_records": 8,
+    "capture_sequence_tokens": 192,
+    "stored_sequence_tokens": 128,
+    "prediction_chunk_records": 8,
+    "inference_records_per_call": 1,
+    "retained_bf16_H_bytes_per_cell": 805306368,
+    "retained_bf16_H_bytes_four_cells_on_disk": 3221225472,
+    "geometry_qualification": "Complete the largest chunk8 qualification on already-opened material before releasing main capture/prediction execution. Preserve one-record decoder numerical semantics.",
+    "cost_projection": "50% more records than proposed1024. Prior512source-target capture inner7.57s scales to about91s for6144; prior standalone~5ms per prediction implies about123s for two methods times one warmup+one measured call. Startup, hashing and I/O are additional; use generous bounded run limits and live guards. These are planning estimates, not measured TRR6 costs."
+  }
+}

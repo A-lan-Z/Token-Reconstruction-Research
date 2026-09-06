@@ -1,0 +1,182 @@
+{
+  "schema": "token-reconstruction.trr0006-preflight.v1",
+  "task_id": "TRR-0006",
+  "captured_at": "2026-09-06T13:59:13+10:00",
+  "status": "PREPARATION_INCOMPLETE_PACKET",
+  "packet": {
+    "path": "coordination/requests/TRR-0006.md",
+    "sha256": "becf8ee449b6e2c9d5bdccba4a932fbf7626f0e4528c0ebc3bb7072d4e3f472f",
+    "tail_status": "INCOMPLETE_EXACTLY_AS_RECEIVED_ENDS_AT_REPEATEDL"
+  },
+  "git": {
+    "branch": "task/TRR-0006",
+    "worktree": ".worktrees/TRR-0006",
+    "parent_commit": "3a7e8f579e713c3e41d02639237042ca26fd019b",
+    "science_source_commit": "da82f6cac45e09ae83452198344c547553cb4433"
+  },
+  "frozen_pair": {
+    "method_freeze_path": "experiments/TRR-0005/method_freeze.json",
+    "method_freeze_sha256": "96330c8b935ff33ab3f69600c4456e556f901084ad2958e49287d2d329caa422",
+    "causal": {
+      "method": "enriched__affine_causal_h_attention128",
+      "state_path": "experiments/TRR-0005/joint_fit_qknorm_v1/enriched/affine_causal_h_attention128/selected.safetensors",
+      "state_sha256": "ee910b14ad6f282bb933ea44ad24453cb5cce1470c65dbc09d8bcc16f3e8abfd",
+      "attention_score_mode": "cosine_scale4",
+      "attention_scale": 4.0,
+      "context_width": 128,
+      "state_source_commit": "da82f6cac45e09ae83452198344c547553cb4433"
+    },
+    "trained_diagonal": {
+      "method": "enriched__affine_trained_diagonal_attention128",
+      "state_path": "experiments/TRR-0005/joint_fit_v1/enriched/affine_trained_diagonal_attention128/selected.safetensors",
+      "state_sha256": "696eb9fc951e85356a06575faf18a2011616692a086bdac3b2fa368e69d599a2",
+      "state_source_commit": "da82f6cac45e09ae83452198344c547553cb4433"
+    }
+  },
+  "scope_gate": {
+    "source_selection": "NOT_STARTED",
+    "source_reservation": "NOT_STARTED",
+    "new_truth_creation": "NOT_STARTED",
+    "truth_opening": "NOT_STARTED",
+    "model_or_target_load": "NOT_STARTED",
+    "activation_capture": "NOT_STARTED",
+    "fitting_or_checkpoint_selection": "NOT_STARTED",
+    "gpu_or_intensive_run": "NOT_STARTED",
+    "parallel_unpublished_data": "NOT_INSPECTED",
+    "global_state_or_registry_edit": "NOT_PERFORMED"
+  },
+  "fixture": {
+    "status": "PLANNED_ALREADY_OPENED_FIXTURE",
+    "authorization": "Root released the live resource gate for a replay of an already-opened TRR-0005 fixture.",
+    "readiness": "PENDING_FROZEN_PAIR_AGENT_READINESS",
+    "purpose": "Check inference equivalence at the post-score publication head before any new study data are opened.",
+    "new_study_truth": false
+  },
+  "precision": {
+    "registered_rule": "U(p_gain) - L(p_loss)",
+    "interval": "one-sided Clopper-Pearson marginal tails",
+    "tail_alpha": 0.0015625,
+    "family_alpha": 0.05,
+    "decision_event": "P(net_upper_pp <= 5.0)",
+    "interpretation": "Per-cell sensitivity only; source-paired cross-target dependence is retained and no joint probability is formed by multiplying cells.",
+    "n": 1024,
+    "scenarios": [
+      {
+        "label": "zero discordance",
+        "p_gain": 0.0,
+        "p_loss": 0.0,
+        "expected_gain": 0.0,
+        "expected_loss": 0.0,
+        "registered_upper_pp": 0.6290161100184322,
+        "probability_exclude_5pp": 1.0
+      },
+      {
+        "label": "Pile scaled from TRR-0005 (1/128, 1/128)",
+        "p_gain": 0.0078125,
+        "p_loss": 0.0078125,
+        "expected_gain": 8.0,
+        "expected_loss": 8.0,
+        "probability_exclude_5pp": 0.999999999971
+      },
+      {
+        "label": "Finance P0 scaled from TRR-0005 (5/128, 4/128)",
+        "p_gain": 0.0390625,
+        "p_loss": 0.03125,
+        "expected_gain": 40.0,
+        "expected_loss": 32.0,
+        "plug_in_registered_upper_pp": 4.285726522674137,
+        "probability_exclude_5pp": 0.80483871583
+      },
+      {
+        "label": "Finance LoRA scaled from TRR-0005 (5/128, 6/128)",
+        "p_gain": 0.0390625,
+        "p_loss": 0.046875,
+        "expected_gain": 40.0,
+        "expected_loss": 48.0,
+        "probability_exclude_5pp": 0.98143569926
+      },
+      {
+        "label": "plausible net +1pp (5%, 4%)",
+        "p_gain": 0.05,
+        "p_loss": 0.04,
+        "probability_exclude_5pp": 0.53497781023
+      },
+      {
+        "label": "true net +5pp, no losses",
+        "p_gain": 0.05,
+        "p_loss": 0.0,
+        "probability_exclude_5pp": 0.00131194789
+      },
+      {
+        "label": "true net +5pp with discordant losses (9%, 4%)",
+        "p_gain": 0.09,
+        "p_loss": 0.04,
+        "probability_exclude_5pp": 2.88583989e-05
+      }
+    ],
+    "recommendation": "No one-time sample-size revision is indicated for the registered +5pp per-cell question by this sensitivity analysis. This is not a guaranteed decision probability, and a future joint claim must use source-paired resampling across target conditions.",
+    "freeze_status": "NOT_FROZEN_PENDING_PACKET_COMPLETION"
+  },
+  "panel_projection": {
+    "records_per_domain": 1024,
+    "unique_source_records_total": 2048,
+    "target_conditions_per_domain": 2,
+    "source_target_cells": 4,
+    "pairing": "The same source records are paired across the published public-base and synthetic-LoRA target states.",
+    "capture_semantics": "Batch 8 x sequence 192 public-prefix forward; retain the first 128 positions including BOS; score positions 1..127 only.",
+    "batches_per_cell": 128,
+    "capture_forwards_total": 512,
+    "raw_activation_shape_per_cell": [
+      1024,
+      192,
+      2048
+    ],
+    "trimmed_activation_shape_per_cell": [
+      1024,
+      128,
+      2048
+    ],
+    "raw_activation_bytes_per_cell_bf16": 805306368,
+    "trimmed_activation_bytes_per_cell_bf16": 536870912,
+    "raw_activation_bytes_all_cells_bf16": 3221225472,
+    "trimmed_activation_bytes_all_cells_bf16": 2147483648,
+    "storage_policy": "Write one cell at a time; do not represent the panel as one full-matrix single batch.",
+    "scored_tokens_per_cell": 130048,
+    "scored_tokens_all_cells": 520192,
+    "eligibility_and_reservation": {
+      "selection_status": "NOT_STARTED",
+      "opaque_reservation_status": "PENDING_COORDINATION",
+      "eligible_source_rule": "Natural sources in the published TRR-0005 source range after excluding known training, validation, opened evaluation, and duplicate sources or sequences.",
+      "source_range_extension_rule": "If exclusions leave too few eligible records, resolve and preregister a compatible extension before selection or truth access; do not silently reuse records or change the population.",
+      "truth_status": "NOT_CREATED_OR_OPENED"
+    }
+  },
+  "resource_projection": {
+    "prior_qualified_geometry": "8 x 192 records/tokens with hidden width 2048, one arm resident sequentially",
+    "prior_qknorm_peak_reserved_bytes": 2956984320,
+    "prior_qknorm_conservative_envelope_bytes": 4413456384,
+    "prior_qknorm_peak_rss_bytes": 6905004032,
+    "prior_final_prediction_max_gpu_reserved_bytes": 3546284032,
+    "prior_final_prediction_max_rss_bytes": 5816393728,
+    "estimated_measured_prediction_seconds_per_method": 19.5,
+    "estimated_measured_prediction_seconds_both_methods": 39.3,
+    "timing_basis": "TRR-0005 final per-record learned prediction timing scaled from 128 to 1024 records per cell; load, I/O, and safety margin remain to be measured.",
+    "live_snapshot": {
+      "gpu": "NVIDIA GeForce RTX 5080",
+      "gpu_total_mib": 16303,
+      "gpu_free_mib": 13456,
+      "gpu_used_mib": 2522,
+      "gpu_utilization_percent": 0,
+      "gpu_temperature_c": 35,
+      "host_available_bytes": 22087585792,
+      "disk_free_bytes": 307767525376
+    },
+    "guard": "No model, target, activation, or GPU load was performed during this preflight. Any later run must repeat the live resource check and use a fail-closed guard."
+  },
+  "limitations": [
+    "The incoming control packet is visibly truncated at 'do not adapt it repeatedl'; no missing tail was inferred.",
+    "The post-score publication-head maintenance changed receipt-schema handling in scripts/trr0005_run_predictions.py; already-opened fixture replay is planned before claiming inference equivalence.",
+    "The sensitivity model is a CPU-only multinomial calculation over paired gain/loss categories, not new evaluation data.",
+    "No private holdout, hidden truth, or parallel unpublished result was read."
+  ]
+}

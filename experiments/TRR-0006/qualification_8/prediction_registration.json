@@ -1,0 +1,120 @@
+{
+  "candidate_arrays_persisted": false,
+  "cell_order": [
+    "pile__public_base",
+    "pile__public_lora_2601",
+    "finance__public_base",
+    "finance__public_lora_2601"
+  ],
+  "code_bindings": [
+    {
+      "bytes": 32507,
+      "path": "scripts/trr0006_run_predictions.py",
+      "role": "prediction_runner",
+      "sha256": "b19558a99d9742f48636c611381e167556b0878ca967bd40c9193c22aeda89cc"
+    },
+    {
+      "bytes": 25360,
+      "path": "scripts/trr0006_prediction_contract.py",
+      "role": "prediction_contract",
+      "sha256": "e99f2e7c0fb27250cd47f2db9511ff2162d8f7efb1c17d13dc837797bfacd6dc"
+    },
+    {
+      "bytes": 55256,
+      "path": "src/token_reconstruction/trr0005_joint_decoder.py",
+      "role": "frozen_decoder_numerics",
+      "sha256": "9cab3cf5ad664c37d91bcd90fe1852df71da25800ddf37291a57000908d3d38f"
+    }
+  ],
+  "code_commit": "fa99a7edbecdc57c50ac59a2c26277fbedce6f76",
+  "geometry": {
+    "capture_batch_records": 8,
+    "capture_sequence_tokens": 192,
+    "chunk_records": 8,
+    "hidden_size": 2048,
+    "scored_post_bos_tokens": 127,
+    "scored_sequence_tokens": 128,
+    "stored_sequence_tokens": 128
+  },
+  "method_ids": [
+    "enriched__affine_causal_h_attention128",
+    "enriched__affine_trained_diagonal_attention128"
+  ],
+  "methods": {
+    "enriched__affine_causal_h_attention128": {
+      "base_method_id": "affine_causal_h_attention128",
+      "decision_rule": "joint affine path plus zero-initialized causal H_0..H_i attention correction",
+      "state": {
+        "bytes": 20990668,
+        "path": "experiments/TRR-0005/joint_fit_qknorm_v1/enriched/affine_causal_h_attention128/selected.safetensors",
+        "sha256": "ee910b14ad6f282bb933ea44ad24453cb5cce1470c65dbc09d8bcc16f3e8abfd",
+        "source_commit": "da82f6cac45e09ae83452198344c547553cb4433"
+      }
+    },
+    "enriched__affine_trained_diagonal_attention128": {
+      "base_method_id": "affine_trained_diagonal_attention128",
+      "decision_rule": "joint affine path plus trained current-position-only diagonal attention correction",
+      "state": {
+        "bytes": 20990652,
+        "path": "experiments/TRR-0005/joint_fit_v1/enriched/affine_trained_diagonal_attention128/selected.safetensors",
+        "sha256": "696eb9fc951e85356a06575faf18a2011616692a086bdac3b2fa368e69d599a2",
+        "source_commit": "da82f6cac45e09ae83452198344c547553cb4433"
+      }
+    }
+  },
+  "numerical_settings": {
+    "activation_input_dtype": "torch.bfloat16",
+    "autocast": false,
+    "cpu_interop_threads": 32,
+    "cpu_intraop_threads": 8,
+    "cuda_cudnn_allow_tf32": true,
+    "cuda_matmul_allow_tf32": false,
+    "decoder_compute_dtype": "torch.float32",
+    "embedding_dtype": "torch.float32",
+    "float32_matmul_precision": "highest",
+    "staged_activation_dtype": "torch.float32",
+    "staged_mask_dtype": "torch.bool"
+  },
+  "observation_manifest": {
+    "bytes": 7730,
+    "path": "experiments/TRR-0006/qualification_8/observation_manifest.json",
+    "sha256": "00dd7f22081dc2c240b1c87ba7fbac6cb074c7deb451b956308c9b3269977db0"
+  },
+  "output_root": "experiments/TRR-0006/qualification_8/predictions",
+  "qualification_only": true,
+  "records_per_domain": 8,
+  "resource_guard": {
+    "maximum_reserved_gpu_bytes": 6442450944,
+    "maximum_rss_bytes": 17179869184,
+    "maximum_seconds": 900,
+    "minimum_free_gpu_bytes": 8589934592,
+    "minimum_host_available_bytes": 10737418240
+  },
+  "runtime_assets": {
+    "normalized_public_E": {
+      "bytes": 1050673488,
+      "dtype": "torch.float32",
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+      "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+      "shape": [
+        128256,
+        2048
+      ]
+    }
+  },
+  "schema": "token-reconstruction.trr0006-frozen-pair-prediction-registration.v1",
+  "source_lineage": {
+    "maintenance_inference_equivalence_proven": false,
+    "post_score_maintenance_commit": "1dba67a8dc75844727866cb4273da28a311df216",
+    "published_parent_commit": "3a7e8f579e713c3e41d02639237042ca26fd019b",
+    "scientific_source_commit": "da82f6cac45e09ae83452198344c547553cb4433"
+  },
+  "status": "FROZEN_PREDICTION_REGISTRATION",
+  "task_id": "TRR-0006",
+  "timing_contract": {
+    "measured_runs_per_record": 1,
+    "repeat_integrity": "Require warmup and measured predicted IDs to match exactly",
+    "warmup_runs_per_record": 1
+  },
+  "truth_opened": false
+}

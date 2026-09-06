@@ -1,0 +1,136 @@
+{
+  "cells": [
+    "pile__public_base",
+    "pile__public_lora_2601",
+    "finance__public_base",
+    "finance__public_lora_2601"
+  ],
+  "commands": [
+    "env PYTHONPATH=.:src:scripts python3 scripts/trr0006_prepare_fixture_observations.py --source-root /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005 --repository-root /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006 --output-root experiments/TRR-0006/qualification_8",
+    "env PYTHONPATH=.:src:scripts OMP_NUM_THREADS=8 MKL_NUM_THREADS=8 OPENBLAS_NUM_THREADS=8 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 python3 scripts/trr0006_run_predictions.py --registration experiments/TRR-0006/qualification_8/prediction_registration.json --repository-root /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006",
+    "env PYTHONPATH=.:src:scripts python3 -c 'from scripts.trr0006_freeze_pair import freeze_matrix; freeze_matrix(repository_root=\".\", registration_path=\"experiments/TRR-0006/qualification_8/prediction_registration.json\", receipt_path=\"experiments/TRR-0006/qualification_8/predictions/freeze_receipt.json\")'"
+  ],
+  "geometry": {
+    "capture_batch_records": 8,
+    "capture_sequence_tokens": 192,
+    "chunk_records": 8,
+    "hidden_size": 2048,
+    "scored_post_bos_tokens": 127,
+    "stored_sequence_tokens": 128
+  },
+  "methods": [
+    "enriched__affine_causal_h_attention128",
+    "enriched__affine_trained_diagonal_attention128"
+  ],
+  "numerical_settings": {
+    "activation_input_dtype": "torch.bfloat16",
+    "autocast": false,
+    "cpu_interop_threads": 32,
+    "cpu_intraop_threads": 8,
+    "cuda_cudnn_allow_tf32": true,
+    "cuda_matmul_allow_tf32": false,
+    "decoder_compute_dtype": "torch.float32",
+    "embedding_dtype": "torch.float32",
+    "float32_matmul_precision": "highest",
+    "staged_activation_dtype": "torch.float32",
+    "staged_mask_dtype": "torch.bool"
+  },
+  "purpose": "Eight retained TRR-0005 rows per cell to qualify the task-local runner and feed a public freeze/scorer dry gate; no TRR-0006 study selection or truth.",
+  "qualification_only": true,
+  "records_per_cell": 8,
+  "runtime": {
+    "freeze_receipt": {
+      "bytes": 32326,
+      "path": "experiments/TRR-0006/qualification_8/predictions/freeze_receipt.json",
+      "sha256": "e2d27ecc1d43fef7344321af515d5106ef820d0ac224084efd6553fec85df7ac"
+    },
+    "id_equivalence": {
+      "bytes": 7183,
+      "path": "experiments/TRR-0006/qualification_8/id_equivalence.json",
+      "sha256": "397ed923351f84309407bea72e30189047f53c2a1cefd88df5028307a3f0b171"
+    },
+    "observation_manifest": {
+      "bytes": 7730,
+      "path": "experiments/TRR-0006/qualification_8/observation_manifest.json",
+      "sha256": "00dd7f22081dc2c240b1c87ba7fbac6cb074c7deb451b956308c9b3269977db0"
+    },
+    "peak_memory": {
+      "cells": 8,
+      "max_cuda_peak_allocated_bytes": 1280330240,
+      "max_cuda_peak_reserved_bytes": 1302331392,
+      "max_process_max_rss_bytes": 1737220096,
+      "scope": "per-cell CUDA counters reset before observation iteration; RSS process-cumulative"
+    },
+    "prediction_descriptors": {
+      "bytes": 23350,
+      "path": "experiments/TRR-0006/qualification_8/predictions/predictions.json",
+      "sha256": "eea730fad2051ae82db7d38b3e82ac769e9d470462a55a7a43b2456dc15ad350"
+    },
+    "registration": {
+      "bytes": 4497,
+      "path": "experiments/TRR-0006/qualification_8/prediction_registration.json",
+      "sha256": "ed5823cc14f8e6e0e8e452bfde6b3d3b15ed8949b13cd5a37a5db4d88345f81a"
+    },
+    "run_manifest": {
+      "bytes": 4922,
+      "path": "experiments/TRR-0006/qualification_8/predictions/run_manifest.json",
+      "sha256": "67b42b95219cfeaeef42d5a82ad5cb1c6c898c1336acc7c55f40fbce9a4b2789"
+    },
+    "timing_descriptors": {
+      "bytes": 15749,
+      "path": "experiments/TRR-0006/qualification_8/predictions/timings.json",
+      "sha256": "c60b636fdac20caf2142132ef4eff1be53dbbf53e8b657e96ec141dbaebfc001"
+    }
+  },
+  "schema": "token-reconstruction.trr0006-qualification-run-summary.v1",
+  "source_bindings": {
+    "failed_fixture_attempt": {
+      "bytes": 1503,
+      "path": "experiments/TRR-0006/fixture_equivalence/failed_attempt_bos_normalization.json",
+      "sha256": "11121d1d6ef35118852ab9e98889173307b6c6532128ec6846474dc424774a0e"
+    },
+    "frozen_decoder_numerics": {
+      "bytes": 55256,
+      "path": "src/token_reconstruction/trr0005_joint_decoder.py",
+      "sha256": "9cab3cf5ad664c37d91bcd90fe1852df71da25800ddf37291a57000908d3d38f"
+    },
+    "prediction_contract": {
+      "bytes": 25360,
+      "path": "scripts/trr0006_prediction_contract.py",
+      "sha256": "e99f2e7c0fb27250cd47f2db9511ff2162d8f7efb1c17d13dc837797bfacd6dc"
+    },
+    "prediction_runner": {
+      "bytes": 32507,
+      "path": "scripts/trr0006_run_predictions.py",
+      "sha256": "b19558a99d9742f48636c611381e167556b0878ca967bd40c9193c22aeda89cc"
+    },
+    "qualification_preparer": {
+      "bytes": 9665,
+      "path": "scripts/trr0006_prepare_fixture_observations.py",
+      "sha256": "231d6881913736fb9d8603a5c5ac9d090241ddd3917ade93f26b8549de6daf2f"
+    },
+    "successful_existing_fixture": {
+      "bytes": 9308,
+      "path": "experiments/TRR-0006/fixture_equivalence/cuda_id_equivalence.json",
+      "sha256": "9c81820d6197c5e8ba6c91395d7ccbfabfc7541696b136be4a0681d48690ced0"
+    }
+  },
+  "source_lineage": {
+    "maintenance_inference_equivalence": "No universal/native equivalence claim; scoped fixture equivalence passed",
+    "post_score_maintenance_commit": "1dba67a8dc75844727866cb4273da28a311df216",
+    "published_parent_commit": "3a7e8f579e713c3e41d02639237042ca26fd019b",
+    "scientific_source_commit": "da82f6cac45e09ae83452198344c547553cb4433"
+  },
+  "status": "QUALIFICATION_COMPLETE_NO_TRUTH",
+  "strict_checks": {
+    "all_eight_prediction_descriptors": true,
+    "candidate_arrays_persisted": false,
+    "public_freeze_gate_verified_before_truth": true,
+    "raw_retained_trr5_saved_prediction_id_equality": true,
+    "source_text_loaded": false,
+    "target_labels_loaded": false,
+    "truth_opened": false,
+    "warmup_equals_measured_per_record": true
+  },
+  "task_id": "TRR-0006"
+}

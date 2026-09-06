@@ -1,0 +1,2398 @@
+{
+  "schema": "token-reconstruction.trr0006-analysis-manifest.v1",
+  "task_id": "TRR-0006",
+  "artifact_role": "final TRR-0006 handoff wrapper; authoritative scored outputs are under scored_v1/",
+  "created_utc": "2026-09-06T06:18:45Z",
+  "status": "TRR6_ANALYSIS_COMPLETE_AFTER_PUBLIC_FREEZE",
+  "truth_opened": true,
+  "private_truth_payload_persisted": false,
+  "decision": {
+    "cost_qualification": {
+      "interpretation": "Cost qualification is reported separately from quality inference; no new training is implied.",
+      "runtime_budget": 1.25,
+      "runtime_qualified": true,
+      "runtime_ratio": 1.0268666166273126,
+      "status": "qualified",
+      "training_budget": 2.0,
+      "training_qualified": true,
+      "training_ratio": 0.9992160644044228
+    },
+    "decision": "positionwise_default",
+    "directional_family": {
+      "cells": 4,
+      "directions": [
+        "lower_support_or_harm",
+        "upper_exclusion"
+      ],
+      "duplicate_contrasts": 0,
+      "endpoint_count": 16,
+      "exact_cp_tail_alpha_each": 0.0015625,
+      "outcomes": [
+        "token",
+        "exact"
+      ],
+      "token_tail_alpha": 0.003125
+    },
+    "exclusion_failures": [],
+    "harm_exceptions": [],
+    "harm_status": "harm_excluded",
+    "material_harm_endpoints": [],
+    "quality_exclusion": true,
+    "quality_support": false,
+    "supporting_endpoints": []
+  },
+  "claim_scope": "Two frozen enriched methods; four registered domain/target cells; no pooled universal claim.",
+  "frozen_pair": {
+    "methods": {
+      "enriched__affine_causal_h_attention128": {
+        "role": "causal_context",
+        "rule": "joint affine path plus zero-initialized causal H_0..H_i attention correction; repaired cosine/QK-normalized implementation",
+        "fit_family": "joint_fit_qknorm_v1",
+        "attention_score_mode": "cosine_scale4",
+        "selected_step": 1900,
+        "state": {
+          "path": "experiments/TRR-0005/joint_fit_qknorm_v1/enriched/affine_causal_h_attention128/selected.safetensors",
+          "bytes": 20990668,
+          "sha256": "ee910b14ad6f282bb933ea44ad24453cb5cce1470c65dbc09d8bcc16f3e8abfd",
+          "tensor_state_sha256": "d2f99c4c662d84fe4c96967883dd359442d1c6931edce2e2060f245751ff9a88"
+        }
+      },
+      "enriched__affine_trained_diagonal_attention128": {
+        "role": "positionwise_control",
+        "rule": "joint affine path plus trained current-position-only diagonal attention correction",
+        "fit_family": "joint_fit_v1",
+        "attention_score_mode": "dot_product_default",
+        "selected_step": 1600,
+        "state": {
+          "path": "experiments/TRR-0005/joint_fit_v1/enriched/affine_trained_diagonal_attention128/selected.safetensors",
+          "bytes": 20990652,
+          "sha256": "696eb9fc951e85356a06575faf18a2011616692a086bdac3b2fa368e69d599a2",
+          "tensor_state_sha256": "72172b23146a64357de125ae9f969f4663f8a26172fa98ba4178a47d4d4ba4c9"
+        }
+      }
+    },
+    "normalized_public_E": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+      "bytes": 1050673488,
+      "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+      "key": "embeddings",
+      "shape": [
+        128256,
+        2048
+      ],
+      "dtype": "F32",
+      "cut_depth": 4,
+      "model_revision": "9213176726f574b556790deb65791e0c5aa438b6"
+    },
+    "no_new_fits": true,
+    "no_new_architecture_or_teacher": true,
+    "no_plain_affine_substitution": true
+  },
+  "design": {
+    "decision_plan": {
+      "path": "experiments/TRR-0006/decision_plan.json",
+      "bytes": 15768,
+      "sha256": "edeb1bb05a00ad3f580d415f1b9ab632f588b3c50fd1ed9c2f2e055737c766ea"
+    },
+    "source_selection": {
+      "path": "experiments/TRR-0006/source_selection.json",
+      "bytes": 2135542,
+      "sha256": "75909aaf0f9e40176c197d86c09651097010a11519855f1db3dc50fe5e754f43"
+    },
+    "cells": [
+      "pile__public_base",
+      "pile__public_lora_2601",
+      "finance__public_base",
+      "finance__public_lora_2601"
+    ],
+    "records_per_domain": 1536,
+    "unique_sources_total": 3072,
+    "source_target_cases_per_method": 6144,
+    "source_ranges_half_open": {
+      "pile": [
+        7000,
+        10000
+      ],
+      "finance": [
+        12000,
+        20000
+      ]
+    },
+    "selection_seed": 5005,
+    "geometry": {
+      "capture_batch_records": 8,
+      "capture_sequence_tokens": 192,
+      "stored_sequence_tokens": 128,
+      "scored_post_bos_tokens": 127,
+      "hidden_size": 2048,
+      "prediction_chunk_records": 8,
+      "inference_records_per_call": 1
+    },
+    "registered_margins_pp": {
+      "token_benefit": 0.5,
+      "exact_benefit": 5.0,
+      "token_harm": 0.5,
+      "exact_harm": 5.0,
+      "warmed_runtime_ratio_budget": 1.25,
+      "training_time_ratio_budget": 2.0
+    },
+    "decision_rules": {
+      "quality_unit": "Every one of the four domain/target cells is evaluated separately; support needs at least one prespecified cell/outcome endpoint and harm must be addressed in all remaining endpoints. No pooled headline can satisfy a cell-level rule.",
+      "candidate_useful": "A descriptive point estimate reaches +0.5 pp token or +5 pp exact and costs are reported. This is a candidate signal only, not positive-evidence power.",
+      "supported_practical_context_gain": "Support a practical context gain when at least one prespecified cell has a lower practical bound reaching its registered margin (+0.5 pp token OR +5 pp exact), every remaining cell/outcome lower bound is at least its retained harm limit (-0.5 pp token or -5 pp exact), and the cost qualification is reported. State exactly which endpoint supports the claim; this is a cell/outcome-scoped result, not a universal four-cell benefit claim.",
+      "practical_exclusion_positionwise": "Classify exclusion only when, in all four cells, the token upper practical bound is strictly below +0.5 pp AND the exact upper practical bound U_CP(g)-L_CP(h) is strictly below +5 pp. Do not add a lower-bound harm condition: if causal is worse, that strengthens the positionwise default; if the sign remains uncertain, report it as uncertainty.",
+      "material_harm": "Call evidence of material harm only when an upper practical bound is strictly below the negative harm margin (token U < -0.5 pp OR exact U < -5 pp) in a cell. A lower bound below -margin alone means harm has not been excluded; it is not evidence of harm.",
+      "inconclusive": "If neither the scoped support rule nor the all-four-cell exclusion rule holds, classify the context comparison as inconclusive. Distinguish harm_not_excluded from evidence_of_material_harm and state the remaining interval and decision relevance.",
+      "cost_qualification": "Report warmed runtime ratio and retained-state preparation/training cost separately. The cost rule is runtime ratio <=1.25 and historical training/preparation ratio <=2 when that ratio is available; no new training is permitted. Missing historical cost does not block quality inference, but a final cost-based recommendation must state cost_unqualified.",
+      "quality_support_without_cost": "Quality inference may be reported when the support rule holds even if historical preparation/training cost is unavailable; mark cost_unqualified and withhold a final cost-based recommendation until the cost rule is qualified.",
+      "harm_not_excluded": "If a lower bound is below the negative harm margin but its upper bound is not below that margin, label harm_not_excluded and make the support claim inconclusive for the affected endpoint.",
+      "cost_qualified_support": "A support result is cost-qualified only when warmed runtime ratio <=1.25 and the available retained preparation/training ratio <=2. If the historical preparation/training ratio is unavailable because no new training is run, report the quality support as cost_unqualified rather than silently treating it as qualified; the quality bounds remain valid."
+    },
+    "one_time_sample_revision": {
+      "records_per_domain": 1536,
+      "max_revisions": 1,
+      "status": "ONE_TIME_REVISION_FROZEN_BEFORE_SELECTION",
+      "rationale": "At the published Finance public-base discordance rates (gain 5/128, loss 4/128), the registered exact-margin exclusion probability is approximately 0.977 at n=1536 versus 0.805 at n=1024. The 50% sample increase is feasible within existing source ranges and bounded chunk geometry. These are conditional IID multinomial planning scenarios, not guaranteed power on the new natural panel.",
+      "limitations": "Rates are multinomial planning scenarios from published TRR5 paired events. Cross-target dependence is retained through paired-pattern bounds/simulation; no product of marginal probabilities is a guaranteed joint claim.",
+      "source_accounting": "At 1536 records/domain: 3072 unique natural source records across two domains and 6144 paired source-target evaluations (two target conditions); these are not 4096 independent observations.",
+      "revisions_used": 1
+    }
+  },
+  "public_observations": {
+    "status": "PUBLIC_OBSERVATIONS_CAPTURE_COMPLETE_NO_TRUTH",
+    "observation_manifest": {
+      "path": "experiments/TRR-0006/panel_capture_v1/observations.json",
+      "bytes": 5318,
+      "sha256": "abeb22804a38947ad67b7cf3a4584fcb569e7dcad7fba48234f64c773511ff0e"
+    },
+    "panel": {
+      "path": "experiments/TRR-0006/panel_capture_v1/panel.json",
+      "bytes": 1579,
+      "sha256": "951ded7d07d5be848af9c55ac0eb202b77053b27da7339b9ac43c64bce75b04a"
+    },
+    "capture_receipt": {
+      "path": "experiments/TRR-0006/panel_capture_v1/capture.json",
+      "bytes": 24234,
+      "sha256": "a367deb88bc02466a1de7aff2a9928e1c9d8109a43869e7ab2aabbe2972a2977"
+    },
+    "external_execution_receipt": {
+      "path": "experiments/TRR-0006/capture_execution_v1/execution_receipt.json",
+      "bytes": 1989,
+      "sha256": "db83f6f65137ff1c12ef48e888e41bfd590876018c7f230f4a5edb9b77d95664"
+    },
+    "manifest_flags": {
+      "public_material_only": true,
+      "source_text_written": false,
+      "token_ids_written": false,
+      "target_labels_loaded": false,
+      "truth_opened": false
+    },
+    "cells": [
+      {
+        "cell_id": "pile__public_base",
+        "domain": "pile",
+        "condition": "public_base",
+        "record_ids_sha256": "b76254217d4c173c22639f221b2bda7d6fb2274a8c877f8addb7d560252fabbd",
+        "producer_only_lora": false,
+        "capture_seconds": 5.472504884994123,
+        "observation": {
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0006/panel_capture_v1/observations/pile__public_base.safetensors",
+          "bytes": 807076744,
+          "sha256": "9ac72b580b0ec69171e0efc49b73ee85a883f773cfdefa6377337bcc46ad0e65",
+          "shape": [
+            1536,
+            128,
+            2048
+          ],
+          "capture_batch_records": 8,
+          "capture_sequence_tokens": 192,
+          "stored_sequence_tokens": 128,
+          "scored_post_bos_tokens": 127,
+          "producer_only_lora": false,
+          "public_full_forward": true,
+          "retained_only_first_128": true
+        },
+        "qualification": {
+          "status": "passed",
+          "fixed_batch_8x192_bit_exact": true,
+          "primary_maximum_absolute_difference": 0.0,
+          "batch1_unpadded_diagnostic_status": "non_equivalent_not_used",
+          "batch1_unpadded_diagnostic_maximum_absolute_difference": 2.0,
+          "batch1_unpadded_diagnostic_used": false
+        }
+      },
+      {
+        "cell_id": "pile__public_lora_2601",
+        "domain": "pile",
+        "condition": "public_lora_2601",
+        "record_ids_sha256": "b76254217d4c173c22639f221b2bda7d6fb2274a8c877f8addb7d560252fabbd",
+        "producer_only_lora": true,
+        "capture_seconds": 5.040928217000328,
+        "observation": {
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0006/panel_capture_v1/observations/pile__public_lora_2601.safetensors",
+          "bytes": 807076744,
+          "sha256": "f2181e712af82d994b62578d36a6625e9655fd2a61ddfa2839f90420c2af2712",
+          "shape": [
+            1536,
+            128,
+            2048
+          ],
+          "capture_batch_records": 8,
+          "capture_sequence_tokens": 192,
+          "stored_sequence_tokens": 128,
+          "scored_post_bos_tokens": 127,
+          "producer_only_lora": true,
+          "public_full_forward": true,
+          "retained_only_first_128": true
+        },
+        "qualification": {
+          "status": "passed",
+          "fixed_batch_8x192_bit_exact": true,
+          "primary_maximum_absolute_difference": 0.0,
+          "batch1_unpadded_diagnostic_status": "non_equivalent_not_used",
+          "batch1_unpadded_diagnostic_maximum_absolute_difference": 2.0,
+          "batch1_unpadded_diagnostic_used": false
+        }
+      },
+      {
+        "cell_id": "finance__public_base",
+        "domain": "finance",
+        "condition": "public_base",
+        "record_ids_sha256": "e7e8e78bf1527252d12888b69f727bd70590d5c14cc2ed242231bee8a934c118",
+        "producer_only_lora": false,
+        "capture_seconds": 5.348981749993982,
+        "observation": {
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0006/panel_capture_v1/observations/finance__public_base.safetensors",
+          "bytes": 807076744,
+          "sha256": "dfae12a7563629eaacde47c85247811496979cab3503ed6da633019e48654327",
+          "shape": [
+            1536,
+            128,
+            2048
+          ],
+          "capture_batch_records": 8,
+          "capture_sequence_tokens": 192,
+          "stored_sequence_tokens": 128,
+          "scored_post_bos_tokens": 127,
+          "producer_only_lora": false,
+          "public_full_forward": true,
+          "retained_only_first_128": true
+        },
+        "qualification": {
+          "status": "passed",
+          "fixed_batch_8x192_bit_exact": true,
+          "primary_maximum_absolute_difference": 0.0,
+          "batch1_unpadded_diagnostic_status": "non_equivalent_not_used",
+          "batch1_unpadded_diagnostic_maximum_absolute_difference": 2.0,
+          "batch1_unpadded_diagnostic_used": false
+        }
+      },
+      {
+        "cell_id": "finance__public_lora_2601",
+        "domain": "finance",
+        "condition": "public_lora_2601",
+        "record_ids_sha256": "e7e8e78bf1527252d12888b69f727bd70590d5c14cc2ed242231bee8a934c118",
+        "producer_only_lora": true,
+        "capture_seconds": 4.944599669004674,
+        "observation": {
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0006/panel_capture_v1/observations/finance__public_lora_2601.safetensors",
+          "bytes": 807076752,
+          "sha256": "b4cd57a3b25f3a49a4e286586810b86d966405dd5c1482f7557b21dd51a7c4c3",
+          "shape": [
+            1536,
+            128,
+            2048
+          ],
+          "capture_batch_records": 8,
+          "capture_sequence_tokens": 192,
+          "stored_sequence_tokens": 128,
+          "scored_post_bos_tokens": 127,
+          "producer_only_lora": true,
+          "public_full_forward": true,
+          "retained_only_first_128": true
+        },
+        "qualification": {
+          "status": "passed",
+          "fixed_batch_8x192_bit_exact": true,
+          "primary_maximum_absolute_difference": 0.0,
+          "batch1_unpadded_diagnostic_status": "non_equivalent_not_used",
+          "batch1_unpadded_diagnostic_maximum_absolute_difference": 2.0,
+          "batch1_unpadded_diagnostic_used": false
+        }
+      }
+    ],
+    "internal_cell_seconds_sum": 20.807014520993107,
+    "producer_inner_elapsed_seconds": 33.57596393499989,
+    "external_elapsed_seconds": 35.2833768230048,
+    "observation_bytes_sum": 3228306984,
+    "child_max_rss_bytes": 10667425792,
+    "network_used": false
+  },
+  "prediction_execution": {
+    "status": "PUBLIC_PREDICTIONS_COMPLETE_NO_TRUTH",
+    "run_manifest": {
+      "path": "experiments/TRR-0006/predictions_v1/run_manifest.json",
+      "bytes": 4898,
+      "sha256": "3e7de6126d0e3ada19f9886979fc37c97fcb865b013ab3941784cd9c27c20eb9"
+    },
+    "predictions": {
+      "path": "experiments/TRR-0006/predictions_v1/predictions.json",
+      "bytes": 23345,
+      "sha256": "1b9c2ac2686b4b007456f9f67adccb342932e6971c133f26d5bfeab736628263"
+    },
+    "timings": {
+      "path": "experiments/TRR-0006/predictions_v1/timings.json",
+      "bytes": 388307,
+      "sha256": "b9dbab1d761be9b79693e483085a19eac64c7e83723216ce2299e29b2a58f7fe"
+    },
+    "freeze_receipt_v2": {
+      "path": "experiments/TRR-0006/predictions_v1/freeze_receipt_v2.json",
+      "bytes": 430948,
+      "sha256": "cd74ec336d10885d120b139acf6353a0f4872e5e659b5a3c1219c770f89c354f"
+    },
+    "records_per_domain": 1536,
+    "prediction_count": 8,
+    "timing_count": 8,
+    "code_commit": "33dc6258614188927751ade45a0f0a2efe1f8361",
+    "started_utc": "2026-09-06T06:10:32Z",
+    "ended_utc": "2026-09-06T06:12:05Z",
+    "elapsed_seconds": 92.90697702299803,
+    "numerical_settings": {
+      "activation_input_dtype": "torch.bfloat16",
+      "autocast": false,
+      "cpu_interop_threads": 32,
+      "cpu_intraop_threads": 8,
+      "cuda_cudnn_allow_tf32": true,
+      "cuda_matmul_allow_tf32": false,
+      "decoder_compute_dtype": "torch.float32",
+      "embedding_dtype": "torch.float32",
+      "float32_matmul_precision": "highest",
+      "staged_activation_dtype": "torch.float32",
+      "staged_mask_dtype": "torch.bool"
+    },
+    "resource_guard": {
+      "after_embedding_load": {
+        "elapsed_seconds": 2.1459303150040796,
+        "gpu": {
+          "allocated_bytes": 1050673152,
+          "free_bytes": 14628683776,
+          "reserved_bytes": 1050673152,
+          "total_bytes": 17066033152
+        },
+        "host_available_bytes": 21493919744,
+        "process_max_rss_bytes": 1737646080,
+        "stage": "after_embedding_load"
+      },
+      "before_process_start_load": {
+        "elapsed_seconds": 1.340904923999915,
+        "gpu": {
+          "allocated_bytes": 0,
+          "free_bytes": 15679356928,
+          "reserved_bytes": 0,
+          "total_bytes": 17066033152
+        },
+        "host_available_bytes": 21614792704,
+        "process_max_rss_bytes": 553144320,
+        "stage": "before_process_start_load"
+      },
+      "final": {
+        "elapsed_seconds": 92.90698405700095,
+        "gpu": {
+          "allocated_bytes": 1060241408,
+          "free_bytes": 14528020480,
+          "reserved_bytes": 1073741824,
+          "total_bytes": 17066033152
+        },
+        "host_available_bytes": 20854083584,
+        "process_max_rss_bytes": 2205585408,
+        "stage": "final"
+      }
+    },
+    "code_bindings": [
+      {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/scripts/trr0006_run_predictions.py",
+        "bytes": 32507,
+        "sha256": "b19558a99d9742f48636c611381e167556b0878ca967bd40c9193c22aeda89cc",
+        "role": "prediction_runner"
+      },
+      {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/scripts/trr0006_prediction_contract.py",
+        "bytes": 25360,
+        "sha256": "e99f2e7c0fb27250cd47f2db9511ff2162d8f7efb1c17d13dc837797bfacd6dc",
+        "role": "prediction_contract"
+      },
+      {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/src/token_reconstruction/trr0005_joint_decoder.py",
+        "bytes": 55256,
+        "sha256": "9cab3cf5ad664c37d91bcd90fe1852df71da25800ddf37291a57000908d3d38f",
+        "role": "frozen_decoder_numerics"
+      }
+    ],
+    "cells": [
+      {
+        "cell_id": "pile__public_base",
+        "method_id": "enriched__affine_causal_h_attention128",
+        "prediction_descriptor": {
+          "records": 1536,
+          "shape": [
+            1536,
+            128
+          ],
+          "prediction_sha256": "f40df7d408084f205f351f30351226dc363fff051dd92363ca421f8c8dea654b",
+          "artifact": {
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0006/predictions_v1/pile/public_base/enriched__affine_causal_h_attention128.safetensors",
+            "bytes": 1573552,
+            "sha256": "cdeb08fd50529767b6ddb60b12ac67cb15b1e7c10cadab9928459e690e2d3eec"
+          },
+          "observation": {
+            "bytes": 807076744,
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0006/panel_capture_v1/observations/pile__public_base.safetensors",
+            "sha256": "9ac72b580b0ec69171e0efc49b73ee85a883f773cfdefa6377337bcc46ad0e65"
+          },
+          "registration_sha256": "097965475e4623f7e884331189751f067e794d88c9358cdce4c7299eaa88207a",
+          "candidate_arrays_persisted": false,
+          "truth_opened": false
+        },
+        "timing": {
+          "chunk_records": 8,
+          "chunks": 192,
+          "load_seconds_separate": 0.030699629001901485,
+          "warmup_seconds_sum": 6.028031482725055,
+          "measured_seconds_sum": 5.47967175017402,
+          "timed_interval_total_seconds": 11.507703232899075,
+          "warmup_runs_per_record": 1,
+          "measured_runs_per_record": 1,
+          "warmup_output_exact_match_measured": true,
+          "measured_output_selected": true,
+          "peak_memory": {
+            "cuda_peak_allocated_bytes": 1280330240,
+            "cuda_peak_reserved_bytes": 1302331392,
+            "process_max_rss_bytes": 2197491712,
+            "scope": "cell-local CUDA counters reset before observation iteration; RSS is process-cumulative"
+          },
+          "timing_boundary": "CPU activation H -> CUDA FP32 preprocessing -> decoder -> predicted IDs CPU",
+          "synchronization_seconds": null,
+          "io_seconds": null,
+          "synchronization_io_note": "CUDA synchronization and artifact I/O are not separately timed; the receipt records the declared steady interval and artifact hashes."
+        }
+      },
+      {
+        "cell_id": "pile__public_base",
+        "method_id": "enriched__affine_trained_diagonal_attention128",
+        "prediction_descriptor": {
+          "records": 1536,
+          "shape": [
+            1536,
+            128
+          ],
+          "prediction_sha256": "48ff2312bfa7a658d93d700e6ae80522552f6d7b51c2b1e907d53e7ffa9b24ad",
+          "artifact": {
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0006/predictions_v1/pile/public_base/enriched__affine_trained_diagonal_attention128.safetensors",
+            "bytes": 1573560,
+            "sha256": "2c51dae04269d49ec81282d00b06091a59770536f865a5f00454b6394e92d7ee"
+          },
+          "observation": {
+            "bytes": 807076744,
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0006/panel_capture_v1/observations/pile__public_base.safetensors",
+            "sha256": "9ac72b580b0ec69171e0efc49b73ee85a883f773cfdefa6377337bcc46ad0e65"
+          },
+          "registration_sha256": "097965475e4623f7e884331189751f067e794d88c9358cdce4c7299eaa88207a",
+          "candidate_arrays_persisted": false,
+          "truth_opened": false
+        },
+        "timing": {
+          "chunk_records": 8,
+          "chunks": 192,
+          "load_seconds_separate": 0.008992012008093297,
+          "warmup_seconds_sum": 5.448609173879959,
+          "measured_seconds_sum": 5.403665426856605,
+          "timed_interval_total_seconds": 10.852274600736564,
+          "warmup_runs_per_record": 1,
+          "measured_runs_per_record": 1,
+          "warmup_output_exact_match_measured": true,
+          "measured_output_selected": true,
+          "peak_memory": {
+            "cuda_peak_allocated_bytes": 1280330240,
+            "cuda_peak_reserved_bytes": 1302331392,
+            "process_max_rss_bytes": 2204491776,
+            "scope": "cell-local CUDA counters reset before observation iteration; RSS is process-cumulative"
+          },
+          "timing_boundary": "CPU activation H -> CUDA FP32 preprocessing -> decoder -> predicted IDs CPU",
+          "synchronization_seconds": null,
+          "io_seconds": null,
+          "synchronization_io_note": "CUDA synchronization and artifact I/O are not separately timed; the receipt records the declared steady interval and artifact hashes."
+        }
+      },
+      {
+        "cell_id": "pile__public_lora_2601",
+        "method_id": "enriched__affine_causal_h_attention128",
+        "prediction_descriptor": {
+          "records": 1536,
+          "shape": [
+            1536,
+            128
+          ],
+          "prediction_sha256": "0cc8da14aa244e3fa820bef71c40175c8fd03d575859008d414a415740c1c488",
+          "artifact": {
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0006/predictions_v1/pile/public_lora_2601/enriched__affine_causal_h_attention128.safetensors",
+            "bytes": 1573560,
+            "sha256": "88292368af6415de3e493c100d74bc0d9d5acf0a1f53eab13bf15732a0bc4c62"
+          },
+          "observation": {
+            "bytes": 807076744,
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0006/panel_capture_v1/observations/pile__public_lora_2601.safetensors",
+            "sha256": "f2181e712af82d994b62578d36a6625e9655fd2a61ddfa2839f90420c2af2712"
+          },
+          "registration_sha256": "097965475e4623f7e884331189751f067e794d88c9358cdce4c7299eaa88207a",
+          "candidate_arrays_persisted": false,
+          "truth_opened": false
+        },
+        "timing": {
+          "chunk_records": 8,
+          "chunks": 192,
+          "load_seconds_separate": 0.030699629001901485,
+          "warmup_seconds_sum": 5.446724493114743,
+          "measured_seconds_sum": 5.413614120028797,
+          "timed_interval_total_seconds": 10.86033861314354,
+          "warmup_runs_per_record": 1,
+          "measured_runs_per_record": 1,
+          "warmup_output_exact_match_measured": true,
+          "measured_output_selected": true,
+          "peak_memory": {
+            "cuda_peak_allocated_bytes": 1280330240,
+            "cuda_peak_reserved_bytes": 1302331392,
+            "process_max_rss_bytes": 2204045312,
+            "scope": "cell-local CUDA counters reset before observation iteration; RSS is process-cumulative"
+          },
+          "timing_boundary": "CPU activation H -> CUDA FP32 preprocessing -> decoder -> predicted IDs CPU",
+          "synchronization_seconds": null,
+          "io_seconds": null,
+          "synchronization_io_note": "CUDA synchronization and artifact I/O are not separately timed; the receipt records the declared steady interval and artifact hashes."
+        }
+      },
+      {
+        "cell_id": "pile__public_lora_2601",
+        "method_id": "enriched__affine_trained_diagonal_attention128",
+        "prediction_descriptor": {
+          "records": 1536,
+          "shape": [
+            1536,
+            128
+          ],
+          "prediction_sha256": "12ccc1f67ac81283ded00d9dd57ac8887393a1849e86e4c88a0283d5f7f68d7b",
+          "artifact": {
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0006/predictions_v1/pile/public_lora_2601/enriched__affine_trained_diagonal_attention128.safetensors",
+            "bytes": 1573568,
+            "sha256": "641e929a5ae4356883d2a8860b2e3b6a8d6f8aa866b72af890f8f49f593a363f"
+          },
+          "observation": {
+            "bytes": 807076744,
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0006/panel_capture_v1/observations/pile__public_lora_2601.safetensors",
+            "sha256": "f2181e712af82d994b62578d36a6625e9655fd2a61ddfa2839f90420c2af2712"
+          },
+          "registration_sha256": "097965475e4623f7e884331189751f067e794d88c9358cdce4c7299eaa88207a",
+          "candidate_arrays_persisted": false,
+          "truth_opened": false
+        },
+        "timing": {
+          "chunk_records": 8,
+          "chunks": 192,
+          "load_seconds_separate": 0.008992012008093297,
+          "warmup_seconds_sum": 5.495207091284101,
+          "measured_seconds_sum": 5.458239763305755,
+          "timed_interval_total_seconds": 10.953446854589856,
+          "warmup_runs_per_record": 1,
+          "measured_runs_per_record": 1,
+          "warmup_output_exact_match_measured": true,
+          "measured_output_selected": true,
+          "peak_memory": {
+            "cuda_peak_allocated_bytes": 1280330240,
+            "cuda_peak_reserved_bytes": 1302331392,
+            "process_max_rss_bytes": 2204491776,
+            "scope": "cell-local CUDA counters reset before observation iteration; RSS is process-cumulative"
+          },
+          "timing_boundary": "CPU activation H -> CUDA FP32 preprocessing -> decoder -> predicted IDs CPU",
+          "synchronization_seconds": null,
+          "io_seconds": null,
+          "synchronization_io_note": "CUDA synchronization and artifact I/O are not separately timed; the receipt records the declared steady interval and artifact hashes."
+        }
+      },
+      {
+        "cell_id": "finance__public_base",
+        "method_id": "enriched__affine_causal_h_attention128",
+        "prediction_descriptor": {
+          "records": 1536,
+          "shape": [
+            1536,
+            128
+          ],
+          "prediction_sha256": "fb9009120c0dfbe7d563211056d8a1996d59ec8448dc92da41dfc22cdf8e24bb",
+          "artifact": {
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0006/predictions_v1/finance/public_base/enriched__affine_causal_h_attention128.safetensors",
+            "bytes": 1573560,
+            "sha256": "4284a5f8553a7055702fbfdedf07c66c8d5c19d05b0efda4df43499db9f1f8da"
+          },
+          "observation": {
+            "bytes": 807076744,
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0006/panel_capture_v1/observations/finance__public_base.safetensors",
+            "sha256": "dfae12a7563629eaacde47c85247811496979cab3503ed6da633019e48654327"
+          },
+          "registration_sha256": "097965475e4623f7e884331189751f067e794d88c9358cdce4c7299eaa88207a",
+          "candidate_arrays_persisted": false,
+          "truth_opened": false
+        },
+        "timing": {
+          "chunk_records": 8,
+          "chunks": 192,
+          "load_seconds_separate": 0.030699629001901485,
+          "warmup_seconds_sum": 5.5319314651424065,
+          "measured_seconds_sum": 5.485913599230116,
+          "timed_interval_total_seconds": 11.017845064372523,
+          "warmup_runs_per_record": 1,
+          "measured_runs_per_record": 1,
+          "warmup_output_exact_match_measured": true,
+          "measured_output_selected": true,
+          "peak_memory": {
+            "cuda_peak_allocated_bytes": 1280330240,
+            "cuda_peak_reserved_bytes": 1302331392,
+            "process_max_rss_bytes": 2204164096,
+            "scope": "cell-local CUDA counters reset before observation iteration; RSS is process-cumulative"
+          },
+          "timing_boundary": "CPU activation H -> CUDA FP32 preprocessing -> decoder -> predicted IDs CPU",
+          "synchronization_seconds": null,
+          "io_seconds": null,
+          "synchronization_io_note": "CUDA synchronization and artifact I/O are not separately timed; the receipt records the declared steady interval and artifact hashes."
+        }
+      },
+      {
+        "cell_id": "finance__public_base",
+        "method_id": "enriched__affine_trained_diagonal_attention128",
+        "prediction_descriptor": {
+          "records": 1536,
+          "shape": [
+            1536,
+            128
+          ],
+          "prediction_sha256": "1c74439ac32dac36cd726c6c1d0b7c25971b867746d6ae35aade23b497f48157",
+          "artifact": {
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0006/predictions_v1/finance/public_base/enriched__affine_trained_diagonal_attention128.safetensors",
+            "bytes": 1573568,
+            "sha256": "ab854296fc0fa976ce912a67df4aed339048ebc7552bae66773cb1aa271a6477"
+          },
+          "observation": {
+            "bytes": 807076744,
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0006/panel_capture_v1/observations/finance__public_base.safetensors",
+            "sha256": "dfae12a7563629eaacde47c85247811496979cab3503ed6da633019e48654327"
+          },
+          "registration_sha256": "097965475e4623f7e884331189751f067e794d88c9358cdce4c7299eaa88207a",
+          "candidate_arrays_persisted": false,
+          "truth_opened": false
+        },
+        "timing": {
+          "chunk_records": 8,
+          "chunks": 192,
+          "load_seconds_separate": 0.008992012008093297,
+          "warmup_seconds_sum": 5.4110180465941085,
+          "measured_seconds_sum": 5.381672766947304,
+          "timed_interval_total_seconds": 10.792690813541412,
+          "warmup_runs_per_record": 1,
+          "measured_runs_per_record": 1,
+          "warmup_output_exact_match_measured": true,
+          "measured_output_selected": true,
+          "peak_memory": {
+            "cuda_peak_allocated_bytes": 1280330240,
+            "cuda_peak_reserved_bytes": 1302331392,
+            "process_max_rss_bytes": 2204491776,
+            "scope": "cell-local CUDA counters reset before observation iteration; RSS is process-cumulative"
+          },
+          "timing_boundary": "CPU activation H -> CUDA FP32 preprocessing -> decoder -> predicted IDs CPU",
+          "synchronization_seconds": null,
+          "io_seconds": null,
+          "synchronization_io_note": "CUDA synchronization and artifact I/O are not separately timed; the receipt records the declared steady interval and artifact hashes."
+        }
+      },
+      {
+        "cell_id": "finance__public_lora_2601",
+        "method_id": "enriched__affine_causal_h_attention128",
+        "prediction_descriptor": {
+          "records": 1536,
+          "shape": [
+            1536,
+            128
+          ],
+          "prediction_sha256": "4e18483890928f192c17c50facc306bda9127f036bbf28cba10165ef8014b9e8",
+          "artifact": {
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0006/predictions_v1/finance/public_lora_2601/enriched__affine_causal_h_attention128.safetensors",
+            "bytes": 1573560,
+            "sha256": "57a49cc4edd7c6ea33c3f2b5380a72161e5b0496f34f30cf4f5f8176501fd763"
+          },
+          "observation": {
+            "bytes": 807076752,
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0006/panel_capture_v1/observations/finance__public_lora_2601.safetensors",
+            "sha256": "b4cd57a3b25f3a49a4e286586810b86d966405dd5c1482f7557b21dd51a7c4c3"
+          },
+          "registration_sha256": "097965475e4623f7e884331189751f067e794d88c9358cdce4c7299eaa88207a",
+          "candidate_arrays_persisted": false,
+          "truth_opened": false
+        },
+        "timing": {
+          "chunk_records": 8,
+          "chunks": 192,
+          "load_seconds_separate": 0.030699629001901485,
+          "warmup_seconds_sum": 5.570819780085003,
+          "measured_seconds_sum": 5.546752384674619,
+          "timed_interval_total_seconds": 11.117572164759622,
+          "warmup_runs_per_record": 1,
+          "measured_runs_per_record": 1,
+          "warmup_output_exact_match_measured": true,
+          "measured_output_selected": true,
+          "peak_memory": {
+            "cuda_peak_allocated_bytes": 1280330240,
+            "cuda_peak_reserved_bytes": 1302331392,
+            "process_max_rss_bytes": 2204491776,
+            "scope": "cell-local CUDA counters reset before observation iteration; RSS is process-cumulative"
+          },
+          "timing_boundary": "CPU activation H -> CUDA FP32 preprocessing -> decoder -> predicted IDs CPU",
+          "synchronization_seconds": null,
+          "io_seconds": null,
+          "synchronization_io_note": "CUDA synchronization and artifact I/O are not separately timed; the receipt records the declared steady interval and artifact hashes."
+        }
+      },
+      {
+        "cell_id": "finance__public_lora_2601",
+        "method_id": "enriched__affine_trained_diagonal_attention128",
+        "prediction_descriptor": {
+          "records": 1536,
+          "shape": [
+            1536,
+            128
+          ],
+          "prediction_sha256": "414e45831bf3a6a13b0193fd69447bc40d8b6e3a015a4cd9dc2cade6992d7076",
+          "artifact": {
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0006/predictions_v1/finance/public_lora_2601/enriched__affine_trained_diagonal_attention128.safetensors",
+            "bytes": 1573568,
+            "sha256": "277940adbafe8511fbeec8e870e2ee25df715c80490bea85c6518ab8ea132891"
+          },
+          "observation": {
+            "bytes": 807076752,
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0006/panel_capture_v1/observations/finance__public_lora_2601.safetensors",
+            "sha256": "b4cd57a3b25f3a49a4e286586810b86d966405dd5c1482f7557b21dd51a7c4c3"
+          },
+          "registration_sha256": "097965475e4623f7e884331189751f067e794d88c9358cdce4c7299eaa88207a",
+          "candidate_arrays_persisted": false,
+          "truth_opened": false
+        },
+        "timing": {
+          "chunk_records": 8,
+          "chunks": 192,
+          "load_seconds_separate": 0.008992012008093297,
+          "warmup_seconds_sum": 5.438427340792259,
+          "measured_seconds_sum": 5.401628892068402,
+          "timed_interval_total_seconds": 10.840056232860661,
+          "warmup_runs_per_record": 1,
+          "measured_runs_per_record": 1,
+          "warmup_output_exact_match_measured": true,
+          "measured_output_selected": true,
+          "peak_memory": {
+            "cuda_peak_allocated_bytes": 1280330240,
+            "cuda_peak_reserved_bytes": 1302331392,
+            "process_max_rss_bytes": 2205585408,
+            "scope": "cell-local CUDA counters reset before observation iteration; RSS is process-cumulative"
+          },
+          "timing_boundary": "CPU activation H -> CUDA FP32 preprocessing -> decoder -> predicted IDs CPU",
+          "synchronization_seconds": null,
+          "io_seconds": null,
+          "synchronization_io_note": "CUDA synchronization and artifact I/O are not separately timed; the receipt records the declared steady interval and artifact hashes."
+        }
+      }
+    ],
+    "runtime_totals": {
+      "enriched__affine_causal_h_attention128": {
+        "load_seconds_sum_as_recorded": 0.12279851600760594,
+        "warmup_seconds_sum": 22.577507221067208,
+        "measured_seconds_sum": 21.925951854107552,
+        "timed_interval_total_seconds": 44.50345907517476
+      },
+      "enriched__affine_trained_diagonal_attention128": {
+        "load_seconds_sum_as_recorded": 0.03596804803237319,
+        "warmup_seconds_sum": 21.793261652550427,
+        "measured_seconds_sum": 21.645206849178066,
+        "timed_interval_total_seconds": 43.438468501728494
+      },
+      "ratios_causal_over_diagonal": {
+        "warmup": 1.0359856904863527,
+        "measured": 1.0129703082481814,
+        "timed_interval": 1.0245172219504906,
+        "per_cell_measured": {
+          "pile__public_base": 1.0140656975059297,
+          "pile__public_lora_2601": 0.9918241694736526,
+          "finance__public_base": 1.0193695969258907,
+          "finance__public_lora_2601": 1.0268666166273126
+        }
+      }
+    }
+  },
+  "fixture_qualification": {
+    "status": "QUALIFICATION_COMPLETE_NO_TRUTH",
+    "summary": {
+      "path": "experiments/TRR-0006/qualification_8/qualification_summary.json",
+      "bytes": 6199,
+      "sha256": "1264fca57eff49ac6b8a8ae882afa1eecbee1f9439da02a098750aac81c02571"
+    },
+    "successful_fixture": {
+      "path": "experiments/TRR-0006/fixture_equivalence/cuda_id_equivalence.json",
+      "bytes": 9308,
+      "sha256": "9c81820d6197c5e8ba6c91395d7ccbfabfc7541696b136be4a0681d48690ced0"
+    },
+    "failed_bos_normalization_attempt": {
+      "path": "experiments/TRR-0006/fixture_equivalence/failed_attempt_bos_normalization.json",
+      "bytes": 1503,
+      "sha256": "11121d1d6ef35118852ab9e98889173307b6c6532128ec6846474dc424774a0e"
+    },
+    "failed_missing_lora_config_attempt": {
+      "path": "experiments/TRR-0006/capture_qualification_8/failed_attempt_missing_lora_config.json",
+      "bytes": 886,
+      "sha256": "b66ff18c9554a8666199c9edf0b2af3052663ca7978b39d1d2b949a0e5a0a73f"
+    },
+    "strict_checks": {
+      "all_eight_prediction_descriptors": true,
+      "candidate_arrays_persisted": false,
+      "public_freeze_gate_verified_before_truth": true,
+      "raw_retained_trr5_saved_prediction_id_equality": true,
+      "source_text_loaded": false,
+      "target_labels_loaded": false,
+      "truth_opened": false,
+      "warmup_equals_measured_per_record": true
+    },
+    "numerical_settings": {
+      "activation_input_dtype": "torch.bfloat16",
+      "autocast": false,
+      "cpu_interop_threads": 32,
+      "cpu_intraop_threads": 8,
+      "cuda_cudnn_allow_tf32": true,
+      "cuda_matmul_allow_tf32": false,
+      "decoder_compute_dtype": "torch.float32",
+      "embedding_dtype": "torch.float32",
+      "float32_matmul_precision": "highest",
+      "staged_activation_dtype": "torch.float32",
+      "staged_mask_dtype": "torch.bool"
+    },
+    "peak_memory": {
+      "cells": 8,
+      "max_cuda_peak_allocated_bytes": 1280330240,
+      "max_cuda_peak_reserved_bytes": 1302331392,
+      "max_process_max_rss_bytes": 1737220096,
+      "scope": "per-cell CUDA counters reset before observation iteration; RSS process-cumulative"
+    },
+    "scope": "fixture only; no truth and no quality claim"
+  },
+  "duplicate_capture": {
+    "status": "DUPLICATE_CAPTURE_EXCLUDED_NO_SCORING",
+    "record": {
+      "path": "experiments/TRR-0006/duplicate_capture_exclusion.json",
+      "bytes": 5946,
+      "sha256": "a70299526decb83d4008c3d407672077fcf937668d2223aedfd17fceea2551e9"
+    },
+    "canonical_manifest": "experiments/TRR-0006/panel_capture_v1/observations.json",
+    "excluded_manifest": "experiments/TRR-0006/public_observations_v1/observations.json",
+    "selected_records_changed": false,
+    "truth_opened_for_choice": false,
+    "reason": "Duplicate capture completed during asynchronous execution handoff. Canonical panel_capture_v1 was designated before reconstruction/scoring; no performance or correctness based choice. All duplicate preparation cost is retained."
+  },
+  "truth_gate_attempt": {
+    "status": "TRUTH_VERIFIED_AFTER_PUBLIC_GATE",
+    "preserved_failed_attempt": {
+      "path": "experiments/TRR-0006/truth_prepare_failed_missing_freeze_plan.json",
+      "bytes": 493,
+      "sha256": "3225f36371c832183f51c4128314753c67c0fb883ae0a5ccff2991de2e392539"
+    },
+    "final_execution_receipt": {
+      "path": "experiments/TRR-0006/scored_v1/execution_receipt.json",
+      "bytes": 4366,
+      "sha256": "471cd68b092e65e43ca59af053e41790d09891b12af737f88caffc491c74f854"
+    },
+    "public_gate": {
+      "assets_rehashed": true,
+      "entry_count": 8,
+      "freeze_receipt": {
+        "bytes": 430948,
+        "path": "experiments/TRR-0006/predictions_v1/freeze_receipt_v2.json",
+        "sha256": "cd74ec336d10885d120b139acf6353a0f4872e5e659b5a3c1219c770f89c354f"
+      },
+      "status": "PUBLIC_MATRIX_VERIFIED_BEFORE_TRUTH",
+      "truth_opened": false,
+      "verified_before_truth": true
+    },
+    "truth_opened_once": true,
+    "truth_payload_read_before_gate": false,
+    "opaque_truth_binding_public_receipt": {
+      "path": "experiments/TRR-0006/scored_v1/truth_binding_public_receipt.json",
+      "bytes": 6311,
+      "sha256": "c2f96e87699bccb38802500566eebe9c85250165e9416b59dcf87f8857f7d930"
+    },
+    "private_truth_payload_persisted": false
+  },
+  "inherited_costs": {
+    "trr5_manifest": {
+      "path": "experiments/TRR-0005/manifest.json",
+      "bytes": 2504324,
+      "sha256": "ef670253241886e7d224b1c57fbdcaa9bb6974253fd24975e098f4255fe0c7d0"
+    },
+    "corpus_preparation": {
+      "status": "PREPARED_PUBLIC_DATA_NO_MODEL_FORWARD",
+      "inner_elapsed_seconds": 18.15817883699492,
+      "receipt_elapsed_seconds": 20.013262748994748,
+      "max_rss_bytes": 1604087808,
+      "fit_records_per_arm": {
+        "coverage_mix_v1": 1200,
+        "original_like_alpaca_v1": 1200
+      },
+      "matching_fit_positions": 124371,
+      "no_model_forward": true
+    },
+    "selected_fit": {
+      "enriched__affine_causal_h_attention128": {
+        "arm_wall_seconds": 96.74899468600051,
+        "best_style_balanced_token_accuracy": 0.9511992363323725,
+        "best_token_accuracy": 0.965528247685924,
+        "canonical_method_id": "enriched__affine_causal_h_attention128",
+        "curve": {
+          "bytes": 244105,
+          "path": "experiments/TRR-0005/joint_fit_qknorm_v1/enriched/affine_causal_h_attention128/learning_curve.json",
+          "points": 35,
+          "sha256": "16abd7fb085ddccf9cf9f1a6598785e1415736fb5fda1f185c12c6d888559f63"
+        },
+        "curve_points": 35,
+        "distribution": "enriched",
+        "final_fit_diagnostic_seconds": 4.14142609800183,
+        "method_id": "affine_causal_h_attention128",
+        "optimization_update_seconds": 87.57789390997641,
+        "parameter_count": 5247361,
+        "peak_memory": {
+          "cuda_peak_allocated_bytes": 2503377920,
+          "cuda_peak_reserved_bytes": 2776629248,
+          "host_available_bytes": 21017636864,
+          "host_available_gib": 19.574199676513672,
+          "process_max_rss_bytes": 6975275008
+        },
+        "selected_step": 1900,
+        "selection_metric": "validation_style_balanced_token_accuracy",
+        "selection_rule": "earliest maximum, including step 0",
+        "selection_validation_seconds": 3.866517684975406,
+        "state": {
+          "bytes": 20990668,
+          "path": "experiments/TRR-0005/joint_fit_qknorm_v1/enriched/affine_causal_h_attention128/selected.safetensors",
+          "selected_step": 1900,
+          "sha256": "ee910b14ad6f282bb933ea44ad24453cb5cce1470c65dbc09d8bcc16f3e8abfd",
+          "state_sha256": "d2f99c4c662d84fe4c96967883dd359442d1c6931edce2e2060f245751ff9a88"
+        },
+        "step0_style_balanced_token_accuracy": 0.33786286855813485,
+        "step0_token_accuracy": 0.3220555378231727,
+        "style_balanced_headroom_pp": 61.33363677742376,
+        "validation_exact_records": 17,
+        "validation_token_rows": 3133
+      },
+      "enriched__affine_trained_diagonal_attention128": {
+        "arm_wall_seconds": 96.82489917099883,
+        "best_style_balanced_token_accuracy": 0.9547109695038689,
+        "best_token_accuracy": 0.967443345036706,
+        "canonical_method_id": "enriched__affine_trained_diagonal_attention128",
+        "curve": {
+          "bytes": 240637,
+          "path": "experiments/TRR-0005/joint_fit_v1/enriched/affine_trained_diagonal_attention128/learning_curve.json",
+          "points": 35,
+          "sha256": "34516cc458424d04188c624e2334ddc0f4762a8df324f2d6f910332e1e565d3f"
+        },
+        "curve_points": 35,
+        "distribution": "enriched",
+        "final_fit_diagnostic_seconds": 4.122252786997706,
+        "method_id": "affine_trained_diagonal_attention128",
+        "optimization_update_seconds": 87.59585114674701,
+        "parameter_count": 5247361,
+        "peak_memory": {
+          "cuda_peak_allocated_bytes": 2501780480,
+          "cuda_peak_reserved_bytes": 2959081472,
+          "host_available_bytes": 21103493120,
+          "host_available_gib": 19.654159545898438,
+          "process_max_rss_bytes": 6906818560
+        },
+        "selected_step": 1600,
+        "selection_metric": "validation_style_balanced_token_accuracy",
+        "selection_rule": "earliest maximum, including step 0",
+        "selection_validation_seconds": 3.906428893991688,
+        "state": {
+          "bytes": 20990652,
+          "path": "experiments/TRR-0005/joint_fit_v1/enriched/affine_trained_diagonal_attention128/selected.safetensors",
+          "selected_step": 1600,
+          "sha256": "696eb9fc951e85356a06575faf18a2011616692a086bdac3b2fa368e69d599a2",
+          "state_sha256": "72172b23146a64357de125ae9f969f4663f8a26172fa98ba4178a47d4d4ba4c9"
+        },
+        "step0_style_balanced_token_accuracy": 0.33786286855813485,
+        "step0_token_accuracy": 0.3220555378231727,
+        "style_balanced_headroom_pp": 61.68481009457341,
+        "validation_exact_records": 18,
+        "validation_token_rows": 3133
+      }
+    },
+    "training_ratios_causal_over_diagonal": {
+      "causal_arm_over_diagonal_arm": 0.9992160644044228,
+      "causal_optimization_over_diagonal_optimization": 0.9997949990035429,
+      "causal_validation_over_diagonal_validation": 0.9897831983892841,
+      "causal_diagnostic_over_diagonal_diagnostic": 1.0046511730344632
+    },
+    "shared_E": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+      "bytes": 1050673488,
+      "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+    },
+    "historical_runtime_receipt": {
+      "path": "experiments/TRR-0005/final_prediction_run_evidence_v1/resource_receipt.json",
+      "bytes": 4225,
+      "sha256": "a4f64f6438bf0aff41a537ae3e34593a60f477d0b16f74218c986ae3de749d26"
+    },
+    "preparation_training_ratio_status": "QUALIFIED",
+    "interpretation": "Training arm/update ratios are inherited TRR-0005 evidence. TRR-0006 performs no training; main prediction cold loads and steady timing are recorded separately.",
+    "training_ratio_used": 0.9992160644044228,
+    "runtime_ratio_used": 1.0268666166273126,
+    "runtime_budget": 1.25,
+    "training_budget": 2.0,
+    "new_training_seconds": 0,
+    "cost_qualification_status": "qualified"
+  },
+  "historical_A2_anchor": {
+    "status": "SEPARATE_HISTORICAL_DENOMINATOR",
+    "source_result": {
+      "path": "experiments/TRR-0005/fresh_confirmation_v1/result.json",
+      "bytes": 8659918,
+      "sha256": "b3366bc65a8cff7b44920a3f778c33f2229f1d780cb256fb2731aa450f830389"
+    },
+    "source_report": {
+      "path": "coordination/results/TRR-0005.md",
+      "bytes": 11603,
+      "sha256": "67c82d2b9b51cc32d405b0eacf751f40ffd17cae221a873d0cb53591e82dc30f"
+    },
+    "not_recomputed_in_TRR0006": true,
+    "token_denominator_per_cell": "128 records x 127 post-BOS positions = 16256",
+    "exact_denominator_per_cell": "128 records",
+    "rows": [
+      {
+        "cell_id": "pile__public_base",
+        "records": 128,
+        "scored_tokens": 16256,
+        "a2_correct_tokens": 16192,
+        "a2_token_accuracy": 0.9960629921259843,
+        "a2_exact_records": 112,
+        "diagonal_correct_tokens": 15391,
+        "diagonal_token_accuracy": 0.9467888779527559,
+        "diagonal_exact_records": 2,
+        "token_gap_pp_a2_minus_diagonal": 4.927411417322835,
+        "exact_gap_records_a2_minus_diagonal": 110
+      },
+      {
+        "cell_id": "pile__public_lora_2601",
+        "records": 128,
+        "scored_tokens": 16256,
+        "a2_correct_tokens": 16197,
+        "a2_token_accuracy": 0.9963705708661418,
+        "a2_exact_records": 111,
+        "diagonal_correct_tokens": 15433,
+        "diagonal_token_accuracy": 0.9493725393700787,
+        "diagonal_exact_records": 3,
+        "token_gap_pp_a2_minus_diagonal": 4.699803149606307,
+        "exact_gap_records_a2_minus_diagonal": 108
+      },
+      {
+        "cell_id": "finance__public_base",
+        "records": 128,
+        "scored_tokens": 16256,
+        "a2_correct_tokens": 16211,
+        "a2_token_accuracy": 0.9972317913385826,
+        "a2_exact_records": 116,
+        "diagonal_correct_tokens": 15906,
+        "diagonal_token_accuracy": 0.9784694881889764,
+        "diagonal_exact_records": 34,
+        "token_gap_pp_a2_minus_diagonal": 1.8762303149606252,
+        "exact_gap_records_a2_minus_diagonal": 82
+      },
+      {
+        "cell_id": "finance__public_lora_2601",
+        "records": 128,
+        "scored_tokens": 16256,
+        "a2_correct_tokens": 16219,
+        "a2_token_accuracy": 0.9977239173228346,
+        "a2_exact_records": 119,
+        "diagonal_correct_tokens": 15915,
+        "diagonal_token_accuracy": 0.9790231299212598,
+        "diagonal_exact_records": 39,
+        "token_gap_pp_a2_minus_diagonal": 1.870078740157477,
+        "exact_gap_records_a2_minus_diagonal": 80
+      }
+    ]
+  },
+  "selection_and_limits": {
+    "status": "FROZEN_TRR0006_SOURCE_SELECTION_NO_TRUTH",
+    "diagnostics": {
+      "finance": {
+        "duplicate_final_sequence": 61,
+        "duplicate_rendered_source": 0,
+        "excluded_hash": 16,
+        "excluded_id": 128,
+        "excluded_index": 0,
+        "excluded_opaque_sequence_hash": 3,
+        "excluded_opaque_source_hash": 0,
+        "invalid": 0,
+        "pool_size": 8000,
+        "selected": 1536
+      },
+      "pile": {
+        "duplicate_final_sequence": 1,
+        "duplicate_rendered_source": 0,
+        "excluded_hash": 6,
+        "excluded_id": 128,
+        "excluded_index": 18,
+        "excluded_opaque_sequence_hash": 0,
+        "excluded_opaque_source_hash": 24,
+        "invalid": 257,
+        "pool_size": 3000,
+        "selected": 1536
+      }
+    },
+    "exclusions": {
+      "identity_counts": {
+        "finance": {
+          "hashes": 544,
+          "ids": 452,
+          "indices": 153
+        },
+        "pile": {
+          "hashes": 806,
+          "ids": 724,
+          "indices": 272
+        }
+      },
+      "p04_exchange": {
+        "aggregate_counts": {
+          "fit_replay_excluded_record_count": 1200,
+          "selection_identity_content_hash_count": 1312,
+          "selection_identity_record_id_count": 1280,
+          "selection_identity_source_index_count": 56,
+          "selection_panel_anchor_record_count": 12,
+          "selection_panel_independent_source_record_count": 72,
+          "selection_panel_record_count": 72,
+          "targetfit_selected_update_record_count": 256,
+          "targetfit_sequence_fingerprint_count": 256,
+          "targetfit_text_fingerprint_count": 256
+        },
+        "applied_sequence_hash_129_count": 520,
+        "applied_source_hash_count": 1720,
+        "available": true,
+        "bytes": 493573,
+        "expected_sha256": "98f8dfcab0977b4bcafa47d97a86a410ab37359b897b9b553746afa7df5c7904",
+        "metadata_consumed_for_row_exclusions": true,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0006/coordination/p04_reservation_hashes.json",
+        "sha256": "98f8dfcab0977b4bcafa47d97a86a410ab37359b897b9b553746afa7df5c7904",
+        "targetfit_per_record_ids_available": false,
+        "targetfit_replay_sequence_hashes_available": false,
+        "targetfit_source_ranges_available": false,
+        "verified": true
+      },
+      "p04_field_summaries": {
+        "correction.public_record_sha256": {
+          "applied_distinct_count": 256,
+          "available": true,
+          "distinct_count": 256,
+          "ordered_canonical_json_sha256": "1b858dd896a9afed613c131b1319c370c9421e4e85a8b96a2727052e667f6b4a",
+          "ordered_count": 256,
+          "ordered_newline_sha256": "e761e30c6aedc0b239440b067f1fb684be6b6897ca03c5b45640c2252860c043",
+          "source_field": "public_record_sha256",
+          "unique_set_canonical_json_sha256": "dd190d6c05eb49dc2fbca753375a979b2b405cb91901abdc9f3ca226bf455478"
+        },
+        "correction.truncated_sequence_sha256": {
+          "applied_distinct_count": 256,
+          "available": true,
+          "distinct_count": 256,
+          "ordered_canonical_json_sha256": "0c1ab3f59eeb9545e9427f8ed24ee30a2cc509588e68312fcf56618a48837c40",
+          "ordered_count": 256,
+          "ordered_newline_sha256": "ea28443a38d7fa0980e7c4c120bf0f4f41035d330c57a53be27bbc60a67afdb4",
+          "source_field": "truncated_sequence_sha256",
+          "unique_set_canonical_json_sha256": "188c6835c45d7031d4878e6195a825f7fd37c1d5f505b87ef5990fe84d476d6b"
+        },
+        "fit_replay.public_record_sha256": {
+          "available": false,
+          "distinct_count": null,
+          "ordered_count": null,
+          "reason": "replay metadata exposes rendered_sha256 rather than this P04 field name",
+          "source_field": "public_record_sha256"
+        },
+        "fit_replay.rendered_sha256": {
+          "applied_distinct_count": 1200,
+          "available": true,
+          "distinct_count": 1200,
+          "ordered_canonical_json_sha256": "ed2496603c2cac58c00f45cf6cc61a6c58403ec1d43f6755e3342328192952df",
+          "ordered_count": 1200,
+          "ordered_newline_sha256": "de0e00db0c30055fd4d618739bb40798a3c63709fe0498ebf33bf6a7b4db6cbf",
+          "source_field": "rendered_sha256",
+          "unique_set_canonical_json_sha256": "41b3695a66eca19cb0016542b8684bc16923fdd7f424ffc10ff03fb7ac61a65d"
+        },
+        "fit_replay.truncated_sequence_sha256": {
+          "available": false,
+          "distinct_count": null,
+          "ordered_count": null,
+          "reason": "not present in the immutable replay metadata ledger",
+          "source_field": "truncated_sequence_sha256"
+        },
+        "fresh_evaluation.public_record_sha256": {
+          "applied_distinct_count": 72,
+          "available": true,
+          "distinct_count": 72,
+          "ordered_canonical_json_sha256": "d2fa0dd3820e20e8d735ec90638726e877687e30d5ef7fc55c0f9a47cc35c2f3",
+          "ordered_count": 72,
+          "ordered_newline_sha256": "19e2ff8d90dbc9375b77fb636e5070614e814037fe85be6df11938144d65fbf9",
+          "source_field": "public_record_sha256",
+          "unique_set_canonical_json_sha256": "baf06639938597432bf4903d16b293785d141a0bc63f68a43a571fa22a5e5f8d"
+        },
+        "fresh_evaluation.truncated_sequence_sha256": {
+          "applied_distinct_count": 72,
+          "available": true,
+          "distinct_count": 72,
+          "ordered_canonical_json_sha256": "d96ffffd97a9e5d3eac9114ce178e0b6d84b113f19e94d7e5c0f05bed374d836",
+          "ordered_count": 72,
+          "ordered_newline_sha256": "22984cc47873c51ab754ac7e2c7da5830a442edb94a563ce9c9b53e91044e6d6",
+          "source_field": "truncated_sequence_sha256",
+          "unique_set_canonical_json_sha256": "4fb1041e486e00c53aa34b91636743e81bd807bdfc0e47f5b459319721c3158d"
+        },
+        "targetfit.public_record_sha256": {
+          "available": false,
+          "distinct_count": null,
+          "ordered_count": null,
+          "reason": "target audit and preparation receipt serialize counts only, with no per-record public fingerprint array",
+          "source_field": "public_record_sha256"
+        },
+        "targetfit.truncated_sequence_sha256": {
+          "available": false,
+          "distinct_count": null,
+          "ordered_count": null,
+          "reason": "target audit and preparation receipt serialize counts only, with no per-record sequence fingerprint array",
+          "source_field": "truncated_sequence_sha256"
+        },
+        "validation.public_record_sha256": {
+          "applied_distinct_count": 192,
+          "available": true,
+          "distinct_count": 192,
+          "ordered_canonical_json_sha256": "619f2a105b0c9543d1886942fc40b858b52c6d1e5a2f2889d942ceaa2696440d",
+          "ordered_count": 192,
+          "ordered_newline_sha256": "7d4bad700c568b150a7fe6f5d39f247e18d602f84c8f8d7bfa6537a6eb263123",
+          "source_field": "public_record_sha256",
+          "unique_set_canonical_json_sha256": "f6b445d4cf0d1d6639f30c813c387d14bb183207a2265d8ceff5486f94e23517"
+        },
+        "validation.truncated_sequence_sha256": {
+          "applied_distinct_count": 192,
+          "available": true,
+          "distinct_count": 192,
+          "ordered_canonical_json_sha256": "5d2922d50687d1bc511b4fafe06122b94bdb8f92721aa2270c68b8615b340a60",
+          "ordered_count": 192,
+          "ordered_newline_sha256": "e0c08822337426e561e316f4d62b6beb0d61b3606899ab5095ea5a489e8fba4e",
+          "source_field": "truncated_sequence_sha256",
+          "unique_set_canonical_json_sha256": "3cfb1d3974b09b008d2d23ef2283dc59878f1983130fc8ddfa9a7a27d811105b"
+        }
+      },
+      "sources": [
+        {
+          "available": true,
+          "bytes": 88693,
+          "new_identity_count": 40,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0003/evidence/control/panel.json",
+          "sha256": "d1810330f53ebb7e149be45b8c07414e09d30b31b68c7c09d24df3854fec7333"
+        },
+        {
+          "available": true,
+          "bytes": 8668,
+          "new_identity_count": 0,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0003/evidence/control/plan.json",
+          "sha256": "1a685a8d4bf1608d8cda346ebd954c3653f00d57bea43e02fcae843af2835d83"
+        },
+        {
+          "available": true,
+          "bytes": 88693,
+          "new_identity_count": 0,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0003/footing/panel.json",
+          "sha256": "d1810330f53ebb7e149be45b8c07414e09d30b31b68c7c09d24df3854fec7333"
+        },
+        {
+          "available": true,
+          "bytes": 23919,
+          "new_identity_count": 256,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0003/evidence/control/track_b_fit_records.json",
+          "sha256": "7aee0f6cb452bb1df401c920ca2a628d32fb204d144d72e4419fc8bd34a3a08e"
+        },
+        {
+          "available": true,
+          "bytes": 463510,
+          "new_identity_count": 0,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0004/fit/adapter_v2/affine_fit_records.json",
+          "sha256": "3f733212efd62b19e71f60f002f4e9756b4975ebfb4dcabf0ac27935929f94ff"
+        },
+        {
+          "available": true,
+          "bytes": 16456,
+          "new_identity_count": 48,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0004/fit/adapter_v2/affine_validation_records.json",
+          "sha256": "30b422b681bef5e7af4c26d339e57dfb3571ecef8077bdc4be5d960ef05c9777"
+        },
+        {
+          "available": true,
+          "bytes": 4838,
+          "new_identity_count": 0,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0004/fit/adapter_v2/public_fit_manifest.json",
+          "sha256": "432285de19bde996dfd1b3b7c289d321b93e99ed0fba88303bb99331c69c118f"
+        },
+        {
+          "available": true,
+          "bytes": 463510,
+          "new_identity_count": 0,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0004/fit/affine_fit_records.json",
+          "sha256": "3f733212efd62b19e71f60f002f4e9756b4975ebfb4dcabf0ac27935929f94ff"
+        },
+        {
+          "available": true,
+          "bytes": 16456,
+          "new_identity_count": 0,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0004/fit/affine_validation_records.json",
+          "sha256": "30b422b681bef5e7af4c26d339e57dfb3571ecef8077bdc4be5d960ef05c9777"
+        },
+        {
+          "available": true,
+          "bytes": 46018,
+          "new_identity_count": 96,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0004/fresh_confirmation_v1/selection_plan.json",
+          "sha256": "a01f445c67bb4cb0f462fb000dd8a46c63cceeebe4c53c1e73c08107378f3eca"
+        },
+        {
+          "available": true,
+          "bytes": 172643,
+          "new_identity_count": 0,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0004/fresh_confirmation_v1/panel_capture/panel.json",
+          "sha256": "da65242f395c2c96a25ed8e30d62415db9108c9ded0c9525d4f9358691cb44da"
+        },
+        {
+          "available": true,
+          "bytes": 691612,
+          "new_identity_count": 0,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0004/alpaca_split_plan.json",
+          "sha256": "29ca79db0f29fd5ec1e3769b5427ac1496b59ef7f88e7e921e41c13b1e07eb2e"
+        },
+        {
+          "available": true,
+          "bytes": 2157231,
+          "new_identity_count": 1318,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0005/corpus/corpus_plan.json",
+          "sha256": "ef8b44bf786b2f7c81e078c771072de278c6fd42b5cd0543d977a2d1ad0b5d84"
+        },
+        {
+          "available": true,
+          "bytes": 23919,
+          "new_identity_count": 0,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/fit_records.json",
+          "sha256": "7aee0f6cb452bb1df401c920ca2a628d32fb204d144d72e4419fc8bd34a3a08e"
+        },
+        {
+          "available": true,
+          "bytes": 5098,
+          "new_identity_count": 0,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_validation_slice_v2/public_validation_records.json",
+          "sha256": "446e6259482b730b3e22cdc693d37b406031141d7ac034de68ecaa5cc49456fb"
+        },
+        {
+          "available": true,
+          "bytes": 237690,
+          "new_identity_count": 768,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0005/fresh_confirmation_v1/selection_plan.json",
+          "sha256": "7835d6aa57935e11e53791a882dcb81d6c1756381310ca82114787d2a8da6cf0"
+        },
+        {
+          "available": true,
+          "bytes": 1976469,
+          "new_identity_count": 0,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0005/fresh_confirmation_v1/panel_capture_v2/panel.json",
+          "sha256": "d72bc8338de90028ae87a00fef3193c2c494a65d529ffad70978b8f706fd690d"
+        },
+        {
+          "available": true,
+          "bytes": 4435,
+          "new_identity_count": 0,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0005/fresh_confirmation_v1/panel_capture_v2/observations.json",
+          "sha256": "010e57225e0cb5a90ef8746b82fa11d32c6f67031da93eb7587c723ddf88e708"
+        },
+        {
+          "available": true,
+          "bytes": 19350,
+          "new_identity_count": 0,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0005/public_activation_v1/capture_manifest_receipt.json",
+          "sha256": "48c469373de931b905af642a21977b2fe85877208db16ec9cc13adc88fec5a7a"
+        }
+      ],
+      "targetfit_per_record_metadata_available": false
+    },
+    "preliminary_inventory": {
+      "path": "experiments/TRR-0006/eligibility_inventory_1536_projection_v3.json",
+      "bytes": 21981,
+      "sha256": "cad1697fc575b27dcd01a80f134d31cc48c6080ebb31706fd87351dd259a67a7"
+    },
+    "limitations": [
+      "P04 target-fit per-record identities, source ranges, and replay sequence hashes were unavailable and therefore remain an explicit disjointness limitation.",
+      "This source selection is valid only for the frozen source range and target pair named here; it does not certify unseen-source disjointness from unavailable P04 target-fit rows."
+    ],
+    "no_private_truth_or_holdout_opened": true
+  },
+  "source_bindings": {
+    "prediction_execution": [
+      {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/scripts/trr0006_run_predictions.py",
+        "bytes": 32507,
+        "sha256": "b19558a99d9742f48636c611381e167556b0878ca967bd40c9193c22aeda89cc",
+        "role": "prediction_runner"
+      },
+      {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/scripts/trr0006_prediction_contract.py",
+        "bytes": 25360,
+        "sha256": "e99f2e7c0fb27250cd47f2db9511ff2162d8f7efb1c17d13dc837797bfacd6dc",
+        "role": "prediction_contract"
+      },
+      {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/src/token_reconstruction/trr0005_joint_decoder.py",
+        "bytes": 55256,
+        "sha256": "9cab3cf5ad664c37d91bcd90fe1852df71da25800ddf37291a57000908d3d38f",
+        "role": "frozen_decoder_numerics"
+      }
+    ],
+    "capture_execution": [
+      {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/scripts/trr0006_capture_public.py",
+        "bytes": 38735,
+        "sha256": "ade20eda4cc6ca3d25861558e5256d1b119ad1419e2bf909c1715fed612f20c7",
+        "name": "capture_producer"
+      },
+      {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/src/token_reconstruction/public_activation.py",
+        "bytes": 20009,
+        "sha256": "3be43dd5b6a5918a48f289971ab2a833977a7f9d87094e6001c5c7cdc60ab76f",
+        "name": "public_activation"
+      },
+      {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/src/token_reconstruction/trr0005_public_corpus.py",
+        "bytes": 34636,
+        "sha256": "57afda7dd872fa8dbdd61de02e5421afada8943f799b50029074ec2f138dcfff",
+        "name": "public_corpus"
+      },
+      {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/src/token_reconstruction/public_prefix.py",
+        "bytes": 8297,
+        "sha256": "b9dca1d8d56c7c07413015aea4bde79e8ceac827c32ee9bc0d1a236ea1dd35f6",
+        "name": "public_prefix"
+      },
+      {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/scripts/trr0004_produce_confirmation.py",
+        "bytes": 72048,
+        "sha256": "b1ae4e199de62f350df0ce9890caa90a70b0611a22051ce6bc304e0ccc4e1b2a",
+        "name": "trr0004_capture_loader"
+      },
+      {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/scripts/trr0004_prepare_public_activations.py",
+        "bytes": 40779,
+        "sha256": "6f1a9b6d7ee4aad89ee8152021e6e431b8652a6f7c162167a6180229feed70e8",
+        "name": "trr0004_resource_guard"
+      },
+      {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/scripts/trr0005_produce_confirmation.py",
+        "bytes": 83875,
+        "sha256": "7289ee5db30bc0b2d3c1b50b1d5b6ca1ac235001371f61b92adf10e2dd979e2b",
+        "name": "trusted_trr0005_producer"
+      }
+    ],
+    "qualification_execution": [
+      {
+        "path": "experiments/TRR-0006/fixture_equivalence/failed_attempt_bos_normalization.json",
+        "bytes": 1503,
+        "sha256": "11121d1d6ef35118852ab9e98889173307b6c6532128ec6846474dc424774a0e",
+        "name": "failed_fixture_attempt"
+      },
+      {
+        "path": "src/token_reconstruction/trr0005_joint_decoder.py",
+        "bytes": 55256,
+        "sha256": "9cab3cf5ad664c37d91bcd90fe1852df71da25800ddf37291a57000908d3d38f",
+        "name": "frozen_decoder_numerics"
+      },
+      {
+        "path": "scripts/trr0006_prediction_contract.py",
+        "bytes": 25360,
+        "sha256": "e99f2e7c0fb27250cd47f2db9511ff2162d8f7efb1c17d13dc837797bfacd6dc",
+        "name": "prediction_contract"
+      },
+      {
+        "path": "scripts/trr0006_run_predictions.py",
+        "bytes": 32507,
+        "sha256": "b19558a99d9742f48636c611381e167556b0878ca967bd40c9193c22aeda89cc",
+        "name": "prediction_runner"
+      },
+      {
+        "path": "scripts/trr0006_prepare_fixture_observations.py",
+        "bytes": 9665,
+        "sha256": "231d6881913736fb9d8603a5c5ac9d090241ddd3917ade93f26b8549de6daf2f",
+        "name": "qualification_preparer"
+      },
+      {
+        "path": "experiments/TRR-0006/fixture_equivalence/cuda_id_equivalence.json",
+        "bytes": 9308,
+        "sha256": "9c81820d6197c5e8ba6c91395d7ccbfabfc7541696b136be4a0681d48690ced0",
+        "name": "successful_existing_fixture"
+      }
+    ],
+    "normalized_public_E": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+      "bytes": 1050673488,
+      "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+    },
+    "selected_states": {
+      "enriched__affine_causal_h_attention128": {
+        "path": "experiments/TRR-0005/joint_fit_qknorm_v1/enriched/affine_causal_h_attention128/selected.safetensors",
+        "bytes": 20990668,
+        "sha256": "ee910b14ad6f282bb933ea44ad24453cb5cce1470c65dbc09d8bcc16f3e8abfd"
+      },
+      "enriched__affine_trained_diagonal_attention128": {
+        "path": "experiments/TRR-0005/joint_fit_v1/enriched/affine_trained_diagonal_attention128/selected.safetensors",
+        "bytes": 20990652,
+        "sha256": "696eb9fc951e85356a06575faf18a2011616692a086bdac3b2fa368e69d599a2"
+      }
+    },
+    "score_execution": {
+      "code_commit": "33dc6258614188927751ade45a0f0a2efe1f8361",
+      "files": [
+        {
+          "bytes": 47526,
+          "path": "scripts/trr0006_freeze_score.py",
+          "role": "scoring_driver",
+          "sha256": "2ef2efbc14d3ca2e4085f0cc6c995f49d7f4aa76d4a77ada445e28618d361a0b"
+        },
+        {
+          "bytes": 34285,
+          "path": "scripts/trr0006_freeze_pair.py",
+          "role": "public_freeze_gate",
+          "sha256": "aa324c1fea8a1fbe4923f4855b2f59ee2a3b4e92710f47933552e92be0ed102f"
+        },
+        {
+          "bytes": 37785,
+          "path": "scripts/trr0006_score_pair.py",
+          "role": "pair_scorer",
+          "sha256": "56daceec00e9cddea685496f224be39de03a2eec369599f68ce9717e4ffdf97a"
+        }
+      ],
+      "schema": "token-reconstruction.trr0006-scoring-execution-binding.v1"
+    },
+    "truth_preparation_public_receipt": {
+      "prediction_contract": {
+        "bytes": 25360,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/scripts/trr0006_prediction_contract.py",
+        "sha256": "e99f2e7c0fb27250cd47f2db9511ff2162d8f7efb1c17d13dc837797bfacd6dc"
+      },
+      "public_capture_materializer": {
+        "bytes": 38735,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/scripts/trr0006_capture_public.py",
+        "sha256": "ade20eda4cc6ca3d25861558e5256d1b119ad1419e2bf909c1715fed612f20c7"
+      },
+      "public_freeze_gate": {
+        "bytes": 34285,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/scripts/trr0006_freeze_pair.py",
+        "sha256": "aa324c1fea8a1fbe4923f4855b2f59ee2a3b4e92710f47933552e92be0ed102f"
+      },
+      "trusted_trr0005_producer": {
+        "bytes": 83875,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/scripts/trr0005_produce_confirmation.py",
+        "sha256": "7289ee5db30bc0b2d3c1b50b1d5b6ca1ac235001371f61b92adf10e2dd979e2b"
+      },
+      "truth_alias_adapter": {
+        "bytes": 3806,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/scripts/trr0005_truth_alias_adapter.py",
+        "sha256": "88bcf1115240904471cbc9bb571b739c3f331744b5d7ef19bfca9eff50990d7e"
+      },
+      "truth_preparation": {
+        "bytes": 30000,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/scripts/trr0006_prepare_truth.py",
+        "sha256": "684fb64cb2226e6dcc6425dfeab32e64838ff8fa902d0c97a738688d7aab634f"
+      }
+    }
+  },
+  "provenance": {
+    "published_parent_commit": "3a7e8f579e713c3e41d02639237042ca26fd019b",
+    "scientific_source_commit": "da82f6cac45e09ae83452198344c547553cb4433",
+    "post_score_maintenance_commit": "1dba67a8dc75844727866cb4273da28a311df216",
+    "trr0006_pair_plan_commit": "fa99a7edbecdc57c50ac59a2c26277fbedce6f76",
+    "selection_capture_commit": "fd339684c9fc8485d33797b8fb52a0e2879b47d2",
+    "prediction_commit": "33dc6258614188927751ade45a0f0a2efe1f8361",
+    "qualification_file_state": "task-local qualification files were uncommitted when qualification ran; exact hashes retained",
+    "later_archived_code_commit": "33dc6258614188927751ade45a0f0a2efe1f8361",
+    "main_registration_status": "COMPLETE_AND_FROZEN_AT_PREDICTION_RUN",
+    "truth_status": "TRUTH_VERIFIED_AFTER_PUBLIC_GATE",
+    "scoring_commit": "33dc6258614188927751ade45a0f0a2efe1f8361",
+    "score_result_sha256": "84b0535802a587c71553de7c14af4b9e952befd00e3ef65dfdd20a23c0ae70df",
+    "publication_head_note": "Prediction and scoring execution are bound to 33dc6258614188927751ade45a0f0a2efe1f8361; later documentation commits are not the execution commit.",
+    "scientific_artifact_commit": "128e24f4f69cabf8203d9c396493e380b1f427f5"
+  },
+  "replay_commands": {
+    "qualification_prepare": "env PYTHONPATH=.:src:scripts python3 scripts/trr0006_prepare_fixture_observations.py --source-root /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005 --repository-root /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006 --output-root experiments/TRR-0006/qualification_8",
+    "qualification_predict": "env PYTHONPATH=.:src:scripts OMP_NUM_THREADS=8 MKL_NUM_THREADS=8 OPENBLAS_NUM_THREADS=8 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 python3 scripts/trr0006_run_predictions.py --registration experiments/TRR-0006/qualification_8/prediction_registration.json --repository-root /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006",
+    "qualification_freeze": "env PYTHONPATH=.:src:scripts python3 -c 'from scripts.trr0006_freeze_pair import freeze_matrix; freeze_matrix(repository_root=\".\", registration_path=\"experiments/TRR-0006/qualification_8/prediction_registration.json\", receipt_path=\"experiments/TRR-0006/qualification_8/predictions/freeze_receipt.json\")'",
+    "main_registration": "scripts/trr0006_build_prediction_registration.py; exact paths and replay command appear below; main registration is prediction_registration.json.",
+    "main_prediction": "Exact executed command: prediction_execution_v1/launch.json; run manifest: predictions_v1/run_manifest.json.",
+    "truth_scoring": "Exact executed argv is preserved in experiments/TRR-0006/score_command.json; use execution commit33dc625 and fresh create-only outputs for a replay.",
+    "execution_binding_commit": "33dc6258614188927751ade45a0f0a2efe1f8361",
+    "score_command_record": "experiments/TRR-0006/score_command.json",
+    "replay_policy": "Use an isolated detached checkout at exactly 33dc6258614188927751ade45a0f0a2efe1f8361, verify pinned input/state/E/observation hashes, regenerate registration into a fresh create-only output root, and do not claim old registration execution at a later publication HEAD; no full rerun is required.",
+    "registration_replay_command": "set -euo pipefail; git worktree add --detach /tmp/trr0006-replay-33dc625 33dc6258614188927751ade45a0f0a2efe1f8361; cd /tmp/trr0006-replay-33dc625; test ! -e experiments/TRR-0006/replay_registration_v1.json; env PYTHONPATH=.:src:scripts python3 scripts/trr0006_build_prediction_registration.py --repository-root /tmp/trr0006-replay-33dc625 --plan experiments/TRR-0006/decision_plan.json --source-selection experiments/TRR-0006/source_selection.json --observation-manifest experiments/TRR-0006/panel_capture_v1/observations.json --normalized-public-E /home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors --output experiments/TRR-0006/replay_registration_v1.json --output-root experiments/TRR-0006/predictions_replay_v1",
+    "prediction_replay_command": "set -euo pipefail; cd /tmp/trr0006-replay-33dc625; test ! -e experiments/TRR-0006/predictions_replay_v1; env PYTHONPATH=.:src:scripts OMP_NUM_THREADS=8 MKL_NUM_THREADS=8 OPENBLAS_NUM_THREADS=8 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 HF_DATASETS_OFFLINE=1 TOKENIZERS_PARALLELISM=false python3 scripts/trr0006_run_predictions.py --registration experiments/TRR-0006/replay_registration_v1.json --repository-root /tmp/trr0006-replay-33dc625",
+    "replay_status": "NOT_RUN; archived receipts are the claimed execution",
+    "external_assets": "Main observation files and normalized E use preserved absolute host paths. Restore exact hashes or regenerate with the recorded producer before replay on a different host. Main H payloads are not committed."
+  },
+  "handoff_notes": [
+    "Final decision positionwise_default: all four token and exact upper practical bounds are below registered causal-benefit margins.",
+    "No support endpoint or material-harm endpoint; harm is excluded under the retained negative limits.",
+    "Cost qualified: maximum measured runtime ratio 1.0268666166273126 <= 1.25 and inherited selected-arm training ratio 0.9992160644044228 <= 2; zero new training.",
+    "The safe public truth-binding receipt is retained; private truth payload remains outside this repository.",
+    "P04 exchange lacks target-fit per-record IDs, ranges, and replay sequence hashes, so cross-study disjointness is not certified."
+  ],
+  "updated_utc": "2026-09-06T06:25:57Z",
+  "quality_matrix": [
+    {
+      "cell_id": "pile__public_base",
+      "method_id": "enriched__affine_causal_h_attention128",
+      "token_accuracy": {
+        "status": "SCORED_AFTER_TRUTH_GATE",
+        "value": 0.9343832020997376,
+        "correct_tokens": 182272,
+        "scored_tokens": 195072,
+        "denominator_post_bos_tokens": 195072
+      },
+      "exact_records": {
+        "status": "SCORED_AFTER_TRUTH_GATE",
+        "value": 34,
+        "rate": 0.022135416666666668,
+        "denominator_records": 1536
+      },
+      "prediction_status": "PUBLIC_PREDICTION_COMPLETE_FROZEN_NO_TRUTH",
+      "prediction_sha256": "f40df7d408084f205f351f30351226dc363fff051dd92363ca421f8c8dea654b",
+      "warmup_measured_ids_equal": true,
+      "inference_geometry": "stored H128 from fixed 8x192 public full forward; one-record decoder inference; chunk size 8",
+      "memory": {
+        "cuda_peak_allocated_bytes": 1280330240,
+        "cuda_peak_reserved_bytes": 1302331392,
+        "process_max_rss_bytes": 2197491712,
+        "scope": "cell-local CUDA counters reset before observation iteration; RSS is process-cumulative",
+        "qualification_reference": {
+          "cells": 8,
+          "max_cuda_peak_allocated_bytes": 1280330240,
+          "max_cuda_peak_reserved_bytes": 1302331392,
+          "max_process_max_rss_bytes": 1737220096,
+          "scope": "per-cell CUDA counters reset before observation iteration; RSS process-cumulative"
+        }
+      },
+      "preparation_capture_seconds": 5.472504884994123,
+      "runtime_components": {
+        "cold_process_start_and_E_state_load_seconds": "separate; see load_seconds_separate below",
+        "load_seconds_separate": 0.030699629001901485,
+        "warmup_seconds": 6.028031482725055,
+        "measured_inference_seconds": 5.47967175017402,
+        "synchronization_seconds": null,
+        "io_seconds": null,
+        "timed_interval_total_seconds": 11.507703232899075,
+        "measured_mean_ms": 3.5674946290195444
+      },
+      "contrast": {
+        "both_correct": 30,
+        "causal_only_gain": 4,
+        "positionwise_only_loss": 12,
+        "neither_correct": 1490,
+        "token_delta_pp": -0.3101418963254593,
+        "token_descriptive_ci95_pp": [
+          -0.3737081692913316,
+          -0.24605017634514414
+        ],
+        "token_practical_bounds_pp": [
+          -0.3962639435695525,
+          -0.22158324874918528
+        ],
+        "exact_delta_pp": -0.5208333333333334,
+        "exact_descriptive_ci95_pp": [
+          -1.0416666666666667,
+          0.0
+        ],
+        "exact_practical_bounds_pp": [
+          -1.669481156243848,
+          0.6427521608049309
+        ],
+        "endpoint_status": {
+          "exact_exclusion": true,
+          "exact_harm_not_excluded": false,
+          "exact_material_harm_evidence": false,
+          "exact_support": false,
+          "token_exclusion": true,
+          "token_harm_not_excluded": false,
+          "token_material_harm_evidence": false,
+          "token_support": false
+        }
+      }
+    },
+    {
+      "cell_id": "pile__public_base",
+      "method_id": "enriched__affine_trained_diagonal_attention128",
+      "token_accuracy": {
+        "status": "SCORED_AFTER_TRUTH_GATE",
+        "value": 0.9374846210629921,
+        "correct_tokens": 182877,
+        "scored_tokens": 195072,
+        "denominator_post_bos_tokens": 195072
+      },
+      "exact_records": {
+        "status": "SCORED_AFTER_TRUTH_GATE",
+        "value": 42,
+        "rate": 0.02734375,
+        "denominator_records": 1536
+      },
+      "prediction_status": "PUBLIC_PREDICTION_COMPLETE_FROZEN_NO_TRUTH",
+      "prediction_sha256": "48ff2312bfa7a658d93d700e6ae80522552f6d7b51c2b1e907d53e7ffa9b24ad",
+      "warmup_measured_ids_equal": true,
+      "inference_geometry": "stored H128 from fixed 8x192 public full forward; one-record decoder inference; chunk size 8",
+      "memory": {
+        "cuda_peak_allocated_bytes": 1280330240,
+        "cuda_peak_reserved_bytes": 1302331392,
+        "process_max_rss_bytes": 2204491776,
+        "scope": "cell-local CUDA counters reset before observation iteration; RSS is process-cumulative",
+        "qualification_reference": {
+          "cells": 8,
+          "max_cuda_peak_allocated_bytes": 1280330240,
+          "max_cuda_peak_reserved_bytes": 1302331392,
+          "max_process_max_rss_bytes": 1737220096,
+          "scope": "per-cell CUDA counters reset before observation iteration; RSS process-cumulative"
+        }
+      },
+      "preparation_capture_seconds": 5.472504884994123,
+      "runtime_components": {
+        "cold_process_start_and_E_state_load_seconds": "separate; see load_seconds_separate below",
+        "load_seconds_separate": 0.008992012008093297,
+        "warmup_seconds": 5.448609173879959,
+        "measured_inference_seconds": 5.403665426856605,
+        "synchronization_seconds": null,
+        "io_seconds": null,
+        "timed_interval_total_seconds": 10.852274600736564,
+        "measured_mean_ms": 3.5180113456097692
+      },
+      "contrast": {
+        "both_correct": 30,
+        "causal_only_gain": 4,
+        "positionwise_only_loss": 12,
+        "neither_correct": 1490,
+        "token_delta_pp": -0.3101418963254593,
+        "token_descriptive_ci95_pp": [
+          -0.3737081692913316,
+          -0.24605017634514414
+        ],
+        "token_practical_bounds_pp": [
+          -0.3962639435695525,
+          -0.22158324874918528
+        ],
+        "exact_delta_pp": -0.5208333333333334,
+        "exact_descriptive_ci95_pp": [
+          -1.0416666666666667,
+          0.0
+        ],
+        "exact_practical_bounds_pp": [
+          -1.669481156243848,
+          0.6427521608049309
+        ],
+        "endpoint_status": {
+          "exact_exclusion": true,
+          "exact_harm_not_excluded": false,
+          "exact_material_harm_evidence": false,
+          "exact_support": false,
+          "token_exclusion": true,
+          "token_harm_not_excluded": false,
+          "token_material_harm_evidence": false,
+          "token_support": false
+        }
+      }
+    },
+    {
+      "cell_id": "pile__public_lora_2601",
+      "method_id": "enriched__affine_causal_h_attention128",
+      "token_accuracy": {
+        "status": "SCORED_AFTER_TRUTH_GATE",
+        "value": 0.938714936023622,
+        "correct_tokens": 183117,
+        "scored_tokens": 195072,
+        "denominator_post_bos_tokens": 195072
+      },
+      "exact_records": {
+        "status": "SCORED_AFTER_TRUTH_GATE",
+        "value": 44,
+        "rate": 0.028645833333333332,
+        "denominator_records": 1536
+      },
+      "prediction_status": "PUBLIC_PREDICTION_COMPLETE_FROZEN_NO_TRUTH",
+      "prediction_sha256": "0cc8da14aa244e3fa820bef71c40175c8fd03d575859008d414a415740c1c488",
+      "warmup_measured_ids_equal": true,
+      "inference_geometry": "stored H128 from fixed 8x192 public full forward; one-record decoder inference; chunk size 8",
+      "memory": {
+        "cuda_peak_allocated_bytes": 1280330240,
+        "cuda_peak_reserved_bytes": 1302331392,
+        "process_max_rss_bytes": 2204045312,
+        "scope": "cell-local CUDA counters reset before observation iteration; RSS is process-cumulative",
+        "qualification_reference": {
+          "cells": 8,
+          "max_cuda_peak_allocated_bytes": 1280330240,
+          "max_cuda_peak_reserved_bytes": 1302331392,
+          "max_process_max_rss_bytes": 1737220096,
+          "scope": "per-cell CUDA counters reset before observation iteration; RSS process-cumulative"
+        }
+      },
+      "preparation_capture_seconds": 5.040928217000328,
+      "runtime_components": {
+        "cold_process_start_and_E_state_load_seconds": "separate; see load_seconds_separate below",
+        "load_seconds_separate": 0.030699629001901485,
+        "warmup_seconds": 5.446724493114743,
+        "measured_inference_seconds": 5.413614120028797,
+        "synchronization_seconds": null,
+        "io_seconds": null,
+        "timed_interval_total_seconds": 10.86033861314354,
+        "measured_mean_ms": 3.524488359393748
+      },
+      "contrast": {
+        "both_correct": 34,
+        "causal_only_gain": 10,
+        "positionwise_only_loss": 11,
+        "neither_correct": 1481,
+        "token_delta_pp": 0.07586942257217848,
+        "token_descriptive_ci95_pp": [
+          0.007689468503946084,
+          0.14353674540682482
+        ],
+        "token_practical_bounds_pp": [
+          -0.02037869350803616,
+          0.17352887651739266
+        ],
+        "exact_delta_pp": -0.06510416666666667,
+        "exact_descriptive_ci95_pp": [
+          -0.6510416666666667,
+          0.5208333333333333
+        ],
+        "exact_practical_bounds_pp": [
+          -1.4040886344565768,
+          1.2753251339576237
+        ],
+        "endpoint_status": {
+          "exact_exclusion": true,
+          "exact_harm_not_excluded": false,
+          "exact_material_harm_evidence": false,
+          "exact_support": false,
+          "token_exclusion": true,
+          "token_harm_not_excluded": false,
+          "token_material_harm_evidence": false,
+          "token_support": false
+        }
+      }
+    },
+    {
+      "cell_id": "pile__public_lora_2601",
+      "method_id": "enriched__affine_trained_diagonal_attention128",
+      "token_accuracy": {
+        "status": "SCORED_AFTER_TRUTH_GATE",
+        "value": 0.9379562417979003,
+        "correct_tokens": 182969,
+        "scored_tokens": 195072,
+        "denominator_post_bos_tokens": 195072
+      },
+      "exact_records": {
+        "status": "SCORED_AFTER_TRUTH_GATE",
+        "value": 45,
+        "rate": 0.029296875,
+        "denominator_records": 1536
+      },
+      "prediction_status": "PUBLIC_PREDICTION_COMPLETE_FROZEN_NO_TRUTH",
+      "prediction_sha256": "12ccc1f67ac81283ded00d9dd57ac8887393a1849e86e4c88a0283d5f7f68d7b",
+      "warmup_measured_ids_equal": true,
+      "inference_geometry": "stored H128 from fixed 8x192 public full forward; one-record decoder inference; chunk size 8",
+      "memory": {
+        "cuda_peak_allocated_bytes": 1280330240,
+        "cuda_peak_reserved_bytes": 1302331392,
+        "process_max_rss_bytes": 2204491776,
+        "scope": "cell-local CUDA counters reset before observation iteration; RSS is process-cumulative",
+        "qualification_reference": {
+          "cells": 8,
+          "max_cuda_peak_allocated_bytes": 1280330240,
+          "max_cuda_peak_reserved_bytes": 1302331392,
+          "max_process_max_rss_bytes": 1737220096,
+          "scope": "per-cell CUDA counters reset before observation iteration; RSS process-cumulative"
+        }
+      },
+      "preparation_capture_seconds": 5.040928217000328,
+      "runtime_components": {
+        "cold_process_start_and_E_state_load_seconds": "separate; see load_seconds_separate below",
+        "load_seconds_separate": 0.008992012008093297,
+        "warmup_seconds": 5.495207091284101,
+        "measured_inference_seconds": 5.458239763305755,
+        "synchronization_seconds": null,
+        "io_seconds": null,
+        "timed_interval_total_seconds": 10.953446854589856,
+        "measured_mean_ms": 3.553541512568851
+      },
+      "contrast": {
+        "both_correct": 34,
+        "causal_only_gain": 10,
+        "positionwise_only_loss": 11,
+        "neither_correct": 1481,
+        "token_delta_pp": 0.07586942257217848,
+        "token_descriptive_ci95_pp": [
+          0.007689468503946084,
+          0.14353674540682482
+        ],
+        "token_practical_bounds_pp": [
+          -0.02037869350803616,
+          0.17352887651739266
+        ],
+        "exact_delta_pp": -0.06510416666666667,
+        "exact_descriptive_ci95_pp": [
+          -0.6510416666666667,
+          0.5208333333333333
+        ],
+        "exact_practical_bounds_pp": [
+          -1.4040886344565768,
+          1.2753251339576237
+        ],
+        "endpoint_status": {
+          "exact_exclusion": true,
+          "exact_harm_not_excluded": false,
+          "exact_material_harm_evidence": false,
+          "exact_support": false,
+          "token_exclusion": true,
+          "token_harm_not_excluded": false,
+          "token_material_harm_evidence": false,
+          "token_support": false
+        }
+      }
+    },
+    {
+      "cell_id": "finance__public_base",
+      "method_id": "enriched__affine_causal_h_attention128",
+      "token_accuracy": {
+        "status": "SCORED_AFTER_TRUTH_GATE",
+        "value": 0.974978469488189,
+        "correct_tokens": 190191,
+        "scored_tokens": 195072,
+        "denominator_post_bos_tokens": 195072
+      },
+      "exact_records": {
+        "status": "SCORED_AFTER_TRUTH_GATE",
+        "value": 361,
+        "rate": 0.23502604166666666,
+        "denominator_records": 1536
+      },
+      "prediction_status": "PUBLIC_PREDICTION_COMPLETE_FROZEN_NO_TRUTH",
+      "prediction_sha256": "fb9009120c0dfbe7d563211056d8a1996d59ec8448dc92da41dfc22cdf8e24bb",
+      "warmup_measured_ids_equal": true,
+      "inference_geometry": "stored H128 from fixed 8x192 public full forward; one-record decoder inference; chunk size 8",
+      "memory": {
+        "cuda_peak_allocated_bytes": 1280330240,
+        "cuda_peak_reserved_bytes": 1302331392,
+        "process_max_rss_bytes": 2204164096,
+        "scope": "cell-local CUDA counters reset before observation iteration; RSS is process-cumulative",
+        "qualification_reference": {
+          "cells": 8,
+          "max_cuda_peak_allocated_bytes": 1280330240,
+          "max_cuda_peak_reserved_bytes": 1302331392,
+          "max_process_max_rss_bytes": 1737220096,
+          "scope": "per-cell CUDA counters reset before observation iteration; RSS process-cumulative"
+        }
+      },
+      "preparation_capture_seconds": 5.348981749993982,
+      "runtime_components": {
+        "cold_process_start_and_E_state_load_seconds": "separate; see load_seconds_separate below",
+        "load_seconds_separate": 0.030699629001901485,
+        "warmup_seconds": 5.5319314651424065,
+        "measured_inference_seconds": 5.485913599230116,
+        "synchronization_seconds": null,
+        "io_seconds": null,
+        "timed_interval_total_seconds": 11.017845064372523,
+        "measured_mean_ms": 3.5715583328321068
+      },
+      "contrast": {
+        "both_correct": 312,
+        "causal_only_gain": 49,
+        "positionwise_only_loss": 38,
+        "neither_correct": 1137,
+        "token_delta_pp": -0.11687992125984252,
+        "token_descriptive_ci95_pp": [
+          -0.15532726377952555,
+          -0.0799704724409489
+        ],
+        "token_practical_bounds_pp": [
+          -0.17070620078740445,
+          -0.06728124743684837
+        ],
+        "exact_delta_pp": 0.7161458333333334,
+        "exact_descriptive_ci95_pp": [
+          -0.4557291666666685,
+          1.8880208333333344
+        ],
+        "exact_practical_bounds_pp": [
+          -1.8605526268474268,
+          3.2854708334389424
+        ],
+        "endpoint_status": {
+          "exact_exclusion": true,
+          "exact_harm_not_excluded": false,
+          "exact_material_harm_evidence": false,
+          "exact_support": false,
+          "token_exclusion": true,
+          "token_harm_not_excluded": false,
+          "token_material_harm_evidence": false,
+          "token_support": false
+        }
+      }
+    },
+    {
+      "cell_id": "finance__public_base",
+      "method_id": "enriched__affine_trained_diagonal_attention128",
+      "token_accuracy": {
+        "status": "SCORED_AFTER_TRUTH_GATE",
+        "value": 0.9761472687007874,
+        "correct_tokens": 190419,
+        "scored_tokens": 195072,
+        "denominator_post_bos_tokens": 195072
+      },
+      "exact_records": {
+        "status": "SCORED_AFTER_TRUTH_GATE",
+        "value": 350,
+        "rate": 0.22786458333333334,
+        "denominator_records": 1536
+      },
+      "prediction_status": "PUBLIC_PREDICTION_COMPLETE_FROZEN_NO_TRUTH",
+      "prediction_sha256": "1c74439ac32dac36cd726c6c1d0b7c25971b867746d6ae35aade23b497f48157",
+      "warmup_measured_ids_equal": true,
+      "inference_geometry": "stored H128 from fixed 8x192 public full forward; one-record decoder inference; chunk size 8",
+      "memory": {
+        "cuda_peak_allocated_bytes": 1280330240,
+        "cuda_peak_reserved_bytes": 1302331392,
+        "process_max_rss_bytes": 2204491776,
+        "scope": "cell-local CUDA counters reset before observation iteration; RSS is process-cumulative",
+        "qualification_reference": {
+          "cells": 8,
+          "max_cuda_peak_allocated_bytes": 1280330240,
+          "max_cuda_peak_reserved_bytes": 1302331392,
+          "max_process_max_rss_bytes": 1737220096,
+          "scope": "per-cell CUDA counters reset before observation iteration; RSS process-cumulative"
+        }
+      },
+      "preparation_capture_seconds": 5.348981749993982,
+      "runtime_components": {
+        "cold_process_start_and_E_state_load_seconds": "separate; see load_seconds_separate below",
+        "load_seconds_separate": 0.008992012008093297,
+        "warmup_seconds": 5.4110180465941085,
+        "measured_inference_seconds": 5.381672766947304,
+        "synchronization_seconds": null,
+        "io_seconds": null,
+        "timed_interval_total_seconds": 10.792690813541412,
+        "measured_mean_ms": 3.5036932076479843
+      },
+      "contrast": {
+        "both_correct": 312,
+        "causal_only_gain": 49,
+        "positionwise_only_loss": 38,
+        "neither_correct": 1137,
+        "token_delta_pp": -0.11687992125984252,
+        "token_descriptive_ci95_pp": [
+          -0.15532726377952555,
+          -0.0799704724409489
+        ],
+        "token_practical_bounds_pp": [
+          -0.17070620078740445,
+          -0.06728124743684837
+        ],
+        "exact_delta_pp": 0.7161458333333334,
+        "exact_descriptive_ci95_pp": [
+          -0.4557291666666685,
+          1.8880208333333344
+        ],
+        "exact_practical_bounds_pp": [
+          -1.8605526268474268,
+          3.2854708334389424
+        ],
+        "endpoint_status": {
+          "exact_exclusion": true,
+          "exact_harm_not_excluded": false,
+          "exact_material_harm_evidence": false,
+          "exact_support": false,
+          "token_exclusion": true,
+          "token_harm_not_excluded": false,
+          "token_material_harm_evidence": false,
+          "token_support": false
+        }
+      }
+    },
+    {
+      "cell_id": "finance__public_lora_2601",
+      "method_id": "enriched__affine_causal_h_attention128",
+      "token_accuracy": {
+        "status": "SCORED_AFTER_TRUTH_GATE",
+        "value": 0.9774647309711286,
+        "correct_tokens": 190676,
+        "scored_tokens": 195072,
+        "denominator_post_bos_tokens": 195072
+      },
+      "exact_records": {
+        "status": "SCORED_AFTER_TRUTH_GATE",
+        "value": 406,
+        "rate": 0.2643229166666667,
+        "denominator_records": 1536
+      },
+      "prediction_status": "PUBLIC_PREDICTION_COMPLETE_FROZEN_NO_TRUTH",
+      "prediction_sha256": "4e18483890928f192c17c50facc306bda9127f036bbf28cba10165ef8014b9e8",
+      "warmup_measured_ids_equal": true,
+      "inference_geometry": "stored H128 from fixed 8x192 public full forward; one-record decoder inference; chunk size 8",
+      "memory": {
+        "cuda_peak_allocated_bytes": 1280330240,
+        "cuda_peak_reserved_bytes": 1302331392,
+        "process_max_rss_bytes": 2204491776,
+        "scope": "cell-local CUDA counters reset before observation iteration; RSS is process-cumulative",
+        "qualification_reference": {
+          "cells": 8,
+          "max_cuda_peak_allocated_bytes": 1280330240,
+          "max_cuda_peak_reserved_bytes": 1302331392,
+          "max_process_max_rss_bytes": 1737220096,
+          "scope": "per-cell CUDA counters reset before observation iteration; RSS process-cumulative"
+        }
+      },
+      "preparation_capture_seconds": 4.944599669004674,
+      "runtime_components": {
+        "cold_process_start_and_E_state_load_seconds": "separate; see load_seconds_separate below",
+        "load_seconds_separate": 0.030699629001901485,
+        "warmup_seconds": 5.570819780085003,
+        "measured_inference_seconds": 5.546752384674619,
+        "synchronization_seconds": null,
+        "io_seconds": null,
+        "timed_interval_total_seconds": 11.117572164759622,
+        "measured_mean_ms": 3.6111669171058716
+      },
+      "contrast": {
+        "both_correct": 355,
+        "causal_only_gain": 51,
+        "positionwise_only_loss": 44,
+        "neither_correct": 1086,
+        "token_delta_pp": 0.041523129921259845,
+        "token_descriptive_ci95_pp": [
+          -0.002050524934382736,
+          0.08407152230971437
+        ],
+        "token_practical_bounds_pp": [
+          -0.019479986876647093,
+          0.102526246719159
+        ],
+        "exact_delta_pp": 0.4557291666666667,
+        "exact_descriptive_ci95_pp": [
+          -0.78125,
+          1.6927083333333315
+        ],
+        "exact_practical_bounds_pp": [
+          -2.23091050077196,
+          3.1377989686676324
+        ],
+        "endpoint_status": {
+          "exact_exclusion": true,
+          "exact_harm_not_excluded": false,
+          "exact_material_harm_evidence": false,
+          "exact_support": false,
+          "token_exclusion": true,
+          "token_harm_not_excluded": false,
+          "token_material_harm_evidence": false,
+          "token_support": false
+        }
+      }
+    },
+    {
+      "cell_id": "finance__public_lora_2601",
+      "method_id": "enriched__affine_trained_diagonal_attention128",
+      "token_accuracy": {
+        "status": "SCORED_AFTER_TRUTH_GATE",
+        "value": 0.977049499671916,
+        "correct_tokens": 190595,
+        "scored_tokens": 195072,
+        "denominator_post_bos_tokens": 195072
+      },
+      "exact_records": {
+        "status": "SCORED_AFTER_TRUTH_GATE",
+        "value": 399,
+        "rate": 0.259765625,
+        "denominator_records": 1536
+      },
+      "prediction_status": "PUBLIC_PREDICTION_COMPLETE_FROZEN_NO_TRUTH",
+      "prediction_sha256": "414e45831bf3a6a13b0193fd69447bc40d8b6e3a015a4cd9dc2cade6992d7076",
+      "warmup_measured_ids_equal": true,
+      "inference_geometry": "stored H128 from fixed 8x192 public full forward; one-record decoder inference; chunk size 8",
+      "memory": {
+        "cuda_peak_allocated_bytes": 1280330240,
+        "cuda_peak_reserved_bytes": 1302331392,
+        "process_max_rss_bytes": 2205585408,
+        "scope": "cell-local CUDA counters reset before observation iteration; RSS is process-cumulative",
+        "qualification_reference": {
+          "cells": 8,
+          "max_cuda_peak_allocated_bytes": 1280330240,
+          "max_cuda_peak_reserved_bytes": 1302331392,
+          "max_process_max_rss_bytes": 1737220096,
+          "scope": "per-cell CUDA counters reset before observation iteration; RSS process-cumulative"
+        }
+      },
+      "preparation_capture_seconds": 4.944599669004674,
+      "runtime_components": {
+        "cold_process_start_and_E_state_load_seconds": "separate; see load_seconds_separate below",
+        "load_seconds_separate": 0.008992012008093297,
+        "warmup_seconds": 5.438427340792259,
+        "measured_inference_seconds": 5.401628892068402,
+        "synchronization_seconds": null,
+        "io_seconds": null,
+        "timed_interval_total_seconds": 10.840056232860661,
+        "measured_mean_ms": 3.5166854766070323
+      },
+      "contrast": {
+        "both_correct": 355,
+        "causal_only_gain": 51,
+        "positionwise_only_loss": 44,
+        "neither_correct": 1086,
+        "token_delta_pp": 0.041523129921259845,
+        "token_descriptive_ci95_pp": [
+          -0.002050524934382736,
+          0.08407152230971437
+        ],
+        "token_practical_bounds_pp": [
+          -0.019479986876647093,
+          0.102526246719159
+        ],
+        "exact_delta_pp": 0.4557291666666667,
+        "exact_descriptive_ci95_pp": [
+          -0.78125,
+          1.6927083333333315
+        ],
+        "exact_practical_bounds_pp": [
+          -2.23091050077196,
+          3.1377989686676324
+        ],
+        "endpoint_status": {
+          "exact_exclusion": true,
+          "exact_harm_not_excluded": false,
+          "exact_material_harm_evidence": false,
+          "exact_support": false,
+          "token_exclusion": true,
+          "token_harm_not_excluded": false,
+          "token_material_harm_evidence": false,
+          "token_support": false
+        }
+      }
+    }
+  ],
+  "scored_result": {
+    "result": {
+      "path": "experiments/TRR-0006/scored_v1/result.json",
+      "bytes": 3407342,
+      "sha256": "84b0535802a587c71553de7c14af4b9e952befd00e3ef65dfdd20a23c0ae70df"
+    },
+    "report": {
+      "path": "experiments/TRR-0006/scored_v1/report.md",
+      "bytes": 1956,
+      "sha256": "6957e3999117e2d93d02af35165622959503b6c3411ada21cd4fd8ca60402ead"
+    },
+    "manifest": {
+      "path": "experiments/TRR-0006/scored_v1/manifest.json",
+      "bytes": 4228,
+      "sha256": "12fdc7838e9cfd217feefbc791464e6aa1482856b06dfd942698a1adabdee8d6"
+    },
+    "execution_receipt": {
+      "path": "experiments/TRR-0006/scored_v1/execution_receipt.json",
+      "bytes": 4366,
+      "sha256": "471cd68b092e65e43ca59af053e41790d09891b12af737f88caffc491c74f854"
+    }
+  },
+  "independent_review": {
+    "path": "experiments/TRR-0006/independent_review.md",
+    "bytes": 4729,
+    "sha256": "3d16c17c7831ffb41b992d94c791427a725ae2c210cbc3d06b6a44ab30442393"
+  },
+  "validation_final_entrypoints": {
+    "path": "experiments/TRR-0006/validation_final_entrypoints_v1/receipt.json",
+    "bytes": 1041,
+    "sha256": "8aacd927af8fb388438d00dd0e405637a51a69b323104f17fa52e6f087a31dd8"
+  },
+  "cost_qualification_inputs": {
+    "path": "experiments/TRR-0006/cost_qualification_inputs.json",
+    "bytes": 844,
+    "sha256": "eb61e9c61ee49679097a337f3ffd7f35ff9e5f647634ffb23c43acbc982ad9c3"
+  },
+  "score_command": {
+    "path": "experiments/TRR-0006/score_command.json",
+    "bytes": 1891,
+    "sha256": "5e28a3bcac0a7093bac61cacb20cad78fb22b88cf0371e85f81f4053203318cc"
+  },
+  "truth_public_receipt": {
+    "path": "experiments/TRR-0006/scored_v1/truth_binding_public_receipt.json",
+    "bytes": 6311,
+    "sha256": "c2f96e87699bccb38802500566eebe9c85250165e9416b59dcf87f8857f7d930",
+    "status": "PUBLIC_TRUTH_PREPARED_OUTSIDE_RECONSTRUCTION_ROOT",
+    "truth_tensor_keys": [
+      "finance__token_ids",
+      "pile__token_ids"
+    ],
+    "truth_tensor_sha256": {
+      "finance__token_ids": "7b322d4f52f4101046686a8381d4b48797bc6ac1bd2a203131957f7b7b25230b",
+      "pile__token_ids": "0ba99ddea5a702e1b76adbeb668af36497554c6631d54efe2f3bf188e4c91be6"
+    },
+    "truth_payload_copied_into_repository": false
+  },
+  "authoritative_scored_manifest": {
+    "path": "experiments/TRR-0006/scored_v1/manifest.json",
+    "bytes": 4228,
+    "sha256": "12fdc7838e9cfd217feefbc791464e6aa1482856b06dfd942698a1adabdee8d6"
+  },
+  "resource_window": {
+    "path": "experiments/TRR-0006/coordination/resource_window.json",
+    "bytes": 672,
+    "sha256": "be9cbb079f5950522560556ad5330965310bd2386631b557efc9d9785ab1cab0"
+  },
+  "final_reviews": {
+    "precision": {
+      "path": "experiments/TRR-0006/independent_review.md",
+      "bytes": 4729,
+      "sha256": "3d16c17c7831ffb41b992d94c791427a725ae2c210cbc3d06b6a44ab30442393"
+    },
+    "source": {
+      "path": "experiments/TRR-0006/source_handoff_review.md",
+      "bytes": 11209,
+      "sha256": "44990fd1fefc3507b36cb7ac7d67c817fae4b27002b79f5aad53933288acfc3b"
+    },
+    "publication_preflight": {
+      "path": "experiments/TRR-0006/publication_preflight.json",
+      "bytes": 950,
+      "sha256": "fb15686b0f397652456c9f73a9b54ab2236d3e325da4371d62714406b00950aa"
+    }
+  },
+  "cost_scope_notes": {
+    "cold_disk_start": "Not measured; process-start markers use cached assets.",
+    "cached_startup_before_E_phase_seconds": 1.340904923999915,
+    "cached_startup_after_E_phase_seconds": 2.1459303150040796,
+    "E_tensor_load_seconds": 0.1338231720001204,
+    "external_prediction_wall_seconds": 94.04616844099655,
+    "historical_public_activation_preparation_seconds": 17.839759826660156,
+    "historical_all_fit_campaign_seconds": 801.7005012369991,
+    "excluded_duplicate_capture_seconds": 33.921350569,
+    "timing_scope": "Cost ratio uses selected arm wall time and maximum of four warmed causal/diagonal cell ratios. Shared preparation and superseded campaign overhead reported separately."
+  },
+  "execution_preflight_difference": {
+    "planned_capture_timeout_seconds": 1800,
+    "actual_canonical_capture_timeout_seconds": 900,
+    "planned_failure_receipts": "capture_preflight.json names planned failure paths, not observed failures; nonexistent paths are not claimed as artifacts.",
+    "authoritative_capture_execution": "experiments/TRR-0006/capture_execution_v1/execution_receipt.json"
+  }
+}
