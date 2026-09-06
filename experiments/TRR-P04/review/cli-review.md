@@ -1,10 +1,10 @@
 # TRR-P04 CLI and preflight review
 
-**Review status:** implementation fixes are partly applied; public qualification
-remains pending a gate correction. This is a static review of the teacher,
-qualifier, prediction, and training entry points on 2026-09-06. No evaluator
-truth, target-update weights, source rows, or heavy jobs were opened during
-this review.
+**Review status:** public capacity qualification passed on 2026-09-06 under
+source commit `628c843ee127c0b5014803f8226d8f795c0c4579`. The r5 receipt includes
+full-pool/probe gate results, GPU free/peak memory, host RSS, UTC timestamps,
+and input hashes. No evaluator truth, target-update weights, source rows, or
+matrix-training jobs were opened during this review.
 
 ## Checks that now pass
 
@@ -23,20 +23,21 @@ this review.
   under the current prediction helper.
 - The canonical candidate-preparation CLI and shared-artifact consumer now exist;
   the trainer rejects missing or mismatched candidate metadata before fitting.
-  The shared-artifact wiring is present; its P04 lowest-token-ID tie policy
-  must be declared in the artifact/receipt, while the native anchor retains its
-  separate native tie behavior.
+  The P04 training proposer declares descending-score/ascending-token-ID ties;
+  native anchor ties remain separate. The existing r1 candidate artifact was
+  generated before that metadata field was added and must be regenerated or
+  explicitly bound before teacher/H/D consumption.
 
 ## Execution-contract findings
 
-1. **Qualifier gate correction is still pending.**
-   The visible `scripts/trr0004_p04_qualify.py` chooses eight deterministic
-   correction records, but still applies the ≥256-error and <0.99 criteria to
-   that eight-row probe. The ≥256 initial-error requirement belongs to the full
-   256-record correction pool for teacher-selection feasibility. The capacity
-   probe needs actual initial errors and measurable post-update improvement; it
-   does not need 256 probe errors. The full-pool gate and probe improvement
-   check must be recorded separately and fail closed.
+1. **Qualifier gate and resource evidence pass.**
+   The corrected `scripts/trr0004_p04_qualify.py` applies ≥256 initial errors
+   and <0.99 accuracy to the full 256-record correction pool, while the exact
+   eight-row capacity probe requires actual initial errors and post-update
+   improvement. The r5 receipt reports 4,185/45,596 full-pool errors, 1,000/1,503
+   probe errors, and token accuracy 0.334664 → 0.806387. Its GPU/host guard also
+   passes: 15.679 GB free preflight, 12.840 GB free post-run, 2.512 GB peak
+   allocated, 2.749 GB peak reserved, and 3.891 GB peak host RSS.
 
 2. **One shared candidate artifact is wired end to end.**
    `scripts/trr0004_p04_prepare_candidates.py` writes `candidate_ids`,
@@ -78,11 +79,10 @@ the plan; token proportions need not equal 75/25.
 
 ## Test coverage gap
 
-The focused suite currently passes (`17 passed` after the latest candidate
-wiring edits), including the step-zero and prediction-schema checks and a
-synthetic shared-row binding check. It still has no bounded test for the
-qualifier full-pool/probe split, candidate-preparation metadata/tie contract,
-or teacher qualification source binding. Add only lightweight synthetic/fixture
-checks for these contracts before the public qualification command; no
-full-vocabulary or teacher-model fixture is needed.
+The focused suite passes (`17 passed` after the qualifier/source edits), including
+step-zero, prediction-schema, and synthetic shared-row binding checks. Runtime
+qualification is now evidenced by the r5 receipt; the main remaining artifact
+issue is that candidate-preparation r1 predates the required tie-policy metadata,
+so it cannot be consumed by the current strict loaders without regeneration or
+an explicit bound compatibility record.
 
