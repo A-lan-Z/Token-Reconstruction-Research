@@ -291,7 +291,7 @@ def prepare_truth(args: argparse.Namespace) -> dict[str, Any]:
         repository_root=root,
         truth_binding_path=header_path,
     )
-    if pretruth.get("verified_before_truth") is not True or pretruth.get("truth_opened") is not False:
+    if pretruth.get("status") != "PUBLIC_MATRIX_VERIFIED_NO_TRUTH_OPENED" or pretruth.get("truth_opened") is not False:
         raise TruthError("truth binding failed the metadata-only pre-truth gate")
     return {
         "task_id": contract.TASK_ID,
