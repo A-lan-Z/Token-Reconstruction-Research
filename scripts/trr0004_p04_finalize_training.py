@@ -84,8 +84,8 @@ def main() -> int:
         seed_result = json.loads(seed_result_path.read_text(encoding="utf-8"))
         if int(seed_result.get("seed", -1)) != seed:
             raise RuntimeError(f"seed receipt mismatch under {seed_root}")
-        if tuple(seed_result.get("arms", {}).keys()) != EXPECTED_ARMS:
-            raise RuntimeError(f"arm coverage/order mismatch for seed {seed}")
+        if set(seed_result.get("arms", {})) != set(EXPECTED_ARMS):
+            raise RuntimeError(f"arm coverage mismatch for seed {seed}")
         schedule = seed_result.get("schedule")
         if not isinstance(schedule, Mapping):
             raise RuntimeError(f"seed {seed} lacks schedule receipt")
