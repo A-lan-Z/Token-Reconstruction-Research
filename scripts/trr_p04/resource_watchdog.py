@@ -189,6 +189,23 @@ def _process_group_members(pgid: int, *, require_member: bool) -> list[dict[str,
             rss_bytes = rss_kib * BYTES_PER_KIB
             break
         if rss_bytes is None:
+            # A just-exited child can remain as a zombie until Popen reaps it;
+            # zombies have no live RSS to observe and must not turn a normal
+            # successful child exit into a watchdog failure.  A non-zombie
+            # process with missing VmRSS remains an unreadable live resource.
+            stat_path = entry / "stat"
+            try:
+                stat_text = stat_path.read_text(encoding="ascii")
+            except (OSError, UnicodeError) as exc:
+                if not entry.exists():
+                    continue
+                raise ResourceReadError(f"cannot read live process state: {stat_path}") from exc
+            try:
+                state = stat_text.rsplit(")", 1)[1].strip().split()[0]
+            except (IndexError, ValueError) as exc:
+                raise ResourceReadError(f"live process stat is malformed: {stat_path}") from exc
+            if state == "Z":
+                continue
             raise ResourceReadError(f"live process RSS is missing: {status_path}")
         members.append({"pid": pid, "rss_bytes": rss_bytes})
     if require_member and not members:
@@ -377,6 +394,13 @@ def main(argv: list[str] | None = None) -> int:
                 # still sampled with require_member=False; only a genuinely
                 # live unreadable group fails closed.
                 leader_returncode = process.poll()
+                if leader_returncode is None:
+                    # Reap a child that exited between poll and /proc reads.
+                    # A zero-time wait never masks a live unreadable process.
+                    try:
+                        leader_returncode = process.wait(timeout=0)
+                    except subprocess.TimeoutExpired:
+                        pass
                 if leader_returncode is not None:
                     try:
                         sample = _sample(pgid, require_member=False, elapsed_seconds=elapsed)
