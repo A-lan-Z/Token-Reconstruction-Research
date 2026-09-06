@@ -28,8 +28,9 @@ evidence; it is retained as prior evidence, while r5 is the auditable receipt.
 The disposition is **teacher qualification PASS for bounded public training
 evidence; first fair student comparison pending**. The teacher receipt supports
 using its frozen relative scores in D's training objective. It does not support
-a native BOS-only accuracy claim. No student states, fresh predictions, or
-evaluation metrics exist yet.
+a native BOS-only accuracy claim. Seed-1737 public-training states and curves
+are now serialized, but no fresh predictions or evaluation metrics exist yet;
+the remaining seed/arm fit receipts are still pending.
 
 ## Public data and candidate preparation
 
@@ -154,6 +155,94 @@ free after the run, and 3.670 GB peak host RSS. This is sufficient to release
 the next bounded student-fit stage, subject to the existing freeze and
 truth-access protocol.
 
+## Public training fairness and cost audit
+
+The serialized training source receipt binds one public data path and one
+teacher/candidate provenance path for the matrix. The runner creates one
+position schedule per seed before entering the arm loop and passes that same
+schedule to `affine_same_data`, S, H, and D. S and the affine reference receive
+no candidate IDs; H receives the frozen candidate IDs but no teacher scores; D
+receives those same IDs plus the qualified teacher arrays. The candidate
+artifact is `ecf031a606a8bce22116b65d2dcbf5bc25596c80961767a40924081f8f03b1e5`,
+with proposer `p04_public_affine` / `pr7_public_affine_state` and the declared
+descending-score, ascending-token-ID tie rule. The D teacher binding is to
+`teacher_evidence.safetensors` SHA-256
+`0f15a16978d0daa6bbf8a7771109350a633a7fc03a108db5fd8d782255ba84f9`, with the
+frozen `sigma_q` and tie tolerance from the qualification receipt.
+
+Both serialized seed schedules have shape 3,000 updates by eight records and
+carry the same concatenated pool-order hash
+`b53f032dfaf2f69e2a26a55f71ce6da2ccf3e746c0079bb3d3b92ae4c88b89b3`. Every
+update contains exactly six replay and two correction records: 18,000 replay
+and 6,000 correction record exposures per seed, exactly 75/25 by records. The
+mask selects 1,508,895 post-BOS positions per seed: 1,124,895 replay and
+384,000 correction positions, or 74.5509%/25.4491% by tokens. Every replay
+record appears exactly 15 times; correction records appear either 23 or 24
+times (144 and 112 records, respectively) in each seed schedule. Correction
+records contribute 128 positions per update; replay contributes 332--384,
+so the total selected positions range from 460--512 (seed 1737) or 461--512
+(seed 2711), with mean 502.965. The token imbalance is therefore a measured
+consequence of unequal replay lengths, rather than a change to the declared
+record mixture.
+
+The 384 required teacher positions are all present in both schedules. Mapping
+teacher record IDs to the correction-pool offset and counting selected masks
+shows 9,033 teacher-position exposures for seed 1737 (201 rows repeated 24
+ times and 183 repeated 23 times) and 9,006 for seed 2711 (174 repeated 24
+times and 210 repeated 23 times). Every qualified teacher row is therefore
+available to D on every scheduled occurrence of its record; the teacher is not
+silently sampled once per fit.
+
+The actual implementation uses `validation_every=100`, producing the common
+0, 100, ..., 3,000 validation grid for every arm and seed. This is a recorded
+deviation from the proposed 200-step grid, applied uniformly before any fresh
+truth access. Each arm still uses the same style-balanced public-validation
+selection metric and earliest-step tie rule; selected steps can differ by arm.
+The completed seed-1737 curves give this public-only checkpoint audit:
+
+| Arm | Selected step | Style-balanced public validation accuracy |
+| --- | ---: | ---: |
+| `affine_same_data` | 1,600 | 94.6573% |
+| S | 600 | 94.7740% |
+| H | 1,700 | 94.5564% |
+| D | 1,300 | 93.7912% |
+
+These are validation-selection diagnostics, not fresh-panel results. On this
+one seed, S is 0.1167 percentage points above the trainable affine reference,
+H is 0.1008 points below it, and D is 0.7653 points below H. The remaining
+seed and all fresh predictions are required before applying any predeclared
+quality gate.
+
+The D curve confirms that the ranking objective is numerically active rather
+than silently zero. Among its 30 serialized post-update checkpoints, 20 have
+nonzero `rank_rows`; those checkpoint batches contain 1--33 teacher rows and
+29--984 retained pairs. At active checkpoints, the raw rank reduction ranges
+from 0.2343 to 1.3170 (median 0.4509), so the fixed rank weight 0.25 contributes
+0.0586--0.3293 (median 0.1127) to the total. The corresponding CE values are
+0.00310--0.04902 (median 0.00626), and H's hard term is 0.000244--0.002782
+(median 0.000441) over the ordinary selected rows. This apparent scale is
+intentional but must be read with its reduction semantics: CE and H average
+selected positions, while D's rank term is a weighted mean over only the
+teacher-masked rows. It is not evidence that D has a comparable per-token
+loss contribution. The fixed objective has not been swept or refit.
+
+For seed 1737, the serialized fit wall times are 146.80 s for the affine
+reference, 189.59 s for S, 207.06 s for H, and 179.99 s for D (728.80 s for
+the seed including orchestration). Selected state artifacts are approximately
+16.79 MB for the affine reference and 25.98 MB for each student. The receipts
+report a common host high-water mark of 5,882,933,248 bytes, but no per-arm
+PyTorch allocator peak.
+
+An external watchdog was attached late, at 2026-09-06T02:38:19Z, and is
+therefore supplementary rather than a start-to-finish guard. At the current
+partial snapshot through 02:48:20Z it sampled whole-device GPU usage, not
+PyTorch `max_memory_reserved`: maximum used was 7,808,745,472 bytes,
+minimum free was 8,945,401,856 bytes, maximum host high-water mark was
+5,882,933,248 bytes, and maximum temperature was 76 degrees C. These samples
+were within the configured free/RSS/temperature limits, but the monitor began
+after launch and remains open while training runs; its whole-device usage
+cannot be substituted for an in-process allocator peak or a final run receipt.
+
 ## Deployment audit
 
 The current activation-only prediction path is consistent with the required
@@ -195,10 +284,11 @@ new receipts:
   joint prediction/state freeze. Report token accuracy, exact records,
   per-style/per-length/per-target results, paired source-record uncertainty,
   and gains/regressions against the same-data controls.
-- **Costs:** capture, candidate preparation, teacher simulations, fitting,
-  retained state/table size, startup, warmed inference, prefix calls, and
-  peak memory must be reported separately. No amortization claim is available
-  yet.
+- **Costs:** partial seed-1737 fitting times and state sizes are recorded
+  above. Capture, candidate preparation, the second seed, complete matrix
+  accounting, startup, warmed inference, prefix calls, and final peak-memory
+  receipts must still be reported separately. No amortization claim is
+  available yet.
 
 Evaluator setup preflights currently pass without model, target, or truth
 access: the two target conditions are planned for 72 records each with 12
@@ -242,6 +332,19 @@ same-data results support that simpler conclusion.
   `d5519e12ba6e0e12b6cb06beec1285468fa8dc07187d095fa1b78f4fd8a21996`), and
   `teacher-qualification-r3/teacher_evidence.safetensors` (SHA-256
   `0f15a16978d0daa6bbf8a7771109350a633a7fc03a108db5fd8d782255ba84f9`).
+- Public training: `experiments/TRR-P04/runtime/training-r1/source_receipt.json`
+  (SHA-256 `698d91b39e211bef7ec996a42cee5d41c709995cfa44b73622c79c7949c35449`),
+  the seed-1737 result receipt (SHA-256
+  `e3234f66086af6ad285e8dc9ff758ca7bbcc99ae27e6b4f5c5fe93ef8ac4b270`),
+  schedules with seed-1737 digest `887edbcef5d44ad39ad9694ef0f4e049b46ba6665a239ecc090e3febce8eedec`
+  and seed-2711 digest `8fc93b18bad186cf13a20118eb4158d5e49fc5c86732ecbb9376303d7c5f7a9d`,
+  and the serialized seed-1737 learning curves: affine SHA-256
+  `60264f485eae27698e2100dae7db6dd5179148b630a57ba7297f5c5b52d0e066`,
+  S `582ad00c5093a74a476a0ed619f24ce12a3f7baa19760c70ff0b13280467b6f4`,
+  H `a3d6ed956c12cf7c3453a8a362388997bfef02250ab858e234432e283da87b96`,
+  and D `f77c7cf2c15ec1bde1e56cc28829f6165e9029509aebedf26392efa072fbfc0d`.
+  The external watchdog is `experiments/TRR-P04/runtime/training-r1/external_resource_watchdog.jsonl`;
+  it is a partial late-attached monitor and is not a final allocator receipt.
 - Evaluator/anchor preflights: `experiments/TRR-P04/setup/evaluator-observation-preflight-r3/evaluator_capture_preflight.json`
   and `experiments/TRR-P04/setup/native-anchor-preflight-r3/native_anchor_preflight.json`.
 - Reviewed source snapshots: `f22d3b05295bff9e3879bb7544502f881054ed9f`
