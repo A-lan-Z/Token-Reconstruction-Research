@@ -3,7 +3,7 @@
   "task_id": "TRR-P07",
   "scope": {
     "purpose": "metadata-only provenance comparison of the published P06 past/diagonal states and retained TRR-0006 enriched positionwise/causal states",
-    "read_boundary": "Only JSON/Markdown/source metadata and hashes were read. No activation, token-id, checkpoint tensor, evaluator answer, or truth payload was opened for this comparison.",
+    "read_boundary": "Only JSON/Markdown/source metadata and hashes were read. For the published fit-record metadata, only the record_id field was used to compare ordered ID digests. No text, token-id, activation, checkpoint tensor, evaluator answer, or truth payload was opened.",
     "causal_interpretation": "These differences document non-equivalence of fit provenance; they do not attribute any prediction difference to one factor."
   },
   "truth_bindings": {
@@ -73,7 +73,11 @@
       "fit_support": {
         "distribution": "coverage_mix_v1",
         "records": 1200,
-        "source_record_ids_sha256": "69fddbc989b9c12d5669d0f9a82f86313e139440f9c00651e96842b45b184f85",
+        "source_record_ids_sha256": {
+          "p06_receipt_canonical_json": "69fddbc989b9c12d5669d0f9a82f86313e139440f9c00651e96842b45b184f85",
+          "published_manifest_newline_digest": "f3e1344854f475819f563da18b788fd34a19b4730527a3959b88470ed13cfc7d",
+          "ordered_id_list_match_verified": true
+        },
         "valid_mask_sha256": "2decc9087334178dbeb7659071f52e8af80f76b734c4d5eee834c1cf1cfd8c78",
         "post_bos_valid_rows_after_crop": 112825,
         "source_manifest": {
@@ -81,7 +85,8 @@
           "bytes": 8171,
           "sha256": "8a8a9490e549181959711496ce9a18c63651de3f7cd849b90716d5cf4531db78"
         },
-        "fit_source_commit": "f1b35756fc535b5e3350e4edd4feff9e46f80321"
+        "fit_source_commit": "f1b35756fc535b5e3350e4edd4feff9e46f80321",
+        "record_id_digest_audit": "fit_record_id_digest_audit"
       },
       "crop_and_mask": {
         "source_geometry": [
@@ -152,7 +157,11 @@
       "fit_support": {
         "distribution": "coverage_mix_v1",
         "records": 1200,
-        "source_record_ids_sha256": "69fddbc989b9c12d5669d0f9a82f86313e139440f9c00651e96842b45b184f85",
+        "source_record_ids_sha256": {
+          "p06_receipt_canonical_json": "69fddbc989b9c12d5669d0f9a82f86313e139440f9c00651e96842b45b184f85",
+          "published_manifest_newline_digest": "f3e1344854f475819f563da18b788fd34a19b4730527a3959b88470ed13cfc7d",
+          "ordered_id_list_match_verified": true
+        },
         "valid_mask_sha256": "2decc9087334178dbeb7659071f52e8af80f76b734c4d5eee834c1cf1cfd8c78",
         "post_bos_valid_rows_after_crop": 112825,
         "source_manifest": {
@@ -160,7 +169,8 @@
           "bytes": 8171,
           "sha256": "8a8a9490e549181959711496ce9a18c63651de3f7cd849b90716d5cf4531db78"
         },
-        "fit_source_commit": "f1b35756fc535b5e3350e4edd4feff9e46f80321"
+        "fit_source_commit": "f1b35756fc535b5e3350e4edd4feff9e46f80321",
+        "record_id_digest_audit": "fit_record_id_digest_audit"
       },
       "crop_and_mask": {
         "source_geometry": [
@@ -343,9 +353,9 @@
   "pairwise_differences": [
     {
       "dimension": "fit support and source identity",
-      "p06": "1200 coverage_mix_v1 records, source IDs 69fdd..., valid-mask 2decc..., 112825 valid post-BOS rows after H128 crop",
-      "trr0006": "1200 coverage_mix_v1 records, source IDs f3e134..., valid-mask e2ee7..., 124371 valid post-BOS rows in H192 fit",
-      "exact_difference": "record counts and nominal distribution match, but source-ID and mask hashes differ; no source-record equivalence is established."
+      "p06": "1200 coverage_mix_v1 records; the P06 receipt reports canonical-JSON ID digest 69fdd..., while the published manifest reports newline digest f3e134...; the ordered 1200-ID list was verified equal from metadata.",
+      "trr0006": "1200 coverage_mix_v1 records; published manifest ID digest f3e134..., valid-mask e2ee7...",
+      "exact_difference": "The apparent source-ID hash difference is serialization, not evidence of a different record set: P06 canonical JSON digest 69fdd... and the manifest newline digest f3e134... were both computed from the same ordered 1200-ID metadata list. The valid-mask hashes differ because P06 crops to H128."
     },
     {
       "dimension": "crop and visibility mask",
@@ -388,12 +398,12 @@
     "All state file hashes, selected steps, fit source-ID/mask hashes, source commits, geometry declarations, initial affine declarations, seeds, optimizer budgets, score rules, and selection metrics listed above are present in published metadata.",
     "The retained causal state is the post-amendment cosine_scale4 state selected at step 1900; the retained diagonal state is the un-repaired original state selected at step 1600.",
     "TRR-0006 published replay is H128 at prediction time even though the retained states were fit against full H192 geometry.",
-    "The old and P06 fit-support hashes differ; equal record counts do not imply equal records or equal valid-position support."
+    "The published P06 and enriched fit metadata point to the same ordered 1200-record ID list; their reported ID hashes differ because P06 uses canonical JSON-list serialization while the older manifest uses a newline-delimited digest. The valid-mask hashes differ because P06 applies the H128 crop."
   ],
   "unresolved_or_not_claimed": [
     "No payload was opened here, so tensor-level equality of W, b, s, Q/K/V, masks, or observations was not tested.",
     "The metadata does not prove an exact training-time autocast/kernel equivalence between P06 and the old fit runs beyond the published prediction boundary.",
-    "The old fit and P06 fit source-ID sets were not intersected by opening source records; no overlap/disjointness count is claimed.",
+    "The metadata audit verified record-ID list identity only; no claim is made about equality of source text, token sequences, or activation payloads beyond the published IDs and manifest binding.",
     "The provenance comparison alone cannot attribute a P07 score difference to crop, initialization, mask, selection metric, attention normalization, or any single factor.",
     "The old qknorm amendment explicitly preserves old diagonal states and does not retroactively refit them under cosine normalization."
   ],
@@ -430,5 +440,22 @@
       "path": "experiments/TRR-0006/score_command.json",
       "role": "TRR-0006 truth-binding metadata path; payload not opened"
     }
-  ]
+  ],
+  "fit_record_id_digest_audit": {
+    "record_metadata_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/public_activation_v1/enriched_fit_records.json",
+    "record_metadata_sha256": "7f197b077aa0aa66edfdd8d92c8daa5b4cb2ae36bdbb80938e4ab8f1de117943",
+    "record_count": 1200,
+    "unique_record_id_count": 1200,
+    "ordered_id_list_match_verified": true,
+    "p06_receipt_digest": {
+      "sha256": "69fddbc989b9c12d5669d0f9a82f86313e139440f9c00651e96842b45b184f85",
+      "serialization": "canonical JSON list with separators=(\",\",\":\") and sort_keys=True"
+    },
+    "canonical_manifest_digest": {
+      "sha256": "f3e1344854f475819f563da18b788fd34a19b4730527a3959b88470ed13cfc7d",
+      "serialization": "JSON list compact separators followed by a final newline-delimited record-ID digest in the published manifest"
+    },
+    "source_fields_used": "record_id only; text, token, activation, and truth fields were not opened or printed",
+    "content_or_text_equivalence_claimed": false
+  }
 }
