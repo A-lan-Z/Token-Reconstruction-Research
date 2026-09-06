@@ -682,6 +682,28 @@ def _build_exclusion_payload(
     }
 
 
+def _public_source_descriptors(source_inputs: Mapping[str, Any]) -> dict[str, Any]:
+    """Emit the exact descriptors consumed by the qualified TRR-0006 binder."""
+
+    result: dict[str, Any] = {}
+    for style in STYLE_ORDER:
+        spec = SOURCE_PARTITIONS[style]
+        result[style] = {
+            "dataset_key": style,
+            "dataset_id": str(spec["dataset_id"]),
+            "split": str(spec["split"]),
+            "revision": str(spec["revision"]),
+            "arrow_files": list(source_inputs[f"{style}_arrow"]),
+            "reserved_holdout": dict(spec),
+        }
+    tokenizer_path = Path(str(source_inputs["tokenizer"]["path"]))
+    try:
+        result["tokenizer"] = trusted._tokenizer_descriptor(tokenizer_path)
+    except trusted.ProducerError as exc:
+        raise SelectionError(str(exc)) from exc
+    return result
+
+
 def _build_selection_payload(
     *,
     root: Path,
@@ -735,10 +757,11 @@ def _build_selection_payload(
         "target_conditions": list(TARGET_CONDITIONS),
         "paired_conditions": True,
         "natural_distribution_preserved": True,
-        "public_sources_frozen": {
-            "pile": {"arrow_files": list(source_inputs["pile_arrow"])},
-            "finance": {"arrow_files": list(source_inputs["finance_arrow"])},
-            "tokenizer": dict(source_inputs["tokenizer"]),
+        "public_sources_frozen": _public_source_descriptors(source_inputs),
+        "planning_bindings": {
+            "decision_contract": dict(decision_record),
+            "identity_inventory": dict(inventory_record),
+            "plan": dict(planning_record),
         },
         "p06_hash_compatibility": compatibility,
         "selection_rule": {

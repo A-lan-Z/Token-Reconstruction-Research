@@ -549,7 +549,7 @@ def capture_public(args: argparse.Namespace) -> dict[str, Any]:
     if not args.execute:
         raise CaptureError("public capture requires explicit --execute")
     root = _root(args.repository_root)
-    selection_path = _resolve(args.selection, root=root)
+    selection_path = _resolve_path(args.selection, root=root)
     selection, selection_record, selected_rows, counts = _load_selection(
         selection_path, repository_root=root
     )
@@ -561,15 +561,15 @@ def capture_public(args: argparse.Namespace) -> dict[str, Any]:
     started_clock = time.perf_counter()
     try:
         pile_paths = tuple(
-            _resolve(path, root=root)
+            _resolve_path(path, root=root)
             for path in (args.pile_arrow or _source_paths(selection, "pile", root=root))
         )
         finance_paths = tuple(
-            _resolve(path, root=root)
+            _resolve_path(path, root=root)
             for path in (args.finance_arrow or _source_paths(selection, "finance", root=root))
         )
         tokenizer_path = (
-            _resolve(args.tokenizer, root=root)
+            _resolve_path(args.tokenizer, root=root)
             if args.tokenizer is not None
             else _tokenizer_path(selection, root=root)
         )
@@ -590,14 +590,14 @@ def capture_public(args: argparse.Namespace) -> dict[str, Any]:
         batches = trr6_capture._batches(records)
         record_ids_sha256 = _digest_record_ids(selected_rows)
         device = trusted._device(args.device)
-        model_snapshot = _resolve(args.model_snapshot, root=root)
+        model_snapshot = _resolve_path(args.model_snapshot, root=root)
         if model_snapshot.is_symlink() or not model_snapshot.is_dir():
             raise CaptureError(f"public model snapshot is unavailable: {model_snapshot}")
         lora_config_path = (
-            _resolve(args.lora_config, root=root) if args.lora_config is not None else None
+            _resolve_path(args.lora_config, root=root) if args.lora_config is not None else None
         )
         lora_update_path = (
-            _resolve(args.lora_update, root=root) if args.lora_update is not None else None
+            _resolve_path(args.lora_update, root=root) if args.lora_update is not None else None
         )
         observations: dict[str, Mapping[str, Any]] = {}
         conditions: dict[str, Any] = {}

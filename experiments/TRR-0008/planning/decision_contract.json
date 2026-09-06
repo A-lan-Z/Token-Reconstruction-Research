@@ -7,6 +7,51 @@
     "positive_vs_practical": "A lower bound >0 but below the practical margin is positive evidence only and does not establish a practical replacement claim.",
     "quality": "primary exact practical lower bound >= +5 percentage points OR primary token practical lower bound >= +1 percentage point; exact and token quality routes each use one-sided alpha 0.025, and the report must identify which route passed"
   },
+  "bootstrap": {
+    "draws": 10000,
+    "resampling": "paired record-level token-accuracy means; token positions remain nested within records",
+    "seed": 8008,
+    "seed_schedule": "base seed plus declared cell ordinal; endpoint streams use fixed offsets and are recorded in the score artifact",
+    "unit": "source_record"
+  },
+  "confidence": {
+    "primary_quality": {
+      "exact_cp_component_alpha": 0.0125,
+      "exact_cp_gain_lower_tail": "beta.ppf(alpha_component, gains, n-gains+1)",
+      "exact_cp_loss_upper_tail": "beta.ppf(1-alpha_component, losses+1, n-losses)",
+      "route_alpha": 0.025,
+      "token_bootstrap_lower_tail_alpha": 0.025
+    },
+    "safeguard": {
+      "exact_cp_component_alpha": 0.025,
+      "exact_cp_gain_lower_tail": "beta.ppf(alpha_component, gains, n-gains+1)",
+      "exact_cp_loss_upper_tail": "beta.ppf(1-alpha_component, losses+1, n-losses)",
+      "overall_alpha": 0.05,
+      "token_bootstrap_lower_tail_alpha": 0.05
+    }
+  },
+  "cost_gate": {
+    "all_cells_required": true,
+    "cells": [
+      "finance__public_base",
+      "finance__public_lora_2601",
+      "pile__public_base",
+      "pile__public_lora_2601"
+    ],
+    "measurement_boundary": "same synchronized warmed timing boundary; startup, memory, and footprint are reported separately",
+    "primary_cell": "finance__public_base",
+    "ratio": "candidate_warmed_runtime/reference_warmed_runtime",
+    "threshold": 1.25,
+    "timing_receipt": {
+      "bytes": 4076989,
+      "path": "experiments/TRR-0008/timing/precision40_result.json",
+      "qualification": "PASS",
+      "schema": "token-reconstruction.trr0008-balanced-timing.v1",
+      "sha256": "a5d923bb9254f0ba0ec917dc6ede9e22d7b566e47e79408cf188f679c6b30c02",
+      "status": "TIMING_COMPLETE",
+      "truth_opened": false
+    }
+  },
   "created_utc": "2026-09-06T11:58:20Z",
   "methods": {
     "a1_a2_fresh_run": false,
@@ -45,15 +90,15 @@
   },
   "primary": {
     "cell": "finance__public_base",
+    "component_alpha": 0.0125,
     "contrast": "candidate minus frozen reference",
     "endpoint": "record_exact_recovery",
     "interval": "exact paired discordance: lower Clopper-Pearson bound for gains minus upper Clopper-Pearson bound for losses, with route alpha/2 allocated to each component",
     "positive_rule": "one-sided 97.5% paired exact lower confidence bound > 0 percentage points",
+    "practical_margin": 0.05,
     "practical_rule": "one-sided 97.5% paired exact lower confidence bound >= +5 percentage points",
     "record_unit": "one 128-token including-BOS source row; exact means all 127 post-BOS positions correct",
-    "route_alpha": 0.025,
-    "component_alpha": 0.0125,
-    "practical_margin": 0.05
+    "route_alpha": 0.025
   },
   "provenance": {
     "p06_underlying_provenance_opened": false,
@@ -80,83 +125,39 @@
       "exact": "in every safeguard cell, the one-sided 95% paired exact lower bound must be >= -5 percentage points (material exact harm excluded)",
       "token": "in every safeguard cell, the one-sided 95% paired token lower bound must be >= -1 percentage point (material token harm excluded)"
     },
-    "interpretation": "A safeguard lower bound that remains below its harm margin leaves deployment unresolved; a point estimate alone cannot clear the gate.",
-    "overall_alpha": 0.05,
+    "exact_harm_margin": 0.05,
     "harm_margins": {
       "exact": -0.05,
       "token": -0.01
     },
+    "interpretation": "A safeguard lower bound that remains below its harm margin leaves deployment unresolved; a point estimate alone cannot clear the gate.",
+    "overall_alpha": 0.05,
     "primary_harm": {
+      "alpha": 0.05,
       "cell": "finance__public_base",
       "exact_lower_bound_minimum": -0.05,
-      "token_lower_bound_minimum": -0.01,
-      "alpha": 0.05,
-      "required": true
+      "required": true,
+      "token_lower_bound_minimum": -0.01
     },
     "route_alpha": 0.05,
-    "exact_harm_margin": 0.05,
     "token_harm_margin": 0.01
   },
   "schema": "token-reconstruction.trr0008-decision-contract.v1",
-  "status": "PROSPECTIVE_DRAFT_PENDING_OWNER_FREEZE",
+  "status": "FROZEN_DECISION_CONTRACT_BEFORE_SOURCE_SELECTION",
   "task_id": "TRR-0008",
   "token_endpoint": {
     "endpoint": "post_bos_token_accuracy",
     "interval": "paired record bootstrap, fixed seed declared by evaluator before truth; token positions are nested within records and are not independent records",
     "positive_rule": "one-sided 97.5% paired record-level lower confidence bound > 0 percentage points",
+    "practical_margin": 0.01,
     "practical_rule": "one-sided 97.5% paired record-level lower confidence bound >= +1 percentage point",
     "role": "second predeclared quality route for practical advance; exact and token routes share a split alpha family and remain separately labelled",
-    "route_alpha": 0.025,
-    "practical_margin": 0.01
+    "route_alpha": 0.025
   },
   "truth_and_freeze": {
     "after_truth": "truth is used only to score frozen predictions; no refit, routing, model swap, sample expansion, or timing change",
     "before_truth": "freeze source identities, observations, all four method outputs, timing blocks, and validation receipts",
     "source_selection": "not started by this planning artifact"
   },
-  "confidence": {
-    "primary_quality": {
-      "route_alpha": 0.025,
-      "exact_cp_component_alpha": 0.0125,
-      "exact_cp_gain_lower_tail": "beta.ppf(alpha_component, gains, n-gains+1)",
-      "exact_cp_loss_upper_tail": "beta.ppf(1-alpha_component, losses+1, n-losses)",
-      "token_bootstrap_lower_tail_alpha": 0.025
-    },
-    "safeguard": {
-      "overall_alpha": 0.05,
-      "exact_cp_component_alpha": 0.025,
-      "exact_cp_gain_lower_tail": "beta.ppf(alpha_component, gains, n-gains+1)",
-      "exact_cp_loss_upper_tail": "beta.ppf(1-alpha_component, losses+1, n-losses)",
-      "token_bootstrap_lower_tail_alpha": 0.05
-    }
-  },
-  "cost_gate": {
-    "ratio": "candidate_warmed_runtime/reference_warmed_runtime",
-    "threshold": 1.25,
-    "cells": [
-      "finance__public_base",
-      "finance__public_lora_2601",
-      "pile__public_base",
-      "pile__public_lora_2601"
-    ],
-    "primary_cell": "finance__public_base",
-    "all_cells_required": true,
-    "measurement_boundary": "same synchronized warmed timing boundary; startup, memory, and footprint are reported separately",
-    "timing_receipt": {
-      "path": "experiments/TRR-0008/timing/precision40_result.json",
-      "bytes": 4076989,
-      "sha256": "a5d923bb9254f0ba0ec917dc6ede9e22d7b566e47e79408cf188f679c6b30c02",
-      "schema": "token-reconstruction.trr0008-balanced-timing.v1",
-      "status": "TIMING_COMPLETE",
-      "qualification": "PASS",
-      "truth_opened": false
-    }
-  },
-  "bootstrap": {
-    "seed": 8008,
-    "draws": 10000,
-    "unit": "source_record",
-    "resampling": "paired record-level token-accuracy means; token positions remain nested within records",
-    "seed_schedule": "base seed plus declared cell ordinal; endpoint streams use fixed offsets and are recorded in the score artifact"
-  }
+  "updated_utc": "2026-09-06T13:19:44Z"
 }

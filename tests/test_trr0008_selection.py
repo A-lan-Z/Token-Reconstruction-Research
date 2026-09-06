@@ -7,11 +7,16 @@ import pytest
 from scripts import trr0008_select_public as selector
 
 
-def test_real_selection_refuses_draft_decision_contract():
+def test_selection_refuses_explicit_draft_decision_fixture(tmp_path):
+    import json
+
+    source = selector.Path("experiments/TRR-0008/planning/decision_contract.json")
+    payload = json.loads(source.read_text(encoding="utf-8"))
+    payload["status"] = "PROSPECTIVE_DRAFT_PENDING_OWNER_FREEZE"
+    candidate = tmp_path / "decision_contract.json"
+    candidate.write_text(json.dumps(payload), encoding="utf-8")
     with pytest.raises(selector.SelectionError, match="frozen decision contract"):
-        selector._validate_decision_contract(
-            selector.Path("experiments/TRR-0008/planning/decision_contract.json")
-        )
+        selector._validate_decision_contract(candidate)
 
 
 def test_real_p06_loader_uses_task_owned_exact_copy():
@@ -28,11 +33,16 @@ def test_real_p06_loader_uses_task_owned_exact_copy():
     assert len(sequence) == 512
 
 
-def test_p06_source_byte_gate_refuses_pending_status():
+def test_p06_source_byte_gate_refuses_explicit_pending_fixture(tmp_path):
+    import json
+
+    source = selector.Path("experiments/TRR-0008/coordination/planning_status.json")
+    payload = json.loads(source.read_text(encoding="utf-8"))
+    payload["p06_hash_compatibility"]["source_hash_byte_input_status"] = "PENDING_P06_PRODUCER_CONFIRMATION"
+    candidate = tmp_path / "planning_status.json"
+    candidate.write_text(json.dumps(payload), encoding="utf-8")
     with pytest.raises(selector.SelectionError, match="source-hash byte input"):
-        selector._validate_planning_status(
-            selector.Path("experiments/TRR-0008/coordination/planning_status.json")
-        )
+        selector._validate_planning_status(candidate)
 
 
 def test_selector_classifies_h128_opaque_sequence_without_serializing_ids():

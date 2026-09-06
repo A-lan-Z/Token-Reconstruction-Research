@@ -1,0 +1,25 @@
+{
+  "schema": "trr.hash-construction-receipt.v1",
+  "producer_task": "TRR-P06",
+  "purpose": "Receipt of user-approved generic exclusion hash rules; no source data or study results.",
+  "public_record_sha256": {
+    "algorithm": "SHA-256, lowercase hexadecimal digest",
+    "pile": "UTF-8 bytes of the original text field, without whitespace stripping or chat-template rendering. Missing or null text is treated as an empty string; non-string non-null values are rejected.",
+    "finance": {
+      "field_normalization": "Missing/null fields become empty strings. Strip surrounding whitespace from system, user, assistant, instruction, input, output. Empty system becomes null.",
+      "user_fallback": "If normalized user is empty, use normalized instruction plus two newline characters and normalized input when input is nonempty; otherwise use normalized instruction alone.",
+      "assistant_fallback": "If normalized assistant is empty, use normalized output.",
+      "serialization": "JSON array [system, user, assistant], serialized with Python json.dumps(sort_keys=True, separators=(comma, colon), ensure_ascii=False), then UTF-8 encoded. No JSON formatting spaces or trailing newline. The public-record hash does not use chat-template rendering.",
+      "validity": "Reject records with empty final user or assistant content."
+    }
+  },
+  "final_sequence_sha256": {
+    "algorithm": "SHA-256, lowercase hexadecimal digest",
+    "selection": "First 128 final rendered token IDs, including BOS at position 0, in order; distinct from the public-record hash.",
+    "encoding": "128 signed 32-bit integers, little-endian in the producing environment, contiguous C-order raw bytes (512 bytes); no shape, dtype, file header, separator, or text encoding is included.",
+    "implementation": "torch.tensor(list(token_ids[:128]), dtype=torch.int32).numpy().tobytes(order=\"C\"); uses native endianness, verified little-endian for this producer.",
+    "boundary": "Includes BOS and 127 subsequent IDs; excludes the rest of the 192-token capture."
+  },
+  "verification": "Rechecked generic producer and panel-preparation code only; no source records, token values, hidden data, or evaluator payloads were opened.",
+  "scope": "Generic conventions only; contains no per-record hashes, identities, examples, results, or private provenance."
+}
