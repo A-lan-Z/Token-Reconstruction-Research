@@ -1,13 +1,13 @@
 {
   "schema": "token-reconstruction.trr-p04-evaluator-target-run-contract.v1",
   "task_id": "TRR-P04",
-  "status": "QUALIFIER_R3_RESOURCE_DIAGNOSTIC_AUTHORIZED",
+  "status": "QUALIFIER_R4_APPROVED_RESOURCE_POLICY",
   "purpose": "evaluator-only target preparation; separate from student fitting and teacher construction",
   "source": {
-    "git_commit": "51216dc857757ef8b53ef2c1f2025e75095d351f",
+    "git_commit": "63d4016f2e555e8460ea566cf967237dc94fb0c3",
     "target_runner": {
       "path": "scripts/trr_p04/prepare_evaluator_target.py",
-      "sha256": "bfda885ff4d7d9b9267b08e2f28e522a1562fe341e8801314c9a3e0ca76c5ddb",
+      "sha256": "bbf4fe9ac443f49f11c12f4a2fd3a5e5eef2cd67bf46573384eb13ffb2cbbd04",
       "gqa_geometry": {
         "num_key_value_heads": 8,
         "head_dim": 64,
@@ -20,7 +20,7 @@
     },
     "watchdog": {
       "path": "scripts/trr_p04/resource_watchdog.py",
-      "sha256": "aaab8630381080309c98dd416219d513d3ab47649e2df179f148ac6402036432"
+      "sha256": "51f5667568a4365d5a24776e5ea1eb7b6abd3f43d81aced6f28b5e1b29801d69"
     },
     "plan": {
       "path": "experiments/TRR-P04/setup/evaluator_target_plan.json",
@@ -80,8 +80,8 @@
     "poll_seconds": 0.5,
     "maximum_group_rss_bytes": 17179869184,
     "minimum_host_mem_available_bytes": 10737418240,
-    "target_internal_min_free_gpu_bytes": 8589934592,
-    "target_internal_max_reserved_gpu_bytes": 8589934592,
+    "target_internal_min_free_gpu_bytes": 5368709120,
+    "target_internal_max_reserved_gpu_bytes": 10737418240,
     "target_internal_max_host_rss_bytes": 17179869184,
     "target_internal_guard_frequency": "before model load, after model load, after LoRA install, and after every training step",
     "fail_closed_on_unreadable_live_resource_data": true
@@ -100,13 +100,13 @@
     "qualifier": {
       "requirement": "run first on exclusive GPU; review PASS and measured margin before execute",
       "timeout_seconds": 300,
-      "watchdog_output_root": "experiments/TRR-P04/runtime/watchdog/evaluator-target-qualifier-r3",
-      "target_output_root": "experiments/TRR-P04/runtime/evaluator-target-qualifier-r3",
+      "watchdog_output_root": "experiments/TRR-P04/runtime/watchdog/evaluator-target-qualifier-r4",
+      "target_output_root": "experiments/TRR-P04/runtime/evaluator-target-qualifier-r4",
       "argv": [
         "python3",
         "scripts/trr_p04/resource_watchdog.py",
         "--output-root",
-        "experiments/TRR-P04/runtime/watchdog/evaluator-target-qualifier-r3",
+        "experiments/TRR-P04/runtime/watchdog/evaluator-target-qualifier-r4",
         "--timeout-seconds",
         "300",
         "--poll-seconds",
@@ -116,7 +116,7 @@
         "--min-available-bytes",
         "10737418240",
         "--label",
-        "p04-evaluator-target-qualifier-r3",
+        "p04-evaluator-target-qualifier-r4",
         "--",
         "env",
         "CUDA_VISIBLE_DEVICES=0",
@@ -141,7 +141,7 @@
         "--model-snapshot",
         "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
         "--output-root",
-        "experiments/TRR-P04/runtime/evaluator-target-qualifier-r3",
+        "experiments/TRR-P04/runtime/evaluator-target-qualifier-r4",
         "--device",
         "cuda"
       ]
@@ -197,7 +197,7 @@
     }
   },
   "outputs": {
-    "qualifier": "experiments/TRR-P04/runtime/evaluator-target-qualifier-r3/target_qualification_receipt.json",
+    "qualifier": "experiments/TRR-P04/runtime/evaluator-target-qualifier-r4/target_qualification_receipt.json",
     "private_update": "experiments/TRR-P04/private/evaluator_target_update/p04_evaluator_target_update_v1.safetensors",
     "private_receipt": "experiments/TRR-P04/private/evaluator_target_update/target_preparation_receipt.json",
     "no_evaluator_truth": true,
@@ -225,7 +225,30 @@
       "status": "FAILED_CLOSED_AFTER_STEP_01_GPU_MARGIN",
       "reason": "Corrected GQA geometry reached one full Adam step; free GPU was 6458179584 bytes below the 8 GiB internal floor. External RSS and host-memory watchdog limits passed; no artifact or truth was written.",
       "runner_source_head": "982360a7980c4e35d7a33b5ef963b3085d7dda31"
+    },
+    "qualifier_r3": {
+      "watchdog_root": "experiments/TRR-P04/runtime/watchdog/evaluator-target-qualifier-r3",
+      "child_root": "experiments/TRR-P04/runtime/evaluator-target-qualifier-r3",
+      "status": "FAILED_CLOSED_WATCHDOG_EXIT_RACE_AFTER_GPU_DIAGNOSTIC",
+      "reason": "Child recorded the same full-step GPU values as r2, then the external watchdog observed a disappearing /proc status during child exit and failed closed. No artifact or truth was written.",
+      "runner_source_head": "f9835953cce2d2febbcb3c8eda146322fc35bad3"
     }
   },
-  "resource_review": "r3 records memory_allocated, max_memory_allocated, memory_reserved, and max_memory_reserved at the fail-closed boundary for policy review; training geometry and numerical recipe unchanged."
+  "resource_review": {
+    "status": "ROOT_APPROVED_REVISED_INTERNAL_GPU_POLICY",
+    "basis": "one complete fixed batch-8 Adam step at max sequence geometry; no OOM, allocator, or driver anomaly",
+    "measured_peak_allocated_bytes": 8920350208,
+    "measured_peak_reserved_bytes": 9133096960,
+    "measured_post_step_free_bytes": 6458179584,
+    "measured_total_gpu_bytes": 17066033152,
+    "measured_post_step_reserved_bytes": 9133096960,
+    "measured_host_mem_available_bytes": 20262199296,
+    "measured_child_rss_bytes": 3704840192,
+    "revised_min_free_gpu_bytes": 5368709120,
+    "revised_max_reserved_gpu_bytes": 10737418240,
+    "observed_free_margin_bytes": 1089470464,
+    "observed_reserved_margin_bytes": 1604321280,
+    "recipe_unchanged": true,
+    "approval": "root approved after r3 diagnostic review"
+  }
 }
