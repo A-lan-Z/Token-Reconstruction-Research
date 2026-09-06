@@ -60,8 +60,16 @@
     },
     "update": {
       "family": "evaluator_only_lora",
-      "layers": [0, 1, 2, 3],
-      "modules": ["q_proj", "v_proj"],
+      "layers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "modules": [
+        "q_proj",
+        "v_proj"
+      ],
       "rank": 4,
       "alpha": 4.0,
       "initialization_seed": 20260910,
@@ -109,6 +117,12 @@
       "required_audit": "before capture, compare evaluator-update rendered-text and truncated-token hashes against every P04 fit/replay, correction, validation, and fresh-panel ledger; reject any whole source record collision",
       "audit_status": "PENDING_TARGET_PREPARATION",
       "activation_drift": "record paired public_base versus update drift after capture without using evaluation truth for target selection"
+    },
+    "schedule": {
+      "batch_order": "cyclic sequential selected rows",
+      "formula": "row=(step*record_batch_size+offset) mod records",
+      "steps": 30,
+      "record_batch_size": 8
     }
   },
   "evaluator_observation_contract": {
@@ -129,12 +143,31 @@
       "capture_batch_size": 8,
       "active_window": "BOS plus exactly the declared 16/32/64/128 post-BOS tokens; later source tokens are not captured, and the fixed 192-token batch is right padded"
     },
-    "serialized_keys": ["activations", "attention_mask", "position_ids"],
-    "dtypes": {"activations": "bfloat16", "attention_mask": "uint8", "position_ids": "int64"},
+    "serialized_keys": [
+      "activations",
+      "attention_mask",
+      "position_ids"
+    ],
+    "dtypes": {
+      "activations": "bfloat16",
+      "attention_mask": "uint8",
+      "position_ids": "int64"
+    },
     "alignment": "activations[record,position] predicts the current token at that position; BOS is position zero and post-BOS positions are the only scored positions",
-    "paired_conditions": ["public_base", "p04_evaluator_target_update_v1"],
+    "paired_conditions": [
+      "public_base",
+      "p04_evaluator_target_update_v1"
+    ],
     "pairing": "same frozen row order and masks for both conditions; no independent target resampling",
-    "forbidden_serialized_fields": ["token_ids", "input_ids", "labels", "source_text", "truth", "oracle", "target_weights"],
+    "forbidden_serialized_fields": [
+      "token_ids",
+      "input_ids",
+      "labels",
+      "source_text",
+      "truth",
+      "oracle",
+      "target_weights"
+    ],
     "runtime_access": {
       "source_text_materialized_transiently": true,
       "source_tokens_materialized_transiently": true,
@@ -154,7 +187,11 @@
     "panel_binding": {
       "selection_path": "experiments/TRR-P04/setup/public_selection-r2.json",
       "anchor_rule": "first four records in each style's 32-token cell",
-      "styles": ["pile_plain", "finance_chat", "alpaca_instruction"],
+      "styles": [
+        "pile_plain",
+        "finance_chat",
+        "alpaca_instruction"
+      ],
       "records": 12,
       "post_bos_positions_per_record": 32,
       "scored_positions_per_target": 384,
@@ -174,10 +211,26 @@
       "cost_receipt": "record actual proposal time, public-prefix calls, candidate simulations, prefix commit tokens, startup/load, and warmed steady interval separately"
     },
     "reusable_sources": [
-      {"role": "legacy proposal/decode", "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/scripts/trr0003_footing_compare.py", "sha256": "bb3690a481014f3ea12b411a3ec6eb58d7c888ef6c4135f9e03908027857f98e"},
-      {"role": "policy definitions", "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/src/token_reconstruction/a1a2_configuration_search.py", "sha256": "608bead6291353cacaa700a85f3dd619fb3261375e6fd5ba19cbc43fd738315b"},
-      {"role": "retained A1 lens", "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/blind/reconstructor_input/public_a1_lens.pt", "sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742"},
-      {"role": "public model snapshot weights", "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6/model.safetensors", "sha256": "1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f"}
+      {
+        "role": "legacy proposal/decode",
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/scripts/trr0003_footing_compare.py",
+        "sha256": "bb3690a481014f3ea12b411a3ec6eb58d7c888ef6c4135f9e03908027857f98e"
+      },
+      {
+        "role": "policy definitions",
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/src/token_reconstruction/a1a2_configuration_search.py",
+        "sha256": "608bead6291353cacaa700a85f3dd619fb3261375e6fd5ba19cbc43fd738315b"
+      },
+      {
+        "role": "retained A1 lens",
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/blind/reconstructor_input/public_a1_lens.pt",
+        "sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742"
+      },
+      {
+        "role": "public model snapshot weights",
+        "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6/model.safetensors",
+        "sha256": "1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f"
+      }
     ],
     "observation_input": "truth-free evaluator activations plus attention_mask and position_ids; native A2 may call the target prefix only for declared candidate simulations",
     "output": "one P04 prediction row per anchor record and target condition under the frozen prediction schema; candidate diagnostics remain task-local and are not truth"
