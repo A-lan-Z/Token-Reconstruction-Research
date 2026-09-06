@@ -1,0 +1,151 @@
+{
+  "schema": "token-reconstruction.trr0006-capture-preflight.v1",
+  "task_id": "TRR-0006",
+  "status": "PASSED_INHERITED_AND_FRESH_8X192_GATE_MAIN_CAPTURE_RELEASED",
+  "scope": "Capture-path qualification only; no TRR-0006 truth, labels, or model fitting.",
+  "frozen_bindings": {
+    "decision_plan": {
+      "path": "experiments/TRR-0006/decision_plan.json",
+      "sha256": "edeb1bb05a00ad3f580d415f1b9ab632f588b3c50fd1ed9c2f2e055737c766ea"
+    },
+    "source_selection": {
+      "path": "experiments/TRR-0006/source_selection.json",
+      "sha256": "75909aaf0f9e40176c197d86c09651097010a11519855f1db3dc50fe5e754f43",
+      "records_per_domain": 1536
+    },
+    "producer_commit": "fd339684c9fc8485d33797b8fb52a0e2879b47d2"
+  },
+  "inherited_qualification": {
+    "basis": "The TRR-0005 published capture already qualified the exact fixed batch-8 x 192 public-prefix path on the opened fixture. TRR-0006 retains the same helper implementations and calls those helpers directly.",
+    "trr5_capture_receipt": {
+      "path": "experiments/TRR-0005/fresh_confirmation_v1/panel_capture_v2/capture.json",
+      "sha256": "8cfef3ab973cd7d8dc4cb3a546d67b3ec50e8684c659f306ce6385f090fd9338",
+      "status": "PUBLIC_FRESH_CAPTURE_COMPLETE_NO_TRUTH"
+    },
+    "trr6_opened_fixture_eight_row_view": {
+      "manifest_path": "experiments/TRR-0006/qualification_8/observation_manifest.json",
+      "manifest_sha256": "00dd7f22081dc2c240b1c87ba7fbac6cb074c7deb451b956308c9b3269977db0",
+      "summary_path": "experiments/TRR-0006/qualification_8/qualification_summary.json",
+      "summary_sha256": "1264fca57eff49ac6b8a8ae882afa1eecbee1f9439da02a098750aac81c02571",
+      "records_per_cell": 8,
+      "truth_opened": false
+    },
+    "primary_geometry": {
+      "batch_records": 8,
+      "sequence_tokens": 192,
+      "active_output_bit_exact": true,
+      "maximum_absolute_difference": 0.0,
+      "decision_rule": "torch.equal on native active outputs",
+      "batching_substitution_allowed": false,
+      "status": "passed_for_public_base_and_public_lora_2601"
+    },
+    "diagnostic_only_unpadded_path": {
+      "active_output_bit_exact": false,
+      "used_for_capture": false,
+      "status": "non_equivalent_not_used"
+    },
+    "trr6_fresh_activation_only_check": {
+      "path": "experiments/TRR-0006/capture_qualification_8/receipt.json",
+      "sha256": "d420342dcb3b7c2dcda40875609285462cc7bd8593163edf9a0521555dbc93fe",
+      "records": 8,
+      "style": "finance",
+      "conditions": [
+        "public_base",
+        "public_lora_2601"
+      ],
+      "status": "QUALIFICATION_PASSED_NO_TRUTH",
+      "truth_opened": false
+    }
+  },
+  "exact_helper_bindings": {
+    "trr0006_capture_producer": {
+      "path": "scripts/trr0006_capture_public.py",
+      "sha256": "ade20eda4cc6ca3d25861558e5256d1b119ad1419e2bf909c1715fed612f20c7"
+    },
+    "trusted_trr0005_producer": {
+      "path": "scripts/trr0005_produce_confirmation.py",
+      "sha256": "7289ee5db30bc0b2d3c1b50b1d5b6ca1ac235001371f61b92adf10e2dd979e2b"
+    },
+    "trusted_capture_loader": {
+      "path": "scripts/trr0004_produce_confirmation.py",
+      "sha256": "b1ae4e199de62f350df0ce9890caa90a70b0611a22051ce6bc304e0ccc4e1b2a"
+    },
+    "trusted_padding_qualifier": {
+      "path": "scripts/trr0004_prepare_public_activations.py",
+      "sha256": "6f1a9b6d7ee4aad89ee8152021e6e431b8652a6f7c162167a6180229feed70e8"
+    },
+    "public_activation": {
+      "path": "src/token_reconstruction/public_activation.py",
+      "sha256": "3be43dd5b6a5918a48f289971ab2a833977a7f9d87094e6001c5c7cdc60ab76f"
+    },
+    "public_prefix": {
+      "path": "src/token_reconstruction/public_prefix.py",
+      "sha256": "b9dca1d8d56c7c07413015aea4bde79e8ceac827c32ee9bc0d1a236ea1dd35f6"
+    },
+    "called_in_order": [
+      "trusted._capture_prefix",
+      "trr0004_prepare_public_activations._qualify_public_prefix_padding",
+      "token_reconstruction.public_activation.capture_public_prefix"
+    ]
+  },
+  "geometry_and_memory": {
+    "records_per_domain": 1536,
+    "hidden_size": 2048,
+    "dtype": "bfloat16",
+    "full_h192_bytes_per_cell": 1207959552,
+    "full_h192_gib_per_cell": 1.125,
+    "compact_h128_bytes_per_cell": 805306368,
+    "compact_h128_gib_per_cell": 0.75,
+    "full_plus_compact_bytes": 2013265920,
+    "full_plus_compact_gib": 1.875,
+    "two_full_h192_concatenation_peak_bytes": 2415919104,
+    "two_full_h192_concatenation_peak_gib": 2.25,
+    "host_staging_budget_gib": 2.25,
+    "retained_on_disk_four_cells_bytes": 3221225472,
+    "retention_policy": "Capture one target condition at a time, one style cell at a time; retain only H128 plus mask and position sidecars."
+  },
+  "resource_guard": {
+    "minimum_free_gpu_bytes": 8589934592,
+    "maximum_reserved_gpu_bytes": 8589934592,
+    "maximum_host_rss_bytes": 17179869184,
+    "minimum_host_available_bytes": 10737418240,
+    "failure_policy": "Stop and preserve failure receipt on OOM, non-finite activation, allocator/driver anomaly, source mismatch, or guard violation."
+  },
+  "live_resources_at_preflight_utc": "2026-09-06T05:35:26Z",
+  "live_resources": {
+    "gpu": {
+      "index": 0,
+      "name": "NVIDIA GeForce RTX 5080",
+      "total_bytes": 17094934528,
+      "used_bytes": 3375366144,
+      "free_bytes": 13378781184,
+      "free_gib": 12.46,
+      "guard_min_free_gib": 8.0,
+      "guard_passed": true
+    },
+    "host": {
+      "total_bytes": 32411611136,
+      "available_bytes": 21904424960,
+      "available_gib": 20.4,
+      "guard_min_available_gib": 10.0,
+      "guard_passed": true
+    }
+  },
+  "timeout_and_failure_receipts": {
+    "planned_outer_timeout": "timeout --signal=TERM --kill-after=30s 1800s",
+    "producer_failure_receipt": "experiments/TRR-0006/public_observations_v1/failure.json",
+    "timeout_receipt": "experiments/TRR-0006/public_observations_v1/timeout_failure.json",
+    "create_only": true,
+    "truth_opened": false,
+    "post_timeout_rule": "If the outer timeout returns nonzero and failure.json is absent, write timeout_failure.json with command, exit status, timestamps, and hashes only; never treat partial observations as complete."
+  },
+  "main_capture_release": {
+    "status": "released_after_inherited_qualification_and_live_guard_pass",
+    "no_new_model_or_data_choice": true,
+    "same_sources_across_targets": true,
+    "capture_batch_records": 8,
+    "capture_sequence_tokens": 192,
+    "stored_sequence_tokens": 128,
+    "truth_opened": false
+  }
+}

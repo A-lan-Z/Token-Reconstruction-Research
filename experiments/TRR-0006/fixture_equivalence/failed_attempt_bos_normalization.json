@@ -1,0 +1,27 @@
+{
+  "attempt": "initial_cuda_fixture_before_bos_normalization_fix",
+  "candidate_arrays_persisted": false,
+  "cause": "The fixture compared the raw BOS argmax to the saved normalized prediction; TRR-0005 forces BOS to 128000 and right-padding to -1 after argmax.",
+  "cells_checked": 4,
+  "corrective_change": {
+    "description": "Mirror the retained _normalize_prediction boundary before equality checks.",
+    "file": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0006/fixture_equivalence.py",
+    "sha256_after_fix": "bb2c9f9b602e5cf3aab3c5f2b449c849b105f4b72bb0b685ddfde5cfbce6c30c"
+  },
+  "error": "strict ID equality failed at BOS for the first checked row before retained prediction normalization was mirrored",
+  "failure_stage": "strict raw/trimmed/saved predicted-ID equality",
+  "methods_checked": 2,
+  "records_checked_per_cell": 2,
+  "schema": "token-reconstruction.trr0006-fixture-failed-attempt.v1",
+  "source_text_loaded": false,
+  "status": "FAILED_PRESERVED_NO_TRUTH",
+  "successful_rerun": {
+    "evidence_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006/experiments/TRR-0006/fixture_equivalence/cuda_id_equivalence.json",
+    "evidence_sha256": "9c81820d6197c5e8ba6c91395d7ccbfabfc7541696b136be4a0681d48690ced0",
+    "status": "BOUNDED_CUDA_ID_EQUIVALENCE_PASSED_NO_TRUTH"
+  },
+  "target_labels_loaded": false,
+  "task_id": "TRR-0006",
+  "timing_comparison": false,
+  "truth_opened": false
+}

@@ -1,0 +1,49 @@
+{
+  "command": [
+    "python3",
+    "scripts/trr0006_capture_public.py",
+    "capture",
+    "--execute",
+    "--repository-root",
+    "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0006",
+    "--frozen-plan",
+    "experiments/TRR-0006/decision_plan.json",
+    "--selection-plan",
+    "experiments/TRR-0006/source_selection.json",
+    "--model-snapshot",
+    "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+    "--lora-config",
+    "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/public-calibration/generation.json",
+    "--lora-update",
+    "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors",
+    "--output-root",
+    "experiments/TRR-0006/panel_capture_v1",
+    "--device",
+    "cuda"
+  ],
+  "environment_overrides": {
+    "PYTHONPATH": ".:src:scripts",
+    "OMP_NUM_THREADS": "8",
+    "MKL_NUM_THREADS": "8",
+    "OPENBLAS_NUM_THREADS": "8",
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1",
+    "HF_DATASETS_OFFLINE": "1",
+    "TOKENIZERS_PARALLELISM": "false"
+  },
+  "started_utc": "2026-09-06T05:41:20.643703+00:00",
+  "code_commit": "fd339684c9fc8485d33797b8fb52a0e2879b47d2",
+  "timeout_seconds": 900,
+  "preflight_estimate": {
+    "full_cell_H192_bytes": 1207959552,
+    "worst_H192_concat_staging_bytes": 2415919104,
+    "compact_H128_bytes": 805306368,
+    "note": "One cell at a time, GPU batches8x192; inherited prefix padding qualification executes before each target full capture."
+  },
+  "gpu_before": "NVIDIA GeForce RTX 5080, 16303 MiB, 12759 MiB, 36",
+  "host_meminfo_before": [
+    "MemTotal:       31651964 kB",
+    "MemFree:         9339132 kB",
+    "MemAvailable:   21419884 kB"
+  ]
+}
