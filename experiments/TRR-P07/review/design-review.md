@@ -43,6 +43,17 @@ Before comparison, the existing P06 qualification/native fixture and
 TRR-0006 fixture-equivalence checks must pass. The report must distinguish
 exact native replay from any common-runner compatible port and retain the
 published numerical, mask, position, batch, normalization, and tie policies.
+A cell is supported when either token delta is at least +1.0 pp with a
+positive 95% lower endpoint or exact-clip delta is at least +5.0 pp with a
+positive lower endpoint, provided the other metric is not harm-classified.
+Harm uses the corresponding -1.0 pp token or -5.0 pp exact upper-endpoint
+rule. A coherent contrast has no harm cell, support in every domain-target
+group across at least one panel, support in each panel, and no materially
+opposite panel point estimates within a domain-target pair. The categories
+are evaluated cellwise; there is no pooled panel/domain/target percentage.
+
 The old P06 full-record negative result remains unchanged. Differences in fit
 support, checkpoint selection, crop, initialization, and attention
 normalization are recorded as possible explanations, not causal findings.
+The published stored-H fixture replays are sufficient for numerical checks;
+no raw-192 recapture is required and no new capture is authorized.
