@@ -95,7 +95,7 @@ def _cuda_memory_snapshot() -> dict[str, int]:
     }
 
 
-def _set_runtime(args: argparse.Namespace) -> None:
+def _set_runtime(args: argparse.Namespace) -> dict[str, int] | None:
     torch.set_num_threads(args.threads)
     try:
         torch.set_num_interop_threads(args.interop_threads)
@@ -104,6 +104,7 @@ def _set_runtime(args: argparse.Namespace) -> None:
     torch.use_deterministic_algorithms(True, warn_only=False)
     if args.device == "cuda" and not torch.cuda.is_available():
         raise P04TrainingError("CUDA requested for largest-cell qualifier but unavailable")
+    preflight: dict[str, int] | None = None
     if args.device == "cuda":
         torch.cuda.reset_peak_memory_stats()
         preflight = _cuda_memory_snapshot()
@@ -113,6 +114,7 @@ def _set_runtime(args: argparse.Namespace) -> None:
             )
     if args.device == "cpu":
         os.environ.setdefault("CUDA_VISIBLE_DEVICES", "")
+    return preflight
 
 
 def _probe_mask(pool, records: list[int], budget: int = 512) -> torch.Tensor:
@@ -134,7 +136,7 @@ def main() -> int:
     args = _args()
     started_utc = _utc_now()
     source_commit = _source_commit()
-    _set_runtime(args)
+    preflight = _set_runtime(args)
     output = args.output_root.expanduser().resolve()
     if output.exists() and any(output.iterdir()):
         raise P04TrainingError("qualifier output root must be empty")
