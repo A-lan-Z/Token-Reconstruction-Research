@@ -42,6 +42,21 @@ def test_anchor_selection_hash_is_the_ordered_first64_subset(tmp_path: Path) -> 
         assert len(selected["subset_sequence_hashes"][domain]) == 64
 
 
+def test_anchor_reads_record_hash_from_manifest_cell(tmp_path: Path) -> None:
+    manifest = {
+        "cells": [
+            {
+                "cell_id": "pile__public_base",
+                "record_ids_sha256": "a" * 64,
+                "observation": {"path": "observations/pile.safetensors"},
+            }
+        ]
+    }
+    cell = anchor._observation_cell(manifest, cell_id="pile__public_base")
+    assert cell["record_ids_sha256"] == "a" * 64
+    assert anchor._observation_descriptor(manifest, cell_id="pile__public_base")["path"] == "observations/pile.safetensors"
+
+
 def test_anchor_normalization_keeps_bos_and_padding_without_rewriting_active_ids() -> None:
     mask = torch.tensor([True, True, True] + [False] * 125)
     prediction = torch.tensor([999, 17, 23] + [-1] * 125)

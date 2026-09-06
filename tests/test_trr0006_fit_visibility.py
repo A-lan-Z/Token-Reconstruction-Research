@@ -90,6 +90,78 @@ def test_probe_schedule_repeats_only_ledger_errors_and_is_seed_bound() -> None:
     assert bool(first.used_replacement.all().item())
 
 
+def test_probe_prediction_retention_is_logging_only(tmp_path: Path) -> None:
+    data, direct = _tiny_data()
+    model = runner.build_visibility_decoder(
+        runner.POSITIONWISE_METHOD,
+        hidden_size=8,
+        vocabulary_size=13,
+        context_width=4,
+        qkv_seed=runner.PROBE_SEED,
+        direct_state=direct,
+        direct_init_label="competent_public_affine",
+    )
+    ledger = [
+        {
+            "record_index": record,
+            "record_id": f"fit-{record}",
+            "position": position,
+            "bin": "1-15",
+        }
+        for record, position in ((0, 1), (0, 2), (2, 1), (4, 3), (6, 4))
+    ]
+    before_state = {name: value.detach().clone() for name, value in model.state_dict().items()}
+    aggregate = runner._evaluate_error_ledger(
+        model, data, data.embedding_table, ledger, device=torch.device("cpu")
+    )
+    retained = runner._evaluate_error_ledger(
+        model,
+        data,
+        data.embedding_table,
+        ledger,
+        device=torch.device("cpu"),
+        retain_predictions=True,
+    )
+    retained_without_rows = {key: value for key, value in retained.items() if key != "prediction_rows"}
+    assert retained_without_rows == aggregate
+    for name, value in model.state_dict().items():
+        assert torch.equal(value, before_state[name])
+    rows = retained["prediction_rows"]
+    assert len(rows) == len(ledger)
+    assert [(row["record_index"], row["position"]) for row in rows] == [
+        (row["record_index"], row["position"]) for row in ledger
+    ]
+    assert all(0 <= row["prediction"] < 13 and row["tie_count"] >= 1 for row in rows)
+
+    output = tmp_path / "probe_predictions.json"
+    runner._write_probe_prediction_snapshot(
+        output,
+        method_id=runner.POSITIONWISE_METHOD,
+        initial_metrics=aggregate,
+        final_metrics=aggregate,
+        initial_rows=rows,
+        final_rows=rows,
+    )
+    payload = __import__("json").loads(output.read_text(encoding="utf-8"))
+    assert payload["schema"] == runner.PROBE_PREDICTION_SCHEMA
+    assert payload["retention"].startswith("logging-only")
+    assert payload["row_count"] == len(ledger)
+    assert payload["initial_predictions"] == payload["final_predictions"]
+
+
+def test_probe_prediction_retention_rejects_reordered_snapshots(tmp_path: Path) -> None:
+    row = {"record_index": 0, "record_id": "fit-0", "position": 1, "bin": "1-15"}
+    with pytest.raises(runner.VisibilityFitError, match="ledger order"):
+        runner._write_probe_prediction_snapshot(
+            tmp_path / "mismatch.json",
+            method_id=runner.POSITIONWISE_METHOD,
+            initial_metrics={"correct": 0},
+            final_metrics={"correct": 0},
+            initial_rows=[row],
+            final_rows=[{**row, "position": 2}],
+        )
+
+
 def test_runner_main_arm_trains_saves_and_loads_selected_state(tmp_path: Path, monkeypatch) -> None:
     data, direct = _tiny_data()
     monkeypatch.setattr(runner, "HIDDEN_SIZE", 8)

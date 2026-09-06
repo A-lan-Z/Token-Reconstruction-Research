@@ -189,24 +189,32 @@ def _load_selection(path: Path, *, root: Path) -> dict[str, Any]:
     return result
 
 
-def _observation_descriptor(manifest: Mapping[str, Any], *, cell_id: str) -> Mapping[str, Any]:
+def _observation_cell(manifest: Mapping[str, Any], *, cell_id: str) -> Mapping[str, Any]:
     cells = manifest.get("cells")
     if not isinstance(cells, list):
         raise AnchorError("observation manifest cells are not an ordered list")
     for cell in cells:
         if isinstance(cell, Mapping) and cell.get("cell_id") == cell_id:
-            observation = cell.get("observation")
-            if not isinstance(observation, Mapping):
+            if not isinstance(cell.get("observation"), Mapping):
                 raise AnchorError(f"observation descriptor is missing: {cell_id}")
-            return observation
+            return cell
     raise AnchorError(f"public-base observation cell is missing: {cell_id}")
+
+
+def _observation_descriptor(manifest: Mapping[str, Any], *, cell_id: str) -> Mapping[str, Any]:
+    """Return the nested tensor descriptor from a manifest cell."""
+
+    return _observation_cell(manifest, cell_id=cell_id)["observation"]
 
 
 def _load_observation(manifest_path: Path, manifest: Mapping[str, Any], *, domain: str, root: Path, expected_ids_sha: str) -> dict[str, Any]:
     if manifest.get("schema") != OBSERVATION_SCHEMA or manifest.get("task_id") != TASK_ID or manifest.get("status") != "FROZEN_PUBLIC_OBSERVATIONS_NO_TRUTH":
         raise AnchorError("observation manifest is not the frozen no-truth schema")
-    descriptor = _observation_descriptor(manifest, cell_id=f"{domain}__public_base")
-    if descriptor.get("record_ids_sha256") != expected_ids_sha:
+    cell = _observation_cell(manifest, cell_id=f"{domain}__public_base")
+    descriptor = cell["observation"]
+    # The accepted capture-r2 manifest binds record order on the cell, beside
+    # the tensor descriptor.  Do not look for this hash inside observation.
+    if cell.get("record_ids_sha256") != expected_ids_sha:
         raise AnchorError(f"public-base observation source order changed: {domain}")
     observation_path = _resolve_file(descriptor.get("path"), root=root, description=f"observation {domain}")
     declared = descriptor.get("sha256")

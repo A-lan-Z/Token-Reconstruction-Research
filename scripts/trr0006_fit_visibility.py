@@ -82,6 +82,7 @@ TASK_ID = "TRR-P06"
 SCRIPT_SCHEMA = "token-reconstruction.trr-p06-visibility-fit.v1"
 PREFLIGHT_SCHEMA = "token-reconstruction.trr-p06-visibility-preflight.v1"
 PROBE_SCHEMA = "token-reconstruction.trr-p06-capacity-probe.v1"
+PROBE_PREDICTION_SCHEMA = "token-reconstruction.trr-p06-capacity-probe-predictions.v1"
 QUALIFICATION_SCHEMA = "token-reconstruction.trr-p06-largest-cell-qualification.v1"
 MAIN_SCHEMA = "token-reconstruction.trr-p06-main-fit.v1"
 FAILURE_SCHEMA = "token-reconstruction.trr-p06-visibility-fit-failure.v1"
@@ -657,7 +658,15 @@ def _evaluate_error_ledger(
     ledger: Sequence[Mapping[str, Any]],
     *,
     device: torch.device,
+    retain_predictions: bool = False,
 ) -> dict[str, Any]:
+    """Evaluate the fixed ledger, optionally retaining per-position IDs.
+
+    Retention is logging-only: it copies the already computed top-1 IDs,
+    targets, and tie counts to CPU for a separate create-only diagnostic file.
+    The default remains aggregate-only so the original probe recipe and its
+    optimizer/state hashes are unchanged.
+    """
     model.eval()
     model.validate_embedding_table(embedding)
     by_record: dict[int, list[Mapping[str, Any]]] = {}
@@ -666,6 +675,7 @@ def _evaluate_error_ledger(
     correct = 0
     total = 0
     bin_counts: dict[str, dict[str, int]] = {}
+    prediction_rows: list[dict[str, Any]] = []
     records = sorted(by_record)
     with torch.inference_mode():
         for start in range(0, len(records), RECORD_BATCH_SIZE):
@@ -687,17 +697,38 @@ def _evaluate_error_ledger(
                     position_slots[chunk_start:chunk_stop],
                     embedding,
                 )
-                predictions, _ = deterministic_top1(logits)
+                predictions, ties = deterministic_top1(logits)
                 targets = truth[record_slots[chunk_start:chunk_stop], position_slots[chunk_start:chunk_stop]]
                 hits = predictions.eq(targets).detach().cpu().tolist()
-                for row, hit in zip(rows[chunk_start:chunk_stop], hits):
+                if retain_predictions:
+                    prediction_values = predictions.detach().cpu().tolist()
+                    tie_values = ties.detach().cpu().tolist()
+                    target_values = targets.detach().cpu().tolist()
+                else:
+                    prediction_values = []
+                    tie_values = []
+                    target_values = []
+                for offset, (row, hit) in enumerate(zip(rows[chunk_start:chunk_stop], hits)):
                     bin_name = str(row["bin"])
                     entry = bin_counts.setdefault(bin_name, {"rows": 0, "correct": 0})
                     entry["rows"] += 1
                     entry["correct"] += int(hit)
                     correct += int(hit)
                     total += 1
-    return {
+                    if retain_predictions:
+                        prediction_rows.append(
+                            {
+                                "record_index": int(row["record_index"]),
+                                "record_id": str(row["record_id"]),
+                                "position": int(row["position"]),
+                                "bin": bin_name,
+                                "prediction": int(prediction_values[offset]),
+                                "target": int(target_values[offset]),
+                                "correct": bool(hit),
+                                "tie_count": int(tie_values[offset]),
+                            }
+                        )
+    result: dict[str, Any] = {
         "correct": correct,
         "total": total,
         "token_accuracy": correct / total if total else None,
@@ -709,6 +740,41 @@ def _evaluate_error_ledger(
             for name, values in sorted(bin_counts.items())
         },
     }
+    if retain_predictions:
+        result["prediction_rows"] = prediction_rows
+    return result
+
+
+def _write_probe_prediction_snapshot(
+    path: Path,
+    *,
+    method_id: str,
+    initial_metrics: Mapping[str, Any],
+    final_metrics: Mapping[str, Any],
+    initial_rows: Sequence[Mapping[str, Any]],
+    final_rows: Sequence[Mapping[str, Any]],
+) -> None:
+    """Write optional per-position probe IDs without changing fit artifacts."""
+    if len(initial_rows) != len(final_rows):
+        raise VisibilityFitError("probe prediction snapshots have different row counts")
+    initial_keys = [(int(row["record_index"]), int(row["position"])) for row in initial_rows]
+    final_keys = [(int(row["record_index"]), int(row["position"])) for row in final_rows]
+    if initial_keys != final_keys:
+        raise VisibilityFitError("probe prediction snapshots do not share ledger order")
+    _json_write_create(
+        path,
+        {
+            "schema": PROBE_PREDICTION_SCHEMA,
+            "task_id": TASK_ID,
+            "method_id": method_id,
+            "retention": "logging-only; no optimizer or evaluation changes",
+            "row_count": len(initial_rows),
+            "initial_metrics": dict(initial_metrics),
+            "final_metrics": dict(final_metrics),
+            "initial_predictions": [dict(row) for row in initial_rows],
+            "final_predictions": [dict(row) for row in final_rows],
+        },
+    )
 
 
 def _peak_snapshot(model: torch.nn.Module, device: torch.device) -> dict[str, Any]:
@@ -762,7 +828,18 @@ def _run_probe_arm(
     runtime_embedding = embedding.to(device=device, dtype=torch.float32)
     model.validate_embedding_table(runtime_embedding)
     curve: list[dict[str, Any]] = []
-    initial_metrics = _evaluate_error_ledger(model, data, runtime_embedding, ledger, device=device)
+    retain_predictions = bool(getattr(args, "retain_probe_predictions", False))
+    initial_evaluation = _evaluate_error_ledger(
+        model,
+        data,
+        runtime_embedding,
+        ledger,
+        device=device,
+        retain_predictions=retain_predictions,
+    )
+    initial_prediction_rows = initial_evaluation.pop("prediction_rows", None) if retain_predictions else None
+    initial_metrics = initial_evaluation
+    final_prediction_rows: list[Mapping[str, Any]] | None = None
     curve.append({"step": 0, "metrics": initial_metrics, "learning_rate": LEARNING_RATE})
     update_seconds = 0.0
     eval_seconds = 0.0
@@ -788,7 +865,18 @@ def _run_probe_arm(
         next_step = step_index + 1
         if next_step % 50 == 0 or next_step == PROBE_STEPS:
             eval_started = time.perf_counter()
-            metrics = _evaluate_error_ledger(model, data, runtime_embedding, ledger, device=device)
+            evaluation = _evaluate_error_ledger(
+                model,
+                data,
+                runtime_embedding,
+                ledger,
+                device=device,
+                retain_predictions=retain_predictions,
+            )
+            prediction_rows = evaluation.pop("prediction_rows", None) if retain_predictions else None
+            if retain_predictions and next_step == PROBE_STEPS:
+                final_prediction_rows = prediction_rows
+            metrics = evaluation
             eval_seconds += time.perf_counter() - eval_started
             curve.append(
                 {
@@ -804,6 +892,25 @@ def _run_probe_arm(
         raise VisibilityFitError(f"probe {method_id} mutated frozen direct affine parameters")
     final_metrics = curve[-1]["metrics"]
     passed = bool(final_metrics["correct"] >= 52 and all(math.isfinite(float(value)) for value in (final_metrics["token_accuracy"],)))
+    prediction_record: dict[str, Any] | None = None
+    if retain_predictions:
+        if initial_prediction_rows is None or final_prediction_rows is None:
+            raise VisibilityFitError(f"probe {method_id} did not retain both initial and final prediction rows")
+        prediction_path = output_root / f"{method_id}.probe_predictions.json"
+        _write_probe_prediction_snapshot(
+            prediction_path,
+            method_id=method_id,
+            initial_metrics=initial_metrics,
+            final_metrics=final_metrics,
+            initial_rows=initial_prediction_rows,
+            final_rows=final_prediction_rows,
+        )
+        prediction_record = {
+            "path": str(prediction_path),
+            "bytes": int(prediction_path.stat().st_size),
+            "sha256": file_sha256(prediction_path),
+            "row_count": len(initial_prediction_rows),
+        }
     curve_path = output_root / f"{method_id}.learning_curve.json"
     _json_write_create(
         curve_path,
@@ -830,6 +937,7 @@ def _run_probe_arm(
         "final_metrics": final_metrics,
         "pass_threshold_correct": 52,
         "learning_curve": {"path": str(curve_path), "sha256": file_sha256(curve_path)},
+        "probe_predictions": prediction_record,
         "update_seconds": update_seconds,
         "evaluation_seconds": eval_seconds,
         "arm_wall_seconds": time.perf_counter() - started,
@@ -938,6 +1046,11 @@ def run_capacity_probe(args: argparse.Namespace) -> dict[str, Any]:
             "row_count": len(ledger),
             "selection_bins": {name: 64 for name in ("1-15", "16-39", "40-79", "80-127")},
             "construction_seconds": time.perf_counter() - ledger_started,
+        },
+        "probe_prediction_retention": {
+            "enabled": bool(getattr(args, "retain_probe_predictions", False)),
+            "schema": PROBE_PREDICTION_SCHEMA if getattr(args, "retain_probe_predictions", False) else None,
+            "mode": "logging-only; exact replay must match original arm state hashes and aggregate metrics",
         },
         "schedule": schedule_record,
         "schedule_metadata": schedule_metadata(schedule),
@@ -1539,6 +1652,11 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--preflight-receipt", type=Path)
     parser.add_argument("--qualification-receipt", type=Path)
     parser.add_argument("--probe-receipt", type=Path)
+    parser.add_argument(
+        "--retain-probe-predictions",
+        action="store_true",
+        help="log per-position initial/final probe IDs in a separate file; does not alter fitting or aggregate metrics",
+    )
     parser.add_argument("--output-root", type=Path, required=True)
     parser.add_argument("--device", choices=("cpu", "cuda"), default="cpu")
     parser.add_argument("--torch-threads", type=int, default=4)
@@ -1558,6 +1676,8 @@ def _parser() -> argparse.ArgumentParser:
 
 
 def _validate_args(args: argparse.Namespace) -> None:
+    if getattr(args, "retain_probe_predictions", False) and args.mode != "probe":
+        raise VisibilityFitError("--retain-probe-predictions is valid only in probe mode")
     if args.mode in ("qualify", "probe", "main") and args.preflight_receipt is None:
         raise VisibilityFitError(f"{args.mode} mode requires --preflight-receipt from a source-only PASS")
     if args.mode == "preflight" and (args.preflight_receipt is not None or args.qualification_receipt is not None or args.probe_receipt is not None):
