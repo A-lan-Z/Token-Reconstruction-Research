@@ -1,7 +1,7 @@
 {
   "schema": "token-reconstruction.trr-p04-evaluator-target-run-contract.v1",
   "task_id": "TRR-P04",
-  "status": "QUALIFIER_R4_APPROVED_RESOURCE_POLICY",
+  "status": "QUALIFIER_R5_READY",
   "purpose": "evaluator-only target preparation; separate from student fitting and teacher construction",
   "source": {
     "git_commit": "63d4016f2e555e8460ea566cf967237dc94fb0c3",
@@ -20,7 +20,7 @@
     },
     "watchdog": {
       "path": "scripts/trr_p04/resource_watchdog.py",
-      "sha256": "51f5667568a4365d5a24776e5ea1eb7b6abd3f43d81aced6f28b5e1b29801d69"
+      "sha256": "cce2137ef5611983221ad199af5ec1c538e95c92db6d316c06baa5016c7dabf0"
     },
     "plan": {
       "path": "experiments/TRR-P04/setup/evaluator_target_plan.json",
@@ -29,7 +29,8 @@
     "selection": {
       "path": "experiments/TRR-P04/setup/public_selection-r2.json",
       "sha256": "05f941e0dbcf29ea3efc47c7bc8abb3a7146a266eeea770f05052bb7728cde6a"
-    }
+    },
+    "watchdog_git_commit": "9b626c15171f394e51c6b6774301519cce2f217e"
   },
   "frozen_recipe": {
     "condition_id": "p04_evaluator_target_update_v1",
@@ -100,13 +101,13 @@
     "qualifier": {
       "requirement": "run first on exclusive GPU; review PASS and measured margin before execute",
       "timeout_seconds": 300,
-      "watchdog_output_root": "experiments/TRR-P04/runtime/watchdog/evaluator-target-qualifier-r4",
-      "target_output_root": "experiments/TRR-P04/runtime/evaluator-target-qualifier-r4",
+      "watchdog_output_root": "experiments/TRR-P04/runtime/watchdog/evaluator-target-qualifier-r5",
+      "target_output_root": "experiments/TRR-P04/runtime/evaluator-target-qualifier-r5",
       "argv": [
         "python3",
         "scripts/trr_p04/resource_watchdog.py",
         "--output-root",
-        "experiments/TRR-P04/runtime/watchdog/evaluator-target-qualifier-r4",
+        "experiments/TRR-P04/runtime/watchdog/evaluator-target-qualifier-r5",
         "--timeout-seconds",
         "300",
         "--poll-seconds",
@@ -116,7 +117,7 @@
         "--min-available-bytes",
         "10737418240",
         "--label",
-        "p04-evaluator-target-qualifier-r4",
+        "p04-evaluator-target-qualifier-r5",
         "--",
         "env",
         "CUDA_VISIBLE_DEVICES=0",
@@ -141,7 +142,7 @@
         "--model-snapshot",
         "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
         "--output-root",
-        "experiments/TRR-P04/runtime/evaluator-target-qualifier-r4",
+        "experiments/TRR-P04/runtime/evaluator-target-qualifier-r5",
         "--device",
         "cuda"
       ]
@@ -197,7 +198,7 @@
     }
   },
   "outputs": {
-    "qualifier": "experiments/TRR-P04/runtime/evaluator-target-qualifier-r4/target_qualification_receipt.json",
+    "qualifier": "experiments/TRR-P04/runtime/evaluator-target-qualifier-r5/target_qualification_receipt.json",
     "private_update": "experiments/TRR-P04/private/evaluator_target_update/p04_evaluator_target_update_v1.safetensors",
     "private_receipt": "experiments/TRR-P04/private/evaluator_target_update/target_preparation_receipt.json",
     "no_evaluator_truth": true,
@@ -232,6 +233,13 @@
       "status": "FAILED_CLOSED_WATCHDOG_EXIT_RACE_AFTER_GPU_DIAGNOSTIC",
       "reason": "Child recorded the same full-step GPU values as r2, then the external watchdog observed a disappearing /proc status during child exit and failed closed. No artifact or truth was written.",
       "runner_source_head": "f9835953cce2d2febbcb3c8eda146322fc35bad3"
+    },
+    "qualifier_r4": {
+      "watchdog_root": "experiments/TRR-P04/runtime/watchdog/evaluator-target-qualifier-r4",
+      "child_root": "experiments/TRR-P04/runtime/evaluator-target-qualifier-r4",
+      "status": "CHILD_QUALIFICATION_PASS_WATCHDOG_RACE",
+      "reason": "Child completed the revised internal policy and wrote a PASS qualification receipt, but the prior watchdog treated a disappearing zombie status as live unreadable data. No artifact or truth was written; receipt retained and excluded pending external PASS.",
+      "runner_source_head": "2488c6ece1f30a219c2c881f5e75e773b473a83f"
     }
   },
   "resource_review": {
@@ -249,6 +257,12 @@
     "observed_free_margin_bytes": 1089470464,
     "observed_reserved_margin_bytes": 1604321280,
     "recipe_unchanged": true,
-    "approval": "root approved after r3 diagnostic review"
+    "approval": "root approved after r3 diagnostic review",
+    "watchdog_fix": {
+      "source_git_commit": "9b626c15171f394e51c6b6774301519cce2f217e",
+      "behavior": "re-poll/reap leader and ignore zombie RSS while still failing closed for live non-zombie unreadable processes",
+      "positive_smoke": "experiments/TRR-P04/setup/watchdog-smoke-p04-r3",
+      "positive_smoke_status": "PASS"
+    }
   }
 }
