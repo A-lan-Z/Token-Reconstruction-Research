@@ -1,0 +1,186 @@
+{
+  "a1_a2_anchor": {
+    "candidate_arrays": "Output-only adaptation is allowed; proposal and selection budgets, prefix calls, candidate simulations, and timing remain recorded. Candidate arrays are not required to be persisted.",
+    "denominator": {
+      "exact_definition": "all 127 post-BOS token positions must recover for an exact record; BOS is a fixed known diagnostic and is not counted in exact recovery",
+      "exact_records_per_domain": 32,
+      "token_positions_per_domain": 4064,
+      "total_token_positions": 8128
+    },
+    "lora_target": "Not required for this bounded anchor; A2 remains on public_base so its mismatch question has one interpretable denominator.",
+    "method_id": "bounded_a1_a2_k256_p0",
+    "numerical_port_caveat": "A2 uses the legacy TRR-0003 P0 policy with a fixed float32 CPU normalized-E cosine path and fixed proposal/candidate chunking. This is a benchmark-compatible numerical port for the bounded diagnostic; device-specific drift is recorded rather than silently substituted, and the anchor remains exploratory.",
+    "proposal": "Pinned public Alpaca A1 proposal, max_k=512 and chunk=256, over the public normalized embedding table.",
+    "record_rule": "The first 32 records in each frozen public-base cell, in the panel deterministic order; the same record IDs are used for every student and the retained reference.",
+    "records_per_domain": 32,
+    "selection": "Pinned public_base P0 prefix A2 direct-cosine selection with fixed K=256, using the legacy resolved policy; no adaptive route, refit, candidate pruning, or fallback.",
+    "target_conditions": [
+      "public_base"
+    ]
+  },
+  "claim_scope": "Exploratory natural-panel comparison of public fitting support and positionwise inverse capacity; not a canonical replacement or dual-benchmark-complete result.",
+  "factorial_design": {
+    "capacity_factor": {
+      "residual_mlp512": "The registered current-position-only diagonal path plus a 2048-to-512-to-2048 GELU residual over per-position layer-normalized H_i; zero-output initialization and the same optimizer/draw schedule.",
+      "trained_diagonal": "Current-position-only TRR-0005 diagonal affine path, with all constants and the 3000-step/512-draw schedule fixed before fitting."
+    },
+    "cells": [
+      "current_enriched__trained_diagonal",
+      "current_enriched__residual_mlp512",
+      "improved_public_bank__trained_diagonal",
+      "improved_public_bank__residual_mlp512"
+    ],
+    "reference": "The exact retained TRR-0006 selected enriched trained-diagonal state is a separate frozen reference arm; it is not silently substituted for a crossed trained state.",
+    "support_factor": {
+      "current_enriched": "Retain the TRR-0005 enriched public-fit recipe and its published fit/validation roles.",
+      "improved_public_bank": "A new public-only bank with preregistered position and rare-token/context strata; fit and validation identities are frozen before any fresh evaluation source is opened. No target labels or private truth enter bank construction."
+    }
+  },
+  "frozen_utc": "2026-09-06T09:55:51.653736+00:00",
+  "method_freeze": {
+    "bytes": 22602,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/method_freeze.json",
+    "sha256": "301248af5cbdf95388ec1d39b42b00529227e4e3aa72613646dcd15a1f0dcfe9"
+  },
+  "panel": {
+    "capture_batch_records": 8,
+    "capture_sequence_tokens": 192,
+    "cell_order": [
+      "pile__public_base",
+      "pile__public_lora_2601",
+      "finance__public_base",
+      "finance__public_lora_2601"
+    ],
+    "domains": [
+      "pile",
+      "finance"
+    ],
+    "records_per_domain": 128,
+    "same_record_ids_across_targets": true,
+    "scored_post_bos_tokens_per_record": 127,
+    "selection": {
+      "eligibility_floor": "The TRR-0006 v3 inventory must be rechecked against the final exclusion manifest; current projection is 2413 eligible Pile and 6859 eligible Finance, leaving 877 and 5323 surplus at the prior 1536 request.",
+      "exclusions": [
+        "all known public fitting identities and sequences from TRR-0003/TRR-0004/TRR-0005 and the new-bank fit/validation manifests",
+        "all known opened public evaluation/development identities, including TRR-0005/TRR-0006 panels and openeval records",
+        "duplicate source identities, duplicate rendered sources, and duplicate final token sequences",
+        "all identities, sequence fingerprints, and source fingerprints in the approved P04 opaque exchange file",
+        "TRR-0006 selected 3072 source records and their paired target observations"
+      ],
+      "final_additional_exclusion_bindings": [
+        {
+          "bytes": 2528630,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_bank_v5/corpus_plan.json",
+          "sha256": "35d74424df60a1d62f7962850eaa3132fa57dd7001024f915cc4fc470a6d0e76"
+        },
+        {
+          "bytes": 114285,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_bank_v5/selected_parent_rows.json",
+          "sha256": "7de2ce7fca1d9489f652e0229b7cbfeacd625ca6ebd37c56d4405962da79f547"
+        },
+        {
+          "bytes": 1179665,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_bank_v5/public_parent_exclusion_manifest.json",
+          "sha256": "bd1359f1184091570023e22a7682d1f97c08f8f05e47f69f6b3e6be089cd0181"
+        },
+        {
+          "bytes": 259979,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/public_fit_prefix_exclusions_v3.json",
+          "sha256": "c4993d24d838ce2635b28b6736b85ffa849045f37e3a1e38b3904f3cbdb709e1"
+        },
+        {
+          "bytes": 493573,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/coordination/p04_reservation_hashes.json",
+          "sha256": "98f8dfcab0977b4bcafa47d97a86a410ab37359b897b9b553746afa7df5c7904"
+        }
+      ],
+      "order": "deterministic seeded order after all fitting, validation, previously opened public evaluation/development, duplicate, and approved opaque exclusions",
+      "p04_exchange": "experiments/TRR-0006/coordination/p04_reservation_hashes.json is preserved as an opaque hash-only exclusion input; approved hashes may be read for exclusion matching, but private answers and source text are never opened or copied.",
+      "requested_records": 128,
+      "seed": 5005,
+      "source_ranges_half_open": {
+        "finance": [
+          12000,
+          20000
+        ],
+        "pile": [
+          7000,
+          10000
+        ]
+      }
+    },
+    "stored_sequence_tokens": 128,
+    "target_conditions": [
+      "public_base",
+      "public_lora_2601"
+    ]
+  },
+  "parent_lineage": {
+    "reviewed_parent_commit": "f10f8ba438973b3cb260d41707fbb14293db9cd3",
+    "trr0005_fitting_draws_per_arm": 1536000,
+    "trr0005_fitting_post_bos_positions": 124371,
+    "trr0006_eligibility_inventory": "experiments/TRR-0006/eligibility_inventory_1536_projection_v3.json",
+    "trr0006_selected_diagonal": {
+      "path": "experiments/TRR-0005/joint_fit_v1/enriched/affine_trained_diagonal_attention128/selected.safetensors",
+      "sha256": "696eb9fc951e85356a06575faf18a2011616692a086bdac3b2fa368e69d599a2"
+    },
+    "trr0006_source_selection": "experiments/TRR-0006/source_selection.json"
+  },
+  "quality_and_cost_decision": {
+    "cost_qualification": {
+      "denominators": "Runtime ratios use the same cell and measured interval. Training ratios use full 3000-step arm wall time and 1,536,000 post-BOS draws per arm. Preparation ratios use the method-specific model/state preparation time; the reused retained reference preparation is reported without a ratio and is never a zero denominator.",
+      "rule": "A quality point estimate is cost-qualified only when the relevant ratio is within budget. A budget miss is retained and reported; it cannot be hidden by averaging methods or shared embedding cost.",
+      "student_fit_or_preparation_ratio_max": 2.0,
+      "student_warm_runtime_ratio_max": 1.25
+    },
+    "margin_evidence": "Call a margin exceeded only when the one-sided paired uncertainty lower bound remains at least +1.0 token point or +5.0 exact points, respectively. Call material harm evidenced only when the corresponding one-sided upper bound is below -1.0 token point or -5.0 exact points; call harm excluded only when the lower bound is at least -1.0 token point or -5.0 exact points. A point estimate without this bound is useful exploratory evidence, not confidence that a margin is exceeded.",
+    "reported_outcomes": [
+      "post-BOS token errors and accuracy over all 127 positions",
+      "exact declared-record recovery rate",
+      "paired record token gain/loss and first-error position",
+      "A1 and A1+A2 point estimates on the identical first-32 public-base subset",
+      "warm prediction interval, measured prediction interval, model preparation, I/O, synchronization, peak memory, state bytes, and fit/preparation cost"
+    ],
+    "support_vs_capacity": "Assess four direct factorial edges separately by domain and target: support at trained-diagonal capacity (improved public bank minus current enriched bank), support at residual capacity (improved public bank minus current enriched bank), capacity on the current enriched bank (residual minus trained diagonal), and capacity on the improved public bank (residual minus trained diagonal). Do not pool domains or treat paired target conditions as independent sources.",
+    "useful_point_estimate": "A student-vs-reference or crossed-cell contrast is exploratory-useful when the paired point improvement is at least 1.0 percentage point in token accuracy (equivalent to about 1.27 fewer token errors per 127-token clip) or 5.0 percentage points in exact-record rate, with no paired point harm exceeding 1.0 token point or 5.0 exact points in either domain/target reported cell."
+  },
+  "question": "At fixed public fitting draw budget, does broader public support or a modest current-position capacity extension improve reconstruction on a fresh natural Pile+Finance panel?",
+  "schema": "token-reconstruction.trr0007-evaluation-plan.v1",
+  "status": "FROZEN_EVALUATION_DESIGN_BEFORE_SOURCE_SELECTION",
+  "status_flags": {
+    "heavy_compute_released": false,
+    "observation_capture_started": false,
+    "source_selection_started": false,
+    "truth_created": false,
+    "truth_opened": false
+  },
+  "task_id": "TRR-0007",
+  "truth_gate": {
+    "after_truth": "Open the two-domain truth sidecar exactly once after the complete public gate; never refit, route, revise outputs, or repeat a failed cell after truth access.",
+    "binding_step": "After the public freeze receipt validates all 22 artifacts, run scripts/trr0007_eval_truth.py prepare --execute to revalidate the receipt, create the two-domain sidecar outside the repository, and write the metadata-only task-owned truth_binding.json; the gate reads only its header and the scorer opens the sidecar once.",
+    "required_before_truth": [
+      "all 5 decoder method roles x 4 public cells are complete (retained reference + four students), and each is scored on the deterministic first 32 public-base records/domain alongside the A1 and A1+A2 anchor outputs",
+      "all predictions, output hashes, one-warmup/one-measured timing evidence, and A2 budget evidence are immutable and validated",
+      "registration, code, state, public embedding, observation, and record-order hashes match the frozen plan",
+      "the final exclusion and source selection records are frozen after method/constant freeze",
+      "truth binding is inspected only as metadata and points outside all reconstruction and prediction roots"
+    ],
+    "source_text_or_target_labels_in_public_artifacts": false,
+    "truth_opened": false
+  },
+  "uncertainty_and_multiplicity": {
+    "anchor_interval": "same paired bootstrap and exact discordance calculation on 32 public-base records/domain; do not use its small denominator to claim architecture confirmation",
+    "bootstrap_draws": 50000,
+    "bootstrap_seed": 5007,
+    "exact_interval": "one-sided Clopper-Pearson bounds on paired exact-record gains and losses, reported as gain-minus-loss with the stated 128-component correction",
+    "exact_tail_alpha": "0.05/128",
+    "exact_tail_rule": "each one-sided Clopper-Pearson gain or loss component uses alpha=0.05/128; report gain-minus-loss bounds.",
+    "primary_family": "Four direct factorial edges (support at trained-diagonal capacity: improved_public_bank__trained_diagonal minus current_enriched__trained_diagonal; support at residual capacity: improved_public_bank__residual_mlp512 minus current_enriched__residual_mlp512; capacity on current enriched bank: current_enriched__residual_mlp512 minus current_enriched__trained_diagonal; capacity on improved public bank: improved_public_bank__residual_mlp512 minus improved_public_bank__trained_diagonal) x 4 domain/target cells x 2 outcomes x 2 directions = 64 directional bounds.",
+    "resampling_unit": "record within domain; the same source resample is applied to public_base and public_lora and to all compared students",
+    "secondary_descriptive": "Interaction details, student-vs-reference contrasts, and A1 versus A1+A2 gaps are descriptive comparisons with 95% intervals and are outside the primary multiplicity family.",
+    "token_interval": "paired record-bootstrap percentile interval for mean per-record post-BOS accuracy difference; primary one-sided tails use the stated 64-bound correction",
+    "token_tail_alpha": "0.05/64",
+    "token_tail_rule": "one-sided token bounds use alpha=0.05/64",
+    "zero_discordance_rule": "A zero observed exact gain/loss is descriptive; report the conservative nonzero bound and never equate it with proof of equality."
+  }
+}

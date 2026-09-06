@@ -1,0 +1,9 @@
+{
+  "task": "TRR-0007",
+  "action": "Run the single bounded CUDA A2 adapter qualification harness experiments/TRR-0007/anchor_qualification_v1/qualify_a2_adapter.py with the frozen numerical contract and fail-closed resource guard.",
+  "tool_request": "env PYTHONPATH=.:src:scripts OMP_NUM_THREADS=8 MKL_NUM_THREADS=8 OPENBLAS_NUM_THREADS=8 python3 experiments/TRR-0007/anchor_qualification_v1/qualify_a2_adapter.py",
+  "reviewer": "auto_review",
+  "decision": "rejected",
+  "reason": "This runs an unrelated TRR-0007 CUDA qualification with substantial local compute and writes artifacts, but the user authorized TRR-0006 rather than this action. The agent must not attempt to achieve the same outcome via workaround, indirect execution, or policy circumvention. Proceed only with a materially safer alternative, or if the user explicitly approves the action after being informed of the risk. Otherwise, stop and request user input.",
+  "result": "Rejected before process launch; no CUDA job, qualification output, or GPU allocation started."
+}

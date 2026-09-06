@@ -1,0 +1,64 @@
+{
+  "task_id": "TRR-0007",
+  "recorded_utc": "2026-09-06T07:45:50.168011+00:00",
+  "status": "DEVELOPMENT_DESIGN_UNDER_REVIEW_NO_FRESH_SELECTION",
+  "evaluation_scope": {
+    "records_per_domain": 128,
+    "domains": [
+      "pile",
+      "finance"
+    ],
+    "student_targets": [
+      "public_base",
+      "public_lora_2601"
+    ],
+    "student_methods": "published frozen trained-diagonal reference plus four data-by-capacity contenders",
+    "A2_anchor": {
+      "records_per_domain": 32,
+      "target": "public_base",
+      "subset_rule": "first32 sources/domain in frozen natural selection order",
+      "same_student_subset_required": true
+    }
+  },
+  "initialization_review": {
+    "preferred": "one common informative TRR5-style pre-enrichment initialization for all crossed training arms; published selected diagonal kept separately as evaluation reference",
+    "alternative_considered": "warm-start every arm from the published selected enriched diagonal, with zero nonlinear residual",
+    "reason_for_preference": "old-bank prior exposure and potentially few remaining training errors could make the old-bank capacity cell uninformative; distinguish data support from prior knowledge",
+    "evidence_limit": "TRR5 reports100percent final fitting accuracy; exact selected-step fitting accuracy has not yet been measured by this task.",
+    "implementation_pending_actual_source_check": false,
+    "measured_reference_fit": {
+      "correct": 124354,
+      "tokens": 124371,
+      "exact": 1185,
+      "records": 1200,
+      "evidence": "experiments/TRR-0007/qualification_enriched_v2/run_evidence.json"
+    }
+  },
+  "resource_policy": "P05 window released; root grants one GPU lease at a time after concrete command/resource preflight and code/config review",
+  "fresh_truth_created": false,
+  "fresh_truth_opened": false,
+  "canonical_comparison_complete": false,
+  "updated_utc": "2026-09-06T08:39:30.897195+00:00",
+  "support_intervention_review": {
+    "prior_packet_position_premise_corrected": "2877/3600 original substitutions are in scored positions1..127; target record length was confused with insertion position",
+    "position_only_proposal": "rejected before execution as insufficiently informative",
+    "broader_recipe_v1": "unexecuted proposal;1600additional IDs were absent from original bank but present in enriched bank",
+    "requested_final_recipe": "Retain1080natural rows and2000legacy controlled IDs; use120new allowed public parent contexts and1600public-frequency-selected IDs absent from CURRENT enriched bank,3600controlled occurrences total, varied1..127 positions. Match1200records,124371postBOS positions and1536000draws.",
+    "selection_inputs": "permitted public fit candidate pool statistics, never evaluation error identities",
+    "private_fresh_truth_opened": false
+  },
+  "report_review_notes": [
+    "The packet position premise is false:2877/3600 old substitutions were already in1..127; distinguish record length from substitution position.",
+    "Broader bank has3600 controlled identities,1600 newly absent-from-current IDs plus2000 retained IDs.",
+    "The repeated bank v1-v5 token artifacts are byte-identical; metadata compatibility fixes and all preparation costs must be disclosed.",
+    "Current selected11tensors exactly equal retained reference; container SHA differs because metadata differs.",
+    "Checkpoint-selection validation has Alpaca and Pile, no Finance; describe this limitation.",
+    "Automatic review rejected old TRR6 truth-sidecar read; do not retry or reconstruct it indirectly. Use public-validation joint diagnostics and published aggregates.",
+    "Candidate frequency preparation scans7.18M public token occurrences; fixed supervised fitting count124371 is not a claim of matched total public-data inspection.",
+    "Runner loads each decoder once, then repeats its load_seconds in four cell receipts. Report that model-preparation cost once per method, not summed four times.",
+    "Shared normalized public E is1050673488bytes and required at inference; states alone understate footprint.",
+    "Warm measured inference is distinct from cached model/table loading and true cold process startup.",
+    "Historical A2 anchor is the qualified CPU-E numerical port; native normalization equivalence was not established.",
+    "No canonical comparison-complete or replacement claim; public-base primary, paired syntheticLoRA secondary."
+  ]
+}

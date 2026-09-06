@@ -1,0 +1,470 @@
+{
+  "access_contract": {
+    "holdout_rows_accessed": false,
+    "preflight_model_forward": false,
+    "private_truth_accessed": false,
+    "public_prefix_only": true,
+    "target_weights_accessed": false
+  },
+  "checks": {
+    "common_validation_geometry": [
+      48,
+      192,
+      2048
+    ],
+    "common_validation_post_bos": 3133,
+    "natural_token_mask_equivalence": {
+      "all_masks_equal_current": true,
+      "current_attention_mask_sha256": "e2ee7f711107a8a887a053657bc5b53bb210cc4735247108df08540a5a9ebb76",
+      "current_token_ids_sha256": "f562144cc786e5323c3d66bf0110803d43ea50d246694c1d600413e96496c37a",
+      "mask_rows_equal": true,
+      "natural_rows": 1080,
+      "natural_slot_indices_sha256": "468e3a01f805086151588ffbf0547fe97fbb1268265f6d7f1fd05630e1b12877",
+      "status": "PASS",
+      "support_attention_mask_sha256": "e2ee7f711107a8a887a053657bc5b53bb210cc4735247108df08540a5a9ebb76",
+      "support_token_ids_sha256": "977b8565d5f1734fd26e3088d4e93c894b3843d28ab21fa264ced36103d43d4c",
+      "token_rows_equal": true
+    },
+    "producer_source": {
+      "bytes": 45256,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/scripts/trr0005_prepare_public_activations.py",
+      "sha256": "e7d3f82df8d9f1c68eecdd7c077112eafc555acde25955549cb34836bd3b2322"
+    },
+    "producer_source_hash_expected": "e7d3f82df8d9f1c68eecdd7c077112eafc555acde25955549cb34836bd3b2322",
+    "shared_embedding_geometry": [
+      128256,
+      2048
+    ],
+    "support_bank_ready": true,
+    "support_current_length_vector_equal": true,
+    "support_plan_binding": true,
+    "support_token_binding": true
+  },
+  "commands": {
+    "capture": [
+      "env",
+      "PYTHONPATH=.:src:scripts",
+      "OMP_NUM_THREADS=8",
+      "MKL_NUM_THREADS=8",
+      "OPENBLAS_NUM_THREADS=8",
+      "python3",
+      "scripts/trr0005_prepare_public_activations.py",
+      "--mode",
+      "capture",
+      "--corpus-plan",
+      "experiments/TRR-0007/support/broader_bank_v1/corpus_plan.json",
+      "--original-artifact",
+      "../TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_cut4.safetensors",
+      "--original-records",
+      "../TRR-0004/experiments/TRR-0004/fit/adapter_v2/affine_fit_records.json",
+      "--common-validation-artifact",
+      "../TRR-0004/experiments/TRR-0004/fit/adapter_v2/validation_mixed_cut4.safetensors",
+      "--common-validation-records",
+      "../TRR-0004/experiments/TRR-0004/fit/adapter_v2/affine_validation_records.json",
+      "--embedding-table",
+      "../../outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+      "--constructed-token-artifact",
+      "experiments/TRR-0007/support/broader_bank_v1/constructed_public_tokens.safetensors",
+      "--output-root",
+      "experiments/TRR-0007/support/broader_capture_v1",
+      "--enriched-activation-artifact",
+      "experiments/TRR-0007/support/broader_capture_v1/enriched_fit_cut4.safetensors",
+      "--model",
+      "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+      "--device",
+      "cuda",
+      "--batch-records",
+      "8",
+      "--cut-depth",
+      "4",
+      "--min-free-gpu-gib",
+      "8",
+      "--max-reserved-gpu-gib",
+      "8",
+      "--max-host-rss-gib",
+      "16"
+    ],
+    "capture_output_root": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_capture_v1",
+    "verify": [
+      "env",
+      "PYTHONPATH=.:src",
+      "python3",
+      "scripts/trr0007_capture_fit.py",
+      "--mode",
+      "verify",
+      "--corpus-plan",
+      "experiments/TRR-0007/support/broader_bank_v1/corpus_plan.json",
+      "--constructed-tokens",
+      "experiments/TRR-0007/support/broader_bank_v1/constructed_public_tokens.safetensors",
+      "--current-tokens",
+      "../TRR-0005/experiments/TRR-0005/corpus/coverage_mix_v1/constructed_public_tokens.safetensors",
+      "--current-activations",
+      "../TRR-0005/outputs/TRR-0005/enriched_fit_cut4.safetensors",
+      "--capture-artifact",
+      "experiments/TRR-0007/support/broader_capture_v1/enriched_fit_cut4.safetensors",
+      "--receipt",
+      "experiments/TRR-0007/support/broader_capture_v1/capture_verification_receipt.json"
+    ],
+    "working_directory": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007"
+  },
+  "execution": {
+    "ended_utc": "2026-09-06T09:10:37Z",
+    "git_commit": "45fcb8eb4e57a1b5655469d1e7dfbefe2bbff0e4",
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "python": "3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]",
+    "resource_usage": {
+      "max_rss_bytes": 1007206400,
+      "system_cpu_seconds": 0.8147329999999999,
+      "user_cpu_seconds": 3.634029
+    },
+    "started_utc": "2026-09-06T09:10:34Z"
+  },
+  "forecast": {
+    "basis": "retained TRR5 capture receipt at identical model, cut, batch, and 1,200x192 geometry",
+    "expected_output_bytes": 947176760,
+    "live_guard": {
+      "failure_policy": "stop and preserve failure on OOM, non-finite activation, allocator/driver anomaly, or source mismatch",
+      "maximum_host_rss_bytes": 17179869184,
+      "maximum_reserved_gpu_bytes": 8589934592,
+      "minimum_free_gpu_bytes": 8589934592
+    },
+    "prior_capture_wall_seconds": 11.447659793004277,
+    "prior_peak_cuda_allocated_bytes": 2472678400,
+    "prior_peak_cuda_reserved_bytes": 2480930816,
+    "prior_peak_host_rss_bytes": 6063869952,
+    "qualification": "producer performs fixed batch-8 x 192 active-output bit-equivalence qualification before full capture"
+  },
+  "input_contract": {
+    "activation_splicing_allowed": false,
+    "controlled_rows": 120,
+    "controlled_slot_indices_sha256": "808a63e652361d9acd403651a64786da3260c04e16c68174192b26e1a542a0e8",
+    "coverage_arm": "coverage_mix_v1",
+    "natural_rows": 1080,
+    "natural_slot_indices_sha256": "468e3a01f805086151588ffbf0547fe97fbb1268265f6d7f1fd05630e1b12877",
+    "plan_schema": "token-reconstruction.trr0005-public-corpus-plan.v1",
+    "plan_status": "PREPARED_PUBLIC_DATA_NO_MODEL_FORWARD",
+    "post_bos_positions": 124371,
+    "real_p0_required": true,
+    "record_count": 1200,
+    "stored_width": 192,
+    "support_rows_contract": "arms.coverage_mix_v1.records plus token_artifact {token_ids, attention_mask}; rows ordered by slot 0..1199; target lengths must match mask"
+  },
+  "schema": "token-reconstruction.trr0007-p0-capture-preflight.v1",
+  "source_code": {
+    "adapter": {
+      "bytes": 44652,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/scripts/trr0007_capture_fit.py",
+      "sha256": "09f8bc75ceda1e5816018d1b517457306ec8ac3868803ecd6a248fd060e41563"
+    },
+    "scripts/trr0005_prepare_public_activations.py": {
+      "bytes": 45256,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/scripts/trr0005_prepare_public_activations.py",
+      "sha256": "e7d3f82df8d9f1c68eecdd7c077112eafc555acde25955549cb34836bd3b2322"
+    },
+    "src/token_reconstruction/public_activation.py": {
+      "bytes": 20009,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/src/token_reconstruction/public_activation.py",
+      "sha256": "3be43dd5b6a5918a48f289971ab2a833977a7f9d87094e6001c5c7cdc60ab76f"
+    },
+    "src/token_reconstruction/public_prefix.py": {
+      "bytes": 8297,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/src/token_reconstruction/public_prefix.py",
+      "sha256": "b9dca1d8d56c7c07413015aea4bde79e8ceac827c32ee9bc0d1a236ea1dd35f6"
+    },
+    "src/token_reconstruction/trr0005_public_corpus.py": {
+      "bytes": 34636,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/src/token_reconstruction/trr0005_public_corpus.py",
+      "sha256": "57afda7dd872fa8dbdd61de02e5421afada8943f799b50029074ec2f138dcfff"
+    }
+  },
+  "sources": {
+    "bank_receipt": {
+      "bytes": 129718,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_bank_v1/bank_construction_receipt.json",
+      "sha256": "6b22e97b2a81f9a9db99def05b6874de48e01cf7d3833dc7a919437d66013fd6"
+    },
+    "constructed_tokens": {
+      "attention_mask": {
+        "bytes": 1152168,
+        "dtype": "U8",
+        "keys": [
+          "attention_mask",
+          "token_ids"
+        ],
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_bank_v1/constructed_public_tokens.safetensors",
+        "sha256": "6d5b33e3eff1ce82a13f85153d85ecfe4da42977dcb227b2f301c141679c7d87",
+        "shape": [
+          1200,
+          192
+        ],
+        "tensor_key": "attention_mask"
+      },
+      "bytes": 1152168,
+      "dtype": "I32",
+      "keys": [
+        "attention_mask",
+        "token_ids"
+      ],
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_bank_v1/constructed_public_tokens.safetensors",
+      "sha256": "6d5b33e3eff1ce82a13f85153d85ecfe4da42977dcb227b2f301c141679c7d87",
+      "shape": [
+        1200,
+        192
+      ],
+      "tensor_key": "token_ids"
+    },
+    "corpus_plan": {
+      "bytes": 2527552,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_bank_v1/corpus_plan.json",
+      "sha256": "72b5d2e79828aa8f9c7556e1d6d102c76fe39f20bedf7880d4026fae58728cd9"
+    },
+    "current_activations": {
+      "attention_mask": {
+        "bytes": 947176760,
+        "dtype": "U8",
+        "keys": [
+          "activations",
+          "attention_mask",
+          "position_ids",
+          "post_bos_selector_large",
+          "post_bos_selector_small",
+          "token_ids"
+        ],
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/outputs/TRR-0005/enriched_fit_cut4.safetensors",
+        "sha256": "191cb77dae8d002402bcf3f126a20c5d8d34111a6e6871d66507503ca6725a99",
+        "shape": [
+          1200,
+          192
+        ],
+        "tensor_key": "attention_mask"
+      },
+      "bytes": 947176760,
+      "dtype": "BF16",
+      "keys": [
+        "activations",
+        "attention_mask",
+        "position_ids",
+        "post_bos_selector_large",
+        "post_bos_selector_small",
+        "token_ids"
+      ],
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/outputs/TRR-0005/enriched_fit_cut4.safetensors",
+      "sha256": "191cb77dae8d002402bcf3f126a20c5d8d34111a6e6871d66507503ca6725a99",
+      "shape": [
+        1200,
+        192,
+        2048
+      ],
+      "tensor_key": "activations",
+      "token_ids": {
+        "bytes": 947176760,
+        "dtype": "I32",
+        "keys": [
+          "activations",
+          "attention_mask",
+          "position_ids",
+          "post_bos_selector_large",
+          "post_bos_selector_small",
+          "token_ids"
+        ],
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/outputs/TRR-0005/enriched_fit_cut4.safetensors",
+        "sha256": "191cb77dae8d002402bcf3f126a20c5d8d34111a6e6871d66507503ca6725a99",
+        "shape": [
+          1200,
+          192
+        ],
+        "tensor_key": "token_ids"
+      }
+    },
+    "current_tokens": {
+      "attention_mask": {
+        "bytes": 1152168,
+        "dtype": "U8",
+        "keys": [
+          "attention_mask",
+          "token_ids"
+        ],
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/corpus/coverage_mix_v1/constructed_public_tokens.safetensors",
+        "sha256": "6c9bfd04b3bd912a0672e4e447fe0e592a0b3cefa3dbdef26e212e8816b59790",
+        "shape": [
+          1200,
+          192
+        ],
+        "tensor_key": "attention_mask"
+      },
+      "bytes": 1152168,
+      "dtype": "I32",
+      "keys": [
+        "attention_mask",
+        "token_ids"
+      ],
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0005/experiments/TRR-0005/corpus/coverage_mix_v1/constructed_public_tokens.safetensors",
+      "sha256": "6c9bfd04b3bd912a0672e4e447fe0e592a0b3cefa3dbdef26e212e8816b59790",
+      "shape": [
+        1200,
+        192
+      ],
+      "tensor_key": "token_ids"
+    },
+    "embedding_table": {
+      "bytes": 1050673488,
+      "dtype": "F32",
+      "keys": [
+        "embeddings"
+      ],
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+      "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+      "shape": [
+        128256,
+        2048
+      ],
+      "tensor_key": "embeddings"
+    },
+    "model": {
+      "config": {
+        "bytes": 877,
+        "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6/config.json",
+        "resolved_path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/3e3aaf51a035cb5092d9f6827a0dc074657ba88c",
+        "sha256_expected": "2febf68cea25bf4611be02b7536f2488a5ba523bb1134986e3610152abe74fdb",
+        "symlink": true
+      },
+      "generation_config": {
+        "bytes": 189,
+        "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6/generation_config.json",
+        "resolved_path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/75ae08310d6d23df373ee2644b497192b3cce6d8",
+        "sha256_expected": "88effbb63300dbbc7390143fbbdd9d9fa50587b37e8bfd16c8c90d4970a74a36",
+        "symlink": true
+      },
+      "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+      "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "snapshot_path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+      "weights": {
+        "bytes": 2471645608,
+        "hash_scope": "full model.safetensors; producer verifies during load",
+        "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6/model.safetensors",
+        "resolved_path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f",
+        "sha256_expected": "1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f",
+        "symlink": true
+      }
+    },
+    "original_artifact": {
+      "attention_mask": {
+        "bytes": 947176648,
+        "dtype": "U8",
+        "keys": [
+          "activations",
+          "attention_mask",
+          "position_ids",
+          "post_bos_selector_large",
+          "post_bos_selector_small",
+          "token_ids"
+        ],
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_cut4.safetensors",
+        "sha256": "d1c78fcf1acc91b57d51355ee11f267bf4c12f1bc7d5160164b3b6ea11b45344",
+        "shape": [
+          1200,
+          192
+        ],
+        "tensor_key": "attention_mask"
+      },
+      "bytes": 947176648,
+      "dtype": "BF16",
+      "keys": [
+        "activations",
+        "attention_mask",
+        "position_ids",
+        "post_bos_selector_large",
+        "post_bos_selector_small",
+        "token_ids"
+      ],
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_cut4.safetensors",
+      "sha256": "d1c78fcf1acc91b57d51355ee11f267bf4c12f1bc7d5160164b3b6ea11b45344",
+      "shape": [
+        1200,
+        192,
+        2048
+      ],
+      "tensor_key": "activations",
+      "token_ids": {
+        "bytes": 947176648,
+        "dtype": "I32",
+        "keys": [
+          "activations",
+          "attention_mask",
+          "position_ids",
+          "post_bos_selector_large",
+          "post_bos_selector_small",
+          "token_ids"
+        ],
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_cut4.safetensors",
+        "sha256": "d1c78fcf1acc91b57d51355ee11f267bf4c12f1bc7d5160164b3b6ea11b45344",
+        "shape": [
+          1200,
+          192
+        ],
+        "tensor_key": "token_ids"
+      }
+    },
+    "original_records": {
+      "bytes": 463510,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fit/adapter_v2/affine_fit_records.json",
+      "sha256": "3f733212efd62b19e71f60f002f4e9756b4975ebfb4dcabf0ac27935929f94ff"
+    },
+    "validation_artifact": {
+      "attention_mask": {
+        "bytes": 37795064,
+        "dtype": "U8",
+        "keys": [
+          "activations",
+          "attention_mask",
+          "token_ids"
+        ],
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fit/adapter_v2/validation_mixed_cut4.safetensors",
+        "sha256": "a8e7633ffb369864af33754c5ebb2d9a4ca9d6e7d4550731e8ff26e20c8200cf",
+        "shape": [
+          48,
+          192
+        ],
+        "tensor_key": "attention_mask"
+      },
+      "bytes": 37795064,
+      "dtype": "BF16",
+      "keys": [
+        "activations",
+        "attention_mask",
+        "token_ids"
+      ],
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fit/adapter_v2/validation_mixed_cut4.safetensors",
+      "sha256": "a8e7633ffb369864af33754c5ebb2d9a4ca9d6e7d4550731e8ff26e20c8200cf",
+      "shape": [
+        48,
+        192,
+        2048
+      ],
+      "tensor_key": "activations",
+      "token_ids": {
+        "bytes": 37795064,
+        "dtype": "I32",
+        "keys": [
+          "activations",
+          "attention_mask",
+          "token_ids"
+        ],
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fit/adapter_v2/validation_mixed_cut4.safetensors",
+        "sha256": "a8e7633ffb369864af33754c5ebb2d9a4ca9d6e7d4550731e8ff26e20c8200cf",
+        "shape": [
+          48,
+          192
+        ],
+        "tensor_key": "token_ids"
+      }
+    },
+    "validation_records": {
+      "bytes": 16456,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fit/adapter_v2/affine_validation_records.json",
+      "sha256": "30b422b681bef5e7af4c26d339e57dfb3571ecef8077bdc4be5d960ef05c9777"
+    }
+  },
+  "status": "PASS_CPU_PREFLIGHT_READY_FOR_ROOT_GPU_LEASE",
+  "task_id": "TRR-0007"
+}
