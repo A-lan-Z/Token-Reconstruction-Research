@@ -1,0 +1,137 @@
+{
+  "schema": "token-reconstruction.trr-p04-native-anchor-run-contract.v1",
+  "task_id": "TRR-P04",
+  "status": "PENDING_IMPLEMENTATION_TIMING_RELEASE",
+  "purpose": "bounded native A1+A2 K=256 anchor on the predeclared P04 12-record subset, separately per paired condition",
+  "source": {
+    "git_commit": "124ce70723c28a4d26bb1f6d123962c7c4f116f2",
+    "anchor_runner": {
+      "path": "scripts/trr_p04/native_anchor_runner.py",
+      "sha256": "e60ae69747549e7fa4814d436b1c7cdb0c33c8617749e4b306b6d727399169d8"
+    },
+    "watchdog": {
+      "path": "scripts/trr_p04/resource_watchdog.py",
+      "sha256": "cce2137ef5611983221ad199af5ec1c538e95c92db6d316c06baa5016c7dabf0"
+    },
+    "selection": {
+      "path": "experiments/TRR-P04/setup/public_selection-r2.json",
+      "sha256": "05f941e0dbcf29ea3efc47c7bc8abb3a7146a266eeea770f05052bb7728cde6a"
+    },
+    "target_plan": {
+      "path": "experiments/TRR-P04/setup/evaluator_target_plan.json",
+      "sha256": "55f5cc5ecc90599d8983ea1fa23d81a5a062178fd5dde6c9d19359c9fcc54fc2"
+    },
+    "observation_index": {
+      "path": "experiments/TRR-P04/runtime/evaluator-observations-r1/observation_index.json",
+      "sha256": "559aa0a4376afd777c305f2ed7ad176eff22d4a0d4671373ce07c80474664f82"
+    }
+  },
+  "panel": {
+    "records": 12,
+    "anchor_length_stratum": 32,
+    "post_bos_positions_per_record": 32,
+    "scored_positions_per_target": 384,
+    "styles": [
+      "pile_plain",
+      "finance_chat",
+      "alpaca_instruction"
+    ],
+    "records_per_style": 4,
+    "anchor_order_sha256": "906fc833e77fe677b8ba6562e2b22f0ccd9956d592441659e1c64cc035da8073",
+    "record_order_sha256": "53f165364993845f217acd3ba9d066e3a76021d22741084a99bd92c5145127ae",
+    "denominator_separate": true
+  },
+  "algorithm": {
+    "method_id": "native_a1_a2",
+    "implementation_identity": "frozen_a1_a2_k256",
+    "port_status": "exact PR7 algorithm on P04 panel/input port; not canonical dual-benchmark claim",
+    "proposal_k": 512,
+    "proposal_chunk": 256,
+    "candidate_k": 256,
+    "record_batch_size": 1,
+    "a2_fallback": false,
+    "tie_rule": "published proposal order and first argmax",
+    "logical_candidate_simulations_per_condition": 98304,
+    "executed_passes_per_record": 4,
+    "executed_candidate_simulations_per_condition_including_warmup_repeats": 393216,
+    "warmup_passes": 1,
+    "measured_repeat_passes": 3,
+    "prediction_exact_repeat_required": true
+  },
+  "public_reference": {
+    "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+    "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "model_snapshot": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+    "reference": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/configuration-search/fresh-blind-code/reference/strict_bos/round001_teacher.py",
+      "bytes": 31291,
+      "sha256": "10532a746cb8c30eb2caf338e206e1fa9d85e708d4db43a0d8fd4a2ff1a6f8bd"
+    },
+    "lens": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/blind/reconstructor_input/public_a1_lens.pt",
+      "bytes": 16787653,
+      "sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742"
+    },
+    "same_for_both_conditions": true,
+    "evaluator_target_update_loaded": false,
+    "target_update_weights_available_to_reconstructor": false
+  },
+  "observations": {
+    "public_base": {
+      "path": "experiments/TRR-P04/runtime/evaluator-observations-r1/observations/public_base.safetensors",
+      "bytes": 56749008,
+      "sha256": "efc947494aea18da63a497c48fdab9f3e5934f681394ab080421672da71bb870"
+    },
+    "p04_evaluator_target_update_v1": {
+      "path": "experiments/TRR-P04/runtime/evaluator-observations-r1/observations/p04_evaluator_target_update_v1.safetensors",
+      "bytes": 56749056,
+      "sha256": "42e910d1321770159d53c7d91b77b8e4c4c9b4c129e31e51326bbba84406e267"
+    }
+  },
+  "runs": {
+    "public_base": {
+      "condition": "public_base",
+      "output_root": "experiments/TRR-P04/runtime/native-anchor-public-r1",
+      "watchdog_root": "experiments/TRR-P04/runtime/watchdog/native-anchor-public-r1",
+      "status": "PENDING_EXCLUSIVE_GPU_RELEASE"
+    },
+    "p04_evaluator_target_update_v1": {
+      "condition": "p04_evaluator_target_update_v1",
+      "output_root": "experiments/TRR-P04/runtime/native-anchor-target-r1",
+      "watchdog_root": "experiments/TRR-P04/runtime/watchdog/native-anchor-target-r1",
+      "status": "PENDING_PUBLIC_ANCHOR_PASS"
+    }
+  },
+  "guards": {
+    "internal_min_free_gpu_bytes": 8589934592,
+    "internal_max_reserved_gpu_bytes": 6442450944,
+    "internal_max_host_rss_bytes": 17179869184,
+    "external_max_group_rss_bytes": 17179869184,
+    "external_min_host_mem_available_bytes": 10737418240,
+    "poll_seconds": 0.5,
+    "timeout_seconds": 900,
+    "fail_closed_on_unreadable_live_resource_data": true
+  },
+  "access": {
+    "source_rows_read": false,
+    "source_tokens_read": false,
+    "evaluation_truth_opened": false,
+    "target_update_weights_loaded": false,
+    "student_states_loaded": false,
+    "public_reference_loaded": true
+  },
+  "freeze_requirements": [
+    "implementation student timing release recorded before launch",
+    "all public/target observation metadata condition/order/geometry checks pass",
+    "same public reference resources and anchor rule for both conditions",
+    "exact-repeat predictions across warmup and measured passes",
+    "truth remains unopened"
+  ],
+  "publication_exclusions": [
+    "prediction token rows until root joint freeze",
+    "observation payloads",
+    "target update weights",
+    "source rows",
+    "evaluation truth"
+  ]
+}
