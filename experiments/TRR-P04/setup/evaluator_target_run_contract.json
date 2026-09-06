@@ -1,7 +1,7 @@
 {
   "schema": "token-reconstruction.trr-p04-evaluator-target-run-contract.v1",
   "task_id": "TRR-P04",
-  "status": "QUALIFIER_R5_READY",
+  "status": "TARGET_AND_OBSERVATIONS_READY_NO_TRUTH",
   "purpose": "evaluator-only target preparation; separate from student fitting and teacher construction",
   "source": {
     "git_commit": "63d4016f2e555e8460ea566cf967237dc94fb0c3",
@@ -202,14 +202,18 @@
     "private_update": "experiments/TRR-P04/private/evaluator_target_update/p04_evaluator_target_update_v1.safetensors",
     "private_receipt": "experiments/TRR-P04/private/evaluator_target_update/target_preparation_receipt.json",
     "no_evaluator_truth": true,
-    "no_source_text_or_tokens_serialized": true
+    "no_source_text_or_tokens_serialized": true,
+    "target_selection_audit": "experiments/TRR-P04/private/evaluator_target_update/target_selection_audit.json",
+    "paired_observation_evidence": "experiments/TRR-P04/runtime/evaluator-observations-r1/capture_evidence.json",
+    "paired_observation_index": "experiments/TRR-P04/runtime/evaluator-observations-r1/observation_index.json",
+    "paired_observation_watchdog": "experiments/TRR-P04/runtime/watchdog/evaluator-observations-r1/finish.json"
   },
   "reservation_gate": {
     "gpu_required": true,
     "exclusive_gpu_required": true,
-    "current_status": "GPU_WINDOW_GRANTED_BY_ROOT",
+    "current_status": "GPU_RELEASED_TO_IMPLEMENTATION_AFTER_CAPTURE",
     "do_not_run_without_root_release": true,
-    "qualification_gate": "qualifier PASS with recorded internal and external memory margin before full execute",
+    "qualification_gate": "PASS r5 at revised 5 GiB free / 10 GiB reserved internal policy; full execute and paired capture also PASS",
     "truth_opened": false
   },
   "prior_attempts": {
@@ -264,5 +268,89 @@
       "positive_smoke": "experiments/TRR-P04/setup/watchdog-smoke-p04-r3",
       "positive_smoke_status": "PASS"
     }
+  },
+  "completed_runs": {
+    "qualifier": {
+      "receipt": {
+        "path": "experiments/TRR-P04/runtime/evaluator-target-qualifier-r5/target_qualification_receipt.json",
+        "bytes": 6692,
+        "sha256": "436ee9af13012d2778fb7fa47814945233b1005782249101380847d36f91b97c"
+      },
+      "watchdog": {
+        "path": "experiments/TRR-P04/runtime/watchdog/evaluator-target-qualifier-r5/finish.json",
+        "bytes": 1090,
+        "sha256": "0d9de4a4fa4958306747d9a620ed44ed8d49e81edbc8dc4560a32f52eb949756"
+      },
+      "status": "PASS_TARGET_WORST_GEOMETRY_QUALIFICATION_NO_ARTIFACT",
+      "steps": 1,
+      "peak_allocated_bytes": 8920350208,
+      "peak_reserved_bytes": 9133096960,
+      "host_max_rss_bytes": 3704700928
+    },
+    "execute": {
+      "receipt": {
+        "path": "experiments/TRR-P04/private/evaluator_target_update/target_preparation_receipt.json",
+        "bytes": 29505,
+        "sha256": "d2c7d751233e4a11c3d9d4a14ededa25a2d35214185eead6705dc86f25f72582"
+      },
+      "watchdog": {
+        "path": "experiments/TRR-P04/runtime/watchdog/evaluator-target-execute-r1/finish.json",
+        "bytes": 1090,
+        "sha256": "f5d5f289b827548c2c3364feb9007035e61e7a6730c8e64d8e733428050ec523"
+      },
+      "artifact": {
+        "path": "experiments/TRR-P04/private/evaluator_target_update/p04_evaluator_target_update_v1.safetensors",
+        "bytes": 428208,
+        "sha256": "d95fe4db02582280a09379604840dc1cf8d890db3aa166e1dad204f657d52950"
+      },
+      "status": "PASS_EVALUATOR_TARGET_UPDATE_READY_NO_EVALUATION_TRUTH",
+      "steps": 30,
+      "peak_allocated_bytes": 8929722368,
+      "peak_reserved_bytes": 9133096960,
+      "host_max_rss_bytes": 3705802752,
+      "loss_first": 3.788069009780884,
+      "loss_last": 2.15740966796875
+    },
+    "paired_capture": {
+      "evidence": {
+        "path": "experiments/TRR-P04/runtime/evaluator-observations-r1/capture_evidence.json",
+        "bytes": 13051,
+        "sha256": "2d196687588d3c76660df622878b295983e75240b4fd68eb553a6229bacdfe44"
+      },
+      "index": {
+        "path": "experiments/TRR-P04/runtime/evaluator-observations-r1/observation_index.json",
+        "bytes": 17095,
+        "sha256": "559aa0a4376afd777c305f2ed7ad176eff22d4a0d4671373ce07c80474664f82"
+      },
+      "public_base": {
+        "path": "experiments/TRR-P04/runtime/evaluator-observations-r1/observations/public_base.safetensors",
+        "bytes": 56749008,
+        "sha256": "efc947494aea18da63a497c48fdab9f3e5934f681394ab080421672da71bb870"
+      },
+      "target_condition": {
+        "path": "experiments/TRR-P04/runtime/evaluator-observations-r1/observations/p04_evaluator_target_update_v1.safetensors",
+        "bytes": 56749056,
+        "sha256": "42e910d1321770159d53c7d91b77b8e4c4c9b4c129e31e51326bbba84406e267"
+      },
+      "watchdog": {
+        "path": "experiments/TRR-P04/runtime/watchdog/evaluator-observations-r1/finish.json",
+        "bytes": 1090,
+        "sha256": "d00c13523f92a2a1dc2156fca6bfbf041e9fe93c3007262d1c17007ddbbdfdee"
+      },
+      "status": "PASS_EVALUATOR_OBSERVATIONS_NO_TRUTH",
+      "records": 72,
+      "observation_geometry": [
+        72,
+        192,
+        2048
+      ]
+    }
+  },
+  "access": {
+    "target_update_training_rows_read": true,
+    "target_update_loaded_for_capture_only": true,
+    "evaluation_truth_opened": false,
+    "source_text_or_tokens_serialized": false,
+    "student_or_teacher_access": false
   }
 }

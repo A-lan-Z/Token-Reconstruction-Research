@@ -1,7 +1,7 @@
 {
   "schema": "token-reconstruction.trr-p04-evaluator-phase-map.v1",
   "task_id": "TRR-P04",
-  "status": "PREPARED_NO_TARGET_OR_TRUTH_ACCESS",
+  "status": "P2_OBSERVATION_CAPTURE_READY_NO_TRUTH",
   "frozen_bindings": {
     "selection": {
       "path": "experiments/TRR-P04/setup/public_selection-r2.json",
@@ -17,7 +17,66 @@
       "seed": 20260910
     },
     "observation_schema": "token-reconstruction.trr-p04-evaluator-observations.v1",
-    "native_anchor": "native_a1_a2 / frozen_a1_a2_k256 / K=256 / 384 scored positions per target"
+    "native_anchor": "native_a1_a2 / frozen_a1_a2_k256 / K=256 / 384 scored positions per target",
+    "target_update": {
+      "condition_id": "p04_evaluator_target_update_v1",
+      "lineage_id": "p04-target-lora-no-robots-v1-seed20260910",
+      "artifact": {
+        "path": "experiments/TRR-P04/private/evaluator_target_update/p04_evaluator_target_update_v1.safetensors",
+        "bytes": 428208,
+        "sha256": "d95fe4db02582280a09379604840dc1cf8d890db3aa166e1dad204f657d52950"
+      },
+      "receipt": {
+        "path": "experiments/TRR-P04/private/evaluator_target_update/target_preparation_receipt.json",
+        "bytes": 29505,
+        "sha256": "d2c7d751233e4a11c3d9d4a14ededa25a2d35214185eead6705dc86f25f72582"
+      },
+      "selection_audit": {
+        "path": "experiments/TRR-P04/private/evaluator_target_update/target_selection_audit.json",
+        "bytes": 6620,
+        "sha256": "341e668fa5f6e31c2b721b2a461574b8a88371d994584201f67af810bdc4c437"
+      },
+      "status": "PASS_EVALUATOR_TARGET_UPDATE_READY_NO_EVALUATION_TRUTH"
+    },
+    "observation_capture": {
+      "evidence": {
+        "path": "experiments/TRR-P04/runtime/evaluator-observations-r1/capture_evidence.json",
+        "bytes": 13051,
+        "sha256": "2d196687588d3c76660df622878b295983e75240b4fd68eb553a6229bacdfe44"
+      },
+      "index": {
+        "path": "experiments/TRR-P04/runtime/evaluator-observations-r1/observation_index.json",
+        "bytes": 17095,
+        "sha256": "559aa0a4376afd777c305f2ed7ad176eff22d4a0d4671373ce07c80474664f82"
+      },
+      "target_lineage_summary": {
+        "path": "experiments/TRR-P04/runtime/evaluator-observations-r1/target_lineage_summary.json",
+        "bytes": 634,
+        "sha256": "506fd6ab86728bf672b4acb8399246f950fbe51c32822b545ff0a4bb3db445c8"
+      },
+      "public_base_observation": {
+        "path": "experiments/TRR-P04/runtime/evaluator-observations-r1/observations/public_base.safetensors",
+        "bytes": 56749008,
+        "sha256": "efc947494aea18da63a497c48fdab9f3e5934f681394ab080421672da71bb870"
+      },
+      "target_observation": {
+        "path": "experiments/TRR-P04/runtime/evaluator-observations-r1/observations/p04_evaluator_target_update_v1.safetensors",
+        "bytes": 56749056,
+        "sha256": "42e910d1321770159d53c7d91b77b8e4c4c9b4c129e31e51326bbba84406e267"
+      },
+      "status": "PASS_EVALUATOR_OBSERVATIONS_NO_TRUTH",
+      "records": 72,
+      "conditions": [
+        "public_base",
+        "p04_evaluator_target_update_v1"
+      ],
+      "record_order_sha256": "53f165364993845f217acd3ba9d066e3a76021d22741084a99bd92c5145127ae",
+      "observation_geometry": [
+        72,
+        192,
+        2048
+      ]
+    }
   },
   "joint_freeze": {
     "schema": "token-reconstruction.trr-p04-joint-freeze-plan.v1",
@@ -114,31 +173,74 @@
       "id": "P1",
       "name": "evaluator_target_update",
       "owner": "evaluator",
-      "status": "SELECTION_AUDIT_PASS_TARGET_ARTIFACT_PENDING",
+      "status": "PASS_TARGET_ARTIFACT_READY_NO_EVALUATION_TRUTH",
       "truth_opened": false,
       "required_audit": "no_robots rendered-text/token overlap with all P04 public pools and fresh panel",
       "outputs": [
         "setup/target-preflight-r4/target_preparation_preflight.json",
         "setup/target-selection-audit-r4/target_selection_audit.json",
+        "runtime/evaluator-target-qualifier-r5/target_qualification_receipt.json",
         "private/evaluator_target_update/p04_evaluator_target_update_v1.safetensors",
-        "private/evaluator_target_update/target_preparation_receipt.json"
-      ]
+        "private/evaluator_target_update/target_preparation_receipt.json",
+        "private/evaluator_target_update/target_selection_audit.json",
+        "runtime/watchdog/evaluator-target-qualifier-r5/finish.json",
+        "runtime/watchdog/evaluator-target-execute-r1/finish.json"
+      ],
+      "run_bindings": {
+        "qualifier": {
+          "path": "experiments/TRR-P04/runtime/evaluator-target-qualifier-r5/target_qualification_receipt.json",
+          "bytes": 6692,
+          "sha256": "436ee9af13012d2778fb7fa47814945233b1005782249101380847d36f91b97c"
+        },
+        "qualifier_watchdog": {
+          "path": "experiments/TRR-P04/runtime/watchdog/evaluator-target-qualifier-r5/finish.json",
+          "bytes": 1090,
+          "sha256": "0d9de4a4fa4958306747d9a620ed44ed8d49e81edbc8dc4560a32f52eb949756"
+        },
+        "execute_receipt": {
+          "path": "experiments/TRR-P04/private/evaluator_target_update/target_preparation_receipt.json",
+          "bytes": 29505,
+          "sha256": "d2c7d751233e4a11c3d9d4a14ededa25a2d35214185eead6705dc86f25f72582"
+        },
+        "execute_watchdog": {
+          "path": "experiments/TRR-P04/runtime/watchdog/evaluator-target-execute-r1/finish.json",
+          "bytes": 1090,
+          "sha256": "f5d5f289b827548c2c3364feb9007035e61e7a6730c8e64d8e733428050ec523"
+        }
+      }
     },
     {
       "id": "P2",
       "name": "paired_observation_capture",
       "owner": "evaluator",
-      "status": "CODE_AND_PREFLIGHT_READY",
+      "status": "PASS_PAIRED_CAPTURE_NO_TRUTH",
       "truth_opened": false,
       "requires": [
         "P1 target update",
-        "root resource reservation"
+        "exclusive GPU reservation (satisfied and released)"
       ],
       "outputs": [
         "runtime/evaluator-observations-r1/<condition>.safetensors",
         "runtime/evaluator-observations-r1/observation_index.json",
         "runtime/evaluator-observations-r1/capture_evidence.json"
-      ]
+      ],
+      "run_bindings": {
+        "evidence": {
+          "path": "experiments/TRR-P04/runtime/evaluator-observations-r1/capture_evidence.json",
+          "bytes": 13051,
+          "sha256": "2d196687588d3c76660df622878b295983e75240b4fd68eb553a6229bacdfe44"
+        },
+        "index": {
+          "path": "experiments/TRR-P04/runtime/evaluator-observations-r1/observation_index.json",
+          "bytes": 17095,
+          "sha256": "559aa0a4376afd777c305f2ed7ad176eff22d4a0d4671373ce07c80474664f82"
+        },
+        "watchdog": {
+          "path": "experiments/TRR-P04/runtime/watchdog/evaluator-observations-r1/finish.json",
+          "bytes": 1090,
+          "sha256": "d00c13523f92a2a1dc2156fca6bfbf041e9fe93c3007262d1c17007ddbbdfdee"
+        }
+      }
     },
     {
       "id": "P3",
@@ -200,7 +302,40 @@
         "dataset_arrow_sha256": "5a9193e927d899d167fd40553d0b403499f5f9cf9a9254db19399a4d0b3550fb",
         "text_collisions": 0,
         "sequence_collisions": 0
+      },
+      "qualifier": {
+        "path": "experiments/TRR-P04/runtime/evaluator-target-qualifier-r5/target_qualification_receipt.json",
+        "sha256": "436ee9af13012d2778fb7fa47814945233b1005782249101380847d36f91b97c",
+        "status": "PASS_TARGET_WORST_GEOMETRY_QUALIFICATION_NO_ARTIFACT"
+      },
+      "execute": {
+        "path": "experiments/TRR-P04/private/evaluator_target_update/target_preparation_receipt.json",
+        "sha256": "d2c7d751233e4a11c3d9d4a14ededa25a2d35214185eead6705dc86f25f72582",
+        "status": "PASS_EVALUATOR_TARGET_UPDATE_READY_NO_EVALUATION_TRUTH"
+      },
+      "execute_watchdog": {
+        "path": "experiments/TRR-P04/runtime/watchdog/evaluator-target-execute-r1/finish.json",
+        "sha256": "f5d5f289b827548c2c3364feb9007035e61e7a6730c8e64d8e733428050ec523",
+        "status": "PASS"
       }
+    },
+    "evaluator_observation_capture": {
+      "evidence": {
+        "path": "experiments/TRR-P04/runtime/evaluator-observations-r1/capture_evidence.json",
+        "bytes": 13051,
+        "sha256": "2d196687588d3c76660df622878b295983e75240b4fd68eb553a6229bacdfe44"
+      },
+      "index": {
+        "path": "experiments/TRR-P04/runtime/evaluator-observations-r1/observation_index.json",
+        "bytes": 17095,
+        "sha256": "559aa0a4376afd777c305f2ed7ad176eff22d4a0d4671373ce07c80474664f82"
+      },
+      "watchdog": {
+        "path": "experiments/TRR-P04/runtime/watchdog/evaluator-observations-r1/finish.json",
+        "bytes": 1090,
+        "sha256": "d00c13523f92a2a1dc2156fca6bfbf041e9fe93c3007262d1c17007ddbbdfdee"
+      },
+      "status": "PASS_EVALUATOR_OBSERVATIONS_NO_TRUTH"
     }
   },
   "publication_copy": {
@@ -223,9 +358,14 @@
   },
   "access": {
     "evaluation_truth_opened": false,
-    "target_update_accessed": false,
-    "observation_capture_run": false,
+    "target_update_accessed": true,
+    "observation_capture_run": true,
     "native_anchor_run": false,
     "student_predictions_read": false
+  },
+  "resource_release": {
+    "status": "GPU_RELEASED_TO_IMPLEMENTATION",
+    "after": "paired observation capture",
+    "anchor_started": false
   }
 }
