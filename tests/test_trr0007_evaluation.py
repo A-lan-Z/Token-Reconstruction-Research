@@ -518,7 +518,18 @@ def test_synthetic_registration_binds_path_states_and_gate_receipts(tmp_path: Pa
         "method_freeze_sha256": method_freeze_record["sha256"],
         "selection_plan": source_record,
         "observations": observation_record,
-        "truth_opened": False,
+        "execution": {
+            "code_commit": "c" * 40,
+            "device": "cpu",
+            "model_loaded_by_producer": True,
+            "network_used": False,
+            "started_utc": "2026-09-06T00:00:00Z",
+            "ended_utc": "2026-09-06T00:00:01Z",
+            "truth_opened": False,
+            "target_labels_loaded": False,
+            "source_text_written": False,
+            "token_ids_written": False,
+        },
     }
     capture_record = write_json(capture_path, capture_payload)
 
@@ -582,6 +593,45 @@ def test_synthetic_registration_binds_path_states_and_gate_receipts(tmp_path: Pa
     public_metadata = gate._validate_public_metadata(registration, root=repo)
     assert public_metadata["method_freeze"]["sha256"] == method_freeze_record["sha256"]
     assert public_metadata["frequency_reference"]["sha256"] == frequency_record["sha256"]
+
+    invalid_captures = [
+        (
+            "top-level truth flag",
+            {**capture_payload, "truth_opened": True},
+        ),
+        (
+            "nested truth flag",
+            {
+                **capture_payload,
+                "execution": {**capture_payload["execution"], "truth_opened": True},
+            },
+        ),
+        (
+            "missing execution mapping",
+            {key: value for key, value in capture_payload.items() if key != "execution"},
+        ),
+        (
+            "non-mapping execution",
+            {**capture_payload, "execution": False},
+        ),
+    ]
+    for _description, invalid_capture in invalid_captures:
+        invalid_record = write_json(capture_path, invalid_capture)
+        with pytest.raises(register.RegisterError, match="records truth access"):
+            register._verify_execution_receipts(
+                root=repo,
+                method_freeze=method_freeze_payload,
+                method_freeze_record=method_freeze_record,
+                source_record=source_record,
+                exclusion_record=exclusion_record,
+                observation_record=observation_record,
+                capture_record=invalid_record,
+            )
+        invalid_registration = dict(registration)
+        invalid_registration["capture_receipt"] = invalid_record
+        with pytest.raises(gate.GateError, match="records truth access"):
+            gate._validate_public_metadata(invalid_registration, root=repo)
+    write_json(capture_path, capture_payload)
 
 
 

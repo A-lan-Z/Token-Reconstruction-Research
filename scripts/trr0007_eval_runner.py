@@ -902,6 +902,7 @@ def execute(
     repository_root: Path,
     device_name: str = "cuda",
 ) -> dict[str, Any]:
+    started_utc = _utc_now()
     root = _root(repository_root)
     registration_path = Path(registration_path).expanduser().resolve()
     registration = contract.load_registration(registration_path)
@@ -981,7 +982,8 @@ def execute(
             "timings": all_timings,
             "truth_opened": False,
             "candidate_arrays_persisted": False,
-            "started_utc": _utc_now(),
+            "started_utc": started_utc,
+            "ended_utc": _utc_now(),
             "elapsed_seconds": float(time.perf_counter() - started),
         }
         contract.write_create_only(output_root / "predictions.json", {
@@ -1011,6 +1013,8 @@ def execute(
             "error": str(exc),
             "truth_opened": False,
             "candidate_arrays_persisted": False,
+            "started_utc": started_utc,
+            "ended_utc": _utc_now(),
             "elapsed_seconds": float(time.perf_counter() - started),
         }
         try:

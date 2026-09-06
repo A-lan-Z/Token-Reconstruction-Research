@@ -226,7 +226,10 @@ def _validate_public_metadata(
         raise GateError("public capture selection binding changed")
     if not isinstance(capture.get("observations"), Mapping) or capture["observations"].get("sha256") != observation_binding["sha256"]:
         raise GateError("public capture observation binding changed")
-    if capture.get("truth_opened") is not False:
+    if capture.get("truth_opened") is True:
+        raise GateError("public capture receipt records truth access")
+    execution = capture.get("execution")
+    if not isinstance(execution, Mapping) or execution.get("truth_opened") is not False:
         raise GateError("public capture receipt records truth access")
     observation = _load_json(
         Path(observation_binding["path"]), description="public observation manifest"

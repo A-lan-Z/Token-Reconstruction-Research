@@ -142,7 +142,10 @@ def _verify_execution_receipts(
         raise RegisterError("capture receipt is not bound to observation manifest")
     if capture.get("method_freeze_sha256") != method_freeze_record["sha256"]:
         raise RegisterError("capture receipt is bound to a different method freeze")
-    if capture.get("truth_opened") is not False:
+    if capture.get("truth_opened") is True:
+        raise RegisterError("capture receipt records truth access")
+    execution = capture.get("execution")
+    if not isinstance(execution, Mapping) or execution.get("truth_opened") is not False:
         raise RegisterError("capture receipt records truth access")
     return selection, capture
 
