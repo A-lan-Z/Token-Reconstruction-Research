@@ -1,0 +1,153 @@
+{
+  "schema": "token-reconstruction.trr-p04-evaluator-target-run-contract.v1",
+  "task_id": "TRR-P04",
+  "status": "READY_FOR_EXCLUSIVE_GPU_RESERVATION",
+  "purpose": "evaluator-only target preparation; separate from student fitting and teacher construction",
+  "source": {
+    "git_commit": "e686cbe3f54f1b69d7f47163d79924b236cd4332",
+    "target_runner": {
+      "path": "scripts/trr_p04/prepare_evaluator_target.py",
+      "sha256": "323cf9b47d976d4ce4e4370e0597f8b6a18d5eda3d4565116905913d152bc060"
+    },
+    "watchdog": {
+      "path": "scripts/trr_p04/resource_watchdog.py",
+      "sha256": "aaab8630381080309c98dd416219d513d3ab47649e2df179f148ac6402036432"
+    },
+    "plan": {
+      "path": "experiments/TRR-P04/setup/evaluator_target_plan.json",
+      "sha256": "55f5cc5ecc90599d8983ea1fa23d81a5a062178fd5dde6c9d19359c9fcc54fc2"
+    },
+    "selection": {
+      "path": "experiments/TRR-P04/setup/public_selection-r2.json",
+      "sha256": "05f941e0dbcf29ea3efc47c7bc8abb3a7146a266eeea770f05052bb7728cde6a"
+    }
+  },
+  "frozen_recipe": {
+    "condition_id": "p04_evaluator_target_update_v1",
+    "lineage_id": "p04-target-lora-no-robots-v1-seed20260910",
+    "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+    "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "layers": [0, 1, 2, 3],
+    "modules": ["q_proj", "v_proj"],
+    "rank": 4,
+    "alpha": 4.0,
+    "initialization_seed": 20260910,
+    "optimizer": "AdamW",
+    "learning_rate": 0.00075,
+    "weight_decay": 0.0,
+    "gradient_clip_norm": 1.0,
+    "steps": 30,
+    "record_batch_size": 8,
+    "maximum_tokens_including_bos": 192,
+    "batch_schedule": "row=(step*record_batch_size+offset) mod records",
+    "objective": "full-vocabulary causal next-token cross-entropy",
+    "target_rows": 256,
+    "target_row_order_sha256": "42fb5bb7dfc58dba8ccf9e3b288e787fd88cc1788e936ee934cfbbdc86de2fd2"
+  },
+  "assets": {
+    "model_snapshot": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+    "model_weights_bytes": 2471645608,
+    "model_weights_sha256": "1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f",
+    "dataset_id": "HuggingFaceH4/no_robots",
+    "dataset_revision": "e6f9a4ac5c37faeb744ba9ecf0473184d7f8105b",
+    "dataset_arrow": "/home/alanz/.cache/huggingface/datasets/HuggingFaceH4___no_robots/default/0.0.0/e6f9a4ac5c37faeb744ba9ecf0473184d7f8105b/no_robots-train.arrow",
+    "dataset_arrow_bytes": 16503208,
+    "dataset_arrow_sha256": "5a9193e927d899d167fd40553d0b403499f5f9cf9a9254db19399a4d0b3550fb",
+    "dataset_info_sha256": "5b18eaa76054da66839dd9c4bab7069504ea8072f917948d9adc1e00aec84b7d",
+    "student_training_access": false,
+    "teacher_access": false,
+    "fresh_panel_access": false
+  },
+  "guards": {
+    "launch_wrapper": "scripts/trr_p04/resource_watchdog.py",
+    "poll_seconds": 0.5,
+    "maximum_group_rss_bytes": 17179869184,
+    "minimum_host_mem_available_bytes": 10737418240,
+    "target_internal_min_free_gpu_bytes": 8589934592,
+    "target_internal_max_reserved_gpu_bytes": 8589934592,
+    "target_internal_max_host_rss_bytes": 17179869184,
+    "target_internal_guard_frequency": "before model load, after model load, after LoRA install, and after every training step",
+    "fail_closed_on_unreadable_live_resource_data": true
+  },
+  "environment": {
+    "CUDA_VISIBLE_DEVICES": "0",
+    "OMP_NUM_THREADS": "4",
+    "MKL_NUM_THREADS": "4",
+    "TOKENIZERS_PARALLELISM": "false",
+    "PYTHONPATH": ".:src",
+    "HF_HUB_OFFLINE": "1",
+    "HF_DATASETS_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1"
+  },
+  "commands": {
+    "qualifier": {
+      "requirement": "run first on exclusive GPU; review PASS and measured margin before execute",
+      "timeout_seconds": 300,
+      "watchdog_output_root": "experiments/TRR-P04/runtime/watchdog/evaluator-target-qualifier-r1",
+      "target_output_root": "experiments/TRR-P04/runtime/evaluator-target-qualifier-r1",
+      "argv": [
+        "python3", "scripts/trr_p04/resource_watchdog.py",
+        "--output-root", "experiments/TRR-P04/runtime/watchdog/evaluator-target-qualifier-r1",
+        "--timeout-seconds", "300",
+        "--poll-seconds", "0.5",
+        "--max-rss-bytes", "17179869184",
+        "--min-available-bytes", "10737418240",
+        "--label", "p04-evaluator-target-qualifier-r1",
+        "--",
+        "env",
+        "CUDA_VISIBLE_DEVICES=0", "HF_HUB_OFFLINE=1", "HF_DATASETS_OFFLINE=1", "TRANSFORMERS_OFFLINE=1",
+        "TOKENIZERS_PARALLELISM=false", "OMP_NUM_THREADS=4", "MKL_NUM_THREADS=4", "PYTHONPATH=.:src",
+        "python3", "scripts/trr_p04/prepare_evaluator_target.py", "--qualify-only",
+        "--plan", "experiments/TRR-P04/setup/evaluator_target_plan.json",
+        "--selection", "experiments/TRR-P04/setup/public_selection-r2.json",
+        "--dataset-arrow", "/home/alanz/.cache/huggingface/datasets/HuggingFaceH4___no_robots/default/0.0.0/e6f9a4ac5c37faeb744ba9ecf0473184d7f8105b/no_robots-train.arrow",
+        "--tokenizer", "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+        "--model-snapshot", "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+        "--output-root", "experiments/TRR-P04/runtime/evaluator-target-qualifier-r1",
+        "--device", "cuda"
+      ]
+    },
+    "execute": {
+      "requirement": "run only after qualifier PASS and root confirms exclusive GPU; creates private target artifact",
+      "timeout_seconds": 900,
+      "watchdog_output_root": "experiments/TRR-P04/runtime/watchdog/evaluator-target-execute-r1",
+      "target_output_root": "experiments/TRR-P04/private/evaluator_target_update",
+      "argv": [
+        "python3", "scripts/trr_p04/resource_watchdog.py",
+        "--output-root", "experiments/TRR-P04/runtime/watchdog/evaluator-target-execute-r1",
+        "--timeout-seconds", "900",
+        "--poll-seconds", "0.5",
+        "--max-rss-bytes", "17179869184",
+        "--min-available-bytes", "10737418240",
+        "--label", "p04-evaluator-target-execute-r1",
+        "--",
+        "env",
+        "CUDA_VISIBLE_DEVICES=0", "HF_HUB_OFFLINE=1", "HF_DATASETS_OFFLINE=1", "TRANSFORMERS_OFFLINE=1",
+        "TOKENIZERS_PARALLELISM=false", "OMP_NUM_THREADS=4", "MKL_NUM_THREADS=4", "PYTHONPATH=.:src",
+        "python3", "scripts/trr_p04/prepare_evaluator_target.py", "--execute",
+        "--plan", "experiments/TRR-P04/setup/evaluator_target_plan.json",
+        "--selection", "experiments/TRR-P04/setup/public_selection-r2.json",
+        "--dataset-arrow", "/home/alanz/.cache/huggingface/datasets/HuggingFaceH4___no_robots/default/0.0.0/e6f9a4ac5c37faeb744ba9ecf0473184d7f8105b/no_robots-train.arrow",
+        "--tokenizer", "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+        "--model-snapshot", "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+        "--output-root", "experiments/TRR-P04/private/evaluator_target_update",
+        "--device", "cuda"
+      ]
+    }
+  },
+  "outputs": {
+    "qualifier": "experiments/TRR-P04/runtime/evaluator-target-qualifier-r1/target_qualification_receipt.json",
+    "private_update": "experiments/TRR-P04/private/evaluator_target_update/p04_evaluator_target_update_v1.safetensors",
+    "private_receipt": "experiments/TRR-P04/private/evaluator_target_update/target_preparation_receipt.json",
+    "no_evaluator_truth": true,
+    "no_source_text_or_tokens_serialized": true
+  },
+  "reservation_gate": {
+    "gpu_required": true,
+    "exclusive_gpu_required": true,
+    "current_status": "GPU_WINDOW_PENDING",
+    "do_not_run_without_root_release": true,
+    "qualification_gate": "qualifier PASS with recorded internal and external memory margin before full execute",
+    "truth_opened": false
+  }
+}
