@@ -958,6 +958,7 @@ def _anchor_binding(
     anchor_rows = [records[index] for index in anchor_indices]
     return {
         "record_count": len(anchor_rows),
+        "record_ids": [str(row["record_id"]) for row in anchor_rows],
         "post_bos_positions": sum(int(row["length_stratum"]) for row in anchor_rows),
         "record_order_sha256": record_order_sha256(anchor_rows),
         "full_panel_slice_digest": _prediction_digest(expected_predictions, expected_ties),
