@@ -1,0 +1,159 @@
+{
+  "candidate_arrays_persisted": false,
+  "cell_order": [
+    "pile__public_base",
+    "pile__public_lora_2601",
+    "finance__public_base",
+    "finance__public_lora_2601"
+  ],
+  "code_bindings": [
+    {
+      "bytes": 32507,
+      "path": "scripts/trr0006_run_predictions.py",
+      "role": "prediction_runner",
+      "sha256": "b19558a99d9742f48636c611381e167556b0878ca967bd40c9193c22aeda89cc"
+    },
+    {
+      "bytes": 25360,
+      "path": "scripts/trr0006_prediction_contract.py",
+      "role": "prediction_contract",
+      "sha256": "e99f2e7c0fb27250cd47f2db9511ff2162d8f7efb1c17d13dc837797bfacd6dc"
+    },
+    {
+      "bytes": 55256,
+      "path": "src/token_reconstruction/trr0005_joint_decoder.py",
+      "role": "frozen_decoder_numerics",
+      "sha256": "9cab3cf5ad664c37d91bcd90fe1852df71da25800ddf37291a57000908d3d38f"
+    }
+  ],
+  "code_commit": "33dc6258614188927751ade45a0f0a2efe1f8361",
+  "decision_plan": {
+    "bytes": 15768,
+    "path": "experiments/TRR-0006/decision_plan.json",
+    "sha256": "edeb1bb05a00ad3f580d415f1b9ab632f588b3c50fd1ed9c2f2e055737c766ea"
+  },
+  "decision_plan_sha256": "edeb1bb05a00ad3f580d415f1b9ab632f588b3c50fd1ed9c2f2e055737c766ea",
+  "execution_binding": {
+    "code_commit": "33dc6258614188927751ade45a0f0a2efe1f8361",
+    "files": [
+      {
+        "bytes": 47526,
+        "path": "scripts/trr0006_freeze_score.py",
+        "role": "scoring_driver",
+        "sha256": "2ef2efbc14d3ca2e4085f0cc6c995f49d7f4aa76d4a77ada445e28618d361a0b"
+      },
+      {
+        "bytes": 34285,
+        "path": "scripts/trr0006_freeze_pair.py",
+        "role": "public_freeze_gate",
+        "sha256": "aa324c1fea8a1fbe4923f4855b2f59ee2a3b4e92710f47933552e92be0ed102f"
+      },
+      {
+        "bytes": 37785,
+        "path": "scripts/trr0006_score_pair.py",
+        "role": "pair_scorer",
+        "sha256": "56daceec00e9cddea685496f224be39de03a2eec369599f68ce9717e4ffdf97a"
+      }
+    ],
+    "schema": "token-reconstruction.trr0006-scoring-execution-binding.v1"
+  },
+  "geometry": {
+    "capture_batch_records": 8,
+    "capture_sequence_tokens": 192,
+    "chunk_records": 8,
+    "hidden_size": 2048,
+    "scored_post_bos_tokens": 127,
+    "scored_sequence_tokens": 128,
+    "stored_sequence_tokens": 128
+  },
+  "method_ids": [
+    "enriched__affine_causal_h_attention128",
+    "enriched__affine_trained_diagonal_attention128"
+  ],
+  "methods": {
+    "enriched__affine_causal_h_attention128": {
+      "base_method_id": "affine_causal_h_attention128",
+      "decision_rule": "joint affine path plus zero-initialized causal H_0..H_i attention correction",
+      "state": {
+        "bytes": 20990668,
+        "path": "experiments/TRR-0005/joint_fit_qknorm_v1/enriched/affine_causal_h_attention128/selected.safetensors",
+        "sha256": "ee910b14ad6f282bb933ea44ad24453cb5cce1470c65dbc09d8bcc16f3e8abfd",
+        "source_commit": "da82f6cac45e09ae83452198344c547553cb4433"
+      }
+    },
+    "enriched__affine_trained_diagonal_attention128": {
+      "base_method_id": "affine_trained_diagonal_attention128",
+      "decision_rule": "joint affine path plus trained current-position-only diagonal attention correction",
+      "state": {
+        "bytes": 20990652,
+        "path": "experiments/TRR-0005/joint_fit_v1/enriched/affine_trained_diagonal_attention128/selected.safetensors",
+        "sha256": "696eb9fc951e85356a06575faf18a2011616692a086bdac3b2fa368e69d599a2",
+        "source_commit": "da82f6cac45e09ae83452198344c547553cb4433"
+      }
+    }
+  },
+  "numerical_settings": {
+    "activation_input_dtype": "torch.bfloat16",
+    "autocast": false,
+    "cpu_interop_threads": 32,
+    "cpu_intraop_threads": 8,
+    "cuda_cudnn_allow_tf32": true,
+    "cuda_matmul_allow_tf32": false,
+    "decoder_compute_dtype": "torch.float32",
+    "embedding_dtype": "torch.float32",
+    "float32_matmul_precision": "highest",
+    "staged_activation_dtype": "torch.float32",
+    "staged_mask_dtype": "torch.bool"
+  },
+  "observation_manifest": {
+    "bytes": 5318,
+    "path": "experiments/TRR-0006/panel_capture_v1/observations.json",
+    "sha256": "abeb22804a38947ad67b7cf3a4584fcb569e7dcad7fba48234f64c773511ff0e"
+  },
+  "output_root": "experiments/TRR-0006/predictions_v1",
+  "qualification_only": false,
+  "records_per_domain": 1536,
+  "resource_guard": {
+    "maximum_reserved_gpu_bytes": 6442450944,
+    "maximum_rss_bytes": 17179869184,
+    "maximum_seconds": 1800,
+    "minimum_free_gpu_bytes": 8589934592,
+    "minimum_host_available_bytes": 10737418240
+  },
+  "runtime_assets": {
+    "normalized_public_E": {
+      "bytes": 1050673488,
+      "dtype": "torch.float32",
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+      "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+      "shape": [
+        128256,
+        2048
+      ]
+    }
+  },
+  "schema": "token-reconstruction.trr0006-frozen-pair-prediction-registration.v1",
+  "source_lineage": {
+    "maintenance_inference_equivalence": "No universal/native equivalence claim; scoped fixture equivalence passed",
+    "post_score_maintenance_commit": "1dba67a8dc75844727866cb4273da28a311df216",
+    "published_parent_commit": "3a7e8f579e713c3e41d02639237042ca26fd019b",
+    "scientific_source_commit": "da82f6cac45e09ae83452198344c547553cb4433"
+  },
+  "source_record_ids_sha256": {
+    "finance": "e7e8e78bf1527252d12888b69f727bd70590d5c14cc2ed242231bee8a934c118",
+    "pile": "b76254217d4c173c22639f221b2bda7d6fb2274a8c877f8addb7d560252fabbd"
+  },
+  "source_selection": {
+    "bytes": 2135542,
+    "path": "experiments/TRR-0006/source_selection.json",
+    "sha256": "75909aaf0f9e40176c197d86c09651097010a11519855f1db3dc50fe5e754f43"
+  },
+  "status": "FROZEN_PREDICTION_REGISTRATION",
+  "task_id": "TRR-0006",
+  "timing_contract": {
+    "measured_runs_per_record": 1,
+    "repeat_integrity": "Require warmup and measured predicted IDs to match exactly",
+    "warmup_runs_per_record": 1
+  },
+  "truth_opened": false
+}
