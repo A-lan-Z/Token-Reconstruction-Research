@@ -592,7 +592,7 @@ def capture_public(args: argparse.Namespace) -> dict[str, Any]:
                 batches=batches,
                 model_snapshot=model_snapshot,
                 lora_config_path=lora_config_path,
-                lora_update=lora_update_path,
+                lora_update_path=lora_update_path,
                 output_root=output_root,
                 records_per_domain=panel.RECORDS_PER_DOMAIN,
                 record_ids_sha256=record_ids_sha256,
