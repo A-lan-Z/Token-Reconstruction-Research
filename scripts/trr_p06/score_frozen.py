@@ -81,6 +81,21 @@ def _sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _json_digest(value: Any) -> str:
+    try:
+        encoded = json.dumps(
+            value, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False
+        ).encode("utf-8")
+    except (TypeError, ValueError) as exc:
+        raise P06ScoreError("value is not canonical-JSON serializable") from exc
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def _sequence_digest(row: np.ndarray) -> str:
+    values = np.asarray(row, dtype=np.int32)
+    return hashlib.sha256(np.ascontiguousarray(values).tobytes(order="C")).hexdigest()
+
+
 def _actual_record(path: Path, *, root: Path | None = None, description: str) -> dict[str, Any]:
     path = path.expanduser().resolve()
     record = {"path": str(path), "bytes": int(path.stat().st_size), "sha256": _sha256_file(path)}
@@ -154,6 +169,50 @@ def _verify_binding(
     if payload.get("truth_opened") is True:
         raise P06ScoreError(f"{name} was written after truth access")
     return actual
+
+
+def _load_selection_identity(
+    binding: Mapping[str, Any],
+    *,
+    root: Path,
+) -> dict[str, Any]:
+    """Read only the frozen selection metadata needed to bind truth rows."""
+
+    path = _resolve_record_path(binding, root=root, description="source selection")
+    selection = _load_json(path, description="source selection")
+    records = selection.get("selection_rule", {}).get("records")
+    if not isinstance(records, Mapping) or set(records) != set(DOMAINS):
+        raise P06ScoreError("source selection lacks the two ordered domain record lists")
+    record_ids: dict[str, list[str]] = {}
+    sequence_hashes: dict[str, list[str]] = {}
+    for domain in DOMAINS:
+        rows = records[domain]
+        if not isinstance(rows, list) or len(rows) != RECORDS_PER_DOMAIN:
+            raise P06ScoreError(f"source selection record count changed: {domain}")
+        ids: list[str] = []
+        hashes: list[str] = []
+        for index, row in enumerate(rows):
+            if not isinstance(row, Mapping):
+                raise P06ScoreError(f"source selection row is malformed: {domain}/{index}")
+            record_id = row.get("record_id")
+            if not isinstance(record_id, str) or not record_id:
+                raise P06ScoreError(f"source selection record ID is malformed: {domain}/{index}")
+            ids.append(record_id)
+            hashes.append(
+                _require_digest(
+                    row.get("final_sequence_sha256"),
+                    description=f"source selection final sequence {domain}/{index}",
+                )
+            )
+        if len(set(ids)) != RECORDS_PER_DOMAIN or len(set(hashes)) != RECORDS_PER_DOMAIN:
+            raise P06ScoreError(f"source selection rows are not unique: {domain}")
+        record_ids[domain] = ids
+        sequence_hashes[domain] = hashes
+    return {
+        "record_ids": record_ids,
+        "record_ids_sha256": {domain: _json_digest(record_ids[domain]) for domain in DOMAINS},
+        "final_sequence_sha256": sequence_hashes,
+    }
 
 
 def _require_digest(value: Any, *, description: str) -> str:
@@ -300,7 +359,12 @@ def _validate_student_matrix(
             if domain in geometry_by_domain and geometry_by_domain[domain] != geometry:
                 raise P06ScoreError(f"paired targets changed source order or mask geometry: {domain}")
             geometry_by_domain[domain] = geometry
-    return normalized, {"states": checked_states, "observation_sha256": observation_by_cell, "geometry": geometry_by_domain}
+    return normalized, {
+        "states": checked_states,
+        "observation_sha256": observation_by_cell,
+        "geometry": geometry_by_domain,
+        "record_ids_sha256": {domain: geometry_by_domain[domain][0] for domain in DOMAINS},
+    }
 
 
 def _validate_anchor_matrix(
@@ -387,6 +451,10 @@ def validate_joint_freeze(
     if not isinstance(preconditions, Mapping) or any(preconditions.get(key) is not True for key in required_preconditions):
         raise P06ScoreError("joint freeze scientific preconditions are incomplete")
     students, student_meta = _validate_student_matrix(manifest, root=root)
+    selection_identity = _load_selection_identity(bindings["source_selection"], root=root)
+    if selection_identity["record_ids_sha256"] != student_meta["record_ids_sha256"]:
+        raise P06ScoreError("student source-order digests differ from frozen source selection")
+    student_meta.update(selection_identity)
     anchors = _validate_anchor_matrix(manifest, freeze, root=root)
     return {
         "schema": "token-reconstruction.trr-p06-joint-validation.v1",
@@ -440,11 +508,29 @@ def _load_truth_manifest(
     path: Path,
     *,
     root: Path,
+    validated: Mapping[str, Any],
     records_per_domain: int = RECORDS_PER_DOMAIN,
 ) -> tuple[dict[str, np.ndarray], dict[str, Any]]:
     manifest = _load_json(path, description="P06 truth manifest")
     if manifest.get("schema") != TRUTH_SCHEMA or manifest.get("task_id") != TASK_ID or manifest.get("status") != "TRUTH_READY_AFTER_JOINT_FREEZE":
         raise P06ScoreError("truth manifest is not the post-freeze status")
+
+    expected_freeze_sha = validated.get("freeze_receipt", {}).get("sha256")
+    expected_selection_sha = validated.get("bindings", {}).get("source_selection", {}).get("sha256")
+    if _require_digest(manifest.get("joint_freeze_sha256"), description="truth joint-freeze binding") != expected_freeze_sha:
+        raise P06ScoreError("truth manifest is bound to a different joint freeze")
+    if _require_digest(manifest.get("source_selection_sha256"), description="truth source-selection binding") != expected_selection_sha:
+        raise P06ScoreError("truth manifest is bound to a different source selection")
+
+    expected_ids = validated.get("student_metadata", {}).get("record_ids_sha256")
+    declared_ids = manifest.get("record_ids_sha256")
+    if not isinstance(declared_ids, Mapping) or dict(declared_ids) != expected_ids:
+        raise P06ScoreError("truth manifest record order differs from frozen student sources")
+    expected_sequences = validated.get("student_metadata", {}).get("final_sequence_sha256")
+    declared_sequences = manifest.get("final_sequence_sha256")
+    if not isinstance(declared_sequences, Mapping) or dict(declared_sequences) != expected_sequences:
+        raise P06ScoreError("truth manifest sequence fingerprints differ from frozen selection")
+
     domains = manifest.get("domains")
     if not isinstance(domains, Mapping) or set(domains) != set(DOMAINS):
         raise P06ScoreError("truth manifest domain set changed")
@@ -459,6 +545,9 @@ def _load_truth_manifest(
             raise P06ScoreError(f"truth {domain} geometry or dtype changed")
         if not np.all(array[:, 0] == BOS_TOKEN_ID) or np.any(array < 0) or np.any(array >= VOCABULARY_SIZE):
             raise P06ScoreError(f"truth {domain} token IDs are outside the frozen public geometry")
+        observed_sequences = [_sequence_digest(row) for row in array]
+        if observed_sequences != expected_sequences[domain]:
+            raise P06ScoreError(f"truth {domain} row order or sequence fingerprints differ from frozen selection")
         truth[domain] = array.astype(np.int64, copy=False)
         records[domain] = actual
     return truth, records
@@ -636,7 +725,10 @@ def score_arrays(
             or np.any(labels >= VOCABULARY_SIZE)
         ):
             raise P06ScoreError(f"truth array IDs changed: {domain}")
-        record_ids = tuple(f"{domain}-opaque-{index:04d}" for index in range(RECORDS_PER_DOMAIN))
+        record_ids_value = verified.get("student_metadata", {}).get("record_ids", {}).get(domain)
+        if not isinstance(record_ids_value, list) or len(record_ids_value) != RECORDS_PER_DOMAIN:
+            raise P06ScoreError(f"validated source record IDs are missing: {domain}")
+        record_ids = tuple(record_ids_value)
         mask = np.ones((RECORDS_PER_DOMAIN, SEQUENCE_TOKENS), dtype=bool)
         for target in TARGETS:
             cell_id = _matrix_key(domain, target)
@@ -731,7 +823,9 @@ def run(
         prediction_manifest_path=prediction_manifest_path,
     )
     truth_manifest = Path(truth_manifest_path).expanduser().resolve()
-    truth_by_domain, truth_records = _load_truth_manifest(truth_manifest, root=root)
+    truth_by_domain, truth_records = _load_truth_manifest(
+        truth_manifest, root=root, validated=verified
+    )
     result = score_arrays(verified, repository_root=root, truth_by_domain=truth_by_domain)
     result["provenance"] = {
         "joint_validation": {

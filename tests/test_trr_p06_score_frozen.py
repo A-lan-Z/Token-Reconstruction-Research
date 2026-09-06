@@ -26,6 +26,11 @@ def _digest(value: object) -> str:
     ).hexdigest()
 
 
+def _sequence_digest(row: np.ndarray) -> str:
+    values = np.asarray(row, dtype=np.int32)
+    return hashlib.sha256(np.ascontiguousarray(values).tobytes(order="C")).hexdigest()
+
+
 def _record(path: Path, root: Path) -> dict[str, object]:
     return {
         "path": path.resolve().relative_to(root.resolve()).as_posix(),
@@ -43,15 +48,39 @@ def _fixture(tmp_path: Path) -> dict[str, Path]:
     (root / "assets").mkdir()
     truth = np.zeros((256, 128), dtype=np.int64)
     truth[:, 0] = score_frozen.BOS_TOKEN_ID
-    truth[:, 1:] = 1000 + np.arange(127)
+    for row in range(256):
+        truth[row, 1:] = 1000 + row * 127 + np.arange(127)
     truth_path = root / "assets" / "truth.npy"
     np.save(truth_path, truth)
 
     plan_path = root / "plan.json"
     selection_path = root / "selection.json"
     observation_path = root / "observations.json"
-    for path in (plan_path, selection_path, observation_path):
-        _write_json(path, {"task_id": "TRR-P06", "truth_opened": False})
+    _write_json(plan_path, {"task_id": "TRR-P06", "truth_opened": False})
+    _write_json(observation_path, {"task_id": "TRR-P06", "truth_opened": False})
+    sequence_hashes = {
+        domain: [_sequence_digest(row) for row in truth]
+        for domain in DOMAINS
+    }
+    _write_json(
+        selection_path,
+        {
+            "task_id": "TRR-P06",
+            "truth_opened": False,
+            "selection_rule": {
+                "records": {
+                    domain: [
+                        {
+                            "record_id": f"{domain}-{index}",
+                            "final_sequence_sha256": sequence_hashes[domain][index],
+                        }
+                        for index in range(256)
+                    ]
+                    for domain in DOMAINS
+                }
+            },
+        },
+    )
     bindings = {
         "plan": _record(plan_path, root),
         "source_selection": _record(selection_path, root),
@@ -177,6 +206,10 @@ def _fixture(tmp_path: Path) -> dict[str, Path]:
         "schema": score_frozen.TRUTH_SCHEMA,
         "task_id": "TRR-P06",
         "status": "TRUTH_READY_AFTER_JOINT_FREEZE",
+        "joint_freeze_sha256": _sha(freeze_path),
+        "source_selection_sha256": _sha(selection_path),
+        "record_ids_sha256": record_ids_sha,
+        "final_sequence_sha256": sequence_hashes,
         "domains": {domain: _record(truth_path, root) for domain in DOMAINS},
     }
     _write_json(truth_manifest_path, truth_manifest)
@@ -255,4 +288,21 @@ def test_joint_freeze_rehashes_prediction_bytes_before_truth(tmp_path: Path) -> 
             repository_root=fixture["root"],
             freeze_receipt_path=fixture["freeze"],
             prediction_manifest_path=fixture["manifest"],
+        )
+
+
+def test_truth_loader_rejects_reversed_rows_even_with_valid_shape_and_hash(tmp_path: Path) -> None:
+    fixture = _fixture(tmp_path)
+    truth = np.load(fixture["truth"], allow_pickle=False)
+    np.save(fixture["truth"], truth[::-1])
+    manifest = json.loads(fixture["truth_manifest"].read_text(encoding="utf-8"))
+    manifest["domains"] = {domain: _record(fixture["truth"], fixture["root"]) for domain in DOMAINS}
+    _write_json(fixture["truth_manifest"], manifest)
+    with pytest.raises(score_frozen.P06ScoreError, match="row order or sequence fingerprints"):
+        score_frozen.run(
+            repository_root=fixture["root"],
+            freeze_receipt_path=fixture["freeze"],
+            prediction_manifest_path=fixture["manifest"],
+            truth_manifest_path=fixture["truth_manifest"],
+            output_path=fixture["root"] / "reversed-score.json",
         )
