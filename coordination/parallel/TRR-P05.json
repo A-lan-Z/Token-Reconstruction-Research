@@ -4,7 +4,7 @@
   "branch": "task/TRR-P05",
   "worktree": "/tmp/trr-p05",
   "status": "SCIENTIFIC_COMPLETE_PUBLICATION_PENDING",
-  "updated_utc": "2026-09-06T08:01:13Z",
+  "updated_utc": "2026-09-06T08:04:54Z",
   "parent": {
     "task_id": "TRR-P04",
     "branch": "task/TRR-P04",
@@ -42,8 +42,10 @@
     "target_preparation_started": false,
     "hidden_evaluation_started": false,
     "trajectory_reconstruction_attempted": false,
-    "source_plaintext_or_token_values_persisted_here": false,
-    "diagnostic_outputs_truth_free": true
+    "diagnostic_outputs_truth_free": true,
+    "source_plaintext_persisted_here": false,
+    "public_token_ids_and_predictions_in_forward_rows": true,
+    "private_truth_or_token_values_persisted_here": false
   },
   "resource_gate": {
     "status": "DIAGNOSTIC_COMPLETE_GPU_RELEASED_LIGHT_DOCS_ONLY",
@@ -85,7 +87,6 @@
       1999,
       2999
     ],
-    "selected_rows_per_gradient_cell": 512,
     "teacher_rows_per_gradient_cell": [
       0,
       1,
@@ -96,7 +97,76 @@
     "truth_access": false,
     "optimizer_step": false,
     "full_wall_seconds": 40.60715087399876,
-    "qualifier_r2_wall_seconds": 9.887169032997917
+    "qualifier_r2_wall_seconds": 9.887169032997917,
+    "selected_row_budget_per_gradient_cell": 512,
+    "observed_selected_rows": {
+      "unique_schedule_batches": 8,
+      "counts": [
+        505,
+        503,
+        496,
+        480,
+        512,
+        505,
+        512,
+        474
+      ],
+      "total_selected_rows": 3987,
+      "min_selected_rows": 474,
+      "max_selected_rows": 512,
+      "by_seed_step": [
+        {
+          "seed": 1737,
+          "step": 0,
+          "selected_rows": 505,
+          "teacher_rows": 0
+        },
+        {
+          "seed": 1737,
+          "step": 999,
+          "selected_rows": 503,
+          "teacher_rows": 1
+        },
+        {
+          "seed": 1737,
+          "step": 1999,
+          "selected_rows": 496,
+          "teacher_rows": 1
+        },
+        {
+          "seed": 1737,
+          "step": 2999,
+          "selected_rows": 480,
+          "teacher_rows": 0
+        },
+        {
+          "seed": 2711,
+          "step": 0,
+          "selected_rows": 512,
+          "teacher_rows": 2
+        },
+        {
+          "seed": 2711,
+          "step": 999,
+          "selected_rows": 505,
+          "teacher_rows": 0
+        },
+        {
+          "seed": 2711,
+          "step": 1999,
+          "selected_rows": 512,
+          "teacher_rows": 4
+        },
+        {
+          "seed": 2711,
+          "step": 2999,
+          "selected_rows": 474,
+          "teacher_rows": 0
+        }
+      ],
+      "deduplicated_across_repeated_state_measurements": true,
+      "deduplication_note": "Each seed/step batch is measured at selected H, selected D, and final D; counts above represent the eight unique schedule batches."
+    }
   },
   "setup_artifacts": {
     "control_packet": "coordination/requests/TRR-P05.md",
@@ -202,8 +272,6 @@
     "status": "PENDING_ROOT_PUBLICATION_REVIEW",
     "manifest_path": "experiments/TRR-P05/manifest.json",
     "inventory_path": "experiments/TRR-P05/publication-files.json",
-    "merge_allowed": false,
-    "inventory_sha256": "ca11d546061b2c202b3d387bfd0fe4e67ea275aad2e5dd568a61c264f121fd43",
-    "inventory_bytes": 36687
+    "merge_allowed": false
   }
 }

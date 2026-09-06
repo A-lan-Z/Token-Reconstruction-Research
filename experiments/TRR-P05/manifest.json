@@ -4,7 +4,7 @@
   "status": "SCIENTIFIC_COMPLETE_PUBLICATION_PENDING",
   "claim_status": "Scientific result complete: the fixed P04 D ranking objective learned cached teacher order in the stored-state diagnostic but did not improve reconstruction; the approved report retires this tested objective for further search-free teaching, with no new P05 fit or sweep.",
   "created_utc": "2026-09-06T07:24:17Z",
-  "updated_utc": "2026-09-06T08:01:13Z",
+  "updated_utc": "2026-09-06T08:04:54Z",
   "git": {
     "branch": "task/TRR-P05",
     "worktree": "/tmp/trr-p05",
@@ -131,7 +131,76 @@
     "updates_applied": false,
     "new_fits": false,
     "new_optimizer_steps": false,
-    "new_target_or_hidden_evaluation": false
+    "new_target_or_hidden_evaluation": false,
+    "selected_row_budget_per_gradient_cell": 512,
+    "observed_selected_rows": {
+      "unique_schedule_batches": 8,
+      "counts": [
+        505,
+        503,
+        496,
+        480,
+        512,
+        505,
+        512,
+        474
+      ],
+      "total_selected_rows": 3987,
+      "min_selected_rows": 474,
+      "max_selected_rows": 512,
+      "by_seed_step": [
+        {
+          "seed": 1737,
+          "step": 0,
+          "selected_rows": 505,
+          "teacher_rows": 0
+        },
+        {
+          "seed": 1737,
+          "step": 999,
+          "selected_rows": 503,
+          "teacher_rows": 1
+        },
+        {
+          "seed": 1737,
+          "step": 1999,
+          "selected_rows": 496,
+          "teacher_rows": 1
+        },
+        {
+          "seed": 1737,
+          "step": 2999,
+          "selected_rows": 480,
+          "teacher_rows": 0
+        },
+        {
+          "seed": 2711,
+          "step": 0,
+          "selected_rows": 512,
+          "teacher_rows": 2
+        },
+        {
+          "seed": 2711,
+          "step": 999,
+          "selected_rows": 505,
+          "teacher_rows": 0
+        },
+        {
+          "seed": 2711,
+          "step": 1999,
+          "selected_rows": 512,
+          "teacher_rows": 4
+        },
+        {
+          "seed": 2711,
+          "step": 2999,
+          "selected_rows": 474,
+          "teacher_rows": 0
+        }
+      ],
+      "deduplicated_across_repeated_state_measurements": true,
+      "deduplication_note": "Each seed/step batch is measured at selected H, selected D, and final D; counts above represent the eight unique schedule batches."
+    }
   },
   "input_availability": {
     "replay_schedule_and_records": "available from P04 metadata and frozen schedule artifacts; bound by child receipt",
@@ -146,11 +215,13 @@
     "truth_opened": false,
     "p03_holdout_opened": false,
     "agent_one_workspace_accessed": false,
-    "source_plaintext_or_token_values_persisted": false,
     "trajectory_reconstructed": false,
     "optimizer_steps_started": false,
     "student_fits_or_sweeps_started": false,
-    "target_preparation_started": false
+    "target_preparation_started": false,
+    "source_plaintext_persisted": false,
+    "public_token_ids_and_predictions_in_forward_rows": true,
+    "private_truth_or_token_values_persisted": false
   },
   "model_and_dataset": {
     "base_model": {
@@ -257,7 +328,6 @@
       1999,
       2999
     ],
-    "selected_rows_per_gradient_cell": 512,
     "teacher_rows_per_gradient_cell": [
       0,
       1,
@@ -310,6 +380,75 @@
         "bytes": 2576,
         "sha256": "24eec3d3c950ecfda3695390302f5e48bcb10c7199c455a7fd11b8faf290f440"
       }
+    },
+    "selected_row_budget_per_gradient_cell": 512,
+    "observed_selected_rows": {
+      "unique_schedule_batches": 8,
+      "counts": [
+        505,
+        503,
+        496,
+        480,
+        512,
+        505,
+        512,
+        474
+      ],
+      "total_selected_rows": 3987,
+      "min_selected_rows": 474,
+      "max_selected_rows": 512,
+      "by_seed_step": [
+        {
+          "seed": 1737,
+          "step": 0,
+          "selected_rows": 505,
+          "teacher_rows": 0
+        },
+        {
+          "seed": 1737,
+          "step": 999,
+          "selected_rows": 503,
+          "teacher_rows": 1
+        },
+        {
+          "seed": 1737,
+          "step": 1999,
+          "selected_rows": 496,
+          "teacher_rows": 1
+        },
+        {
+          "seed": 1737,
+          "step": 2999,
+          "selected_rows": 480,
+          "teacher_rows": 0
+        },
+        {
+          "seed": 2711,
+          "step": 0,
+          "selected_rows": 512,
+          "teacher_rows": 2
+        },
+        {
+          "seed": 2711,
+          "step": 999,
+          "selected_rows": 505,
+          "teacher_rows": 0
+        },
+        {
+          "seed": 2711,
+          "step": 1999,
+          "selected_rows": 512,
+          "teacher_rows": 4
+        },
+        {
+          "seed": 2711,
+          "step": 2999,
+          "selected_rows": 474,
+          "teacher_rows": 0
+        }
+      ],
+      "deduplicated_across_repeated_state_measurements": true,
+      "deduplication_note": "Each seed/step batch is measured at selected H, selected D, and final D; counts above represent the eight unique schedule batches."
     }
   },
   "validation": {
@@ -388,14 +527,14 @@
     "task_state": {
       "path": "coordination/parallel/TRR-P05.json",
       "status": "FINAL_METADATA",
-      "bytes": 7314,
-      "sha256": "32afa9151a542e9930271c56fe73288500727112e90a7c65ffa1a409baccbf53"
+      "bytes": 8887,
+      "sha256": "562f21cf6c895d918e6da0abedd4bd4f1726b24676db289aae10316dbf84bf48"
     },
     "publication_inventory": {
       "path": "experiments/TRR-P05/publication-files.json",
       "status": "FINAL_ALLOWLIST",
       "bytes": 36687,
-      "sha256": "0be3fc14b8fffbbe4edaa6ddd13e48ee8af7c3484a89eebd7dee662f16b8f416"
+      "sha256": "eca23601665df592b1e0f94d9e64df65be46a016dc00c5d8316f5f2067592ec5"
     },
     "runtime_index": {
       "path": "experiments/TRR-P05/runtime/diagnostic-index-r1.json",
@@ -428,7 +567,7 @@
   },
   "publication": {
     "inventory_path": "experiments/TRR-P05/publication-files.json",
-    "inventory_sha256": "0be3fc14b8fffbbe4edaa6ddd13e48ee8af7c3484a89eebd7dee662f16b8f416",
+    "inventory_sha256": "eca23601665df592b1e0f94d9e64df65be46a016dc00c5d8316f5f2067592ec5",
     "inventory_bytes": 36687,
     "finalization": "PENDING_ROOT_PUBLICATION_REVIEW",
     "merge_allowed": false
