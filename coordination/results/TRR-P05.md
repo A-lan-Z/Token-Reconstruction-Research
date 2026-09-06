@@ -9,10 +9,10 @@ D did learn the cached non-gold teacher order. At the two final D states,
 agreement is 68.50% and 68.40% on the 256 difficult rows and 79.17% and
 78.86% on the 128 uniform rows. The corresponding affine initial-function
 reference is near chance for this pair task (51.39% and 52.03%). D's original
-weighted ranking loss falls from 0.8593/0.9029 to 0.4778/0.4802 on difficult
-rows and from 0.9029/0.9021 to 0.3173/0.3184 on uniform rows (seeds 1737/2711
-where applicable). This is measurable order learning, not a failed transfer
-of the ranking signal.
+weighted ranking loss falls from 0.8593 to 0.4778/0.4802 on difficult
+rows and from 0.9029 to 0.3173/0.3184 on uniform rows (seeds 1737/2711).
+This is measurable order learning, not a failed transfer of the ranking
+signal.
 
 The learned order did not yield a reconstruction advantage. Final D has much
 smaller gold-token margins than the same-seed H and S states: 2.19--2.41
@@ -121,6 +121,10 @@ teacher signal is ineffective. P03 remains stopped; no P03 holdout, agent-one
 artifact, target data, or hidden truth was opened.
 
 ## Reproducible evidence
+
+The first qualifier attempt is retained as an excluded cuDNN-mode
+failure; the corrected qualifier-r2 passed and applied no updates before the
+full run. The failure is an execution-history item, not a scientific result.
 
 The full run receipt reports `PASS` at source commit
 `e022b56ff92b4987b88a47418b4df76ccd296cea`, with no truth access, no
