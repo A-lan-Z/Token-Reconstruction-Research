@@ -1,8 +1,12 @@
 from __future__ import annotations
 
 from collections import Counter
+import math
+from pathlib import Path
+import statistics
 
 import pytest
+from scipy.stats import t as scipy_t
 import torch
 
 from scripts import trr0008_timing as timing
@@ -53,6 +57,50 @@ def test_schedule_is_exactly_balanced_per_cell() -> None:
             assert counts == Counter({method_id: 2 for method_id in timing.METHOD_IDS})
         first = rows[0]["order"]
         assert rows[5]["order"] == list(reversed(first))
+
+
+def test_followup_schedule_repeats_exact_ten_block_cycle() -> None:
+    orders, digest = timing._schedule_rows(
+        method_ids=timing.METHOD_IDS,
+        cell_ids=timing.contract.CELL_ORDER,
+        blocks=timing.FOLLOWUP_BLOCKS,
+        seed=timing.DEFAULT_SEED,
+    )
+    assert len(orders) == timing.FOLLOWUP_BLOCKS * len(timing.contract.CELL_ORDER)
+    assert len(digest) == 64
+    for cell_id in timing.contract.CELL_ORDER:
+        rows = [row for row in orders if row["cell_id"] == cell_id]
+        assert len(rows) == timing.FOLLOWUP_BLOCKS
+        cycle = [tuple(row["order"]) for row in rows[: timing.DEFAULT_BLOCKS]]
+        for cycle_index in range(4):
+            start = cycle_index * timing.DEFAULT_BLOCKS
+            assert [tuple(row["order"]) for row in rows[start : start + timing.DEFAULT_BLOCKS]] == cycle
+        for position in range(len(timing.METHOD_IDS)):
+            counts = Counter(row["order"][position] for row in rows)
+            assert counts == Counter({method_id: 8 for method_id in timing.METHOD_IDS})
+
+
+def test_run_rejects_unregistered_block_count() -> None:
+    config = timing.TimingConfig(
+        repository_root=Path("."),
+        trr7_root=Path("."),
+        output_path=Path("/tmp/trr0008-unused.json"),
+        device="cpu",
+        blocks=20,
+    )
+    with pytest.raises(timing.TimingError, match="registered timing supports exactly"):
+        timing.run(config)
+
+
+def test_followup_ratio_ci_uses_exact_student_t_df39() -> None:
+    values = [1.0 + 0.01 * (index % 5) for index in range(timing.FOLLOWUP_BLOCKS)]
+    result = timing._ratio_summary(values)
+    critical = float(scipy_t.ppf(0.975, 39))
+    expected_margin = critical * statistics.stdev(values) / math.sqrt(timing.FOLLOWUP_BLOCKS)
+    assert result["degrees_of_freedom"] == 39
+    assert result["critical_value"] == pytest.approx(critical, abs=1e-12)
+    assert result["ci_lower"] == pytest.approx(result["mean_ratio"] - expected_margin, abs=1e-12)
+    assert result["ci_upper"] == pytest.approx(result["mean_ratio"] + expected_margin, abs=1e-12)
 
 
 def test_ratio_summary_has_fixed_threshold_decisions() -> None:

@@ -11,13 +11,13 @@
     "alias INCONCLUSIVE blocks every overall candidate qualification outcome"
   ],
   "cpu_test_command": "PYTHONPATH=.:src:scripts pytest -q tests/test_trr0008_timing.py",
-  "cpu_test_result": "9 passed",
+  "cpu_test_result": "12 passed",
   "default_trr7_root": "sibling .worktrees/TRR-0007 (explicit command remains pinned)",
   "first_gpu_command": "PYTHONPATH=.:src python3 scripts/trr0008_timing.py --device cuda --trr7-root /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007 --records-per-cell 32 --blocks 10 --warmup-runs 1 --maximum-seconds 600 --output /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0008/experiments/TRR-0008/timing/result.json",
-  "gpu_launched": false,
+  "gpu_launched": true,
   "harness": "scripts/trr0008_timing.py",
   "plan": "experiments/TRR-0008/timing/diagnostic_plan.md",
-  "status": "GPU_WINDOW_PENDING",
+  "status": "TIMING_COMPLETE",
   "task_id": "TRR-0008",
   "unpublished_parallel_findings_used": false,
   "cpu_compile_command": "PYTHONPATH=.:src:scripts python3 -m py_compile scripts/trr0008_timing.py tests/test_trr0008_timing.py",
@@ -29,12 +29,47 @@
     "alias_class": "token_reconstruction.trr0005_joint_decoder.JointAffineAttentionDecoder",
     "alias_state_tensors_exact": true
   },
-  "comparative_timing_launched": false,
+  "comparative_timing_launched": true,
   "unpublished_parallel_access": {
     "read_p06_once_while_locating_parent": true,
     "material_category_encountered": "scheduling/coordination status only",
     "unpublished_scientific_findings_encountered": false,
     "unpublished_scientific_findings_used": false,
     "further_p06_reads_authorized": false
+  },
+  "cpu_compatibility_test_command": "PYTHONPATH=.:src:scripts pytest -q tests/test_trr0007_positionwise.py tests/test_trr0007_evaluation.py",
+  "cpu_compatibility_test_result": "29 passed",
+  "result_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0008/experiments/TRR-0008/timing/result.json",
+  "result_sha256": "215f5bb3c1597e6970bd84fc55f9990b7250e6f29f54a100d2cded660a9b9c53",
+  "result_code_commit": "74deda63e7fcf8ff5bf7e563adc5089fd07189e4",
+  "result_elapsed_seconds": 89.101235301001,
+  "equivalence_status": "PASS",
+  "alias_control_decision": "INCONCLUSIVE",
+  "candidate_raw_decision": "PASS",
+  "candidate_final_decision": "INCONCLUSIVE",
+  "measurement_valid": false,
+  "cost_failure_demonstrated": false,
+  "resource_extrema": {
+    "max_process_rss_bytes": 1739538432,
+    "min_host_available_bytes": 20304945152,
+    "min_cuda_free_bytes": 14144241664,
+    "max_cuda_reserved_bytes": 1457520640
+  },
+  "followup": {
+    "status": "PLANNED_NOT_EXECUTED",
+    "plan_path": "experiments/TRR-0008/timing/followup_plan.md",
+    "assessment_path": "experiments/TRR-0008/timing/followup_assessment.md",
+    "total_blocks": 40,
+    "cycles": 4,
+    "records_per_cell": 32,
+    "result_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0008/experiments/TRR-0008/timing/precision40_result.json",
+    "final_qualification_authority": "followup_receipt_only_if_executed",
+    "no_further_timing_expansion_if_inconclusive": true
+  },
+  "cpu_test_history": {
+    "committed_baseline_before_alias_regression": "8 passed",
+    "post_alias_regression_before_followup_support": "9 passed",
+    "current_with_40_block_followup_support": "12 passed",
+    "student_t_df39_regression": "scipy.stats.t.ppf(0.975, 39) = 2.022690920036761"
   }
 }

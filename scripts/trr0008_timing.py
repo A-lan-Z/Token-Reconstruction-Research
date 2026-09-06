@@ -56,6 +56,8 @@ TRR7_METHOD_FREEZE = "experiments/TRR-0007/method_freeze.json"
 # useful only in isolated unit tests; a real receipt records any deviation.
 DEFAULT_RECORDS_PER_CELL = 32
 DEFAULT_BLOCKS = 10
+FOLLOWUP_BLOCKS = 40
+REGISTERED_BLOCK_COUNTS = (DEFAULT_BLOCKS, FOLLOWUP_BLOCKS)
 DEFAULT_WARMUP_RUNS = 1
 DEFAULT_SEED = 8008
 DEFAULT_MAX_SECONDS = 600
@@ -96,6 +98,7 @@ _T_CRITICAL_95 = {
     27: 2.051830516,
     28: 2.048407142,
     29: 2.045229642,
+    39: 2.022690920036761,
 }
 
 
@@ -666,7 +669,7 @@ def _equivalence_check(
 
 
 def _balanced_orders(*, method_ids: Sequence[str], cell_ids: Sequence[str], blocks: int, seed: int) -> list[dict[str, Any]]:
-    """Build a deterministic cyclic schedule with no outcome-dependent order."""
+    """Build fixed ten-block cycles with no outcome-dependent order."""
 
     if not method_ids or blocks <= 0 or not cell_ids:
         raise ValueError("method IDs, cells, and blocks must be non-empty")
@@ -678,14 +681,22 @@ def _balanced_orders(*, method_ids: Sequence[str], cell_ids: Sequence[str], bloc
     generator.manual_seed(int(seed))
     permutation = torch.randperm(len(method_ids), generator=generator).tolist()
     permuted = tuple(method_ids[index] for index in permutation)
+    cycle_length = 2 * len(permuted)
+    if blocks % cycle_length:
+        raise ValueError(f"blocks must be a whole number of {cycle_length}-block balance cycles")
     for block_index in range(blocks):
+        cycle_block_index = block_index % cycle_length
         for cell_index, cell_id in enumerate(cell_ids):
-            offset = (block_index + cell_index) % len(permuted)
+            offset = (cycle_block_index + cell_index) % len(permuted)
             rotated = permuted[offset:] + permuted[:offset]
-            # Ten registered blocks are five rotations followed by their
-            # reversals.  Every method therefore occupies every order
-            # position exactly twice per cell.
-            order = rotated if block_index < len(permuted) else tuple(reversed(rotated))
+            # Each ten-block cycle has five rotations followed by their
+            # reversals.  A 40-block follow-up repeats this exact cycle four
+            # times, preserving balance without outcome-dependent ordering.
+            order = (
+                rotated
+                if cycle_block_index < len(permuted)
+                else tuple(reversed(rotated))
+            )
             orders.append(
                 {
                     "block_index": block_index,
@@ -725,7 +736,10 @@ def _ratio_summary(values: Sequence[float], *, threshold: float = QUALIFICATION_
     mean = statistics.fmean(values)
     stdev = statistics.stdev(values)
     df = len(values) - 1
-    critical = _T_CRITICAL_95.get(df, 1.96)
+    try:
+        critical = _T_CRITICAL_95[df]
+    except KeyError as exc:
+        raise ValueError(f"Student-t critical value is not registered for df={df}") from exc
     margin = critical * stdev / math.sqrt(len(values))
     lower, upper = mean - margin, mean + margin
     if upper <= threshold:
@@ -736,6 +750,8 @@ def _ratio_summary(values: Sequence[float], *, threshold: float = QUALIFICATION_
         decision = "INCONCLUSIVE"
     return {
         "blocks": len(values),
+        "degrees_of_freedom": df,
+        "critical_value": critical,
         "block_ratios": values,
         "mean_ratio": mean,
         "stdev_ratio": stdev,
@@ -1064,8 +1080,9 @@ def run(config: TimingConfig) -> dict[str, Any]:
     started = time.perf_counter()
     if config.records_per_cell <= 0 or config.records_per_cell > contract.RECORDS_PER_DOMAIN:
         raise TimingError("timing record count must be in 1..128")
-    if config.blocks <= 1:
-        raise TimingError("at least two timing blocks are required")
+    if config.blocks not in REGISTERED_BLOCK_COUNTS:
+        supported = ", ".join(str(value) for value in REGISTERED_BLOCK_COUNTS)
+        raise TimingError(f"registered timing supports exactly {supported} total blocks")
     if config.warmup_runs != 1:
         raise TimingError("the frozen timing contract requires one warmup per record")
     try:
@@ -1145,6 +1162,8 @@ def run(config: TimingConfig) -> dict[str, Any]:
                 "records_per_cell": config.records_per_cell,
                 "equivalence_records_per_cell": contract.RECORDS_PER_DOMAIN,
                 "blocks": config.blocks,
+                "block_cycle_length": 2 * len(METHOD_IDS),
+                "block_cycles": config.blocks // (2 * len(METHOD_IDS)),
                 "warmup_runs_per_record": config.warmup_runs,
                 "seed": config.seed,
                 "maximum_seconds": config.maximum_seconds,
