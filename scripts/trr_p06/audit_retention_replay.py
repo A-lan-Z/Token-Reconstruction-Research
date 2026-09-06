@@ -237,6 +237,8 @@ def audit(original_root: Path, replay_root: Path, output: Path) -> dict[str, Any
 
     original_watchdog = original_root.parent / "watchdog-capacity-r1"
     replay_watchdog = replay_root.parent / "watchdog-capacity-retention-replay-r1"
+    original_watchdog_cost = _watchdog_cost(original_watchdog)
+    replay_watchdog_cost = _watchdog_cost(replay_watchdog)
     original_arm_seconds = sum(float(row["arm_wall_seconds"]) for row in original_methods.values())
     replay_arm_seconds = sum(float(row["arm_wall_seconds"]) for row in replay_methods.values())
     result = {
@@ -258,14 +260,14 @@ def audit(original_root: Path, replay_root: Path, output: Path) -> dict[str, Any
             "root": str(original_root),
             "receipt_sha256": _sha256(original_receipt_path),
             "source_commit": original_receipt.get("source_commit"),
-            "watchdog": _watchdog_cost(original_watchdog),
+            "watchdog": original_watchdog_cost,
             "arm_wall_seconds_sum": original_arm_seconds,
         },
         "replay": {
             "root": str(replay_root),
             "receipt_sha256": _sha256(replay_receipt_path),
             "source_commit": replay_receipt.get("source_commit"),
-            "watchdog": _watchdog_cost(replay_watchdog),
+            "watchdog": replay_watchdog_cost,
             "arm_wall_seconds_sum": replay_arm_seconds,
         },
         "ledger": {
@@ -295,8 +297,8 @@ def audit(original_root: Path, replay_root: Path, output: Path) -> dict[str, Any
             "replay_optimizer_updates": sum(int(row["steps"]) for row in replay_methods.values()),
             "original_probe_arm_wall_seconds_sum": original_arm_seconds,
             "replay_arm_wall_seconds_sum": replay_arm_seconds,
-            "original_watchdog_elapsed_seconds": original_watchdog.get("elapsed_seconds"),
-            "replay_watchdog_elapsed_seconds": replay_watchdog.get("elapsed_seconds"),
+            "original_watchdog_elapsed_seconds": original_watchdog_cost.get("elapsed_seconds"),
+            "replay_watchdog_elapsed_seconds": replay_watchdog_cost.get("elapsed_seconds"),
             "replay_peak_cuda_reserved_bytes": max(int(row["peak_memory"]["cuda_peak_reserved_bytes"]) for row in replay_methods.values()),
             "replay_peak_process_rss_bytes": max(int(row["peak_memory"]["process_max_rss_bytes"]) for row in replay_methods.values()),
             "additional_fit_choices": 0,
