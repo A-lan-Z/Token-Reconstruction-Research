@@ -6,6 +6,7 @@ import pytest
 from token_reconstruction.trr_p06_metrics import (
     CONTRASTS,
     P06MetricsError,
+    TRAINING_REPLICATE_SEEDS,
     paired_cluster_bootstrap,
     paired_metrics,
     score_method,
@@ -47,14 +48,6 @@ def test_unequal_length_pair_metrics_keep_micro_denominator_and_exact_subset() -
         attention_mask=mask,
         position_ids=np.tile(np.arange(128), (len(record_ids), 1)),
         method_id="p06_full_record",
-    )
-    right_score = score_method(
-        right,
-        truth,
-        record_ids=record_ids,
-        attention_mask=mask,
-        position_ids=np.tile(np.arange(128), (len(record_ids), 1)),
-        method_id="p06_past_only",
     )
     comparison = paired_metrics(
         left,
@@ -100,11 +93,14 @@ def _full_clip_score(
     record_ids: tuple[str, ...],
     truth: np.ndarray,
     wrong_spans: dict[int, tuple[int, int]],
+    *,
+    mask: np.ndarray | None = None,
 ) -> dict[str, object]:
     predictions = truth.copy()
     for row, (start, stop) in wrong_spans.items():
         predictions[row, start:stop] += 1
-    mask = np.ones_like(truth, dtype=bool)
+    if mask is None:
+        mask = np.ones_like(truth, dtype=bool)
     return score_method(
         predictions,
         truth,
@@ -114,36 +110,84 @@ def _full_clip_score(
     )
 
 
-def _bootstrap_cells(*, mismatched_target_order: bool = False) -> dict[str, dict[str, object]]:
+def _replicate_methods(
+    target: str,
+    seed: int,
+    record_ids: tuple[str, ...],
+    truth: np.ndarray,
+    *,
+    short_mask: np.ndarray | None = None,
+) -> dict[str, object]:
+    # For public_base, the two seeds reverse a one-token full/past outcome on
+    # source-0.  Averaging therefore produces fractional counts and exact
+    # indicators while retaining four source records, not eight.
+    if target == "public_base":
+        if seed == 6106:
+            spans = {
+                "p06_positionwise_diagonal": {1: (1, 4)},
+                "p06_past_only": {0: (1, 2)},
+                "p06_full_record": {},
+            }
+        else:
+            spans = {
+                "p06_positionwise_diagonal": {1: (1, 4)},
+                "p06_past_only": {},
+                "p06_full_record": {0: (1, 2)},
+            }
+    else:
+        if seed == 6106:
+            spans = {
+                "p06_positionwise_diagonal": {1: (1, 4)},
+                "p06_past_only": {0: (1, 2)},
+                "p06_full_record": {},
+            }
+        else:
+            spans = {
+                "p06_positionwise_diagonal": {1: (1, 4)},
+                "p06_past_only": {0: (1, 3)},
+                "p06_full_record": {0: (1, 2)},
+            }
+    return {
+        method: _full_clip_score(
+            method,
+            record_ids,
+            truth,
+            method_spans,
+            mask=short_mask,
+        )
+        for method, method_spans in spans.items()
+    }
+
+
+def _bootstrap_cells(
+    *,
+    mismatched_target_order: bool = False,
+    short: bool = False,
+) -> dict[str, dict[str, object]]:
     records = 4
     record_ids = tuple(f"source-{index}" for index in range(records))
     truth = np.zeros((records, 128), dtype=np.int64)
     truth[:, 0] = 128000
     truth[:, 1:] = 2000 + np.arange(127)
-    methods = {
-        "p06_positionwise_diagonal": {0: (1, 4)},
-        "p06_past_only": {1: (1, 7)},
-        "p06_full_record": {2: (1, 2)},
-    }
+    mask = None
+    if short:
+        mask = np.zeros_like(truth, dtype=bool)
+        mask[:, :4] = True
     target_cells: dict[str, dict[str, object]] = {}
-    for target, target_methods in (
-        ("public_base", methods),
-        (
-            "public_lora_2601",
-            {
-                "p06_positionwise_diagonal": {0: (1, 4)},
-                "p06_past_only": {1: (1, 2)},
-                "p06_full_record": {2: (1, 2)},
-            },
-        ),
-    ):
+    for target in ("public_base", "public_lora_2601"):
         ids = tuple(reversed(record_ids)) if (target == "public_lora_2601" and mismatched_target_order) else record_ids
         target_cells[target] = {
             "domain": "pile",
             "target": target,
-            "methods": {
-                method: _full_clip_score(method, ids, truth, spans)
-                for method, spans in target_methods.items()
+            "replicates": {
+                str(seed): _replicate_methods(
+                    target,
+                    seed,
+                    ids,
+                    truth,
+                    short_mask=mask,
+                )
+                for seed in TRAINING_REPLICATE_SEEDS
             },
         }
     return {
@@ -152,30 +196,51 @@ def _bootstrap_cells(*, mismatched_target_order: bool = False) -> dict[str, dict
     }
 
 
-def test_cluster_bootstrap_is_seeded_and_reuses_paired_domain_schedule() -> None:
+def test_cluster_bootstrap_averages_two_seeds_before_shared_source_resampling() -> None:
     cells = _bootstrap_cells()
     first = paired_cluster_bootstrap(cells, draws=256, seed=6306)
     second = paired_cluster_bootstrap(cells, draws=256, seed=6306)
     assert first == second
     assert first["draws"] == 256
     assert first["seed"] == 6306
+    assert first["training_replicate_seeds"] == [6106, 6107]
     assert first["unit"] == "source-record cluster"
     domain = first["domains"]["pile"]
     assert domain["schedule_shared_across_targets"] is True
     assert domain["schedule_shape"] == [256, 4]
     assert domain["target_conditions"] == ["public_base", "public_lora_2601"]
+    assert domain["records"] == 4
     for target in domain["target_conditions"]:
         contrasts = domain["targets"][target]["contrasts"]
         assert set(contrasts) == set(CONTRASTS)
-        assert contrasts["full_minus_past"]["records"] == 4
-        assert contrasts["full_minus_past"]["token_delta_ci95_percentile_pp"]
-        assert contrasts["full_minus_past"]["macro_token_delta_ci95_percentile_pp"]
-    assert (
-        domain["targets"]["public_base"]["contrasts"]["full_minus_past"]["point"]["token_delta_pp"]
-        != domain["targets"]["public_lora_2601"]["contrasts"]["full_minus_past"]["point"]["token_delta_pp"]
-    )
+        contrast = contrasts["full_minus_past"]
+        assert contrast["replicate_count"] == 2
+        assert set(contrast["per_seed"]) == {"6106", "6107"}
+        assert contrast["records"] == 4
+        assert contrast["replicate_averaged"]["records"] == 4
+        assert contrast["schedule_sha256"] == domain["schedule_sha256"]
+        assert contrast["macro_token_delta_ci95_percentile_pp"]
+
+    base = domain["targets"]["public_base"]["contrasts"]["full_minus_past"]
+    averaged_row = base["replicate_averaged"]["per_record"][0]
+    assert averaged_row["left_correct_tokens"] == pytest.approx(126.5)
+    assert averaged_row["right_correct_tokens"] == pytest.approx(126.5)
+    assert averaged_row["token_gains"] == pytest.approx(0.5)
+    assert averaged_row["token_losses"] == pytest.approx(0.5)
+    assert averaged_row["left_exact_record"] == pytest.approx(0.5)
+    assert averaged_row["right_exact_record"] == pytest.approx(0.5)
+    assert base["point"]["token_delta_pp"] == pytest.approx(0.0)
+    assert base["point"]["exact_delta_pp"] == pytest.approx(0.0)
 
 
 def test_cluster_bootstrap_rejects_changed_source_record_order() -> None:
     with pytest.raises(P06MetricsError, match="source-record order"):
         paired_cluster_bootstrap(_bootstrap_cells(mismatched_target_order=True), draws=32, seed=6306)
+
+
+def test_padded_only_exact_interval_is_explicitly_undefined() -> None:
+    result = paired_cluster_bootstrap(_bootstrap_cells(short=True), draws=32, seed=6306)
+    contrast = result["domains"]["pile"]["targets"]["public_base"]["contrasts"]["full_minus_past"]
+    assert contrast["exact_denominator"] == 0
+    assert contrast["exact_delta_ci95_percentile_pp"] == [None, None]
+    assert contrast["draws_with_exact_observation"] == 0

@@ -24,6 +24,7 @@ VOCABULARY_SIZE = 128256
 POST_BOS_POSITIONS = tuple(range(1, SEQUENCE_TOKENS))
 DEFAULT_BOOTSTRAP_DRAWS = 10_000
 DEFAULT_BOOTSTRAP_SEED = 6306
+TRAINING_REPLICATE_SEEDS = (6106, 6107)
 
 METHOD_ORDER = (
     "p06_positionwise_diagonal",
@@ -482,14 +483,14 @@ def _bootstrap_summary(
 ) -> dict[str, Any]:
     if schedule.ndim != 2 or schedule.shape[1] != len(rows):
         raise P06MetricsError("bootstrap row/schedule geometry differs")
-    left_correct = np.asarray([int(row["left_correct_tokens"]) for row in rows], dtype=np.float64)
-    right_correct = np.asarray([int(row["right_correct_tokens"]) for row in rows], dtype=np.float64)
-    scored = np.asarray([int(row["scored_tokens"]) for row in rows], dtype=np.float64)
-    left_gains = np.asarray([int(row["token_gains"]) for row in rows], dtype=np.float64)
-    left_losses = np.asarray([int(row["token_losses"]) for row in rows], dtype=np.float64)
+    left_correct = np.asarray([float(row["left_correct_tokens"]) for row in rows], dtype=np.float64)
+    right_correct = np.asarray([float(row["right_correct_tokens"]) for row in rows], dtype=np.float64)
+    scored = np.asarray([float(row["scored_tokens"]) for row in rows], dtype=np.float64)
+    left_gains = np.asarray([float(row["token_gains"]) for row in rows], dtype=np.float64)
+    left_losses = np.asarray([float(row["token_losses"]) for row in rows], dtype=np.float64)
     exact_eligible = np.asarray([bool(row["exact_eligible"]) for row in rows])
-    right_exact = np.asarray([bool(row["right_exact_record"]) if row["exact_eligible"] else False for row in rows], dtype=np.float64)
-    left_exact = np.asarray([bool(row["left_exact_record"]) if row["exact_eligible"] else False for row in rows], dtype=np.float64)
+    right_exact = np.asarray([float(row["right_exact_record"]) if row["exact_eligible"] else 0.0 for row in rows], dtype=np.float64)
+    left_exact = np.asarray([float(row["left_exact_record"]) if row["exact_eligible"] else 0.0 for row in rows], dtype=np.float64)
 
     denominator = scored[schedule].sum(axis=1)
     token_delta = np.divide(
@@ -539,6 +540,9 @@ def _bootstrap_summary(
             return [None, None]
         return [float(np.quantile(finite, 0.025)), float(np.quantile(finite, 0.975))]
 
+    def percentile_pp(values: np.ndarray) -> list[float | None]:
+        return [None if value is None else 100.0 * value for value in percentile(values)]
+
     point_denominator = float(scored.sum())
     point_exact_denominator = int(exact_eligible.sum())
     point = {
@@ -553,12 +557,266 @@ def _bootstrap_summary(
         "scored_tokens": int(scored.sum()),
         "exact_denominator": point_exact_denominator,
         "point": point,
-        "token_delta_ci95_percentile_pp": [100.0 * value for value in percentile(token_delta)],
-        "macro_token_delta_ci95_percentile_pp": [100.0 * value for value in percentile(macro_delta)],
-        "token_gain_rate_ci95_percentile_pp": [100.0 * value for value in percentile(token_gain_rate)],
-        "token_loss_rate_ci95_percentile_pp": [100.0 * value for value in percentile(token_loss_rate)],
-        "exact_delta_ci95_percentile_pp": [100.0 * value for value in percentile(exact_delta)],
+        "token_delta_ci95_percentile_pp": percentile_pp(token_delta),
+        "macro_token_delta_ci95_percentile_pp": percentile_pp(macro_delta),
+        "token_gain_rate_ci95_percentile_pp": percentile_pp(token_gain_rate),
+        "token_loss_rate_ci95_percentile_pp": percentile_pp(token_loss_rate),
+        "exact_delta_ci95_percentile_pp": percentile_pp(exact_delta),
         "draws_with_exact_observation": int(np.isfinite(exact_delta).sum()),
+    }
+
+
+def _normalise_replicate_scores(
+    cell_id: str,
+    raw: Mapping[str, Any],
+    *,
+    contrasts: Mapping[str, tuple[str, str]],
+) -> dict[int, dict[str, dict[str, Any]]]:
+    """Validate the two registered fit replicates for one target cell."""
+
+    replicates = raw.get("replicates")
+    if not isinstance(replicates, Mapping):
+        raise P06MetricsError(
+            f"{cell_id} must provide score replicates for seeds {TRAINING_REPLICATE_SEEDS}; "
+            "a single methods score is not a registered P06 result"
+        )
+    normalized: dict[int, dict[str, dict[str, Any]]] = {}
+    for raw_seed, seed_methods in replicates.items():
+        if isinstance(raw_seed, bool):
+            raise P06MetricsError(f"{cell_id} has a boolean replicate seed")
+        try:
+            seed = int(raw_seed)
+        except (TypeError, ValueError) as exc:
+            raise P06MetricsError(f"{cell_id} has a non-integer replicate seed") from exc
+        if seed in normalized:
+            raise P06MetricsError(f"{cell_id} repeats replicate seed {seed}")
+        if not isinstance(seed_methods, Mapping):
+            raise P06MetricsError(f"{cell_id}/{seed} replicate methods are malformed")
+        methods: dict[str, dict[str, Any]] = {}
+        for method_id in METHOD_ORDER:
+            if method_id not in seed_methods:
+                raise P06MetricsError(f"{cell_id}/{seed} lacks {method_id}")
+            methods[method_id] = _validated_score(
+                seed_methods[method_id], name=f"{cell_id}/{seed}/{method_id}"
+            )
+        # Also validate custom contrast method IDs before any score is used.
+        for contrast_id, (left_method, right_method) in contrasts.items():
+            if left_method not in methods or right_method not in methods:
+                raise P06MetricsError(
+                    f"contrast {contrast_id} references an unregistered method"
+                )
+        normalized[seed] = methods
+    expected = set(TRAINING_REPLICATE_SEEDS)
+    if set(normalized) != expected:
+        raise P06MetricsError(
+            f"{cell_id} must contain exactly replicate seeds {TRAINING_REPLICATE_SEEDS}"
+        )
+    source_ids: list[str] | None = None
+    for seed in TRAINING_REPLICATE_SEEDS:
+        for method_id in METHOD_ORDER:
+            ids = normalized[seed][method_id]["record_ids"]
+            if source_ids is None:
+                source_ids = list(ids)
+            elif ids != source_ids:
+                raise P06MetricsError(
+                    f"source-record order differs within {cell_id}/{seed}/{method_id}"
+                )
+    return normalized
+
+
+def _mean_numeric(values: Sequence[Any]) -> float:
+    return float(np.mean(np.asarray(values, dtype=np.float64)))
+
+
+def _aggregate_seed_comparisons(
+    comparisons: Mapping[int, Mapping[str, Any]],
+) -> dict[str, Any]:
+    """Average paired *metrics* within each source record across two seeds.
+
+    This intentionally consumes paired count/discordance summaries rather than
+    token IDs or correctness vectors.  Seeds therefore remain replicate
+    measurements of each source record, never extra bootstrap clusters.
+    """
+
+    seeds = tuple(sorted(comparisons))
+    if seeds != tuple(sorted(TRAINING_REPLICATE_SEEDS)):
+        raise P06MetricsError("replicate comparison set is not the registered two-seed set")
+    first = comparisons[seeds[0]]
+    record_ids = list(first["record_ids"])
+    records = int(first["records"])
+    for seed in seeds[1:]:
+        comparison = comparisons[seed]
+        if comparison["records"] != records or comparison["record_ids"] != record_ids:
+            raise P06MetricsError("replicate comparison source records differ")
+
+    per_record: list[dict[str, Any]] = []
+    for index, record_id in enumerate(record_ids):
+        rows = [comparisons[seed]["per_record"][index] for seed in seeds]
+        scored = [int(row["scored_tokens"]) for row in rows]
+        exact_eligible = [bool(row["exact_eligible"]) for row in rows]
+        if len(set(scored)) != 1 or len(set(exact_eligible)) != 1:
+            raise P06MetricsError(
+                f"replicate denominator/eligibility differs for source record {record_id}"
+            )
+        left_exact = (
+            _mean_numeric([float(row["left_exact_record"]) for row in rows])
+            if exact_eligible[0]
+            else None
+        )
+        right_exact = (
+            _mean_numeric([float(row["right_exact_record"]) for row in rows])
+            if exact_eligible[0]
+            else None
+        )
+        token_gains = _mean_numeric([row["token_gains"] for row in rows])
+        token_losses = _mean_numeric([row["token_losses"] for row in rows])
+        per_record.append(
+            {
+                "record_id": record_id,
+                "scored_tokens": scored[0],
+                "left_correct_tokens": _mean_numeric(
+                    [row["left_correct_tokens"] for row in rows]
+                ),
+                "right_correct_tokens": _mean_numeric(
+                    [row["right_correct_tokens"] for row in rows]
+                ),
+                "token_delta": token_gains - token_losses,
+                "token_gains": token_gains,
+                "token_losses": token_losses,
+                "exact_eligible": exact_eligible[0],
+                "left_exact_record": left_exact,
+                "right_exact_record": right_exact,
+            }
+        )
+
+    scored = np.asarray([row["scored_tokens"] for row in per_record], dtype=np.float64)
+    left_correct = np.asarray(
+        [row["left_correct_tokens"] for row in per_record], dtype=np.float64
+    )
+    right_correct = np.asarray(
+        [row["right_correct_tokens"] for row in per_record], dtype=np.float64
+    )
+    gains = np.asarray([row["token_gains"] for row in per_record], dtype=np.float64)
+    losses = np.asarray([row["token_losses"] for row in per_record], dtype=np.float64)
+    exact_eligible = np.asarray(
+        [bool(row["exact_eligible"]) for row in per_record], dtype=bool
+    )
+    left_exact = np.asarray(
+        [float(row["left_exact_record"]) if row["exact_eligible"] else 0.0 for row in per_record],
+        dtype=np.float64,
+    )
+    right_exact = np.asarray(
+        [float(row["right_exact_record"]) if row["exact_eligible"] else 0.0 for row in per_record],
+        dtype=np.float64,
+    )
+    denominator = float(scored.sum())
+    macro_valid = scored > 0
+    left_macro = np.divide(
+        left_correct, scored, out=np.full(scored.shape, np.nan), where=macro_valid
+    )
+    right_macro = np.divide(
+        right_correct, scored, out=np.full(scored.shape, np.nan), where=macro_valid
+    )
+    exact_denominator = int(exact_eligible.sum())
+    left_exact_total = float(left_exact.sum())
+    right_exact_total = float(right_exact.sum())
+    exact_both = _mean_numeric(
+        [comparison["metrics"]["exact_both"] for comparison in comparisons.values()]
+    )
+    exact_left_only = _mean_numeric(
+        [comparison["metrics"]["exact_left_only"] for comparison in comparisons.values()]
+    )
+    exact_right_only = _mean_numeric(
+        [comparison["metrics"]["exact_right_only"] for comparison in comparisons.values()]
+    )
+    exact_neither = _mean_numeric(
+        [comparison["metrics"]["exact_neither"] for comparison in comparisons.values()]
+    )
+    metrics = {
+        "scored_tokens": int(denominator),
+        "left_correct_tokens": float(left_correct.sum()),
+        "right_correct_tokens": float(right_correct.sum()),
+        "left_token_accuracy": (
+            float(left_correct.sum() / denominator) if denominator else None
+        ),
+        "right_token_accuracy": (
+            float(right_correct.sum() / denominator) if denominator else None
+        ),
+        "token_delta_pp": (
+            float(100.0 * (left_correct.sum() - right_correct.sum()) / denominator)
+            if denominator
+            else None
+        ),
+        "macro_records": int(macro_valid.sum()),
+        "left_macro_token_accuracy": (
+            float(np.nanmean(left_macro)) if macro_valid.any() else None
+        ),
+        "right_macro_token_accuracy": (
+            float(np.nanmean(right_macro)) if macro_valid.any() else None
+        ),
+        "macro_token_delta_pp": (
+            float(100.0 * np.nanmean(left_macro - right_macro))
+            if macro_valid.any()
+            else None
+        ),
+        "token_gains": float(gains.sum()),
+        "token_losses": float(losses.sum()),
+        "token_both_correct": _mean_numeric(
+            [comparison["metrics"]["token_both_correct"] for comparison in comparisons.values()]
+        ),
+        "token_neither_correct": _mean_numeric(
+            [comparison["metrics"]["token_neither_correct"] for comparison in comparisons.values()]
+        ),
+        "exact_denominator": exact_denominator,
+        "left_exact_records": left_exact_total,
+        "right_exact_records": right_exact_total,
+        "exact_delta_pp": (
+            float(100.0 * (left_exact_total - right_exact_total) / exact_denominator)
+            if exact_denominator
+            else None
+        ),
+        "exact_both": exact_both,
+        "exact_left_only": exact_left_only,
+        "exact_right_only": exact_right_only,
+        "exact_neither": exact_neither,
+    }
+
+    position_metrics: dict[str, dict[str, Any]] = {}
+    for position_name in POSITION_BINS:
+        bins = [comparison["position_metrics"][position_name] for comparison in comparisons.values()]
+        scored_bin = int(bins[0]["scored_tokens"])
+        if any(int(item["scored_tokens"]) != scored_bin for item in bins):
+            raise P06MetricsError(f"replicate position denominator differs in {position_name}")
+        left_bin = _mean_numeric([item["left_correct_tokens"] for item in bins])
+        right_bin = _mean_numeric([item["right_correct_tokens"] for item in bins])
+        position_metrics[position_name] = {
+            "positions": list(POSITION_BINS[position_name]),
+            "scored_tokens": scored_bin,
+            "left_correct_tokens": left_bin,
+            "right_correct_tokens": right_bin,
+            "token_gains": _mean_numeric([item["token_gains"] for item in bins]),
+            "token_losses": _mean_numeric([item["token_losses"] for item in bins]),
+            "both_correct": _mean_numeric([item["both_correct"] for item in bins]),
+            "neither_correct": _mean_numeric([item["neither_correct"] for item in bins]),
+            "left_token_accuracy": (left_bin / scored_bin if scored_bin else None),
+            "right_token_accuracy": (right_bin / scored_bin if scored_bin else None),
+            "delta_pp": (
+                100.0 * (left_bin - right_bin) / scored_bin if scored_bin else None
+            ),
+        }
+    return {
+        "task_id": TASK_ID,
+        "contrast_id": first.get("contrast_id"),
+        "left_method": first.get("left_method"),
+        "right_method": first.get("right_method"),
+        "record_ids": record_ids,
+        "records": records,
+        "replicate_ids": [str(seed) for seed in seeds],
+        "replicate_count": len(seeds),
+        "aggregation": "mean within each source record; replicates are not bootstrap records",
+        "metrics": metrics,
+        "position_metrics": position_metrics,
+        "per_record": per_record,
     }
 
 
@@ -569,14 +827,13 @@ def paired_cluster_bootstrap(
     seed: int = DEFAULT_BOOTSTRAP_SEED,
     contrasts: Mapping[str, tuple[str, str]] = CONTRASTS,
 ) -> dict[str, Any]:
-    """Bootstrap all registered method contrasts with paired target schedules.
+    """Bootstrap registered contrasts after averaging the two fit replicates.
 
-    ``cells`` maps cell IDs to objects containing ``domain``, ``target``, and a
-    ``methods`` map of :func:`score_method` results.  Source IDs must have the
-    same order in both target conditions within a domain.  One schedule is
-    generated per domain and reused for every target in that domain, so target
-    changes are paired at the source-record cluster rather than independently
-    resampled.
+    ``cells`` maps one target cell per domain/target to ``replicates`` keyed by
+    seeds 6106 and 6107.  Every seed has one score for each of the three arms.
+    Seed summaries are retained, but their per-source counts/discordances are
+    averaged before one shared source-record schedule is applied to both target
+    conditions.  No token IDs or seed predictions are averaged here.
     """
 
     if not isinstance(cells, Mapping) or not cells:
@@ -585,80 +842,125 @@ def paired_cluster_bootstrap(
         raise P06MetricsError("bootstrap draw count must be positive")
     if isinstance(seed, bool) or not isinstance(seed, (int, np.integer)):
         raise P06MetricsError("bootstrap seed must be an integer")
+
     normalized: dict[str, dict[str, Any]] = {}
     for cell_id, raw in cells.items():
         if not isinstance(cell_id, str) or not cell_id or not isinstance(raw, Mapping):
             raise P06MetricsError("bootstrap cell is malformed")
         domain = raw.get("domain")
         target = raw.get("target")
-        methods = raw.get("methods")
-        if not isinstance(domain, str) or not domain or not isinstance(target, str) or not target or not isinstance(methods, Mapping):
-            raise P06MetricsError(f"bootstrap cell lacks domain/target/methods: {cell_id}")
-        for method_id in contrasts.values():
-            for method in method_id:
-                if method not in methods:
-                    raise P06MetricsError(f"bootstrap cell lacks {method}: {cell_id}")
-                _validated_score(methods[method], name=f"{cell_id}/{method}")
-        normalized[cell_id] = {"domain": domain, "target": target, "methods": methods}
+        if (
+            not isinstance(domain, str)
+            or not domain
+            or not isinstance(target, str)
+            or not target
+        ):
+            raise P06MetricsError(f"bootstrap cell lacks domain/target: {cell_id}")
+        normalized[cell_id] = {
+            "domain": domain,
+            "target": target,
+            "replicates": _normalise_replicate_scores(
+                cell_id, raw, contrasts=contrasts
+            ),
+        }
 
     rng = np.random.default_rng(int(seed))
     by_domain: dict[str, list[tuple[str, dict[str, Any]]]] = {}
     for cell_id in sorted(normalized):
         cell = normalized[cell_id]
         by_domain.setdefault(cell["domain"], []).append((cell_id, cell))
+
     domain_results: dict[str, Any] = {}
     for domain in sorted(by_domain):
         domain_cells = by_domain[domain]
-        first_id, first_cell = domain_cells[0]
-        first_methods = first_cell["methods"]
-        first_score = next(iter(first_methods.values()))
-        source_ids = list(first_score["record_ids"])
-        records = len(source_ids)
-        target_seen: dict[str, Mapping[str, Any]] = {}
+        target_seen: dict[str, dict[str, Any]] = {}
+        source_ids: list[str] | None = None
+        records: int | None = None
         for cell_id, cell in domain_cells:
             target = cell["target"]
             if target in target_seen:
                 raise P06MetricsError(f"duplicate target cell in domain {domain}: {target}")
             target_seen[target] = cell
-            for method_id, score in cell["methods"].items():
-                if score["record_ids"] != source_ids:
-                    raise P06MetricsError(f"source-record order differs across paired cells: {cell_id}/{method_id}")
-        schedule = np.asarray(rng.integers(0, records, size=(draws, records), dtype=np.int64), order="C")
+            for replicate in TRAINING_REPLICATE_SEEDS:
+                for method_id in METHOD_ORDER:
+                    score = cell["replicates"][replicate][method_id]
+                    ids = list(score["record_ids"])
+                    if source_ids is None:
+                        source_ids = ids
+                        records = len(ids)
+                    elif ids != source_ids:
+                        raise P06MetricsError(
+                            f"source-record order differs across paired cells: {cell_id}/{replicate}/{method_id}"
+                        )
+        if source_ids is None or records is None:
+            raise P06MetricsError(f"domain {domain} has no score cells")
+        expected_targets = {"public_base", "public_lora_2601"}
+        if set(target_seen) != expected_targets:
+            raise P06MetricsError(
+                f"domain {domain} must contain exactly targets {sorted(expected_targets)}"
+            )
+        schedule = np.asarray(
+            rng.integers(0, records, size=(draws, records), dtype=np.int64), order="C"
+        )
+        schedule_digest = _schedule_digest(schedule)
         target_results: dict[str, Any] = {}
         for target, cell in sorted(target_seen.items()):
-            methods = cell["methods"]
+            seed_comparisons: dict[str, dict[str, dict[str, Any]]] = {}
+            for replicate in TRAINING_REPLICATE_SEEDS:
+                methods = cell["replicates"][replicate]
+                seed_comparisons[str(replicate)] = {}
+                for contrast_id, (left_method, right_method) in contrasts.items():
+                    seed_comparisons[str(replicate)][contrast_id] = paired_metrics_from_scores(
+                        methods[left_method], methods[right_method], contrast_id=contrast_id
+                    )
             contrast_results: dict[str, Any] = {}
-            for contrast_id, (left_method, right_method) in contrasts.items():
-                comparison = paired_metrics_from_scores(
-                    methods[left_method], methods[right_method], contrast_id=contrast_id
-                )
-                # Preserve the per-record paired rows as the only bootstrap
-                # input; no token-level iid resampling is permitted.
-                # The paired rows contain both sides and are the sole
-                # source-record units used by the bootstrap.
-                contrast_results[contrast_id] = {
-                    "left_method": left_method,
-                    "right_method": right_method,
-                    **_bootstrap_summary(comparison["per_record"], schedule),
+            for contrast_id in contrasts:
+                comparisons = {
+                    int(replicate): seed_comparisons[str(replicate)][contrast_id]
+                    for replicate in TRAINING_REPLICATE_SEEDS
                 }
-            target_results[target] = {"contrasts": contrast_results}
+                aggregate = _aggregate_seed_comparisons(comparisons)
+                contrast_results[contrast_id] = {
+                    "left_method": aggregate["left_method"],
+                    "right_method": aggregate["right_method"],
+                    "replicate_ids": aggregate["replicate_ids"],
+                    "replicate_count": aggregate["replicate_count"],
+                    "aggregation": aggregate["aggregation"],
+                    "per_seed": {
+                        replicate: seed_comparisons[replicate][contrast_id]
+                        for replicate in sorted(seed_comparisons)
+                    },
+                    "replicate_averaged": aggregate,
+                    "schedule_sha256": schedule_digest,
+                    **_bootstrap_summary(aggregate["per_record"], schedule),
+                }
+            target_results[target] = {
+                "replicate_ids": [str(seed) for seed in TRAINING_REPLICATE_SEEDS],
+                "replicate_count": len(TRAINING_REPLICATE_SEEDS),
+                "schedule_sha256": schedule_digest,
+                "contrasts": contrast_results,
+            }
         domain_results[domain] = {
             "records": records,
             "source_record_ids": source_ids,
             "target_conditions": sorted(target_seen),
             "schedule_shared_across_targets": True,
             "schedule_shape": list(schedule.shape),
-            "schedule_sha256": _schedule_digest(schedule),
+            "schedule_sha256": schedule_digest,
+            "replicate_ids": [str(seed) for seed in TRAINING_REPLICATE_SEEDS],
+            "replicate_count": len(TRAINING_REPLICATE_SEEDS),
             "targets": target_results,
         }
     return {
-        "schema": "token-reconstruction.trr-p06-paired-bootstrap.v1",
+        "schema": "token-reconstruction.trr-p06-paired-bootstrap.v2",
         "task_id": TASK_ID,
         "draws": int(draws),
         "seed": int(seed),
+        "training_replicate_seeds": list(TRAINING_REPLICATE_SEEDS),
         "unit": "source-record cluster",
         "strata": "domain-only",
         "target_resampling": "one source-index schedule reused across target conditions within each domain",
+        "replicate_aggregation": "mean per source record before bootstrap; seeds are not independent records",
         "domains": domain_results,
         "contrasts": {name: list(pair) for name, pair in contrasts.items()},
     }
@@ -673,6 +975,7 @@ __all__ = [
     "P06MetricsError",
     "POSITION_BINS",
     "SEQUENCE_TOKENS",
+    "TRAINING_REPLICATE_SEEDS",
     "make_bootstrap_schedule",
     "paired_cluster_bootstrap",
     "paired_metrics",
