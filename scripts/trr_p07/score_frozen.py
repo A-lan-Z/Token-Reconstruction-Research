@@ -97,6 +97,12 @@ def _newline_digest(values: Sequence[str]) -> str:
     return hashlib.sha256(("\n".join(values) + "\n").encode("utf-8")).hexdigest()
 
 
+def _canonical_json_digest(values: Sequence[str]) -> str:
+    return hashlib.sha256(
+        json.dumps(list(values), sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    ).hexdigest()
+
+
 def _load_json(path: Path, *, description: str) -> dict[str, Any]:
     path = path.expanduser().resolve()
     if path.is_symlink() or not path.is_file():
@@ -456,6 +462,24 @@ def _frozen_record_digest(validated: Mapping[str, Any], *, panel: str, domain: s
     return str(next(iter(digests)))
 
 
+def _effective_source_digest(validated: Mapping[str, Any], *, panel: str, domain: str) -> str:
+    """Return the digest for rows actually scored in this panel.
+
+    The P06 producer records its canonical JSON digest for the 256 rows.  The
+    retained TRR-0006 descriptor intentionally preserves its published full
+    panel digest, while the P07 subset binding carries the effective every-sixth
+    row digest.
+    """
+
+    if panel == "trr0006_subset":
+        subset = validated.get("replay", {}).get("panels", {}).get(panel, {}).get("subset")
+        value = subset.get("subset_record_ids_sha256", {}).get(domain) if isinstance(subset, Mapping) else None
+        if isinstance(value, str) and _SHA256.fullmatch(value):
+            return value
+        raise P07ScoreError(f"effective TRR-0006 subset digest is missing: {domain}")
+    return _frozen_record_digest(validated, panel=panel, domain=domain)
+
+
 def _load_historical_truth_sidecars(
     *,
     validated: Mapping[str, Any],
@@ -485,14 +509,14 @@ def _load_historical_truth_sidecars(
     old_ids = _selection_rows(Path(trr0006_selection_path), root=root, expected_sha256=TRR0006_SELECTION_SHA256, expected_records=1536, indices=range(0, 1536, 6))
     full_old_ids = _selection_rows(Path(trr0006_selection_path), root=root, expected_sha256=TRR0006_SELECTION_SHA256, expected_records=1536)
     for domain, (ids, _) in p06_ids.items():
-        if p06_manifest.get("record_ids_sha256", {}).get(domain) != _newline_digest(ids):
+        if p06_manifest.get("record_ids_sha256", {}).get(domain) != _canonical_json_digest(ids):
             raise P07ScoreError(f"P06 truth sidecar record order changed: {domain}")
-        if _frozen_record_digest(validated, panel="p06_panel", domain=domain) != _newline_digest(ids):
+        if _effective_source_digest(validated, panel="p06_panel", domain=domain) != _canonical_json_digest(ids):
             raise P07ScoreError(f"P06 frozen source order differs from truth sidecar: {domain}")
     for domain, (ids, _) in full_old_ids.items():
-        if trr_manifest.get("record_ids_sha256", {}).get(domain) != _newline_digest(ids):
+        if trr_manifest.get("record_ids_sha256", {}).get(domain) != _canonical_json_digest(ids):
             raise P07ScoreError(f"TRR-0006 truth sidecar full record order changed: {domain}")
-        if _frozen_record_digest(validated, panel="trr0006_subset", domain=domain) != _newline_digest(old_ids[domain][0]):
+        if _effective_source_digest(validated, panel="trr0006_subset", domain=domain) != _newline_digest(old_ids[domain][0]):
             raise P07ScoreError(f"TRR-0006 frozen subset source order differs from truth sidecar: {domain}")
 
     loaded: dict[tuple[str, str], tuple[np.ndarray, tuple[str, ...]]] = {}
@@ -565,7 +589,8 @@ def score_arrays(
             record_ids = tuple(ids)
             if labels.shape != (RECORDS_PER_DOMAIN, SEQUENCE_TOKENS) or len(record_ids) != RECORDS_PER_DOMAIN:
                 raise P07ScoreError(f"truth geometry changed: {panel}/{domain}")
-            if _newline_digest(record_ids) != _frozen_record_digest(validated, panel=panel, domain=domain):
+            computed_digest = _canonical_json_digest(record_ids) if panel == "p06_panel" else _newline_digest(record_ids)
+            if computed_digest != _effective_source_digest(validated, panel=panel, domain=domain):
                 raise P07ScoreError(f"truth row order differs from frozen predictions: {panel}/{domain}")
             for target in TARGETS:
                 cell_id = f"{domain}__{target}"

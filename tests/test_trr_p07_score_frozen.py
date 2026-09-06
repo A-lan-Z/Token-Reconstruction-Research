@@ -55,7 +55,8 @@ def test_validate_freeze_rejects_missing_fixture_gate_before_prediction_reads(tm
 
 def test_score_arrays_binds_method_families_and_returns_all_eight_cells(tmp_path: Path) -> None:
     record_ids = tuple(f"source-{index}" for index in range(256))
-    source_digest = score_frozen._newline_digest(record_ids)
+    p06_digest = score_frozen._canonical_json_digest(record_ids)
+    subset_digest = score_frozen._newline_digest(record_ids)
     truth = np.zeros((256, 128), dtype=np.int64)
     truth[:, 0] = 128000
     truth[:, 1:] = 1000 + np.arange(127)
@@ -84,7 +85,7 @@ def test_score_arrays_binds_method_families_and_returns_all_eight_cells(tmp_path
                             "shape": [256, 128],
                             "scored_post_bos_tokens": 127,
                             "seed": seed,
-                            "record_ids_sha256": source_digest,
+                            "record_ids_sha256": p06_digest if panel == "p06_panel" else subset_digest,
                             "observation": _record(observation_paths[(panel, domain)]),
                             "timing": {"selected_row_indices": list(range(256))},
                             "prediction": _record(path),
@@ -95,6 +96,15 @@ def test_score_arrays_binds_method_families_and_returns_all_eight_cells(tmp_path
         "status": "JOINT_FREEZE_VALIDATED_NO_TRUTH",
         "truth_opened": False,
         "replay_manifest": {"path": "replay_manifest.json", "sha256": "b" * 64},
+        "replay": {
+            "panels": {
+                "trr0006_subset": {
+                    "subset": {
+                        "subset_record_ids_sha256": {"pile": subset_digest, "finance": subset_digest},
+                    },
+                },
+            },
+        },
         "descriptors": descriptors,
     }
     truth_by_cell = {(panel, domain): (truth, record_ids) for panel in score_frozen.PANELS for domain in score_frozen.DOMAINS}
