@@ -5,9 +5,11 @@
 The completed public stages establish that the proposed student graph can be
 optimized on a bounded public error set, that the largest planned cell fits the
 available GPU guard, and that the privileged public teacher produces an
-informative bounded signal. They do not establish that a GRU, hard-confusion
-loss, or teacher score information improves reconstruction on fresh records.
-The eight-fit comparison and fresh evaluation remain pending.
+informative bounded signal. All eight public training fits are now serialized
+under the common schedule design. They do not establish that a GRU,
+hard-confusion loss, or teacher score information improves reconstruction on
+fresh records. Fresh evaluator capture, native anchor outputs, and truth-gated
+fresh evaluation remain pending.
 
 ## Decision summary
 
@@ -26,11 +28,11 @@ same learning result but omitted resource, source-commit, and UTC timing
 evidence; it is retained as prior evidence, while r5 is the auditable receipt.
 
 The disposition is **teacher qualification PASS for bounded public training
-evidence; first fair student comparison pending**. The teacher receipt supports
-using its frozen relative scores in D's training objective. It does not support
-a native BOS-only accuracy claim. Seed-1737 public-training states and curves
-are now serialized, but no fresh predictions or evaluation metrics exist yet;
-the remaining seed/arm fit receipts are still pending.
+evidence; public eight-fit training comparison complete; fresh paired comparison
+pending**. The teacher receipt supports using its frozen relative scores in D's
+training objective. It does not support a native BOS-only accuracy claim. Both
+training seeds and all four arms are now serialized, but no fresh predictions or
+evaluation metrics exist yet.
 
 ## Public data and candidate preparation
 
@@ -198,20 +200,32 @@ The actual implementation uses `validation_every=100`, producing the common
 deviation from the proposed 200-step grid, applied uniformly before any fresh
 truth access. Each arm still uses the same style-balanced public-validation
 selection metric and earliest-step tie rule; selected steps can differ by arm.
-The completed seed-1737 curves give this public-only checkpoint audit:
+The eight selected public-only checkpoints are:
 
-| Arm | Selected step | Style-balanced public validation accuracy |
-| --- | ---: | ---: |
-| `affine_same_data` | 1,600 | 94.6573% |
-| S | 600 | 94.7740% |
-| H | 1,700 | 94.5564% |
-| D | 1,300 | 93.7912% |
+| Seed | Arm | Selected step | Style-balanced public validation accuracy | Delta vs same-data affine |
+| ---: | --- | ---: | ---: | ---: |
+| 1737 | `affine_same_data` | 1,600 | 94.6573% | +0.0000 pp |
+| 1737 | S | 600 | 94.7740% | +0.1167 pp |
+| 1737 | H | 1,700 | 94.5564% | -0.1008 pp |
+| 1737 | D | 1,300 | 93.7912% | -0.8661 pp |
+| 2711 | `affine_same_data` | 1,900 | 94.6137% | +0.0000 pp |
+| 2711 | S | 1,200 | 94.5803% | -0.0335 pp |
+| 2711 | H | 1,400 | 94.5669% | -0.0468 pp |
+| 2711 | D | 300 | 93.4317% | -1.1820 pp |
 
-These are validation-selection diagnostics, not fresh-panel results. On this
-one seed, S is 0.1167 percentage points above the trainable affine reference,
-H is 0.1008 points below it, and D is 0.7653 points below H. The remaining
-seed and all fresh predictions are required before applying any predeclared
-quality gate.
+These are public validation selection diagnostics, not fresh-panel results.
+On seed 1737, S is 0.1167 percentage points above the trainable affine
+reference, H is 0.1008 points below it, and D is 0.8661 points below it. On
+seed 2711, S and H are 0.0335 and 0.0468 points below affine, while D is 1.1820
+points below. This exploratory pattern does not determine fresh performance or
+justify selecting a winner before the paired evaluator comparison.
+
+The original training process serialized all eight arm fits, then failed only
+while constructing its aggregate with `NameError: TRAINING_SCHEMA is not
+defined` (followed by an exception-handler name error). No fit was rerun. A
+separate finalizer under source commit `d9805ef35f7b6c35552d081d7a8893ee65e18d9f`
+verified the 26 preserved artifacts; the fit source remains
+`1aefc307ebdd4cd5002ac6ac0cdc5a1fc696aa68`.
 
 The D curve confirms that the ranking objective is numerically active rather
 than silently zero. Among its 30 serialized post-update checkpoints, 20 have
@@ -226,22 +240,26 @@ selected positions, while D's rank term is a weighted mean over only the
 teacher-masked rows. It is not evidence that D has a comparable per-token
 loss contribution. The fixed objective has not been swept or refit.
 
-For seed 1737, the serialized fit wall times are 146.80 s for the affine
-reference, 189.59 s for S, 207.06 s for H, and 179.99 s for D (728.80 s for
-the seed including orchestration). Selected state artifacts are approximately
-16.79 MB for the affine reference and 25.98 MB for each student. The receipts
-report a common host high-water mark of 5,882,933,248 bytes, but no per-arm
-PyTorch allocator peak.
+The per-arm fit receipts report 146.8009, 189.5909, 207.0576, and 179.9868
+seconds for seed 1737 (affine, S, H, D), and 118.9694, 153.9741, 174.0851,
+and 180.5299 seconds for seed 2711. Their eight-arm sum is
+1,350.994774457 seconds. The seed-level `wall_seconds` fields are cumulative
+from the process start, so the seed-2711 value is not a standalone second-seed
+duration. The aggregate `training_result.json` field `wall_seconds=0.202251`
+and the finalization receipt's 0.208573 seconds are finalizer-only timings
+recorded after fitting, not fitting durations. Selected state artifacts are
+approximately 16.79 MB for the affine reference and 25.98 MB for each student.
+The fit receipts report a common host high-water mark of 5,882,933,248 bytes,
+but no per-arm PyTorch allocator peak.
 
-An external watchdog was attached late, at 2026-09-06T02:38:19Z, and is
-therefore supplementary rather than a start-to-finish guard. At the current
-partial snapshot through 02:48:20Z it sampled whole-device GPU usage, not
-PyTorch `max_memory_reserved`: maximum used was 7,808,745,472 bytes,
-minimum free was 8,945,401,856 bytes, maximum host high-water mark was
-5,882,933,248 bytes, and maximum temperature was 76 degrees C. These samples
-were within the configured free/RSS/temperature limits, but the monitor began
-after launch and remains open while training runs; its whole-device usage
-cannot be substituted for an in-process allocator peak or a final run receipt.
+An external watchdog was attached late, at 2026-09-06T02:38:19Z, and ended at
+02:53:47Z after the target process exited. It is therefore supplementary rather
+than a start-to-finish guard. It sampled whole-device GPU usage, not PyTorch
+`max_memory_reserved`: maximum used was 7,808,745,472 bytes, minimum free was
+8,945,401,856 bytes, maximum host high-water mark was 5,882,933,248 bytes, and
+maximum temperature was 76 degrees C. It observed no guard violation, but the
+late start and whole-device measurement prevent it from substituting for an
+in-process allocator peak or a complete start-to-finish guard.
 
 ## Deployment audit
 
@@ -265,31 +283,71 @@ candidate artifact is not loaded by this prediction path.
 
 ## Native anchor pre-execution provenance review
 
-The first static review found a source-level blocker in
-`scripts/trr_p04/native_anchor_runner.py` before any native anchor execution.
-Its shifted-condition branch still imports the private
-`token_reconstruction.target_update` module, installs the evaluator LoRA, and
-loads the private update through `_load_reference_resources`; the CLI also
-accepts `--target-update`, and the receipt records `target_update_loaded=true`.
-That contradicts the anchor contract: both `public_base` and
-`p04_evaluator_target_update_v1` must load the same pinned untouched public
-base snapshot and public/historical A1 reference resources. The evaluator
-observation-capture step is the sole component permitted to load the private
-target update. This is a provenance/deployment source bug, not an observed
-contamination result: no native anchor has run, so no anchor prediction,
-metric, or private-update exposure exists to invalidate.
+The initial static review found a source-level provenance bug in
+`scripts/trr_p04/native_anchor_runner.py` before any native anchor execution:
+the shifted branch loaded the evaluator-private LoRA despite claiming that the
+reconstructor did not receive target weights. Commit
+`6753dff3331481e587044c94bbab8f8d6db0cdf` removes that loader and the
+`--target-update` CLI input. The fixed `_load_reference_resources` path loads
+the same pinned public model snapshot and public/historical A1 resources for
+both `public_base` and `p04_evaluator_target_update_v1`; its receipt records
+that the evaluator update was not loaded. The focused truth-free evaluator
+contract tests pass (4 passed), including identical public-reference identity
+across the two conditions. The evaluator observation-capture process remains
+the sole private-update loader.
 
-The anchor remains blocked until the setup-owned fix is present and reviewed.
-The minimum post-fix check is a source and receipt audit showing no private
-update import, path, hash, LoRA installation, or `target_update_loaded` field
-in the anchor runner; both conditions must point to the identical public base
-snapshot/reference assets, while the evaluator capture retains the private
-loader. The static student prediction audit above passes independently: its
-CLI and `p04_student` path accept activation/mask tensors, student state, and
-public embeddings only, with no target-update path or import.
+The anchor is therefore clear on this access-contract review, subject to the
+usual receipt binding at execution. No native anchor has run before or after
+the fix, so there is no anchor prediction, metric, or private-update exposure
+to invalidate. The numerical result must retain its exact PR7 A1+A2 K=256
+algorithm on the P04 input-panel port: 12 anchor records, 32 scored positions
+per record, 384 scored positions per target, published proposal order and
+first-argmax ties, and no canonical dual-benchmark claim. The student paths
+retain their separate lowest-token-ID tie rule.
 
+A stale unused `PR7_TARGET_UPDATE` path constant remains in the source file;
+it is not passed, loaded, hashed, or emitted by the fixed anchor flow. Remove
+it before publication if the final source certification requires that no private
+path string occur anywhere in the anchor source.
 
-## Pending first fair comparison
+## Prediction freeze provenance review
+
+The current `freeze_predictions.py` gate correctly requires exact coverage for
+all eight student/reference groups in both target conditions and both native
+anchor groups, validates prediction lengths and panel coverage, and reads no
+truth. The student prediction receipt already records output, state,
+observation, record, and embedding hashes plus method/seed/condition and the
+activation-only flags. The remaining gap is cross-binding: the freezer and
+scorer currently hash prediction files and the labeled state files, but do not
+require or validate a receipt for each prediction output. They therefore do not
+prove that the output's state, observation condition/order, geometry, and
+training provenance are the assets named by the freeze manifest.
+
+The minimum setup addition before opening truth is one strict receipt check at
+the freeze boundary. For every student output, require its prediction receipt
+and verify its output hash, method/seed/condition, state hash, observation hash,
+record-manifest hash, embedding-table hash, source commit, and activation-only
+flags. Cross-reference the observation hash to the post-capture truth-free
+receipt for that condition, including the frozen panel selection hash, ordered
+record hash, mask/position geometry, 72-record/192-token/2,048-hidden shape,
+and cut depth. For each state, bind the manifest row to the training
+finalization receipt, state-binding receipt, and training source receipt, and
+carry the verified state metadata: state schema, method, seed, architecture
+JSON/digest, schedule digest, selected step, affine initialization and public
+input/validation/embedding/candidate/teacher asset hashes, and fit source
+commit. This binds the model/pretraining and configuration lineage without
+loading tensors or truth. For each native anchor output, require the native
+anchor receipt and verify its condition, panel/anchor order, observation hash,
+public model/reference identity, PR7 source descriptors, tie rule, and
+`target_update_loaded=false` fields. These are small receipt cross-checks; a
+new generic gate is unnecessary.
+
+The scorer's aggregate anchor table will be sufficient for totals only. The
+final truth-gated report must also derive 12-record native-anchor fixes and
+regressions against the selected same-data affine control and D, so those
+comparisons are not inferred from the public teacher qualification table.
+
+## Pending fresh comparison
 
 The following sections remain intentionally open and must be filled only from
 new receipts:
@@ -297,31 +355,30 @@ new receipts:
 - **Teacher qualification:** complete for the fixed 384-row public training
   signal. The receipt and per-kind audit above are training-only evidence and
   must not be called native BOS-only reconstruction. No teacher expansion is
-  authorized before the first fair student comparison.
-- **Eight-fit comparison:** paired seeds 1737 and 2711 for the same-data affine
-  reference and S/H/D students, using the common 75/25 record schedule and
-  3,000-update budget. S is full-vocabulary CE; H adds the fixed label-only
-  hard-confusion loss; D adds the single weighted non-gold adjacent-pair
-  ranking loss from qualified teacher scores. All deployed predictions remain
-  unrestricted full-vocabulary outputs.
+  authorized before the fresh paired comparison.
+- **Eight-fit comparison:** complete in the public training stage for paired
+  seeds 1737 and 2711, using the common 75/25 record schedule and 3,000-update
+  budget. S is full-vocabulary CE; H adds the fixed label-only hard-confusion
+  loss; D adds the single weighted non-gold adjacent-pair ranking loss from
+  qualified teacher scores. All deployed predictions remain unrestricted
+  full-vocabulary outputs.
 - **Fresh metrics:** frozen predictions for the 72-record panel across
   `public_base` and the predeclared evaluator target-update condition, plus the
   separate 12-record native A1+A2 anchor. Truth can be opened only after the
   joint prediction/state freeze. Report token accuracy, exact records,
   per-style/per-length/per-target results, paired source-record uncertainty,
   and gains/regressions against the same-data controls.
-- **Costs:** partial seed-1737 fitting times and state sizes are recorded
-  above. Capture, candidate preparation, the second seed, complete matrix
-  accounting, startup, warmed inference, prefix calls, and final peak-memory
-  receipts must still be reported separately. No amortization claim is
-  available yet.
+- **Costs:** both seed fits and per-arm times are recorded above. Capture,
+  candidate preparation, complete matrix accounting, startup, warmed inference,
+  prefix calls, and final peak-memory receipts must still be reported
+  separately. No amortization claim is available yet.
 
 Evaluator setup preflights currently pass without model, target, or truth
 access: the two target conditions are planned for 72 records each with 12
 separate anchor records and 384 anchor positions per target. The native anchor
 is an exact PR7 algorithm on this P04 input-panel port, not a canonical
-dual-benchmark result. Fresh observation capture and all eight fits remain
-unreported.
+dual-benchmark result. Fresh observation capture and truth-gated scoring remain
+pending; the eight public fits are reported above.
 
 ## Scope and claim discipline
 
@@ -360,22 +417,33 @@ same-data results support that simpler conclusion.
   `0f15a16978d0daa6bbf8a7771109350a633a7fc03a108db5fd8d782255ba84f9`).
 - Public training: `experiments/TRR-P04/runtime/training-r1/source_receipt.json`
   (SHA-256 `698d91b39e211bef7ec996a42cee5d41c709995cfa44b73622c79c7949c35449`),
-  the seed-1737 result receipt (SHA-256
-  `e3234f66086af6ad285e8dc9ff758ca7bbcc99ae27e6b4f5c5fe93ef8ac4b270`),
-  schedules with seed-1737 digest `887edbcef5d44ad39ad9694ef0f4e049b46ba6665a239ecc090e3febce8eedec`
-  and seed-2711 digest `8fc93b18bad186cf13a20118eb4158d5e49fc5c86732ecbb9376303d7c5f7a9d`,
-  and the serialized seed-1737 learning curves: affine SHA-256
-  `60264f485eae27698e2100dae7db6dd5179148b630a57ba7297f5c5b52d0e066`,
-  S `582ad00c5093a74a476a0ed619f24ce12a3f7baa19760c70ff0b13280467b6f4`,
-  H `a3d6ed956c12cf7c3453a8a362388997bfef02250ab858e234432e283da87b96`,
-  and D `f77c7cf2c15ec1bde1e56cc28829f6165e9029509aebedf26392efa072fbfc0d`.
-  The external watchdog is `experiments/TRR-P04/runtime/training-r1/external_resource_watchdog.jsonl`;
-  it is a partial late-attached monitor and is not a final allocator receipt.
+  `training_result.json` (SHA-256
+  `2e0f9566c33fa19c1351885d4027cd00b1f22f95c4464aa1d8be4f3a55f23d19`),
+  `training_finalization_receipt.json` (SHA-256
+  `4ac6e3bfd482a658e62e458b5d27ec74a50350c2d6818623efc3fb645f0fba29`),
+  and `late_finalization_failure.json` (SHA-256
+  `5b078f399bdff9d1f335759b78fde609536793010bc187c006a347fbb443efb8`), and
+  `training_state_binding_check.json` (SHA-256
+  `6d1a74504c7b773693013fc56bec678db3768fe0f1453bbb59d88ae9fd9d0d12`).
+  The fit source is `1aefc307ebdd4cd5002ac6ac0cdc5a1fc696aa68`; the finalizer
+  source is `d9805ef35f7b6c35552d081d7a8893ee65e18d9f`. Seed-result hashes are
+  `e3234f66086af6ad285e8dc9ff758ca7bbcc99ae27e6b4f5c5fe93ef8ac4b270` (1737)
+  and `b20807c9f1898acd549f03a3defe327fa17b400fc9943ffc06334878cc570c44`
+  (2711). Schedules have seed-1737 digest
+  `887edbcef5d44ad39ad9694ef0f4e049b46ba6665a239ecc090e3febce8eedec` and
+  seed-2711 digest `8fc93b18bad186cf13a20118eb4158d5e49fc5c86732ecbb9376303d7c5f7a9d`.
+  Learning-curve hashes are recorded in the seed result directories. The
+  external watchdog receipt is
+  `experiments/TRR-P04/runtime/training-r1/external_resource_watchdog_receipt.json`
+  (SHA-256 `e344773291c8076e9f75c54860a9a2e6fe8ce81a887a90135d848a99a60b4269`);
+  it is a late-attached supplementary monitor, not a start-to-finish allocator receipt.
 - Evaluator/anchor preflights: `experiments/TRR-P04/setup/evaluator-observation-preflight-r3/evaluator_capture_preflight.json`
   and `experiments/TRR-P04/setup/native-anchor-preflight-r3/native_anchor_preflight.json`.
 - Reviewed source snapshots: `f22d3b05295bff9e3879bb7544502f881054ed9f`
-  for teacher qualification and `233f310be43c0018bdd28d4d98d38a703e7d355f`
-  for the current setup/source lineage.
+  for teacher qualification, `6753dff3331481e587044c94bbab8f8d6db0cdf`
+  for the native-anchor public-reference fix, and `233f310be43c0018bdd28d4d98d38a703e7d355f`
+  for the setup/source lineage.
+
 
 No evaluator truth, private target-update weights, or fresh evaluation source
 rows were opened while preparing this record. Public correction labels used by
