@@ -8,8 +8,10 @@ import torch
 from scripts.trr0004_p04_prediction_runner import (
     METHODS,
     SEEDS,
+    _load_observations,
     _load_selection,
     _load_state_manifest,
+    _validate_observation_index,
     run_synthetic_smoke,
 )
 
@@ -17,6 +19,8 @@ from scripts.trr0004_p04_prediction_runner import (
 ROOT = Path(__file__).resolve().parents[1]
 SELECTION = ROOT / "experiments/TRR-P04/setup/public_selection-r2.json"
 STATE_MANIFEST = ROOT / "experiments/TRR-P04/runtime/training-r1/selected_state_manifest.json"
+OBSERVATION_ROOT = ROOT / "experiments/TRR-P04/runtime/evaluator-observations-r1"
+OBSERVATION_INDEX = OBSERVATION_ROOT / "observation_index.json"
 
 
 def test_prediction_runner_synthetic_cli_path_serializes_lowest_id_ties(tmp_path: Path) -> None:
@@ -45,3 +49,29 @@ def test_real_selection_and_selected_manifest_bind_the_eight_evaluation_states()
     assert all(row["evaluation_input"] is True for row in states.values())
     assert len(payload["excluded_final_states"]) == 8
     assert payload["training_provenance"]["finalized_after_late_cli_failure"] is True
+
+
+def test_real_observation_masks_bind_in_serialized_uint8_representation() -> None:
+    if not OBSERVATION_INDEX.is_file():
+        import pytest
+
+        pytest.skip("setup-owned evaluator observations are unavailable")
+    records, selection_descriptor = _load_selection(SELECTION)
+    index, _ = _validate_observation_index(
+        OBSERVATION_INDEX,
+        selection_records=records,
+        selection_descriptor=selection_descriptor,
+    )
+    observations, descriptors = _load_observations(
+        index_path=OBSERVATION_INDEX,
+        observation_root=OBSERVATION_ROOT,
+        index=index,
+        records=records,
+        selection_descriptor=selection_descriptor,
+    )
+    assert set(observations) == {"public_base", "p04_evaluator_target_update_v1"}
+    assert all(value[1].dtype == torch.bool for value in observations.values())
+    assert all(
+        descriptor["attention_mask_sha256"] == "854efd9f11edec5c584e908ef33ed6ba6899ce65bde6c8421c6ccd4dc0dc11de"
+        for descriptor in descriptors.values()
+    )

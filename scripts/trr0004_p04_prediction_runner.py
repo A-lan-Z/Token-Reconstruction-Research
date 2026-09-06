@@ -363,7 +363,11 @@ def _validate_observation_artifact(
         raise PredictionRunnerError(f"{condition} attention-mask geometry or dtype changed")
     if tuple(position_ids.shape) != (EXPECTED_ROWS, EXPECTED_SEQUENCE) or position_ids.dtype != torch.int64:
         raise PredictionRunnerError(f"{condition} position-id geometry or dtype changed")
-    mask = mask.to(dtype=torch.bool)
+    # Preserve the serialized representation for the binding hash.  Setup
+    # writes uint8 masks; use a separate boolean view only for geometry checks.
+    # Hashing the cast view would reject an otherwise unchanged setup artifact.
+    serialized_mask = mask
+    mask = serialized_mask.to(dtype=torch.bool)
     if not mask[:, 0].all().item() or not mask[:, 1:].any(dim=1).all().item():
         raise PredictionRunnerError(f"{condition} observation mask lacks BOS or active positions")
     if not torch.equal(mask, mask.cumprod(dim=1).to(torch.bool)):
@@ -387,7 +391,7 @@ def _validate_observation_artifact(
         raise PredictionRunnerError(f"{condition} observation order binding changed")
     for key, tensor in (
         ("activations_sha256", activations),
-        ("attention_mask_sha256", mask),
+        ("attention_mask_sha256", serialized_mask),
         ("position_ids_sha256", position_ids),
     ):
         if metadata.get(key) != tensor_sha256(tensor):
@@ -402,7 +406,7 @@ def _validate_observation_artifact(
         "shape": list(activations.shape),
         "dtype": str(activations.dtype),
         "activations_sha256": tensor_sha256(activations),
-        "attention_mask_sha256": tensor_sha256(mask),
+        "attention_mask_sha256": tensor_sha256(serialized_mask),
         "position_ids_sha256": tensor_sha256(position_ids),
     }
     return activations, mask, position_ids, artifact
