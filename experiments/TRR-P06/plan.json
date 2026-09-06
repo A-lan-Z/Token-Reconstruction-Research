@@ -1,0 +1,231 @@
+{
+  "schema": "token-reconstruction.trr-p06-plan.v1",
+  "task_id": "TRR-P06",
+  "status": "PROPOSED_PACKET_ENDING_TRUNCATED",
+  "provenance": {
+    "parent_task": "TRR-0006",
+    "parent_commit": "f10f8ba438973b3cb260d41707fbb14293db9cd3",
+    "packet_path": "coordination/requests/TRR-P06.md",
+    "packet_sha256": "cc8241b9db46e60a52070a23127dc783862c93e38668df15b2fa3e3e6e475e57",
+    "packet_status": "supplied attachment ends during the final decision bullet; no experiment freeze is claimed",
+    "unpublished_sources": false,
+    "out_of_scope": [
+      "TRR-0007 fitting-support-versus-positionwise study",
+      "P03 holdout",
+      "P04 teacher ranking",
+      "P03 projected prototypes",
+      "agent-one hidden records or results"
+    ]
+  },
+  "objective": {
+    "question": "Can already-observed later-position activations in the current record improve reconstruction beyond a past-only activation-context decoder?",
+    "estimand": "The incremental Full-valid-record minus Past-prefix visibility effect for a fixed jointly trainable affine-plus-attention family, on newly selected natural records.",
+    "interpretation": "A positive result concerns this visibility intervention, fitted state, public source distribution, target conditions, and clip geometry. It is not a claim that later activations reveal source tokens or that the method is suitable for token-streaming inference."
+  },
+  "scope": {
+    "new_fits": true,
+    "new_optimizer_steps": true,
+    "new_private_target_preparation": false,
+    "new_hidden_evaluation": false,
+    "public_changed_target_evaluation": true,
+    "auxiliary_teacher_or_ranking_loss": false,
+    "candidate_search_or_a2_in_student": false,
+    "source_token_or_guessed_token_feedback": false,
+    "public_only_fitting_and_selection": true,
+    "fresh_natural_panel": true,
+    "two_target_conditions": true,
+    "all_predictions_and_choices_frozen_before_truth": true
+  },
+  "common_numerical_recipe": {
+    "hidden_size": 2048,
+    "vocabulary_size": 128256,
+    "bos_token_id": 128000,
+    "pad_token_id": 128001,
+    "fit_sequence_tokens_including_bos": 192,
+    "stored_and_scored_sequence_tokens_including_bos": 128,
+    "scored_post_bos_positions": 127,
+    "attention_context_width": 128,
+    "activation_input_normalization": "float32 layer_norm eps=1e-5",
+    "attention_score_mode": "cosine_qk_normalized_scale4.0 for every arm",
+    "output_normalization": "float32 L2 normalize before the shared F32 embedding table",
+    "logit_scale": "exp(s), with s initialized to 3.0 and trained identically",
+    "direct_path_initialization": "W=identity, b=0",
+    "added_path_initialization": "Q/K/V deterministic shared-seed initialization; output weight and bias zero",
+    "parameter_count_per_arm": 5247361,
+    "diagonal_effective_trainable_parameter_count": 4722817,
+    "diagonal_inactive_parameters": "Q and K have zero gradient when each valid query has only its one diagonal key; retain them for the shared-family count and report this effective-capacity difference",
+    "embedding_table": "one shared public normalized F32 E table for all arms",
+    "precision": "inherit the reviewed P04/P05 runtime settings; F32 model parameters and logits, no diagnostic-only deterministic-kernel flag"
+  },
+  "visibility_arms": [
+    {
+      "method_id": "p06_positionwise_diagonal",
+      "role": "competent positionwise control",
+      "allowed_keys": "j=i among valid positions",
+      "observation": "H_i and the common direct affine path",
+      "future_activation_count": 0,
+      "past_activation_count": 0
+    },
+    {
+      "method_id": "p06_past_only",
+      "role": "past-only activation-context decoder",
+      "allowed_keys": "0 <= j <= i among valid positions",
+      "observation": "H_0 through H_i and the common direct affine path",
+      "future_activation_count": 0,
+      "past_activation_count": "i"
+    },
+    {
+      "method_id": "p06_full_record",
+      "role": "later-activation decoder",
+      "allowed_keys": "all valid positions j in the declared current record",
+      "observation": "all valid H_j in the stored current record and the common direct affine path",
+      "future_activation_count": "number of valid j>i; for a full 128-position clip, 127-i",
+      "past_activation_count": "i"
+    }
+  ],
+  "fairness_contract": {
+    "same_family": true,
+    "same_direct_path": true,
+    "same_attention_normalization": true,
+    "same_embedding_table": true,
+    "same_initialization_within_replicate": true,
+    "same_fit_records_and_labels": true,
+    "same_position_draw_schedule_within_replicate": true,
+    "same_validation_records_and_selection_metric": true,
+    "actual_mask_used_during_fit_and_validation": true,
+    "invalid_or_padded_rows": "excluded from every arm's key set, query output, loss, and metric denominator; padding is never an artificial future observation",
+    "left_to_right_commitment": "student predictions are emitted in order and cannot revise prior tokens, while the Full arm may precompute activation-only features for the whole record",
+    "streaming_status": "Full arm is explicitly offline full-record inference and is not a token-streaming decoder",
+    "effective_capacity_note": "Total parameter counts match, but diagonal Q/K are structurally gradient-inactive; report both total and effective trainable parameters rather than treating them as identical capacity"
+  },
+  "public_fit": {
+    "distribution": "coverage_mix_v1",
+    "manifest": "experiments/TRR-0005/public_activation_v1/enriched_manifest.json",
+    "fit_records": 1200,
+    "fit_post_bos_positions": 124371,
+    "common_validation_records": 48,
+    "common_validation_post_bos_positions": 3133,
+    "supervision": "full-vocabulary same-position cross-entropy only",
+    "optimizer": "AdamW, learning_rate=1e-3, weight_decay=0.0, gradient_clip_norm=1.0",
+    "steps": 3000,
+    "record_batch_size": 8,
+    "post_bos_draws_per_step": 512,
+    "validation_every_steps": 100,
+    "training_replicates": [
+      {
+        "replicate": "r1",
+        "training_seed": 6106,
+        "shared_schedule_seed": 6106
+      },
+      {
+        "replicate": "r2",
+        "training_seed": 6107,
+        "shared_schedule_seed": 6107
+      }
+    ],
+    "selection": "For each arm and replicate, select the earliest checkpoint attaining the maximum full-vocabulary token accuracy on the same public validation records; no fresh-panel answer or target condition enters selection",
+    "fit_data_role": "fixed public data for all three visibility masks; this is not a coverage or teacher-loss comparison"
+  },
+  "capacity_qualification": {
+    "purpose": "show that every mask can learn on public positions where the common initial affine direct path is wrong",
+    "source": "common public validation split only, before fresh panel truth",
+    "probe_positions": 256,
+    "probe_construction": "deterministic 64 initial-affine-error positions from each scored-position bin [1,15], [16,39], [40,79], [80,127], chosen by a frozen public-only ledger",
+    "initial_accuracy": "0/256 by construction; the probe is not an already-perfect subset",
+    "pass_rule": "every arm in both training replicates must correct at least 20 percent (52/256) of these positions at its public-validation-selected checkpoint and remain finite",
+    "failure_rule": "a failed arm is reported as an underqualified comparison and stops fresh-panel truth scoring; no post hoc mask, seed, or fit-data rescue is permitted"
+  },
+  "fresh_panel": {
+    "selection_seed": 6206,
+    "domains": ["pile", "finance"],
+    "target_conditions": ["public_base", "public_lora_2601"],
+    "records_per_domain": 256,
+    "unique_source_records": 512,
+    "pairing": "the same source record is evaluated under both public target conditions; target changes are paired within source",
+    "clip": "128 positions including BOS; score post-BOS positions 1..127 only",
+    "eligibility": "new natural records with at least 128 valid positions, separated from fit, validation, opened public evaluation, and accessible duplicate source/sequence identities using the public exclusion ledger",
+    "stratification": "predeclared domain and natural-length/context strata; no target labels, correctness, or fresh predictions are used in selection",
+    "observation": "public full forward at the fixed cut, retaining H_0..H_127 and matching masks/position IDs for all arms",
+    "position_effect_bins": [
+      {"name": "early", "positions": [1, 15]},
+      {"name": "early_middle", "positions": [16, 39]},
+      {"name": "late_middle", "positions": [40, 79]},
+      {"name": "near_end", "positions": [80, 127]}
+    ],
+    "position_reporting": "report Full-Past and Full-Positionwise paired deltas by bin, with actual future_valid_count from the mask; for a full valid clip this is 127-i",
+    "padding_and_ends": "records shorter than the declared clip are ineligible for the primary fixed-clip panel; any capture padding beyond valid positions is masked out and a public padded-mask invariance check is required",
+    "student_inference": "activation-only feature computation followed by full-vocabulary readout; no A2, candidate simulation, target prefix, guessed-token feedback, or online truth"
+  },
+  "a1_a2_anchor": {
+    "method": "published native A1+A2 K=256 decision rule",
+    "role": "bounded absolute-quality anchor only; never used for student selection",
+    "source_subset": "predeclared first 64 selected records per domain from the fresh public panel",
+    "target_condition": "public_base only",
+    "records": 128,
+    "scored_tokens": 16256,
+    "exact_denominator": 128,
+    "reporting": "separate token/exact quality and full anchor cost/candidate simulations; never pool its denominator with the three student arms or changed-target cells"
+  },
+  "metrics_and_decision": {
+    "primary_contrast": "p06_full_record minus p06_past_only",
+    "secondary_contrasts": [
+      "p06_past_only minus p06_positionwise_diagonal",
+      "p06_full_record minus p06_positionwise_diagonal"
+    ],
+    "token_metric": "micro accuracy over valid post-BOS positions, with per-record token accuracy also retained",
+    "exact_metric": "fraction of records with every one of the 127 scored post-BOS positions correct",
+    "paired_metrics": "token gains/losses and exact-record both/gain/loss/neither counts on identical source-target pairs",
+    "uncertainty": "10000 source-record cluster bootstrap draws, seed 6306, stratified by domain, target condition, and predeclared natural-length stratum; two fixed training replicates are averaged within each resample rather than treated as new sources",
+    "descriptive_interval": "central 95 percent paired bootstrap interval for each cell and replicate-averaged contrast",
+    "practical_threshold": {
+      "token_benefit_pp": 1.0,
+      "exact_benefit_pp": 5.0,
+      "harm_limits_pp": {"token": -1.0, "exact": -5.0},
+      "promotion": "in at least one public-base domain, Full-Past must have a point estimate at or above one registered benefit margin and a 95 percent lower bound above zero, while every other public-base domain/outcome remains above its retained harm limit; public-LoRA target cells are reported separately as a transfer test",
+      "interpretation": "thresholds are exploratory progression criteria for this panel, not universal equivalence claims; failure to reach a threshold does not prove later activations have no value"
+    },
+    "position_analysis": "descriptive only after the primary gate is fixed; do not reselect masks, records, or checkpoints from position-bin outcomes",
+    "quality_anchor": "the A1+A2 anchor is an absolute-quality reference with the separate denominator above, not a fourth visibility arm"
+  },
+  "resource_preflight": {
+    "largest_qualification": "one p06_full_record backward cell at 8 records x 192 positions, 512 post-BOS draws, full-vocabulary readout, and the actual full-valid mask",
+    "estimated_geometry": {
+      "embedding_table_fp32_bytes": 1050673488,
+      "activation_batch_fp32_bytes": 12582912,
+      "attention_scores_fp32_bytes": 1179648,
+      "selected_logits_fp32_bytes": 262668288,
+      "model_parameter_fp32_bytes": 20989444,
+      "adam_m_v_fp32_bytes": 41978888
+    },
+    "proposed_guards": {
+      "minimum_free_gpu_gib": 8.0,
+      "maximum_reserved_gpu_gib": 6.0,
+      "maximum_host_rss_gib": 16.0,
+      "minimum_host_available_gib": 10.0,
+      "timeout_seconds": 1800
+    },
+    "protocol": "qualify the full mask backward cell with live guard and measured margin before releasing six fits; execute fits sequentially, retain source/state/schedule hashes, and do not use microbatching or mask shortcuts as an unverified workaround",
+    "cost_reporting": "report capture, feature construction, readout, synchronization, I/O, warmup, measured per-record time, retained H/state memory, and A1+A2 candidate cost separately; Full is offline full-record inference"
+  },
+  "truth_and_freeze": {
+    "before_truth": [
+      "freeze plan, panel/source selection, all three arm definitions and masks",
+      "freeze both selected states per arm/replicate and every prediction artifact",
+      "validate identical source IDs, masks, positions, clip geometry, target pairing, code/state/input hashes",
+      "freeze A1+A2 anchor outputs and its separate denominator",
+      "create a complete create-only matrix receipt"
+    ],
+    "after_truth": "truth is loaded once only to compute declared metrics; no model, mask, source, timing, or routing changes are permitted",
+    "access_invariant": "student prediction never loads source plaintext, target labels, correctness feedback, unavailable target-prefix weights, guessed-token feedback, or another task's sealed data"
+  },
+  "expected_artifacts": {
+    "plan": "experiments/TRR-P06/plan.json",
+    "review": "experiments/TRR-P06/review/design-review.md",
+    "qualification": "experiments/TRR-P06/runtime/qualification/",
+    "fits": "experiments/TRR-P06/runtime/fits/",
+    "fresh_predictions": "experiments/TRR-P06/runtime/predictions/",
+    "freeze_receipt": "experiments/TRR-P06/runtime/freeze_receipt.json",
+    "result": "experiments/TRR-P06/runtime/result.json",
+    "report": "coordination/results/TRR-P06.md"
+  }
+}
