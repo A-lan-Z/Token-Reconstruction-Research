@@ -1,0 +1,356 @@
+{
+  "schema": "token-reconstruction.trr-p04-evaluator-target-run-contract.v1",
+  "task_id": "TRR-P04",
+  "status": "TARGET_AND_OBSERVATIONS_READY_NO_TRUTH",
+  "purpose": "evaluator-only target preparation; separate from student fitting and teacher construction",
+  "source": {
+    "git_commit": "63d4016f2e555e8460ea566cf967237dc94fb0c3",
+    "target_runner": {
+      "path": "scripts/trr_p04/prepare_evaluator_target.py",
+      "sha256": "bbf4fe9ac443f49f11c12f4a2fd3a5e5eef2cd67bf46573384eb13ffb2cbbd04",
+      "gqa_geometry": {
+        "num_key_value_heads": 8,
+        "head_dim": 64,
+        "module_output_sizes": {
+          "q_proj": 2048,
+          "v_proj": 512
+        },
+        "expected_trainable_parameters": 106496
+      }
+    },
+    "watchdog": {
+      "path": "scripts/trr_p04/resource_watchdog.py",
+      "sha256": "cce2137ef5611983221ad199af5ec1c538e95c92db6d316c06baa5016c7dabf0"
+    },
+    "plan": {
+      "path": "experiments/TRR-P04/setup/evaluator_target_plan.json",
+      "sha256": "55f5cc5ecc90599d8983ea1fa23d81a5a062178fd5dde6c9d19359c9fcc54fc2"
+    },
+    "selection": {
+      "path": "experiments/TRR-P04/setup/public_selection-r2.json",
+      "sha256": "05f941e0dbcf29ea3efc47c7bc8abb3a7146a266eeea770f05052bb7728cde6a"
+    },
+    "watchdog_git_commit": "9b626c15171f394e51c6b6774301519cce2f217e"
+  },
+  "frozen_recipe": {
+    "condition_id": "p04_evaluator_target_update_v1",
+    "lineage_id": "p04-target-lora-no-robots-v1-seed20260910",
+    "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+    "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "layers": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "rank": 4,
+    "alpha": 4.0,
+    "initialization_seed": 20260910,
+    "optimizer": "AdamW",
+    "learning_rate": 0.00075,
+    "weight_decay": 0.0,
+    "gradient_clip_norm": 1.0,
+    "steps": 30,
+    "record_batch_size": 8,
+    "maximum_tokens_including_bos": 192,
+    "batch_schedule": "row=(step*record_batch_size+offset) mod records",
+    "objective": "full-vocabulary causal next-token cross-entropy",
+    "target_rows": 256,
+    "target_row_order_sha256": "42fb5bb7dfc58dba8ccf9e3b288e787fd88cc1788e936ee934cfbbdc86de2fd2"
+  },
+  "assets": {
+    "model_snapshot": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+    "model_weights_bytes": 2471645608,
+    "model_weights_sha256": "1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f",
+    "dataset_id": "HuggingFaceH4/no_robots",
+    "dataset_revision": "e6f9a4ac5c37faeb744ba9ecf0473184d7f8105b",
+    "dataset_arrow": "/home/alanz/.cache/huggingface/datasets/HuggingFaceH4___no_robots/default/0.0.0/e6f9a4ac5c37faeb744ba9ecf0473184d7f8105b/no_robots-train.arrow",
+    "dataset_arrow_bytes": 16503208,
+    "dataset_arrow_sha256": "5a9193e927d899d167fd40553d0b403499f5f9cf9a9254db19399a4d0b3550fb",
+    "dataset_info_sha256": "5b18eaa76054da66839dd9c4bab7069504ea8072f917948d9adc1e00aec84b7d",
+    "student_training_access": false,
+    "teacher_access": false,
+    "fresh_panel_access": false
+  },
+  "guards": {
+    "launch_wrapper": "scripts/trr_p04/resource_watchdog.py",
+    "poll_seconds": 0.5,
+    "maximum_group_rss_bytes": 17179869184,
+    "minimum_host_mem_available_bytes": 10737418240,
+    "target_internal_min_free_gpu_bytes": 5368709120,
+    "target_internal_max_reserved_gpu_bytes": 10737418240,
+    "target_internal_max_host_rss_bytes": 17179869184,
+    "target_internal_guard_frequency": "before model load, after model load, after LoRA install, and after every training step",
+    "fail_closed_on_unreadable_live_resource_data": true
+  },
+  "environment": {
+    "CUDA_VISIBLE_DEVICES": "0",
+    "OMP_NUM_THREADS": "4",
+    "MKL_NUM_THREADS": "4",
+    "TOKENIZERS_PARALLELISM": "false",
+    "PYTHONPATH": ".:src",
+    "HF_HUB_OFFLINE": "1",
+    "HF_DATASETS_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1"
+  },
+  "commands": {
+    "qualifier": {
+      "requirement": "run first on exclusive GPU; review PASS and measured margin before execute",
+      "timeout_seconds": 300,
+      "watchdog_output_root": "experiments/TRR-P04/runtime/watchdog/evaluator-target-qualifier-r5",
+      "target_output_root": "experiments/TRR-P04/runtime/evaluator-target-qualifier-r5",
+      "argv": [
+        "python3",
+        "scripts/trr_p04/resource_watchdog.py",
+        "--output-root",
+        "experiments/TRR-P04/runtime/watchdog/evaluator-target-qualifier-r5",
+        "--timeout-seconds",
+        "300",
+        "--poll-seconds",
+        "0.5",
+        "--max-rss-bytes",
+        "17179869184",
+        "--min-available-bytes",
+        "10737418240",
+        "--label",
+        "p04-evaluator-target-qualifier-r5",
+        "--",
+        "env",
+        "CUDA_VISIBLE_DEVICES=0",
+        "HF_HUB_OFFLINE=1",
+        "HF_DATASETS_OFFLINE=1",
+        "TRANSFORMERS_OFFLINE=1",
+        "TOKENIZERS_PARALLELISM=false",
+        "OMP_NUM_THREADS=4",
+        "MKL_NUM_THREADS=4",
+        "PYTHONPATH=.:src",
+        "python3",
+        "scripts/trr_p04/prepare_evaluator_target.py",
+        "--qualify-only",
+        "--plan",
+        "experiments/TRR-P04/setup/evaluator_target_plan.json",
+        "--selection",
+        "experiments/TRR-P04/setup/public_selection-r2.json",
+        "--dataset-arrow",
+        "/home/alanz/.cache/huggingface/datasets/HuggingFaceH4___no_robots/default/0.0.0/e6f9a4ac5c37faeb744ba9ecf0473184d7f8105b/no_robots-train.arrow",
+        "--tokenizer",
+        "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+        "--model-snapshot",
+        "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+        "--output-root",
+        "experiments/TRR-P04/runtime/evaluator-target-qualifier-r5",
+        "--device",
+        "cuda"
+      ]
+    },
+    "execute": {
+      "requirement": "run only after qualifier PASS and root confirms exclusive GPU; creates private target artifact",
+      "timeout_seconds": 900,
+      "watchdog_output_root": "experiments/TRR-P04/runtime/watchdog/evaluator-target-execute-r1",
+      "target_output_root": "experiments/TRR-P04/private/evaluator_target_update",
+      "argv": [
+        "python3",
+        "scripts/trr_p04/resource_watchdog.py",
+        "--output-root",
+        "experiments/TRR-P04/runtime/watchdog/evaluator-target-execute-r1",
+        "--timeout-seconds",
+        "900",
+        "--poll-seconds",
+        "0.5",
+        "--max-rss-bytes",
+        "17179869184",
+        "--min-available-bytes",
+        "10737418240",
+        "--label",
+        "p04-evaluator-target-execute-r1",
+        "--",
+        "env",
+        "CUDA_VISIBLE_DEVICES=0",
+        "HF_HUB_OFFLINE=1",
+        "HF_DATASETS_OFFLINE=1",
+        "TRANSFORMERS_OFFLINE=1",
+        "TOKENIZERS_PARALLELISM=false",
+        "OMP_NUM_THREADS=4",
+        "MKL_NUM_THREADS=4",
+        "PYTHONPATH=.:src",
+        "python3",
+        "scripts/trr_p04/prepare_evaluator_target.py",
+        "--execute",
+        "--plan",
+        "experiments/TRR-P04/setup/evaluator_target_plan.json",
+        "--selection",
+        "experiments/TRR-P04/setup/public_selection-r2.json",
+        "--dataset-arrow",
+        "/home/alanz/.cache/huggingface/datasets/HuggingFaceH4___no_robots/default/0.0.0/e6f9a4ac5c37faeb744ba9ecf0473184d7f8105b/no_robots-train.arrow",
+        "--tokenizer",
+        "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+        "--model-snapshot",
+        "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+        "--output-root",
+        "experiments/TRR-P04/private/evaluator_target_update",
+        "--device",
+        "cuda"
+      ]
+    }
+  },
+  "outputs": {
+    "qualifier": "experiments/TRR-P04/runtime/evaluator-target-qualifier-r5/target_qualification_receipt.json",
+    "private_update": "experiments/TRR-P04/private/evaluator_target_update/p04_evaluator_target_update_v1.safetensors",
+    "private_receipt": "experiments/TRR-P04/private/evaluator_target_update/target_preparation_receipt.json",
+    "no_evaluator_truth": true,
+    "no_source_text_or_tokens_serialized": true,
+    "target_selection_audit": "experiments/TRR-P04/private/evaluator_target_update/target_selection_audit.json",
+    "paired_observation_evidence": "experiments/TRR-P04/runtime/evaluator-observations-r1/capture_evidence.json",
+    "paired_observation_index": "experiments/TRR-P04/runtime/evaluator-observations-r1/observation_index.json",
+    "paired_observation_watchdog": "experiments/TRR-P04/runtime/watchdog/evaluator-observations-r1/finish.json"
+  },
+  "reservation_gate": {
+    "gpu_required": true,
+    "exclusive_gpu_required": true,
+    "current_status": "GPU_RELEASED_TO_IMPLEMENTATION_AFTER_CAPTURE",
+    "do_not_run_without_root_release": true,
+    "qualification_gate": "PASS r5 at revised 5 GiB free / 10 GiB reserved internal policy; full execute and paired capture also PASS",
+    "truth_opened": false
+  },
+  "prior_attempts": {
+    "qualifier_r1": {
+      "watchdog_root": "experiments/TRR-P04/runtime/watchdog/evaluator-target-qualifier-r1",
+      "child_root": "experiments/TRR-P04/runtime/evaluator-target-qualifier-r1",
+      "status": "FAILED_PRE_TRAINING_GEOMETRY_VALIDATION",
+      "reason": "Pinned Llama GQA v_proj output width is 512; obsolete uniform-width assumption rejected closed.",
+      "runner_source_head": "299d181595350359226134467892dd3b000e60b4"
+    },
+    "qualifier_r2": {
+      "watchdog_root": "experiments/TRR-P04/runtime/watchdog/evaluator-target-qualifier-r2",
+      "child_root": "experiments/TRR-P04/runtime/evaluator-target-qualifier-r2",
+      "status": "FAILED_CLOSED_AFTER_STEP_01_GPU_MARGIN",
+      "reason": "Corrected GQA geometry reached one full Adam step; free GPU was 6458179584 bytes below the 8 GiB internal floor. External RSS and host-memory watchdog limits passed; no artifact or truth was written.",
+      "runner_source_head": "982360a7980c4e35d7a33b5ef963b3085d7dda31"
+    },
+    "qualifier_r3": {
+      "watchdog_root": "experiments/TRR-P04/runtime/watchdog/evaluator-target-qualifier-r3",
+      "child_root": "experiments/TRR-P04/runtime/evaluator-target-qualifier-r3",
+      "status": "FAILED_CLOSED_WATCHDOG_EXIT_RACE_AFTER_GPU_DIAGNOSTIC",
+      "reason": "Child recorded the same full-step GPU values as r2, then the external watchdog observed a disappearing /proc status during child exit and failed closed. No artifact or truth was written.",
+      "runner_source_head": "f9835953cce2d2febbcb3c8eda146322fc35bad3"
+    },
+    "qualifier_r4": {
+      "watchdog_root": "experiments/TRR-P04/runtime/watchdog/evaluator-target-qualifier-r4",
+      "child_root": "experiments/TRR-P04/runtime/evaluator-target-qualifier-r4",
+      "status": "CHILD_QUALIFICATION_PASS_WATCHDOG_RACE",
+      "reason": "Child completed the revised internal policy and wrote a PASS qualification receipt, but the prior watchdog treated a disappearing zombie status as live unreadable data. No artifact or truth was written; receipt retained and excluded pending external PASS.",
+      "runner_source_head": "2488c6ece1f30a219c2c881f5e75e773b473a83f"
+    }
+  },
+  "resource_review": {
+    "status": "ROOT_APPROVED_REVISED_INTERNAL_GPU_POLICY",
+    "basis": "one complete fixed batch-8 Adam step at max sequence geometry; no OOM, allocator, or driver anomaly",
+    "measured_peak_allocated_bytes": 8920350208,
+    "measured_peak_reserved_bytes": 9133096960,
+    "measured_post_step_free_bytes": 6458179584,
+    "measured_total_gpu_bytes": 17066033152,
+    "measured_post_step_reserved_bytes": 9133096960,
+    "measured_host_mem_available_bytes": 20262199296,
+    "measured_child_rss_bytes": 3704840192,
+    "revised_min_free_gpu_bytes": 5368709120,
+    "revised_max_reserved_gpu_bytes": 10737418240,
+    "observed_free_margin_bytes": 1089470464,
+    "observed_reserved_margin_bytes": 1604321280,
+    "recipe_unchanged": true,
+    "approval": "root approved after r3 diagnostic review",
+    "watchdog_fix": {
+      "source_git_commit": "9b626c15171f394e51c6b6774301519cce2f217e",
+      "behavior": "re-poll/reap leader and ignore zombie RSS while still failing closed for live non-zombie unreadable processes",
+      "positive_smoke": "experiments/TRR-P04/setup/watchdog-smoke-p04-r3",
+      "positive_smoke_status": "PASS"
+    }
+  },
+  "completed_runs": {
+    "qualifier": {
+      "receipt": {
+        "path": "experiments/TRR-P04/runtime/evaluator-target-qualifier-r5/target_qualification_receipt.json",
+        "bytes": 6692,
+        "sha256": "436ee9af13012d2778fb7fa47814945233b1005782249101380847d36f91b97c"
+      },
+      "watchdog": {
+        "path": "experiments/TRR-P04/runtime/watchdog/evaluator-target-qualifier-r5/finish.json",
+        "bytes": 1090,
+        "sha256": "0d9de4a4fa4958306747d9a620ed44ed8d49e81edbc8dc4560a32f52eb949756"
+      },
+      "status": "PASS_TARGET_WORST_GEOMETRY_QUALIFICATION_NO_ARTIFACT",
+      "steps": 1,
+      "peak_allocated_bytes": 8920350208,
+      "peak_reserved_bytes": 9133096960,
+      "host_max_rss_bytes": 3704700928
+    },
+    "execute": {
+      "receipt": {
+        "path": "experiments/TRR-P04/private/evaluator_target_update/target_preparation_receipt.json",
+        "bytes": 29505,
+        "sha256": "d2c7d751233e4a11c3d9d4a14ededa25a2d35214185eead6705dc86f25f72582"
+      },
+      "watchdog": {
+        "path": "experiments/TRR-P04/runtime/watchdog/evaluator-target-execute-r1/finish.json",
+        "bytes": 1090,
+        "sha256": "f5d5f289b827548c2c3364feb9007035e61e7a6730c8e64d8e733428050ec523"
+      },
+      "artifact": {
+        "path": "experiments/TRR-P04/private/evaluator_target_update/p04_evaluator_target_update_v1.safetensors",
+        "bytes": 428208,
+        "sha256": "d95fe4db02582280a09379604840dc1cf8d890db3aa166e1dad204f657d52950"
+      },
+      "status": "PASS_EVALUATOR_TARGET_UPDATE_READY_NO_EVALUATION_TRUTH",
+      "steps": 30,
+      "peak_allocated_bytes": 8929722368,
+      "peak_reserved_bytes": 9133096960,
+      "host_max_rss_bytes": 3705802752,
+      "loss_first": 3.788069009780884,
+      "loss_last": 2.15740966796875
+    },
+    "paired_capture": {
+      "evidence": {
+        "path": "experiments/TRR-P04/runtime/evaluator-observations-r1/capture_evidence.json",
+        "bytes": 13051,
+        "sha256": "2d196687588d3c76660df622878b295983e75240b4fd68eb553a6229bacdfe44"
+      },
+      "index": {
+        "path": "experiments/TRR-P04/runtime/evaluator-observations-r1/observation_index.json",
+        "bytes": 17095,
+        "sha256": "559aa0a4376afd777c305f2ed7ad176eff22d4a0d4671373ce07c80474664f82"
+      },
+      "public_base": {
+        "path": "experiments/TRR-P04/runtime/evaluator-observations-r1/observations/public_base.safetensors",
+        "bytes": 56749008,
+        "sha256": "efc947494aea18da63a497c48fdab9f3e5934f681394ab080421672da71bb870"
+      },
+      "target_condition": {
+        "path": "experiments/TRR-P04/runtime/evaluator-observations-r1/observations/p04_evaluator_target_update_v1.safetensors",
+        "bytes": 56749056,
+        "sha256": "42e910d1321770159d53c7d91b77b8e4c4c9b4c129e31e51326bbba84406e267"
+      },
+      "watchdog": {
+        "path": "experiments/TRR-P04/runtime/watchdog/evaluator-observations-r1/finish.json",
+        "bytes": 1090,
+        "sha256": "d00c13523f92a2a1dc2156fca6bfbf041e9fe93c3007262d1c17007ddbbdfdee"
+      },
+      "status": "PASS_EVALUATOR_OBSERVATIONS_NO_TRUTH",
+      "records": 72,
+      "observation_geometry": [
+        72,
+        192,
+        2048
+      ]
+    }
+  },
+  "access": {
+    "target_update_training_rows_read": true,
+    "target_update_loaded_for_capture_only": true,
+    "evaluation_truth_opened": false,
+    "source_text_or_tokens_serialized": false,
+    "student_or_teacher_access": false
+  }
+}

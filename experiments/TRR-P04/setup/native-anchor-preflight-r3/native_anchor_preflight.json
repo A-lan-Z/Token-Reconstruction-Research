@@ -1,0 +1,101 @@
+{
+  "access": {
+    "evaluation_truth_opened": false,
+    "model_loaded": false,
+    "observation_tensor_read": false,
+    "source_rows_read": false,
+    "target_update_loaded": false
+  },
+  "algorithm": {
+    "a2_fallback": false,
+    "candidate_k": 256,
+    "expected_candidate_simulations": 98304,
+    "expected_proposal_positions": 384,
+    "policy": "fixed schedule [256], direct cosine, no fast path, commit last winner",
+    "proposal_chunk": 256,
+    "proposal_k": 512,
+    "record_batch_size": 1,
+    "tie_rule": "published proposal order and first argmax"
+  },
+  "anchor": {
+    "denominator_separate": true,
+    "implementation_identity": "frozen_a1_a2_k256",
+    "method_id": "native_a1_a2",
+    "port_status": "exact PR7 algorithm on P04 panel/input port; not canonical dual-benchmark claim",
+    "post_bos_length_per_record": 32,
+    "record_count": 12,
+    "record_order_sha256": "906fc833e77fe677b8ba6562e2b22f0ccd9956d592441659e1c64cc035da8073",
+    "scored_positions_per_target": 384
+  },
+  "created_utc": "2026-09-06T02:15:21Z",
+  "execution": {
+    "argv": [
+      "scripts/trr_p04/native_anchor_runner.py",
+      "--selection",
+      "experiments/TRR-P04/setup/public_selection-r2.json",
+      "--target-plan",
+      "experiments/TRR-P04/setup/evaluator_target_plan.json",
+      "--output-root",
+      "experiments/TRR-P04/setup/native-anchor-preflight-r3",
+      "--preflight-only"
+    ],
+    "elapsed_seconds": 0.007342,
+    "git_commit": "81542a6ac87b22ca3a1b9a48dacf1e0e0afb1bf3",
+    "max_rss_bytes": 847310848,
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "python": "3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]",
+    "safe_environment": {
+      "PYTHONPATH": ".:src"
+    }
+  },
+  "reusable_sources": [
+    {
+      "bytes": 44976,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/scripts/trr0003_footing_compare.py",
+      "role": "immutable PR7 legacy proposal/decode",
+      "sha256": "bb3690a481014f3ea12b411a3ec6eb58d7c888ef6c4135f9e03908027857f98e"
+    },
+    {
+      "bytes": 29969,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/src/token_reconstruction/a1a2_configuration_search.py",
+      "role": "immutable PR7 policy definitions",
+      "sha256": "608bead6291353cacaa700a85f3dd619fb3261375e6fd5ba19cbc43fd738315b"
+    }
+  ],
+  "schema": "token-reconstruction.trr-p04-native-anchor.v1-preflight.v1",
+  "selection": {
+    "anchor_count": 12,
+    "anchor_order_sha256": "906fc833e77fe677b8ba6562e2b22f0ccd9956d592441659e1c64cc035da8073",
+    "path": "/tmp/trr-p04/experiments/TRR-P04/setup/public_selection-r2.json",
+    "record_count": 72,
+    "record_order_sha256": "53f165364993845f217acd3ba9d066e3a76021d22741084a99bd92c5145127ae",
+    "sha256": "05f941e0dbcf29ea3efc47c7bc8abb3a7146a266eeea770f05052bb7728cde6a"
+  },
+  "status": "PASS_NO_MODEL_NO_TARGET_NO_TRUTH",
+  "target_conditions": [
+    "public_base",
+    "p04_evaluator_target_update_v1"
+  ],
+  "target_plan": {
+    "condition_id": "p04_evaluator_target_update_v1",
+    "config": {
+      "alpha": 4.0,
+      "layers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "modules": [
+        "q_proj",
+        "v_proj"
+      ],
+      "rank": 4
+    },
+    "lineage_id": "p04-target-lora-no-robots-v1-seed20260910",
+    "path": "/tmp/trr-p04/experiments/TRR-P04/setup/evaluator_target_plan.json",
+    "seed": 20260910,
+    "sha256": "d7beca5c291a9ce6d92cf33cddde3046c9b55fc839d3a596430b862df9728188"
+  },
+  "task_id": "TRR-P04"
+}

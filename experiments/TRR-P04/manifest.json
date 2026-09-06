@@ -1,0 +1,1396 @@
+{
+  "schema": "token-reconstruction.trr-p04.manifest.v1",
+  "task_id": "TRR-P04",
+  "status": "SCIENTIFIC_COMPLETE_PUBLICATION_COMPLETE",
+  "claim_status": "Scientific comparison is complete on the frozen paired 72-record natural panel: D underperformed H and S in both public and evaluator target conditions, while S versus affine was near zero with intervals spanning zero. The separate PR7-compatible native A1+A2 numerical port recovered 384/384 public-anchor positions and 383/384 evaluator-target positions. Publication is recorded in PR #10, which remains open and unmerged.",
+  "created_utc": "2026-09-06T03:57:29.442249Z",
+  "updated_utc": "2026-09-06T04:56:15Z",
+  "purpose": "Evaluate whether offline hard-confusion or privileged teacher-score supervision improves a causal activation-only student on a fresh paired natural panel, with a separate PR7-compatible native A1+A2 anchor.",
+  "authority": {
+    "charter": {
+      "path": "RESEARCH_CHARTER.md",
+      "role": "authoritative research charter",
+      "status": "COMPLETED",
+      "publication": "include",
+      "bytes": 3693,
+      "sha256": "ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d"
+    },
+    "control_packet": {
+      "path": "coordination/requests/TRR-P04.md",
+      "role": "incoming control packet",
+      "status": "COMPLETED",
+      "publication": "include",
+      "bytes": 11950,
+      "sha256": "1cd77f141bf780896848438f6a2bf8ab85b2b99e51a9a7dcf2cd73872f2ed268"
+    },
+    "dual_benchmark_protocol": {
+      "path": "research/DUAL_BENCHMARK_PROTOCOL.md",
+      "role": "comparability protocol",
+      "status": "COMPLETED",
+      "publication": "include",
+      "bytes": 15328,
+      "sha256": "86806c33cbaab2b5f23590a06cea2945013067171984c4293daedee49e37a1f4"
+    },
+    "parent_task": {
+      "task_id": "TRR-0004",
+      "branch": "task/TRR-0004",
+      "verified_commit": "6e8b683e404c0acb70cd59b7dd6d6868b2061f61",
+      "pr": 7,
+      "state": "OPEN_UNMERGED"
+    }
+  },
+  "git": {
+    "worktree": "/tmp/trr-p04",
+    "branch": "task/TRR-P04",
+    "current_head": "827d31b69c478957aa202ee9f93021747f471f4d",
+    "anchor_execution_commit": "370a9afea354589969435b76717c2f7f416bb2af",
+    "anchor_adapter_commit": "2a714ef2d57699563d9b9cf60255d7aab71991ed",
+    "student_prediction_commit": "124ce70723c28a4d26bb1f6d123962c7c4f116f2",
+    "parent_pr_state": "OPEN_UNMERGED",
+    "merge_allowed": false,
+    "publication_owner": "root",
+    "truth_materializer_commit": "827d31b69c478957aa202ee9f93021747f471f4d",
+    "joint_freeze_validator_commit": "f0b26911c5d2fb7d0db1c27e0557bc05481d8bbb",
+    "scoring_source_commit": "208ad88f75140396626e8416ecd31ace35302026"
+  },
+  "coordination": {
+    "task_state": {
+      "path": "coordination/parallel/TRR-P04.json",
+      "role": "compact task-local coordination state",
+      "status": "SCIENTIFIC_COMPLETE_PUBLICATION_COMPLETE",
+      "publication": "include",
+      "bytes": 12616,
+      "sha256": "bfb5ee16cb921b3228458b07d6782b8258aed5ed4ccb13bd08b9a11a1bf80b43"
+    },
+    "phase_map": {
+      "path": "experiments/TRR-P04/setup/evaluator_capture_phase_map.json",
+      "role": "evaluator phase map",
+      "status": "COMPLETED",
+      "publication": "include",
+      "bytes": 24565,
+      "sha256": "10ac0bd5767c8ae7d98ee2494ddee59de0af26e0d6187ec30ff4300e8fb317c1"
+    },
+    "native_anchor_contract": {
+      "path": "experiments/TRR-P04/setup/native-anchor-run-contract.json",
+      "role": "native anchor contract",
+      "status": "COMPLETED",
+      "publication": "include",
+      "bytes": 13198,
+      "sha256": "ee509a9c82c83cd7c62ff0dd916f1cf14e1720825bce066af9bb4a8925e26648"
+    },
+    "publication_files": {
+      "path": "experiments/TRR-P04/publication-files.json",
+      "role": "curated publication allowlist and exclusions",
+      "status": "PUBLICATION_COMPLETE_OPEN_UNMERGED",
+      "publication": "include",
+      "bytes": 30554,
+      "sha256": "ef0d66ed73e8984720bd158a7d86ab7d252eee82ec27a026b0237f0cfe871f95"
+    },
+    "global_state_modified": false,
+    "active_method_registry_modified": false,
+    "shared_protocol_modified": false,
+    "other_agent_mutable_work_inspected": false,
+    "command_plan": {
+      "path": "experiments/TRR-P04/setup/truth-score-command-plan.json",
+      "role": "executed truth/score command plan",
+      "status": "COMPLETED",
+      "publication": "include",
+      "bytes": 40673,
+      "sha256": "a0d7f0cf0a7c3557754b1c5b01f9bcb477b982398c3a2a9decf6e2177f4c4517"
+    }
+  },
+  "scientific_access_scope": {
+    "panel_preparation": "Public source metadata and deterministic style/length selection were inspected before freeze. Evaluator-side target preparation and observation capture used private evaluator resources in isolated preparation only.",
+    "attack_input": [
+      "opaque record identity",
+      "activation tensor",
+      "attention mask",
+      "position IDs",
+      "frozen method configuration",
+      "public asset identities"
+    ],
+    "student_forbidden": [
+      "source plaintext",
+      "source token IDs",
+      "teacher scores",
+      "candidate IDs",
+      "labels",
+      "future activations",
+      "guessed-token feedback",
+      "public-prefix calls",
+      "evaluator target weights"
+    ],
+    "anchor_forbidden": [
+      "source rows",
+      "source tokens",
+      "evaluation truth",
+      "evaluator target update weights"
+    ],
+    "truth_boundary": {
+      "evaluation_truth_opened": true,
+      "joint_freeze_status": "PASS_FROZEN_BEFORE_TRUTH",
+      "truth_scoring_status": "PASS_SCORED_AFTER_TRUTH_GATE",
+      "target_update_weights_loaded_by_anchor": false,
+      "observation_payloads_truth_free": true,
+      "truth_materialization_status": "PASS_AFTER_JOINT_FREEZE",
+      "truth_opening_order": "private source truth materialized after freeze; scorer opened both truth files only after all public panel/prediction/state/observation/anchor bindings validated",
+      "truth_payload_publication": "exclude"
+    }
+  },
+  "model_and_dataset": {
+    "base_model": {
+      "id": "meta-llama/Llama-3.2-1B-Instruct",
+      "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "cut_depth": 4,
+      "hidden_size": 2048,
+      "vocab_size": 128256,
+      "bos_token_id": 128000,
+      "dtype": "bfloat16",
+      "snapshot_publication": "exclude_large_external_asset"
+    },
+    "fresh_panel_sources": [
+      "NeelNanda/pile-10k",
+      "Josephgflowers/Finance-Instruct-500k",
+      "tatsu-lab/alpaca"
+    ],
+    "source_records_publication": "source rows and text excluded",
+    "target_condition": {
+      "condition_id": "p04_evaluator_target_update_v1",
+      "lineage_id": "p04-target-lora-no-robots-v1-seed20260910",
+      "dataset": "HuggingFaceH4/no_robots",
+      "revision": "e6f9a4ac5c37faeb744ba9ecf0473184d7f8105b",
+      "artifact_publication": "private/exclude",
+      "observation_only_for_attack": true
+    }
+  },
+  "assets": {
+    "public_reference": {
+      "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "reference": {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/configuration-search/fresh-blind-code/reference/strict_bos/round001_teacher.py",
+        "role": "immutable PR7 reference implementation",
+        "publication": "identity_only",
+        "bytes": 31291,
+        "sha256": "10532a746cb8c30eb2caf338e206e1fa9d85e708d4db43a0d8fd4a2ff1a6f8bd"
+      },
+      "lens": {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/blind/reconstructor_input/public_a1_lens.pt",
+        "role": "retained public A1 lens",
+        "status": "VERIFIED_READ_ONLY_IDENTITY",
+        "publication": "identity_only",
+        "bytes": 16787653,
+        "sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742"
+      },
+      "same_for_anchor_conditions": true,
+      "evaluator_target_update_loaded_by_anchor": false
+    },
+    "public_candidate_preparation": {
+      "artifact": "experiments/TRR-P04/runtime/candidate-preparation-r2/candidate_preparation.safetensors",
+      "sha256": "ecf031a606a8bce22116b65d2dcbf5bc25596c80961767a40924081f8f03b1e5",
+      "publication": "exclude_large_payload"
+    },
+    "paired_observations": {
+      "public_base": {
+        "path": "experiments/TRR-P04/runtime/evaluator-observations-r1/observations/public_base.safetensors",
+        "role": "truth-free public observations",
+        "status": "VERIFIED_READ_ONLY_IDENTITY",
+        "publication": "exclude",
+        "bytes": 56749008,
+        "sha256": "efc947494aea18da63a497c48fdab9f3e5934f681394ab080421672da71bb870"
+      },
+      "target": {
+        "path": "experiments/TRR-P04/runtime/evaluator-observations-r1/observations/p04_evaluator_target_update_v1.safetensors",
+        "role": "truth-free target observations",
+        "status": "VERIFIED_READ_ONLY_IDENTITY",
+        "publication": "exclude",
+        "bytes": 56749056,
+        "sha256": "42e910d1321770159d53c7d91b77b8e4c4c9b4c129e31e51326bbba84406e267"
+      }
+    },
+    "target_update_weights": {
+      "path": "experiments/TRR-P04/private/evaluator_target_update/p04_evaluator_target_update_v1.safetensors",
+      "role": "private evaluator target update weights",
+      "status": "VERIFIED_READ_ONLY_IDENTITY",
+      "publication": "exclude",
+      "bytes": 428208,
+      "sha256": "d95fe4db02582280a09379604840dc1cf8d890db3aa166e1dad204f657d52950"
+    }
+  },
+  "panel": {
+    "status": "FROZEN_72_RECORD_PAIRED_PANEL_SCORED_AFTER_TRUTH_GATE",
+    "records": 72,
+    "styles": [
+      "pile_plain",
+      "finance_chat",
+      "alpaca_instruction"
+    ],
+    "length_strata_post_bos": [
+      16,
+      32,
+      64,
+      128
+    ],
+    "records_per_style_length_cell": 6,
+    "anchor_records": 12,
+    "anchor_style_counts": {
+      "pile_plain": 4,
+      "finance_chat": 4,
+      "alpaca_instruction": 4
+    },
+    "anchor_length_stratum": 32,
+    "anchor_post_bos_positions_per_record": 32,
+    "scored_positions_per_target": 384,
+    "scored_positions_all_student_arms_per_target": 1482,
+    "selection": {
+      "path": "experiments/TRR-P04/setup/public_selection-r2.json",
+      "role": "frozen panel selection metadata",
+      "status": "COMPLETED",
+      "publication": "include",
+      "bytes": 357935,
+      "sha256": "05f941e0dbcf29ea3efc47c7bc8abb3a7146a266eeea770f05052bb7728cde6a"
+    },
+    "record_order_sha256": "53f165364993845f217acd3ba9d066e3a76021d22741084a99bd92c5145127ae",
+    "anchor_order_sha256": "906fc833e77fe677b8ba6562e2b22f0ccd9956d592441659e1c64cc035da8073",
+    "conditions": [
+      "public_base",
+      "p04_evaluator_target_update_v1"
+    ],
+    "stage1_stage2_disjoint": "not applicable; no second holdout in P04"
+  },
+  "completed_preparations": {
+    "target_update": {
+      "status": "PASS_EVALUATOR_TARGET_UPDATE_READY_NO_EVALUATION_TRUTH",
+      "qualifier": {
+        "path": "experiments/TRR-P04/runtime/evaluator-target-qualifier-r5/target_qualification_receipt.json",
+        "role": "target worst geometry qualifier",
+        "status": "COMPLETED",
+        "publication": "include",
+        "bytes": 6692,
+        "sha256": "436ee9af13012d2778fb7fa47814945233b1005782249101380847d36f91b97c"
+      },
+      "artifact": {
+        "path": "experiments/TRR-P04/private/evaluator_target_update/p04_evaluator_target_update_v1.safetensors",
+        "role": "private target update artifact",
+        "status": "VERIFIED_READ_ONLY_IDENTITY",
+        "publication": "exclude",
+        "bytes": 428208,
+        "sha256": "d95fe4db02582280a09379604840dc1cf8d890db3aa166e1dad204f657d52950"
+      },
+      "fit_receipt": {
+        "path": "experiments/TRR-P04/private/evaluator_target_update/target_preparation_receipt.json",
+        "role": "private evaluator target fit receipt",
+        "status": "COMPLETED",
+        "publication": "exclude",
+        "bytes": 29505,
+        "sha256": "d2c7d751233e4a11c3d9d4a14ededa25a2d35214185eead6705dc86f25f72582"
+      }
+    },
+    "paired_observation_capture": {
+      "status": "PASS_EVALUATOR_OBSERVATIONS_NO_TRUTH",
+      "evidence": {
+        "path": "experiments/TRR-P04/runtime/evaluator-observations-r1/capture_evidence.json",
+        "role": "paired capture evidence",
+        "status": "COMPLETED",
+        "publication": "include",
+        "bytes": 13051,
+        "sha256": "2d196687588d3c76660df622878b295983e75240b4fd68eb553a6229bacdfe44"
+      },
+      "index": {
+        "path": "experiments/TRR-P04/runtime/evaluator-observations-r1/observation_index.json",
+        "role": "truth-free observation index",
+        "status": "COMPLETED",
+        "publication": "include",
+        "bytes": 17095,
+        "sha256": "559aa0a4376afd777c305f2ed7ad176eff22d4a0d4671373ce07c80474664f82"
+      },
+      "lineage": {
+        "path": "experiments/TRR-P04/runtime/evaluator-observations-r1/target_lineage_summary.json",
+        "role": "target lineage summary",
+        "status": "COMPLETED",
+        "publication": "include",
+        "bytes": 634,
+        "sha256": "506fd6ab86728bf672b4acb8399246f950fbe51c32822b545ff0a4bb3db445c8"
+      },
+      "drift": {
+        "path": "experiments/TRR-P04/runtime/evaluator-observations-r1/paired_drift_summary.json",
+        "role": "truth-free drift summary",
+        "status": "COMPLETED",
+        "publication": "include",
+        "bytes": 6346,
+        "sha256": "393ee8f4c92432e27835f6d05af10e2b5970f2e66e5d82821f7b71f75cddd1d6"
+      },
+      "geometry": [
+        72,
+        192,
+        2048
+      ]
+    },
+    "student_predictions": {
+      "status": "PASS_STUDENT_PREDICTIONS_FROZEN_BEFORE_TRUTH",
+      "freeze_receipt": {
+        "path": "experiments/TRR-P04/runtime/student-predictions-r3/student_prediction_freeze.json",
+        "role": "student prediction freeze receipt",
+        "status": "COMPLETED",
+        "publication": "include",
+        "bytes": 48620,
+        "sha256": "6f9c1c80580319f649ccb563d6346ec1b498917c4638f8326ce9218ca4daa9af"
+      },
+      "state_manifest": {
+        "path": "experiments/TRR-P04/runtime/training-r1/selected_state_manifest-r3.json",
+        "role": "selected state manifest",
+        "status": "COMPLETED",
+        "publication": "include",
+        "bytes": 78479,
+        "sha256": "2595faa316bcadb1262cddb97acfa92deefa10b840a90f59d798f34ec7fd9f47"
+      },
+      "state_binding": {
+        "path": "experiments/TRR-P04/runtime/training-r1/training_state_binding_check.json",
+        "role": "state binding check",
+        "status": "COMPLETED",
+        "publication": "include",
+        "bytes": 6820,
+        "sha256": "6d1a74504c7b773693013fc56bec678db3768fe0f1453bbb59d88ae9fd9d0d12"
+      },
+      "conditions": 2,
+      "groups_per_condition": 8,
+      "all_predictions_repeat_exact": true,
+      "all_anchor_slices_exact": true
+    },
+    "native_anchor": {
+      "status": "PASS_BOTH_CONDITIONS_NO_TRUTH",
+      "contract": {
+        "path": "experiments/TRR-P04/setup/native-anchor-run-contract.json",
+        "role": "native anchor contract",
+        "status": "COMPLETED",
+        "publication": "include",
+        "bytes": 13198,
+        "sha256": "ee509a9c82c83cd7c62ff0dd916f1cf14e1720825bce066af9bb4a8925e26648"
+      },
+      "public": {
+        "receipt": {
+          "path": "experiments/TRR-P04/runtime/native-anchor-public-r2/native_anchor_receipt.json",
+          "role": "public anchor receipt",
+          "status": "COMPLETED",
+          "publication": "include",
+          "bytes": 13670,
+          "sha256": "5a8a56eeefbca486ccb9ada99427172c51668235cecbadd18394c2cadea2c0f8"
+        },
+        "diagnostics": {
+          "path": "experiments/TRR-P04/runtime/native-anchor-public-r2/native_anchor_diagnostics.json",
+          "role": "public anchor diagnostics",
+          "status": "COMPLETED",
+          "publication": "include",
+          "bytes": 24103,
+          "sha256": "88ed57202f18c2423bbe1750841bbf36f224f323f87f6acbc390507e15dc056a"
+        },
+        "prediction": {
+          "path": "experiments/TRR-P04/runtime/native-anchor-public-r2/predictions.jsonl",
+          "role": "public anchor predictions",
+          "status": "HELD_FOR_ROOT_JOINT_FREEZE",
+          "publication": "include",
+          "bytes": 5021,
+          "sha256": "bb81464aaea5455a1be087390767c589b7a3fef6c65b7ffe085f50ec8cf1d408"
+        },
+        "watchdog": {
+          "path": "experiments/TRR-P04/runtime/watchdog/native-anchor-public-r2/finish.json",
+          "role": "public anchor watchdog finish",
+          "status": "COMPLETED",
+          "publication": "include",
+          "bytes": 1091,
+          "sha256": "e526d03d089006d31b08fa4164123872e51ed9b6e910bb7f7d677c2925b0d20e"
+        }
+      },
+      "target": {
+        "receipt": {
+          "path": "experiments/TRR-P04/runtime/native-anchor-target-r2/native_anchor_receipt.json",
+          "role": "target anchor receipt",
+          "status": "COMPLETED",
+          "publication": "include",
+          "bytes": 13794,
+          "sha256": "3e60cd3e10d1a26331cb94caf5fa7ec11644fb7b2dc9926b501e3dfcdb04d206"
+        },
+        "diagnostics": {
+          "path": "experiments/TRR-P04/runtime/native-anchor-target-r2/native_anchor_diagnostics.json",
+          "role": "target anchor diagnostics",
+          "status": "COMPLETED",
+          "publication": "include",
+          "bytes": 24122,
+          "sha256": "1f688bd2e8a18ab255ced68854c5111acd6d02f824ed1ebc34513d392d112364"
+        },
+        "prediction": {
+          "path": "experiments/TRR-P04/runtime/native-anchor-target-r2/predictions.jsonl",
+          "role": "target anchor predictions",
+          "status": "HELD_FOR_ROOT_JOINT_FREEZE",
+          "publication": "include",
+          "bytes": 5249,
+          "sha256": "51da2b471e52c865119d9e2c8e3a6ec86682913f1c5a5c231efab6cb29b4d07a"
+        },
+        "watchdog": {
+          "path": "experiments/TRR-P04/runtime/watchdog/native-anchor-target-r2/finish.json",
+          "role": "target anchor watchdog finish",
+          "status": "COMPLETED",
+          "publication": "include",
+          "bytes": 1091,
+          "sha256": "8ca654ef51d5a61629e04b372261bf36286147a0ddd6f015e2f9102e021c7aef"
+        }
+      },
+      "logical_candidate_simulations_per_condition": 98304,
+      "executed_candidate_simulations_per_condition_including_warmup_repeats": 393216,
+      "warmup_passes_per_record": 1,
+      "measured_repeat_passes_per_record": 3,
+      "prediction_exact_repeat_both_conditions": true,
+      "public_reference_same_both_conditions": true,
+      "evaluator_target_update_loaded": false,
+      "truth_opened": false,
+      "port_status": "exact PR7 algorithm on P04 panel/input port; not canonical dual-benchmark claim"
+    },
+    "joint_freeze": {
+      "status": "FROZEN_BEFORE_TRUTH",
+      "receipt": {
+        "path": "experiments/TRR-P04/runtime/freeze.json",
+        "status": "COMPLETED",
+        "publication": "include",
+        "bytes": 28344,
+        "sha256": "3c8ff3ea0e3435ded45b3e2a75b0498fbd2eee9fce39ab409ec5a942b69417d7",
+        "role": "joint pre-truth freeze receipt"
+      },
+      "prediction_groups": 18,
+      "prediction_files": 18,
+      "state_files": 8,
+      "native_anchor_receipts": 2,
+      "truth_accessed": false,
+      "model_loaded": false
+    },
+    "truth_materialization": {
+      "status": "PASS_EVALUATOR_TRUTH_MATERIALIZED_AFTER_FREEZE",
+      "receipt": {
+        "path": "/tmp/trr-p04-evaluator-truth-v1/truth_materialization_receipt.json",
+        "status": "COMPLETED",
+        "publication": "exclude",
+        "bytes": 3727,
+        "sha256": "6c8ae536234e06b65a9c9b4bdc504f167a36d44a2436fb2631d7163511c2772c",
+        "role": "private truth materialization receipt"
+      },
+      "watchdog": {
+        "command.json": {
+          "path": "experiments/TRR-P04/runtime/watchdog/evaluator-truth-materialization-r1/command.json",
+          "status": "COMPLETED",
+          "publication": "include",
+          "bytes": 1910,
+          "sha256": "6dd0b7393344e1dbff8bb250df3590b5de348bbd80ce65300c2db61ef7333bbd",
+          "role": "truth materialization watchdog command"
+        },
+        "resource_guard.json": {
+          "path": "experiments/TRR-P04/runtime/watchdog/evaluator-truth-materialization-r1/resource_guard.json",
+          "status": "COMPLETED",
+          "publication": "include",
+          "bytes": 3529,
+          "sha256": "b2c5d4d822c3f6a2cf9cd4f5f4427f213c9bc6963ad40a006688da1a4889b4f6",
+          "role": "truth materialization watchdog resource guard"
+        },
+        "resource_samples.jsonl": {
+          "path": "experiments/TRR-P04/runtime/watchdog/evaluator-truth-materialization-r1/resource_samples.jsonl",
+          "status": "COMPLETED",
+          "publication": "include",
+          "bytes": 2164,
+          "sha256": "840ffc426caf510cb8ae5ea9fbcbd6e9598b9c00103bb286b32717a8287c9aa9",
+          "role": "truth materialization watchdog resource samples."
+        },
+        "time.json": {
+          "path": "experiments/TRR-P04/runtime/watchdog/evaluator-truth-materialization-r1/time.json",
+          "status": "COMPLETED",
+          "publication": "include",
+          "bytes": 1229,
+          "sha256": "4bc347ba64ee6dee51b56376a8ea52ac8752c4259749344d927a4ff8bb98b4f0",
+          "role": "truth materialization watchdog time"
+        },
+        "finish.json": {
+          "path": "experiments/TRR-P04/runtime/watchdog/evaluator-truth-materialization-r1/finish.json",
+          "status": "COMPLETED",
+          "publication": "include",
+          "bytes": 1088,
+          "sha256": "0897b7279c7e33d997645c89f4071b687884f6eafc086e13225b63bf23322122",
+          "role": "truth materialization watchdog finish"
+        }
+      },
+      "truth_directory": "/tmp/trr-p04-evaluator-truth-v1",
+      "truth_files": {
+        "p04_evaluator_target_update_v1": {
+          "bytes": 26050,
+          "path": "/tmp/trr-p04-evaluator-truth-v1/p04_evaluator_target_update_v1.jsonl",
+          "sha256": "9d75b9be80e120263bd656a45da3401b29fb4693b3b233b0f2a71b8aa8167ef4"
+        },
+        "public_base": {
+          "bytes": 26050,
+          "path": "/tmp/trr-p04-evaluator-truth-v1/public_base.jsonl",
+          "sha256": "9d75b9be80e120263bd656a45da3401b29fb4693b3b233b0f2a71b8aa8167ef4"
+        }
+      },
+      "records_per_condition": 72,
+      "post_bos_tokens_per_condition": 4320,
+      "truth_content_publication": "exclude",
+      "source_materialized_transiently_after_freeze": true
+    },
+    "truth_scoring": {
+      "status": "SCORED_AFTER_TRUTH_GATE",
+      "score": {
+        "path": "experiments/TRR-P04/runtime/score/evaluator_score_r1.json",
+        "status": "COMPLETED",
+        "publication": "include",
+        "bytes": 247601,
+        "sha256": "f9a604727eba9cd0f7e7bdb2a2c1e1ed828e15d9c9ae551b375a18c640277853",
+        "role": "truth-gated evaluator score artifact"
+      },
+      "watchdog": {
+        "command.json": {
+          "path": "experiments/TRR-P04/runtime/watchdog/evaluator-score-r1/command.json",
+          "status": "COMPLETED",
+          "publication": "include",
+          "bytes": 7312,
+          "sha256": "3e2e13fac816c6b239e855926435b62c8a692f2434d1c53ff3d2133052262b78",
+          "role": "score watchdog command"
+        },
+        "resource_guard.json": {
+          "path": "experiments/TRR-P04/runtime/watchdog/evaluator-score-r1/resource_guard.json",
+          "status": "COMPLETED",
+          "publication": "include",
+          "bytes": 1723,
+          "sha256": "42f2766b3c730a2bc01bac8d234fcb85599b85d788e2a0a0b94bc8c9fb08360e",
+          "role": "score watchdog resource guard"
+        },
+        "resource_samples.jsonl": {
+          "path": "experiments/TRR-P04/runtime/watchdog/evaluator-score-r1/resource_samples.jsonl",
+          "status": "COMPLETED",
+          "publication": "include",
+          "bytes": 835,
+          "sha256": "dc8f812b76fbd1349728cc5acbe9e90607720add68e140eea6c888b0ecec5008",
+          "role": "score watchdog resource samples."
+        },
+        "time.json": {
+          "path": "experiments/TRR-P04/runtime/watchdog/evaluator-score-r1/time.json",
+          "status": "COMPLETED",
+          "publication": "include",
+          "bytes": 4064,
+          "sha256": "49b9b7f5eab3a89d9c1e43b4c238e767c5e3464ce814e6e2d3dec375b5e56c11",
+          "role": "score watchdog time"
+        },
+        "finish.json": {
+          "path": "experiments/TRR-P04/runtime/watchdog/evaluator-score-r1/finish.json",
+          "status": "COMPLETED",
+          "publication": "include",
+          "bytes": 1087,
+          "sha256": "471c0325430f800aea462f87f4e1d432a95edf653710aa447b759ecb5d982ffb",
+          "role": "score watchdog finish"
+        }
+      },
+      "truth_gate": {
+        "prediction_files_read_before_truth": true,
+        "prediction_files_rewritten": false,
+        "truth_opened_after_gate": true,
+        "verified_before_truth": true
+      },
+      "bootstrap": {
+        "cluster_unit": "source_record_id",
+        "samples": 10000,
+        "seed": 20260908,
+        "strata": 12,
+        "paired_target_rows_kept_together": true,
+        "pooled_overall_inference": false
+      }
+    }
+  },
+  "development_and_failed_attempts": [
+    {
+      "attempt": "evaluator-target-qualifier-r1",
+      "status": "FAILED_CLOSED",
+      "path": "experiments/TRR-P04/runtime/evaluator-target-qualifier-r1/failure.json",
+      "reason": "obsolete uniform LoRA geometry before corrected GQA parameter layout; no evaluator truth"
+    },
+    {
+      "attempt": "evaluator-target-qualifier-r2",
+      "status": "FAILED_CLOSED",
+      "path": "experiments/TRR-P04/runtime/evaluator-target-qualifier-r2/failure.json",
+      "reason": "old internal 8 GiB free-GPU guard after one step; measured memory retained; no evaluator truth"
+    },
+    {
+      "attempt": "evaluator-target-qualifier-r3",
+      "status": "FAILED_CLOSED",
+      "path": "experiments/TRR-P04/runtime/evaluator-target-qualifier-r3/failure.json",
+      "reason": "external watchdog observed child exit during final resource sample; no artifact or evaluator truth"
+    },
+    {
+      "attempt": "evaluator-target-qualifier-r4",
+      "status": "FAILED_CLOSED",
+      "path": "experiments/TRR-P04/runtime/evaluator-target-qualifier-r4/target_qualification_receipt.json",
+      "reason": "child qualification passed under revised policy but old watchdog /proc race failed closed; no artifact or evaluator truth"
+    },
+    {
+      "attempt": "native-anchor-public-r1",
+      "status": "FAILED_CLOSED",
+      "path": "experiments/TRR-P04/runtime/watchdog/native-anchor-public-r1/finish.json",
+      "reason": "persisted zero-padded position IDs disagreed with immutable PR7 decoder validator; no predictions or truth; corrected adapter committed before r2"
+    },
+    {
+      "attempt": "joint-freeze-direct-script-r1",
+      "status": "FAILED_BEFORE_VALIDATION",
+      "path": null,
+      "reason": "direct script invocation omitted PYTHONPATH and raised ModuleNotFoundError: scripts; no freeze receipt and no truth access",
+      "corrected_by": "joint-freeze-corrected command with PYTHONPATH=.:src; corrected run PASS"
+    }
+  ],
+  "pending_gates_and_results": {
+    "joint_prediction_freeze": "PASS_FROZEN_BEFORE_TRUTH",
+    "truth_materialization": "PASS_AFTER_JOINT_FREEZE",
+    "truth_gated_scoring": "PASS_SCORED_AFTER_TRUTH_GATE",
+    "fresh_accuracy_metrics": "COMPLETED",
+    "student_method_attribution": "COMPLETED_IN_SCORE_ARTIFACT",
+    "native_anchor_truth_metrics": "COMPLETED_IN_SCORE_ARTIFACT",
+    "publication_finalization": "COMPLETE_OPEN_UNMERGED"
+  },
+  "runtime_runs": {
+    "target_qualifier_r5": "experiments/TRR-P04/runtime/evaluator-target-qualifier-r5/target_qualification_receipt.json",
+    "target_fit": "experiments/TRR-P04/private/evaluator_target_update/target_preparation_receipt.json",
+    "paired_observations": "experiments/TRR-P04/runtime/evaluator-observations-r1/capture_evidence.json",
+    "student_freeze": "experiments/TRR-P04/runtime/student-predictions-r3/student_prediction_freeze.json",
+    "native_anchor_public": "experiments/TRR-P04/runtime/native-anchor-public-r2/native_anchor_receipt.json",
+    "native_anchor_target": "experiments/TRR-P04/runtime/native-anchor-target-r2/native_anchor_receipt.json",
+    "joint_freeze": "experiments/TRR-P04/runtime/freeze.json",
+    "truth_materialization_receipt": "/tmp/trr-p04-evaluator-truth-v1/truth_materialization_receipt.json",
+    "truth_materialization_watchdog": "experiments/TRR-P04/runtime/watchdog/evaluator-truth-materialization-r1/finish.json",
+    "score": "experiments/TRR-P04/runtime/score/evaluator_score_r1.json",
+    "score_watchdog": "experiments/TRR-P04/runtime/watchdog/evaluator-score-r1/finish.json",
+    "validation_receipt": "experiments/TRR-P04/runtime/task-validation-r1/validation_receipt.json",
+    "derived_tables": "coordination/results/TRR-P04-derived-tables.json",
+    "publication_receipt": "experiments/TRR-P04/runtime/publication_receipt.json"
+  },
+  "artifact_inventory": {
+    "publication_inventory": {
+      "path": "experiments/TRR-P04/publication-files.json",
+      "role": "curated publication allowlist and exclusions",
+      "status": "PUBLICATION_COMPLETE_OPEN_UNMERGED",
+      "bytes": 30554,
+      "sha256": "ef0d66ed73e8984720bd158a7d86ab7d252eee82ec27a026b0237f0cfe871f95"
+    },
+    "included_compact_artifacts": 76,
+    "excluded_entries": 19,
+    "large_payloads_excluded": true,
+    "truth_payloads_excluded": true
+  },
+  "evidence_pointers": {
+    "phase_map": {
+      "path": "experiments/TRR-P04/setup/evaluator_capture_phase_map.json",
+      "role": "evaluator phase map",
+      "status": "COMPLETED",
+      "publication": "include",
+      "bytes": 24565,
+      "sha256": "10ac0bd5767c8ae7d98ee2494ddee59de0af26e0d6187ec30ff4300e8fb317c1"
+    },
+    "anchor_contract": {
+      "path": "experiments/TRR-P04/setup/native-anchor-run-contract.json",
+      "role": "native anchor run contract",
+      "status": "COMPLETED",
+      "publication": "include",
+      "bytes": 13198,
+      "sha256": "ee509a9c82c83cd7c62ff0dd916f1cf14e1720825bce066af9bb4a8925e26648"
+    },
+    "public_anchor_receipt": {
+      "path": "experiments/TRR-P04/runtime/native-anchor-public-r2/native_anchor_receipt.json",
+      "role": "public anchor receipt",
+      "status": "COMPLETED",
+      "publication": "include",
+      "bytes": 13670,
+      "sha256": "5a8a56eeefbca486ccb9ada99427172c51668235cecbadd18394c2cadea2c0f8"
+    },
+    "target_anchor_receipt": {
+      "path": "experiments/TRR-P04/runtime/native-anchor-target-r2/native_anchor_receipt.json",
+      "role": "target anchor receipt",
+      "status": "COMPLETED",
+      "publication": "include",
+      "bytes": 13794,
+      "sha256": "3e60cd3e10d1a26331cb94caf5fa7ec11644fb7b2dc9926b501e3dfcdb04d206"
+    },
+    "public_anchor_watchdog": {
+      "path": "experiments/TRR-P04/runtime/watchdog/native-anchor-public-r2/finish.json",
+      "role": "public anchor watchdog",
+      "status": "COMPLETED",
+      "publication": "include",
+      "bytes": 1091,
+      "sha256": "e526d03d089006d31b08fa4164123872e51ed9b6e910bb7f7d677c2925b0d20e"
+    },
+    "target_anchor_watchdog": {
+      "path": "experiments/TRR-P04/runtime/watchdog/native-anchor-target-r2/finish.json",
+      "role": "target anchor watchdog",
+      "status": "COMPLETED",
+      "publication": "include",
+      "bytes": 1091,
+      "sha256": "8ca654ef51d5a61629e04b372261bf36286147a0ddd6f015e2f9102e021c7aef"
+    },
+    "student_freeze": {
+      "path": "experiments/TRR-P04/runtime/student-predictions-r3/student_prediction_freeze.json",
+      "role": "student freeze",
+      "status": "COMPLETED",
+      "publication": "include",
+      "bytes": 48620,
+      "sha256": "6f9c1c80580319f649ccb563d6346ec1b498917c4638f8326ce9218ca4daa9af"
+    },
+    "command_plan": {
+      "path": "experiments/TRR-P04/setup/truth-score-command-plan.json",
+      "status": "COMPLETED",
+      "publication": "include",
+      "bytes": 40673,
+      "sha256": "a0d7f0cf0a7c3557754b1c5b01f9bcb477b982398c3a2a9decf6e2177f4c4517",
+      "role": "truth/score command plan"
+    },
+    "joint_freeze": {
+      "path": "experiments/TRR-P04/runtime/freeze.json",
+      "status": "COMPLETED",
+      "publication": "include",
+      "bytes": 28344,
+      "sha256": "3c8ff3ea0e3435ded45b3e2a75b0498fbd2eee9fce39ab409ec5a942b69417d7",
+      "role": "joint pre-truth freeze receipt"
+    },
+    "truth_materialization_receipt": {
+      "path": "/tmp/trr-p04-evaluator-truth-v1/truth_materialization_receipt.json",
+      "status": "COMPLETED",
+      "publication": "exclude",
+      "bytes": 3727,
+      "sha256": "6c8ae536234e06b65a9c9b4bdc504f167a36d44a2436fb2631d7163511c2772c",
+      "role": "private truth materialization receipt",
+      "truth_content": "exclude"
+    },
+    "truth_materialization_watchdog": {
+      "command.json": {
+        "path": "experiments/TRR-P04/runtime/watchdog/evaluator-truth-materialization-r1/command.json",
+        "status": "COMPLETED",
+        "publication": "include",
+        "bytes": 1910,
+        "sha256": "6dd0b7393344e1dbff8bb250df3590b5de348bbd80ce65300c2db61ef7333bbd",
+        "role": "truth materialization watchdog command"
+      },
+      "resource_guard.json": {
+        "path": "experiments/TRR-P04/runtime/watchdog/evaluator-truth-materialization-r1/resource_guard.json",
+        "status": "COMPLETED",
+        "publication": "include",
+        "bytes": 3529,
+        "sha256": "b2c5d4d822c3f6a2cf9cd4f5f4427f213c9bc6963ad40a006688da1a4889b4f6",
+        "role": "truth materialization watchdog resource guard"
+      },
+      "resource_samples.jsonl": {
+        "path": "experiments/TRR-P04/runtime/watchdog/evaluator-truth-materialization-r1/resource_samples.jsonl",
+        "status": "COMPLETED",
+        "publication": "include",
+        "bytes": 2164,
+        "sha256": "840ffc426caf510cb8ae5ea9fbcbd6e9598b9c00103bb286b32717a8287c9aa9",
+        "role": "truth materialization watchdog resource samples."
+      },
+      "time.json": {
+        "path": "experiments/TRR-P04/runtime/watchdog/evaluator-truth-materialization-r1/time.json",
+        "status": "COMPLETED",
+        "publication": "include",
+        "bytes": 1229,
+        "sha256": "4bc347ba64ee6dee51b56376a8ea52ac8752c4259749344d927a4ff8bb98b4f0",
+        "role": "truth materialization watchdog time"
+      },
+      "finish.json": {
+        "path": "experiments/TRR-P04/runtime/watchdog/evaluator-truth-materialization-r1/finish.json",
+        "status": "COMPLETED",
+        "publication": "include",
+        "bytes": 1088,
+        "sha256": "0897b7279c7e33d997645c89f4071b687884f6eafc086e13225b63bf23322122",
+        "role": "truth materialization watchdog finish"
+      }
+    },
+    "score": {
+      "path": "experiments/TRR-P04/runtime/score/evaluator_score_r1.json",
+      "status": "COMPLETED",
+      "publication": "include",
+      "bytes": 247601,
+      "sha256": "f9a604727eba9cd0f7e7bdb2a2c1e1ed828e15d9c9ae551b375a18c640277853",
+      "role": "truth-gated score artifact"
+    },
+    "score_watchdog": {
+      "command.json": {
+        "path": "experiments/TRR-P04/runtime/watchdog/evaluator-score-r1/command.json",
+        "status": "COMPLETED",
+        "publication": "include",
+        "bytes": 7312,
+        "sha256": "3e2e13fac816c6b239e855926435b62c8a692f2434d1c53ff3d2133052262b78",
+        "role": "score watchdog command"
+      },
+      "resource_guard.json": {
+        "path": "experiments/TRR-P04/runtime/watchdog/evaluator-score-r1/resource_guard.json",
+        "status": "COMPLETED",
+        "publication": "include",
+        "bytes": 1723,
+        "sha256": "42f2766b3c730a2bc01bac8d234fcb85599b85d788e2a0a0b94bc8c9fb08360e",
+        "role": "score watchdog resource guard"
+      },
+      "resource_samples.jsonl": {
+        "path": "experiments/TRR-P04/runtime/watchdog/evaluator-score-r1/resource_samples.jsonl",
+        "status": "COMPLETED",
+        "publication": "include",
+        "bytes": 835,
+        "sha256": "dc8f812b76fbd1349728cc5acbe9e90607720add68e140eea6c888b0ecec5008",
+        "role": "score watchdog resource samples."
+      },
+      "time.json": {
+        "path": "experiments/TRR-P04/runtime/watchdog/evaluator-score-r1/time.json",
+        "status": "COMPLETED",
+        "publication": "include",
+        "bytes": 4064,
+        "sha256": "49b9b7f5eab3a89d9c1e43b4c238e767c5e3464ce814e6e2d3dec375b5e56c11",
+        "role": "score watchdog time"
+      },
+      "finish.json": {
+        "path": "experiments/TRR-P04/runtime/watchdog/evaluator-score-r1/finish.json",
+        "status": "COMPLETED",
+        "publication": "include",
+        "bytes": 1087,
+        "sha256": "471c0325430f800aea462f87f4e1d432a95edf653710aa447b759ecb5d982ffb",
+        "role": "score watchdog finish"
+      }
+    },
+    "validation_receipt": {
+      "path": "experiments/TRR-P04/runtime/task-validation-r1/validation_receipt.json",
+      "role": "focused CPU-only validation and publication audit receipt",
+      "status": "PASS_34_OF_34",
+      "publication": "include",
+      "bytes": 5861,
+      "sha256": "3c0091f8bc2dbb85acdb4b66509f1e7e73b5356cd48655f4de80faff0997828e"
+    },
+    "derived_tables": {
+      "path": "coordination/results/TRR-P04-derived-tables.json",
+      "role": "compact post-score derived tables without token IDs or truth rows",
+      "status": "COMPLETED_POST_SCORE",
+      "publication": "include",
+      "bytes": 58633,
+      "sha256": "1821be64925e21fa70dc470a7505f3737eee129cdb507e1ff22b65090614cf56",
+      "truth_rows_embedded": false
+    },
+    "publication_receipt": {
+      "path": "experiments/TRR-P04/runtime/publication_receipt.json",
+      "role": "sanitized GitHub publication receipt",
+      "status": "PUBLICATION_COMPLETE_OPEN_UNMERGED",
+      "publication": "include",
+      "bytes": 389,
+      "sha256": "0bab95ceb70aa1fb5604c0c0e069bd49bbaca16016c4e1104ee3c3e92e06282b"
+    }
+  },
+  "publication": {
+    "status": "COMPLETE_OPEN_UNMERGED",
+    "inventory": "experiments/TRR-P04/publication-files.json",
+    "include_compact_receipts_and_source": true,
+    "include_predictions_after_joint_freeze": true,
+    "exclude_observation_payloads": true,
+    "exclude_target_update_weights": true,
+    "exclude_source_rows_and_private_indexes": true,
+    "exclude_evaluation_truth": true,
+    "root_must_refresh_after_scoring": false,
+    "include_joint_freeze_receipt": true,
+    "include_score_artifact": true,
+    "include_safe_truth_and_score_watchdog_receipts": true,
+    "exclude_private_truth_payload": true,
+    "pull_request": {
+      "url": "https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/10",
+      "number": 10,
+      "state": "open",
+      "merged": false,
+      "base": "task/TRR-0004",
+      "base_sha": "6e8b683e404c0acb70cd59b7dd6d6868b2061f61",
+      "head": "task/TRR-P04",
+      "evidence_commit": "1a4c2eed3b0e1fe2502d231bb55d76149d9be766"
+    },
+    "publication_receipt": {
+      "path": "experiments/TRR-P04/runtime/publication_receipt.json",
+      "role": "sanitized GitHub publication receipt",
+      "status": "PUBLICATION_COMPLETE_OPEN_UNMERGED",
+      "publication": "include",
+      "bytes": 389,
+      "sha256": "0bab95ceb70aa1fb5604c0c0e069bd49bbaca16016c4e1104ee3c3e92e06282b"
+    }
+  },
+  "notes": [
+    "Joint freeze validated all 18 prediction files/groups, 8 selected states, both native anchors, paired observations, and pre-truth access flags before truth opening.",
+    "Private truth was materialized once after the freeze into two separate files outside the repository; the scorer opened it only after the public binding gate and did not rewrite predictions.",
+    "The score artifact reports the complete paired 72-record comparison, per-seed results, native 12-record anchor denominators, and 10,000-draw source-record bootstrap diagnostics without truth token rows.",
+    "The first direct-freeze invocation failed before validation due to missing PYTHONPATH; the corrected declared command passed. No selection, retraining, compression, reference-token sweep, ensemble routing, or prototype extension followed scoring.",
+    "Large observations/model/lens/embedding assets, evaluator target weights, source rows, private indexes, raw watchdog streams, and actual truth JSONL remain excluded from publication."
+  ],
+  "evaluation_results": {
+    "status": "COMPLETED_AFTER_TRUTH_GATE",
+    "score_artifact": {
+      "path": "experiments/TRR-P04/runtime/score/evaluator_score_r1.json",
+      "status": "COMPLETED",
+      "publication": "include",
+      "bytes": 247601,
+      "sha256": "f9a604727eba9cd0f7e7bdb2a2c1e1ed828e15d9c9ae551b375a18c640277853",
+      "role": "complete score artifact"
+    },
+    "conditions": [
+      "p04_evaluator_target_update_v1",
+      "public_base"
+    ],
+    "records_per_condition": 72,
+    "scored_tokens_per_group": 4320,
+    "per_seed_method_summary": {
+      "p04_evaluator_target_update_v1": {
+        "affine_same_data": {
+          "1737": {
+            "records": 72,
+            "scored_tokens": 4320,
+            "correct_tokens": 4123,
+            "token_accuracy": 0.9543981481481482,
+            "exact_records": 38,
+            "exact_record_rate": 0.5277777777777778
+          },
+          "2711": {
+            "records": 72,
+            "scored_tokens": 4320,
+            "correct_tokens": 4125,
+            "token_accuracy": 0.9548611111111112,
+            "exact_records": 38,
+            "exact_record_rate": 0.5277777777777778
+          }
+        },
+        "native_a1_a2": {
+          "none": {
+            "records": 12,
+            "scored_tokens": 384,
+            "correct_tokens": 383,
+            "token_accuracy": 0.9973958333333334,
+            "exact_records": 11,
+            "exact_record_rate": 0.9166666666666666
+          }
+        },
+        "student_d": {
+          "1737": {
+            "records": 72,
+            "scored_tokens": 4320,
+            "correct_tokens": 4095,
+            "token_accuracy": 0.9479166666666666,
+            "exact_records": 37,
+            "exact_record_rate": 0.5138888888888888
+          },
+          "2711": {
+            "records": 72,
+            "scored_tokens": 4320,
+            "correct_tokens": 4083,
+            "token_accuracy": 0.9451388888888889,
+            "exact_records": 36,
+            "exact_record_rate": 0.5
+          }
+        },
+        "student_h": {
+          "1737": {
+            "records": 72,
+            "scored_tokens": 4320,
+            "correct_tokens": 4118,
+            "token_accuracy": 0.9532407407407407,
+            "exact_records": 39,
+            "exact_record_rate": 0.5416666666666666
+          },
+          "2711": {
+            "records": 72,
+            "scored_tokens": 4320,
+            "correct_tokens": 4115,
+            "token_accuracy": 0.9525462962962963,
+            "exact_records": 38,
+            "exact_record_rate": 0.5277777777777778
+          }
+        },
+        "student_s": {
+          "1737": {
+            "records": 72,
+            "scored_tokens": 4320,
+            "correct_tokens": 4133,
+            "token_accuracy": 0.9567129629629629,
+            "exact_records": 38,
+            "exact_record_rate": 0.5277777777777778
+          },
+          "2711": {
+            "records": 72,
+            "scored_tokens": 4320,
+            "correct_tokens": 4118,
+            "token_accuracy": 0.9532407407407407,
+            "exact_records": 39,
+            "exact_record_rate": 0.5416666666666666
+          }
+        }
+      },
+      "public_base": {
+        "affine_same_data": {
+          "1737": {
+            "records": 72,
+            "scored_tokens": 4320,
+            "correct_tokens": 4107,
+            "token_accuracy": 0.9506944444444444,
+            "exact_records": 38,
+            "exact_record_rate": 0.5277777777777778
+          },
+          "2711": {
+            "records": 72,
+            "scored_tokens": 4320,
+            "correct_tokens": 4109,
+            "token_accuracy": 0.9511574074074074,
+            "exact_records": 38,
+            "exact_record_rate": 0.5277777777777778
+          }
+        },
+        "native_a1_a2": {
+          "none": {
+            "records": 12,
+            "scored_tokens": 384,
+            "correct_tokens": 384,
+            "token_accuracy": 1.0,
+            "exact_records": 12,
+            "exact_record_rate": 1.0
+          }
+        },
+        "student_d": {
+          "1737": {
+            "records": 72,
+            "scored_tokens": 4320,
+            "correct_tokens": 4080,
+            "token_accuracy": 0.9444444444444444,
+            "exact_records": 36,
+            "exact_record_rate": 0.5
+          },
+          "2711": {
+            "records": 72,
+            "scored_tokens": 4320,
+            "correct_tokens": 4073,
+            "token_accuracy": 0.9428240740740741,
+            "exact_records": 35,
+            "exact_record_rate": 0.4861111111111111
+          }
+        },
+        "student_h": {
+          "1737": {
+            "records": 72,
+            "scored_tokens": 4320,
+            "correct_tokens": 4110,
+            "token_accuracy": 0.9513888888888888,
+            "exact_records": 38,
+            "exact_record_rate": 0.5277777777777778
+          },
+          "2711": {
+            "records": 72,
+            "scored_tokens": 4320,
+            "correct_tokens": 4107,
+            "token_accuracy": 0.9506944444444444,
+            "exact_records": 37,
+            "exact_record_rate": 0.5138888888888888
+          }
+        },
+        "student_s": {
+          "1737": {
+            "records": 72,
+            "scored_tokens": 4320,
+            "correct_tokens": 4114,
+            "token_accuracy": 0.9523148148148148,
+            "exact_records": 37,
+            "exact_record_rate": 0.5138888888888888
+          },
+          "2711": {
+            "records": 72,
+            "scored_tokens": 4320,
+            "correct_tokens": 4104,
+            "token_accuracy": 0.95,
+            "exact_records": 38,
+            "exact_record_rate": 0.5277777777777778
+          }
+        }
+      }
+    },
+    "primary_token_weighted_pairwise_bootstrap": [
+      {
+        "condition": "public_base",
+        "left": "D",
+        "right": "H",
+        "observed_token_accuracy_difference": -0.007407407407407408,
+        "ci_95": [
+          -0.012152777777777778,
+          -0.002777777777777778
+        ],
+        "bootstrap_samples": 10000,
+        "seed": 20260908,
+        "clusters": 72,
+        "strata": 12
+      },
+      {
+        "condition": "public_base",
+        "left": "D",
+        "right": "S",
+        "observed_token_accuracy_difference": -0.007523148148148148,
+        "ci_95": [
+          -0.011805555555555555,
+          -0.003472222222222222
+        ],
+        "bootstrap_samples": 10000,
+        "seed": 20260908,
+        "clusters": 72,
+        "strata": 12
+      },
+      {
+        "condition": "public_base",
+        "left": "H",
+        "right": "S",
+        "observed_token_accuracy_difference": -0.00011574074074074075,
+        "ci_95": [
+          -0.0024305555555555556,
+          0.002199074074074074
+        ],
+        "bootstrap_samples": 10000,
+        "seed": 20260908,
+        "clusters": 72,
+        "strata": 12
+      },
+      {
+        "condition": "public_base",
+        "left": "S",
+        "right": "affine",
+        "observed_token_accuracy_difference": 0.0002314814814814815,
+        "ci_95": [
+          -0.0023148148148148147,
+          0.0025462962962962965
+        ],
+        "bootstrap_samples": 10000,
+        "seed": 20260908,
+        "clusters": 72,
+        "strata": 12
+      },
+      {
+        "condition": "p04_evaluator_target_update_v1",
+        "left": "D",
+        "right": "H",
+        "observed_token_accuracy_difference": -0.00636574074074074,
+        "ci_95": [
+          -0.01087962962962963,
+          -0.0019675925925925924
+        ],
+        "bootstrap_samples": 10000,
+        "seed": 20260908,
+        "clusters": 72,
+        "strata": 12
+      },
+      {
+        "condition": "p04_evaluator_target_update_v1",
+        "left": "D",
+        "right": "S",
+        "observed_token_accuracy_difference": -0.008449074074074074,
+        "ci_95": [
+          -0.011689814814814814,
+          -0.005324074074074074
+        ],
+        "bootstrap_samples": 10000,
+        "seed": 20260908,
+        "clusters": 72,
+        "strata": 12
+      },
+      {
+        "condition": "p04_evaluator_target_update_v1",
+        "left": "H",
+        "right": "S",
+        "observed_token_accuracy_difference": -0.0020833333333333333,
+        "ci_95": [
+          -0.0042824074074074075,
+          0.00034722222222222224
+        ],
+        "bootstrap_samples": 10000,
+        "seed": 20260908,
+        "clusters": 72,
+        "strata": 12
+      },
+      {
+        "condition": "p04_evaluator_target_update_v1",
+        "left": "S",
+        "right": "affine",
+        "observed_token_accuracy_difference": 0.00034722222222222224,
+        "ci_95": [
+          -0.0020833333333333333,
+          0.002662037037037037
+        ],
+        "bootstrap_samples": 10000,
+        "seed": 20260908,
+        "clusters": 72,
+        "strata": 12
+      }
+    ],
+    "native_anchor_summary": [
+      {
+        "condition": "public_base",
+        "anchor_records": 12,
+        "scored_tokens_per_group": 384,
+        "methods": [
+          {
+            "method_id": "affine_same_data",
+            "seed": 1737,
+            "native_anchor": false,
+            "correct_tokens": 374,
+            "token_accuracy": 0.9739583333333334,
+            "exact_records": 8
+          },
+          {
+            "method_id": "student_s",
+            "seed": 1737,
+            "native_anchor": false,
+            "correct_tokens": 375,
+            "token_accuracy": 0.9765625,
+            "exact_records": 8
+          },
+          {
+            "method_id": "student_h",
+            "seed": 1737,
+            "native_anchor": false,
+            "correct_tokens": 375,
+            "token_accuracy": 0.9765625,
+            "exact_records": 8
+          },
+          {
+            "method_id": "student_d",
+            "seed": 1737,
+            "native_anchor": false,
+            "correct_tokens": 371,
+            "token_accuracy": 0.9661458333333334,
+            "exact_records": 8
+          },
+          {
+            "method_id": "affine_same_data",
+            "seed": 2711,
+            "native_anchor": false,
+            "correct_tokens": 376,
+            "token_accuracy": 0.9791666666666666,
+            "exact_records": 8
+          },
+          {
+            "method_id": "student_s",
+            "seed": 2711,
+            "native_anchor": false,
+            "correct_tokens": 375,
+            "token_accuracy": 0.9765625,
+            "exact_records": 8
+          },
+          {
+            "method_id": "student_h",
+            "seed": 2711,
+            "native_anchor": false,
+            "correct_tokens": 375,
+            "token_accuracy": 0.9765625,
+            "exact_records": 8
+          },
+          {
+            "method_id": "student_d",
+            "seed": 2711,
+            "native_anchor": false,
+            "correct_tokens": 369,
+            "token_accuracy": 0.9609375,
+            "exact_records": 8
+          },
+          {
+            "method_id": "native_a1_a2",
+            "seed": null,
+            "native_anchor": true,
+            "correct_tokens": 384,
+            "token_accuracy": 1.0,
+            "exact_records": 12
+          }
+        ]
+      },
+      {
+        "condition": "p04_evaluator_target_update_v1",
+        "anchor_records": 12,
+        "scored_tokens_per_group": 384,
+        "methods": [
+          {
+            "method_id": "affine_same_data",
+            "seed": 1737,
+            "native_anchor": false,
+            "correct_tokens": 374,
+            "token_accuracy": 0.9739583333333334,
+            "exact_records": 8
+          },
+          {
+            "method_id": "student_s",
+            "seed": 1737,
+            "native_anchor": false,
+            "correct_tokens": 375,
+            "token_accuracy": 0.9765625,
+            "exact_records": 8
+          },
+          {
+            "method_id": "student_h",
+            "seed": 1737,
+            "native_anchor": false,
+            "correct_tokens": 375,
+            "token_accuracy": 0.9765625,
+            "exact_records": 8
+          },
+          {
+            "method_id": "student_d",
+            "seed": 1737,
+            "native_anchor": false,
+            "correct_tokens": 371,
+            "token_accuracy": 0.9661458333333334,
+            "exact_records": 9
+          },
+          {
+            "method_id": "affine_same_data",
+            "seed": 2711,
+            "native_anchor": false,
+            "correct_tokens": 375,
+            "token_accuracy": 0.9765625,
+            "exact_records": 8
+          },
+          {
+            "method_id": "student_s",
+            "seed": 2711,
+            "native_anchor": false,
+            "correct_tokens": 373,
+            "token_accuracy": 0.9713541666666666,
+            "exact_records": 8
+          },
+          {
+            "method_id": "student_h",
+            "seed": 2711,
+            "native_anchor": false,
+            "correct_tokens": 374,
+            "token_accuracy": 0.9739583333333334,
+            "exact_records": 8
+          },
+          {
+            "method_id": "student_d",
+            "seed": 2711,
+            "native_anchor": false,
+            "correct_tokens": 369,
+            "token_accuracy": 0.9609375,
+            "exact_records": 8
+          },
+          {
+            "method_id": "native_a1_a2",
+            "seed": null,
+            "native_anchor": true,
+            "correct_tokens": 383,
+            "token_accuracy": 0.9973958333333334,
+            "exact_records": 11
+          }
+        ]
+      }
+    ],
+    "uncertainty_contract": {
+      "cluster_unit": "source_record_id",
+      "paired_target_conditions_are_not_independent_clusters": true,
+      "per_target_style_length_required": true,
+      "pooled_overall_inference": false
+    },
+    "truth_token_rows_embedded": false,
+    "derived_tables": {
+      "path": "coordination/results/TRR-P04-derived-tables.json",
+      "role": "compact post-score derived tables without token IDs or truth rows",
+      "status": "COMPLETED_POST_SCORE",
+      "publication": "include",
+      "bytes": 58633,
+      "sha256": "1821be64925e21fa70dc470a7505f3737eee129cdb507e1ff22b65090614cf56",
+      "truth_rows_embedded": false
+    }
+  }
+}

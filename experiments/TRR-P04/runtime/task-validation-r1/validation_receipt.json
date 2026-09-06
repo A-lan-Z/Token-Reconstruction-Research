@@ -1,0 +1,113 @@
+{
+  "branch": "task/TRR-P04",
+  "collect_only_check": {
+    "collected": 34,
+    "command": "env CUDA_VISIBLE_DEVICES='' PYTHONPATH=/tmp/trr-p04/src:/tmp/trr-p04 pytest --collect-only -q tests/test_p04_objectives.py tests/test_p04_student.py tests/test_p04_training.py tests/test_trr0004_p04_prediction_runner.py tests/test_trr_p04_anchor_diagnostics.py tests/test_trr_p04_evaluator.py tests/test_trr_p04_joint_validation.py tests/test_trr_p04_tools.py tests/test_trr_p04_truth_materializer.py",
+    "gpu_tests_skipped": 0,
+    "result": "PASS"
+  },
+  "development_attempts": [
+    {
+      "command": "env CUDA_VISIBLE_DEVICES='' OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 TOKENIZERS_PARALLELISM=false pytest -q tests/test_p04_objectives.py tests/test_p04_student.py tests/test_p04_training.py tests/test_trr0004_p04_prediction_runner.py tests/test_trr_p04_anchor_diagnostics.py tests/test_trr_p04_evaluator.py tests/test_trr_p04_joint_validation.py tests/test_trr_p04_tools.py tests/test_trr_p04_truth_materializer.py",
+      "reason": "src-layout imports were not on PYTHONPATH; no test body ran",
+      "result": "COLLECTION_FAILED",
+      "return_code": 1
+    },
+    {
+      "command": "env CUDA_VISIBLE_DEVICES='' PYTHONPATH=/tmp/trr-p04 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 TOKENIZERS_PARALLELISM=false pytest -q tests/test_p04_objectives.py tests/test_p04_student.py tests/test_p04_training.py tests/test_trr0004_p04_prediction_runner.py tests/test_trr_p04_anchor_diagnostics.py tests/test_trr_p04_evaluator.py tests/test_trr_p04_joint_validation.py tests/test_trr_p04_tools.py tests/test_trr_p04_truth_materializer.py",
+      "reason": "repository root was present but /tmp/trr-p04/src was absent from PYTHONPATH; no test body ran",
+      "result": "COLLECTION_FAILED",
+      "return_code": 1
+    }
+  ],
+  "notes": [
+    "Selected student state, teacher evidence, prediction JSONL, and watchdog JSONL files are tracked P04 evidence and are below the size threshold.",
+    "Untracked private/runtime payloads were outside this publication-tree audit and were not modified."
+  ],
+  "publication_audit": {
+    "audit_result": "NO_OVERSIZED_OR_PRIVATE_SOURCE_TRUTH_PAYLOAD_TRACKED; REVIEW_ONE_CONFIG_PATH_REFERENCE",
+    "embedded_private_source_truth_payload_files_found": 0,
+    "json_parse_failures": 0,
+    "nonempty_exact_sensitive_payload_fields": [
+      {
+        "classification": "metadata-only path reference; referenced target is absent; no truth payload embedded",
+        "field": "artifacts.private_truth",
+        "path": "experiments/TRR-P04/config/student_training.json"
+      }
+    ],
+    "scope": "git ls-files; all repository files for size, experiments/TRR-P04 paths for sensitive path segments and JSON metadata fields",
+    "setup_manifest_modified": false,
+    "size_threshold_bytes": 104857600,
+    "tracked_p04_file_count": 176,
+    "tracked_p04_json_files_scanned": 151,
+    "tracked_p04_path_segments": {
+      "private": [],
+      "source": [],
+      "target": [],
+      "truth": [],
+      "weight": []
+    },
+    "tracked_repository_file_count": 1248,
+    "tracked_repository_files_over_threshold": []
+  },
+  "resource_boundary": {
+    "cuda_available_in_test_process": false,
+    "cuda_visibility_verified_by_receipt_writer": true,
+    "cuda_visible_devices": "",
+    "gpu_reserved": false,
+    "mkl_num_threads": "2",
+    "omp_num_threads": "2",
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "python": "3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]",
+    "torch_version": "2.10.0+cu128"
+  },
+  "schema": "token-reconstruction.trr-p04-task-validation-receipt.v1",
+  "source_commit_before_receipt": "ce976af71ce62d495ae88c08885f24be35e98641",
+  "status": "PASS_WITH_IMPORT_PATH_CORRECTION_AND_CONFIG_REFERENCE_REVIEW",
+  "task_id": "TRR-P04",
+  "test_files": [
+    "tests/test_p04_objectives.py",
+    "tests/test_p04_student.py",
+    "tests/test_p04_training.py",
+    "tests/test_trr0004_p04_prediction_runner.py",
+    "tests/test_trr_p04_anchor_diagnostics.py",
+    "tests/test_trr_p04_evaluator.py",
+    "tests/test_trr_p04_joint_validation.py",
+    "tests/test_trr_p04_tools.py",
+    "tests/test_trr_p04_truth_materializer.py"
+  ],
+  "test_scope": "P04-specific CPU-safe tests only; no unrelated repository suite",
+  "validation_run": {
+    "capture_note": "Executed as the recorded pytest argv under a timestamp-capturing Python subprocess wrapper; environment and argv above are exact.",
+    "collected": 34,
+    "command": "env CUDA_VISIBLE_DEVICES='' PYTHONPATH=/tmp/trr-p04/src:/tmp/trr-p04 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 TOKENIZERS_PARALLELISM=false pytest -q -ra tests/test_p04_objectives.py tests/test_p04_student.py tests/test_p04_training.py tests/test_trr0004_p04_prediction_runner.py tests/test_trr_p04_anchor_diagnostics.py tests/test_trr_p04_evaluator.py tests/test_trr_p04_joint_validation.py tests/test_trr_p04_tools.py tests/test_trr_p04_truth_materializer.py",
+    "elapsed_seconds": 8.800906,
+    "ended_utc": "2026-09-06T04:27:00.744085Z",
+    "failed": 0,
+    "passed": 34,
+    "pytest_argv": [
+      "pytest",
+      "-q",
+      "-ra",
+      "tests/test_p04_objectives.py",
+      "tests/test_p04_student.py",
+      "tests/test_p04_training.py",
+      "tests/test_trr0004_p04_prediction_runner.py",
+      "tests/test_trr_p04_anchor_diagnostics.py",
+      "tests/test_trr_p04_evaluator.py",
+      "tests/test_trr_p04_joint_validation.py",
+      "tests/test_trr_p04_tools.py",
+      "tests/test_trr_p04_truth_materializer.py"
+    ],
+    "return_code": 0,
+    "skipped": 0,
+    "started_utc": "2026-09-06T04:26:51.982006Z",
+    "stdout_log": {
+      "bytes": 99,
+      "path": "/tmp/trr-p04/focused-tests-final.log",
+      "sha256": "6ed20a668a2e7abd686cbaeed603170135b3a57afef9e1dec742eced882f0028"
+    },
+    "summary": "34 passed in 7.54s",
+    "xfailed": 0
+  }
+}

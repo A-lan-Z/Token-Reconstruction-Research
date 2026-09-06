@@ -1,0 +1,797 @@
+{
+  "architecture": {
+    "gru_width": 256,
+    "hidden_size": 2048,
+    "initial_logit_scale": 3.0,
+    "input_normalization": "F.layer_norm(x, (hidden_size,), weight=None, bias=None, eps=1e-5)",
+    "output_normalization": "F.normalize(affine(x) + gru_up(GRU(layer_norm(x))), dim=-1)",
+    "output_table": "fixed normalized public input-embedding table",
+    "vocab_size": 128256
+  },
+  "argv": [
+    "/tmp/trr-p04/scripts/trr0004_p04_train.py",
+    "--replay-observations",
+    "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_cut4.safetensors",
+    "--replay-records",
+    "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fit/affine_fit_records.json",
+    "--correction-observations",
+    "/tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/correction_cut4.safetensors",
+    "--correction-records",
+    "/tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/correction_records.json",
+    "--validation-observations",
+    "/tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/validation_cut4.safetensors",
+    "--validation-records",
+    "/tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/validation_records.json",
+    "--embedding-table",
+    "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+    "--affine-state",
+    "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/fit_large_v1/historical_affine_ce_no_vocab_bias.safetensors",
+    "--teacher-evidence",
+    "/tmp/trr-p04/experiments/TRR-P04/runtime/teacher-qualification-r3/teacher_evidence.safetensors",
+    "--candidate-ids",
+    "/tmp/trr-p04/experiments/TRR-P04/runtime/candidate-preparation-r2/candidate_preparation.safetensors",
+    "--output-root",
+    "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1",
+    "--seed",
+    "1737",
+    "--seed",
+    "2711",
+    "--steps",
+    "3000",
+    "--record-batch-size",
+    "8",
+    "--position-budget",
+    "512",
+    "--replay-fraction",
+    "0.75",
+    "--validation-every",
+    "100",
+    "--learning-rate",
+    "1e-3",
+    "--weight-decay",
+    "0",
+    "--gradient-clip-norm",
+    "1",
+    "--candidate-k",
+    "32",
+    "--device",
+    "cuda",
+    "--threads",
+    "4",
+    "--interop-threads",
+    "1",
+    "--arms",
+    "affine_same_data",
+    "student_s",
+    "student_h",
+    "student_d"
+  ],
+  "candidate_artifact": {
+    "affine_file_sha256": "09c5b852373d8555b06508a79bb00c94041202702b61b121b35fa2b6f9f64e65",
+    "candidate_k": 32,
+    "enabled": true,
+    "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/candidate-preparation-r2/candidate_preparation.safetensors",
+    "pool_observation_sha256": "1c23d4fbce6069b42f28ab0939e3958e8edf546517342252b03ac16cf4f6d899",
+    "pool_record_order_sha256": "b53f032dfaf2f69e2a26a55f71ce6da2ccf3e746c0079bb3d3b92ae4c88b89b3",
+    "proposer_id": "p04_public_affine",
+    "proposer_resource": "pr7_public_affine_state",
+    "schema": "token-reconstruction.trr-p04-candidate-preparation.v1",
+    "sha256": "ecf031a606a8bce22116b65d2dcbf5bc25596c80961767a40924081f8f03b1e5",
+    "tensor_sha256": "7b96a0a0348acf4e5e46b7a521a381311ccffdc97177f01630c9e02bbc238e7f",
+    "tie_policy": "descending_score_then_ascending_token_id"
+  },
+  "correction": {
+    "positions": 192,
+    "post_bos_positions": 45596,
+    "record_order_sha256": "0c22e5f09396e51e0500baa651f32529529658dd4a5e3248fc2eaaf1ba9b53a0",
+    "rows": 256
+  },
+  "cuda_visible_devices": "0",
+  "cwd": "/tmp/trr-p04",
+  "git_commit": "1aefc307ebdd4cd5002ac6ac0cdc5a1fc696aa68",
+  "input_files": {
+    "affine_state": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/fit_large_v1/historical_affine_ce_no_vocab_bias.safetensors",
+      "sha256": "09c5b852373d8555b06508a79bb00c94041202702b61b121b35fa2b6f9f64e65"
+    },
+    "candidate_ids": {
+      "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/candidate-preparation-r2/candidate_preparation.safetensors",
+      "sha256": "ecf031a606a8bce22116b65d2dcbf5bc25596c80961767a40924081f8f03b1e5"
+    },
+    "correction_observations": {
+      "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/correction_cut4.safetensors",
+      "sha256": "c9eb10065ee765a95aa0d30bae91f3061fecf3bfa5aa52c56a3eaa62d4c216b4"
+    },
+    "correction_records": {
+      "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/correction_records.json",
+      "sha256": "3f993ef70ef153d0f2e13dc86748378b93ccfd0b85d1c8bd0f033c53b3f1484d"
+    },
+    "embedding_table": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+      "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+    },
+    "replay_observations": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_cut4.safetensors",
+      "sha256": "d1c78fcf1acc91b57d51355ee11f267bf4c12f1bc7d5160164b3b6ea11b45344"
+    },
+    "replay_records": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fit/affine_fit_records.json",
+      "sha256": "3f733212efd62b19e71f60f002f4e9756b4975ebfb4dcabf0ac27935929f94ff"
+    },
+    "teacher_evidence": {
+      "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/teacher-qualification-r3/teacher_evidence.safetensors",
+      "sha256": "0f15a16978d0daa6bbf8a7771109350a633a7fc03a108db5fd8d782255ba84f9"
+    },
+    "validation_observations": {
+      "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/validation_cut4.safetensors",
+      "sha256": "033f714add8d240686a10a01cb3b52e5202480b30f98106182a7bc3ec53004f0"
+    },
+    "validation_records": {
+      "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/validation_records.json",
+      "sha256": "51f416d82d681b031dafddd379f2709ce07a470e571212803a1f984307df05a8"
+    }
+  },
+  "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "python": "3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]",
+  "replay": {
+    "positions": 192,
+    "post_bos_positions": 124371,
+    "record_order_sha256": "2ddb655190ba267a03a0f90e1544c9e4a144144d22660cf01c965c5bd9c15065",
+    "rows": 1200
+  },
+  "task_id": "TRR-P04",
+  "teacher_binding": {
+    "evidence_record_count": 106,
+    "evidence_rows": 384,
+    "required_positions": {
+      "finance-public-023605-6c1a8bf627e88d6c": [
+        146
+      ],
+      "finance-public-033341-13da4714dd09ddfe": [
+        52
+      ],
+      "finance-public-036250-6b4974d31ab12c31": [
+        38,
+        83,
+        132
+      ],
+      "finance-public-038319-8d774ea12cad4e05": [
+        52,
+        76
+      ],
+      "finance-public-045164-05f5f0a8cc28301c": [
+        77,
+        66
+      ],
+      "finance-public-049248-56784c2fde0ed714": [
+        84
+      ],
+      "finance-public-051429-289d936cc978a8a2": [
+        178
+      ],
+      "finance-public-071349-98fb65eaf268dcf8": [
+        179,
+        45
+      ],
+      "finance-public-074854-97a68b379a2c6080": [
+        119
+      ],
+      "finance-public-075977-dce87f6f3c351333": [
+        185
+      ],
+      "finance-public-133082-e8d1900af3877491": [
+        37
+      ],
+      "finance-public-139107-f9c1f32b5c5aa9a0": [
+        30
+      ],
+      "finance-public-151007-b60b1d055e22a154": [
+        30
+      ],
+      "finance-public-315863-8f1d2073c744bfeb": [
+        16,
+        97
+      ],
+      "finance-public-342092-45efc0df92449395": [
+        46
+      ],
+      "finance-public-343481-48bc0ac0aa994aa2": [
+        167
+      ],
+      "finance-public-345616-acc38733580a4ddd": [
+        127
+      ],
+      "finance-public-379547-f2e4d6e6d5ba2158": [
+        171
+      ],
+      "finance-public-380317-2e9d0efd67b8acf9": [
+        179
+      ],
+      "finance-public-380370-d0210bf465e50be2": [
+        147
+      ],
+      "finance-public-383996-41f23b6849bdef6a": [
+        57
+      ],
+      "finance-public-385409-a61573a49812f770": [
+        34
+      ],
+      "finance-public-390926-0a44090818d10214": [
+        112
+      ],
+      "finance-public-405694-a1b77ea04c829f93": [
+        108
+      ],
+      "finance-public-410299-1a1cc005118396df": [
+        124
+      ],
+      "finance-public-452908-17df7ac9692789d4": [
+        34
+      ],
+      "finance-public-458267-fc635a624305f991": [
+        119
+      ],
+      "finance-public-461517-b94c08b5f6b1cb36": [
+        178
+      ],
+      "finance-public-463878-b7cf000bc83a12bd": [
+        78
+      ],
+      "finance-public-468052-27b19a73205149b9": [
+        95,
+        97
+      ],
+      "finance-public-491794-b32360a10ac08e5c": [
+        17
+      ],
+      "finance-public-492386-659cc470f986610e": [
+        179
+      ],
+      "finance-public-500315-b54156c831fe1ef2": [
+        187,
+        96
+      ],
+      "finance-public-501633-d7ff56fa92bdac0b": [
+        40
+      ],
+      "pile10k-00572-b3f1744a567ad061": [
+        33
+      ],
+      "pile10k-00709-3d869bc66b4b32fc": [
+        18
+      ],
+      "pile10k-00913-f9ff15f311fc16c8": [
+        178,
+        177
+      ],
+      "pile10k-01000-658bc28642ff0da4": [
+        10,
+        4
+      ],
+      "pile10k-01255-df6686e7a3dd2a62": [
+        6,
+        14,
+        20,
+        23,
+        39,
+        66,
+        67,
+        68,
+        77,
+        92,
+        110,
+        138,
+        145,
+        148,
+        149,
+        155,
+        158,
+        160
+      ],
+      "pile10k-01565-afebf41e567befaf": [
+        12
+      ],
+      "pile10k-01606-b908c3e7006ccb8f": [
+        79
+      ],
+      "pile10k-01771-76211684dcc8f739": [
+        9,
+        22,
+        25,
+        27,
+        28,
+        29,
+        31,
+        35,
+        36,
+        37,
+        38,
+        39,
+        41,
+        43,
+        44,
+        46,
+        47,
+        49,
+        53,
+        54,
+        55,
+        56,
+        58,
+        60,
+        61,
+        62,
+        65,
+        66,
+        68,
+        71,
+        74,
+        75,
+        77,
+        84,
+        86,
+        87,
+        89,
+        90,
+        92,
+        94,
+        96,
+        97,
+        98,
+        100,
+        102,
+        104,
+        105,
+        106,
+        108,
+        113,
+        116,
+        117,
+        125,
+        128,
+        141,
+        161,
+        166,
+        111
+      ],
+      "pile10k-01917-1899d6d749cfae77": [
+        6,
+        35,
+        159,
+        181,
+        189
+      ],
+      "pile10k-02003-57136a6f03bd8de6": [
+        1,
+        12,
+        22,
+        29,
+        76,
+        79,
+        91
+      ],
+      "pile10k-02036-e319a3484f1d021a": [
+        1,
+        10,
+        25,
+        26,
+        38,
+        39,
+        43,
+        44,
+        45,
+        47,
+        48,
+        51,
+        53,
+        54,
+        57,
+        65,
+        66,
+        68,
+        71,
+        79,
+        82,
+        89,
+        104,
+        111,
+        113,
+        114,
+        117,
+        144,
+        145,
+        149,
+        151,
+        152,
+        154,
+        166,
+        170,
+        190
+      ],
+      "pile10k-02368-3b669ed778c1251c": [
+        11
+      ],
+      "pile10k-02384-b4879322d02c56c8": [
+        79
+      ],
+      "pile10k-02493-15001e1858065120": [
+        2,
+        3,
+        9,
+        15,
+        19,
+        36,
+        37,
+        42,
+        43,
+        56,
+        57,
+        61,
+        62,
+        66,
+        67,
+        71,
+        72,
+        76,
+        77,
+        82,
+        83,
+        84,
+        88,
+        89,
+        90,
+        91,
+        96,
+        97,
+        101,
+        102,
+        106,
+        107,
+        111,
+        112,
+        116,
+        117,
+        121,
+        122,
+        127,
+        128,
+        132,
+        133,
+        138,
+        144,
+        149,
+        150,
+        155,
+        156,
+        160,
+        161,
+        162,
+        168,
+        169,
+        174,
+        175,
+        179,
+        180,
+        183,
+        184,
+        187,
+        188,
+        191,
+        63
+      ],
+      "pile10k-02875-ee0913d5b16550d6": [
+        98
+      ],
+      "pile10k-03275-f94dbb9db73c982a": [
+        122
+      ],
+      "pile10k-03454-461548b96706e8df": [
+        171,
+        121
+      ],
+      "pile10k-03561-e3d639115b8354db": [
+        5,
+        9,
+        27,
+        77,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        101,
+        105,
+        112,
+        115,
+        116,
+        119,
+        125,
+        126,
+        133,
+        134,
+        146,
+        147,
+        149,
+        153,
+        155,
+        157,
+        159,
+        171,
+        181,
+        182,
+        189
+      ],
+      "pile10k-04101-794cc90ea078c399": [
+        1
+      ],
+      "pile10k-04162-f5cbc91977ffe946": [
+        119,
+        4
+      ],
+      "pile10k-04219-d92c4740979074de": [
+        39
+      ],
+      "pile10k-04267-04db6593e4df59d5": [
+        174,
+        58
+      ],
+      "pile10k-04505-28675c7befd8d724": [
+        135,
+        15,
+        114
+      ],
+      "pile10k-05210-759a5ace1068af23": [
+        110
+      ],
+      "pile10k-05499-ff643d7cdf5cebd4": [
+        116
+      ],
+      "pile10k-05744-6657f87295041980": [
+        113
+      ],
+      "pile10k-05754-2199571c9194553f": [
+        33
+      ],
+      "pile10k-05823-096ab3e68239431e": [
+        105
+      ],
+      "pile10k-05900-17c4b3b86d7375fe": [
+        70
+      ],
+      "pile10k-06021-1daabb71056bec51": [
+        114
+      ],
+      "pile10k-06548-1c88bfa16a5d7611": [
+        127
+      ],
+      "pile10k-06956-3c86e370158d9dab": [
+        17,
+        18,
+        21,
+        24,
+        57,
+        94,
+        99,
+        119,
+        144,
+        161,
+        78,
+        141,
+        14
+      ],
+      "pile10k-07476-ab4c204416e0998d": [
+        2,
+        7,
+        8,
+        9,
+        12,
+        43,
+        45,
+        73,
+        77,
+        90,
+        102,
+        133,
+        147,
+        149,
+        155,
+        157,
+        169,
+        181,
+        134
+      ],
+      "pile10k-07741-7f5697e7f497fdbd": [
+        55
+      ],
+      "pile10k-08438-88609dd66482df70": [
+        174
+      ],
+      "pile10k-08715-2963868482859f1b": [
+        174
+      ],
+      "pile10k-09067-ea69ad1e45e629b9": [
+        9,
+        149
+      ],
+      "pile10k-09070-cf60154d19f227bc": [
+        145,
+        5,
+        36,
+        77
+      ],
+      "pile10k-09317-0dcb6e579f4036f3": [
+        118
+      ],
+      "pile10k-09328-4732b24c8eaccfd1": [
+        8,
+        14,
+        47,
+        57,
+        98,
+        103,
+        104,
+        107,
+        110,
+        129,
+        136,
+        183,
+        185
+      ],
+      "pile10k-09339-1efbd1e8d4a107ff": [
+        20,
+        117
+      ],
+      "pile10k-09348-647e8e431abda6d9": [
+        42
+      ],
+      "pile10k-09474-d8b63f73b63a9592": [
+        129
+      ],
+      "pile10k-09552-f830808ce22a8542": [
+        11,
+        133
+      ],
+      "pile10k-09708-07e6ac6371dd6e95": [
+        121,
+        86
+      ],
+      "pile10k-09963-ecfb0c185b7528a4": [
+        129
+      ],
+      "tatsu-lab/alpaca/train@dce01c9b08f87459cf36a430d809084718273017:row-00340": [
+        56
+      ],
+      "tatsu-lab/alpaca/train@dce01c9b08f87459cf36a430d809084718273017:row-00968": [
+        110
+      ],
+      "tatsu-lab/alpaca/train@dce01c9b08f87459cf36a430d809084718273017:row-08133": [
+        31
+      ],
+      "tatsu-lab/alpaca/train@dce01c9b08f87459cf36a430d809084718273017:row-11743": [
+        25
+      ],
+      "tatsu-lab/alpaca/train@dce01c9b08f87459cf36a430d809084718273017:row-12691": [
+        36
+      ],
+      "tatsu-lab/alpaca/train@dce01c9b08f87459cf36a430d809084718273017:row-12776": [
+        158
+      ],
+      "tatsu-lab/alpaca/train@dce01c9b08f87459cf36a430d809084718273017:row-18199": [
+        35
+      ],
+      "tatsu-lab/alpaca/train@dce01c9b08f87459cf36a430d809084718273017:row-20479": [
+        44
+      ],
+      "tatsu-lab/alpaca/train@dce01c9b08f87459cf36a430d809084718273017:row-21293": [
+        30
+      ],
+      "tatsu-lab/alpaca/train@dce01c9b08f87459cf36a430d809084718273017:row-21718": [
+        175
+      ],
+      "tatsu-lab/alpaca/train@dce01c9b08f87459cf36a430d809084718273017:row-22687": [
+        97,
+        10
+      ],
+      "tatsu-lab/alpaca/train@dce01c9b08f87459cf36a430d809084718273017:row-25279": [
+        5
+      ],
+      "tatsu-lab/alpaca/train@dce01c9b08f87459cf36a430d809084718273017:row-27171": [
+        89
+      ],
+      "tatsu-lab/alpaca/train@dce01c9b08f87459cf36a430d809084718273017:row-27696": [
+        159
+      ],
+      "tatsu-lab/alpaca/train@dce01c9b08f87459cf36a430d809084718273017:row-28600": [
+        67
+      ],
+      "tatsu-lab/alpaca/train@dce01c9b08f87459cf36a430d809084718273017:row-29169": [
+        27
+      ],
+      "tatsu-lab/alpaca/train@dce01c9b08f87459cf36a430d809084718273017:row-31205": [
+        65
+      ],
+      "tatsu-lab/alpaca/train@dce01c9b08f87459cf36a430d809084718273017:row-31386": [
+        12
+      ],
+      "tatsu-lab/alpaca/train@dce01c9b08f87459cf36a430d809084718273017:row-31899": [
+        123,
+        70
+      ],
+      "tatsu-lab/alpaca/train@dce01c9b08f87459cf36a430d809084718273017:row-33943": [
+        111,
+        99
+      ],
+      "tatsu-lab/alpaca/train@dce01c9b08f87459cf36a430d809084718273017:row-34433": [
+        67
+      ],
+      "tatsu-lab/alpaca/train@dce01c9b08f87459cf36a430d809084718273017:row-34818": [
+        16
+      ],
+      "tatsu-lab/alpaca/train@dce01c9b08f87459cf36a430d809084718273017:row-39453": [
+        165
+      ],
+      "tatsu-lab/alpaca/train@dce01c9b08f87459cf36a430d809084718273017:row-44330": [
+        138
+      ],
+      "tatsu-lab/alpaca/train@dce01c9b08f87459cf36a430d809084718273017:row-45899": [
+        142
+      ],
+      "tatsu-lab/alpaca/train@dce01c9b08f87459cf36a430d809084718273017:row-46514": [
+        5
+      ]
+    },
+    "sigma_q": 0.014523349702358246,
+    "source_sha256": "0f15a16978d0daa6bbf8a7771109350a633a7fc03a108db5fd8d782255ba84f9",
+    "tie_tolerance": 0.00014523349702358246
+  },
+  "torch": "2.10.0+cu128",
+  "training_config": {
+    "affine_state": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/fit_large_v1/historical_affine_ce_no_vocab_bias.safetensors",
+    "arms": [
+      "affine_same_data",
+      "student_s",
+      "student_h",
+      "student_d"
+    ],
+    "candidate_ids": "/tmp/trr-p04/experiments/TRR-P04/runtime/candidate-preparation-r2/candidate_preparation.safetensors",
+    "candidate_k": 32,
+    "correction_mask": null,
+    "correction_observations": "/tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/correction_cut4.safetensors",
+    "correction_records": "/tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/correction_records.json",
+    "correction_truth": null,
+    "device": "cuda",
+    "dry_run": false,
+    "embedding_table": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+    "gradient_clip_norm": 1.0,
+    "interop_threads": 1,
+    "learning_rate": 0.001,
+    "output_root": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1",
+    "position_budget": 512,
+    "record_batch_size": 8,
+    "replay_fraction": 0.75,
+    "replay_mask": null,
+    "replay_observations": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_cut4.safetensors",
+    "replay_records": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fit/affine_fit_records.json",
+    "replay_truth": null,
+    "seeds": [
+      1737,
+      2711
+    ],
+    "steps": 3000,
+    "teacher_evidence": "/tmp/trr-p04/experiments/TRR-P04/runtime/teacher-qualification-r3/teacher_evidence.safetensors",
+    "threads": 4,
+    "validation_every": 100,
+    "validation_mask": null,
+    "validation_observations": "/tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/validation_cut4.safetensors",
+    "validation_records": "/tmp/trr-p04/experiments/TRR-P04/runtime/public-pool-capture-r1/validation_records.json",
+    "validation_truth": null,
+    "weight_decay": 0.0
+  },
+  "validation": {
+    "positions": 192,
+    "post_bos_positions": 34139,
+    "record_order_sha256": "02397110138634b9124cd47335edd28e1f37a45db139db9c4c1d23aded69226e",
+    "rows": 192
+  }
+}

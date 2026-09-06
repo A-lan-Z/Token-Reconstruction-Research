@@ -1,0 +1,89 @@
+{
+  "schema": "token-reconstruction.trr-p04-training-config.v1",
+  "task_id": "TRR-P04",
+  "status": "PROPOSED_FOR_SOURCE_REVIEW",
+  "student": {
+    "architecture": "one-layer unidirectional GRU residual over a trainable affine path",
+    "hidden_size": 2048,
+    "gru_width": 256,
+    "vocab_size": 128256,
+    "output": "fixed normalized public embedding table, unrestricted full-vocabulary logits",
+    "input": "activation prefix H[0:i+1], record-reset sequence, no source tokens/teacher/candidates/feedback",
+    "trainable_affine": true,
+    "zero_initialized_gru_up": true,
+    "initialization": "public PR7 affine W,b,s; W,b,s remain trainable in every arm"
+  },
+  "arms": {
+    "affine_same_data": {"loss": "full-vocabulary CE"},
+    "student_s": {"loss": "full-vocabulary CE"},
+    "student_h": {
+      "loss": "full-vocabulary CE + 0.25 * row-balanced hard-confusion softplus",
+      "candidate_k": 32,
+      "hard_margin": 1.0,
+      "teacher_scores_consumed": false
+    },
+    "student_d": {
+      "loss": "student_h + 0.25 * weighted adjacent non-gold pairwise ranking",
+      "candidate_k": 32,
+      "teacher_scores_consumed": "qualified public correction evidence only",
+      "student_temperature": 1.0,
+      "sigma_q": "single median nonzero adjacent non-gold score gap from 384 qualification rows",
+      "tie_tolerance": "max(1e-6, 0.01*sigma_q)",
+      "pair_weight": "min(abs(score_gap)/sigma_q, 1.0)",
+      "gold_in_ranking_pairs": false
+    }
+  },
+  "paired_schedule": {
+    "seeds": [1737, 2711],
+    "steps": 3000,
+    "record_batch_size": 8,
+    "replay_records_per_batch": 6,
+    "correction_records_per_batch": 2,
+    "replay_fraction": 0.75,
+    "selected_position_budget": 512,
+    "same_schedule_across_arms": true,
+    "optimizer": "AdamW",
+    "learning_rate": 0.001,
+    "weight_decay": 0.0,
+    "gradient_clip_norm": 1.0,
+    "checkpoint_selection": "earliest public-validation checkpoint with best style-balanced token accuracy; step zero retained on regression"
+  },
+  "public_pools": {
+    "replay": {"records": 1200, "target_condition": "public_base"},
+    "correction": {"records": 256, "target_condition": "public_base", "teacher_rows": 384},
+    "validation": {"records": 192, "target_condition": "public_base"}
+  },
+  "teacher": {
+    "mode": "privileged_public_prefix",
+    "proposal_k": 512,
+    "candidate_k": 32,
+    "difficult_rows": 256,
+    "uniform_audit_rows": 128,
+    "native_anchor": "separate evaluator-side A1+A2 reference; never an inference dependency"
+  },
+  "runtime": {
+    "numeric_threads": 4,
+    "interop_threads": 1,
+    "deterministic_algorithms": true,
+    "cuda_training": true,
+    "cpu_only_scoring": true,
+    "qualifier_geometry": {"batch": 8, "sequence": 192, "hidden": 2048, "gru_width": 256, "position_budget": 512, "vocab": 128256},
+    "memory_estimate": {
+      "normalized_embedding_table_fp32_bytes": 1050673488,
+      "selected_logits_fp32_bytes_at_512_rows": 262668288,
+      "gru_sequence_fp32_bytes_at_8x192": 12582912,
+      "model_parameters_approx_bytes": 26000000,
+      "expected_reserved_gpu_range_gib": [2.0, 6.0],
+      "guard_gpu_reserved_gib": 6.0,
+      "guard_host_rss_gib": 16.0
+    },
+    "preflight": "qualify largest representative graph before full paired matrix; fail closed on nonfinite/allocator/driver/resource anomaly"
+  },
+  "artifacts": {
+    "candidate_ids": "created once before fitting and bound to affine/table source hashes",
+    "teacher_evidence": "teacher_evidence.safetensors plus teacher_qualification.json",
+    "states": "one create-only selected.safetensors and final.safetensors per method/seed",
+    "predictions": "evaluator-owned JSONL under frozen prediction roots",
+    "private_truth": "never loaded by training or teacher"
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "access": {
+    "dataset_rows_read": false,
+    "evaluation_truth_opened": false,
+    "model_loaded": false,
+    "source_text_materialized": false,
+    "source_tokens_materialized": false,
+    "student_or_teacher_access": false,
+    "target_update_written": false
+  },
+  "assets": {
+    "model_snapshot": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+    "model_weights": {
+      "bytes": 2471645608,
+      "hash_source": "pinned prior snapshot metadata",
+      "sha256": "1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f"
+    },
+    "tokenizer_snapshot": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6"
+  },
+  "created_utc": "2026-09-06T02:31:31Z",
+  "dataset": {
+    "arrow": {
+      "bytes": 16503208,
+      "hash_recorded": false,
+      "path": "/home/alanz/.cache/huggingface/datasets/HuggingFaceH4___no_robots/default/0.0.0/e6f9a4ac5c37faeb744ba9ecf0473184d7f8105b/no_robots-train.arrow",
+      "sha256": null
+    },
+    "dataset_id": "HuggingFaceH4/no_robots",
+    "dataset_info": {
+      "bytes": 1158,
+      "path": "/home/alanz/.cache/huggingface/datasets/HuggingFaceH4___no_robots/default/0.0.0/e6f9a4ac5c37faeb744ba9ecf0473184d7f8105b/dataset_info.json",
+      "sha256": "5b18eaa76054da66839dd9c4bab7069504ea8072f917948d9adc1e00aec84b7d"
+    },
+    "dataset_revision": "e6f9a4ac5c37faeb744ba9ecf0473184d7f8105b",
+    "expected_rows": 9500,
+    "hash_deferred_until_target_prep": true,
+    "split": "train"
+  },
+  "execution": {
+    "argv": [
+      "scripts/trr_p04/prepare_evaluator_target.py",
+      "--preflight-only",
+      "--plan",
+      "experiments/TRR-P04/setup/evaluator_target_plan.json",
+      "--selection",
+      "experiments/TRR-P04/setup/public_selection-r2.json",
+      "--dataset-arrow",
+      "/home/alanz/.cache/huggingface/datasets/HuggingFaceH4___no_robots/default/0.0.0/e6f9a4ac5c37faeb744ba9ecf0473184d7f8105b/no_robots-train.arrow",
+      "--tokenizer",
+      "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+      "--model-snapshot",
+      "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+      "--output-root",
+      "experiments/TRR-P04/setup/target-preflight-r3"
+    ],
+    "elapsed_seconds": 0.011391,
+    "git_commit": "1aefc307ebdd4cd5002ac6ac0cdc5a1fc696aa68",
+    "max_rss_bytes": 537669632,
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "python": "3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]",
+    "safe_environment": {
+      "PYTHONPATH": ".:src"
+    }
+  },
+  "geometry": {
+    "lora_modules": 8,
+    "lora_parameter_count": 131072,
+    "model_weights_bytes": 2471645608,
+    "one_step_logits_bytes_bfloat16": 391950336,
+    "one_step_logits_bytes_float32_loss_copy": 783900672,
+    "resource_limits": {
+      "maximum_host_rss_bytes": 17179869184,
+      "maximum_reserved_gpu_bytes": 8589934592,
+      "minimum_free_gpu_bytes": 8589934592,
+      "minimum_host_available_bytes": 10737418240
+    },
+    "runtime_estimate": "not measured until the bounded one-step qualification; full 30-step runtime is then recorded",
+    "status": "ESTIMATE_ONLY_NOT_MEASURED",
+    "worst_geometry": {
+      "hidden_size": 2048,
+      "record_batch_size": 8,
+      "tokens_including_bos": 192,
+      "vocabulary_size": 128256
+    }
+  },
+  "plan": {
+    "condition_id": "p04_evaluator_target_update_v1",
+    "config": {
+      "alpha": 4.0,
+      "family": "evaluator_only_lora",
+      "gradient_clip_norm": 1.0,
+      "initialization_seed": 20260910,
+      "layers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "learning_rate": 0.00075,
+      "maximum_tokens_including_bos": 192,
+      "modules": [
+        "q_proj",
+        "v_proj"
+      ],
+      "optimizer": "AdamW",
+      "rank": 4,
+      "record_batch_size": 8,
+      "steps": 30,
+      "target_update_path": "experiments/TRR-P04/private/evaluator_target_update/p04_evaluator_target_update_v1.safetensors",
+      "weight_decay": 0.0
+    },
+    "lineage_id": "p04-target-lora-no-robots-v1-seed20260910",
+    "path": "/tmp/trr-p04/experiments/TRR-P04/setup/evaluator_target_plan.json",
+    "selection": {
+      "records": 256,
+      "row_order_sha256": "42fb5bb7dfc58dba8ccf9e3b288e787fd88cc1788e936ee934cfbbdc86de2fd2",
+      "seed": 20260910
+    },
+    "sha256": "55f5cc5ecc90599d8983ea1fa23d81a5a062178fd5dde6c9d19359c9fcc54fc2"
+  },
+  "schema": "token-reconstruction.evaluator-target-lora.v1-preflight.v1",
+  "selection": {
+    "anchors": 12,
+    "path": "/tmp/trr-p04/experiments/TRR-P04/setup/public_selection-r2.json",
+    "records": 72,
+    "sha256": "05f941e0dbcf29ea3efc47c7bc8abb3a7146a266eeea770f05052bb7728cde6a"
+  },
+  "status": "PASS_NO_MODEL_NO_TARGET_NO_EVALUATION_TRUTH",
+  "task_id": "TRR-P04"
+}

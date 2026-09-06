@@ -1,0 +1,686 @@
+{
+  "authorization": {
+    "joint_freeze_receipt": {
+      "bytes": 28344,
+      "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/freeze.json",
+      "sha256": "3c8ff3ea0e3435ded45b3e2a75b0498fbd2eee9fce39ab409ec5a942b69417d7",
+      "status": "FROZEN_BEFORE_TRUTH",
+      "truth_accessed": false
+    },
+    "joint_freeze_required_before_truth": true,
+    "materializer_fail_closed_on_missing_or_changed_freeze": true,
+    "no_evaluator_truth_rows_or_tokens_read_by_preparation": true,
+    "scorer_opens_truth_only_after_public_binding_gate": true,
+    "scoring_status": "SCORED_AFTER_TRUTH_GATE",
+    "truth_materialization_status": "PASS_EVALUATOR_TRUTH_MATERIALIZED_AFTER_FREEZE",
+    "truth_gate_approved_by_root": true
+  },
+  "commands": {
+    "joint_freeze_corrected": {
+      "argv": [
+        "env",
+        "HF_HUB_OFFLINE=1",
+        "HF_DATASETS_OFFLINE=1",
+        "TRANSFORMERS_OFFLINE=1",
+        "TOKENIZERS_PARALLELISM=false",
+        "OMP_NUM_THREADS=4",
+        "MKL_NUM_THREADS=4",
+        "PYTHONPATH=.:src",
+        "python3",
+        "scripts/trr_p04/freeze_predictions.py",
+        "--panel",
+        "experiments/TRR-P04/setup/public_selection-r2.json",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/affine_same_data-seed1737/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/affine_same_data-seed1737/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_s-seed1737/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_s-seed1737/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_h-seed1737/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_h-seed1737/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_d-seed1737/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_d-seed1737/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/affine_same_data-seed2711/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/affine_same_data-seed2711/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_s-seed2711/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_s-seed2711/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_h-seed2711/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_h-seed2711/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_d-seed2711/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_d-seed2711/predictions.jsonl",
+        "--anchor-prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/native-anchor-public-r2/predictions.jsonl",
+        "--anchor-prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/native-anchor-target-r2/predictions.jsonl",
+        "--state-manifest",
+        "experiments/TRR-P04/runtime/training-r1/selected_state_manifest-r3.json",
+        "--truth-dir",
+        "/tmp/trr-p04-evaluator-truth-v1",
+        "--student-prediction-freeze",
+        "experiments/TRR-P04/runtime/student-predictions-r3/student_prediction_freeze.json",
+        "--observation-index",
+        "experiments/TRR-P04/runtime/evaluator-observations-r1/observation_index.json",
+        "--native-anchor-receipt",
+        "experiments/TRR-P04/runtime/native-anchor-public-r2/native_anchor_receipt.json",
+        "--native-anchor-receipt",
+        "experiments/TRR-P04/runtime/native-anchor-target-r2/native_anchor_receipt.json",
+        "--output",
+        "experiments/TRR-P04/runtime/freeze.json"
+      ],
+      "model_loaded": false,
+      "result": {
+        "bytes": 28344,
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/freeze.json",
+        "sha256": "3c8ff3ea0e3435ded45b3e2a75b0498fbd2eee9fce39ab409ec5a942b69417d7"
+      },
+      "shell": "env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 PYTHONPATH=.:src python3 scripts/trr_p04/freeze_predictions.py --panel experiments/TRR-P04/setup/public_selection-r2.json --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/affine_same_data-seed1737/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/affine_same_data-seed1737/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_s-seed1737/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_s-seed1737/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_h-seed1737/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_h-seed1737/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_d-seed1737/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_d-seed1737/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/affine_same_data-seed2711/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/affine_same_data-seed2711/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_s-seed2711/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_s-seed2711/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_h-seed2711/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_h-seed2711/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_d-seed2711/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_d-seed2711/predictions.jsonl --anchor-prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/native-anchor-public-r2/predictions.jsonl --anchor-prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/native-anchor-target-r2/predictions.jsonl --state-manifest experiments/TRR-P04/runtime/training-r1/selected_state_manifest-r3.json --truth-dir /tmp/trr-p04-evaluator-truth-v1 --student-prediction-freeze experiments/TRR-P04/runtime/student-predictions-r3/student_prediction_freeze.json --observation-index experiments/TRR-P04/runtime/evaluator-observations-r1/observation_index.json --native-anchor-receipt experiments/TRR-P04/runtime/native-anchor-public-r2/native_anchor_receipt.json --native-anchor-receipt experiments/TRR-P04/runtime/native-anchor-target-r2/native_anchor_receipt.json --output experiments/TRR-P04/runtime/freeze.json",
+      "truth_accessed": false
+    },
+    "score_guarded": {
+      "argv": [
+        "python3",
+        "scripts/trr_p04/resource_watchdog.py",
+        "--output-root",
+        "experiments/TRR-P04/runtime/watchdog/evaluator-score-r1",
+        "--timeout-seconds",
+        "900",
+        "--poll-seconds",
+        "0.5",
+        "--max-rss-bytes",
+        "8589934592",
+        "--min-available-bytes",
+        "10737418240",
+        "--cwd",
+        "/tmp/trr-p04",
+        "--label",
+        "evaluator-score-r1",
+        "--",
+        "env",
+        "HF_HUB_OFFLINE=1",
+        "HF_DATASETS_OFFLINE=1",
+        "TRANSFORMERS_OFFLINE=1",
+        "TOKENIZERS_PARALLELISM=false",
+        "OMP_NUM_THREADS=4",
+        "MKL_NUM_THREADS=4",
+        "PYTHONPATH=.:src",
+        "python3",
+        "scripts/trr_p04/score_predictions.py",
+        "--panel",
+        "experiments/TRR-P04/setup/public_selection-r2.json",
+        "--freeze",
+        "experiments/TRR-P04/runtime/freeze.json",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/affine_same_data-seed1737/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/affine_same_data-seed1737/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_s-seed1737/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_s-seed1737/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_h-seed1737/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_h-seed1737/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_d-seed1737/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_d-seed1737/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/affine_same_data-seed2711/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/affine_same_data-seed2711/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_s-seed2711/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_s-seed2711/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_h-seed2711/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_h-seed2711/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_d-seed2711/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_d-seed2711/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/native-anchor-public-r2/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/native-anchor-target-r2/predictions.jsonl",
+        "--truth-dir",
+        "/tmp/trr-p04-evaluator-truth-v1",
+        "--output",
+        "experiments/TRR-P04/runtime/score/evaluator_score_r1.json"
+      ],
+      "child_argv": [
+        "env",
+        "HF_HUB_OFFLINE=1",
+        "HF_DATASETS_OFFLINE=1",
+        "TRANSFORMERS_OFFLINE=1",
+        "TOKENIZERS_PARALLELISM=false",
+        "OMP_NUM_THREADS=4",
+        "MKL_NUM_THREADS=4",
+        "PYTHONPATH=.:src",
+        "python3",
+        "scripts/trr_p04/score_predictions.py",
+        "--panel",
+        "experiments/TRR-P04/setup/public_selection-r2.json",
+        "--freeze",
+        "experiments/TRR-P04/runtime/freeze.json",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/affine_same_data-seed1737/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/affine_same_data-seed1737/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_s-seed1737/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_s-seed1737/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_h-seed1737/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_h-seed1737/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_d-seed1737/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_d-seed1737/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/affine_same_data-seed2711/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/affine_same_data-seed2711/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_s-seed2711/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_s-seed2711/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_h-seed2711/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_h-seed2711/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_d-seed2711/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_d-seed2711/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/native-anchor-public-r2/predictions.jsonl",
+        "--prediction-file",
+        "/tmp/trr-p04/experiments/TRR-P04/runtime/native-anchor-target-r2/predictions.jsonl",
+        "--truth-dir",
+        "/tmp/trr-p04-evaluator-truth-v1",
+        "--output",
+        "experiments/TRR-P04/runtime/score/evaluator_score_r1.json"
+      ],
+      "execute_only_after_truth_materialization_pass": true,
+      "expected_status": "SCORED_AFTER_TRUTH_GATE",
+      "output_root": "experiments/TRR-P04/runtime/watchdog/evaluator-score-r1",
+      "shell": "python3 scripts/trr_p04/resource_watchdog.py --output-root experiments/TRR-P04/runtime/watchdog/evaluator-score-r1 --timeout-seconds 900 --poll-seconds 0.5 --max-rss-bytes 8589934592 --min-available-bytes 10737418240 --cwd /tmp/trr-p04 --label evaluator-score-r1 -- env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 PYTHONPATH=.:src python3 scripts/trr_p04/score_predictions.py --panel experiments/TRR-P04/setup/public_selection-r2.json --freeze experiments/TRR-P04/runtime/freeze.json --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/affine_same_data-seed1737/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/affine_same_data-seed1737/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_s-seed1737/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_s-seed1737/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_h-seed1737/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_h-seed1737/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_d-seed1737/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_d-seed1737/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/affine_same_data-seed2711/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/affine_same_data-seed2711/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_s-seed2711/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_s-seed2711/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_h-seed2711/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_h-seed2711/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_d-seed2711/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_d-seed2711/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/native-anchor-public-r2/predictions.jsonl --prediction-file /tmp/trr-p04/experiments/TRR-P04/runtime/native-anchor-target-r2/predictions.jsonl --truth-dir /tmp/trr-p04-evaluator-truth-v1 --output experiments/TRR-P04/runtime/score/evaluator_score_r1.json",
+      "actual_status": "PASS",
+      "score_path": "experiments/TRR-P04/runtime/score/evaluator_score_r1.json"
+    },
+    "truth_materialization_guarded": {
+      "argv": [
+        "python3",
+        "scripts/trr_p04/resource_watchdog.py",
+        "--output-root",
+        "experiments/TRR-P04/runtime/watchdog/evaluator-truth-materialization-r1",
+        "--timeout-seconds",
+        "900",
+        "--poll-seconds",
+        "0.5",
+        "--max-rss-bytes",
+        "8589934592",
+        "--min-available-bytes",
+        "10737418240",
+        "--cwd",
+        "/tmp/trr-p04",
+        "--label",
+        "evaluator-truth-materialization-r1",
+        "--",
+        "env",
+        "HF_HUB_OFFLINE=1",
+        "HF_DATASETS_OFFLINE=1",
+        "TRANSFORMERS_OFFLINE=1",
+        "TOKENIZERS_PARALLELISM=false",
+        "OMP_NUM_THREADS=4",
+        "MKL_NUM_THREADS=4",
+        "PYTHONPATH=.:src",
+        "python3",
+        "scripts/trr_p04/materialize_evaluator_truth.py",
+        "--selection",
+        "experiments/TRR-P04/setup/public_selection-r2.json",
+        "--freeze",
+        "experiments/TRR-P04/runtime/freeze.json",
+        "--truth-dir",
+        "/tmp/trr-p04-evaluator-truth-v1",
+        "--tokenizer",
+        "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6"
+      ],
+      "child_argv": [
+        "env",
+        "HF_HUB_OFFLINE=1",
+        "HF_DATASETS_OFFLINE=1",
+        "TRANSFORMERS_OFFLINE=1",
+        "TOKENIZERS_PARALLELISM=false",
+        "OMP_NUM_THREADS=4",
+        "MKL_NUM_THREADS=4",
+        "PYTHONPATH=.:src",
+        "python3",
+        "scripts/trr_p04/materialize_evaluator_truth.py",
+        "--selection",
+        "experiments/TRR-P04/setup/public_selection-r2.json",
+        "--freeze",
+        "experiments/TRR-P04/runtime/freeze.json",
+        "--truth-dir",
+        "/tmp/trr-p04-evaluator-truth-v1",
+        "--tokenizer",
+        "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6"
+      ],
+      "execute_only_after_root_truth_gate_approval": true,
+      "expected_status": "PASS_EVALUATOR_TRUTH_MATERIALIZED_AFTER_FREEZE",
+      "output_root": "experiments/TRR-P04/runtime/watchdog/evaluator-truth-materialization-r1",
+      "shell": "python3 scripts/trr_p04/resource_watchdog.py --output-root experiments/TRR-P04/runtime/watchdog/evaluator-truth-materialization-r1 --timeout-seconds 900 --poll-seconds 0.5 --max-rss-bytes 8589934592 --min-available-bytes 10737418240 --cwd /tmp/trr-p04 --label evaluator-truth-materialization-r1 -- env HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 PYTHONPATH=.:src python3 scripts/trr_p04/materialize_evaluator_truth.py --selection experiments/TRR-P04/setup/public_selection-r2.json --freeze experiments/TRR-P04/runtime/freeze.json --truth-dir /tmp/trr-p04-evaluator-truth-v1 --tokenizer /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+      "writes_private_output_outside_repository": true,
+      "actual_status": "PASS",
+      "receipt_path": "/tmp/trr-p04-evaluator-truth-v1/truth_materialization_receipt.json"
+    }
+  },
+  "created_utc": "2026-09-06T04:14:00Z",
+  "environment": {
+    "safe_allowlist": [
+      "CUDA_VISIBLE_DEVICES",
+      "OMP_NUM_THREADS",
+      "MKL_NUM_THREADS",
+      "TOKENIZERS_PARALLELISM",
+      "PYTHONPATH",
+      "HF_HUB_OFFLINE",
+      "HF_DATASETS_OFFLINE",
+      "TRANSFORMERS_OFFLINE"
+    ],
+    "values": {
+      "HF_DATASETS_OFFLINE": "1",
+      "HF_HUB_OFFLINE": "1",
+      "MKL_NUM_THREADS": "4",
+      "OMP_NUM_THREADS": "4",
+      "PYTHONPATH": ".:src",
+      "TOKENIZERS_PARALLELISM": "false",
+      "TRANSFORMERS_OFFLINE": "1"
+    },
+    "watchdog_max_rss_bytes": 8589934592,
+    "watchdog_min_host_available_bytes": 10737418240,
+    "watchdog_timeout_seconds": 900
+  },
+  "execution_order": [
+    "root reviews joint_freeze_corrected receipt and confirms FROZEN_BEFORE_TRUTH/truth_accessed=false",
+    "root authorizes truth_materialization_guarded; materializer creates both private JSONL files and receipt outside the repository",
+    "verify private truth receipt and both file hashes; do not copy truth into attack metadata/publication",
+    "run score_guarded; scorer validates panel/freeze/predictions before opening private truth"
+  ],
+  "geometry": {
+    "anchor_post_bos_positions_per_condition": 384,
+    "anchor_records_per_condition": 12,
+    "conditions": [
+      "public_base",
+      "p04_evaluator_target_update_v1"
+    ],
+    "fresh_records": 72,
+    "full_student_post_bos_positions_per_condition": 4320,
+    "length_strata_post_bos": [
+      16,
+      32,
+      64,
+      128
+    ],
+    "records_per_style_length_cell": 6,
+    "styles": 3
+  },
+  "inputs": {
+    "all_prediction_file_count": 18,
+    "all_prediction_rows_are_read_only_before_truth": true,
+    "anchor_prediction_files": [
+      {
+        "bytes": 5021,
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/native-anchor-public-r2/predictions.jsonl",
+        "sha256": "bb81464aaea5455a1be087390767c589b7a3fef6c65b7ffe085f50ec8cf1d408"
+      },
+      {
+        "bytes": 5249,
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/native-anchor-target-r2/predictions.jsonl",
+        "sha256": "51da2b471e52c865119d9e2c8e3a6ec86682913f1c5a5c231efab6cb29b4d07a"
+      }
+    ],
+    "student_prediction_files": [
+      {
+        "bytes": 41883,
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/affine_same_data-seed1737/predictions.jsonl",
+        "sha256": "5578380c698c189fcdc1de2ac1750decaf708034c4593275e9f82e939665d362"
+      },
+      {
+        "bytes": 43248,
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/affine_same_data-seed1737/predictions.jsonl",
+        "sha256": "ad0e8dd791a45b5edaa6a362a33fb8c532aabb61daa65be599ffeebdf43f2eec"
+      },
+      {
+        "bytes": 41420,
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_s-seed1737/predictions.jsonl",
+        "sha256": "5d1d93876c9a80e3f9a22bd673c3f3cb8fe00328347668e4de4c44659a583cb0"
+      },
+      {
+        "bytes": 42774,
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_s-seed1737/predictions.jsonl",
+        "sha256": "f61c6f827852bc5c385d9dceb0f9ccf8b1f419f537ec6d2252df165c8b2b8837"
+      },
+      {
+        "bytes": 41377,
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_h-seed1737/predictions.jsonl",
+        "sha256": "cca28566ebb2f39f04db1b8be90e9f12707c08fd2f5ad46038f6fe8dfc70428d"
+      },
+      {
+        "bytes": 42734,
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_h-seed1737/predictions.jsonl",
+        "sha256": "9d3fbe3f36a43b4f4ff273db3b6cba2c051048b41826462836305ce5e4c60b34"
+      },
+      {
+        "bytes": 41415,
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_d-seed1737/predictions.jsonl",
+        "sha256": "47bf874d67b89259cdff63be6cda5861cb3df0354ab75821c2dbbdf6f0503622"
+      },
+      {
+        "bytes": 42769,
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_d-seed1737/predictions.jsonl",
+        "sha256": "a5b0f68d8f7a945e1b3537d44f39917595b6a54fdc03a43eee19d31678886ae0"
+      },
+      {
+        "bytes": 41883,
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/affine_same_data-seed2711/predictions.jsonl",
+        "sha256": "be56cbdf3c78468fa2f98881e6c158e7ffe9faa33823b54394d72ce88ffb42b6"
+      },
+      {
+        "bytes": 43241,
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/affine_same_data-seed2711/predictions.jsonl",
+        "sha256": "e880b63f8c58f7e673c3736f94a9dc8a8119d0e3db3941b7c1fafbef33a0b884"
+      },
+      {
+        "bytes": 41379,
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_s-seed2711/predictions.jsonl",
+        "sha256": "a83f4b3cd0731efcf8fd4a5db480f34b5bd3b05bb0d252b15d7e83302d733b4c"
+      },
+      {
+        "bytes": 42731,
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_s-seed2711/predictions.jsonl",
+        "sha256": "885eb9dfa947c2b4436c4484c25d4f9aa1984dd4fe194436078efdcd31c61fe4"
+      },
+      {
+        "bytes": 41379,
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_h-seed2711/predictions.jsonl",
+        "sha256": "74e8c72d61d63607c680362d504d67edc562e27117bba135bde01addbae9d762"
+      },
+      {
+        "bytes": 42733,
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_h-seed2711/predictions.jsonl",
+        "sha256": "e1e313cdc9a7acd037f5179038be5158fccd1e06742edb5aa4523fe7629b6d93"
+      },
+      {
+        "bytes": 41418,
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/public_base/student_d-seed2711/predictions.jsonl",
+        "sha256": "cbee1389bfc5f570c2d809ffeaaf3abb13540abda7b1dbfa9d5dffcd66d288c3"
+      },
+      {
+        "bytes": 42752,
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/predictions/p04_evaluator_target_update_v1/student_d-seed2711/predictions.jsonl",
+        "sha256": "8f34f1af7d542103331cd8eebd173c1187291cc3c95d8a4b37f1aa81d3d7a113"
+      }
+    ]
+  },
+  "known_failed_attempts": [
+    {
+      "command_shape": "freeze_predictions.py direct script invocation without PYTHONPATH",
+      "corrected_by": "joint_freeze_corrected command adds PYTHONPATH=.:src and offline environment",
+      "reason": "ModuleNotFoundError: scripts",
+      "receipt_written": false,
+      "status": "FAILED_BEFORE_VALIDATION",
+      "truth_accessed": false
+    }
+  ],
+  "notes": [
+    "The joint freeze, private truth materialization, and frozen prediction score commands were executed once in the declared order after root approval.",
+    "Private truth JSONL and its materialization receipt remain outside the publication allowlist; this plan records only their descriptors and gate status.",
+    "The score artifact contains aggregate metrics and diagnostics without truth token rows; no selection, retraining, or rerun followed scoring."
+  ],
+  "paths": {
+    "joint_freeze": {
+      "bytes": 28344,
+      "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/freeze.json",
+      "sha256": "3c8ff3ea0e3435ded45b3e2a75b0498fbd2eee9fce39ab409ec5a942b69417d7"
+    },
+    "native_anchor_receipts": [
+      {
+        "bytes": 13670,
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/native-anchor-public-r2/native_anchor_receipt.json",
+        "sha256": "5a8a56eeefbca486ccb9ada99427172c51668235cecbadd18394c2cadea2c0f8"
+      },
+      {
+        "bytes": 13794,
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/native-anchor-target-r2/native_anchor_receipt.json",
+        "sha256": "3e60cd3e10d1a26331cb94caf5fa7ec11644fb7b2dc9926b501e3dfcdb04d206"
+      }
+    ],
+    "observation_index": {
+      "bytes": 17095,
+      "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/evaluator-observations-r1/observation_index.json",
+      "sha256": "559aa0a4376afd777c305f2ed7ad176eff22d4a0d4671373ce07c80474664f82"
+    },
+    "score_output": "experiments/TRR-P04/runtime/score/evaluator_score_r1.json",
+    "selection": {
+      "bytes": 357935,
+      "path": "/tmp/trr-p04/experiments/TRR-P04/setup/public_selection-r2.json",
+      "sha256": "05f941e0dbcf29ea3efc47c7bc8abb3a7146a266eeea770f05052bb7728cde6a"
+    },
+    "state_manifest": {
+      "bytes": 78479,
+      "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/training-r1/selected_state_manifest-r3.json",
+      "sha256": "2595faa316bcadb1262cddb97acfa92deefa10b840a90f59d798f34ec7fd9f47"
+    },
+    "student_prediction_freeze": {
+      "bytes": 48620,
+      "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/student-predictions-r3/student_prediction_freeze.json",
+      "sha256": "6f9c1c80580319f649ccb563d6346ec1b498917c4638f8326ce9218ca4daa9af"
+    },
+    "truth_directory": "/tmp/trr-p04-evaluator-truth-v1",
+    "truth_files": [
+      "/tmp/trr-p04-evaluator-truth-v1/public_base.jsonl",
+      "/tmp/trr-p04-evaluator-truth-v1/p04_evaluator_target_update_v1.jsonl"
+    ]
+  },
+  "publication": {
+    "exclude": [
+      "truth directory and its JSONL files",
+      "truth_materialization_receipt.json from private directory",
+      "source rows/text and evaluator target weights"
+    ],
+    "include": [
+      "experiments/TRR-P04/setup/truth-score-command-plan.json",
+      "scripts/trr_p04/materialize_evaluator_truth.py",
+      "tests/test_trr_p04_truth_materializer.py"
+    ]
+  },
+  "schema": "token-reconstruction.trr-p04-truth-score-command-plan.v1",
+  "source_bindings": [
+    {
+      "bytes": 16752,
+      "path": "scripts/trr_p04/materialize_evaluator_truth.py",
+      "sha256": "c0fb5b5c580ccfa721165193c3139346d1fbf3f015f2941608fbb5244c082152"
+    },
+    {
+      "bytes": 49540,
+      "path": "scripts/trr_p04/freeze_predictions.py",
+      "sha256": "200e9c4d60ee2ed96d9db6f786472a7e2f7e74090546f8efc99f0b255a80ccce"
+    },
+    {
+      "bytes": 45971,
+      "path": "scripts/trr_p04/score_predictions.py",
+      "sha256": "080cfd5fef808b202e9d83d48ea3f36e8a644c806bd79e120fcdb90ca1b70755"
+    },
+    {
+      "bytes": 24237,
+      "path": "scripts/trr_p04/resource_watchdog.py",
+      "sha256": "cce2137ef5611983221ad199af5ec1c538e95c92db6d316c06baa5016c7dabf0"
+    }
+  ],
+  "status": "EXECUTED_AFTER_ROOT_TRUTH_GATE",
+  "task_id": "TRR-P04",
+  "truth_contract": {
+    "one_file_per_condition": true,
+    "post_bos_only": true,
+    "schema": "JSONL rows {record_id, token_ids}",
+    "separate_private_directory": true,
+    "source_rows_and_text_not_serialized_in_truth_receipt": true,
+    "truth_files_publication": "exclude"
+  },
+  "working_directory": "/tmp/trr-p04",
+  "executions": {
+    "truth_materialization": {
+      "status": "PASS_EVALUATOR_TRUTH_MATERIALIZED_AFTER_FREEZE",
+      "receipt": {
+        "path": "/tmp/trr-p04-evaluator-truth-v1/truth_materialization_receipt.json",
+        "status": "COMPLETED",
+        "publication": "exclude",
+        "bytes": 3727,
+        "sha256": "6c8ae536234e06b65a9c9b4bdc504f167a36d44a2436fb2631d7163511c2772c",
+        "role": "private truth materialization receipt"
+      },
+      "watchdog": {
+        "command.json": {
+          "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/watchdog/evaluator-truth-materialization-r1/command.json",
+          "status": "COMPLETED",
+          "publication": "include",
+          "bytes": 1910,
+          "sha256": "6dd0b7393344e1dbff8bb250df3590b5de348bbd80ce65300c2db61ef7333bbd",
+          "role": "truth materialization watchdog command"
+        },
+        "resource_guard.json": {
+          "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/watchdog/evaluator-truth-materialization-r1/resource_guard.json",
+          "status": "COMPLETED",
+          "publication": "include",
+          "bytes": 3529,
+          "sha256": "b2c5d4d822c3f6a2cf9cd4f5f4427f213c9bc6963ad40a006688da1a4889b4f6",
+          "role": "truth materialization watchdog resource guard"
+        },
+        "resource_samples.jsonl": {
+          "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/watchdog/evaluator-truth-materialization-r1/resource_samples.jsonl",
+          "status": "COMPLETED",
+          "publication": "include",
+          "bytes": 2164,
+          "sha256": "840ffc426caf510cb8ae5ea9fbcbd6e9598b9c00103bb286b32717a8287c9aa9",
+          "role": "truth materialization watchdog resource samples."
+        },
+        "time.json": {
+          "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/watchdog/evaluator-truth-materialization-r1/time.json",
+          "status": "COMPLETED",
+          "publication": "include",
+          "bytes": 1229,
+          "sha256": "4bc347ba64ee6dee51b56376a8ea52ac8752c4259749344d927a4ff8bb98b4f0",
+          "role": "truth materialization watchdog time"
+        },
+        "finish.json": {
+          "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/watchdog/evaluator-truth-materialization-r1/finish.json",
+          "status": "COMPLETED",
+          "publication": "include",
+          "bytes": 1088,
+          "sha256": "0897b7279c7e33d997645c89f4071b687884f6eafc086e13225b63bf23322122",
+          "role": "truth materialization watchdog finish"
+        }
+      },
+      "truth_files": {
+        "p04_evaluator_target_update_v1": {
+          "bytes": 26050,
+          "path": "/tmp/trr-p04-evaluator-truth-v1/p04_evaluator_target_update_v1.jsonl",
+          "sha256": "9d75b9be80e120263bd656a45da3401b29fb4693b3b233b0f2a71b8aa8167ef4"
+        },
+        "public_base": {
+          "bytes": 26050,
+          "path": "/tmp/trr-p04-evaluator-truth-v1/public_base.jsonl",
+          "sha256": "9d75b9be80e120263bd656a45da3401b29fb4693b3b233b0f2a71b8aa8167ef4"
+        }
+      },
+      "source_rows_and_tokens_transient_only": true,
+      "target_update_weights_loaded": false,
+      "student_states_loaded": false
+    },
+    "scoring": {
+      "status": "SCORED_AFTER_TRUTH_GATE",
+      "score": {
+        "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/score/evaluator_score_r1.json",
+        "status": "COMPLETED",
+        "publication": "include",
+        "bytes": 247601,
+        "sha256": "f9a604727eba9cd0f7e7bdb2a2c1e1ed828e15d9c9ae551b375a18c640277853",
+        "role": "truth-gated score artifact"
+      },
+      "watchdog": {
+        "command.json": {
+          "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/watchdog/evaluator-score-r1/command.json",
+          "status": "COMPLETED",
+          "publication": "include",
+          "bytes": 7312,
+          "sha256": "3e2e13fac816c6b239e855926435b62c8a692f2434d1c53ff3d2133052262b78",
+          "role": "score watchdog command"
+        },
+        "resource_guard.json": {
+          "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/watchdog/evaluator-score-r1/resource_guard.json",
+          "status": "COMPLETED",
+          "publication": "include",
+          "bytes": 1723,
+          "sha256": "42f2766b3c730a2bc01bac8d234fcb85599b85d788e2a0a0b94bc8c9fb08360e",
+          "role": "score watchdog resource guard"
+        },
+        "resource_samples.jsonl": {
+          "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/watchdog/evaluator-score-r1/resource_samples.jsonl",
+          "status": "COMPLETED",
+          "publication": "include",
+          "bytes": 835,
+          "sha256": "dc8f812b76fbd1349728cc5acbe9e90607720add68e140eea6c888b0ecec5008",
+          "role": "score watchdog resource samples."
+        },
+        "time.json": {
+          "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/watchdog/evaluator-score-r1/time.json",
+          "status": "COMPLETED",
+          "publication": "include",
+          "bytes": 4064,
+          "sha256": "49b9b7f5eab3a89d9c1e43b4c238e767c5e3464ce814e6e2d3dec375b5e56c11",
+          "role": "score watchdog time"
+        },
+        "finish.json": {
+          "path": "/tmp/trr-p04/experiments/TRR-P04/runtime/watchdog/evaluator-score-r1/finish.json",
+          "status": "COMPLETED",
+          "publication": "include",
+          "bytes": 1087,
+          "sha256": "471c0325430f800aea462f87f4e1d432a95edf653710aa447b759ecb5d982ffb",
+          "role": "score watchdog finish"
+        }
+      },
+      "truth_gate": {
+        "prediction_files_read_before_truth": true,
+        "prediction_files_rewritten": false,
+        "truth_opened_after_gate": true,
+        "verified_before_truth": true
+      },
+      "bootstrap": {
+        "kind": "token_weighted_accuracy_difference",
+        "cluster_unit": "source_record_id",
+        "samples": 10000,
+        "seed": 20260908,
+        "strata": 12
+      }
+    }
+  }
+}

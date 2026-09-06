@@ -1,0 +1,408 @@
+{
+  "evaluation_panel": {
+    "a1_a2_anchor": {
+      "cost": "report candidate simulations and warm inference separately",
+      "denominator": "separate from the full 72-record panel",
+      "method": "native A1+A2 when available; otherwise label the exact numerical port, normalization, and denominator",
+      "scored_positions_per_target": 384,
+      "selection": "predeclared four source records per style in the 32-token stratum, selected before any evaluation truth is opened",
+      "source_records": 12
+    },
+    "freshness_rule": "panel records are selected from immutable public metadata with explicit row/text/token overlap exclusions; no panel answer, target-update weight, or evaluated metric can influence selection",
+    "layout": "3 natural styles x 4 post-BOS length strata x 6 source records per cell",
+    "paired_cluster_rule": "both target conditions reuse each source record; bootstrap and uncertainty resample source_record_id, never target-condition rows independently",
+    "paired_target_conditions": [
+      {
+        "id": "public_base",
+        "role": "matched public target"
+      },
+      {
+        "id": "p04_evaluator_target_update_v1",
+        "role": "fresh evaluator-only target update",
+        "seed_and_lineage": "must be fixed and recorded before panel freeze; not the PR7 public_lora_2601 artifact",
+        "training_or_teacher_access": false
+      }
+    ],
+    "post_bos_lengths": [
+      16,
+      32,
+      64,
+      128
+    ],
+    "proposed_independent_source_records": 72,
+    "styles": [
+      {
+        "id": "pile_plain",
+        "rendering": "plain stored text",
+        "source": "NeelNanda/pile-10k"
+      },
+      {
+        "id": "finance_chat",
+        "rendering": "the pinned public Finance chat-template renderer",
+        "source": "Josephgflowers/Finance-Instruct-500k"
+      },
+      {
+        "id": "alpaca_instruction",
+        "rendering": "the pinned public instruction renderer",
+        "source": "tatsu-lab/alpaca"
+      }
+    ]
+  },
+  "evaluator_target_plan": {
+    "schema": "token-reconstruction.trr-p04-evaluator-target-plan.v1",
+    "status": "PREDECLARED_BEFORE_EVALUATOR_OBSERVATION_CAPTURE",
+    "condition_id": "p04_evaluator_target_update_v1",
+    "base_model": {
+      "id": "meta-llama/Llama-3.2-1B-Instruct",
+      "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "snapshot": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+      "weights_available_to_reconstructor": false
+    },
+    "update": {
+      "family": "evaluator_only_lora",
+      "layers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "modules": [
+        "q_proj",
+        "v_proj"
+      ],
+      "rank": 4,
+      "alpha": 4.0,
+      "initialization_seed": 20260910,
+      "optimizer": "AdamW",
+      "learning_rate": 0.00075,
+      "weight_decay": 0.0,
+      "gradient_clip_norm": 1.0,
+      "steps": 30,
+      "record_batch_size": 8,
+      "maximum_tokens_including_bos": 192,
+      "objective": "causal next-token cross-entropy on the fixed evaluator-only update corpus",
+      "target_update_path": "experiments/TRR-P04/private/evaluator_target_update/p04_evaluator_target_update_v1.safetensors",
+      "weights_available_to_reconstructor": false
+    },
+    "update_corpus": {
+      "dataset_id": "HuggingFaceH4/no_robots",
+      "dataset_revision": "e6f9a4ac5c37faeb744ba9ecf0473184d7f8105b",
+      "split": "train",
+      "expected_source_rows": 9500,
+      "cached_arrow": {
+        "path": "/home/alanz/.cache/huggingface/datasets/HuggingFaceH4___no_robots/default/0.0.0/e6f9a4ac5c37faeb744ba9ecf0473184d7f8105b/no_robots-train.arrow",
+        "bytes": 16503208,
+        "sha256_recorded_at_target_prep": null
+      },
+      "selection": {
+        "seed": 20260910,
+        "order": "sha256(TRR-P04|target-update-v1|row:index|seed:20260910), then row index",
+        "records": 256,
+        "selected_row_order_sha256": "42fb5bb7dfc58dba8ccf9e3b288e787fd88cc1788e936ee934cfbbdc86de2fd2",
+        "row_ids_serialized_in_public_metadata": false
+      },
+      "rendering": "pinned Llama chat template over each no_robots messages field, add_generation_prompt=false, date_string=06 Aug 2026",
+      "label_access": "evaluator target-update training only",
+      "student_training_access": false,
+      "teacher_access": false,
+      "fresh_panel_access": false
+    },
+    "lineage_and_overlap": {
+      "lineage_id": "p04-target-lora-no-robots-v1-seed20260910",
+      "prior_update_excluded": {
+        "id": "public_lora_2601",
+        "path": "outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors",
+        "sha256": "eea7bb49f801b61df2e26a8f59af7c3096f6f3a2604404e16e589443bcfba595"
+      },
+      "required_audit": "before capture, compare evaluator-update rendered-text and truncated-token hashes against every P04 fit/replay, correction, validation, and fresh-panel ledger; reject any whole source record collision",
+      "audit_status": "PENDING_TARGET_PREPARATION",
+      "activation_drift": "record paired public_base versus update drift after capture without using evaluation truth for target selection"
+    },
+    "schedule": {
+      "batch_order": "cyclic sequential selected rows",
+      "formula": "row=(step*record_batch_size+offset) mod records",
+      "steps": 30,
+      "record_batch_size": 8
+    }
+  },
+  "evaluator_observation_contract": {
+    "schema": "token-reconstruction.trr-p04-evaluator-observations.v1",
+    "panel_binding": {
+      "path": "experiments/TRR-P04/setup/public_selection-r2.json",
+      "sha256": "05f941e0dbcf29ea3efc47c7bc8abb3a7146a266eeea770f05052bb7728cde6a",
+      "record_count": 72,
+      "record_order_sha256": "53f165364993845f217acd3ba9d066e3a76021d22741084a99bd92c5145127ae",
+      "anchor_count": 12,
+      "anchor_order_sha256": "906fc833e77fe677b8ba6562e2b22f0ccd9956d592441659e1c64cc035da8073"
+    },
+    "geometry": {
+      "records_per_condition": 72,
+      "padded_tokens_including_bos": 192,
+      "hidden_size": 2048,
+      "cut_depth": 4,
+      "capture_batch_size": 8,
+      "active_window": "BOS plus exactly the declared 16/32/64/128 post-BOS tokens; later source tokens are not captured, and the fixed 192-token batch is right padded"
+    },
+    "serialized_keys": [
+      "activations",
+      "attention_mask",
+      "position_ids"
+    ],
+    "dtypes": {
+      "activations": "bfloat16",
+      "attention_mask": "uint8",
+      "position_ids": "int64"
+    },
+    "alignment": "activations[record,position] predicts the current token at that position; BOS is position zero and post-BOS positions are the only scored positions",
+    "paired_conditions": [
+      "public_base",
+      "p04_evaluator_target_update_v1"
+    ],
+    "pairing": "same frozen row order and masks for both conditions; no independent target resampling",
+    "forbidden_serialized_fields": [
+      "token_ids",
+      "input_ids",
+      "labels",
+      "source_text",
+      "truth",
+      "oracle",
+      "target_weights"
+    ],
+    "runtime_access": {
+      "source_text_materialized_transiently": true,
+      "source_tokens_materialized_transiently": true,
+      "source_tokens_serialized": false,
+      "evaluation_truth_opened": false,
+      "target_update_weights_serialized": false,
+      "public_prefix_calls_at_student_inference": false
+    },
+    "output_layout": "experiments/TRR-P04/runtime/evaluator-observations-r1/<condition>.safetensors plus observation_index.json and capture_evidence.json",
+    "publication": "publish compact metadata and hashes only; exclude observation tensors, source rows, target weights, and private truth"
+  },
+  "native_anchor_contract": {
+    "schema": "token-reconstruction.trr-p04-native-anchor.v1",
+    "method_id": "native_a1_a2",
+    "implementation_identity": "frozen_a1_a2_k256",
+    "port_status": "exact PR7 A1+A2 algorithm on the new P04 12-record anchor; this is a panel/input port and not a canonical dual-benchmark replacement claim",
+    "panel_binding": {
+      "selection_path": "experiments/TRR-P04/setup/public_selection-r2.json",
+      "anchor_rule": "first four records in each style's 32-token cell",
+      "styles": [
+        "pile_plain",
+        "finance_chat",
+        "alpaca_instruction"
+      ],
+      "records": 12,
+      "post_bos_positions_per_record": 32,
+      "scored_positions_per_target": 384,
+      "denominator_separate_from_72_record_student_panel": true
+    },
+    "algorithm": {
+      "a1_proposal_k": 512,
+      "a1_chunk": 256,
+      "a2_candidate_k": 256,
+      "policy": "fixed schedule [256], direct cosine, no fast path, commit last winner",
+      "record_batch_size": 1,
+      "a2_fallback": false,
+      "tie_rule": "published candidate/proposal order and first argmax; do not apply P04 student lowest-ID tie rule",
+      "full_vocabulary_decision": true,
+      "expected_candidate_simulations": 98304,
+      "expected_proposal_positions": 384,
+      "cost_receipt": "record actual proposal time, public-prefix calls, candidate simulations, prefix commit tokens, startup/load, and warmed steady interval separately"
+    },
+    "reusable_sources": [
+      {
+        "role": "legacy proposal/decode",
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/scripts/trr0003_footing_compare.py",
+        "sha256": "bb3690a481014f3ea12b411a3ec6eb58d7c888ef6c4135f9e03908027857f98e"
+      },
+      {
+        "role": "policy definitions",
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/src/token_reconstruction/a1a2_configuration_search.py",
+        "sha256": "608bead6291353cacaa700a85f3dd619fb3261375e6fd5ba19cbc43fd738315b"
+      },
+      {
+        "role": "retained A1 lens",
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/blind/reconstructor_input/public_a1_lens.pt",
+        "sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742"
+      },
+      {
+        "role": "public model snapshot weights",
+        "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6/model.safetensors",
+        "sha256": "1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f"
+      }
+    ],
+    "observation_input": "truth-free evaluator activations plus attention_mask and position_ids; native A2 may call the target prefix only for declared candidate simulations",
+    "output": "one P04 prediction row per anchor record and target condition under the frozen prediction schema; candidate diagnostics remain task-local and are not truth"
+  },
+  "metrics": {
+    "costs": [
+      "public activation generation",
+      "teacher candidate simulations",
+      "student training updates and token examples",
+      "retained embedding/table/student-state bytes",
+      "startup and warmed uncontended inference"
+    ],
+    "decision": "attribute any improvement separately to recurrent architecture, label-only hard-confusion supervision, or teacher score information; preserve negative results and do not claim an A2 replacement",
+    "primary": [
+      "unrestricted post-BOS token recovery",
+      "completely reconstructed records",
+      "paired per-source gains/regressions against H",
+      "per-style/per-length/per-target accuracy"
+    ],
+    "secondary": [
+      "teacher agreement and candidate recall",
+      "teacher fixes/errors/ties",
+      "record-cluster bootstrap uncertainty",
+      "public validation loss and calibration"
+    ]
+  },
+  "model_and_tokenizer": {
+    "bos_token_id": 128000,
+    "cut_depth": 4,
+    "hidden_size": 2048,
+    "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+    "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "padding_token_id": 128001,
+    "tokenizer_snapshot": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6"
+  },
+  "observation_contract": {
+    "a2_or_search_fallback_at_inference": false,
+    "attack_metadata_may_contain_truth": false,
+    "attack_observation_path": "experiments/TRR-P04/runtime/observations/",
+    "future_activation_access": false,
+    "guessed_token_feedback": false,
+    "output": "unrestricted full-vocabulary logits/predictions using a tied public embedding table or an explicitly documented equivalent",
+    "public_prefix_calls_at_inference": false,
+    "record_reset": true,
+    "scored_positions": "post_bos positions only",
+    "sequence_layout": "BOS followed by L post-BOS tokens; H has one row for BOS and each scored position",
+    "source_token_access_at_inference": false,
+    "student_input": "activation prefix H[0:i+1] only when predicting x_i",
+    "student_input_dtype": "bfloat16 or float32 after an explicitly recorded conversion",
+    "student_input_shape": "[batch, prefix_length, 2048]",
+    "teacher_or_candidate_access_at_inference": false
+  },
+  "outputs": {
+    "freeze_receipt": "experiments/TRR-P04/runtime/freeze.json",
+    "prediction_root": "experiments/TRR-P04/runtime/predictions/",
+    "public_training_evidence": "experiments/TRR-P04/runtime/public_training/",
+    "publication": "task-sized predictions/diagnostics, compact receipts, config/code hashes, and report/manifest; exclude evaluator truth, target-update weights, source rows, and large observation/model assets",
+    "score_root": "experiments/TRR-P04/runtime/score/",
+    "scorer_behavior": "scorer reads frozen predictions only after the truth-opening gate; it does not rewrite predictions or feed answers back into selection/training",
+    "teacher_evidence": "experiments/TRR-P04/runtime/teacher_evidence/",
+    "timing_and_resource_receipts": "experiments/TRR-P04/runtime/receipts/"
+  },
+  "parent": {
+    "commit": "6e8b683e404c0acb70cd59b7dd6d6868b2061f61",
+    "pr": 7,
+    "task_id": "TRR-0004",
+    "worktree_assets_read_only": true
+  },
+  "public_data_contract": {
+    "correction_pool": {
+      "labels": "public and available to the training loader",
+      "must_be_disjoint_from": [
+        "fit_replay_pool",
+        "public_validation_pool",
+        "fresh_evaluation_panel"
+      ],
+      "proposed_record_budget": 256,
+      "role": "separate public training pool containing useful public-base mistakes and uncertain positions",
+      "selection": "fixed from public development diagnostics before student comparison",
+      "target_condition": "public_base only"
+    },
+    "fit_replay_pool": {
+      "labels": "public and available to the training loader",
+      "proposed_record_budget": 1200,
+      "role": "common ordinary public training data for S, H, and D",
+      "selection": "fixed before teacher qualification; no evaluation answers",
+      "target_condition": "public_base only"
+    },
+    "same_data_rule": "S, H, D, and the same-data affine reference receive identical records, labels, row order, 75% replay/25% correction schedule (6+2 records per eight-record batch), optimizer opportunities, and continuation budget; only the declared loss terms differ",
+    "source_overlap_audit": "audit dataset row IDs, normalized source-text hashes, and truncated token-sequence hashes against every available immutable PR7 fit/validation/panel ledger before freezing; exclude a whole source record on any exact collision",
+    "validation_pool": {
+      "labels": "public and available before freeze",
+      "must_not_be": "fresh evaluation panel",
+      "proposed_record_budget": 192,
+      "role": "public-only objective, temperature, hard-negative, and one development adjustment decisions"
+    }
+  },
+  "question": "Does offline teacher relative-score supervision improve a search-free causal student beyond full-vocabulary labels plus the same hard-confusion control?",
+  "resource_gate": {
+    "comparative_timing": "requires an uncontended window",
+    "heavy_jobs": "blocked pending root reservation and implementation-owned preflight",
+    "resource_guard": "isolated restart-safe fail-closed guard with command, safe environment allowlist, wall time, group RSS, and host-memory samples",
+    "setup_and_selection": "CPU-only/light metadata work is allowed"
+  },
+  "schema": "token-reconstruction.trr-p04-interface.v1",
+  "status": "FROZEN_PANEL_AND_EVALUATOR_CONTRACT_PENDING_TARGET_AND_STUDENT_RUNS",
+  "student_arms": {
+    "D": {
+      "candidate_restriction": "training target only; deployed prediction remains full-vocabulary",
+      "score_rule": "use centered relative teacher scores or pairwise margins; choose scale/temperature once on public validation, inspect entropy/span, and record ties/errors",
+      "supervision": "H plus one fixed relative-score/ranking objective from the frozen teacher evidence"
+    },
+    "H": {
+      "hard_negative_rule": "candidate IDs excluding the gold token, with weights and margin chosen once on public validation",
+      "supervision": "S plus a fixed label-derived hard-confusion loss over the frozen candidate identities; no teacher numeric scores"
+    },
+    "S": {
+      "supervision": "full-vocabulary token cross-entropy on fit/replay plus correction data"
+    },
+    "common_architecture": "one-layer unidirectional GRU over boundary activations with a trainable residual/identity affine path and tied public-embedding output",
+    "common_initialization": "one frozen configuration and paired seeds where feasible; any seed exception is recorded",
+    "inference_contract": "S, H, and D consume only activation prefixes and retained student state; no candidate IDs, teacher scores, labels, source tokens, prefix calls, or feedback",
+    "method_ids": {
+      "D": "student_d",
+      "H": "student_h",
+      "S": "student_s",
+      "affine": "affine_same_data"
+    },
+    "seed_pairing": "each seed runs all affine/S/H/D arms with the same public rows, labels, order, and schedule",
+    "trainable_affine_path": true,
+    "training_seeds": [
+      1737,
+      2711
+    ]
+  },
+  "task_id": "TRR-P04",
+  "teacher_contract": {
+    "candidate_budget": 32,
+    "candidate_id_rule": "candidate identities are generated once from the same frozen public decoder/resource and reused byte-for-byte by H and D",
+    "evidence_positions": {
+      "difficult_public_positions": 256,
+      "random_public_audit_positions": 128,
+      "selection_source": "correction_pool only; no fresh evaluation records",
+      "total_initial_teacher_positions": 384
+    },
+    "modes": {
+      "native_anchor": "native causal A1+A2 scorer with K=256, if authorized, uses only its declared reconstructed prefix and is reported separately",
+      "privileged_training_teacher": "known public prefix may be used to qualify K=32 teacher scores and create training evidence; report as privileged and do not call it native reconstruction"
+    },
+    "native_anchor_candidate_budget": 256,
+    "native_anchor_role": "evaluation-only native A1+A2 anchor; separate from privileged K=32 training evidence",
+    "proposal_budget": 32,
+    "required_diagnostics": [
+      "proposal miss rate",
+      "candidate recall at each declared k",
+      "teacher top-choice correctness",
+      "teacher fixes and teacher-introduced errors relative to public labels",
+      "score span and calibrated/normalized score distribution",
+      "finite-precision ties",
+      "true-token-in-candidate indicator"
+    ],
+    "role": "public training-only supervision; never an inference dependency",
+    "scorer": "frozen public A2-style selector with its exact method/config/asset hashes recorded",
+    "truth_policy": "public labels may be used for training-only qualification; no evaluation truth, target-prefix weights, or holdout answers enter teacher construction"
+  },
+  "truth_and_freeze": {
+    "evaluation_truth_path": "experiments/TRR-P04/private/evaluation_truth/",
+    "evaluation_truth_schema": "JSONL rows {record_id, token_ids}; one file per target condition",
+    "holdout": "none planned for this exploratory comparison; any later holdout requires a new frozen request",
+    "public_training_truth": "public fit/replay, correction, and validation labels may be read before freeze",
+    "target_update_path": "experiments/TRR-P04/private/evaluator_target_update/",
+    "truth_in_attack_metadata": false,
+    "truth_opening_gate": "freeze source selection, observation index, all S/H/D weights, baseline weights, teacher evidence, candidate identities, and prediction roots before the evaluator scorer opens any evaluation truth"
+  }
+}

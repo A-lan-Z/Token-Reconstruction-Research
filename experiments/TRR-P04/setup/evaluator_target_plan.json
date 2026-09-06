@@ -1,0 +1,90 @@
+{
+  "base_model": {
+    "id": "meta-llama/Llama-3.2-1B-Instruct",
+    "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "snapshot": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+    "weights_available_to_reconstructor": false
+  },
+  "condition_id": "p04_evaluator_target_update_v1",
+  "lineage_id": "p04-target-lora-no-robots-v1-seed20260910",
+  "outputs": {
+    "private_target_receipt": "experiments/TRR-P04/private/evaluator_target_update/target_preparation_receipt.json",
+    "private_update": "experiments/TRR-P04/private/evaluator_target_update/p04_evaluator_target_update_v1.safetensors",
+    "public_compact_receipt": "experiments/TRR-P04/runtime/evaluator-observations-r1/target_lineage_summary.json",
+    "truth_opened": false
+  },
+  "overlap_and_drift": {
+    "audit_status": "PENDING_TARGET_PREPARATION",
+    "drift_diagnostic": "after capture, report paired public_base versus update activation cosine and relative-L2 summaries by style and length; do not use evaluation truth to select the update",
+    "prior_update_excluded": {
+      "id": "public_lora_2601",
+      "path": "outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors",
+      "sha256": "eea7bb49f801b61df2e26a8f59af7c3096f6f3a2604404e16e589443bcfba595"
+    },
+    "required_audit": "before capture, compare evaluator-update rendered-text and truncated-token hashes against every P04 fit/replay, correction, validation, and fresh-panel ledger; reject any whole source record collision",
+    "unseen_claim_boundary": "unseen to P04 student fitting and teacher construction after the audit; no claim of global dataset novelty"
+  },
+  "schedule": {
+    "batch_order": "cyclic sequential selected rows",
+    "formula": "row=(step*record_batch_size+offset) mod records",
+    "record_batch_size": 8,
+    "steps": 30
+  },
+  "schema": "token-reconstruction.trr-p04-evaluator-target-plan.v1",
+  "status": "PREDECLARED_BEFORE_EVALUATOR_OBSERVATION_CAPTURE",
+  "task_id": "TRR-P04",
+  "update": {
+    "alpha": 4.0,
+    "family": "evaluator_only_lora",
+    "gradient_clip_norm": 1.0,
+    "initialization_seed": 20260910,
+    "layers": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "learning_rate": 0.00075,
+    "maximum_tokens_including_bos": 192,
+    "modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "objective": "causal next-token cross-entropy on the fixed evaluator-only update corpus",
+    "optimizer": "AdamW",
+    "rank": 4,
+    "record_batch_size": 8,
+    "steps": 30,
+    "target_update_path": "experiments/TRR-P04/private/evaluator_target_update/p04_evaluator_target_update_v1.safetensors",
+    "weight_decay": 0.0,
+    "weights_available_to_reconstructor": false
+  },
+  "update_corpus": {
+    "cached_arrow": {
+      "bytes": 16503208,
+      "path": "/home/alanz/.cache/huggingface/datasets/HuggingFaceH4___no_robots/default/0.0.0/e6f9a4ac5c37faeb744ba9ecf0473184d7f8105b/no_robots-train.arrow",
+      "sha256_recorded_at_target_prep": null
+    },
+    "dataset_id": "HuggingFaceH4/no_robots",
+    "dataset_info": {
+      "bytes": 1158,
+      "path": "/home/alanz/.cache/huggingface/datasets/HuggingFaceH4___no_robots/default/0.0.0/e6f9a4ac5c37faeb744ba9ecf0473184d7f8105b/dataset_info.json",
+      "sha256": "5b18eaa76054da66839dd9c4bab7069504ea8072f917948d9adc1e00aec84b7d"
+    },
+    "dataset_revision": "e6f9a4ac5c37faeb744ba9ecf0473184d7f8105b",
+    "expected_source_rows": 9500,
+    "fresh_panel_access": false,
+    "label_access": "evaluator target-update training only",
+    "rendering": "pinned Llama chat template over each no_robots messages field, add_generation_prompt=false, date_string=06 Aug 2026",
+    "selection": {
+      "order": "sha256(TRR-P04|target-update-v1|row:index|seed:20260910), then row index",
+      "records": 256,
+      "row_ids_serialized_in_public_metadata": false,
+      "seed": 20260910,
+      "selected_row_order_sha256": "42fb5bb7dfc58dba8ccf9e3b288e787fd88cc1788e936ee934cfbbdc86de2fd2"
+    },
+    "split": "train",
+    "student_training_access": false,
+    "teacher_access": false
+  }
+}
