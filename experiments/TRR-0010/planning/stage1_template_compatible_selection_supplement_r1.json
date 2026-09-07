@@ -1,0 +1,120 @@
+{
+  "schema": "token-reconstruction.trr-p09-stage1-template-compatible-selection-supplement.v1",
+  "task_id": "TRR-P09",
+  "status": "JOINT_AGREED_PENDING_RERUN",
+  "purpose": "Record the narrow deterministic selector supplement agreed after the two failed r2 preparation attempts. This supplement changes only how an immutable B0 template is assigned to a controlled selection slot; it does not authorize a new panel, model, capture, fit, or truth access.",
+  "bindings": {
+    "correction_addendum": {
+      "path": "experiments/TRR-P09/planning/stage1-correction-addendum-r1.json",
+      "bytes": 6364,
+      "sha256": "0bad461d93041fdb21d284b0ae1684d2268adfb0f9a304f9b97ab4cd39900564"
+    },
+    "joint_countersignature": {
+      "path": "experiments/TRR-P09/setup/stage1-correction-addendum-countersignature-r1.json",
+      "sha256": "1b7e8578f9c7786d3be46b210be03ecf84e4a745782cfa05ad73a8128f16e610",
+      "scope": "CPU-only r2 input preparation; original plan unchanged; r1 preserved and excluded"
+    },
+    "r1_disposition": "Preserve the immutable r1 output and receipt for audit only. Do not overwrite, recapture, or relabel r1 as corrected."
+  },
+  "trusted_structural_rule": {
+    "module": "src/token_reconstruction/trr0005_public_corpus.py",
+    "function": "apply_replacements",
+    "source_commit": "a44047a4d747ebc39c97311c03d530c798247d2f",
+    "semantics": "Replacement offsets are post-BOS offsets. A candidate is structurally incompatible with a template if any assigned offset addresses BOS_TOKEN_ID or PAD_TOKEN_ID at source_token_ids[offset + 1]. The helper remains authoritative; do not move offsets, substitute replacement IDs, or change the structural-token set."
+  },
+  "selection_rule": {
+    "bucket_key": [
+      "stratum",
+      "target_post_bos_length"
+    ],
+    "slot_order": "Retain the signed target-slot-first order, existing exact-length quotas, and existing deterministic ranked candidate order.",
+    "template_order": "Within each bucket, use immutable B0 templates in ascending original B0 index order and assign them round-robin as bucket slots are filled.",
+    "candidate_traversal": "For each required slot, traverse the ranked eligible parents from the beginning and select the first candidate that passes the existing parent-rejection rules, length rules, and the structural check for that slot's assigned template.",
+    "structural_skip": "If the assigned template addresses BOS or PAD, skip that candidate for the current slot only. Do not consume the slot, mark the candidate used, change the template, move an offset, or alter replacement IDs.",
+    "later_eligibility": "A structurally skipped parent remains eligible for later slots and may be reconsidered under the later slot's assigned template. A selected parent is marked used under the existing identity, rendered-hash, public-hash, and H128 namespaces.",
+    "row_binding": "Persist the selected candidate's assigned template by candidate identity and use that exact binding during controlled-row construction; retain the existing output row allocation/order."
+  },
+  "required_r2_audit": {
+    "per_bucket": [
+      "required_slot_count",
+      "selected_count",
+      "structural_skip_count",
+      "ordered_structural_skip_digest",
+      "residual_ranked_eligible_count"
+    ],
+    "global": [
+      "exact_9x_use_of_each_immutable_b0_template",
+      "b0_prefix_byte_equivalence_to_immutable_input",
+      "exact_signed_stratum_and_length_quotas",
+      "parent_exclusion_namespace_audit",
+      "support_and_exposure_counts",
+      "fixed_diagnostic_indices"
+    ],
+    "digest_policy": "Skip digests must be metadata-only stable candidate-key digests; do not publish source text, token IDs, or sealed truth."
+  },
+  "unchanged_terms": {
+    "source_ranking": true,
+    "parent_rejection_rules": true,
+    "target_rows": 12000,
+    "b0_rows": 1200,
+    "new_rows": 10800,
+    "controlled_rows_in_additions": 1080,
+    "controlled_occurrences_in_additions": 32400,
+    "occurrences_per_controlled_record": 30,
+    "no_new_panel_or_truth_access": true,
+    "no_gpu_capture_fit_or_model_load": true
+  },
+  "failed_attempts": [
+    {
+      "attempt": "r2",
+      "source_commit": "c6f1008ecef4ad01e63f65261939c6e7a8e0efed",
+      "watchdog_root": "/tmp/trr-p09-runtime/watchdog-stage1-input-preparation-r2",
+      "output_root": "/tmp/trr-p09-runtime/stage1-input-preparation-r2",
+      "command_receipt": "/tmp/trr-p09-runtime/watchdog-stage1-input-preparation-r2/command.json",
+      "command_sha256": "2f5c46dd6e1799e0157281768ebb9666e1aeaa0ea9056795fee0aeb4e3319656",
+      "finish_receipt": "/tmp/trr-p09-runtime/watchdog-stage1-input-preparation-r2/finish.json",
+      "finish_sha256": "a89229c125fb5f547985cc529dcbd9f1a9316ad883540ad1c3cd272357e47d21",
+      "time_receipt": "/tmp/trr-p09-runtime/watchdog-stage1-input-preparation-r2/time.json",
+      "time_sha256": "da0b027f5d59b45f958a811c60ddc573253f0a009c746d8558c6dbf64c0bde70",
+      "start_utc": "2026-09-07T10:27:05.966834Z",
+      "end_utc": "2026-09-07T10:27:36.793643Z",
+      "elapsed_seconds": 30.869566,
+      "child_return_code": 2,
+      "wrapper_exit_code": 2,
+      "watchdog_status": "CHILD_EXITED_NONZERO",
+      "watchdog_errors": [],
+      "stderr": "prepare_stage1_inputs: ERROR: replacement position targets a structural token",
+      "stderr_sha256": "d0895a54480160dfaef7baf3261b4a6bed214a65db69fc586a150c2858ee44c7",
+      "guard_sha256": "9c1069e855740537699ccd4c6696bd0f84053dd8a19656ee6d01c87a5010bfda",
+      "resource_peak_group_rss_bytes": 1607389184,
+      "resource_min_host_available_bytes": 18667343872,
+      "disposition": "EXCLUDED_PRE_RERUN_STRUCTURAL_FAILURE"
+    },
+    {
+      "attempt": "r2-retry",
+      "source_commit": "a44047a4d747ebc39c97311c03d530c798247d2f",
+      "watchdog_root": "/tmp/trr-p09-runtime/watchdog-stage1-input-preparation-r2-retry",
+      "output_root": "/tmp/trr-p09-runtime/stage1-input-preparation-r2",
+      "command_receipt": "/tmp/trr-p09-runtime/watchdog-stage1-input-preparation-r2-retry/command.json",
+      "command_sha256": "f6c2fccb8fba3995d8ea1b67d5799f198ad2991a7194a5a2299c8f2672300589",
+      "finish_receipt": "/tmp/trr-p09-runtime/watchdog-stage1-input-preparation-r2-retry/finish.json",
+      "finish_sha256": "16d4a5b2afd5d3ce83f6839be62567721aea2864f62c1759d5e7f9b699deacd2",
+      "time_receipt": "/tmp/trr-p09-runtime/watchdog-stage1-input-preparation-r2-retry/time.json",
+      "time_sha256": "cc1f60e2d581618fbc54d23e0c4587f311a452ad6b4339ba5c6699f21daeeb44",
+      "start_utc": "2026-09-07T10:30:46.091275Z",
+      "end_utc": "2026-09-07T10:31:16.942261Z",
+      "elapsed_seconds": 30.850386,
+      "child_return_code": 2,
+      "wrapper_exit_code": 2,
+      "watchdog_status": "CHILD_EXITED_NONZERO",
+      "watchdog_errors": [],
+      "stderr": "prepare_stage1_inputs: ERROR: replacement position targets a structural token",
+      "stderr_sha256": "d0895a54480160dfaef7baf3261b4a6bed214a65db69fc586a150c2858ee44c7",
+      "guard_sha256": "8c71926d95bec98d29cc7ca82cd5d7579e67747711cdc65797f50c2474f5f917",
+      "resource_peak_group_rss_bytes": 1607651328,
+      "resource_min_host_available_bytes": 18915639296,
+      "disposition": "EXCLUDED_PRE_RERUN_STRUCTURAL_FAILURE"
+    }
+  ],
+  "next_action": "Implement only the selection supplement and its focused regressions, then execute one guarded CPU r2 preparation under the existing signed resource caps after the resulting source commit is recorded."
+}
