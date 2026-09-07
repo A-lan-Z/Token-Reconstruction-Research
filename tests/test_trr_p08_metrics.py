@@ -191,3 +191,19 @@ def test_gate_rejects_support_when_one_seed_is_materially_negative() -> None:
     )
     assert result["disposition"] == "INCONCLUSIVE"
     assert result["support_seed_ok"]["pile"] is False
+
+
+def test_gate_checks_exact_seed_direction_for_ruled_out_call() -> None:
+    summaries = {
+        "pile": _summary((-0.2, 0.2), (-1.0, 4.0)),
+        "finance": _summary((-0.15, 0.25), (-2.0, 4.5)),
+    }
+    result = classify_interaction_gate(
+        summaries,
+        seed_interactions={
+            "pile": ({"token_delta_pp": -0.1, "exact_delta_pp": 5.0}, {"token_delta_pp": 0.0, "exact_delta_pp": -1.0}),
+            "finance": ({"token_delta_pp": 0.1, "exact_delta_pp": 0.0}, {"token_delta_pp": -0.1, "exact_delta_pp": -1.0}),
+        },
+    )
+    assert result["disposition"] == "INCONCLUSIVE"
+    assert result["ruled_out_seed_ok"]["pile"] is False
