@@ -1,0 +1,31 @@
+{
+  "checks": [
+    "nonzero Delta score_rows equals exported/materialized E logits exactly",
+    "argmax IDs match exported E",
+    "public E remains unmodified",
+    "full-vocabulary output shape preserved",
+    "total loss scalar",
+    "directional Delta gradient finite and nonzero",
+    "decoder gradients finite",
+    "exported-E reload preserves logits and argmax IDs"
+  ],
+  "directional_source_sha256": "9eb38939ba0541f51ce7a964080a058c313081f7ef7b25e2b51f91bac92310db",
+  "geometry": {
+    "batch_records": 2,
+    "hidden": 8,
+    "positions": 4,
+    "scored_rows": 3,
+    "vocabulary": 17
+  },
+  "materializer": "detached E plus one out-of-place index_copy",
+  "primary_path": "merged effective-E score_rows; compute_base_logits=False in directional smoke",
+  "protocol_commit": "0aee09c4abb8d65b6ed3a42dc8ae93789509a518",
+  "protocol_source": "src/token_reconstruction/trr_p09_fixed_control_adapter.py",
+  "schema": "token-reconstruction.trr0010-p09-hook-smoke.v4",
+  "scope": "tiny synthetic shared_decoder_rows call loaded from Agent2 committed protocol; no public assets or labels",
+  "status": "PASS",
+  "task_head": "4602f98eeb03ac121d8bbc230d7e2b219551b914",
+  "task_id": "TRR-0010",
+  "test_source_sha256": "c700875470186bc462895e70ee2ee68b767d507a8b679ecec8efde1d06932d47",
+  "timestamp_utc": "2026-09-07T08:04:44.094118+00:00"
+}
