@@ -1,7 +1,7 @@
 {
   "schema": "token-reconstruction.trr-p08-capture-preflight-plan.v1",
   "task_id": "TRR-P08",
-  "status": "PREPARED_NOT_RUN_ROOT_GPU_GRANT_PENDING",
+  "status": "PREPARED_NOT_RUN_REMOVED_LEDGER_REVIEW",
   "created_utc": "2026-09-07T02:12:00Z",
   "source_binding": {
     "universe": {
@@ -36,7 +36,10 @@
     "hidden_size": 2048,
     "vocab_size": 128256,
     "cells": 4,
-    "target_conditions": ["public_base", "public_lora_2601"],
+    "target_conditions": [
+      "public_base",
+      "public_lora_2601"
+    ],
     "cells_processed_sequentially": true
   },
   "published_preflight_estimate": {
@@ -69,5 +72,10 @@
     "truth_materialization_or_scoring": false,
     "requires_root_gpu_grant": true,
     "not_executed": true
+  },
+  "blocking_review": {
+    "status": "REQUIRED_BEFORE_CAPTURE",
+    "audit": "experiments/TRR-P08/setup/selection-disjointness-audit-r1.json",
+    "finding": "fresh P08 final-sequence overlap count 1 with removed TRR-0007 ledger; no command executed"
   }
 }

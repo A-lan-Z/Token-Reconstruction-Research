@@ -39,9 +39,9 @@
     "model_or_tensor_payload_loaded": true,
     "selection_access_note": "Approved evaluator-side selector transiently read public source rows/tokenizer; selection metadata persisted identities/digests only and no source text or token arrays."
   },
-  "next_step": "Root review of bounded disjointness audit and static capture plan; no capture, prediction, truth opening, or additional compute is authorized by this status.",
+  "next_step": "Root disposition of the removed TRR-0007 ledger collision is required before any P08 capture; frozen universe and selection remain unchanged.",
   "created_utc": "2026-09-07T00:12:47.039245+00:00",
-  "updated_utc": "2026-09-07T02:13:00Z",
+  "updated_utc": "2026-09-07T02:18:00Z",
   "plan": {
     "path": "experiments/TRR-P08/plan.json",
     "status": "FROZEN_DESIGN_PRE_FIT",
@@ -73,7 +73,8 @@
     "source_universe_frozen": "experiments/TRR-P08/runtime/source-universe-r1/frozen.json",
     "source_selection": "experiments/TRR-P08/runtime/source-selection-r1/selection.json",
     "selection_disjointness_audit": "experiments/TRR-P08/setup/selection-disjointness-audit-r1.json",
-    "capture_preflight_plan": "experiments/TRR-P08/setup/capture-preflight-plan-r1.json"
+    "capture_preflight_plan": "experiments/TRR-P08/setup/capture-preflight-plan-r1.json",
+    "selection_disjointness_audit_status": "REVIEW_REQUIRED_REMOVED_LEDGER_SEQUENCE_OVERLAP"
   },
   "verification": {
     "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p08_panel_adapter.py tests/test_trr_p08_source_binding.py tests/test_trr_p08_fit_staged.py",
@@ -136,8 +137,9 @@
     "focused_result": "21 passed"
   },
   "pending": [
-    "implementation-owned hash-only source reservation export and root publication review",
-    "paired capture/prediction/truth scoring remain separately gated and were not started by this fit receipt"
+    "root disposition of one fresh final-sequence collision with the removed TRR-0007 approved ledger",
+    "implementation-owned hash-only source reservation exchange remains metadata-only",
+    "paired capture/prediction/truth scoring remain gated and unstarted"
   ],
   "source_universe_proposal": {
     "status": "FROZEN_SOURCE_UNIVERSE_SELECTION_COMPLETE_EXPORT_PENDING",
@@ -189,7 +191,19 @@
     },
     "selection_access": "approved evaluator-side selection transiently read public rows/tokenizer; no source text or token arrays persisted",
     "disjointness_audit": "experiments/TRR-P08/setup/selection-disjointness-audit-r1.json",
-    "capture_preflight_plan": "experiments/TRR-P08/setup/capture-preflight-plan-r1.json"
+    "capture_preflight_plan": "experiments/TRR-P08/setup/capture-preflight-plan-r1.json",
+    "disjointness_audit_status": "REVIEW_REQUIRED_REMOVED_LEDGER_SEQUENCE_OVERLAP",
+    "removed_trr0007_ledger_review": {
+      "path": "/tmp/trr-p06/experiments/TRR-P06/setup/approved-trr0007/p06_opaque_source_sequence_reservation.json",
+      "sha256": "09e845fec244a38873c5bf127f6d984af91af503fb42d3a8411451ce41cdedf4",
+      "fresh_public_overlap": 0,
+      "fresh_final_sequence_overlap": 1,
+      "replacement_trr0008_overlap": {
+        "public_record_sha256": 0,
+        "final_sequence_sha256": 0
+      },
+      "reselection_run": false
+    }
   },
   "resource_boundary": {
     "status": "MAIN_PASS_GPU_RELEASED",

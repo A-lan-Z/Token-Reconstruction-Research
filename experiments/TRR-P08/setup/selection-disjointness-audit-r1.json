@@ -1,7 +1,7 @@
 {
   "schema": "token-reconstruction.trr-p08-selection-disjointness-audit.v1",
   "task_id": "TRR-P08",
-  "status": "PASS_BOUNDED_HASH_DISJOINT_NO_UNIVERSAL_CLAIM",
+  "status": "REVIEW_REQUIRED_REMOVED_LEDGER_SEQUENCE_OVERLAP",
   "created_utc": "2026-09-07T02:10:00Z",
   "scope": {
     "source_rows_or_text_read": false,
@@ -101,6 +101,14 @@
     "fresh_vs_union_of_prior_ledgers": {
       "public_record_sha256": 0,
       "final_sequence_sha256": 0
+    },
+    "fresh_vs_removed_old_trr0007_ledger": {
+      "public_record_sha256": 0,
+      "final_sequence_sha256": 1
+    },
+    "old_trr0007_vs_replacement_trr0008": {
+      "public_record_sha256": 0,
+      "final_sequence_sha256": 0
     }
   },
   "effective_collector_binding": {
@@ -149,6 +157,51 @@
   "coverage_disclaimer": {
     "global_disjointness_claim": false,
     "universal_coverage_complete": false,
-    "interpretation": "Zero intersections are certified only for the two explicit hash fields and the approved ledgers read here."
+    "interpretation": "The P08 selection is disjoint from the explicit P06 selection and TRR-0008 ledger, but the replaced older TRR-0007 ledger has one final-sequence collision; global disjointness remains unclaimed."
+  },
+  "removed_descriptor_review": {
+    "removed_descriptor": {
+      "path": "/tmp/trr-p06/experiments/TRR-P06/setup/approved-trr0007/p06_opaque_source_sequence_reservation.json",
+      "bytes": 41283,
+      "sha256": "09e845fec244a38873c5bf127f6d984af91af503fb42d3a8411451ce41cdedf4",
+      "label": "approved-opaque:p06_opaque_source_sequence_reservation.json",
+      "role": "approved_opaque_reservation",
+      "schema": "token-reconstruction.trr0007-opaque-source-sequence-reservation.v1",
+      "status": "READY_FOR_FUTURE_PUBLIC_SELECTION_HASH_ONLY",
+      "counts": {
+        "final_sequence_sha256": 256,
+        "public_record_sha256": 256
+      },
+      "public_record_distinct_count": 256,
+      "final_sequence_distinct_count": 256,
+      "hashes_digest": "a7ddca83c0e58464aaa82a20364447a8eeacb8d9580eb3925f462f7876b621a4"
+    },
+    "replacement_descriptor": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0008/experiments/TRR-0008/selection/opaque_source_sequence_reservation.json",
+      "bytes": 216396,
+      "sha256": "0487b9dda91d7eb791c93e1ba704afcea22abfc21f003cad8b99984f523357a4",
+      "label": "approved-opaque:opaque_source_sequence_reservation.json",
+      "role": "approved_opaque_reservation",
+      "schema": "token-reconstruction.trr0008-opaque-source-sequence-reservation.v1",
+      "status": "READY_FOR_TRR0008_CAPTURE_HASH_ONLY",
+      "counts": {
+        "final_sequence_sha256": 1408,
+        "public_record_sha256": 1408
+      },
+      "public_record_distinct_count": 1408,
+      "final_sequence_distinct_count": 1408,
+      "hashes_digest": "d1fd58e316472416feeb04ab9cfdb8dde36a3e6867b94eef8e99e7515a8634b8"
+    },
+    "fresh_vs_removed_descriptor": {
+      "public_record_sha256": 0,
+      "final_sequence_sha256": 1
+    },
+    "removed_vs_replacement": {
+      "public_record_sha256": 0,
+      "final_sequence_sha256": 0
+    },
+    "finding": "The old TRR-0007 final-sequence ledger has one overlap with the frozen P08 selection. The replacement TRR-0008 ledger is disjoint from the old ledger, so it does not cover that one hash. Frozen P08 source selection and universe are preserved unchanged pending root disposition.",
+    "source_values_or_individual_hashes_persisted": false,
+    "reselection_run": false
   }
 }
