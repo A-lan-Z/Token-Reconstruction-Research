@@ -282,7 +282,7 @@ def test_run_single_arm_writes_arm_scoped_receipt(monkeypatch, tmp_path: Path) -
 
     def builder(**kwargs):
         assert kwargs["arm_name"] == "current_directional"
-        assert kwargs["bank_role"] == "current"
+        assert kwargs["bank_role"] == "B0"
         assert tuple(kwargs["checkpoint_steps"]) == fit.CHECKPOINT_STEPS
         return {"synthetic": True}
 

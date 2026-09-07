@@ -265,3 +265,29 @@ def test_configuration_dry_run_rejects_placeholder_resource_qualification(tmp_pa
     resource["production_caps"]["gpu_reserved_limit_bytes"] = 10**12
     with pytest.raises(provider.ProductionProviderError, match="resource cap gpu_reserved_limit_bytes differs"):
         provider.configuration_dry_run(binding_receipts=receipts, diagnostic_binding=diagnostic, arm_name="current_directional", expected_contract_sha256=contract_sha, expected_countersignature_sha256=counter_sha, expected_qualification_sha256=qsha, expected_resource_guard_sha256=gsha)
+
+
+def test_actual_stage3_bindings_use_canonical_b0_b1_roles_without_model() -> None:
+    """Exercise the real provider handoff, not a mock role alias."""
+    root = Path(__file__).resolve().parents[1]
+    from trr0010_directional_fit_cli import _load_diagnostic_binding
+
+    diagnostic = _load_diagnostic_binding(
+        root / "experiments/TRR-0010/setup/fixed_diagnostic_binding_r1.json"
+    )
+    cases = (
+        ("current_directional", "B0", root / "experiments/TRR-0010/setup/production_arm_binding_current_stage3_v3.json"),
+        ("expanded_directional", "B1", root / "experiments/TRR-0010/setup/production_arm_binding_expanded_stage3_v2.json"),
+    )
+    for arm_name, bank_role, path in cases:
+        receipt = json.loads(path.read_text(encoding="utf-8"))
+        result = provider.configuration_dry_run(
+            binding_receipts={arm_name: receipt},
+            diagnostic_binding=diagnostic,
+            arm_name=arm_name,
+        )
+        assert result["status"] == "PASS_CONFIGURATION_DRY_RUN"
+        assert result["arms"][arm_name]["bank_role"] == bank_role
+        assert result["model_allocated"] is False
+        assert result["updates"] is False
+        assert result["truth_opened"] is False

@@ -36,7 +36,10 @@ FIT_FAILURE_SCHEMA = "token-reconstruction.trr0010-directional-fit-failure.v1"
 CHECKPOINT_STEPS = (0, 1000, 2000, 4000, 8000, 12000, 13000)
 TRAINING_STEPS = 13000
 REQUIRED_ARMS = ("current_directional", "expanded_directional")
-ARM_TO_BANK = {"current_directional": "current", "expanded_directional": "expanded"}
+# Provider bindings and the signed stage-3 contract use the canonical bank
+# identifiers. Keep the arm names as the public method selectors, but pass
+# the actual B0/B1 roles through the production handoff.
+ARM_TO_BANK = {"current_directional": "B0", "expanded_directional": "B1"}
 EXPECTED_SELECTION_METRIC = "domain_balanced_token_accuracy"
 EXPECTED_BATCH_RECORDS = 8
 EXPECTED_POSITION_BUDGET = 512
