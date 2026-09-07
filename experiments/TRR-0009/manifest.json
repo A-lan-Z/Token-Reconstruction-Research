@@ -345,7 +345,7 @@
     "status": "IDENTITY_INVENTORY_COMPLETE_AND_CORRECTED_SELECTION_V2_COMPLETE_NO_TRUTH",
     "truth_created_or_opened": false
   },
-  "claim_scope": "Capture, predictions, and precision timing are complete with cost and alias gates passing; the public gate failed before truth on a metadata compatibility check for continued_fixed_readout. No quality finding or decision is available. The task awaits explicit authorization for a narrow metadata repair; the original selection remains excluded and corrected v2 remains canonical.",
+  "claim_scope": "Truth was opened only after the public freeze and authorized compatibility repairs. The frozen unpooled score and deterministic aggregator find no useful pilot signal under the primary practical floors; exact/token harm, rare/absent, alias, and cost safeguards pass. Retain the reference; no automatic replacement, retraining, or sample expansion.",
   "cost_and_resources": {
     "accounting_boundary": {
       "deduplication_rules": [
@@ -416,7 +416,7 @@
             "finance__public_lora_2601"
           ]
         },
-        "alias_qualification": "UNKNOWN_PENDING_RUN",
+        "alias_qualification": "PASS",
         "challenge_wall_seconds": 3.878089745005127,
         "continuation_adapter_preparation_seconds": 9.148822391987778,
         "continuation_arm_wall_seconds_sum": 758.0140656649601,
@@ -466,7 +466,6 @@
             "sha256": "8f8e7a549cb9a58efad312bc4428b37856850ded275ee8bd49e487cea7711475"
           }
         },
-        "deployed_adapter_state_bytes": "UNKNOWN_PENDING_RUN",
         "disk_cold_startup_seconds": "UNMEASURED",
         "largest_cell_qualification_seconds": 10.092721462,
         "phase_wall_seconds": {
@@ -638,12 +637,29 @@
             "warmup_output_exact_match_measured": true,
             "warmup_seconds_sum": 0.8483604459324852
           }
-        }
+        },
+        "deployed_adapter_artifacts": {
+          "support_ids_bytes": 137616,
+          "support_counts_bytes": 137624,
+          "support_files_total_bytes": 275240,
+          "E_file_bytes": 1050673488,
+          "disk_cold_startup": "UNMEASURED",
+          "selected_state_bytes_by_method": {
+            "continued_adaptable_readout": 29870540,
+            "continued_fixed_readout": 29390492,
+            "published_reference": 20990652,
+            "unchanged_anchor": 29390628
+          },
+          "adaptive_selected_state_extra_vs_fixed_bytes": 480048,
+          "learned_scalar_payload_extra_bytes": 137008,
+          "required_runtime_artifact_delta_vs_fixed_bytes": 755288
+        },
+        "status": "TRR0009_CAPTURE_PREDICTION_TIMING_TRUTH_SCORE_COMPLETE"
       },
       "inherited_inputs_are_not_incremental_trr0009_cost": true,
-      "status": "TRR0009_CAPTURE_PREDICTION_TIMING_COMPLETE_TRUTH_SCORE_PENDING",
+      "status": "TRR0009_CAPTURE_PREDICTION_TIMING_TRUTH_SCORE_COMPLETE",
       "unknown_is_not_zero": true,
-      "unknown_marker": "UNKNOWN_PENDING_RUN"
+      "unknown_marker": "UNMEASURED_OR_NOT_APPLICABLE_ONLY"
     },
     "all_cells_required": true,
     "cells": [
@@ -731,7 +747,27 @@
     "measurement_boundary": "Same synchronized warmed inference boundary; startup, fit wall, adapter state, optimizer state, and peak memory reported separately.",
     "runtime_ratio": "continued_adaptable_readout warmed runtime / continued_fixed_readout warmed runtime",
     "threshold": 1.25,
-    "training_cost": "Both continued arms use the same fixed 3000-step/base schedule; report extra adapter preparation, optimizer state, training wall, and peak memory. A resource-guard failure stops the run and leaves the pilot unresolved; no additional unstated cost threshold is introduced."
+    "training_cost": "Both continued arms use the same fixed 3000-step/base schedule; report extra adapter preparation, optimizer state, training wall, and peak memory. A resource-guard failure stops the run and leaves the pilot unresolved; no additional unstated cost threshold is introduced.",
+    "incremental_trr0009": {
+      "status": "TRR0009_CAPTURE_PREDICTION_TIMING_TRUTH_SCORE_COMPLETE",
+      "alias_qualification": "PASS",
+      "deployed_adapter_artifacts": {
+        "support_ids_bytes": 137616,
+        "support_counts_bytes": 137624,
+        "support_files_total_bytes": 275240,
+        "E_file_bytes": 1050673488,
+        "disk_cold_startup": "UNMEASURED",
+        "selected_state_bytes_by_method": {
+          "continued_adaptable_readout": 29870540,
+          "continued_fixed_readout": 29390492,
+          "published_reference": 20990652,
+          "unchanged_anchor": 29390628
+        },
+        "adaptive_selected_state_extra_vs_fixed_bytes": 480048,
+        "learned_scalar_payload_extra_bytes": 137008,
+        "required_runtime_artifact_delta_vs_fixed_bytes": 755288
+      }
+    }
   },
   "decision_contract_summary": {
     "all_cells": [
@@ -767,7 +803,12 @@
     "source_rows_selected": true,
     "source_text_written": false,
     "token_ids_written": false,
-    "truth_created_or_opened": false
+    "truth_created_or_opened": true,
+    "fresh_quality_status": "SCORE_COMPLETE_AFTER_PUBLIC_FREEZE",
+    "truth_opened": true,
+    "trusted_labels_materialized_in_ram": true,
+    "raw_truth_committed": false,
+    "target_labels_written_to_public_artifacts": false
   },
   "exclusions": {
     "known_fit_validation_opened_eval_ledgers_inherited": true,
@@ -931,13 +972,47 @@
     "vocab_size": 128256
   },
   "gate_status": {
-    "authorization_required": "Explicit authorization for the narrow metadata compatibility repair before truth access.",
+    "authorization_required": "Satisfied for the documented narrow maintenance repair.",
     "cost_and_alias_gates": "PASS",
-    "error": "state inference semantics changed: continued_fixed_readout",
-    "failure_check": "_validate_state_semantics",
-    "freeze_output_written": false,
+    "freeze_output_written": true,
     "override_or_workaround": "NONE",
-    "public_gate_failure": {
+    "quality_result": "SCORE_COMPLETE_AFTER_PUBLIC_FREEZE",
+    "status": "DECISION_COMPLETE_RETAIN_REFERENCE_NO_USEFUL_PILOT_SIGNAL",
+    "truth_opened": true,
+    "authorization_status": "EXPLICIT_USER_APPROVAL_RECEIVED",
+    "authorization_receipt": "experiments/TRR-0009/coordination/metadata_gate_authorization.json",
+    "authorization_receipt_sha256": "abe7aae3a4a5a86fb3abced8b8102d71c0890c2565ccb2b6f7dfdb77cbc0b38c",
+    "decision_status": "FAIL",
+    "decision_outcome": "NO_USEFUL_PILOT_SIGNAL",
+    "primary_useful_status": "FAIL",
+    "harm_safeguards": "PASS",
+    "rare_absent_safeguards": "PASS",
+    "score_artifact": {
+      "path": "experiments/TRR-0009/evaluation/score_v2.json",
+      "bytes": 133163,
+      "sha256": "62b15bbf2f41b58010f25a74f765b7a13f0e3e05dc77762309de07306006e53d",
+      "status": "SCORE_COMPLETE_AFTER_PUBLIC_FREEZE"
+    },
+    "decision_artifact": {
+      "path": "experiments/TRR-0009/evaluation/aggregate_decision_v2.json",
+      "bytes": 19858,
+      "sha256": "e11a4fd746d9c44187c6186f92ff9f28f209bf6ee17bb51821d071edb783842f",
+      "status": "FAIL"
+    },
+    "truth_score_execution_receipt": {
+      "path": "experiments/TRR-0009/evaluation/truth_prepare_score_compat_v2_execution_receipt.json",
+      "bytes": 14312,
+      "sha256": "43768e63f6417564b41c7c7b2e87eb53412536e08667acd62dbba56523c99dcd",
+      "status": "TRUTH_PREPARATION_AND_SCORE_COMPLETE"
+    },
+    "prior_failed_truth_preparation": {
+      "path": "experiments/TRR-0009/evaluation/truth_prepare_compat_v2_failure.json",
+      "bytes": 2369,
+      "sha256": "5c7b0ba2b40bf09e413e8932ac180d136b74dcc4391ce4e94fb22878080ff811",
+      "status": "EXCLUDED_BEFORE_SIDECAR"
+    },
+    "raw_truth_committed": false,
+    "historical_public_gate_failure": {
       "bytes": 2158,
       "error": "state inference semantics changed: continued_fixed_readout",
       "failure_check": "_validate_state_semantics",
@@ -947,13 +1022,14 @@
       "status": "PUBLIC_GATE_FAILED_BEFORE_TRUTH",
       "truth_opened": false
     },
-    "quality_result": "UNKNOWN_PENDING_GATE_REPAIR",
-    "status": "AWAITING_EXPLICIT_METADATA_GATE_AUTHORIZATION",
-    "truth_opened": false
+    "historical_public_gate_failure_scope": "PRESERVED_PRE_TRUTH_FAILURE; NOT_CURRENT_GATE_STATUS"
   },
   "limitations": [
     "The final count-only scan applied the latest opaque exclusions and recomputed H128 duplicate effects; its aggregate counts are sufficient for the frozen 256 Finance / 128 Pile panel.",
     "Exact power is conditional on a prior discordance model and does not predict candidate-versus-fixed outcomes; token-route power is intentionally unclaimed before observed source-record variation.",
+    "The registered token useful benefit is excluded by its per-cell upper bounds; the exact +2-point practical route remains unresolved rather than excluded.",
+    "The adaptable arm changes only supported-token gain/bias correction: embedding directions are fixed and IDs absent from the support set receive no direct correction, although decoder competition can still change predictions.",
+    "The learning-curve raw gain/bias values do not establish effective-bound contact, so the current gain/bias bounds should not be widened without a new pre-fit diagnostic.",
     "Rare/absent bins with fewer than 32 exposed source records remain UNKNOWN and cannot clear a safeguard.",
     "A useful pilot signal is mechanism screening only; it cannot promote a replacement or trigger outcome-driven sample expansion."
   ],
@@ -1467,9 +1543,10 @@
     }
   },
   "pr_body_draft": {
-    "bytes": 3648,
     "path": "coordination/results/TRR-0009_pr_body.md",
-    "sha256": "37c4fb0b17342cd05a9db9e90a090eb8cc0fea30415ab530e389adb9fefa882b"
+    "bytes": 4363,
+    "sha256": "d4e10575f706d0b347c0e05259733d2eb6e9e0d22e81f48e1406355718bbae6a",
+    "status": "FINAL_DECISION_COMPLETE"
   },
   "prior_public_evidence": {
     "p07_resource_reply": {
@@ -1569,10 +1646,10 @@
     "unseen_token_count": 111130
   },
   "report": {
-    "bytes": 30015,
     "path": "coordination/results/TRR-0009.md",
-    "sha256": "5167134410c8453924ec16629220b821f69ce630aa1304e1b07185367b917087",
-    "status": "PUBLIC_GATE_FAILED_PRE_TRUTH_AWAITING_METADATA_AUTHORIZATION"
+    "bytes": 11995,
+    "sha256": "048986a8e40400187af1e26747829afea12d9e8220f7879728c979dbee963fa4",
+    "status": "FINAL_DECISION_COMPLETE"
   },
   "schema": "token-reconstruction.trr0009-manifest.v1",
   "selection_repair_audit": {
@@ -1581,7 +1658,7 @@
     "sha256": "29fb75a982dacb54e66f31b10e35ac7b2a91685b50525728288fe29af317f428"
   },
   "source_selection_provenance": {
-    "fresh_capture_and_quality": "UNKNOWN_PENDING_RUN",
+    "fresh_capture_and_quality": "COMPLETE_CAPTURE_PREDICTION_TIMING_AND_FROZEN_TRUTH_SCORE",
     "incoming_p08_exclusion": {
       "bytes": 80045,
       "identity_only": true,
@@ -1760,7 +1837,7 @@
       "sha256": "9b9de06571a8ec5c08712b0d1e132dc2565dcffdd7261c8da59cfdbbd24a662d"
     }
   },
-  "status": "AWAITING_EXPLICIT_METADATA_GATE_AUTHORIZATION",
+  "status": "DECISION_COMPLETE_RETAIN_REFERENCE_NO_USEFUL_PILOT_SIGNAL",
   "superseded_original_selection": {
     "exclusions": {
       "bytes": 18980,
@@ -1914,10 +1991,205 @@
     "weight_decay": 0.0
   },
   "truth_flow": {
-    "after_truth": "Truth is used only to score frozen outputs; no refit, routing, sample expansion, or threshold changes.",
+    "after_truth": "Truth was opened only after the public freeze and authorized maintenance repairs, then used only to score frozen outputs; no refit, routing, sample expansion, or threshold changes.",
     "before_truth": "Selected identities, paired observations, method states, and exclusion receipts are frozen before any truth opening.",
     "new_a2": false,
-    "source_selection": "COMPLETE_IDENTITY_ONLY_SELECTION_BEFORE_CAPTURE_PREDICTION_AND_TRUTH"
+    "source_selection": "COMPLETE_IDENTITY_ONLY_SELECTION_BEFORE_CAPTURE_PREDICTION_AND_TRUTH",
+    "truth_score_complete": true,
+    "truth_opened": true,
+    "raw_truth_committed": false,
+    "trusted_labels_materialized_in_ram": true,
+    "score_artifact": {
+      "path": "experiments/TRR-0009/evaluation/score_v2.json",
+      "bytes": 133163,
+      "sha256": "62b15bbf2f41b58010f25a74f765b7a13f0e3e05dc77762309de07306006e53d",
+      "status": "SCORE_COMPLETE_AFTER_PUBLIC_FREEZE"
+    }
   },
-  "updated_utc": "2026-09-07T03:20:00Z"
+  "updated_utc": "2026-09-07T04:46:28.816868+00:00",
+  "reproducibility_appendix": {
+    "path": "coordination/results/TRR-0009_reproducibility_appendix.md",
+    "bytes": 36235,
+    "sha256": "df790b1a003266da81cacb0b67d9d563f06c7b006223b3f4b6acfc84306192a3",
+    "status": "FINAL_DETAILED_EVIDENCE_COMPLETE"
+  },
+  "authorization_receipt": {
+    "path": "experiments/TRR-0009/coordination/metadata_gate_authorization.json",
+    "bytes": 2646,
+    "sha256": "abe7aae3a4a5a86fb3abced8b8102d71c0890c2565ccb2b6f7dfdb77cbc0b38c",
+    "status": "EXPLICIT_USER_APPROVAL_RECEIVED"
+  },
+  "compute_release_followup": {
+    "path": "experiments/TRR-0009/coordination/compute_release_followup.json",
+    "bytes": 1025,
+    "sha256": "fe47eed4b8f05b5e2b106de169f93df54748ef73dd08b74d5dcd7248c95e5db6",
+    "status": "COORDINATION_ONLY_RELEASE_AND_REJECTION_HISTORY"
+  },
+  "final_quality": {
+    "path": "experiments/TRR-0009/evaluation/score_v2.json",
+    "bytes": 133163,
+    "sha256": "62b15bbf2f41b58010f25a74f765b7a13f0e3e05dc77762309de07306006e53d",
+    "status": "SCORE_COMPLETE_AFTER_PUBLIC_FREEZE",
+    "truth_opened": true,
+    "source_text_or_target_labels_in_public_artifacts": false,
+    "raw_truth_committed": false,
+    "bootstrap": {
+      "unit": "source_record",
+      "seed": 9009,
+      "draws": 10000
+    },
+    "primary_cell": "finance__public_base",
+    "primary_contrast": "continued_adaptable_readout minus continued_fixed_readout",
+    "primary_exact_point": 0.0078125,
+    "primary_exact_lcb": -0.02280764333728385,
+    "primary_token_point": 0.0002460626419633627,
+    "primary_token_lcb": -3.075879067182541e-05,
+    "decision_status": "FAIL",
+    "decision_outcome": "NO_USEFUL_PILOT_SIGNAL",
+    "numeric_review_v2": {
+      "path": "experiments/TRR-0009/evaluation/score_numeric_review_v2.json",
+      "bytes": 40841,
+      "sha256": "429bdbfc7f0ad05e2e266fb66d8355184c739030ccb9523247e8b092332ab1a1",
+      "status": "NUMERIC_REVIEW_COMPLETE_CORRECTED"
+    },
+    "numeric_review_v2_addendum": {
+      "path": "experiments/TRR-0009/evaluation/score_numeric_review_v2_addendum.json",
+      "bytes": 4023,
+      "sha256": "d698c41224ccaa704830c2c02d8180d90c7550d3cdfb048902fecb923734d13e",
+      "status": "FINAL_REVIEW_COMPLETE_WITH_NEXT_EXPERIMENT_CORRECTION"
+    }
+  },
+  "decision": {
+    "path": "experiments/TRR-0009/evaluation/aggregate_decision_v2.json",
+    "bytes": 19858,
+    "sha256": "e11a4fd746d9c44187c6186f92ff9f28f209bf6ee17bb51821d071edb783842f",
+    "status": "FAIL",
+    "outcome": "NO_USEFUL_PILOT_SIGNAL",
+    "action": "RETAIN_REFERENCE_AND_REPORT_FAILED_GATE",
+    "primary_useful": "FAIL",
+    "exact_harm": "PASS",
+    "token_harm": "PASS",
+    "rare_absent": "PASS",
+    "cost": "PASS",
+    "automatic_replacement": false,
+    "automatic_retraining_or_sample_expansion": false
+  },
+  "truth_score_execution": {
+    "path": "experiments/TRR-0009/evaluation/truth_prepare_score_compat_v2_execution_receipt.json",
+    "bytes": 14312,
+    "sha256": "43768e63f6417564b41c7c7b2e87eb53412536e08667acd62dbba56523c99dcd",
+    "status": "TRUTH_PREPARATION_AND_SCORE_COMPLETE",
+    "score": {
+      "path": "experiments/TRR-0009/evaluation/score_v2.json",
+      "bytes": 133163,
+      "sha256": "62b15bbf2f41b58010f25a74f765b7a13f0e3e05dc77762309de07306006e53d",
+      "status": "SCORE_COMPLETE_AFTER_PUBLIC_FREEZE"
+    },
+    "truth_binding": {
+      "path": "experiments/TRR-0009/evaluation/truth_binding_compat_v2.json",
+      "bytes": 6207,
+      "sha256": "1a90e98092116ddcd0fae6876e8609f987cdb72f1d0a386c6b3375879cb423aa",
+      "status": "TRUTH_BINDING_COMPLETE"
+    },
+    "public_freeze": {
+      "path": "experiments/TRR-0009/evaluation/public_freeze_compat_v2.json",
+      "bytes": 210986,
+      "sha256": "acbb51fb8872dba1658cec708af10043e66b710b714dbaa53b1cf7545f0dd0c1",
+      "status": "PUBLIC_FREEZE_COMPLETE"
+    },
+    "private_sidecar": {
+      "path": "/tmp/trr0009_truth_sidecar_compat_v2.safetensors",
+      "bytes": 787736,
+      "sha256": "57b1fbd5f378a9bfc72c36804a8de0a437be7b9327da7a9c4a709f603d74f989",
+      "committed": false
+    },
+    "full_code_commit": "16e86a5fab3c693c6942620aabfdbdb865b5108d",
+    "prior_failed_truth_preparation": {
+      "path": "experiments/TRR-0009/evaluation/truth_prepare_compat_v2_failure.json",
+      "bytes": 2369,
+      "sha256": "5c7b0ba2b40bf09e413e8932ac180d136b74dcc4391ce4e94fb22878080ff811",
+      "status": "EXCLUDED_BEFORE_SIDECAR"
+    },
+    "metadata_compatibility_implementation": {
+      "path": "experiments/TRR-0009/evaluation/metadata_compatibility_implementation_receipt.md",
+      "bytes": 2545,
+      "sha256": "5683ec89d2542a43dec3c049c1539c0c18b685e3774715949dd0ebf5bc32c4ac",
+      "status": "AUTHORIZED_IMPLEMENTATION_RECEIPT"
+    },
+    "truth_source_compatibility_implementation": {
+      "path": "experiments/TRR-0009/evaluation/truth_source_compatibility_implementation_receipt.md",
+      "bytes": 2750,
+      "sha256": "120a361ab0ab2f84e9f4bf9ae3a443dc0b1bd1dd1d6bd75481407c736a5685cc",
+      "status": "AUTHORIZED_IMPLEMENTATION_RECEIPT"
+    }
+  },
+  "runtime_artifacts": {
+    "shared_E_file_bytes": 1050673488,
+    "shared_E_tensor_payload_bytes": 1050673152,
+    "shared_E_header_bytes": 336,
+    "adaptive_support_ids_file_bytes": 137616,
+    "adaptive_support_counts_file_bytes": 137624,
+    "adaptive_support_files_total_bytes": 275240,
+    "adaptive_required_serialized_files": "E + selected adaptable state + support_ids.safetensors + support_counts.safetensors + code",
+    "disk_cold_startup": "UNMEASURED",
+    "process_peaks_are_separate": true,
+    "selected_state_bytes_by_method": {
+      "continued_adaptable_readout": 29870540,
+      "continued_fixed_readout": 29390492,
+      "published_reference": 20990652,
+      "unchanged_anchor": 29390628
+    },
+    "adaptive_selected_state_extra_vs_fixed_bytes": 480048,
+    "learned_scalar_payload_extra_bytes": 137008,
+    "required_runtime_artifact_delta_vs_fixed_bytes": 755288,
+    "state_size_verification": {
+      "status": "PHYSICAL_SERIALIZED_STATE_SIZES_VERIFIED",
+      "basis": "Frozen method-freeze bindings and physical selected.safetensors sizes; raw run receipts remain unchanged.",
+      "correction_note": "Earlier summary fields had an incorrect adaptable file-size entry; the bound adaptable file is 29870540 bytes.",
+      "method_freeze": "experiments/TRR-0009/training/method_freeze.json",
+      "files": {
+        "continued_adaptable_readout": {
+          "path": "experiments/TRR-0009/training/run_v1/continued_adaptable_readout/selected.safetensors",
+          "bytes": 29870540,
+          "sha256": "93661674c5e92144b84779737dee46a604afeb1ce1553966e464f0c84b2133c3"
+        },
+        "continued_fixed_readout": {
+          "path": "experiments/TRR-0009/training/run_v1/continued_fixed_readout/selected.safetensors",
+          "bytes": 29390492,
+          "sha256": "5cada4a3d04bb5477eaf0be25ed8d8ac25a89283223e9ba14b18fa10416bee14"
+        },
+        "published_reference": {
+          "path": "experiments/TRR-0005/joint_fit_v1/enriched/affine_trained_diagonal_attention128/selected.safetensors",
+          "bytes": 20990652,
+          "sha256": "696eb9fc951e85356a06575faf18a2011616692a086bdac3b2fa368e69d599a2"
+        },
+        "unchanged_anchor": {
+          "path": "experiments/TRR-0007/enriched_fit_v1/current_enriched/trr0007_residual_mlp512/selected.safetensors",
+          "bytes": 29390628,
+          "sha256": "2a44a91b01ca1fdc9615eab804872c50c606199704eaf51fa114cc0d7959ddc8"
+        }
+      }
+    }
+  },
+  "numeric_review": {
+    "authoritative": {
+      "path": "experiments/TRR-0009/evaluation/score_numeric_review_v2.json",
+      "bytes": 40841,
+      "sha256": "429bdbfc7f0ad05e2e266fb66d8355184c739030ccb9523247e8b092332ab1a1",
+      "status": "NUMERIC_REVIEW_COMPLETE_CORRECTED"
+    },
+    "superseded": {
+      "path": "experiments/TRR-0009/evaluation/score_numeric_review_v1.json",
+      "bytes": 35576,
+      "sha256": "0d739386336c649e7726db044521f15b26beab854fd9b037d50c2499247e81e2",
+      "status": "SUPERSEDED",
+      "reason": "Corrected headline interpretation: pooled arithmetic is descriptive only; exact positive benefit remains unresolved and the review does not assert equivalence."
+    },
+    "next_experiment_addendum": {
+      "path": "experiments/TRR-0009/evaluation/score_numeric_review_v2_addendum.json",
+      "bytes": 4023,
+      "sha256": "d698c41224ccaa704830c2c02d8180d90c7550d3cdfb048902fecb923734d13e",
+      "status": "FINAL_REVIEW_COMPLETE_WITH_NEXT_EXPERIMENT_CORRECTION"
+    }
+  }
 }
