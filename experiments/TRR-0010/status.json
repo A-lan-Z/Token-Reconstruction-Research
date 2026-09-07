@@ -1,4 +1,19 @@
 {
+  "amendment": {
+    "agent2_thread_id": "01a07061-9c25-7e13-bcac-12d57c41c666",
+    "authorized_scope": "implementation and guarded CPU r2 compilation/verification only",
+    "receipt_bytes": 2533,
+    "receipt_path": "experiments/TRR-0010/planning/stage1_correction_amendment_receipt.json",
+    "receipt_sha256": "a86d8f3f39e54c65799eaf5379f6de814c06784f11f29c674f75301442999ef2",
+    "root_thread_id": "01a07029-b0e2-71d2-af08-ecd9aacc645f",
+    "source_bytes": 6364,
+    "source_commit": "537ba5c423ed480f6a3046fdff32a4e3b49deef3",
+    "source_path": "experiments/TRR-P09/planning/stage1-correction-addendum-r1.json",
+    "source_sha256": "0bad461d93041fdb21d284b0ae1684d2268adfb0f9a304f9b97ab4cd39900564",
+    "task_copy_bytes": 6364,
+    "task_copy_path": "experiments/TRR-0010/planning/shared_stage1_correction_addendum_r1.json",
+    "task_copy_sha256": "0bad461d93041fdb21d284b0ae1684d2268adfb0f9a304f9b97ab4cd39900564"
+  },
   "artifacts": [
     {
       "bytes": 10798,
@@ -70,11 +85,33 @@
       "id": "ancestor_cost_ledger_markdown",
       "path": "experiments/TRR-0010/planning/ancestor_cost_ledger.md",
       "sha256": "4c4096aa98824c6939397a80874845f2fe4a5c66b1befd6feaf79410adb45ada"
+    },
+    {
+      "bytes": 6364,
+      "id": "stage1_correction_addendum_copy",
+      "path": "experiments/TRR-0010/planning/shared_stage1_correction_addendum_r1.json",
+      "sha256": "0bad461d93041fdb21d284b0ae1684d2268adfb0f9a304f9b97ab4cd39900564",
+      "source_commit": "537ba5c423ed480f6a3046fdff32a4e3b49deef3"
+    },
+    {
+      "bytes": 2533,
+      "id": "stage1_correction_amendment_receipt",
+      "path": "experiments/TRR-0010/planning/stage1_correction_amendment_receipt.json",
+      "sha256": "a86d8f3f39e54c65799eaf5379f6de814c06784f11f29c674f75301442999ef2"
+    },
+    {
+      "bytes": 5979,
+      "id": "a2_stage1_followup_audit",
+      "path": "experiments/TRR-P09/review/stage1-compiler-review.md",
+      "sha256": "2c8e74e826cd2ddf2e922929b3cc26a281012c66ce330e68d1c9f40790e609c5",
+      "source_commit": "2fcb7a7"
     }
   ],
   "branch": "task/TRR-0010",
   "constraints": {
+    "amendment_source_or_signed_plan_modified": false,
     "gpu_or_capture_run": false,
+    "joint_amendment_approved": true,
     "private_truth_access": false,
     "score_claim": false,
     "source_or_signed_plan_modified": false,
@@ -82,44 +119,52 @@
   },
   "execution": {
     "activation_capture_performed": false,
+    "correction_addendum_copied_exactly": true,
     "fresh_evaluation_started": false,
     "fresh_evaluation_truth_opened": false,
     "gpu_qualification_performed": false,
     "r1_cpu_input_compilation": {
       "controlled_joint_assignment_accepted": false,
       "no_capture_or_fit_started": true,
+      "old_development_alpaca_keys_observed_in_r1_additions": 63,
       "old_development_alpaca_keys_omitted": 624,
       "post_bos_positions": 1243710,
       "rows": 12000,
       "status": "EXCLUDED_PRE_CAPTURE",
       "wall_seconds": 32.387874
     },
+    "r2_cpu_input_compilation_started": false,
     "score_available": false,
     "substantive_fits_started": false
   },
   "implementation_commit": "a4985c0cd373c26d4361ce1c861fa35bdb25b10e",
   "pending": [
-    "A2 exact joint-assignment addendum and corrected deterministic template binding.",
-    "Guarded r1 recompile using the corrected B0-template rule.",
-    "Capture qualifier and resource review after corrected compilation; no capture is retained from excluded r1.",
+    "Guarded corrected r2 compilation and verification under the jointly countersigned B0-template amendment.",
+    "Bind the namespace-correct parent exclusion manifest and verify zero overlap for all 624 prior-development Alpaca keys; r1 had 63 observed overlaps.",
+    "Capture qualifier and resource review after corrected r2; no capture is retained from excluded r1.",
     "Only after the shared contract and resource qualification: substantive fits, contender freeze, and any later evaluation design/truth steps."
   ],
   "provenance": {
+    "a2_followup_audit_commit": "2fcb7a7",
     "a2_manifest_sha256": "c6d6915bb0e539336928725e9c32288157f15dbb96fe08544925e84cc40474e1",
     "a2_receipt_commit": "a6c07e7",
+    "amendment_source_commit": "537ba5c423ed480f6a3046fdff32a4e3b49deef3",
+    "amendment_source_sha256": "0bad461d93041fdb21d284b0ae1684d2268adfb0f9a304f9b97ab4cd39900564",
     "corrected_joint_assignment": {
       "global_token_multiset_exact_9x": true,
       "joint_exact_9x": false,
       "joint_mismatch_keys": 35499,
       "ordered_exact_nine_cycles": false,
       "stratum_active_length_exact_9x": true
-    }
+    },
+    "old_development_alpaca_keys_expected": 624,
+    "old_development_alpaca_keys_observed_in_r1_additions": 63
   },
   "report_path": "coordination/results/TRR-0010.md",
   "reviewed_base_commit": "4602f98eeb03ac121d8bbc230d7e2b219551b914",
   "schema": "token-reconstruction.trr0010-status.v5",
   "scientific_results_available": false,
-  "status": "PREPARATION_ONLY_R1_CPU_COMPILATION_EXCLUDED_JOINT_ASSIGNMENT",
+  "status": "PREPARATION_ONLY_CORRECTED_COMPILATION_VERIFICATION_PENDING",
   "task_id": "TRR-0010",
-  "updated_utc": "2026-09-07T10:13:55Z"
+  "updated_utc": "2026-09-07T10:18:50Z"
 }
