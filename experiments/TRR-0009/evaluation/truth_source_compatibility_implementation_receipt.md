@@ -1,0 +1,13 @@
+# TRR-0009 truth-source compatibility implementation receipt
+
+The first authorized truth-preparation attempt failed before writing a sidecar because the existing source-evidence serializer passed the frozen Hugging Face tokenizer snapshot directory to a regular-file hash validator. The failure is preserved at `truth_prepare_compat_v2_failure.json`; the phase materialized selected labels in RAM after public-gate validation, then failed during evidence serialization. No sidecar, binding header, or score was written.
+
+The bounded repair is a separate adapter at `scripts/trr0009_eval_truth_source_compat.py`. It leaves the registered source, registration, predictions, timing, frozen gate adapter, and truth source unchanged. Around the existing gate-compat prepare/score wrappers it temporarily replaces only `truth._source_evidence`. It uses the trusted public descriptor constructors to validate the tokenizer as the exact frozen directory, every frozen component's resolved blob bytes/SHA-256 and snapshot symlink target/flag, and every frozen Arrow file plus dataset identity/revision/reserved range. The returned evidence includes `records_by_domain` to match the materialization/header path and an `adapter_source` path/bytes/SHA-256 record. The same adapter is active during `_validate_sidecar_header` on both preparation and scoring, so the source-evidence identity is rechecked before score-sidecar opening.
+
+The adapter does not derive a mutable current-HEAD field. Its own file binding is path/bytes/hash based; phase execution receipts separately record the preparation/scoring commit. Documentation changes therefore do not invalidate a valid source-evidence header.
+
+Synthetic verification passed with 6 tests:
+
+    PYTHONPATH=.:src:scripts python3 -m pytest -q tests/test_trr0009_eval_truth_source_compat.py
+
+The suite covers tiny directory-plus-symlink tokenizer snapshots, all component and Arrow bindings, changed component bytes, changed directory/path, changed Arrow path/bytes, the original materializer-to-header source-evidence round-trip, scoped patch restoration, and the production writer failure caused by shared paired-cell storage. The adapter narrowly clones each paired tensor before delegating to the existing safetensors writer; values and geometry are unchanged. A metadata-only smoke against the frozen TRR-0009 public descriptors passed for 256 Finance and 128 Pile records, one tokenizer snapshot with three resolved components, one Pile Arrow file, and two Finance Arrow files; the adapter source binding was SHA-256 577348b015dcf2ab87c9a0d61dd300586b33d9206fbc62b1f239c6f8f5ae831e. No corrected production truth preparation or scoring has run yet; root/capacity review and commit are required before retry.
