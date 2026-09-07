@@ -71,5 +71,5 @@ assembly receipt, exact source hashes, temporary input identities, preserved
 failed attempts, and CPU resource logs are in
 `production_provider_cpu_assembly_smoke_v1.json` and its adjacent evidence
 files. The receipt records source commit `ceef4e46e8f7ca6d6b7f2e4a3a4a0cf39f263548`
-for the successful provider assembly and `e76ebcd2ecd59369207c067543cbb578c5adbd23`
+for the successful provider assembly and `dd5fca499c389451f196d317c5fd604a8c28fcc1`
 for the current raw-runner receipt implementation.

@@ -4,7 +4,7 @@ Status: ready for root lease review; no CUDA fit has been launched from this
 receipt. The source-bound command uses the signed stage-3 contract
 `experiments/TRR-0010/planning/shared_stage3_contract_v1.json` (25,643 bytes,
 SHA-256 `23e4bde4475082cc004e7ef787c22fed6301275ce2ff23a0396d975b439faf9d`)
-and source commit `e76ebcd2ecd59369207c067543cbb578c5adbd23`.
+and source commit `dd5fca499c389451f196d317c5fd604a8c28fcc1`.
 
 Each arm receives its own lease, process/output root, 7,200-second deadline,
 and fail-closed guard. The current arm binds B0 and the expanded arm binds B1;
