@@ -717,6 +717,7 @@ def run_training(
     ]
     | None = None,
     deadline_seconds: float | None = None,
+    resource_guard_callback: Callable[[str], None] | None = None,
 ) -> dict[str, Any]:
     """Run one fixed/directional continuation under one shared schedule.
 
@@ -742,6 +743,8 @@ def run_training(
         raise FixedControlRunnerError("checkpoint grid contains an out-of-range step")
     if deadline_seconds is not None and deadline_seconds <= 0:
         raise FixedControlRunnerError("deadline must be positive")
+    if resource_guard_callback is not None and not callable(resource_guard_callback):
+        raise FixedControlRunnerError("resource guard callback must be callable")
     if config.selection_metric == DOMAIN_BALANCED_SELECTION_METRIC and validation_callback is None:
         raise FixedControlRunnerError(
             "domain-balanced selection requires an explicit validation callback"
@@ -765,6 +768,8 @@ def run_training(
 
     def record_checkpoint(step: int, train_result: StepResult | None) -> None:
         nonlocal validation_seconds
+        if resource_guard_callback is not None:
+            resource_guard_callback(f"before_validation_step_{step}")
         validation_started = time.perf_counter()
         def evaluate_view(batches: Iterable[BatchLike]) -> Mapping[str, Any]:
             return evaluate_batches(
@@ -806,6 +811,8 @@ def run_training(
     record_checkpoint(0, None)
     schedule_iterator = iter(schedule_steps)
     for step_index in range(config.steps):
+        if resource_guard_callback is not None:
+            resource_guard_callback(f"before_update_step_{step_index + 1}")
         try:
             schedule_step = next(schedule_iterator)
         except StopIteration as exc:
@@ -830,6 +837,8 @@ def run_training(
         update_seconds += last_train.update_seconds
         if scheduler is not None:
             scheduler.step()
+        if resource_guard_callback is not None:
+            resource_guard_callback(f"after_update_step_{step_index + 1}")
         completed_step = step_index + 1
         if completed_step in checkpoints:
             record_checkpoint(completed_step, last_train)
