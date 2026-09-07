@@ -378,6 +378,14 @@ def test_fitting_metric_callback_keeps_fixed_rows_at_grid_and_full_bank_at_end()
     assert all(scope["metrics"]["token_rows"] == 6 for scope in end["fitting_diagnostics"]["scopes"])
     assert all(scope["batch_count"] == 1 for scope in end["fitting_diagnostics"]["scopes"])
     assert start["fitting_diagnostics"]["selection_metric_untouched"] is True
+    cost = fixed_control_cost_summary({
+        "status": "COMPLETED",
+        "schedule": {"steps": 1, "exposure": {"draws_per_step": 2, "total_draws": 2}},
+        "timing": {"whole_wall_seconds": 1.0, "stream_load_seconds": 0.1, "optimizer_update_seconds": 0.8, "validation_seconds": 0.1},
+        "learning_curve": [{"step": 0, "validation": {"token_rows": 1}, "state_binding": start}],
+    })
+    assert cost["fitting_diagnostics"]["scope_run_count"] == 2
+    assert cost["fitting_diagnostics"]["full_bank_steps"] == [0]
     serializer = compose_checkpoint_callbacks(lambda _point, _decoder, _hook: {"checkpoint": {"ok": True}}, callback)
     composed = serializer({"step": 0}, decoder, hook)
     assert "fitting_diagnostics" in composed and "checkpoint" in composed
