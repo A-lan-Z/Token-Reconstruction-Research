@@ -119,9 +119,11 @@ def estimate_production_wall(
     estimated = scaled_forward_seconds + overhead
     if not math.isfinite(estimated):
         raise LaunchError("production wall estimate is not finite")
+    qualification_record = _file_record(qualification_path)
     return {
         "schema": "token-reconstruction.trr-p09-stage1-production-extrapolation.v1",
-        "qualification_receipt": _file_record(qualification_path),
+        "qualification_receipt": qualification_record,
+        "qualification_receipt_sha256": qualification_record["sha256"],
         "qualification_elapsed_seconds": elapsed,
         "qualification_batch_count": len(batches),
         "qualification_forward_calls": qualification_forward_calls,

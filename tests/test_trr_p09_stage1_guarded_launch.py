@@ -68,6 +68,7 @@ def test_estimate_scales_only_measured_qualification_and_explicit_overhead(tmp_p
         encoding="utf-8",
     )
     estimate = launch.estimate_production_wall(receipt, fixed_overhead_seconds=10.0)
+    assert estimate["qualification_receipt_sha256"] == launch._sha256(receipt)
     assert estimate["qualification_forward_calls"] == 3
     assert estimate["production_forward_calls"] == 1350
     assert estimate["forward_scaled_seconds"] == pytest.approx(900.0)
