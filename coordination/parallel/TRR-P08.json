@@ -1,7 +1,7 @@
 {
   "schema": "token-reconstruction.task-local-state.v1",
   "task_id": "TRR-P08",
-  "status": "SETUP_READY_INVENTORY_PENDING",
+  "status": "PLAN_PROPOSED_SOURCE_BINDING_READY_NO_SELECTION_NO_CAPTURE",
   "branch": "task/TRR-P08",
   "worktree": "/tmp/trr-p08",
   "parent": {
@@ -29,8 +29,44 @@
     "truth_opened": false,
     "gpu_or_heavy_compute_started": false,
     "global_state_or_registry_modified": false,
-    "other_worktree_modified": false
+    "other_worktree_modified": false,
+    "source_rows_or_plaintext_read_by_p08": false,
+    "token_values_or_truth_read_by_p08": false,
+    "model_or_tensor_payload_loaded_by_p08": false,
+    "fresh_records_selected": false,
+    "fresh_capture_started": false,
+    "fit_or_optimizer_steps_started": false
   },
   "next_step": "Read-only inventory of published P06/P07 assets and exclusion metadata; no fresh selection or capture until root approves plan and source universe.",
-  "created_utc": "2026-09-07T00:12:47.039245+00:00"
+  "created_utc": "2026-09-07T00:12:47.039245+00:00",
+  "updated_utc": "2026-09-07T00:26:13.564942+00:00",
+  "plan": {
+    "path": "experiments/TRR-P08/plan.json",
+    "status": "PROPOSED_PRE_FREEZE",
+    "sha256": "74103cda1b13c34c4ac60fc6eee2440ff41b9257516e1ce0a6712e5a9e1d5b90",
+    "bytes": 17122,
+    "fit_arms": 8,
+    "records_per_domain": 256,
+    "staged_phase_updates": "1000 affine-only + 2000 complete",
+    "source_selection_started": false
+  },
+  "setup_artifacts": {
+    "asset_inventory": "experiments/TRR-P08/setup/asset_inventory.json",
+    "asset_inventory_report": "experiments/TRR-P08/setup/asset-inventory.md",
+    "preflight": "experiments/TRR-P08/setup/preflight.json",
+    "capture_binding": "experiments/TRR-P08/setup/capture_binding.json",
+    "source_binding_module": "scripts/trr_p08/source_binding.py",
+    "source_binding_tests": "tests/test_trr_p08_source_binding.py"
+  },
+  "verification": {
+    "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p08_source_binding.py",
+    "result": "4 passed",
+    "payload_loaded": false
+  },
+  "pending": [
+    "root/design final plan freeze and approved source-universe hash bindings",
+    "source enumeration and fresh capture after freeze",
+    "resource qualification and GPU reservation",
+    "implementation eight-fit matrix and prediction freeze"
+  ]
 }
