@@ -1,6 +1,6 @@
 # TRR-0010 evaluation reuse note (read-only interface review)
 
-This note records the smallest public orchestration reuse found in the TRR-0009/TRR-0005 code. It is a planning adapter map only: no source selection, capture, prediction, GPU execution, truth access, or code change was performed.
+This note records the smallest public orchestration reuse found in the TRR-0009/TRR-0005 code and the task-local metadata adapter. The adapter and synthetic tests were implemented without source selection, capture, prediction, GPU execution, or truth access.
 
 ## Public observations
 
@@ -62,3 +62,38 @@ capture, prediction, GPU run, or truth access was performed here.
 Synthetic verification: python3 -m pytest -q
 tests/test_trr0010_eval_gate.py tests/test_trr0010_eval_runner.py -> 26
 passed.
+
+## TRR-0010 registration and capture wiring
+
+scripts/trr0010_eval_register.py:build_registration(...) is the task-local
+descriptor boundary. It first requires
+token-reconstruction.trr0010-final-evaluation-design.v1 with status
+FROZEN_TRR0010_FINAL_EVALUATION_DESIGN, all six TRR-0010 contender roles,
+explicit frozen decision rules, the 128-per-domain paired panel, the inherited
+B8x192-to-first-128 geometry, final-B1 and approved opaque exclusion records,
+and exact runner/gate/producer/A1+A2 code bindings. A draft contract therefore
+fails before any selection or capture path is opened.
+
+After that freeze, the adapter calls the existing
+trr0009_eval_capture.load_selection(..., expected_counts={"finance": 128,
+"pile": 128}) only on the identity-only selection ledger. It writes a
+TRR-0010 source-selection binding containing ordered record digests and
+immutable exclusion records, without copying source rows, IDs, text, token
+IDs, answers, or labels. It then consumes the already-produced TRR-0010
+panel, observation manifest, and capture receipts and binds all six method
+state and resource rows: public E for fixed methods, exported effective W for
+directional methods, and public E/lens/P0 plus snapshot/reference descriptors
+for the single native A1+A2 comparator.
+
+The lower-level public producer call specification is
+trr0009_eval_capture.capture_public(args) through its
+_capture_condition_with_producer and
+token_reconstruction.public_activation.capture_public_prefix calls. The
+future TRR-0010 capture wrapper must pass the frozen identity-only panel and
+public model/LoRA inputs, use B8x192 with batch size 8, retain only the first
+128 positions, and package each cell under the TRR-0010 observation schema.
+The TRR-0009 entrypoint is not called unchanged because its output-root and
+metadata schemas are TRR-0009-specific. The wrapper remains truth-free; the
+private truth curator is a separate later consumer after the public gate and
+final freeze. No selection, source read, model load, capture, GPU run, or
+truth access was performed while preparing this adapter.
