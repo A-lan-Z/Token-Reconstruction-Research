@@ -1,15 +1,17 @@
 {
   "schema": "token-reconstruction.trr-p08-capture-binding.v1",
   "task_id": "TRR-P08",
-  "status": "CPU_ADAPTER_READY_SELECTION_FROZEN_NO_CAPTURE",
+  "status": "REPAIR_REQUIRED_R1_EXCLUDED_R2_PENDING",
   "source_selection": {
-    "status": "FROZEN_TRR-P08_SOURCE_SELECTION_NO_TRUTH",
+    "status": "EXCLUDED_PRE_CAPTURE_BINDING_DEFECT",
     "path": "experiments/TRR-P08/runtime/source-selection-r1/selection.json",
     "bytes": 372627,
     "sha256": "75f8d66007d6ae5558ded8b0fc428fc88db8aa5a04f4d372bd187f5934079274",
     "selected": true,
     "records_total": 512,
-    "records_per_domain": 256
+    "records_per_domain": 256,
+    "capture_allowed": false,
+    "disposition": "EXCLUDED_PRE_CAPTURE_BINDING_DEFECT"
   },
   "model": {
     "id": "meta-llama/Llama-3.2-1B-Instruct",
@@ -63,5 +65,43 @@
     "selection_and_capture_are_create_only": true,
     "source_rows_or_tokens_persisted": false
   },
-  "preflight_plan": "experiments/TRR-P08/setup/capture-preflight-plan-r1.json"
+  "preflight_plan": "experiments/TRR-P08/setup/capture-preflight-plan-r1.json",
+  "superseded_r1": {
+    "universe": {
+      "path": "experiments/TRR-P08/runtime/source-universe-r1/frozen.json",
+      "bytes": 66135,
+      "sha256": "d9f818bd2d99388bd5d3b746134188c272fcf35502e425cedcff95dfc1b5b304",
+      "disposition": "EXCLUDED_PRE_CAPTURE_BINDING_DEFECT"
+    },
+    "selection": {
+      "path": "experiments/TRR-P08/runtime/source-selection-r1/selection.json",
+      "bytes": 372627,
+      "sha256": "75f8d66007d6ae5558ded8b0fc428fc88db8aa5a04f4d372bd187f5934079274",
+      "disposition": "EXCLUDED_PRE_CAPTURE_BINDING_DEFECT"
+    }
+  },
+  "required_repaired_inputs": {
+    "universe": {
+      "path": "experiments/TRR-P08/runtime/source-universe-r2/frozen.json",
+      "status": "NOT_CREATED_REPAIR_PENDING"
+    },
+    "selection": {
+      "path": "experiments/TRR-P08/runtime/source-selection-r2/selection.json",
+      "status": "NOT_CREATED_REPAIR_PENDING"
+    },
+    "required_opaque_ledger_keys": [
+      "approved_trr0007_opaque",
+      "approved_trr0008_opaque",
+      "approved_trr0009_opaque"
+    ],
+    "original_trr0009_retained": true,
+    "replacement_export_union_required": true,
+    "replacement_export_status": "NOT_RECEIVED_AGENT1_REPAIR_PENDING"
+  },
+  "repair_binding": {
+    "classification": "EXCLUDED_PRE_CAPTURE_BINDING_DEFECT",
+    "receipt": "experiments/TRR-P08/setup/exclusion-binding-repair-r2.json",
+    "universe_command": "experiments/TRR-P08/setup/source-universe-command-r2.json",
+    "r1_capture_or_truth_access": false
+  }
 }

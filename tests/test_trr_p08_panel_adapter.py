@@ -70,6 +70,21 @@ def test_universe_is_metadata_only_until_explicit_freeze(tmp_path: Path) -> None
         panel.load_universe(path, require_frozen=True)
 
 
+def test_superseded_frozen_universe_without_required_ledger_contract_fails_closed(tmp_path: Path) -> None:
+    value = panel._universe_metadata(
+        root=tmp_path,
+        plan_binding={"path": "plan.json", "sha256": "plan-sha"},
+        seed=8088,
+        ranges={"pile": [0, 7000], "finance": [20000, 26000]},
+        exclusions=_empty_exclusions(),
+    )
+    value["status"] = "FROZEN_SOURCE_UNIVERSE"
+    path = tmp_path / "superseded-frozen.json"
+    path.write_text(json.dumps(value), encoding="utf-8")
+    with pytest.raises(panel.PanelPreparationError, match="required opaque ledger contract"):
+        panel.load_universe(path, require_frozen=True)
+
+
 def test_universe_ranges_are_bound_to_both_domains() -> None:
     with pytest.raises(panel.PanelPreparationError, match="missing finance"):
         panel._configure_p06(seed=8088, ranges={"pile": [0, 7000]})
@@ -138,14 +153,32 @@ def test_capture_manifest_matches_prediction_validator_without_payloads(tmp_path
     assert evidence["record_ids_sha256"] == {"pile": "a" * 64, "finance": "b" * 64}
 
 
-def test_explicit_prior_bindings_include_current_p06_selection_and_nested_opaque():
+def test_explicit_prior_bindings_include_all_required_opaque_ledgers():
+    opaque_paths = tuple(panel.APPROVED_OPAQUE_SPECS)
     bindings, paths = panel._explicit_prior_exclusion_bindings(
         Path("/tmp/trr-p08"),
-        (panel.APPROVED_TRR0008_OPAQUE_PATH,),
+        opaque_paths,
     )
     assert paths[0] == (Path("/tmp/trr-p08") / panel.PUBLISHED_P06_SELECTION_RELATIVE).resolve()
     assert bindings["published_p06_selection"]["sha256"] == panel.PUBLISHED_P06_SELECTION_SHA256
+    assert bindings["approved_trr0007_opaque"][0]["counts"] == {
+        "public_record_sha256": 256,
+        "final_sequence_sha256": 256,
+    }
     assert bindings["approved_trr0008_opaque"][0]["counts"] == {
         "public_record_sha256": 1408,
         "final_sequence_sha256": 1408,
     }
+    assert bindings["approved_trr0009_opaque"][0]["counts"] == {
+        "public_record_sha256": 384,
+        "final_sequence_sha256": 384,
+    }
+
+
+def test_explicit_prior_bindings_fail_closed_when_any_required_ledger_is_missing():
+    opaque_paths = tuple(panel.APPROVED_OPAQUE_SPECS)
+    with pytest.raises(panel.PanelPreparationError, match="ledger set is incomplete"):
+        panel._explicit_prior_exclusion_bindings(
+            Path("/tmp/trr-p08"),
+            opaque_paths[:-1],
+        )

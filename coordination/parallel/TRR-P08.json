@@ -1,7 +1,7 @@
 {
   "schema": "token-reconstruction.task-local-state.v1",
   "task_id": "TRR-P08",
-  "status": "MAIN_PASS_8_ARMS_SELECTED_STATES_FROZEN_PUBLIC_FIT_COMPLETE",
+  "status": "MAIN_PASS_8_ARMS_SELECTED_STATES_FROZEN_PUBLIC_FIT_COMPLETE_R1_EXCLUDED_REPAIR_PENDING",
   "branch": "task/TRR-P08",
   "worktree": "/tmp/trr-p08",
   "parent": {
@@ -39,9 +39,9 @@
     "model_or_tensor_payload_loaded": true,
     "selection_access_note": "Approved evaluator-side selector transiently read public source rows/tokenizer; selection metadata persisted identities/digests only and no source text or token arrays."
   },
-  "next_step": "Root disposition of the removed TRR-0007 ledger collision is required before any P08 capture; frozen universe and selection remain unchanged.",
+  "next_step": "Preserve r1 universe/selection/export as EXCLUDED_PRE_CAPTURE_BINDING_DEFECT; review the mandatory all-ledger r2 contract, await any Agent1 replacement export for union, then obtain a new root grant before any enumeration or capture.",
   "created_utc": "2026-09-07T00:12:47.039245+00:00",
-  "updated_utc": "2026-09-07T02:18:00Z",
+  "updated_utc": "2026-09-07T02:45:28Z",
   "plan": {
     "path": "experiments/TRR-P08/plan.json",
     "status": "FROZEN_DESIGN_PRE_FIT",
@@ -74,7 +74,10 @@
     "source_selection": "experiments/TRR-P08/runtime/source-selection-r1/selection.json",
     "selection_disjointness_audit": "experiments/TRR-P08/setup/selection-disjointness-audit-r1.json",
     "capture_preflight_plan": "experiments/TRR-P08/setup/capture-preflight-plan-r1.json",
-    "selection_disjointness_audit_status": "REVIEW_REQUIRED_REMOVED_LEDGER_SEQUENCE_OVERLAP"
+    "selection_disjointness_audit_status": "REVIEW_REQUIRED_REMOVED_LEDGER_SEQUENCE_OVERLAP",
+    "source_universe_command_repair": "experiments/TRR-P08/setup/source-universe-command-r2.json",
+    "exclusion_binding_repair": "experiments/TRR-P08/setup/exclusion-binding-repair-r2.json",
+    "r1_selection_disposition": "EXCLUDED_PRE_CAPTURE_BINDING_DEFECT"
   },
   "verification": {
     "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p08_panel_adapter.py tests/test_trr_p08_source_binding.py tests/test_trr_p08_fit_staged.py",
@@ -134,15 +137,24 @@
       "status": "PASS",
       "execution_note": "Completed post-fit suite; no rerun in this bookkeeping update."
     },
-    "focused_result": "21 passed"
+    "focused_result": "21 passed",
+    "repair_validation": {
+      "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p08_source_binding.py tests/test_trr_p08_panel_adapter.py",
+      "result": "14 passed",
+      "status": "PASS",
+      "payload_loaded": false,
+      "source_rows_or_token_values_read": false,
+      "selection_or_capture_started": false
+    }
   },
   "pending": [
-    "root disposition of one fresh final-sequence collision with the removed TRR-0007 approved ledger",
-    "implementation-owned hash-only source reservation exchange remains metadata-only",
+    "r1 universe/selection/export are excluded before capture because the omitted TRR-0007 ledger has one final-sequence collision",
+    "r2 all-ledger universe/selection repair is prepared but not executed; current P06 plus approved TRR-0007/TRR-0008/TRR-0009 bindings are mandatory",
+    "preserve the original TRR-0009 ledger and union any Agent1 replacement export when received before a future authorized selection",
     "paired capture/prediction/truth scoring remain gated and unstarted"
   ],
   "source_universe_proposal": {
-    "status": "FROZEN_SOURCE_UNIVERSE_SELECTION_COMPLETE_EXPORT_PENDING",
+    "status": "R1_EXCLUDED_PRE_CAPTURE_BINDING_DEFECT_R2_PREPARED_NOT_RUN",
     "command_receipt": "experiments/TRR-P08/setup/source-universe-command.json",
     "selection_seed": 8108,
     "candidate_ranges_half_open": {
@@ -192,7 +204,7 @@
     "selection_access": "approved evaluator-side selection transiently read public rows/tokenizer; no source text or token arrays persisted",
     "disjointness_audit": "experiments/TRR-P08/setup/selection-disjointness-audit-r1.json",
     "capture_preflight_plan": "experiments/TRR-P08/setup/capture-preflight-plan-r1.json",
-    "disjointness_audit_status": "REVIEW_REQUIRED_REMOVED_LEDGER_SEQUENCE_OVERLAP",
+    "disjointness_audit_status": "R1_REVIEW_REQUIRED_REMOVED_LEDGER_SEQUENCE_OVERLAP",
     "removed_trr0007_ledger_review": {
       "path": "/tmp/trr-p06/experiments/TRR-P06/setup/approved-trr0007/p06_opaque_source_sequence_reservation.json",
       "sha256": "09e845fec244a38873c5bf127f6d984af91af503fb42d3a8411451ce41cdedf4",
@@ -203,7 +215,55 @@
         "final_sequence_sha256": 0
       },
       "reselection_run": false
-    }
+    },
+    "r1_disposition": "EXCLUDED_PRE_CAPTURE_BINDING_DEFECT",
+    "r2_command_receipt": "experiments/TRR-P08/setup/source-universe-command-r2.json",
+    "r2_repair_receipt": "experiments/TRR-P08/setup/exclusion-binding-repair-r2.json",
+    "r2_enumeration_started": false,
+    "r2_selection_started": false,
+    "r2_capture_started": false,
+    "required_opaque_ledgers": [
+      {
+        "key": "approved_trr0007_opaque",
+        "path": "/tmp/trr-p06/experiments/TRR-P06/setup/approved-trr0007/p06_opaque_source_sequence_reservation.json",
+        "bytes": 41283,
+        "sha256": "09e845fec244a38873c5bf127f6d984af91af503fb42d3a8411451ce41cdedf4",
+        "counts": {
+          "public_record_sha256": 256,
+          "final_sequence_sha256": 256
+        }
+      },
+      {
+        "key": "approved_trr0008_opaque",
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0008/experiments/TRR-0008/selection/opaque_source_sequence_reservation.json",
+        "bytes": 216396,
+        "sha256": "0487b9dda91d7eb791c93e1ba704afcea22abfc21f003cad8b99984f523357a4",
+        "counts": {
+          "public_record_sha256": 1408,
+          "final_sequence_sha256": 1408
+        }
+      },
+      {
+        "key": "approved_trr0009_opaque",
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/selection/opaque_source_sequence_reservation.json",
+        "bytes": 60742,
+        "sha256": "c0a1310c2dc8198ece3eda1eb273a3ef7412a1802ab85819ed709728bf603c52",
+        "counts": {
+          "public_record_sha256": 384,
+          "final_sequence_sha256": 384
+        }
+      }
+    ],
+    "required_opaque_ledger_keys": [
+      "approved_trr0007_opaque",
+      "approved_trr0008_opaque",
+      "approved_trr0009_opaque"
+    ],
+    "original_trr0009_retained": true,
+    "replacement_export_union_required": true,
+    "replacement_export_status": "NOT_RECEIVED_AGENT1_REPAIR_PENDING",
+    "frozen_universe_disposition": "R1_EXCLUDED_PRE_CAPTURE_BINDING_DEFECT",
+    "selection_disposition": "R1_EXCLUDED_PRE_CAPTURE_BINDING_DEFECT"
   },
   "resource_boundary": {
     "status": "MAIN_PASS_GPU_RELEASED",
@@ -226,7 +286,18 @@
       "scope": "hash-only scheduling/exclusion exchange; no source values or science"
     },
     "compute_release": "RELEASED_AFTER_MAIN_PASS",
-    "gpu_launch_authorized": false
+    "gpu_launch_authorized": false,
+    "capture_repair_required": true,
+    "r1_capture_allowed": false,
+    "r2_repair_prepared_not_run": true,
+    "required_opaque_ledger_keys": [
+      "approved_trr0007_opaque",
+      "approved_trr0008_opaque",
+      "approved_trr0009_opaque"
+    ],
+    "original_trr0009_retained": true,
+    "replacement_export_union_required": true,
+    "replacement_export_status": "NOT_RECEIVED_AGENT1_REPAIR_PENDING"
   },
   "communication_authorization": {
     "status": "AUTHORIZED_SCOPED",

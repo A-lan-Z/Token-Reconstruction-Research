@@ -65,6 +65,117 @@ APPROVED_TRR0008_OPAQUE_COUNTS = {
     "public_record_sha256": 1408,
     "final_sequence_sha256": 1408,
 }
+APPROVED_TRR0007_OPAQUE_PATH = Path(
+    "/tmp/trr-p06/experiments/TRR-P06/setup/approved-trr0007/"
+    "p06_opaque_source_sequence_reservation.json"
+)
+APPROVED_TRR0007_OPAQUE_SHA256 = (
+    "09e845fec244a38873c5bf127f6d984af91af503fb42d3a8411451ce41cdedf4"
+)
+APPROVED_TRR0007_OPAQUE_SCHEMA = (
+    "token-reconstruction.trr0007-opaque-source-sequence-reservation.v1"
+)
+APPROVED_TRR0007_OPAQUE_COUNTS = {
+    "public_record_sha256": 256,
+    "final_sequence_sha256": 256,
+}
+APPROVED_TRR0009_OPAQUE_PATH = Path(
+    "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/"
+    "TRR-0009/experiments/TRR-0009/selection/opaque_source_sequence_reservation.json"
+)
+APPROVED_TRR0009_OPAQUE_SHA256 = (
+    "c0a1310c2dc8198ece3eda1eb273a3ef7412a1802ab85819ed709728bf603c52"
+)
+APPROVED_TRR0009_OPAQUE_SCHEMA = (
+    "token-reconstruction.trr0009-opaque-source-sequence-reservation.v1"
+)
+APPROVED_TRR0009_OPAQUE_COUNTS = {
+    "public_record_sha256": 384,
+    "final_sequence_sha256": 384,
+}
+
+REQUIRED_OPAQUE_LEDGER_KEYS = (
+    "approved_trr0007_opaque",
+    "approved_trr0008_opaque",
+    "approved_trr0009_opaque",
+)
+
+
+APPROVED_OPAQUE_SPECS = {
+    APPROVED_TRR0007_OPAQUE_PATH.resolve(): {
+        "key": "approved_trr0007_opaque",
+        "sha256": APPROVED_TRR0007_OPAQUE_SHA256,
+        "schema": APPROVED_TRR0007_OPAQUE_SCHEMA,
+        "counts": APPROVED_TRR0007_OPAQUE_COUNTS,
+        "label": "approved TRR-0007 opaque reservation",
+    },
+    APPROVED_TRR0008_OPAQUE_PATH.resolve(): {
+        "key": "approved_trr0008_opaque",
+        "sha256": APPROVED_TRR0008_OPAQUE_SHA256,
+        "schema": APPROVED_TRR0008_OPAQUE_SCHEMA,
+        "counts": APPROVED_TRR0008_OPAQUE_COUNTS,
+        "label": "approved TRR-0008 opaque reservation",
+    },
+    APPROVED_TRR0009_OPAQUE_PATH.resolve(): {
+        "key": "approved_trr0009_opaque",
+        "sha256": APPROVED_TRR0009_OPAQUE_SHA256,
+        "schema": APPROVED_TRR0009_OPAQUE_SCHEMA,
+        "counts": APPROVED_TRR0009_OPAQUE_COUNTS,
+        "label": "approved TRR-0009 opaque reservation",
+    },
+}
+
+
+def _required_opaque_ledger_contract(bindings: Mapping[str, Any]) -> dict[str, Any]:
+    """Return the exact hash-only ledger set required for repaired P08 input."""
+
+    ledgers: dict[str, dict[str, Any]] = {}
+    for key in REQUIRED_OPAQUE_LEDGER_KEYS:
+        entries = bindings.get(key)
+        if not isinstance(entries, list) or len(entries) != 1 or not isinstance(entries[0], Mapping):
+            raise PanelPreparationError(f"required opaque ledger binding is missing: {key}")
+        item = entries[0]
+        ledgers[key] = {
+            "path": str(item.get("path", "")),
+            "bytes": int(item.get("bytes", -1)),
+            "sha256": str(item.get("sha256", "")),
+            "schema": str(item.get("schema", "")),
+            "counts": dict(item.get("counts", {})),
+        }
+    canonical = json.dumps(ledgers, sort_keys=True, separators=(",", ":"))
+    return {
+        "schema": "token-reconstruction.trr-p08-required-opaque-ledger-set.v1",
+        "keys": list(REQUIRED_OPAQUE_LEDGER_KEYS),
+        "ledgers": ledgers,
+        "set_sha256": hashlib.sha256(canonical.encode("utf-8")).hexdigest(),
+    }
+
+
+def _validate_required_opaque_ledger_contract(value: Mapping[str, Any]) -> None:
+    exclusion = value.get("exclusion_binding")
+    contract = exclusion.get("required_opaque_ledger_contract") if isinstance(exclusion, Mapping) else None
+    if not isinstance(contract, Mapping):
+        raise PanelPreparationError(
+            "required opaque ledger contract is missing; superseded pre-repair universe cannot run"
+        )
+    if contract.get("schema") != "token-reconstruction.trr-p08-required-opaque-ledger-set.v1":
+        raise PanelPreparationError("required opaque ledger contract schema changed")
+    if list(contract.get("keys", ())) != list(REQUIRED_OPAQUE_LEDGER_KEYS):
+        raise PanelPreparationError("required opaque ledger set is incomplete or reordered")
+    bindings = {
+        key: [{
+            "path": spec.get("path"),
+            "bytes": spec.get("bytes"),
+            "sha256": spec.get("sha256"),
+            "schema": spec.get("schema"),
+            "counts": spec.get("counts"),
+        }]
+        for key, spec in (contract.get("ledgers") or {}).items()
+        if isinstance(spec, Mapping)
+    }
+    expected = _required_opaque_ledger_contract(bindings)
+    if expected != dict(contract):
+        raise PanelPreparationError("required opaque ledger contract does not match exact approved ledgers")
 
 
 class PanelPreparationError(RuntimeError):
@@ -102,7 +213,12 @@ def _explicit_prior_exclusion_bindings(
     approved_opaque_paths: Sequence[Path | str],
     p06_selection_path: Path | str | None = None,
 ) -> tuple[dict[str, Any], tuple[Path, ...]]:
-    """Verify exact prior ledgers before passing them to the P06 collector."""
+    """Verify every required prior ledger before passing it to the collector.
+
+    The exact set is deliberately fail-closed. P06's inherited catalog had a
+    stale TRR-0007 descriptor; omitting that approved export from a repaired
+    P08 universe would silently permit a reserved sequence into selection.
+    """
 
     requested_selection = (
         PUBLISHED_P06_SELECTION_RELATIVE
@@ -121,27 +237,30 @@ def _explicit_prior_exclusion_bindings(
         PUBLISHED_P06_SELECTION_SHA256,
         label="published P06 source selection",
     )
-    opaque_bindings: list[dict[str, Any]] = []
-    opaque_paths: list[Path] = []
-    for raw_path in approved_opaque_paths:
-        candidate = Path(raw_path).expanduser().resolve()
-        if candidate != APPROVED_TRR0008_OPAQUE_PATH.resolve():
-            raise PanelPreparationError(
-                "only the approved TRR-0008 opaque reservation path may be bound"
-            )
+    opaque_paths = tuple(Path(raw).expanduser().resolve() for raw in approved_opaque_paths)
+    expected_paths = frozenset(APPROVED_OPAQUE_SPECS)
+    if len(opaque_paths) != len(expected_paths) or frozenset(opaque_paths) != expected_paths:
+        missing = sorted(str(path) for path in expected_paths.difference(opaque_paths))
+        unexpected = sorted(str(path) for path in frozenset(opaque_paths).difference(expected_paths))
+        raise PanelPreparationError(
+            "approved opaque ledger set is incomplete or unexpected; "
+            f"missing={missing!r}, unexpected={unexpected!r}"
+        )
+    opaque_bindings: dict[str, list[dict[str, Any]]] = {}
+    for candidate in opaque_paths:
+        spec = APPROVED_OPAQUE_SPECS[candidate]
         binding = p08_binding.bind_opaque_reservation(
             candidate,
-            APPROVED_TRR0008_OPAQUE_SHA256,
-            expected_schema=APPROVED_TRR0008_OPAQUE_SCHEMA,
-            expected_counts=APPROVED_TRR0008_OPAQUE_COUNTS,
-            label="approved TRR-0008 opaque reservation",
+            spec["sha256"],
+            expected_schema=spec["schema"],
+            expected_counts=spec["counts"],
+            label=spec["label"],
         )
-        opaque_bindings.append(binding)
-        opaque_paths.append(candidate)
+        opaque_bindings[spec["key"]] = [binding]
     return (
         {
             "published_p06_selection": p06_selection,
-            "approved_trr0008_opaque": opaque_bindings,
+            **opaque_bindings,
         },
         (Path(p06_selection["path"]), *opaque_paths),
     )
@@ -343,6 +462,7 @@ def build_source_universe(args: argparse.Namespace) -> dict[str, Any]:
         exclusions=exclusions,
     )
     value["exclusion_binding"]["explicit_prior_bindings"] = explicit_bindings
+    value["exclusion_binding"]["required_opaque_ledger_contract"] = _required_opaque_ledger_contract(explicit_bindings)
     value["exclusion_binding"]["p06_selection_explicitly_bound"] = True
     value["exclusion_binding"]["approved_opaque_nested_values_contract"] = (
         "For nested reservation exports, exclusion counts are derived from "
@@ -359,6 +479,10 @@ def load_universe(path: Path, *, require_frozen: bool = False) -> dict[str, Any]
     status = str(value.get("status", ""))
     if status not in {"PROPOSED_BEFORE_ENUMERATION", "FROZEN_SOURCE_UNIVERSE"}:
         raise PanelPreparationError("P08 source universe status is invalid")
+    if require_frozen and status != "FROZEN_SOURCE_UNIVERSE":
+        raise PanelPreparationError("P08 source selection requires FROZEN_SOURCE_UNIVERSE")
+    if status == "FROZEN_SOURCE_UNIVERSE":
+        _validate_required_opaque_ledger_contract(value)
     provenance = value.get("provenance")
     sources = value.get("candidate_source_universe")
     contract = value.get("panel_contract")
@@ -379,8 +503,6 @@ def load_universe(path: Path, *, require_frozen: bool = False) -> dict[str, Any]
         raise PanelPreparationError("P08 source universe geometry changed")
     if list(contract.get("target_conditions", ())) != list(CONDITION_ORDER):
         raise PanelPreparationError("P08 source universe target order changed")
-    if require_frozen and status != "FROZEN_SOURCE_UNIVERSE":
-        raise PanelPreparationError("P08 source selection requires FROZEN_SOURCE_UNIVERSE")
     _reject_payload(value)
     return value
 
@@ -395,6 +517,7 @@ def freeze_source_universe(args: argparse.Namespace) -> dict[str, Any]:
     exclusion_meta = value.get("exclusion_binding")
     if not isinstance(exclusion_meta, Mapping):
         raise PanelPreparationError("source universe has no exclusion binding")
+    _validate_required_opaque_ledger_contract(value)
     try:
         descriptor_paths = p06._frozen_descriptor_paths(exclusion_meta)
     except p06.PanelPreparationError as exc:
