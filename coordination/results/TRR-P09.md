@@ -12,7 +12,7 @@ The bounded planning recommendation is a 12,000-row proportional expansion, pend
 
 A permitted public Alpaca count/tokenization audit rendered all 52,002 rows with the pinned public tokenizer. It found 50,778 rows after 1,224 keyed fit/validation identity exclusions, with 39,765/24,401/14,317/6,824 rows meeting post-BOS thresholds 64/96/128/160. These are count-only upper bounds: the exclusion metadata has a 4,193-value union containing 4,073 opaque sequence/reservation digests, and zero rendered-text SHA-256 hits against that union do not establish disjointness because the namespaces/canonicalizations differ. The audit receipt and exact command/environment provenance are `experiments/TRR-P09/planning/alpaca-capacity-audit.json` (SHA-256 `d1f11364cabe6db876bb83f09ce1d8d7db1cdc3f76ac2e8bafaed149ba33a5c9`) and `experiments/TRR-P09/planning/alpaca-capacity-audit-provenance.json` (SHA-256 `c9c6828e16d87a7316f36b10d7a832a7cd04c20a73c035b4178062e3926fc2d2`). The executed CLI is `scripts/trr_p09/audit_alpaca_capacity.py` (SHA-256 `db8b54c290a1ee5c8915a6c315c6969ee4cea3284da246f57d044b0cbbd8b80e`). The human proposal is `experiments/TRR-P09/planning/bank-proposal.md`.
 
-No P09 source selection, public model forward, activation-bank capture, fitting, final-panel selection, or truth access has occurred. The deterministic selection recipe is documented only; it must apply exact keyed identities, namespace-matched digests, inherited Pile `[7000,10000)` and Finance `[12000,20000)` reservations, and length quotas before any later root-authorized selection.
+The initial r1 attempt did execute source selection, but it is preserved and excluded before capture. The corrected r2 source selection has now completed under the accepted CPU-only supplement; it still produced no public-model forward, activation-bank capture, fitting, final-panel evaluation, or truth access. Capture remains blocked until the setup-owned r2 metadata is revised to remove its stale legacy ten-cycle descriptor and the capture qualification gate passes.
 
 Validation command (from the isolated P09 worktree):
 
@@ -99,3 +99,64 @@ fresh CPU receipt pass.
 The full metadata-only audit is
 `experiments/TRR-P09/review/stage1-compiler-review.md`; the r1 result is kept as
 an excluded attempt for provenance.
+
+
+## Corrected r2 CPU preparation audit (2026-09-07)
+
+The corrected CPU preparation completed under the jointly countersigned narrow
+addendum and template-compatible supplement. The receipt is
+`experiments/TRR-P09/setup/stage1-input-preparation-r2-receipt.json` (SHA-256
+`9b5b575fcd0454ca43c46f68e99cf9444cdde65c234a46aa571ef48051955798`); its
+output manifest is
+`/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/preparation_manifest.json`
+(SHA-256
+`262d13d7cf86c72e97ef8d1ad9656a2f34603fd3c0d147f1648769c2e8c21123`) and
+records are SHA-256
+`367cfba0ffe78f59454861a76f23830f480a8745cc6b35e6b4a0d05eca53638b`. The
+watchdog reported PASS, return code 0, 32.880936 seconds, peak group RSS
+1,609,445,376 bytes, and no resource errors. The run source commit was
+`15be77368dae5129a216c9354975b6347cf28720`; the focused metadata/synthetic
+test command reported 73 passed.
+
+An independent metadata-only audit found 12,000 ordered records with the
+expected quotas: 6,000 Alpaca natural, 3,000 Pile natural, 1,800 Finance
+natural, and 600 controlled records for each Pile and Finance. It found
+1,243,710 post-BOS positions, `N=13,000`, 45,631 distinct post-BOS token IDs,
+and 64-row diagnostics per bank with seed 4010 and quotas 32/16/10/3/3. The
+first 1,200 record identities and source metadata match the published B0
+records. Among the 1,080 controlled additions, there are 120 distinct joint
+(stratum, target length, offset, replacement-token) templates and every one
+is used exactly nine times. The full public parent exclusion manifest is
+bound (SHA-256
+`bd1359f1184091570023e22a7682d1f97c08f8f05e47f69f6b3e6be089cd0181`): the
+600 B0 Alpaca rows intersect its 1,224 Alpaca keys as expected, while the B1
+additions have zero record-ID, source-row-key, current-fit, or rendered-hash
+overlap, including zero overlap with all 624 non-B0 prior-development Alpaca
+keys.
+
+The setup manifest retains a stale legacy field named
+`full_ten_cycle_composition` and its associated identity digest, describing
+the superseded signed-order construction. That field is not used as the r2
+controlled-row result: the independently checked r2 template assignment and
+exact-nine audit above are authoritative for this review. Setup must revise
+the r2 receipt/manifest metadata before capture so the machine-readable
+record agrees with the corrected construction. The r1 output remains
+excluded; its B0 order permutation and 63 prior-development Alpaca overlaps
+are preserved as failed provenance, and the two earlier structural-token
+failures plus the pre-final slot-compatibility failure remain excluded
+attempts.
+
+## Immutable B0 loader binding
+
+The existing monolithic B0 payload is now bound without copying or
+materializing H through
+`experiments/TRR-P09/setup/b0-immutable-loader-binding-r1.json` (SHA-256
+`7e6d7d3ac0ceec77f8b1e961a1a74b0675fd43e6ef3e4e77dcdd368d0c27445d`) and
+`scripts/trr_p09/b0_immutable_loader.py` (commit `86e66aa`). The adapter
+validated the published headers only: `[1200,192,2048]` BF16 activations, U8
+mask, I64 positions, and I32 tokens, with active-prefix positions and zero
+padding. Its two synthetic tests passed; no real B0 H slice, model, GPU, fit,
+or evaluation truth was opened.
+
+The scientific status remains preparation-only: no P09 activation capture,
+model forward, fit, or truth access is authorized by this receipt.
