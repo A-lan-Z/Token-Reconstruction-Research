@@ -37,6 +37,9 @@ from trr0010_model import export_effective_embedding, save_directional_state
 
 TASK_ID = "TRR-0010"
 REQUIRED_DOMAINS = ("Finance", "Pile")
+EXPECTED_START_STATE_SHA256 = "5cada4a3d04bb5477eaf0be25ed8d8ac25a89283223e9ba14b18fa10416bee14"
+EXPECTED_START_SELECTED_STEP = 400
+EXPECTED_START_METHOD_ID = RESIDUAL_MLP_METHOD_ID
 REQUIRED_SCHEDULE_KEYS = (
     "batch_record_indices",
     "draw_position_slots",
@@ -336,6 +339,28 @@ class _ValidationView:
             or len(set(self.record_indices)) != len(self.record_indices)
         ):
             raise ProviderError(f"validation {label} records are invalid or not batch aligned")
+        raw_resource_indices = descriptor.get("record_indices_by_resource")
+        if raw_resource_indices is not None:
+            if not isinstance(raw_resource_indices, Mapping):
+                raise ProviderError(f"validation {label} resource indices are malformed")
+            self.resource_indices: dict[str, tuple[int, ...]] = {}
+            for role in resource_specs:
+                values = raw_resource_indices.get(role)
+                if not isinstance(values, Sequence) or isinstance(values, (str, bytes)):
+                    raise ProviderError(f"validation {label} resource indices are missing: {role}")
+                indices = tuple(int(value) for value in values)
+                if (
+                    len(indices) != len(self.record_indices)
+                    or len(indices) % self.batch_records
+                    or any(index < 0 for index in indices)
+                    or len(set(indices)) != len(indices)
+                ):
+                    raise ProviderError(f"validation {label} resource indices are invalid: {role}")
+                self.resource_indices[role] = indices
+        else:
+            self.resource_indices = {
+                role: self.record_indices for role in resource_specs
+            }
         self.expected_post_bos_rows = int(
             descriptor.get("expected_post_bos_rows", len(self.record_indices) * (self.sequence_tokens - 1))
         )
@@ -381,12 +406,24 @@ class _ValidationView:
                 activation_path, activation_key = self.resources["activations"]
                 token_path, token_key = self.resources["token_ids"]
                 mask_path, mask_key = self.resources["attention_mask"]
-                activations = self._gather_rows(handles[activation_path], activation_key, indices)
-                token_ids = self._gather_rows(handles[token_path], token_key, indices)
-                attention_mask = self._gather_rows(handles[mask_path], mask_key, indices).to(dtype=torch.bool)
+                activations = self._gather_rows(
+                    handles[activation_path], activation_key,
+                    self.resource_indices["activations"][start:stop],
+                )
+                token_ids = self._gather_rows(
+                    handles[token_path], token_key,
+                    self.resource_indices["token_ids"][start:stop],
+                )
+                attention_mask = self._gather_rows(
+                    handles[mask_path], mask_key,
+                    self.resource_indices["attention_mask"][start:stop],
+                ).to(dtype=torch.bool)
                 if "position_ids" in self.resources:
                     position_path, position_key = self.resources["position_ids"]
-                    position_ids = self._gather_rows(handles[position_path], position_key, indices).to(dtype=torch.long)
+                    position_ids = self._gather_rows(
+                        handles[position_path], position_key,
+                        self.resource_indices["position_ids"][start:stop],
+                    ).to(dtype=torch.long)
                 else:
                     position_ids = torch.arange(self.sequence_tokens, dtype=torch.long).expand(
                         self.batch_records, -1
@@ -408,6 +445,200 @@ class _ValidationView:
                 )
 
 
+def _manifest_path_descriptor(
+    manifest_path: Path,
+    value: Mapping[str, Any],
+    *,
+    label: str,
+) -> dict[str, Any]:
+    """Resolve a public-manifest file descriptor without changing its binding."""
+
+    raw_path = value.get("path")
+    if not isinstance(raw_path, str) or not raw_path:
+        raise ProviderError(f"{label} path is missing")
+    path = Path(raw_path).expanduser()
+    if not path.is_absolute():
+        path = manifest_path.parent / path
+    descriptor = {str(key): item for key, item in value.items()}
+    descriptor["path"] = str(path.resolve())
+    _verify_descriptor(descriptor, label=label)
+    return descriptor
+
+
+def _actual_public_validation_views(
+    manifest_path: Path,
+    manifest: Mapping[str, Any],
+    *,
+    expected_tokens: int,
+    expected_batch: int,
+) -> dict[str, _ValidationView]:
+    """Adapt the P09 public validation preparation manifest.
+
+    P09 keeps H in domain-local observation files while the prepared labels are
+    in separate domain-local files.  The join's global rows are therefore not
+    valid indices into every resource: each view carries an explicit local row
+    map for H and labels while retaining global rows for reporting.
+    """
+
+    if manifest.get("task_id") != "TRR-P09" or manifest.get("truth_opened") is not False:
+        raise ProviderError("public validation manifest is not a no-truth preparation")
+    domains = manifest.get("domains")
+    if not isinstance(domains, Sequence) or tuple(str(value) for value in domains) != REQUIRED_DOMAINS:
+        raise ProviderError("public validation domains are not the frozen Finance/Pile order")
+    if int(manifest.get("hidden_size", 0)) <= 0:
+        raise ProviderError("public validation hidden size is missing")
+    try:
+        sequence_tokens = int(manifest["sequence_tokens_including_bos"])
+        record_count = int(manifest["record_count"])
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ProviderError("public validation geometry is incomplete") from exc
+    if sequence_tokens != int(expected_tokens) or record_count <= 0:
+        raise ProviderError("public validation sequence or record geometry differs from the binding")
+    counts = manifest.get("records_by_domain")
+    payloads = manifest.get("payloads")
+    label_join = manifest.get("label_join")
+    observation_join = manifest.get("observation_h_join")
+    if not isinstance(counts, Mapping) or not isinstance(payloads, Mapping):
+        raise ProviderError("public validation payload bindings are incomplete")
+    if set(str(key) for key in counts) != set(REQUIRED_DOMAINS) or sum(int(value) for value in counts.values()) != record_count:
+        raise ProviderError("public validation domain counts differ from record count")
+    if not isinstance(label_join, Mapping) or not isinstance(observation_join, Sequence):
+        raise ProviderError("public validation row joins are incomplete")
+    if len(observation_join) != record_count:
+        raise ProviderError("public validation H join length differs from record count")
+
+    row_descriptor = manifest.get("rows")
+    if not isinstance(row_descriptor, Mapping):
+        raise ProviderError("public validation record-row binding is missing")
+    row_path = _manifest_path_descriptor(manifest_path, row_descriptor, label="public validation rows")
+    row_payload = _read_json(Path(row_path["path"]), label="public validation rows")
+    rows = row_payload.get("rows")
+    if not isinstance(rows, Sequence) or isinstance(rows, (str, bytes)) or len(rows) != record_count:
+        raise ProviderError("public validation rows are malformed")
+
+    join_by_global: dict[int, Mapping[str, Any]] = {}
+    for item in observation_join:
+        if not isinstance(item, Mapping):
+            raise ProviderError("public validation H join entry is malformed")
+        try:
+            global_row = int(item["global_row"])
+            observation_row = int(item["observation_row"])
+        except (KeyError, TypeError, ValueError) as exc:
+            raise ProviderError("public validation H join row indices are malformed") from exc
+        domain = str(item.get("domain", ""))
+        if domain not in REQUIRED_DOMAINS or global_row in join_by_global or global_row < 0 or observation_row < 0:
+            raise ProviderError("public validation H join has duplicate or invalid rows")
+        join_by_global[global_row] = item
+    if set(join_by_global) != set(range(record_count)):
+        raise ProviderError("public validation H join does not cover global rows exactly")
+
+    row_by_global: dict[int, Mapping[str, Any]] = {}
+    for item in rows:
+        if not isinstance(item, Mapping):
+            raise ProviderError("public validation record row is malformed")
+        try:
+            global_row = int(item["global_row"])
+        except (KeyError, TypeError, ValueError) as exc:
+            raise ProviderError("public validation record row index is malformed") from exc
+        if global_row in row_by_global:
+            raise ProviderError("public validation record rows contain duplicates")
+        row_by_global[global_row] = item
+    if set(row_by_global) != set(range(record_count)):
+        raise ProviderError("public validation record rows do not cover global rows exactly")
+    for global_row, item in join_by_global.items():
+        row = row_by_global[global_row]
+        if str(row.get("domain")) != str(item.get("domain")) or str(row.get("record_id")) != str(item.get("record_id")):
+            raise ProviderError("public validation H and record-row identities differ")
+
+    rows_by_domain = label_join.get("rows_by_domain")
+    if not isinstance(rows_by_domain, Mapping):
+        raise ProviderError("public validation label row join is missing")
+    views: dict[str, _ValidationView] = {}
+    for domain in REQUIRED_DOMAINS:
+        expected_count = int(counts[domain])
+        domain_globals = tuple(
+            global_row for global_row in range(record_count)
+            if str(join_by_global[global_row].get("domain")) == domain
+        )
+        if len(domain_globals) != expected_count:
+            raise ProviderError(f"public validation {domain} H count differs from its binding")
+        raw_label_rows = rows_by_domain.get(domain)
+        if not isinstance(raw_label_rows, Sequence) or isinstance(raw_label_rows, (str, bytes)):
+            raise ProviderError(f"public validation {domain} label rows are malformed")
+        label_globals = tuple(int(value) for value in raw_label_rows)
+        if len(label_globals) != expected_count or len(set(label_globals)) != len(label_globals):
+            raise ProviderError(f"public validation {domain} label rows are invalid")
+        if set(label_globals) != set(domain_globals):
+            raise ProviderError(f"public validation {domain} H/label global rows differ")
+        label_local_by_global = {global_row: local for local, global_row in enumerate(label_globals)}
+
+        h_entries = [join_by_global[global_row] for global_row in domain_globals]
+        h_signature = {
+            (
+                str(entry.get("h_path")),
+                int(entry.get("h_bytes", -1)),
+                str(entry.get("h_sha256")),
+                str(entry.get("activations_key", "")),
+            )
+            for entry in h_entries
+        }
+        if len(h_signature) != 1:
+            raise ProviderError(f"public validation {domain} H resource binding changes within the domain")
+        h_path_raw, h_bytes, h_sha256, activations_key = next(iter(h_signature))
+        if not h_path_raw or h_bytes <= 0 or len(h_sha256) != 64 or not activations_key:
+            raise ProviderError(f"public validation {domain} H resource binding is malformed")
+        h_descriptor = _manifest_path_descriptor(
+            manifest_path,
+            {"path": h_path_raw, "bytes": h_bytes, "sha256": h_sha256, "tensor_key": activations_key},
+            label=f"public validation {domain} H",
+        )
+
+        payload = payloads.get(domain)
+        if not isinstance(payload, Mapping) or not isinstance(payload.get("file"), Mapping):
+            raise ProviderError(f"public validation {domain} label payload is missing")
+        payload_file = _manifest_path_descriptor(
+            manifest_path,
+            payload["file"],
+            label=f"public validation {domain} labels",
+        )
+        tensor_keys = payload.get("tensor_keys")
+        if not isinstance(tensor_keys, Sequence) or isinstance(tensor_keys, (str, bytes)):
+            raise ProviderError(f"public validation {domain} label tensor keys are malformed")
+        if not {"token_ids", "attention_mask", "position_ids"}.issubset(set(str(key) for key in tensor_keys)):
+            raise ProviderError(f"public validation {domain} label tensor keys are incomplete")
+        payload_shape = payload.get("shape")
+        if not isinstance(payload_shape, Sequence) or tuple(int(value) for value in payload_shape) != (expected_count, sequence_tokens):
+            raise ProviderError(f"public validation {domain} label shape differs from its binding")
+        label_resources = {
+            role: {**payload_file, "tensor_key": str(tensor_keys_by_role)}
+            for role, tensor_keys_by_role in (
+                ("token_ids", "token_ids"),
+                ("attention_mask", "attention_mask"),
+                ("position_ids", "position_ids"),
+            )
+        }
+        resource_indices = {
+            "activations": tuple(int(entry["observation_row"]) for entry in h_entries),
+            "token_ids": tuple(label_local_by_global[global_row] for global_row in domain_globals),
+            "attention_mask": tuple(label_local_by_global[global_row] for global_row in domain_globals),
+            "position_ids": tuple(label_local_by_global[global_row] for global_row in domain_globals),
+        }
+        views[domain] = _ValidationView(
+            {
+                "resources": {"activations": h_descriptor, **label_resources},
+                "sequence_tokens": sequence_tokens,
+                "batch_records": int(expected_batch),
+                "record_indices": domain_globals,
+                "record_indices_by_resource": resource_indices,
+                "expected_post_bos_rows": expected_count * (sequence_tokens - 1),
+            },
+            label=domain,
+            expected_tokens=expected_tokens,
+            expected_batch=expected_batch,
+        )
+    return views
+
+
 def _manifest_validation_views(
     manifest_descriptor: Mapping[str, Any],
     *,
@@ -423,6 +654,13 @@ def _manifest_validation_views(
 
     manifest_path = _verify_descriptor(manifest_descriptor, label="validation manifest")
     manifest = _read_json(manifest_path, label="validation manifest")
+    if manifest.get("schema") == "token-reconstruction.trr-p09-public-validation-preparation.v1":
+        return _actual_public_validation_views(
+            manifest_path,
+            manifest,
+            expected_tokens=expected_tokens,
+            expected_batch=expected_batch,
+        )
     resources = manifest.get("resources")
     grouping = manifest.get("validation_grouping")
     if not isinstance(resources, Mapping) or not isinstance(grouping, Mapping):
@@ -681,11 +919,15 @@ def build_inputs(
     contract_path, _ = _artifact(binding_receipt, "contract")
     bank_path, _ = _artifact(binding_receipt, "bank_manifest")
     schedule_path, _ = _artifact(binding_receipt, "schedule")
-    base_path, _ = _artifact(binding_receipt, "base_state")
+    base_path, base_binding = _artifact(binding_receipt, "base_state")
     embedding_path, _ = _artifact(binding_receipt, "public_embedding")
     support_ids_path, _ = _artifact(binding_receipt, "support_ids")
     support_counts_path, _ = _artifact(binding_receipt, "support_counts")
     contract = _read_json(contract_path, label="final contract")
+    if str(base_binding.get("sha256", "")) != EXPECTED_START_STATE_SHA256:
+        raise ProviderError(
+            "base_state is not the published TRR-0009 continued-fixed step-400 checkpoint"
+        )
     a2_adapter, runner, loader_module, b0_module = _load_a2_modules(binding_receipt)
     preparation_guard("after_a2_import")
 
@@ -697,6 +939,10 @@ def build_inputs(
 
     with safe_open(str(base_path), framework="pt", device="cpu") as handle:
         base_metadata = dict(handle.metadata() or {})
+    if str(base_metadata.get("selected_step", "")) != str(EXPECTED_START_SELECTED_STEP):
+        raise ProviderError("selected base state metadata is not step 400")
+    if str(base_metadata.get("method_id", "")) != EXPECTED_START_METHOD_ID:
+        raise ProviderError("selected base state method identity differs from the frozen start")
     context_width = _metadata_int(base_metadata, "context_width", "sequence_tokens")
     bottleneck_size = _metadata_int(base_metadata, "bottleneck_size")
     if context_width is None or bottleneck_size is None:

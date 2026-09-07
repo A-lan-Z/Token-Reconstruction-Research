@@ -71,12 +71,15 @@ def _binding_manifest(tmp_path: Path) -> dict[str, object]:
     ):
         payload = f"source-{index}".encode()
         sources[relative] = {**_write(tmp_path / relative, payload), "commit": "a" * 40}
+    b0_payload = _write(tmp_path / "b0-binding.json", b"b0-binding")
+    b0_binding = {**b0_payload, "status": "VERIFIED"}
     return {
         "schema": "token-reconstruction.trr0010-qualifier-bindings.v1",
         "task_id": "TRR-0010",
         "finalized": True,
         "status": "READY_FOR_QUALIFICATION",
         "artifacts": artifacts,
+        "b0_binding": b0_binding,
         "a2_sources": sources,
         "settings": _settings(),
         "schedule": {"seed": 4005, "steps": 2, "semantic_sha256": "b" * 64, "exposure": {"draws": 6}},
@@ -93,6 +96,21 @@ def test_binding_manifest_requires_final_schedule_and_validation_geometry(tmp_pa
     assert receipt["settings"]["probe_steps"] == 2
     assert receipt["schedule"]["semantic_sha256"] == "b" * 64
     assert receipt["validation_geometry"]["batch_records"] == 2
+    assert receipt["b0_binding"]["status"] == "VERIFIED"
+
+
+def test_binding_accepts_full_schedule_with_discarded_probe_prefix(tmp_path: Path) -> None:
+    manifest = _binding_manifest(tmp_path)
+    manifest["schedule"] = {
+        "seed": 4005,
+        "steps": 13,
+        "probe_steps": 2,
+        "semantic_sha256": "b" * 64,
+        "exposure": {"draws": 6},
+    }
+    receipt = validate_qualification_bindings(manifest)
+    assert receipt["schedule"]["steps"] == 13
+    assert receipt["settings"]["probe_steps"] == 2
 
 
 def test_lease_requires_exclusive_explicit_caps() -> None:

@@ -187,13 +187,7 @@ def validate_qualification_bindings(manifest: Mapping[str, Any]) -> dict[str, An
     if b0_binding is not None:
         if not isinstance(b0_binding, Mapping):
             raise QualificationError("B0 binding descriptor is malformed")
-        b0_path = _verify_descriptor(b0_binding, label="B0 immutable binding")
-        verified_b0_binding = {
-            "path": str(b0_path),
-            "bytes": int(b0_path.stat().st_size),
-            "sha256": _sha256_file(b0_path),
-            "status": b0_binding.get("status"),
-        }
+        verified_b0_binding = _verify_descriptor(b0_binding, label="B0 immutable binding")
 
     schedule = manifest.get("schedule")
     if not isinstance(schedule, Mapping):
@@ -201,8 +195,13 @@ def validate_qualification_bindings(manifest: Mapping[str, Any]) -> dict[str, An
     for key in ("seed", "steps", "semantic_sha256", "exposure"):
         if key not in schedule:
             raise QualificationError(f"qualification schedule metadata is incomplete: {key}")
-    if int(schedule["steps"]) != int(settings["probe_steps"]):
-        raise QualificationError("qualification schedule steps differ from probe_steps")
+    serialized_steps = int(schedule["steps"])
+    probe_steps = int(settings["probe_steps"])
+    if serialized_steps < probe_steps:
+        raise QualificationError("serialized schedule ends before the discarded probe prefix")
+    declared_probe_steps = schedule.get("probe_steps", probe_steps)
+    if int(declared_probe_steps) != probe_steps:
+        raise QualificationError("qualification probe prefix differs from the bound probe_steps")
     semantic = schedule["semantic_sha256"]
     if not isinstance(semantic, str) or len(semantic) != 64 or any(c not in "0123456789abcdef" for c in semantic):
         raise QualificationError("qualification schedule semantic digest is malformed")

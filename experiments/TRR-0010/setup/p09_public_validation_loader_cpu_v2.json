@@ -1,0 +1,184 @@
+{
+  "argv": [
+    "scripts/trr0010_public_validation_loader_audit.py",
+    "--manifest",
+    "/tmp/trr-p09-runtime/public-validation-r1/validation_manifest.json",
+    "--rows",
+    "/tmp/trr-p09-runtime/public-validation-r1/validation_rows.json",
+    "--audit-finish",
+    "/tmp/trr-p09-runtime/public-validation-audit-watchdog-r1/finish.json",
+    "--output",
+    "experiments/TRR-0010/setup/p09_public_validation_loader_cpu_v2.json"
+  ],
+  "bindings": {
+    "audit_finish": {
+      "bytes": 1088,
+      "path": "/tmp/trr-p09-runtime/public-validation-audit-watchdog-r1/finish.json",
+      "sha256": "159055736ff5c75e49ee02a6c5c5fda85586f6609a1b303d3ec577adc389eeeb"
+    },
+    "audit_script": {
+      "bytes": 8151,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/scripts/trr0010_public_validation_loader_audit.py",
+      "sha256": "0bd34eeb96f8211702e8d583102960066828d672e4dbb41d26c63212fa1c4ef5"
+    },
+    "audit_stdout_sha256": "3e953731a039ee1feea89e183126047ee0a4c3608061df267ebe728916f05659",
+    "manifest": {
+      "bytes": 468369,
+      "path": "/tmp/trr-p09-runtime/public-validation-r1/validation_manifest.json",
+      "sha256": "2ae3c36d62a3219f0df24ef6d87a9c76418b408d946ba52bcedd020b6b403d38"
+    },
+    "provider_source": {
+      "bytes": 51981,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/scripts/trr0010_p09_provider.py",
+      "sha256": "8056d7d69880234ff8aa39b24e422786cc1dd1ac37d08309b9b41efd122c55f5"
+    },
+    "rows": {
+      "bytes": 72111,
+      "path": "/tmp/trr-p09-runtime/public-validation-r1/validation_rows.json",
+      "sha256": "3877baf2a8ad894cb7c971aadd1591854852f77091bdbdb218b3617a6971919f"
+    }
+  },
+  "checks": [
+    "manifest and every bound H/label resource descriptor SHA256 verified by provider",
+    "actual P09 global rows mapped to domain-local H and label rows",
+    "separate H/label/mask/position resources loaded through lazy batches",
+    "all 384 records and 48 batches iterated with exact shape/dtype/position checks"
+  ],
+  "command": "env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false PYTHONPATH=.:src:scripts python3 scripts/trr0010_public_validation_loader_audit.py --manifest /tmp/trr-p09-runtime/public-validation-r1/validation_manifest.json --rows /tmp/trr-p09-runtime/public-validation-r1/validation_rows.json --audit-finish /tmp/trr-p09-runtime/public-validation-audit-watchdog-r1/finish.json --output experiments/TRR-0010/setup/p09_public_validation_loader_cpu_v2.json",
+  "execution": {
+    "device": "cpu",
+    "elapsed_seconds": 0.5286589559982531,
+    "end_utc": "2026-09-07T13:03:33.382004+00:00",
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "python": "3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]",
+    "start_utc": "2026-09-07T13:03:32.853368+00:00",
+    "threads": {
+      "mkl": "1",
+      "omp": "1",
+      "openblas": "1"
+    },
+    "torch": "2.10.0+cu128"
+  },
+  "geometry": {
+    "batch_records": 8,
+    "domains": {
+      "Finance": {
+        "attention_true_post_bos_rows": 32512,
+        "batches": 32,
+        "dtypes": {
+          "activations": "torch.bfloat16",
+          "attention_mask": "torch.bool",
+          "position_ids": "torch.int64",
+          "token_ids": "torch.int64"
+        },
+        "expected_post_bos_rows": 32512,
+        "first_batch_shapes": {
+          "activations": [
+            8,
+            128,
+            2048
+          ],
+          "attention_mask": [
+            8,
+            128
+          ],
+          "position_ids": [
+            8,
+            128
+          ],
+          "token_ids": [
+            8,
+            128
+          ]
+        },
+        "global_first": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "global_last": [
+          248,
+          249,
+          250,
+          251,
+          252,
+          253,
+          254,
+          255
+        ],
+        "records": 256,
+        "scored_post_bos_rows": 32512
+      },
+      "Pile": {
+        "attention_true_post_bos_rows": 16256,
+        "batches": 16,
+        "dtypes": {
+          "activations": "torch.bfloat16",
+          "attention_mask": "torch.bool",
+          "position_ids": "torch.int64",
+          "token_ids": "torch.int64"
+        },
+        "expected_post_bos_rows": 16256,
+        "first_batch_shapes": {
+          "activations": [
+            8,
+            128,
+            2048
+          ],
+          "attention_mask": [
+            8,
+            128
+          ],
+          "position_ids": [
+            8,
+            128
+          ],
+          "token_ids": [
+            8,
+            128
+          ]
+        },
+        "global_first": [
+          256,
+          257,
+          258,
+          259,
+          260,
+          261,
+          262,
+          263
+        ],
+        "global_last": [
+          376,
+          377,
+          378,
+          379,
+          380,
+          381,
+          382,
+          383
+        ],
+        "records": 128,
+        "scored_post_bos_rows": 16256
+      }
+    },
+    "global_row_order": "Finance_then_Pile",
+    "hidden_size": 2048,
+    "sequence_tokens_including_bos": 128
+  },
+  "schema": "token-reconstruction.trr0010-public-validation-loader-cpu-audit.v2",
+  "status": "PASS_PUBLIC_VALIDATION_LOADER_CPU",
+  "task_id": "TRR-0010",
+  "truth_boundary": {
+    "evaluation_labels_opened": false,
+    "model_forward_count": 0,
+    "public_prepared_labels_only": true,
+    "source_text_read": false,
+    "truth_opened": false
+  }
+}

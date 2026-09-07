@@ -255,3 +255,126 @@ def test_manifest_validation_views_gather_interleaved_rows_from_separate_files(t
             assert torch.equal(batch.token_ids[0], token_ids[row])
             assert torch.equal(batch.attention_mask[0], masks[row])
             assert torch.equal(batch.position_ids[0], torch.arange(sequence_tokens))
+
+
+def test_p09_validation_manifest_maps_global_rows_to_domain_local_payloads(tmp_path):
+    """The P09 join must not use Pile global rows as local label indices."""
+
+    sequence_tokens = 3
+
+    def write_tensor_file(name, tensors):
+        path = tmp_path / name
+        save_file(tensors, str(path))
+        raw = path.read_bytes()
+        return {
+            "path": str(path),
+            "bytes": len(raw),
+            "sha256": hashlib.sha256(raw).hexdigest(),
+        }
+
+    finance_h = write_tensor_file(
+        "finance_h.safetensors",
+        {"activations": torch.stack([
+            torch.full((sequence_tokens, 2), 10.0),
+            torch.full((sequence_tokens, 2), 11.0),
+        ])},
+    )
+    pile_h = write_tensor_file(
+        "pile_h.safetensors",
+        {"activations": torch.stack([
+            torch.full((sequence_tokens, 2), 20.0),
+            torch.full((sequence_tokens, 2), 21.0),
+        ])},
+    )
+    finance_labels = write_tensor_file(
+        "finance_labels.safetensors",
+        {
+            "token_ids": torch.tensor([[100, 101, 102], [110, 111, 112]], dtype=torch.int32),
+            "attention_mask": torch.ones(2, sequence_tokens, dtype=torch.uint8),
+            "position_ids": torch.arange(sequence_tokens, dtype=torch.long).expand(2, -1).contiguous(),
+        },
+    )
+    pile_labels = write_tensor_file(
+        "pile_labels.safetensors",
+        {
+            "token_ids": torch.tensor([[200, 201, 202], [210, 211, 212]], dtype=torch.int32),
+            "attention_mask": torch.ones(2, sequence_tokens, dtype=torch.uint8),
+            "position_ids": torch.arange(sequence_tokens, dtype=torch.long).expand(2, -1).contiguous(),
+        },
+    )
+
+    def h_entry(domain, global_row, observation_row, record_id, descriptor):
+        return {
+            "domain": domain,
+            "global_row": global_row,
+            "observation_row": observation_row,
+            "record_id": record_id,
+            "h_path": descriptor["path"],
+            "h_bytes": descriptor["bytes"],
+            "h_sha256": descriptor["sha256"],
+            "activations_key": "activations",
+            "attention_mask_key": "attention_mask",
+            "position_ids_key": "position_ids",
+        }
+
+    rows = [
+        {"domain": "Finance", "global_row": 0, "record_id": "finance-0"},
+        {"domain": "Finance", "global_row": 1, "record_id": "finance-1"},
+        {"domain": "Pile", "global_row": 2, "record_id": "pile-0"},
+        {"domain": "Pile", "global_row": 3, "record_id": "pile-1"},
+    ]
+    rows_path = tmp_path / "validation_rows.json"
+    rows_path.write_text(json.dumps({"rows": rows}, sort_keys=True), encoding="utf-8")
+    rows_raw = rows_path.read_bytes()
+    rows_descriptor = {
+        "path": str(rows_path),
+        "bytes": len(rows_raw),
+        "sha256": hashlib.sha256(rows_raw).hexdigest(),
+    }
+    manifest_payload = {
+        "schema": "token-reconstruction.trr-p09-public-validation-preparation.v1",
+        "task_id": "TRR-P09",
+        "truth_opened": False,
+        "domains": ["Finance", "Pile"],
+        "hidden_size": 2,
+        "sequence_tokens_including_bos": sequence_tokens,
+        "record_count": 4,
+        "records_by_domain": {"Finance": 2, "Pile": 2},
+        "observation_h_join": [
+            h_entry("Finance", 0, 0, "finance-0", finance_h),
+            h_entry("Finance", 1, 1, "finance-1", finance_h),
+            h_entry("Pile", 2, 0, "pile-0", pile_h),
+            h_entry("Pile", 3, 1, "pile-1", pile_h),
+        ],
+        "label_join": {
+            "rows_by_domain": {"Finance": [0, 1], "Pile": [2, 3]},
+        },
+        "payloads": {
+            "Finance": {"file": finance_labels, "shape": [2, sequence_tokens], "tensor_keys": ["token_ids", "attention_mask", "position_ids"]},
+            "Pile": {"file": pile_labels, "shape": [2, sequence_tokens], "tensor_keys": ["token_ids", "attention_mask", "position_ids"]},
+        },
+        "rows": rows_descriptor,
+    }
+    manifest_path = tmp_path / "p09_validation_manifest.json"
+    manifest_path.write_text(json.dumps(manifest_payload, sort_keys=True), encoding="utf-8")
+    manifest_raw = manifest_path.read_bytes()
+    manifest_descriptor = {
+        "path": str(manifest_path),
+        "bytes": len(manifest_raw),
+        "sha256": hashlib.sha256(manifest_raw).hexdigest(),
+    }
+
+    views = provider._manifest_validation_views(
+        manifest_descriptor,
+        expected_tokens=sequence_tokens,
+        expected_batch=2,
+    )
+    finance = list(views["Finance"].batches())
+    pile = list(views["Pile"].batches())
+    assert [batch.global_rows for batch in finance] == [(0, 1)]
+    assert [batch.global_rows for batch in pile] == [(2, 3)]
+    assert torch.equal(finance[0].activations[:, 0, 0], torch.tensor([10.0, 11.0]))
+    assert torch.equal(pile[0].activations[:, 0, 0], torch.tensor([20.0, 21.0]))
+    assert torch.equal(finance[0].token_ids[:, 0], torch.tensor([100, 110]))
+    assert torch.equal(pile[0].token_ids[:, 0], torch.tensor([200, 210]))
+    assert torch.equal(pile[0].position_ids, torch.arange(sequence_tokens).expand(2, -1))
