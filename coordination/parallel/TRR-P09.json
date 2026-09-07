@@ -1,81 +1,106 @@
 {
-  "schema": "token-reconstruction.task-local-state.v1",
-  "task_id": "TRR-P09",
-  "status": "SETUP_READY_NO_COMPUTE",
+  "access_boundary": {
+    "agent1_worktree_accessed": false,
+    "fit_or_optimizer_steps_started": false,
+    "fresh_evaluation_selected": false,
+    "global_state_or_registry_modified": false,
+    "model_or_tensor_payload_loaded": false,
+    "other_worktree_modified": false,
+    "p03_holdout_accessed": false,
+    "public_metadata_only_setup": true,
+    "source_generation_started": false,
+    "trr0010_unpublished_science_accessed": false,
+    "truth_opened": false
+  },
+  "bank_contract": {
+    "current_prefix_post_bos_positions": 124371,
+    "current_prefix_records": 1200,
+    "expanded_target_records": 12000,
+    "fixed_training_diagnostic_indices": "PENDING_COMMON_CONTRACT",
+    "model_loaded": false,
+    "natural_validation_geometry": "T=128 already-opened TRR-0009 public_base view; no new panel",
+    "production_capture_started": false,
+    "public_forward_batch": "PENDING_SHARED_GEOMETRY_QUALIFICATION; proposal B=8",
+    "shard_records": 64,
+    "source_rows_selected": false,
+    "status": "PROPOSAL_PENDING_COMMON_CONTRACT",
+    "training_geometry": "loader_minibatch_proposed_B=8; complete_sequence_T=192; H=2048; BF16"
+  },
   "branch": "task/TRR-P09",
-  "worktree": "/tmp/trr-p09",
+  "created_utc": "2026-09-07T06:39:42.867994+00:00",
+  "inputs": {
+    "ancestor_reference_state_role": "published TRR-0007 current enriched selected checkpoint; retained provenance only",
+    "ancestor_reference_state_sha256": "2a44a91b01ca1fdc9615eab804872c50c606199704eaf51fa114cc0d7959ddc8",
+    "fixed_control_state_sha256": "5cada4a3d04bb5477eaf0be25ed8d8ac25a89283223e9ba14b18fa10416bee14",
+    "parent_manifest": {
+      "bytes": 106214,
+      "path": "experiments/TRR-0009/manifest.json",
+      "sha256": "00d2e9bcb75962072dabdac50ad38b32e9ad638fae77c9da75faec1760048e64"
+    },
+    "parent_status": {
+      "bytes": 6222,
+      "path": "experiments/TRR-0009/status.json",
+      "sha256": "be3adc2a3edd2b6c6dab8e74b4346cc6ca3a6b366cbd4ef2a808839fc5fc942a"
+    },
+    "starting_state_role": "published TRR-0009 continued_fixed_readout selected step 400 (shared P09 starting state)",
+    "starting_state_sha256": "5cada4a3d04bb5477eaf0be25ed8d8ac25a89283223e9ba14b18fa10416bee14"
+  },
+  "ownership": {
+    "common_contract": "Agent1/root",
+    "directional_readout": "Agent1",
+    "final_evaluation_and_report": "Agent1/root",
+    "fixed_readout_controls": "Agent2",
+    "provenance_inventory": "Agent2",
+    "public_fitting_bank": "Agent2"
+  },
+  "packet": {
+    "bytes": 5391,
+    "path": "coordination/requests/TRR-P09.md",
+    "saved_verbatim": true,
+    "sha256": "0f6bb008ac905d6d76874e4e726ebed3db8aa15c73ef344412220c013ee41ab3"
+  },
   "parent": {
     "branch": "task/TRR-0009",
     "commit": "4602f98eeb03ac121d8bbc230d7e2b219551b914",
     "merge_allowed": false
   },
-  "packet": {
-    "path": "coordination/requests/TRR-P09.md",
-    "bytes": 5391,
-    "sha256": "0f6bb008ac905d6d76874e4e726ebed3db8aa15c73ef344412220c013ee41ab3",
-    "saved_verbatim": true
-  },
-  "role_path": "experiments/TRR-P09/setup/agent2-role.md",
-  "ownership": {
-    "public_fitting_bank": "Agent2",
-    "fixed_readout_controls": "Agent2",
-    "directional_readout": "Agent1",
-    "common_contract": "Agent1/root",
-    "final_evaluation_and_report": "Agent1/root",
-    "provenance_inventory": "Agent2"
-  },
-  "access_boundary": {
-    "global_state_or_registry_modified": false,
-    "other_worktree_modified": false,
-    "agent1_worktree_accessed": false,
-    "p03_holdout_accessed": false,
-    "trr0010_unpublished_science_accessed": false,
-    "source_generation_started": false,
-    "fresh_evaluation_selected": false,
-    "model_or_tensor_payload_loaded": false,
-    "truth_opened": false,
-    "fit_or_optimizer_steps_started": false,
-    "public_metadata_only_setup": true
-  },
-  "setup_artifacts": {
-    "agent2_role": "experiments/TRR-P09/setup/agent2-role.md",
-    "resource_snapshot": "experiments/TRR-P09/setup/resource-snapshot-r0.json",
-    "published_input_inventory": "experiments/TRR-P09/setup/published-input-inventory-r0.json",
-    "parent_method_freeze": "experiments/TRR-0009/training/method_freeze.json",
-    "parent_source_inventory": "experiments/TRR-0009/planning/source_inventory_final.json"
+  "pending": [
+    "Root/design review bank schema and shared StreamedBankLoader interface.",
+    "Bind exact public snapshot, current-prefix, validation-view, and schedule hashes.",
+    "Freeze fixed training-diagnostic subset indices before any public forward or fit.",
+    "Obtain root compute authorization before production public-model activation capture."
+  ],
+  "publication": {
+    "merge_allowed": false,
+    "pr_pending": true,
+    "status": "SETUP_ONLY"
   },
   "resource_boundary": {
-    "status": "READ_ONLY_SNAPSHOT_NO_COMPUTE",
-    "gpu_launch_authorized": false,
+    "bank_fixture_only_tests_authorized": true,
+    "bank_schema_written": true,
     "cpu_fit_authorized": false,
     "fresh_bank_generation_authorized": false,
+    "gpu_launch_authorized": false,
+    "live_snapshot_path": "experiments/TRR-P09/setup/resource-snapshot-r0.json",
     "preflight_required_before_compute": true,
-    "live_snapshot_path": "experiments/TRR-P09/setup/resource-snapshot-r0.json"
+    "public_forward_authorized": false,
+    "status": "READ_ONLY_SNAPSHOT_NO_COMPUTE"
   },
-  "inputs": {
-    "parent_manifest": {
-      "path": "experiments/TRR-0009/manifest.json",
-      "bytes": 106214,
-      "sha256": "00d2e9bcb75962072dabdac50ad38b32e9ad638fae77c9da75faec1760048e64"
-    },
-    "parent_status": {
-      "path": "experiments/TRR-0009/status.json",
-      "bytes": 6222,
-      "sha256": "be3adc2a3edd2b6c6dab8e74b4346cc6ca3a6b366cbd4ef2a808839fc5fc942a"
-    },
-    "fixed_control_state_sha256": "5cada4a3d04bb5477eaf0be25ed8d8ac25a89283223e9ba14b18fa10416bee14",
-    "starting_state_sha256": "2a44a91b01ca1fdc9615eab804872c50c606199704eaf51fa114cc0d7959ddc8"
+  "role_path": "experiments/TRR-P09/setup/agent2-role.md",
+  "schema": "token-reconstruction.task-local-state.v1",
+  "setup_artifacts": {
+    "agent2_role": "experiments/TRR-P09/setup/agent2-role.md",
+    "bank_contract_tests": "tests/test_trr_p09_bank_artifact.py",
+    "bank_proposal": "experiments/TRR-P09/setup/bank-preparation-proposal-r0.md",
+    "bank_runner": "scripts/trr_p09/prepare_streamed_bank.py",
+    "bank_schema": "experiments/TRR-P09/setup/bank-artifact-schema-r0.json",
+    "parent_method_freeze": "experiments/TRR-0009/training/method_freeze.json",
+    "parent_source_inventory": "experiments/TRR-0009/planning/source_inventory_final.json",
+    "published_input_inventory": "experiments/TRR-P09/setup/published-input-inventory-r0.json",
+    "resource_snapshot": "experiments/TRR-P09/setup/resource-snapshot-r0.json"
   },
-  "pending": [
-    "Agree common crossed contract with Agent1/root before fitting or source generation.",
-    "Define nested expanded public fitting bank and continued-compute fixed-readout control.",
-    "Run metadata-only resource preflight and obtain root compute authorization."
-  ],
-  "created_utc": "2026-09-07T06:39:42.867994+00:00",
-  "updated_utc": "2026-09-07T06:39:42.867994+00:00",
-  "publication": {
-    "status": "SETUP_ONLY",
-    "merge_allowed": false,
-    "pr_pending": true
-  }
+  "status": "BANK_SCHEMA_PROPOSED_NO_CAPTURE",
+  "task_id": "TRR-P09",
+  "updated_utc": "2026-09-07T06:58:05Z",
+  "worktree": "/tmp/trr-p09"
 }

@@ -1,0 +1,197 @@
+{
+  "schema": "token-reconstruction.trr-p09-streamed-public-bank.v1",
+  "task_id": "TRR-P09",
+  "proposal_status": "PROPOSAL_NOT_CAPTURED",
+  "contract_version": 0,
+  "purpose": "Immutable streamed public fitting bank for the crossed fixed-readout and directional-readout study.",
+  "truth_boundary": {
+    "public_fitting_h_token_labels_masks_and_positions_allowed": true,
+    "public_fitting_source_text_persisted": false,
+    "final_evaluation_source_rows_or_labels_opened": false,
+    "truth_materialization_before_prediction_freeze": false,
+    "evaluation_truth_is_not_a_bank_input": true
+  },
+  "input_binding": {
+    "hash_algorithm": "sha256",
+    "required_before_first_forward": true,
+    "required_records": [
+      "public_model_snapshot_manifest",
+      "public_tokenizer_snapshot_manifest",
+      "current_bank_manifest",
+      "current_bank_payload_and_record_metadata",
+      "expanded_public_selection_manifest",
+      "fixed_public_training_diagnostic_schedule"
+    ],
+    "record_shape": {
+      "path": "absolute_or_repository_relative_at_capture",
+      "bytes": "nonnegative integer",
+      "sha256": "64 lowercase hexadecimal characters"
+    },
+    "unbound_values_are": "PENDING_CAPTURE_BINDING",
+    "model_and_tokenizer_are_public_only": true
+  },
+  "parent_bank": {
+    "identity": "published current public fitting bank",
+    "required_record_count": 1200,
+    "required_post_bos_positions": 124371,
+    "sequence_tokens_for_training": 192,
+    "prefix_rule": "expanded rows [0:1200] are byte-equivalent current-bank records and tensors",
+    "required_equal_fields": [
+      "record_id_order",
+      "parent_record_id_order",
+      "sequence_id_order",
+      "token_ids",
+      "attention_mask",
+      "position_ids",
+      "activations"
+    ],
+    "digests": {
+      "record_id_order_sha256": null,
+      "token_ids_sha256": null,
+      "attention_mask_sha256": null,
+      "position_ids_sha256": null,
+      "activations_sha256": null
+    },
+    "verification_status": "PENDING_PAYLOAD_AUDIT"
+  },
+  "expanded_bank_plan": {
+    "target_record_count": 12000,
+    "target_is_strictly_larger": true,
+    "target_status": "PENDING_SOURCE_AND_CAPACITY_CONTRACT",
+    "all_crossed_arms_share_same_record_order": true,
+    "all_crossed_arms_share_same_activation_bank": true,
+    "fit_rows_are_public_training_material": true
+  },
+  "geometry": {
+    "training_forward": {
+      "loader_batch_records_proposed": 8,
+      "public_forward_batch_records": null,
+      "public_forward_batch_proposal": 8,
+      "public_forward_batch_qualification": "PENDING_SHARED_GEOMETRY_QUALIFICATION",
+      "sequence_tokens": 192,
+      "hidden_size": 2048,
+      "hidden_dtype": "torch.bfloat16",
+      "payload_keys": ["activations", "token_ids", "attention_mask", "position_ids"],
+      "activations_key_semantics": "complete public-model H for every 192-token sequence",
+      "no_prefix_truncation_before_forward": true
+    },
+    "natural_validation_view": {
+      "sequence_tokens": 128,
+      "source_contract": "already-opened TRR-0009 public_base natural validation",
+      "new_source_panel_in_this_artifact": false,
+      "record_count": null,
+      "record_id_digest": null,
+      "status": "BOUND_BY_SHARED_EVALUATION_CONTRACT"
+    }
+  },
+  "sharding": {
+    "payload_format": "safetensors",
+    "default_records_per_shard": 64,
+    "records_per_shard_must_be_multiple_of": 8,
+    "stored_tensors_per_shard": {
+      "activations": "[R,192,2048] BF16",
+      "token_ids": "[R,192] INT64 or INT32",
+      "attention_mask": "[R,192] BOOL or UINT8",
+      "position_ids": "[R,192] INT64 or INT32"
+    },
+    "sidecar_per_shard": {
+      "required": true,
+      "fields": [
+        "schema",
+        "shard_id",
+        "row_range",
+        "payload_file_record",
+        "tensor_digests",
+        "record_id",
+        "parent_record_id",
+        "sequence_id",
+        "source_record_sha256",
+        "sequence_sha256",
+        "active_token_count",
+        "global_row",
+        "loader_batch_start",
+        "loader_batch_count",
+        "public_forward_group",
+        "positions_are_exposed"
+      ]
+    },
+    "create_only": true,
+    "publication_order": [
+      "write unique staging payload",
+      "write and fsync sidecar",
+      "write COMPLETE marker",
+      "atomically publish previously absent shard directory"
+    ],
+    "resume": {
+      "completed_shard": "verify input/geometry/payload hashes then skip",
+      "partial_shard": "retain as failure evidence and fail closed",
+      "overwrite_existing_payload": false,
+      "overwrite_existing_sidecar": false
+    }
+  },
+  "loader": {
+    "interface": "trr-p09.streamed-bank-loader.v1",
+    "entrypoint": "scripts/trr_p09.prepare_streamed_bank.StreamedBankLoader.get_records",
+    "batch_contract": {
+      "activations": "[N,192,2048] torch.bfloat16",
+      "token_ids": "[N,192] torch.int64 or torch.int32",
+      "attention_mask": "[N,192] torch.bool after CPU normalization",
+      "position_ids": "[N,192] torch.int64 after CPU normalization",
+      "global_rows": "N requested row indices in caller order, repeats allowed",
+      "record_ids": "N hash-bound public record identifiers in caller order",
+      "sequence_ids": "N hash-bound public sequence identifiers in caller order",
+      "N": "arbitrary schedule length; the proposed fit minibatch is 8"
+    },
+    "resident_scope": "one CPU shard batch plus one decoder batch; no whole-bank GPU load",
+    "validation": [
+      "schema and shard completion marker",
+      "payload key set and tensor geometry",
+      "contiguous mask with first position active",
+      "position IDs equal 0..191",
+      "record sidecar rows agree with batch range"
+    ]
+  },
+  "exposure": {
+    "unit": "one complete sequence per record",
+    "loader_batch_count_for_12000_rows": 1500,
+    "loader_batch_count_for_1200_rows": 150,
+    "public_forward_count": null,
+    "repeated_exposures": "owned by the frozen fit schedule and recorded separately",
+    "candidate_simulations": 0,
+    "positions_exposed_per_forward": 192
+  },
+  "fixed_public_training_diagnostic": {
+    "purpose": "same-data diagnostic for fixed-readout control without choosing rows from answers",
+    "selection": "predeclare indices and digest in the shared fit contract before fitting",
+    "row_indices": null,
+    "row_indices_sha256": null,
+    "source_bank": "current public fitting bank",
+    "status": "PENDING_COMMON_CONTRACT",
+    "must_not_be_used_for": ["final natural evaluation selection", "truth opening", "post-score adaptation"]
+  },
+  "storage_estimate": {
+    "formula_hidden_bytes": "record_count * 192 * 2048 * 2",
+    "current_1200_hidden_bytes": 943718400,
+    "expanded_12000_hidden_bytes": 9437184000,
+    "expanded_12000_hidden_gib": 8.7890625,
+    "note": "token/mask/position sidecars and filesystem overhead are additional",
+    "capture_gpu_residency": "one 8x192x2048 BF16 output is 6291456 bytes; model workspace is qualified separately"
+  },
+  "preflight": {
+    "required": true,
+    "disk_free_floor_gib": 20,
+    "host_available_floor_gib": 10,
+    "gpu_free_floor_gib": 8,
+    "gpu_reserved_ceiling_gib": 6,
+    "host_rss_ceiling_gib": 16,
+    "fail_closed_on_unreadable_resource_data": true,
+    "capture_requires_root_authorization": true,
+    "capture_and_fitting_are_not_authorized_by_this_schema": true
+  },
+  "fixture": {
+    "schema": "token-reconstruction.trr-p09-bank-fixture.v1",
+    "purpose": "synthetic current-prefix equivalence and loader tests only",
+    "public_source_or_model_loaded": false,
+    "not_scientific_evidence": true
+  }
+}
