@@ -348,9 +348,42 @@ def _load_selection(path: Path, *, root: Path, final_b1: Mapping[str, Any]) -> t
         raise RegisterError("selection must contain exactly 128 Finance and 128 Pile records")
     selection_exclusions = selection.get("selection_exclusions")
     if not isinstance(selection_exclusions, Mapping):
-        raise RegisterError("selection does not bind its final B1 exclusion ledger")
-    exclusion_record = _binding(selection_exclusions, root=root, description="selection final B1 exclusions")
-    _same_record(exclusion_record, final_b1, description="selection/final B1 exclusion")
+        raise RegisterError("selection does not bind its generated exclusion union")
+    exclusion_record = _binding(selection_exclusions, root=root, description="selection exclusion union")
+    try:
+        exclusion_payload = json.loads(
+            Path(exclusion_record["path"]).read_text(encoding="utf-8")
+        )
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise RegisterError("selection exclusion union is not valid JSON") from exc
+    if not isinstance(exclusion_payload, Mapping):
+        raise RegisterError("selection exclusion union must be a JSON object")
+    if (
+        exclusion_payload.get("schema") != trr10_selection.EXCLUSION_SCHEMA
+        or exclusion_payload.get("task_id") != gate.TASK_ID
+        or exclusion_payload.get("status") != trr10_selection.EXCLUSION_STATUS
+    ):
+        raise RegisterError("selection exclusion union schema or status changed")
+    _truth_free(exclusion_payload, description="selection exclusion union")
+    applied_sources = exclusion_payload.get("sources")
+    if not isinstance(applied_sources, Sequence) or isinstance(applied_sources, (str, bytes, bytearray)):
+        raise RegisterError("selection exclusion union applied sources are absent")
+    matching_final_b1: list[dict[str, Any]] = []
+    for index, source in enumerate(applied_sources):
+        if not isinstance(source, Mapping):
+            raise RegisterError(f"selection exclusion union source {index} is malformed")
+        # The trusted union collector marks files that it actually opened with
+        # available=true. Compare the complete frozen descriptor instead of
+        # rebinding the selector's union to the final-B1 ledger: the union is
+        # the native selector output and must retain its full provenance.
+        if source.get("available") is True:
+            try:
+                _same_record(source, final_b1, description="selection applied final B1 exclusion")
+            except RegisterError:
+                continue
+            matching_final_b1.append(dict(source))
+    if not matching_final_b1:
+        raise RegisterError("selection exclusion union does not apply the frozen final B1 ledger")
     row_rule = selection.get("selection_rule")
     if not isinstance(row_rule, Mapping):
         raise RegisterError("selection rule is absent")
@@ -363,6 +396,11 @@ def _load_selection(path: Path, *, root: Path, final_b1: Mapping[str, Any]) -> t
         "rows": rows,
         "counts": dict(counts),
         "record_ids_sha256": {str(k): str(v) for k, v in record_digests.items()},
+        "selection_exclusions": dict(exclusion_record),
+        "selection_exclusion_schema": str(exclusion_payload["schema"]),
+        "selection_exclusion_status": str(exclusion_payload["status"]),
+        "selection_exclusion_sources": [dict(source) for source in applied_sources],
+        "selection_applied_final_b1": matching_final_b1,
     }
 
 
@@ -385,6 +423,15 @@ def _selection_binding_payload(
         "selection_ledger": dict(selection_record),
         "selection_ledger_schema": selection.get("schema"),
         "selection_ledger_status": selection.get("status"),
+        # Keep the native selector's union manifest and applied-source list
+        # alongside the legacy final-B1 field used by the registration gate.
+        # This preserves full exclusion provenance without pretending the
+        # selector's union file is itself the nested B1 ledger.
+        "selection_exclusion_union": dict(selection_meta["selection_exclusions"]),
+        "selection_exclusion_union_schema": selection_meta["selection_exclusion_schema"],
+        "selection_exclusion_union_status": selection_meta["selection_exclusion_status"],
+        "selection_exclusion_union_sources": list(selection_meta["selection_exclusion_sources"]),
+        "selection_applied_final_b1": list(selection_meta["selection_applied_final_b1"]),
         "selection_exclusions": dict(final_b1),
         "approved_opaque_exclusion_ledgers": [dict(record) for record in opaque_records],
         "source_text_written": False,

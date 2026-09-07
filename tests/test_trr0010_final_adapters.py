@@ -167,6 +167,58 @@ def test_trr10_selection_loader_rejects_wrong_schema_and_checks_order(tmp_path: 
         selector.load_selection(path, repository_root=tmp_path, expected_counts={"pile": 2, "finance": 2})
 
 
+def _selection_with_native_exclusion_union(tmp_path: Path) -> tuple[Path, dict, dict]:
+    selection_path = _selection(tmp_path)
+    final_b1 = tmp_path / "assets" / "final_b1.json"
+    final_b1.parent.mkdir(parents=True, exist_ok=True)
+    final_b1.write_text("{\"schema\":\"synthetic-final-b1\"}\n", encoding="utf-8")
+    final_record = _record(final_b1, tmp_path)
+    union_path = tmp_path / "assets" / "source_exclusions.json"
+    union_payload = {
+        "schema": selector.EXCLUSION_SCHEMA,
+        "task_id": selector.TASK_ID,
+        "status": selector.EXCLUSION_STATUS,
+        "identity_only": True,
+        "sources": [{**final_record, "available": True, "new_identity_count": 4}],
+        "source_text_or_token_ids_written": False,
+        "private_or_truth_payload_read": False,
+        "truth_opened": False,
+        "truth_created": False,
+    }
+    _write(union_path, union_payload)
+    selection_payload = json.loads(selection_path.read_text(encoding="utf-8"))
+    selection_payload["selection_exclusions"] = _record(union_path, tmp_path)
+    selection_path.write_text(json.dumps(selection_payload, sort_keys=True) + "\n", encoding="utf-8")
+    return selection_path, final_record, union_payload
+
+
+def test_register_accepts_native_union_and_preserves_frozen_b1_provenance(tmp_path: Path) -> None:
+    selection_path, final_record, union_payload = _selection_with_native_exclusion_union(tmp_path)
+    _selection_value, _selection_record, metadata = register._load_selection(
+        selection_path, root=tmp_path, final_b1=final_record
+    )
+    assert metadata["selection_exclusion_schema"] == selector.EXCLUSION_SCHEMA
+    assert metadata["selection_exclusion_status"] == selector.EXCLUSION_STATUS
+    assert metadata["selection_exclusion_sources"] == union_payload["sources"]
+    assert metadata["selection_applied_final_b1"] == union_payload["sources"]
+
+
+@pytest.mark.parametrize("tamper", ["missing", "changed"])
+def test_register_rejects_native_union_without_exact_frozen_b1_source(tmp_path: Path, tamper: str) -> None:
+    selection_path, final_record, union_payload = _selection_with_native_exclusion_union(tmp_path)
+    if tamper == "missing":
+        union_payload["sources"] = []
+    else:
+        union_payload["sources"] = [{**final_record, "available": True, "sha256": "0" * 64}]
+    union_path = tmp_path / "assets" / "source_exclusions.json"
+    _write(union_path, union_payload)
+    selection_payload = json.loads(selection_path.read_text(encoding="utf-8"))
+    selection_payload["selection_exclusions"] = _record(union_path, tmp_path)
+    selection_path.write_text(json.dumps(selection_payload, sort_keys=True) + "\n", encoding="utf-8")
+    with pytest.raises(register.RegisterError, match="does not apply the frozen final B1 ledger"):
+        register._load_selection(selection_path, root=tmp_path, final_b1=final_record)
+
+
 def _producer_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
     selection_path = _selection(tmp_path, count=128)
     bridge = tmp_path / "producer" / "selection.json"
