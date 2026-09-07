@@ -23,6 +23,7 @@ for _import_root in (_REPOSITORY_ROOT, _REPOSITORY_ROOT / "src"):
         sys.path.insert(0, str(_import_root))
 
 from scripts import trr0009_eval_capture as trr9_capture
+from scripts import trr0010_select_public as trr10_selection
 from scripts import trr0010_eval_gate as gate
 
 
@@ -320,13 +321,26 @@ def _require_design(path: Path, *, root: Path) -> tuple[dict[str, Any], dict[str
 
 def _load_selection(path: Path, *, root: Path, final_b1: Mapping[str, Any]) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
     try:
-        selection, selection_record, rows, counts = trr9_capture.load_selection(
-            path,
-            repository_root=root,
-            expected_counts=gate.RECORDS_BY_DOMAIN,
-        )
-    except Exception as exc:
-        raise RegisterError(f"TRR-0009 identity-only selection is not compatible: {exc}") from exc
+        raw = json.loads(Path(path).expanduser().resolve().read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise RegisterError("identity-only selection is not valid JSON") from exc
+    schema = raw.get("schema") if isinstance(raw, Mapping) else None
+    if schema == trr10_selection.SELECTION_SCHEMA:
+        try:
+            selection, selection_record, rows, counts = trr10_selection.load_selection(
+                path, repository_root=root, expected_counts=gate.RECORDS_BY_DOMAIN
+            )
+        except Exception as exc:
+            raise RegisterError(f"TRR-0010 identity-only selection is not compatible: {exc}") from exc
+    elif schema == trr9_capture.SELECTION_SCHEMA:
+        try:
+            selection, selection_record, rows, counts = trr9_capture.load_selection(
+                path, repository_root=root, expected_counts=gate.RECORDS_BY_DOMAIN
+            )
+        except Exception as exc:
+            raise RegisterError(f"legacy identity-only selection is not compatible: {exc}") from exc
+    else:
+        raise RegisterError("identity-only selection schema is unknown")
     if selection.get("target_conditions") != list(gate.TARGET_ORDER) or selection.get("paired_conditions") is not True:
         raise RegisterError("selection target pairing changed")
     if dict(counts) != dict(gate.RECORDS_BY_DOMAIN):
@@ -379,6 +393,46 @@ def _selection_binding_payload(
         "truth_opened": False,
         "candidate_arrays_persisted": False,
     }
+
+
+def prepare_selection_binding(
+    *,
+    repository_root: Path,
+    design_path: Path,
+    selection_path: Path,
+    selection_binding_path: Path,
+) -> dict[str, Any]:
+    """Create or verify the binding needed by capture-before-registration.
+
+    Final capture is intentionally produced before prediction registration.
+    This helper makes the deterministic selection binding available at that
+    boundary; ``build_registration`` reuses the exact file and refuses any
+    semantic change.
+    """
+    root = _root(repository_root)
+    design_record, _design, design_meta = _require_design(Path(design_path), root=root)
+    selection, selection_record, selection_meta = _load_selection(
+        Path(selection_path), root=root, final_b1=design_meta["final_b1"]
+    )
+    payload = _selection_binding_payload(
+        selection=selection,
+        selection_record=selection_record,
+        selection_meta=selection_meta,
+        final_b1=design_meta["final_b1"],
+        opaque_records=design_meta["approved_opaque_ledgers"],
+    )
+    path = Path(selection_binding_path)
+    if not path.is_absolute():
+        path = root / path
+    path = path.resolve()
+    if path.exists():
+        record, existing = _json(path, root=root, description="TRR-0010 source-selection binding")
+        if existing != payload:
+            raise RegisterError("pre-registration source-selection binding changed")
+        return record
+    return _write_create_only(
+        path, payload, root=root, description="TRR-0010 source-selection binding"
+    )
 
 
 def _observation_bindings(
@@ -693,18 +747,11 @@ def build_registration(
         root=root,
         final_b1=design_meta["final_b1"],
     )
-    selection_binding = _selection_binding_payload(
-        selection=selection,
-        selection_record=selection_record,
-        selection_meta=selection_meta,
-        final_b1=design_meta["final_b1"],
-        opaque_records=design_meta["approved_opaque_ledgers"],
-    )
-    selection_binding_record = _write_create_only(
-        Path(selection_binding_path),
-        selection_binding,
-        root=root,
-        description="TRR-0010 source-selection binding",
+    selection_binding_record = prepare_selection_binding(
+        repository_root=root,
+        design_path=Path(design_path),
+        selection_path=Path(selection_path),
+        selection_binding_path=Path(selection_binding_path),
     )
     observation_record, manifest, observations = _observation_bindings(
         Path(observation_manifest_path),
