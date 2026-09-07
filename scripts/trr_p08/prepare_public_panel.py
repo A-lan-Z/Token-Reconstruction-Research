@@ -184,6 +184,27 @@ def _validate_required_opaque_ledger_contract(value: Mapping[str, Any]) -> None:
         raise PanelPreparationError("required opaque ledger contract schema changed")
     if list(contract.get("keys", ())) != list(REQUIRED_OPAQUE_LEDGER_KEYS):
         raise PanelPreparationError("required opaque ledger set is incomplete or reordered")
+    ledgers = contract.get("ledgers")
+    if not isinstance(ledgers, Mapping) or set(ledgers) != set(REQUIRED_OPAQUE_LEDGER_KEYS):
+        raise PanelPreparationError("required opaque ledger entries do not match approved set")
+    approved_by_key = {
+        str(spec["key"]): (path, spec)
+        for path, spec in APPROVED_OPAQUE_SPECS.items()
+    }
+    for key in REQUIRED_OPAQUE_LEDGER_KEYS:
+        expected_path, expected = approved_by_key[key]
+        actual = ledgers.get(key)
+        if not isinstance(actual, Mapping):
+            raise PanelPreparationError(f"required opaque ledger entry is malformed: {key}")
+        if (
+            Path(str(actual.get("path", ""))).expanduser().resolve() != expected_path
+            or actual.get("sha256") != expected["sha256"]
+            or actual.get("schema") != expected["schema"]
+            or actual.get("counts") != expected["counts"]
+        ):
+            raise PanelPreparationError(
+                f"required opaque ledger entry does not match approved binding: {key}"
+            )
     bindings = {
         key: [{
             "path": spec.get("path"),

@@ -85,6 +85,40 @@ def test_superseded_frozen_universe_without_required_ledger_contract_fails_close
         panel.load_universe(path, require_frozen=True)
 
 
+def _valid_required_opaque_contract() -> dict:
+    bindings = {
+        spec["key"]: [{
+            "path": str(path),
+            "bytes": path.stat().st_size,
+            "sha256": spec["sha256"],
+            "schema": spec["schema"],
+            "counts": dict(spec["counts"]),
+        }]
+        for path, spec in panel.APPROVED_OPAQUE_SPECS.items()
+    }
+    return panel._required_opaque_ledger_contract(bindings)
+
+
+@pytest.mark.parametrize("field", ["sha256", "path"])
+def test_frozen_contract_rejects_changed_approved_ledger_entry(field: str) -> None:
+    contract = _valid_required_opaque_contract()
+    entry = contract["ledgers"]["approved_trr0009_replacement_opaque"]
+    entry[field] = "0" * 64 if field == "sha256" else "/tmp/substituted-reservation.json"
+    with pytest.raises(panel.PanelPreparationError, match="does not match approved binding"):
+        panel._validate_required_opaque_ledger_contract(
+            {"exclusion_binding": {"required_opaque_ledger_contract": contract}}
+        )
+
+
+def test_frozen_contract_rejects_missing_approved_ledger_entry() -> None:
+    contract = _valid_required_opaque_contract()
+    del contract["ledgers"]["approved_trr0009_replacement_opaque"]
+    with pytest.raises(panel.PanelPreparationError, match="entries do not match approved set"):
+        panel._validate_required_opaque_ledger_contract(
+            {"exclusion_binding": {"required_opaque_ledger_contract": contract}}
+        )
+
+
 def test_universe_ranges_are_bound_to_both_domains() -> None:
     with pytest.raises(panel.PanelPreparationError, match="missing finance"):
         panel._configure_p06(seed=8088, ranges={"pile": [0, 7000]})
