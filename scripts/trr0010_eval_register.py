@@ -887,6 +887,7 @@ def build_registration(
         "task_id": gate.TASK_ID,
         "status": gate.REGISTRATION_STATUS,
         "repository_root": str(root),
+        "output_root": str(output),
         "code_commit": current_head,
         "code_bindings": code_records,
         "contract_binding": design_record,

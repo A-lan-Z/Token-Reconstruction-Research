@@ -101,6 +101,48 @@ def test_frequency_reference_binding_rejects_missing_bank(tmp_path: Path) -> Non
         )
 
 
+
+
+def test_registration_builder_serializes_prediction_root(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The gate/runner consume the builder's resolved prediction-root field."""
+    design_record = {"path": "design.json", "bytes": 1, "sha256": "a" * 64}
+    design = {"code_commit": "a" * 40, "numerical_settings": {}, "resource_guard": {}}
+    design_meta = {
+        "code_bindings": {},
+        "final_b1": {},
+        "approved_opaque_ledgers": [],
+        "decision_rules": {},
+        "capture_geometry": {},
+    }
+    monkeypatch.setattr(register, "_require_design", lambda *_args, **_kwargs: (design_record, design, design_meta))
+    monkeypatch.setattr(register, "_load_selection", lambda *_args, **_kwargs: ({}, {}, {}))
+    monkeypatch.setattr(register, "prepare_selection_binding", lambda **_kwargs: {"path": "selection-binding.json", "bytes": 1, "sha256": "b" * 64})
+    monkeypatch.setattr(register, "_observation_bindings", lambda *_args, **_kwargs: ({}, {}, {}))
+    monkeypatch.setattr(register, "_panel", lambda *_args, **_kwargs: ({}, {}))
+    monkeypatch.setattr(register, "_capture", lambda *_args, **_kwargs: ({}, {}))
+    monkeypatch.setattr(register, "_record", lambda *_args, **_kwargs: {"path": "timing.json", "bytes": 1, "sha256": "c" * 64})
+    monkeypatch.setattr(register, "_frequency_reference_bindings", lambda **_kwargs: ({}, {}))
+    monkeypatch.setattr(register, "_method_rows", lambda *_args, **_kwargs: [])
+    monkeypatch.setattr(register, "_verify_method_rows_match_design", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr(register, "_git_head", lambda *_args, **_kwargs: "a" * 40)
+    captured = {}
+    monkeypatch.setattr(register, "_write_create_only", lambda path, payload, **_kwargs: captured.setdefault("payload", payload) or {})
+    result = register.build_registration(
+        repository_root=tmp_path,
+        design_path=tmp_path / "design.json",
+        selection_path=tmp_path / "selection.json",
+        panel_path=tmp_path / "panel.json",
+        observation_manifest_path=tmp_path / "observations.json",
+        capture_path=tmp_path / "capture.json",
+        timing_plan_path=tmp_path / "timing.json",
+        method_rows={},
+        output_root=Path("experiments/TRR-0010/evaluation/public_prediction_watchdog_r5"),
+        output_path=tmp_path / "registration.json",
+    )
+    assert result["output_root"] == str((tmp_path / "experiments/TRR-0010/evaluation/public_prediction_watchdog_r5").resolve())
+    assert captured["payload"]["output_root"] == result["output_root"]
+
+
 def _truth_descriptor_fixture(tmp_path: Path) -> tuple[Path, dict]:
     def record(name: str) -> dict:
         path = tmp_path / name
