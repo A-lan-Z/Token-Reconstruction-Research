@@ -27,3 +27,75 @@ Before any real qualification or fit, the study caller still must bind the final
 ## Publication metadata
 
 This preparation checkpoint is published as draft [PR #19](https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/19) with base `task/TRR-0009` and evidence head `140ed70df03aca32814cbd4b48aa395745d57ad6`. The PR is open, draft, and unmerged; publication metadata does not change the preparation-pending scientific status above.
+
+## Stage-1 authorization and cost-lineage update (2026-09-07)
+
+The public stage-1 input recipe is now bound by
+`experiments/TRR-P09/planning/stage1-public-bank-plan.json` (SHA-256
+`bca93d6099760791c5ecbf3be8177d250cc672c62b2177a3d72d79b934c3826c`) and
+countersigned in
+`experiments/TRR-P09/setup/stage1-plan-countersignature-r1.json` (SHA-256
+`5a08ea2699ce038d7895239932312326852df5ff8514b878e150b7da622853a1`). This
+authorizes guarded CPU input preparation under the signed recipe. It does not
+open a model, create activations, start a fit, acquire an evaluation lease, or
+open truth. The text above records the pre-receipt state; the completed r1 CPU
+preparation and its pre-capture exclusion are recorded below as a create-only
+receipt.
+
+The published starting-checkpoint cost lineage is recorded separately in
+`experiments/TRR-P09/planning/starting-state-cost-lineage.md` (SHA-256
+`8f81b372d51d58d61f88f6c778825240ad67e95ece8d6804bcf8542307e36c9e`). It
+reports full scheduled runs, selected steps, preparation/capture components,
+and UNKNOWN fields without inventing a grand total or charging shared receipt
+fields repeatedly.
+
+A read-only compiler receipt audit is recorded in
+`experiments/TRR-P09/review/stage1-compiler-review.md`. The r1 geometry,
+quotas, source hashes, namespace counts, N, and separate diagnostics pass the
+metadata review. The r1 attempt is excluded before capture because the observed
+B0 replacement order differs from the signed first cycle, and because 63 of 624
+non-B0 prior-development Alpaca rows were not excluded by the compiled ledger.
+These findings are implementation/provenance blockers for r2, not a new
+scientific gate; no model or truth boundary was crossed.
+
+
+## Stage-1 CPU preparation receipt and pre-capture exclusion (2026-09-07)
+
+The guarded CPU preparation completed with return code 0 in 32.387874 seconds
+under source commit `c3cf2956bd2fe0c1254561d8dfb17ae8405bb8fd`. Its receipt is
+`experiments/TRR-P09/setup/stage1-input-preparation-r1-receipt.json` (SHA-256
+`4314ee55f64f15e88e25319d0a80860a152a83b7d41b02f9539858aef23d0153`). It
+produced public tokenized inputs only: 12,000 rows at width 192, 1,200 B0
+rows plus 10,800 new rows, 1,243,710 post-BOS positions, and `N=13,000`.
+The output and records hashes are `981406fd65109bdaacd935d4eab979a4520d0a5a589f4f6da1f18a119d7de168`
+and `30fe4216fd3fb6b76e4aec79324fafd73a398ed901e07b4681b815cce2dc98a4`,
+respectively. The compiler loaded no model and produced no activation payload.
+
+The quotas are 6,000 Alpaca natural, 3,000 Pile natural, 1,800 Finance
+natural, and 600 controlled rows each for Pile and Finance. Receipt review
+found the required separate 64-row diagnostics and namespace-specific
+exclusion counts. A public metadata-only overlap check found no B0/B1
+public-record-hash overlap and no overlap with the bound TRR-0009 source IDs or
+dataset-scoped source indices. The separate prior Alpaca capacity audit
+bound 1,224 Alpaca row keys in the public parent-exclusion manifest
+(SHA-256 `bd1359f1184091570023e22a7682d1f97c08f8f05e47f69f6b3e6be089cd0181`):
+600 are B0 rows and 624 are earlier development rows. The r1 scan excluded
+only 600 by metadata and zero by hash; 63 of the 624 non-B0 rows occur in the
+r1 B1 additions. This ledger gap is preserved as a second pre-capture blocker
+for r2.
+
+The r1 output is excluded before capture because the observed published B0
+replacement sequence is a permutation of, but not in the same order as, the
+signed 3,600-ID first cycle. Both sequences contain the same 3,600 unique IDs
+with identical multiplicities; the first order mismatch is `624` versus
+`17065`. Since IDs are assigned to concrete row/position occurrences, this
+order difference is not silently treated as equivalent. The narrow addendum
+under review will bind the observed B0 occurrence/offset digests and repeat
+each of the 120 B0 controlled-row templates exactly nine times on new parents
+matched by domain and active length, preserving the inherited position bins.
+No model capture, fitting, or truth access may start until that addendum and a
+fresh CPU receipt pass.
+
+The full metadata-only audit is
+`experiments/TRR-P09/review/stage1-compiler-review.md`; the r1 result is kept as
+an excluded attempt for provenance.
