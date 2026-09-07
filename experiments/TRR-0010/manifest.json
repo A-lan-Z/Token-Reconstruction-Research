@@ -474,6 +474,62 @@
       "receipt_sha256": "bc75d1c6837cd27bc2980cb448d4c309cecb279ab729b70db13367bac3eed47a",
       "truth_opened": false,
       "quality_results": false
+    },
+    {
+      "id": "trr0010_fixed_fit_learning_curve_cost_table_v1",
+      "path": "experiments/TRR-0010/report/fixed_fit_learning_curve_cost_table_v1.json",
+      "bytes": 26761,
+      "sha256": "fcdac6275a2300834566cbbf2a8a188d1204e1cae6cdbadae717ee3cebac1d56",
+      "status": "DESCRIPTIVE_B0_B1_FIXED_READOUT_FIT_DIAGNOSTICS_NO_FINAL_QUALITY",
+      "banks": [
+        "B0_current_fixed",
+        "B1_expanded_fixed"
+      ],
+      "checkpoint_rows": 14,
+      "updates_per_bank": 13000,
+      "truth_opened": false,
+      "quality_results": false
+    },
+    {
+      "id": "trr0010_fixed_fit_learning_curve_cost_table_v2",
+      "path": "experiments/TRR-0010/report/fixed_fit_learning_curve_cost_table_v2.json",
+      "bytes": 27837,
+      "sha256": "4f760524a2d0269861f8424d24ed6d89584f94719c6ecfa888d605bce8924040",
+      "status": "DESCRIPTIVE_B0_B1_FIXED_READOUT_FIT_DIAGNOSTICS_NO_FINAL_QUALITY",
+      "banks": [
+        "B0_current_fixed",
+        "B1_expanded_fixed"
+      ],
+      "checkpoint_rows": 14,
+      "updates_per_bank": 13000,
+      "truth_opened": false,
+      "quality_results": false,
+      "supersedes": {
+        "id": "trr0010_fixed_fit_learning_curve_cost_table_v1",
+        "path": "experiments/TRR-0010/report/fixed_fit_learning_curve_cost_table_v1.json",
+        "bytes": 26761,
+        "sha256": "fcdac6275a2300834566cbbf2a8a188d1204e1cae6cdbadae717ee3cebac1d56"
+      }
+    },
+    {
+      "id": "a2_published_final_manifest_b1_audit",
+      "path": "experiments/TRR-P09/manifest.json",
+      "bytes": 79938,
+      "sha256": "6371426c2ac587c90bdb86277b71c8a1274ebed625ab92a47e10d6b34f64c402",
+      "source_commit": "02fa090140cc3c55172225122eb4d7649e995951",
+      "status": "PASS_PUBLISHED_A2_FINAL_MANIFEST_B1_AUDIT",
+      "b1_audit": {
+        "path": "scientific_execution.b1_audit",
+        "status": "PASS_93_OF_93",
+        "unique_record_position_pairs": 1237403,
+        "repeated_record_position_draws": 5418597,
+        "sampled_records": 11996,
+        "records_in_batches": 11996,
+        "record_batch_exposures": 104000,
+        "frozen64_position_chunk_count": 19,
+        "full_bank_available_post_bos_positions": 1243710,
+        "truth_opened": false
+      }
     }
   ],
   "execution": {
@@ -643,7 +699,7 @@
     "directional_qualification_started": true,
     "capture_complete_no_truth": true,
     "directional_qualification_status": "PASS_LARGEST_CELL_QUALIFICATION_NO_FIT_NO_TRUTH",
-    "substantive_fit_status": "B0_AND_B1_EXPANDED_FIXED_COMPLETE_DIRECTIONAL_FITS_NOT_STARTED",
+    "substantive_fit_status": "B0_AND_B1_FIXED_READOUT_COMPLETE_DIRECTIONAL_FITS_NOT_STARTED",
     "final_evaluation_status": "PENDING_TRUTH_CLOSED",
     "qualified_B1_manifest_bound": true,
     "qualified_B1_manifest_external_sha256": "0e14dbf74c947cfc6c586e7a5dbf76a27d8f0522fb8e54d2f98c6067bb36d196",
@@ -672,7 +728,7 @@
     "qualification_receipt_path": "experiments/TRR-0010/training/qualification_v2/qualification.json",
     "qualification_receipt_sha256": "58594a477733c2f1ce21d356ec9acead92de6001b2c31bd41f635213700bca66",
     "current_fit_stage": {
-      "status": "B0_AND_B1_EXPANDED_FIXED_COMPLETE_DIRECTIONAL_PENDING",
+      "status": "B0_AND_B1_FIXED_READOUT_COMPLETE_DIRECTIONAL_PENDING",
       "B0": {
         "status": "COMPLETE_CAPACITY_AUDITED",
         "updates": 13000,
@@ -715,7 +771,7 @@
           "step": 13000
         }
       },
-      "source": "A2 B0/B1 audit and handoff receipts plus root coordination update; both expanded-fixed completions are bound; directional fits remain held"
+      "source": "A2 B0/B1 audit and handoff receipts plus root coordination update; both fixed-readout completions (B0 current-fixed and B1 expanded-fixed) are bound; directional fits remain held"
     },
     "cost_evidence_adapter": {
       "status": "SYNTHETIC_PUBLIC_TIMING_PASS_NO_PRODUCTION_ARTIFACT",
@@ -1181,7 +1237,7 @@
   "scope": {
     "amendment_source_or_signed_plan_modified": false,
     "joint_amendment_approved": true,
-    "no_score_or_accuracy_result": true,
+    "no_score_or_accuracy_result": false,
     "no_source_or_signed_plan_edit": true,
     "opened_fixture_equivalence_attempted": true,
     "opened_fixture_equivalence_pass": true,
@@ -1191,15 +1247,16 @@
     "opened_fixture_truth_or_accuracy_access": false,
     "public_metadata_audit_only": false,
     "r1_compilation_excluded_before_capture": true,
-    "stage1_public_capture_only": true,
+    "stage1_public_capture_only": false,
     "stage1_public_capture_truth_closed": true,
-    "directional_qualification_started": false,
-    "substantive_fits_started": false,
-    "final_evaluation_started": false
+    "directional_qualification_started": true,
+    "substantive_fits_started": true,
+    "final_evaluation_started": false,
+    "no_final_score_or_reconstruction_quality_result": true
   },
-  "status": "B0_AND_B1_EXPANDED_FIXED_COMPLETE_NO_DIRECTIONAL_FITS_COST_ADAPTER_READY_NO_QUALITY_RESULT",
+  "status": "B0_AND_B1_FIXED_READOUT_COMPLETE_NO_DIRECTIONAL_FITS_COST_ADAPTER_READY_NO_QUALITY_RESULT",
   "task_id": "TRR-0010",
-  "updated_utc": "2026-09-07T14:53:02Z",
+  "updated_utc": "2026-09-07T16:14:48Z",
   "publication": {
     "status": "OPEN_DRAFT_PR_PUBLISHED",
     "url": "https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/20",
@@ -1556,7 +1613,7 @@
       "truth_opened": false
     },
     "substantive_fits": {
-      "status": "B0_AND_B1_EXPANDED_FIXED_COMPLETE_DIRECTIONAL_FITS_NOT_STARTED",
+      "status": "B0_AND_B1_FIXED_READOUT_COMPLETE_DIRECTIONAL_FITS_NOT_STARTED",
       "quality_results": false,
       "B0_audit_sha256": "1f09e48753ecf5ef3561391465e33eca2ead713c48122633db4e0b08bc6bd6c6",
       "B0_truth_opened": false,
@@ -1840,5 +1897,46 @@
     "directional_fit_started": false,
     "truth_opened": false,
     "quality_results": false
+  },
+  "fixed_fit_learning_curve_cost_table": {
+    "id": "trr0010_fixed_fit_learning_curve_cost_table_v2",
+    "path": "experiments/TRR-0010/report/fixed_fit_learning_curve_cost_table_v2.json",
+    "bytes": 27837,
+    "sha256": "4f760524a2d0269861f8424d24ed6d89584f94719c6ecfa888d605bce8924040",
+    "status": "DESCRIPTIVE_B0_B1_FIXED_READOUT_FIT_DIAGNOSTICS_NO_FINAL_QUALITY",
+    "banks": [
+      "B0_current_fixed",
+      "B1_expanded_fixed"
+    ],
+    "checkpoint_rows": 14,
+    "updates_per_bank": 13000,
+    "truth_opened": false,
+    "quality_results": false,
+    "supersedes": {
+      "id": "trr0010_fixed_fit_learning_curve_cost_table_v1",
+      "path": "experiments/TRR-0010/report/fixed_fit_learning_curve_cost_table_v1.json",
+      "bytes": 26761,
+      "sha256": "fcdac6275a2300834566cbbf2a8a188d1204e1cae6cdbadae717ee3cebac1d56"
+    }
+  },
+  "a2_published_final_manifest": {
+    "id": "a2_published_final_manifest_b1_audit",
+    "path": "experiments/TRR-P09/manifest.json",
+    "bytes": 79938,
+    "sha256": "6371426c2ac587c90bdb86277b71c8a1274ebed625ab92a47e10d6b34f64c402",
+    "source_commit": "02fa090140cc3c55172225122eb4d7649e995951",
+    "status": "PASS_PUBLISHED_A2_FINAL_MANIFEST_B1_AUDIT",
+    "b1_audit": {
+      "path": "scientific_execution.b1_audit",
+      "status": "PASS_93_OF_93",
+      "unique_record_position_pairs": 1237403,
+      "repeated_record_position_draws": 5418597,
+      "sampled_records": 11996,
+      "records_in_batches": 11996,
+      "record_batch_exposures": 104000,
+      "frozen64_position_chunk_count": 19,
+      "full_bank_available_post_bos_positions": 1243710,
+      "truth_opened": false
+    }
   }
 }
