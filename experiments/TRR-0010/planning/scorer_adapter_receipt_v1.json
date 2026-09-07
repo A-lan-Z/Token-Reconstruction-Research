@@ -1,0 +1,67 @@
+{
+  "generated_utc": "2026-09-07T20:48:00+10:00",
+  "registration_binding_api": {
+    "all_methods_each_bank": true,
+    "payload_requirement": "Each bound JSON contains its named B0 or B1 public fitting-support map; one file may carry both maps when both registration records point to that same file.",
+    "registration_source_commit": "58f0cd50412208311d224e0462ce3f0d8fb91e99",
+    "required_input_bindings": {
+      "frequency_reference_B0": "{path,bytes,sha256}",
+      "frequency_reference_B1": "{path,bytes,sha256}"
+    },
+    "runtime_arbitrary_frequency_map_forbidden": true
+  },
+  "schema": "token-reconstruction.trr0010-scorer-adapter-receipt.v1",
+  "scoring_contract": {
+    "all_contrasts_scored_under_each_bank": true,
+    "all_methods_scored_under_each_bank": true,
+    "cost_gate": "planner-owned; scorer emits UNKNOWN/deferred",
+    "decision_status": "CHECKS_COMPUTED_NO_POOLED_DECISION",
+    "frequency_banks": [
+      "B0",
+      "B1"
+    ],
+    "remaining_error_routes": [
+      "directional_expanded",
+      "directional_current",
+      "data_fixed",
+      "data_directional",
+      "data_expanded_fixed_vs_unchanged",
+      "combined_candidate",
+      "combined_vs_unchanged",
+      "a1_a2_vs_unchanged"
+    ],
+    "separate_cell_and_domain_outputs": true,
+    "shared_source_record_bootstrap_per_domain": true,
+    "unknown_propagation": true
+  },
+  "source_bindings": {
+    "scorer": {
+      "bytes": 53479,
+      "path": "scripts/trr0010_score.py",
+      "sha256": "24d533c44cb73819142e50f57188dca42b0184211449a372832848e9c3bfc012",
+      "source_commit": "6d28278e723979bf184d92cb8b2a090807999f9e"
+    },
+    "tests": {
+      "bytes": 10994,
+      "path": "tests/test_trr0010_score.py",
+      "sha256": "31d93b22aff1ffd7b8fd73dd7d75d442675e5138662d9339cad26ce4c56f4cf9",
+      "source_commit": "6d28278e723979bf184d92cb8b2a090807999f9e"
+    }
+  },
+  "status": "SYNTHETIC_SCORER_READY",
+  "task_id": "TRR-0010",
+  "truth_boundary": {
+    "prediction_and_frequency_bindings_validated_before_truth": true,
+    "private_truth_source_not_opened_by_task": true,
+    "public_gate_before_truth_loader": true,
+    "synthetic_only": true,
+    "truth_loader_invocations_on_valid_synthetic_path": 1
+  },
+  "verification": {
+    "command": "PYTHONPATH=.:src:scripts pytest -q tests/test_trr0010_analysis.py tests/test_trr0010_eval_gate.py tests/test_trr0010_score.py",
+    "registration_focus_command": "PYTHONPATH=.:src:scripts pytest -q tests/test_trr0010_score.py tests/test_trr0010_eval_register.py",
+    "registration_focus_result": "10 passed in 5.26s",
+    "result": "41 passed in 5.98s"
+  },
+  "worktree_head_at_receipt": "6eee6f59badb4ed08f3261d6955d0c468bad36a5"
+}
