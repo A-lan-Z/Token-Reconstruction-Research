@@ -13,10 +13,12 @@
     "truth_opened": false
   },
   "bank_contract": {
+    "arbitrary_schedule_rows_verified": true,
     "current_prefix_post_bos_positions": 124371,
     "current_prefix_records": 1200,
     "expanded_target_records": 12000,
     "fixed_training_diagnostic_indices": "PENDING_COMMON_CONTRACT",
+    "integrity_gate": "verify-once manifest/input/shard hashes, COMPLETE markers, contiguous ranges, payload headers and global_row metadata; stat-only checks thereafter",
     "model_loaded": false,
     "natural_validation_geometry": "T=128 already-opened TRR-0009 public_base view; no new panel",
     "production_capture_started": false,
@@ -65,7 +67,7 @@
     "merge_allowed": false
   },
   "pending": [
-    "Root/design review bank schema and shared StreamedBankLoader interface.",
+    "Root/design review integrity-gated StreamedBankLoader interface.",
     "Bind exact public snapshot, current-prefix, validation-view, and schedule hashes.",
     "Freeze fixed training-diagnostic subset indices before any public forward or fit.",
     "Obtain root compute authorization before production public-model activation capture."
@@ -94,13 +96,14 @@
     "bank_proposal": "experiments/TRR-P09/setup/bank-preparation-proposal-r0.md",
     "bank_runner": "scripts/trr_p09/prepare_streamed_bank.py",
     "bank_schema": "experiments/TRR-P09/setup/bank-artifact-schema-r0.json",
+    "integrity_gate_tests": "tests/test_trr_p09_bank_artifact.py",
     "parent_method_freeze": "experiments/TRR-0009/training/method_freeze.json",
     "parent_source_inventory": "experiments/TRR-0009/planning/source_inventory_final.json",
     "published_input_inventory": "experiments/TRR-P09/setup/published-input-inventory-r0.json",
     "resource_snapshot": "experiments/TRR-P09/setup/resource-snapshot-r0.json"
   },
-  "status": "BANK_SCHEMA_PROPOSED_NO_CAPTURE",
+  "status": "BANK_SCHEMA_INTEGRITY_GATE_NO_CAPTURE",
   "task_id": "TRR-P09",
-  "updated_utc": "2026-09-07T06:58:05Z",
+  "updated_utc": "2026-09-07T07:17:59Z",
   "worktree": "/tmp/trr-p09"
 }

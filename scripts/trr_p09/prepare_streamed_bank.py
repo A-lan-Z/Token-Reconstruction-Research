@@ -437,6 +437,12 @@ def _relative(path: Path, root: Path) -> str:
     return str(Path(path).resolve().relative_to(Path(root).resolve()))
 
 
+def relative_file_record(path: Path, *, root: Path, label: str) -> dict[str, Any]:
+    record = file_record(path, label=label)
+    record["path"] = _relative(path, root)
+    return record
+
+
 def write_shard_create_only(
     *,
     output_root: Path,
@@ -467,12 +473,22 @@ def write_shard_create_only(
         expected_digests = {key: tensor_digest(tensors[key]) for key in _PAYLOAD_KEYS}
         existing_payload = existing.get("payload", {})
         existing_range = existing.get("row_range", {})
+        if (final_dir / "COMPLETE").read_bytes() != b"\n":
+            raise BankContractError(f"existing shard completion marker is invalid: {final_dir}")
+        actual_payload = relative_file_record(
+            final_dir / "payload.safetensors", root=output_root, label="existing shard payload"
+        )
+        payload_matches = (
+            int(existing_payload.get("bytes", -1)) == actual_payload["bytes"]
+            and str(existing_payload.get("sha256")) == actual_payload["sha256"]
+        )
         if (
             existing.get("schema") == SHARD_SCHEMA
             and int(existing_range.get("start", -1)) == global_start
             and int(existing_range.get("count", -1)) == rows
             and existing_payload.get("tensor_digests") == expected_digests
             and existing.get("records") == [dict(row) for row in records]
+            and payload_matches
         ):
             return {
                 "shard_id": shard_id,
@@ -483,6 +499,8 @@ def write_shard_create_only(
                     "bytes": int(existing_payload.get("bytes", 0)),
                     "sha256": str(existing_payload.get("sha256")),
                 },
+                "sidecar": relative_file_record(final_dir / "shard.json", root=output_root, label="existing shard sidecar"),
+                "complete": relative_file_record(final_dir / "COMPLETE", root=output_root, label="existing shard completion marker"),
                 "status": "SKIPPED_EXISTING_VERIFIED",
             }
         raise BankContractError(f"existing shard does not match requested immutable content: {final_dir}")
@@ -550,6 +568,8 @@ def write_shard_create_only(
             "bytes": shard_manifest["payload"]["bytes"],
             "sha256": shard_manifest["payload"]["sha256"],
         },
+        "sidecar": relative_file_record(final_dir / "shard.json", root=output_root, label="shard sidecar"),
+        "complete": relative_file_record(final_dir / "COMPLETE", root=output_root, label="shard completion marker"),
         "status": "CREATED",
     }
 
@@ -632,6 +652,12 @@ def build_bank_manifest(
             }),
         },
         "input_snapshots": dict(input_snapshots),
+        "input_binding": {
+            "required_before_forward": not fixture,
+            "roles": sorted(str(key) for key in input_snapshots),
+            "descriptor_field": "file",
+            "verification": "verify-once before loader iteration; stat-only thereafter",
+        },
         "tensor_layout": {
             "payload_format": "safetensors",
             "keys": list(_PAYLOAD_KEYS),
@@ -800,6 +826,139 @@ def _load_json(path: Path) -> dict[str, Any]:
     return value
 
 
+def _resolve_bank_path(root: Path, value: Any, *, label: str) -> Path:
+    if not isinstance(value, str) or not value:
+        raise BankContractError(f"{label} path is absent")
+    raw = Path(value).expanduser()
+    if raw.is_absolute():
+        candidate = raw.resolve()
+    else:
+        candidate = (root / raw).resolve()
+    try:
+        candidate.relative_to(root.resolve())
+    except ValueError as exc:
+        raise BankContractError(f"{label} escapes bank root: {candidate}") from exc
+    # Reject symlinks in the bank artifact path, including a symlinked parent.
+    probe = candidate
+    while probe != root.resolve():
+        if probe.is_symlink():
+            raise BankContractError(f"{label} is a symlink: {probe}")
+        probe = probe.parent
+    return candidate
+
+
+def _stat_record(path: Path, *, label: str) -> dict[str, Any]:
+    path = Path(path).expanduser()
+    if path.is_symlink() or not path.is_file():
+        raise BankContractError(f"{label} disappeared or became a symlink: {path}")
+    stat_result = path.stat()
+    return {
+        "path": str(path.resolve()),
+        "bytes": int(stat_result.st_size),
+        "mtime_ns": int(stat_result.st_mtime_ns),
+        "inode": int(stat_result.st_ino),
+    }
+
+
+def _verify_bank_file_descriptor(
+    descriptor: Mapping[str, Any],
+    *,
+    root: Path,
+    label: str,
+) -> tuple[Path, dict[str, Any]]:
+    if not isinstance(descriptor, Mapping):
+        raise BankContractError(f"{label} descriptor is absent")
+    path = _resolve_bank_path(root, descriptor.get("path"), label=label)
+    actual = verify_file_record(
+        {**dict(descriptor), "path": str(path)},
+        label=label,
+    )
+    return path, _stat_record(path, label=label)
+
+
+def _verify_payload_metadata(
+    payload_path: Path,
+    *,
+    row_count: int,
+    geometry: BankGeometry,
+    label: str,
+) -> dict[str, Any]:
+    expected_shapes = {
+        "activations": [row_count, geometry.sequence_tokens, geometry.hidden_size],
+        "token_ids": [row_count, geometry.sequence_tokens],
+        "attention_mask": [row_count, geometry.sequence_tokens],
+        "position_ids": [row_count, geometry.sequence_tokens],
+    }
+    allowed_dtypes = {
+        "activations": {"BF16"},
+        "token_ids": {"I32", "I64"},
+        "attention_mask": {"BOOL", "U8"},
+        "position_ids": {"I32", "I64"},
+    }
+    try:
+        with safe_open(str(payload_path), framework="pt", device="cpu") as handle:
+            if set(handle.keys()) != set(_PAYLOAD_KEYS):
+                raise BankContractError(f"{label} tensor keys changed")
+            tensors: dict[str, Any] = {}
+            for key in _PAYLOAD_KEYS:
+                sliced = handle.get_slice(key)
+                shape = [int(value) for value in sliced.get_shape()]
+                dtype = str(sliced.get_dtype())
+                if shape != expected_shapes[key]:
+                    raise BankContractError(
+                        f"{label} {key} shape changed: {shape} vs {expected_shapes[key]}"
+                    )
+                if dtype not in allowed_dtypes[key]:
+                    raise BankContractError(f"{label} {key} dtype changed: {dtype}")
+                tensors[key] = {"shape": shape, "dtype": dtype}
+    except BankContractError:
+        raise
+    except Exception as exc:
+        raise BankContractError(f"cannot inspect {label} payload header") from exc
+    return tensors
+
+
+def _manifest_input_bindings(
+    manifest: Mapping[str, Any],
+    *,
+    root: Path,
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    if bool(manifest.get("fixture")):
+        return {"fixture": "synthetic_contract_fixture"}, []
+    bindings = manifest.get("input_snapshots")
+    binding_config = manifest.get("input_binding")
+    if not isinstance(bindings, Mapping) or not isinstance(binding_config, Mapping):
+        raise BankContractError("non-fixture bank lacks exact input snapshot bindings")
+    roles = binding_config.get("roles")
+    if not isinstance(roles, list) or not roles:
+        raise BankContractError("non-fixture bank lacks required input snapshot roles")
+    verified: dict[str, Any] = {}
+    static_files: list[dict[str, Any]] = []
+    for role in roles:
+        entry = bindings.get(role)
+        if not isinstance(entry, Mapping):
+            raise BankContractError(f"input snapshot binding is absent: {role}")
+        descriptor = entry.get("file") if isinstance(entry.get("file"), Mapping) else entry
+        if not isinstance(descriptor, Mapping):
+            raise BankContractError(f"input snapshot file descriptor is absent: {role}")
+        # Public model/tokenizer manifests may be external to the bank root.
+        actual = verify_file_record(descriptor, label=f"input snapshot {role}")
+        path = Path(actual["path"]).resolve()
+        static_files.append(_stat_record(path, label=f"input snapshot {role}"))
+        verified[str(role)] = actual
+    return verified, static_files
+
+
+def _check_static_files(files: Sequence[Mapping[str, Any]]) -> None:
+    for entry in files:
+        path = Path(str(entry["path"]))
+        current = _stat_record(path, label="immutable bank artifact")
+        for key in ("bytes", "mtime_ns", "inode"):
+            if int(current[key]) != int(entry[key]):
+                raise BankContractError(f"immutable bank artifact changed after integrity gate: {path}")
+
+
+
 def validate_bank_manifest(path: Path) -> dict[str, Any]:
     """Validate contract-level metadata without opening tensor payloads."""
 
@@ -842,6 +1001,149 @@ def validate_bank_manifest(path: Path) -> dict[str, Any]:
     return manifest
 
 
+def verify_bank_integrity(manifest_path: Path) -> dict[str, Any]:
+    """Hash and validate a bank once before any schedule read.
+
+    This is intentionally the expensive boundary: payload, sidecar, completion
+    marker, manifest, and declared input snapshot files are hashed here. Later
+    reads perform only inode/size/mtime checks and never rehash the bank.
+    """
+
+    manifest_path = Path(manifest_path).expanduser().resolve()
+    manifest = validate_bank_manifest(manifest_path)
+    root = manifest_path.parent.resolve()
+    geometry_data = manifest["geometry"]
+    geometry = BankGeometry(
+        sequence_tokens=int(geometry_data["sequence_tokens"]),
+        hidden_size=int(geometry_data["hidden_size"]),
+        batch_records=int(geometry_data["loader_batch_records"]),
+        shard_records=int(geometry_data["shard_records"]),
+        hidden_dtype=str(geometry_data["hidden_dtype"]),
+    )
+    manifest_digest = file_record(manifest_path, label="bank manifest")
+    input_bindings, input_static = _manifest_input_bindings(manifest, root=root)
+    static_files: list[dict[str, Any]] = [
+        _stat_record(manifest_path, label="bank manifest"),
+        *input_static,
+    ]
+    shards = manifest["sharding"]["shards"]
+    expected_total = int(manifest["bank"]["record_count"])
+    cursor = 0
+    seen_record_ids: set[str] = set()
+    verified_shards: list[dict[str, Any]] = []
+    for shard_index, item in enumerate(shards):
+        if not isinstance(item, Mapping):
+            raise BankContractError(f"shard descriptor {shard_index} is malformed")
+        row_range = item.get("row_range")
+        if not isinstance(row_range, Mapping):
+            raise BankContractError(f"shard descriptor {shard_index} lacks row range")
+        try:
+            start = int(row_range["start"])
+            stop = int(row_range["stop"])
+            count = int(row_range["count"])
+        except (KeyError, TypeError, ValueError) as exc:
+            raise BankContractError(f"shard descriptor {shard_index} row range is malformed") from exc
+        if start != cursor or stop != start + count or count <= 0:
+            raise BankContractError(
+                f"shard row ranges are not contiguous at {shard_index}: "
+                f"expected start {cursor}, got {start}:{stop}"
+            )
+        if count > geometry.shard_records or count % geometry.batch_records:
+            raise BankContractError(f"shard {shard_index} is not loader-batch aligned")
+        payload_path, payload_static = _verify_bank_file_descriptor(
+            item.get("payload"), root=root, label=f"shard {shard_index} payload"
+        )
+        sidecar_path, sidecar_static = _verify_bank_file_descriptor(
+            item.get("sidecar"), root=root, label=f"shard {shard_index} sidecar"
+        )
+        complete_path, complete_static = _verify_bank_file_descriptor(
+            item.get("complete"), root=root, label=f"shard {shard_index} COMPLETE marker"
+        )
+        shard_dir = payload_path.parent
+        if _resolve_bank_path(root, item.get("path"), label=f"shard {shard_index}") != shard_dir:
+            raise BankContractError(f"shard {shard_index} directory binding differs")
+        if sidecar_path != shard_dir / "shard.json" or complete_path != shard_dir / "COMPLETE":
+            raise BankContractError(f"shard {shard_index} sidecar/completion paths differ")
+        if complete_path.read_bytes() != b"\n":
+            raise BankContractError(f"shard {shard_index} COMPLETE marker is invalid")
+        sidecar = _load_json(sidecar_path)
+        if sidecar.get("schema") != SHARD_SCHEMA or sidecar.get("task_id") != TASK_ID:
+            raise BankContractError(f"shard {shard_index} sidecar schema changed")
+        if int(sidecar.get("shard_id", -1)) != int(item.get("shard_id", -2)):
+            raise BankContractError(f"shard {shard_index} sidecar ID differs")
+        if sidecar.get("row_range") != dict(row_range):
+            raise BankContractError(f"shard {shard_index} sidecar row range differs")
+        sidecar_payload = sidecar.get("payload")
+        if not isinstance(sidecar_payload, Mapping):
+            raise BankContractError(f"shard {shard_index} sidecar payload record is absent")
+        sidecar_payload_path = (sidecar_path.parent / str(sidecar_payload.get("path", ""))).resolve()
+        if sidecar_payload_path != payload_path:
+            raise BankContractError(f"shard {shard_index} sidecar payload path differs")
+        payload_descriptor = item["payload"]
+        if (
+            int(sidecar_payload.get("bytes", -1)) != int(payload_descriptor["bytes"])
+            or str(sidecar_payload.get("sha256")) != str(payload_descriptor["sha256"])
+            or tuple(sidecar_payload.get("keys", ())) != _PAYLOAD_KEYS
+        ):
+            raise BankContractError(f"shard {shard_index} sidecar payload binding differs")
+        tensor_digests = sidecar_payload.get("tensor_digests")
+        if not isinstance(tensor_digests, Mapping) or set(tensor_digests) != set(_PAYLOAD_KEYS):
+            raise BankContractError(f"shard {shard_index} tensor digest metadata is incomplete")
+        records = sidecar.get("records")
+        if not isinstance(records, list) or len(records) != count:
+            raise BankContractError(f"shard {shard_index} record metadata count differs")
+        local_ids: set[str] = set()
+        for offset, record in enumerate(records):
+            if not isinstance(record, Mapping):
+                raise BankContractError(f"shard {shard_index} record {offset} is malformed")
+            global_row = record.get("global_row")
+            if isinstance(global_row, bool) or not isinstance(global_row, int) or global_row != start + offset:
+                raise BankContractError(f"shard {shard_index} record {offset} global_row differs")
+            record_id = record.get("record_id")
+            sequence_id = record.get("sequence_id")
+            parent_record_id = record.get("parent_record_id")
+            if not all(isinstance(value, str) and value for value in (record_id, sequence_id, parent_record_id)):
+                raise BankContractError(f"shard {shard_index} record {offset} identity is incomplete")
+            if record_id in local_ids or record_id in seen_record_ids:
+                raise BankContractError(f"duplicate record_id in bank: {record_id}")
+            local_ids.add(record_id)
+            seen_record_ids.add(record_id)
+        tensor_headers = _verify_payload_metadata(
+            payload_path,
+            row_count=count,
+            geometry=geometry,
+            label=f"shard {shard_index}",
+        )
+        static_files.extend([payload_static, sidecar_static, complete_static])
+        verified_shards.append(
+            {
+                "shard_index": shard_index,
+                "row_range": {"start": start, "stop": stop, "count": count},
+                "record_count": count,
+                "payload": dict(payload_descriptor),
+                "sidecar": dict(item["sidecar"]),
+                "complete": dict(item["complete"]),
+                "tensor_headers": tensor_headers,
+            }
+        )
+        cursor = stop
+    if cursor != expected_total:
+        raise BankContractError(f"shards cover {cursor} rows, expected {expected_total}")
+    return {
+        "schema": "token-reconstruction.trr-p09-bank-integrity-gate.v1",
+        "task_id": TASK_ID,
+        "manifest": manifest_digest,
+        "input_snapshots": input_bindings,
+        "shard_count": len(verified_shards),
+        "record_count": cursor,
+        "verified_shards": verified_shards,
+        "static_files": static_files,
+        "hashes_performed_once": True,
+        "stat_checks_after_gate": True,
+    }
+
+
+
 class StreamedBankLoader:
     """Read one complete public sequence batch at a time from immutable shards."""
 
@@ -850,6 +1152,7 @@ class StreamedBankLoader:
     def __init__(self, manifest_path: Path, *, device: str = "cpu") -> None:
         self.manifest_path = Path(manifest_path).expanduser().resolve()
         self.manifest = validate_bank_manifest(self.manifest_path)
+        self._integrity = verify_bank_integrity(self.manifest_path)
         self.root = self.manifest_path.parent
         self.geometry = BankGeometry(
             sequence_tokens=int(self.manifest["geometry"]["sequence_tokens"]),
@@ -862,11 +1165,15 @@ class StreamedBankLoader:
             raise BankContractError("requested loader CUDA device is unavailable")
         self.device = torch.device(device)
 
+    def _assert_integrity_current(self) -> None:
+        _check_static_files(self._integrity["static_files"])
+
     def _read_shard(self, item: Mapping[str, Any]) -> Iterator[StreamBatch]:
+        self._assert_integrity_current()
         relative = item.get("payload", {}).get("path")
         if not isinstance(relative, str):
             raise BankContractError("shard payload path is missing")
-        payload_path = (self.root / relative).resolve()
+        payload_path = _resolve_bank_path(self.root, relative, label="loader shard payload")
         shard_json = payload_path.parent / "shard.json"
         complete = payload_path.parent / "COMPLETE"
         if not shard_json.is_file() or not complete.is_file():
@@ -924,6 +1231,7 @@ class StreamedBankLoader:
         smallest contiguous slice needed from one shard is opened at a time.
         """
 
+        self._assert_integrity_current()
         requested = [int(index) for index in global_indices]
         if not requested:
             raise BankContractError("get_records requires at least one row")
@@ -947,8 +1255,9 @@ class StreamedBankLoader:
         output_tensors: dict[str, list[torch.Tensor | None]] = {key: [None] * len(requested) for key in _PAYLOAD_KEYS}
         output_rows: list[Mapping[str, Any] | None] = [None] * len(requested)
         for shard_index, positions in grouped.items():
+            self._assert_integrity_current()
             item = shards[shard_index]
-            payload_path = (self.root / str(item["payload"]["path"])).resolve()
+            payload_path = _resolve_bank_path(self.root, item["payload"]["path"], label="scheduled shard payload")
             shard = _load_json(payload_path.parent / "shard.json")
             rows = shard.get("records")
             if not isinstance(rows, list):
@@ -998,8 +1307,10 @@ class StreamedBankLoader:
     def iter_batches(self) -> Iterator[StreamBatch]:
         """Yield sequential convenience batches; schedules should call get_records."""
 
+        self._assert_integrity_current()
         shards = self.manifest["sharding"]["shards"]
         for item in shards:
+            self._assert_integrity_current()
             yield from self._read_shard(item)
 
 

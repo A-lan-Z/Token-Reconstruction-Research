@@ -101,6 +101,8 @@
         "shard_id",
         "row_range",
         "payload_file_record",
+        "sidecar_file_record",
+        "complete_marker_file_record",
         "tensor_digests",
         "record_id",
         "parent_record_id",
@@ -122,6 +124,18 @@
       "write COMPLETE marker",
       "atomically publish previously absent shard directory"
     ],
+    "integrity_gate": {
+      "schema": "token-reconstruction.trr-p09-bank-integrity-gate.v1",
+      "before_iteration": [
+        "verify manifest and declared public input snapshot hashes",
+        "verify every payload, sidecar, and COMPLETE marker hash",
+        "verify contiguous non-overlapping row ranges cover record_count",
+        "verify sidecar global_row equals row_range.start plus local offset",
+        "verify safetensors keys, shapes, and dtypes without loading values"
+      ],
+      "after_gate": "stat-only inode/size/mtime checks; do not rehash the bank",
+      "failure": "fail closed before returning any batch"
+    },
     "resume": {
       "completed_shard": "verify input/geometry/payload hashes then skip",
       "partial_shard": "retain as failure evidence and fail closed",

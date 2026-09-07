@@ -33,8 +33,13 @@ GPU margins without importing a model; an authorized capture must then use the
 external fail-closed watchdog and inner resource checks.
 
 Each shard is published through a unique staging directory, a safetensors
-payload, a hash-bound sidecar, and a `COMPLETE` marker. A completed shard is
-verified and skipped on resume. Existing payloads and sidecars are never
+payload, a hash-bound sidecar, and a `COMPLETE` marker. Before the first
+schedule read, the loader hashes the manifest, declared public input snapshot
+manifests, every payload, sidecar, and completion marker; checks contiguous
+non-overlapping ranges and exact `global_row` metadata; and validates tensor
+headers without loading the bank. Later accesses perform only inode/size/mtime
+checks, so the 9 GiB payload is not rehashed on every batch. A completed shard
+is verified and skipped on resume. Existing payloads and sidecars are never
 replaced; an incomplete staging directory remains as failure evidence. Sidecar
 rows contain only public fitting identities and hashes (`record_id`,
 `parent_record_id`, `sequence_id`, source/sequence digests, active count,
