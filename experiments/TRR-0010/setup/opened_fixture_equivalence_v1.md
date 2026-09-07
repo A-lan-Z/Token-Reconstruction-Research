@@ -40,3 +40,15 @@ writes `FAIL_NONEXACT` and exits nonzero; it is never reported as PASS. A succes
 would be created under `experiments/TRR-0010/evaluation/opened_fixture_zero_delta_v1/`;
 failures are preserved in a sibling `_failure` directory. No command has been
 launched yet.
+
+After the first authorized launch attempt, the pre-load guard failed closed
+before loading E, H, or model state because the diagnostic compared the
+TRR-0009 published digest namespace with TRR-0010's distinct support-digest
+namespace. The failed attempt is preserved under
+`experiments/TRR-0010/evaluation/opened_fixture_zero_delta_v1_failure/`.
+The corrected entrypoint now derives B0 support directly from the published
+`enriched_fit_cut4.safetensors` `token_ids` and `attention_mask` tensors only
+(124,371 post-BOS rows and 17,126 supported IDs), verifies exact equality with
+the published support ID/count files, and records both digest namespaces. It
+never opens the fit activation tensor for support derivation. A retry requires a
+new explicit lease/go.

@@ -39,6 +39,8 @@ from safetensors import safe_open
 
 from scripts import trr0010_model as model_source_module
 from scripts import trr0010_p09_caller as caller_source_module
+from scripts import trr0009_model as support_source_module
+from scripts.trr0009_model import support_digest as published_support_digest
 from scripts.trr0010_model import (
     build_directional_from_base,
     export_effective_embedding,
@@ -60,6 +62,7 @@ EXPECTED_EMBEDDING_SHA256 = "ad4201381ec062f0ece1ed007f6a003503e57ef438427136105
 EXPECTED_SUPPORT_DIGEST = "8090b9231042d6c9f9c52f3a0a9d8733b8ec1b739a4f28b12ab1057a7126969d"
 EXPECTED_SUPPORT_IDS_SHA256 = "b3bef773294cbc79755852512d79c21c910dca30f000387e8c73a69c19c8f104"
 EXPECTED_SUPPORT_COUNTS_SHA256 = "3ae3412ccf0061adcc0a24e3ef40ec0fbe87cd44e935bfc9e24462ae87f18825"
+EXPECTED_B0_FIT_TENSOR_SHA256 = "a55814759dfa9d2567587935063fc49e44d8bff949c50014793deb982ebdf35d"
 EXPECTED_OBSERVATION_SHA256 = {
     "pile": "5ad0fece58e4247d8fb1a1d8f5d1d5a021eb96cded0be112f0aafa9052dab89a",
     "finance": "7449bf11fd335ec8d46ca7581378b8e3a3351d7b7852561cac944c723dd643bb",
@@ -120,6 +123,7 @@ def _runtime_source_bindings() -> dict[str, Any]:
         "model": _module_record(model_source_module, label="TRR-0010 model"),
         "loader": _module_record(loader_source_module, label="TRR-0007 positionwise loader"),
         "caller": _module_record(caller_source_module, label="TRR-P09 caller"),
+        "support_provenance": _module_record(support_source_module, label="TRR-0009 support digest helper"),
     }
 
 
@@ -238,6 +242,38 @@ def _selected_step(path: Path) -> int:
     return step
 
 
+def _derive_b0_support(path: Path) -> tuple[torch.Tensor, torch.Tensor, dict[str, Any]]:
+    """Derive B0 support from public token_ids/mask without opening H."""
+
+    try:
+        with safe_open(str(path), framework="pt", device="cpu") as handle:
+            if "token_ids" not in handle.keys() or "attention_mask" not in handle.keys():
+                raise DiagnosticError("B0 fit tensor lacks token_ids or attention_mask")
+            token_ids = handle.get_tensor("token_ids").to(dtype=torch.long).contiguous()
+            attention_mask = handle.get_tensor("attention_mask").to(dtype=torch.bool).contiguous()
+    except DiagnosticError:
+        raise
+    except Exception as exc:
+        raise DiagnosticError("unable to derive B0 support from public token_ids/mask") from exc
+    if tuple(token_ids.shape) != (1200, 192) or tuple(attention_mask.shape) != tuple(token_ids.shape):
+        raise DiagnosticError("B0 token_ids/mask geometry changed")
+    if not attention_mask[:, 0].all().item():
+        raise DiagnosticError("B0 token_ids/mask lost BOS rows")
+    labels = token_ids[:, 1:][attention_mask[:, 1:]]
+    if labels.numel() != 124371 or labels.lt(0).any().item() or labels.ge(VOCABULARY_SIZE).any().item():
+        raise DiagnosticError("B0 post-BOS token support geometry or range changed")
+    counts = torch.bincount(labels, minlength=VOCABULARY_SIZE).to(dtype=torch.long)
+    ids = torch.nonzero(counts > 0, as_tuple=False).flatten().to(dtype=torch.long)
+    if int(ids.numel()) != 17126:
+        raise DiagnosticError("B0 supported-token count changed")
+    return ids, counts[ids], {
+        "source": "public B0 fit token_ids and attention_mask only; H activations not opened for support derivation",
+        "post_bos_rows": int(labels.numel()),
+        "supported_token_count": int(ids.numel()),
+        "published_trr0009_support_digest": published_support_digest(ids, counts[ids]),
+    }
+
+
 def _load_observation(path: Path, *, domain: str, records: int) -> tuple[torch.Tensor, torch.Tensor]:
     try:
         with safe_open(str(path), framework="pt", device="cpu") as handle:
@@ -287,6 +323,7 @@ def _default_paths(root: Path) -> dict[str, Path]:
     return {
         "state": trr9 / "experiments" / "TRR-0009" / "training" / "run_v1" / "continued_fixed_readout" / "selected.safetensors",
         "embedding": project / "outputs" / "TRR-0003" / "track_b" / "public_fit_v2" / "public_normalized_embeddings.safetensors",
+        "fit_tensor": root.parent / "TRR-0007" / "experiments" / "TRR-0007" / "support" / "broader_capture_v2" / "enriched_fit_cut4.safetensors",
         "support_ids": trr9_eval / "support_ids.safetensors",
         "support_counts": trr9_eval / "support_counts.safetensors",
         "pile": trr9_eval / "public_observations_v2" / "observations" / "pile__public_base.safetensors",
@@ -332,6 +369,7 @@ def run_diagnostic(*, root: Path, output_root: Path, device_name: str, records: 
     selected_step = _selected_step(paths["state"])
     state_record = _bound_file(paths["state"], expected_sha256=EXPECTED_STATE_SHA256, label="selected fixed state")
     embedding_record = _bound_file(paths["embedding"], expected_sha256=EXPECTED_EMBEDDING_SHA256, label="public embedding")
+    fit_tensor_record = _bound_file(paths["fit_tensor"], expected_sha256=EXPECTED_B0_FIT_TENSOR_SHA256, label="B0 public fit token/mask tensor")
     support_ids_record = _bound_file(paths["support_ids"], expected_sha256=EXPECTED_SUPPORT_IDS_SHA256, label="support IDs")
     support_counts_record = _bound_file(paths["support_counts"], expected_sha256=EXPECTED_SUPPORT_COUNTS_SHA256, label="support counts")
     observation_records = {
@@ -340,12 +378,20 @@ def run_diagnostic(*, root: Path, output_root: Path, device_name: str, records: 
     }
     _ensure_deadline(started_perf, max_seconds)
 
+    derived_support_ids, derived_support_counts, support_provenance = _derive_b0_support(paths["fit_tensor"])
     support_ids = _load_single_tensor(paths["support_ids"], key="support_ids", label="support IDs")
     support_counts = _load_single_tensor(paths["support_counts"], key="support_counts", label="support counts")
     if support_ids.dtype != torch.int64 or support_counts.dtype != torch.int64:
         raise DiagnosticError("support vectors must be int64")
-    if support_digest(support_ids, support_counts) != EXPECTED_SUPPORT_DIGEST:
-        raise DiagnosticError("support digest differs from the bound public B0 support")
+    if not torch.equal(derived_support_ids, support_ids) or not torch.equal(derived_support_counts, support_counts):
+        raise DiagnosticError("stored B0 support differs from support derived from public token_ids/mask")
+    if support_provenance["published_trr0009_support_digest"] != EXPECTED_SUPPORT_DIGEST:
+        raise DiagnosticError("derived B0 support differs from the published TRR-0009 support digest")
+    support_provenance.update({
+        "stored_support_ids_equal": True,
+        "stored_support_counts_equal": True,
+        "trr0010_directional_support_digest": support_digest(derived_support_ids, derived_support_counts),
+    })
     public_embedding = _load_single_tensor(paths["embedding"], key="embeddings", label="public embedding")
     if tuple(public_embedding.shape) != (VOCABULARY_SIZE, HIDDEN_SIZE) or public_embedding.dtype != torch.float32:
         raise DiagnosticError("public embedding geometry or dtype changed")
@@ -499,6 +545,8 @@ def run_diagnostic(*, root: Path, output_root: Path, device_name: str, records: 
         "geometry": {"sequence_tokens": 128, "hidden_size": HIDDEN_SIZE, "vocabulary_size": VOCABULARY_SIZE},
         "state": state_record,
         "public_embedding": embedding_record,
+        "b0_fit_tensor": fit_tensor_record,
+        "support_provenance": support_provenance,
         "support_ids": support_ids_record,
         "support_counts": support_counts_record,
         "support_digest": EXPECTED_SUPPORT_DIGEST,

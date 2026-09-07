@@ -1,0 +1,39 @@
+{
+  "schema": "token-reconstruction.trr0010-opened-fixture-support-derivation.v1",
+  "status": "PASS_PUBLIC_B0_SUPPORT_BINDING",
+  "task_id": "TRR-0010",
+  "truth_opened": false,
+  "source": {
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_fit_cut4.safetensors",
+    "bytes": 947176760,
+    "sha256": "a55814759dfa9d2567587935063fc49e44d8bff949c50014793deb982ebdf35d",
+    "keys_opened": ["token_ids", "attention_mask"],
+    "activation_key_opened": false,
+    "source_text_or_labels_outside_public_token_tensor_opened": false
+  },
+  "geometry": {
+    "records": 1200,
+    "sequence_tokens": 192,
+    "post_bos_rows": 124371,
+    "supported_token_count": 17126
+  },
+  "support_binding": {
+    "derivation": "torch.bincount(token_ids[:,1:][attention_mask[:,1:]]) over public B0 input token IDs and mask",
+    "published_trr0009_digest": "8090b9231042d6c9f9c52f3a0a9d8733b8ec1b739a4f28b12ab1057a7126969d",
+    "trr0010_directional_digest": "f554d25681904530bf0f52752b50f92ae5da10b99998d06eb0cc30ed25fccd4d",
+    "stored_support_ids": {
+      "path": "experiments/TRR-0009/evaluation/support_ids.safetensors",
+      "bytes": 137616,
+      "sha256": "b3bef773294cbc79755852512d79c21c910dca30f000387e8c73a69c19c8f104"
+    },
+    "stored_support_counts": {
+      "path": "experiments/TRR-0009/evaluation/support_counts.safetensors",
+      "bytes": 137624,
+      "sha256": "3ae3412ccf0061adcc0a24e3ef40ec0fbe87cd44e935bfc9e24462ae87f18825"
+    },
+    "derived_ids_equal_stored": true,
+    "derived_counts_equal_stored": true,
+    "digest_namespace_note": "TRR-0009 and TRR-0010 use distinct digest prefixes over the identical sorted ID/count vectors."
+  },
+  "method": "CPU-only metadata/payload check; no H activations, fixture observations, labels, truth, GPU, fitting, or scoring opened."
+}

@@ -106,6 +106,30 @@
       "path": "experiments/TRR-P09/review/stage1-compiler-review.md",
       "sha256": "2c8e74e826cd2ddf2e922929b3cc26a281012c66ce330e68d1c9f40790e609c5",
       "source_commit": "2fcb7a7"
+    },
+    {
+      "bytes": 31308,
+      "id": "opened_fixture_diagnostic_source",
+      "path": "scripts/trr0010_opened_fixture_equivalence.py",
+      "sha256": "3e3231e6626aed22332e0d2edabbaae08254064dfec434eac02b80ac05ffc54b"
+    },
+    {
+      "bytes": 3493,
+      "id": "opened_fixture_diagnostic_plan",
+      "path": "experiments/TRR-0010/setup/opened_fixture_equivalence_v1.md",
+      "sha256": "67bba0f7bccd22169477eab32d9742ff25a5a5800387046216ef3825bbe54892"
+    },
+    {
+      "bytes": 1890,
+      "id": "opened_fixture_support_derivation",
+      "path": "experiments/TRR-0010/setup/opened_fixture_support_derivation_v1.json",
+      "sha256": "aea50494804343903f317684b47e6c039ec421c95b9baf5242147b8ef91b7f9e"
+    },
+    {
+      "bytes": 642,
+      "id": "opened_fixture_diagnostic_failure",
+      "path": "experiments/TRR-0010/evaluation/opened_fixture_zero_delta_v1_failure/failure.json",
+      "sha256": "2bb9ee8574b9472f0313f1b5ad8f733c69e45c2181422f0d8f236c2f75b58496"
     }
   ],
   "execution": {
@@ -114,6 +138,53 @@
     "fresh_evaluation_started": false,
     "fresh_evaluation_truth_opened": false,
     "gpu_qualification_performed": false,
+    "opened_fixture_equivalence_attempt": {
+      "command": [
+        "env",
+        "OMP_NUM_THREADS=1",
+        "MKL_NUM_THREADS=1",
+        "OPENBLAS_NUM_THREADS=1",
+        "TOKENIZERS_PARALLELISM=false",
+        "PYTHONPATH=.:src:scripts",
+        "timeout",
+        "--signal=TERM",
+        "--kill-after=15s",
+        "240s",
+        "python3",
+        "scripts/trr0010_opened_fixture_equivalence.py",
+        "--repository-root",
+        ".",
+        "--output-root",
+        "experiments/TRR-0010/evaluation/opened_fixture_zero_delta_v1",
+        "--device",
+        "cuda",
+        "--records-per-domain",
+        "2",
+        "--max-seconds",
+        "240"
+      ],
+      "ended_utc": "2026-09-07T10:36:33Z",
+      "exit_code": 1,
+      "failure_reason": "pre-load support digest namespace mismatch; no model, E, H, observation, label, truth, or accuracy payload loaded",
+      "failure_receipt": {
+        "bytes": 642,
+        "id": "opened_fixture_diagnostic_failure",
+        "path": "experiments/TRR-0010/evaluation/opened_fixture_zero_delta_v1_failure/failure.json",
+        "sha256": "2bb9ee8574b9472f0313f1b5ad8f733c69e45c2181422f0d8f236c2f75b58496"
+      },
+      "fit_or_truth_access": false,
+      "gpu_payload_load": false,
+      "retry_authorization": "new explicit lease required",
+      "started_utc": "2026-09-07T10:36:32Z",
+      "status": "EXCLUDED_PRELOAD_BINDING_FAILURE",
+      "support_derivation_receipt": {
+        "bytes": 1890,
+        "id": "opened_fixture_support_derivation",
+        "path": "experiments/TRR-0010/setup/opened_fixture_support_derivation_v1.json",
+        "sha256": "aea50494804343903f317684b47e6c039ec421c95b9baf5242147b8ef91b7f9e"
+      },
+      "wall_seconds": 1.0
+    },
     "r1_cpu_input_compilation": {
       "controlled_joint_assignment_accepted": false,
       "no_capture_or_fit_started": true,
@@ -133,7 +204,8 @@
     "Guarded corrected r2 compilation and verification under the jointly countersigned B0-template amendment.",
     "Bind the namespace-correct parent exclusion manifest and verify zero overlap for all 624 prior-development Alpaca keys; r1 had 63 observed overlaps.",
     "Capture qualifier and resource review after corrected r2; no capture is retained from excluded r1.",
-    "Only after the shared contract and resource qualification: substantive fits, contender freeze, and any later evaluation design/truth steps."
+    "Only after the shared contract and resource qualification: substantive fits, contender freeze, and any later evaluation design/truth steps.",
+    "Retry the corrected opened-fixture equivalence diagnostic only after a fresh explicit GPU lease; the first attempt failed before payload load on an incompatible support-digest namespace."
   ],
   "provenance": {
     "a2_followup_audit_commit": "2fcb7a7",
@@ -149,7 +221,16 @@
       "stratum_active_length_exact_9x": true
     },
     "old_development_alpaca_keys_expected": 624,
-    "old_development_alpaca_keys_observed_in_r1_additions": 63
+    "old_development_alpaca_keys_observed_in_r1_additions": 63,
+    "opened_fixture_support_derivation": {
+      "fit_tensor_sha256": "a55814759dfa9d2567587935063fc49e44d8bff949c50014793deb982ebdf35d",
+      "h_activations_opened_for_derivation": false,
+      "post_bos_rows": 124371,
+      "published_trr0009_digest": "8090b9231042d6c9f9c52f3a0a9d8733b8ec1b739a4f28b12ab1057a7126969d",
+      "stored_ids_and_counts_equal": true,
+      "supported_token_count": 17126,
+      "trr0010_digest": "f554d25681904530bf0f52752b50f92ae5da10b99998d06eb0cc30ed25fccd4d"
+    }
   },
   "report_path": "coordination/results/TRR-0010.md",
   "reviewed_base_commit": "4602f98eeb03ac121d8bbc230d7e2b219551b914",
@@ -160,10 +241,13 @@
     "joint_amendment_approved": true,
     "no_score_or_accuracy_result": true,
     "no_source_or_signed_plan_edit": true,
+    "opened_fixture_equivalence_attempted": true,
+    "opened_fixture_payload_load": false,
+    "opened_fixture_truth_or_accuracy_access": false,
     "public_metadata_audit_only": true,
     "r1_compilation_excluded_before_capture": true
   },
-  "status": "PREPARATION_ONLY_CORRECTED_COMPILATION_VERIFICATION_PENDING",
+  "status": "PREPARATION_ONLY_OPENED_FIXTURE_PRELOAD_BINDING_FAILURE_RETRY_PENDING",
   "task_id": "TRR-0010",
-  "updated_utc": "2026-09-07T10:18:50Z"
+  "updated_utc": "2026-09-07T10:42:38Z"
 }
