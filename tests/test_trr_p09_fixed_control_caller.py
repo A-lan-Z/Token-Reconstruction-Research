@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 import torch
 from safetensors import safe_open
+from safetensors.torch import save_file
 from torch import nn
 
 from scripts.trr_p09.fixed_control_caller import (
@@ -14,13 +15,14 @@ from scripts.trr_p09.fixed_control_caller import (
     build_fixed_control_receipt,
     fixed_control_cost_summary,
     inherited_schedule_steps,
+    load_serialized_schedule,
     join_public_validation_labels,
     make_domain_validation_callback,
     make_fixed_checkpoint_callback,
     materialize_schedule_plan,
     signed_p09_checkpoint_grid,
 )
-from scripts.trr_p09.fixed_control_runner import FixedControlRunnerError, SchedulePlan, validate_batch
+from scripts.trr_p09.fixed_control_runner import FixedControlRunnerError, SchedulePlan, ScheduleStep, validate_batch
 from token_reconstruction.trr_p09_fixed_control_adapter import (
     AssetBinding,
     BankContract,
@@ -148,6 +150,93 @@ def test_schedule_matches_inherited_torch_generator_and_plan_digest() -> None:
     assert isinstance(plan, SchedulePlan)
     assert plan.exposure_summary()["total_draws"] == 20
 
+
+
+def test_serialized_common_schedule_validates_digest_and_streams_steps(tmp_path: Path) -> None:
+    steps = (
+        ScheduleStep(
+            step=0,
+            batch_global_rows=(0, 1),
+            draw_record_slots=(0, 1, 0),
+            draw_position_slots=(1, 2, 3),
+            used_replacement=False,
+        ),
+        ScheduleStep(
+            step=1,
+            batch_global_rows=(2, 3),
+            draw_record_slots=(1, 0, 1),
+            draw_position_slots=(2, 3, 4),
+            used_replacement=True,
+        ),
+    )
+    plan = SchedulePlan.from_steps(seed=17, steps=steps)
+    path = tmp_path / "schedule.safetensors"
+    save_file(
+        {
+            "batch_record_indices": torch.tensor([step.batch_global_rows for step in steps], dtype=torch.int32),
+            "draw_record_slots": torch.tensor([step.draw_record_slots for step in steps], dtype=torch.int16),
+            "draw_position_slots": torch.tensor([step.draw_position_slots for step in steps], dtype=torch.int16),
+            "used_replacement": torch.tensor([step.used_replacement for step in steps], dtype=torch.uint8),
+        },
+        str(path),
+        metadata={
+            "schema": "token-reconstruction.trr-p09-common-schedules.v1",
+            "bank": "B0",
+            "seed": "17",
+            "steps": "2",
+            "record_batch_size": "2",
+            "position_budget": "3",
+            "sequence_tokens": "6",
+            "schedule_semantic_sha256": plan.semantic_sha256,
+            "valid_mask_semantic_sha256": "a" * 64,
+        },
+    )
+    loaded = load_serialized_schedule(
+        path,
+        expected_seed=17,
+        expected_steps=2,
+        expected_record_batch_size=2,
+        expected_position_budget=3,
+        expected_sequence_tokens=6,
+        expected_global_row_exclusive=4,
+        expected_bank="B0",
+    )
+    assert tuple(loaded.iter_steps()) == steps
+    assert loaded.exposure_summary()["total_draws"] == 6
+    assert loaded.exposure_summary()["used_replacement_steps"] == 1
+
+    tampered = tmp_path / "tampered.safetensors"
+    save_file(
+        {
+            "batch_record_indices": torch.tensor([[0, 1], [3, 2]], dtype=torch.int32),
+            "draw_record_slots": torch.tensor([step.draw_record_slots for step in steps], dtype=torch.int16),
+            "draw_position_slots": torch.tensor([step.draw_position_slots for step in steps], dtype=torch.int16),
+            "used_replacement": torch.tensor([step.used_replacement for step in steps], dtype=torch.uint8),
+        },
+        str(tampered),
+        metadata={
+            "schema": "token-reconstruction.trr-p09-common-schedules.v1",
+            "bank": "B0",
+            "seed": "17",
+            "steps": "2",
+            "record_batch_size": "2",
+            "position_budget": "3",
+            "sequence_tokens": "6",
+            "schedule_semantic_sha256": plan.semantic_sha256,
+            "valid_mask_semantic_sha256": "a" * 64,
+        },
+    )
+    with pytest.raises(FixedControlCallerError, match="semantic digest"):
+        load_serialized_schedule(
+            tampered,
+            expected_seed=17,
+            expected_steps=2,
+            expected_record_batch_size=2,
+            expected_position_budget=3,
+            expected_sequence_tokens=6,
+            expected_global_row_exclusive=4,
+            expected_bank="B0",
+        )
 
 def test_runner_accepts_zero_position_ids_only_in_inactive_padding() -> None:
     from tests.test_trr_p09_fixed_control_runner import _batch

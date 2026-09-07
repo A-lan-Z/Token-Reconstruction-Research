@@ -9,9 +9,10 @@ P09 checkpoint-grid formula and 512-position schedule budget.
 """
 from __future__ import annotations
 
-from collections.abc import Callable, Iterable, Mapping, Sequence
+from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from dataclasses import dataclass
 import hashlib
+import json
 import math
 import os
 from pathlib import Path
@@ -19,6 +20,7 @@ from typing import Any
 from types import MappingProxyType
 
 import torch
+from safetensors import safe_open
 from safetensors.torch import save as save_safetensors
 from torch import nn
 
@@ -43,6 +45,7 @@ SIGNED_POSITION_BUDGET = 512
 SIGNED_CHECKPOINT_MILESTONES = (0, 1000, 2000, 4000, 8000, 12000)
 DEFAULT_VALIDATION_DOMAINS = ("Finance", "Pile")
 _SHA256_LENGTH = 64
+COMMON_SCHEDULE_SCHEMA = "token-reconstruction.trr-p09-common-schedules.v1"
 
 
 class FixedControlCallerError(FixedControlRunnerError):
@@ -248,6 +251,226 @@ def signed_p09_checkpoint_grid(
     steps = max(12000, required)
     return tuple(sorted(set(SIGNED_CHECKPOINT_MILESTONES + (steps,))))
 
+
+
+@dataclass(frozen=True)
+class SerializedSchedule:
+    """Validated common schedule backed by four CPU tensors.
+
+    The tensors are loaded once after the metadata/hash gate and are retained
+    as compact integer arrays. ``iter_steps`` creates one ``ScheduleStep`` at
+    a time, so the training loop never materializes the millions of Python
+    integers represented by a 13,000-step schedule.
+    """
+
+    path: Path
+    file_sha256: str
+    bank: str
+    seed: int
+    steps: int
+    record_batch_size: int
+    position_budget: int
+    sequence_tokens: int
+    semantic_sha256: str
+    valid_mask_semantic_sha256: str
+    batch_record_indices: torch.Tensor
+    draw_record_slots: torch.Tensor
+    draw_position_slots: torch.Tensor
+    used_replacement: torch.Tensor
+
+    def iter_steps(self) -> Iterator[ScheduleStep]:
+        for index in range(self.steps):
+            yield ScheduleStep(
+                step=index,
+                batch_global_rows=tuple(int(value) for value in self.batch_record_indices[index].tolist()),
+                draw_record_slots=tuple(int(value) for value in self.draw_record_slots[index].tolist()),
+                draw_position_slots=tuple(int(value) for value in self.draw_position_slots[index].tolist()),
+                used_replacement=bool(int(self.used_replacement[index].item())),
+            )
+
+    def exposure_summary(self) -> dict[str, Any]:
+        return {
+            "seed": int(self.seed),
+            "steps": int(self.steps),
+            "draws_per_step": int(self.position_budget),
+            "total_draws": int(self.steps * self.position_budget),
+            "used_replacement_steps": int(self.used_replacement.sum().item()),
+            "schedule_semantic_sha256": self.semantic_sha256,
+            "source": "validated_serialized_common_schedule",
+        }
+
+
+def _schedule_file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def _schedule_metadata_int(metadata: Mapping[str, str], key: str) -> int:
+    value = metadata.get(key)
+    try:
+        parsed = int(str(value))
+    except (TypeError, ValueError) as exc:
+        raise FixedControlCallerError(f"serialized schedule metadata {key!r} is malformed") from exc
+    return parsed
+
+
+def _schedule_step_bytes(step: ScheduleStep) -> bytes:
+    return json.dumps(
+        step.as_dict(), sort_keys=True, separators=(",", ":"), allow_nan=False
+    ).encode("utf-8")
+
+
+def load_serialized_schedule(
+    path: Path,
+    *,
+    expected_seed: int,
+    expected_steps: int,
+    expected_record_batch_size: int,
+    expected_position_budget: int,
+    expected_sequence_tokens: int,
+    expected_global_row_exclusive: int,
+    expected_bank: str | None = None,
+    expected_valid_mask_semantic_sha256: str | None = None,
+    expected_file_sha256: str | None = None,
+) -> SerializedSchedule:
+    """Load and fully validate one common schedule before model load.
+
+    The B0 artifact contains rows ``[0,1200)`` and the B1 artifact contains
+    the composed namespace ``[0,12000)``. Row values are already in the
+    namespace consumed by ``CombinedB0StreamedBankLoader``; this function has
+    no implicit offset translation.
+    """
+
+    schedule_path = Path(path).expanduser().resolve()
+    if schedule_path.is_symlink() or not schedule_path.is_file():
+        raise FixedControlCallerError(f"serialized schedule is unavailable: {schedule_path}")
+    actual_file_sha256 = _schedule_file_sha256(schedule_path)
+    if expected_file_sha256 is not None and actual_file_sha256 != expected_file_sha256:
+        raise FixedControlCallerError("serialized schedule file hash differs from the supplied binding")
+
+    required_keys = {
+        "batch_record_indices",
+        "draw_record_slots",
+        "draw_position_slots",
+        "used_replacement",
+    }
+    try:
+        with safe_open(str(schedule_path), framework="pt", device="cpu") as handle:
+            metadata = dict(handle.metadata() or {})
+            if metadata.get("schema") != COMMON_SCHEDULE_SCHEMA:
+                raise FixedControlCallerError("serialized schedule schema differs")
+            if set(handle.keys()) != required_keys:
+                raise FixedControlCallerError("serialized schedule tensor keys differ")
+            tensors = {
+                key: handle.get_tensor(key).contiguous()
+                for key in sorted(required_keys)
+            }
+    except FixedControlCallerError:
+        raise
+    except Exception as exc:
+        raise FixedControlCallerError(f"cannot read serialized schedule: {schedule_path}") from exc
+
+    bank = str(metadata.get("bank", ""))
+    if bank not in {"B0", "B1"}:
+        raise FixedControlCallerError("serialized schedule bank is invalid")
+    if expected_bank is not None and bank != expected_bank:
+        raise FixedControlCallerError("serialized schedule bank differs from the requested arm")
+    seed = _schedule_metadata_int(metadata, "seed")
+    steps = _schedule_metadata_int(metadata, "steps")
+    record_batch_size = _schedule_metadata_int(metadata, "record_batch_size")
+    position_budget = _schedule_metadata_int(metadata, "position_budget")
+    sequence_tokens = _schedule_metadata_int(metadata, "sequence_tokens")
+    expected = {
+        "seed": int(expected_seed),
+        "steps": int(expected_steps),
+        "record_batch_size": int(expected_record_batch_size),
+        "position_budget": int(expected_position_budget),
+        "sequence_tokens": int(expected_sequence_tokens),
+    }
+    actual = {
+        "seed": seed,
+        "steps": steps,
+        "record_batch_size": record_batch_size,
+        "position_budget": position_budget,
+        "sequence_tokens": sequence_tokens,
+    }
+    if actual != expected:
+        raise FixedControlCallerError(f"serialized schedule contract differs: expected {expected}, got {actual}")
+    if steps <= 0 or expected_global_row_exclusive <= 0:
+        raise FixedControlCallerError("serialized schedule dimensions are invalid")
+
+    expected_shapes = {
+        "batch_record_indices": (steps, record_batch_size),
+        "draw_record_slots": (steps, position_budget),
+        "draw_position_slots": (steps, position_budget),
+        "used_replacement": (steps,),
+    }
+    expected_dtypes = {
+        "batch_record_indices": torch.int32,
+        "draw_record_slots": torch.int16,
+        "draw_position_slots": torch.int16,
+        "used_replacement": torch.uint8,
+    }
+    for key, shape in expected_shapes.items():
+        if tuple(tensors[key].shape) != shape:
+            raise FixedControlCallerError(f"serialized schedule {key} shape differs")
+        if tensors[key].dtype != expected_dtypes[key]:
+            raise FixedControlCallerError(f"serialized schedule {key} dtype differs")
+    batch_rows = tensors["batch_record_indices"]
+    record_slots = tensors["draw_record_slots"]
+    positions = tensors["draw_position_slots"]
+    replacement = tensors["used_replacement"]
+    if bool((batch_rows < 0).any().item()) or bool((batch_rows >= expected_global_row_exclusive).any().item()):
+        raise FixedControlCallerError("serialized schedule contains an out-of-range global row")
+    if bool((record_slots < 0).any().item()) or bool((record_slots >= record_batch_size).any().item()):
+        raise FixedControlCallerError("serialized schedule contains an out-of-range record slot")
+    if bool((positions <= 0).any().item()) or bool((positions >= sequence_tokens).any().item()):
+        raise FixedControlCallerError("serialized schedule contains BOS or out-of-range position draws")
+    if bool(((replacement != 0) & (replacement != 1)).any().item()):
+        raise FixedControlCallerError("serialized schedule replacement flags are invalid")
+
+    digest = hashlib.sha256()
+    digest.update(("{\"seed\":" + str(seed) + ",\"steps\":[").encode("ascii"))
+    for index in range(steps):
+        rows = tuple(int(value) for value in batch_rows[index].tolist())
+        if len(set(rows)) != len(rows):
+            raise FixedControlCallerError("serialized schedule contains duplicate rows within a batch")
+        step = ScheduleStep(
+            step=index,
+            batch_global_rows=rows,
+            draw_record_slots=tuple(int(value) for value in record_slots[index].tolist()),
+            draw_position_slots=tuple(int(value) for value in positions[index].tolist()),
+            used_replacement=bool(int(replacement[index].item())),
+        )
+        if index:
+            digest.update(b",")
+        digest.update(_schedule_step_bytes(step))
+    digest.update(b"]}")
+    semantic_sha256 = digest.hexdigest()
+    metadata_semantic = str(metadata.get("schedule_semantic_sha256", ""))
+    if semantic_sha256 != metadata_semantic:
+        raise FixedControlCallerError("serialized schedule semantic digest differs")
+    if expected_valid_mask_semantic_sha256 is not None and str(metadata.get("valid_mask_semantic_sha256", "")) != expected_valid_mask_semantic_sha256:
+        raise FixedControlCallerError("serialized schedule valid-mask binding differs")
+    return SerializedSchedule(
+        path=schedule_path,
+        file_sha256=actual_file_sha256,
+        bank=bank,
+        seed=seed,
+        steps=steps,
+        record_batch_size=record_batch_size,
+        position_budget=position_budget,
+        sequence_tokens=sequence_tokens,
+        semantic_sha256=semantic_sha256,
+        valid_mask_semantic_sha256=str(metadata.get("valid_mask_semantic_sha256", "")),
+        batch_record_indices=batch_rows,
+        draw_record_slots=record_slots,
+        draw_position_slots=positions,
+        used_replacement=replacement,
+    )
 
 def inherited_schedule_steps(
     valid_mask: torch.Tensor,
@@ -582,6 +805,8 @@ __all__ = [
     "make_domain_validation_callback",
     "make_fixed_checkpoint_callback",
     "materialize_schedule_plan",
+    "SerializedSchedule",
+    "load_serialized_schedule",
     "signed_p09_checkpoint_grid",
     "write_fixed_control_receipt",
 ]

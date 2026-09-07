@@ -48,6 +48,7 @@ from scripts.trr_p09.fixed_control_caller import (  # noqa: E402
     build_fixed_control_receipt,
     inherited_schedule_steps,
     join_public_validation_labels,
+    load_serialized_schedule,
     make_domain_validation_callback,
     make_fixed_checkpoint_callback,
     signed_p09_checkpoint_grid,
@@ -68,6 +69,7 @@ from scripts.trr_p09.prepare_streamed_bank import (  # noqa: E402
     StreamBatch,
     StreamedBankLoader,
     file_record,
+    tensor_digest,
     sha256_file,
     validate_bank_manifest,
 )
@@ -625,13 +627,132 @@ def _run_synthetic(args: argparse.Namespace) -> int:
     return 0
 
 
+
+def _run_configuration_dry_run(args: argparse.Namespace) -> int:
+    """Validate actual bank/schedule wiring without loading model or E."""
+
+    required = ("fit_prefix_manifest", "fit_addition_manifest", "common_schedule")
+    missing = [name for name in required if getattr(args, name, None) is None]
+    if missing:
+        raise FixedControlCLIError("configuration dry-run lacks required arguments: " + ", ".join(missing))
+    if args.device != "cpu":
+        raise FixedControlCLIError("configuration dry-run is CPU-only; pass --device cpu")
+    output_root = Path(args.output_root).expanduser().resolve()
+    if output_root.exists():
+        raise FixedControlCLIError(f"configuration dry-run output is create-only: {output_root}")
+    prefix_path = Path(args.fit_prefix_manifest).expanduser().resolve()
+    addition_path = Path(args.fit_addition_manifest).expanduser().resolve()
+    common_schedule_path = Path(args.common_schedule).expanduser().resolve()
+    fit_asset, computed_fit_sha = _combined_file_binding(prefix_path, addition_path)
+    if args.expected_fit_binding_sha256 is not None and _require_sha(args.expected_fit_binding_sha256, label="expected fit binding SHA") != computed_fit_sha:
+        raise FixedControlCLIError("fit manifest binding differs from the supplied expected SHA")
+    fit_manifest, prefix_rows = _read_bank_rows(prefix_path)
+    addition_manifest, addition_rows = _read_bank_rows(addition_path)
+    if int(fit_manifest["bank"].get("expanded_row_origin", 0)) != 0:
+        raise FixedControlCLIError("B0 binding does not begin at global row zero")
+    if int(addition_manifest["bank"].get("expanded_row_origin", -1)) != len(prefix_rows):
+        raise FixedControlCLIError("B1 binding does not begin after the B0 prefix")
+    fit_rows = [*prefix_rows, *addition_rows]
+    if len(fit_rows) != 12000:
+        raise FixedControlCLIError(f"configuration dry-run requires 12000 composed rows, got {len(fit_rows)}")
+    valid_mask = _valid_mask(fit_rows, sequence_tokens=EXPECTED_SEQUENCE_TOKENS)
+    seed = int(args.seed) if args.seed is not None else 4010
+    expected_steps = int(args.steps) if args.steps is not None else 13000
+    schedule = load_serialized_schedule(
+        common_schedule_path,
+        expected_seed=seed,
+        expected_steps=expected_steps,
+        expected_record_batch_size=EXPECTED_RECORD_BATCH_SIZE,
+        expected_position_budget=EXPECTED_POSITION_BUDGET,
+        expected_sequence_tokens=EXPECTED_SEQUENCE_TOKENS,
+        expected_global_row_exclusive=len(fit_rows),
+        expected_bank=args.schedule_bank,
+        expected_valid_mask_semantic_sha256=None,
+        expected_file_sha256=(
+            _require_sha(args.expected_schedule_sha256, label="expected schedule SHA")
+            if args.expected_schedule_sha256 is not None
+            else None
+        ),
+    )
+    schedule_mask = valid_mask if schedule.bank == "B1" else valid_mask[: len(prefix_rows)]
+    if schedule.valid_mask_semantic_sha256 != tensor_digest(schedule_mask):
+        raise FixedControlCLIError("configuration schedule mask digest does not match composed bank metadata")
+    schedule_row_limit = len(fit_rows) if schedule.bank == "B1" else len(prefix_rows)
+    if int(schedule.batch_record_indices.max().item()) >= schedule_row_limit:
+        raise FixedControlCLIError("configuration schedule selects rows outside its bank namespace")
+    loader = CombinedB0StreamedBankLoader(prefix_path, addition_path, device="cpu")
+    requested_rows = (0, 7, 8, 1199, 1200, 1207, 1264, 1265, 11999)
+    batch = loader.get_records(requested_rows)
+    if tuple(batch.global_rows) != requested_rows:
+        raise FixedControlCLIError("combined loader changed dry-run row order")
+    if tuple(batch.activations.shape) != (len(requested_rows), EXPECTED_SEQUENCE_TOKENS, EXPECTED_HIDDEN_SIZE):
+        raise FixedControlCLIError("combined loader activation geometry changed")
+    if batch.activations.dtype != torch.bfloat16:
+        raise FixedControlCLIError("combined loader activation dtype changed")
+    mask = batch.attention_mask.to(dtype=torch.bool)
+    expected_positions = torch.where(
+        mask,
+        torch.arange(EXPECTED_SEQUENCE_TOKENS, dtype=torch.long).expand_as(mask),
+        torch.zeros_like(batch.position_ids, dtype=torch.long),
+    )
+    if not torch.equal(batch.position_ids.to(dtype=torch.long), expected_positions):
+        raise FixedControlCLIError("combined loader position/mask convention changed")
+    output_root.mkdir(parents=True)
+    receipt = {
+        "schema": "token-reconstruction.trr-p09-fixed-control-configuration-dry-run.v1",
+        "task_id": TASK_ID,
+        "status": "PASS_FIXED_CONTROL_CPU_CONFIGURATION",
+        "command": list(sys.argv),
+        "source_commit": _git_commit(_REPOSITORY_ROOT),
+        "scope": "CPU-only configuration validation; no model, embedding, validation labels, optimizer, fit, or evaluation truth",
+        "fit_binding": fit_asset,
+        "schedule": {
+            "file": _record(common_schedule_path, label="serialized common schedule"),
+            "bank": schedule.bank,
+            "seed": schedule.seed,
+            "steps": schedule.steps,
+            "record_batch_size": schedule.record_batch_size,
+            "position_budget": schedule.position_budget,
+            "sequence_tokens": schedule.sequence_tokens,
+            "semantic_sha256": schedule.semantic_sha256,
+            "valid_mask_semantic_sha256": schedule.valid_mask_semantic_sha256,
+            "exposure": schedule.exposure_summary(),
+        },
+        "loader": {
+            "interface": loader.interface,
+            "b0_binding": _record(prefix_path, label="B0 immutable binding"),
+            "b1_manifest": _record(addition_path, label="B1 bank manifest"),
+            "global_row_range": [loader.expanded_row_origin, loader.global_row_stop],
+            "requested_rows": list(requested_rows),
+            "returned_shape": list(batch.activations.shape),
+            "activation_dtype": str(batch.activations.dtype),
+            "record_ids_sha256": hashlib.sha256(("\\n".join(batch.record_ids) + "\\n").encode()).hexdigest(),
+            "mask_position_contract": "arange(T) on active positions, zero on inactive padding",
+        },
+        "truth_boundary": {
+            "model_loaded": False,
+            "embedding_loaded": False,
+            "validation_labels_loaded": False,
+            "optimizer_created": False,
+            "fit_started": False,
+            "evaluation_truth_opened": False,
+        },
+    }
+    write_create_only_json(output_root / "configuration_receipt.json", receipt)
+    print(json.dumps({"status": receipt["status"], "output_root": str(output_root), "schedule_sha256": schedule.semantic_sha256, "schedule_bank": schedule.bank}, sort_keys=True))
+    return 0
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--synthetic", action="store_true")
+    parser.add_argument("--configuration-dry-run", action="store_true")
     parser.add_argument("--output-root", type=Path, required=True)
     parser.add_argument("--repository-root", type=Path, default=_REPOSITORY_ROOT)
     parser.add_argument("--fit-prefix-manifest", "--fit-prefix-binding", dest="fit_prefix_manifest", type=Path)
     parser.add_argument("--fit-addition-manifest", type=Path)
+    parser.add_argument("--common-schedule", type=Path)
+    parser.add_argument("--expected-schedule-sha256")
+    parser.add_argument("--schedule-bank", choices=("B0", "B1"))
     parser.add_argument("--validation-manifest", type=Path)
     parser.add_argument("--validation-labels", type=Path)
     parser.add_argument("--embedding", type=Path)
@@ -658,7 +779,7 @@ def _parser() -> argparse.ArgumentParser:
 
 
 def _require_production_args(args: argparse.Namespace) -> None:
-    names = ("fit_prefix_manifest", "fit_addition_manifest", "validation_manifest", "validation_labels", "embedding", "state", "selection_supplement", "stage3_agreement", "qualification_receipt", "watchdog_receipt", "seed", "learning_rate", "weight_decay", "gradient_clip_norm")
+    names = ("fit_prefix_manifest", "fit_addition_manifest", "common_schedule", "schedule_bank", "expected_schedule_sha256", "validation_manifest", "validation_labels", "embedding", "state", "selection_supplement", "stage3_agreement", "qualification_receipt", "watchdog_receipt", "seed", "learning_rate", "weight_decay", "gradient_clip_norm")
     missing = [name for name in names if getattr(args, name) is None]
     if missing:
         raise FixedControlCLIError("production mode lacks required arguments: " + ", ".join(missing))
@@ -706,14 +827,49 @@ def _run_production(args: argparse.Namespace) -> int:
     if int(fit_geometry["sequence_tokens"]) != EXPECTED_SEQUENCE_TOKENS or int(fit_geometry["hidden_size"]) != EXPECTED_HIDDEN_SIZE:
         raise FixedControlCLIError("fit bank geometry differs from P09 full-width contract")
     valid_mask = _valid_mask(fit_rows, sequence_tokens=EXPECTED_SEQUENCE_TOKENS)
-    valid_positions = int(valid_mask[:, 1:].sum().item())
-    steps = signed_p09_checkpoint_grid(valid_positions, position_budget=EXPECTED_POSITION_BUDGET)[-1]
-    if args.steps is not None and int(args.steps) != steps:
-        raise FixedControlCLIError(f"--steps {args.steps} differs from manifest-derived exact N {steps}")
     seed = int(args.seed)
-    schedule_semantic, exposure = _schedule_pass(valid_mask, tuple(range(len(fit_rows))), steps=steps, seed=seed, record_batch_size=EXPECTED_RECORD_BATCH_SIZE, position_budget=EXPECTED_POSITION_BUDGET)
+    expected_steps = int(args.steps) if args.steps is not None else 13000
+    common_schedule_path = Path(args.common_schedule).expanduser().resolve()
+    schedule = load_serialized_schedule(
+        common_schedule_path,
+        expected_seed=seed,
+        expected_steps=expected_steps,
+        expected_record_batch_size=EXPECTED_RECORD_BATCH_SIZE,
+        expected_position_budget=EXPECTED_POSITION_BUDGET,
+        expected_sequence_tokens=EXPECTED_SEQUENCE_TOKENS,
+        expected_global_row_exclusive=len(fit_rows),
+        expected_bank=args.schedule_bank,
+        expected_file_sha256=(
+            _require_sha(args.expected_schedule_sha256, label="expected schedule SHA")
+            if args.expected_schedule_sha256 is not None
+            else None
+        ),
+    )
+    schedule_mask = valid_mask if schedule.bank == "B1" else valid_mask[: len(prefix_rows)]
+    expected_schedule_mask_sha256 = tensor_digest(schedule_mask)
+    if schedule.valid_mask_semantic_sha256 != expected_schedule_mask_sha256:
+        raise FixedControlCLIError("serialized schedule valid-mask digest does not match the selected bank rows")
+    schedule_row_limit = len(fit_rows) if schedule.bank == "B1" else len(prefix_rows)
+    if int(schedule.batch_record_indices.max().item()) >= schedule_row_limit:
+        raise FixedControlCLIError("serialized schedule selects rows outside its bank namespace")
+    valid_positions = int(schedule_mask[:, 1:].sum().item())
+    steps = schedule.steps
+    checkpoint_grid = tuple(sorted(set(signed_p09_checkpoint_grid(valid_positions) + (steps,))))
+    if args.steps is not None and int(args.steps) != steps:
+        raise FixedControlCLIError(f"--steps {args.steps} differs from serialized schedule steps {steps}")
+    exposure = schedule.exposure_summary()
     output_root.mkdir(parents=True)
-    schedule_record = _write_schedule_receipt(output_root, seed=seed, steps=steps, grid=signed_p09_checkpoint_grid(valid_positions), valid_positions=valid_positions, semantic=schedule_semantic, exposure=exposure)
+    common_schedule_record = _record(common_schedule_path, label="serialized common schedule")
+    schedule_receipt = _write_schedule_receipt(
+        output_root,
+        seed=seed,
+        steps=steps,
+        grid=checkpoint_grid,
+        valid_positions=valid_positions,
+        semantic=schedule.semantic_sha256,
+        exposure=exposure,
+    )
+
     val_manifest, val_rows = _read_bank_rows(validation_path)
     labels = join_public_validation_labels(_label_rows(Path(args.validation_labels)), required_domains=DEFAULT_VALIDATION_DOMAINS)
     val_geometry = val_manifest["geometry"]
@@ -748,21 +904,21 @@ def _run_production(args: argparse.Namespace) -> int:
         fit_manifest=AssetBinding("combined-fit-bank-manifests", "combined://b0+b1", 1, computed_fit_sha),
         validation_manifest=AssetBinding("public-validation-bank-manifest", str(validation_path), int(validation_path.stat().st_size), sha256_file(validation_path)),
         embedding=AssetBinding("public-normalized-E", str(args.embedding), int(embedding_meta["file"]["bytes"]), EXPECTED_EMBEDDING_SHA256),
-        schedule=AssetBinding("derived-fixed-control-schedule", str(schedule_record["path"]), int(schedule_record["bytes"]), str(schedule_record["sha256"])),
-        fit_shape=(len(fit_rows), EXPECTED_SEQUENCE_TOKENS, EXPECTED_HIDDEN_SIZE),
+        schedule=AssetBinding("serialized-common-schedule", str(common_schedule_record["path"]), int(common_schedule_record["bytes"]), str(common_schedule_record["sha256"])),
+        fit_shape=(schedule_row_limit, EXPECTED_SEQUENCE_TOKENS, EXPECTED_HIDDEN_SIZE),
         validation_shape=(len(val_rows), EXPECTED_VALIDATION_SEQUENCE_TOKENS, EXPECTED_HIDDEN_SIZE),
-        fit_mask_shape=(len(fit_rows), EXPECTED_SEQUENCE_TOKENS),
+        fit_mask_shape=(schedule_row_limit, EXPECTED_SEQUENCE_TOKENS),
         validation_mask_shape=(len(val_rows), EXPECTED_VALIDATION_SEQUENCE_TOKENS),
         fit_post_bos_rows=valid_positions,
         fit_supported_token_count=EXPECTED_VOCABULARY_SIZE,
-        schedule_semantic_sha256=schedule_semantic,
+        schedule_semantic_sha256=schedule.semantic_sha256,
     )
     checkpoint = make_fixed_checkpoint_callback(output_root=output_root / "states", bank_contract=bank_contract, bank_manifest_sha256=computed_fit_sha, base_state_sha256=EXPECTED_STATE_SHA256, fit_manifest_sha256=computed_fit_sha)
     started_utc = _utc_now()
-    result = run_training(decoder, hook, fit_source, inherited_schedule_steps(valid_mask, tuple(range(len(fit_rows))), steps=steps, seed=seed, record_batch_size=EXPECTED_RECORD_BATCH_SIZE, position_budget=EXPECTED_POSITION_BUDGET), schedule_steps_count=steps, schedule_seed=seed, schedule_semantic_sha256=schedule_semantic, schedule_exposure=exposure, optimizer=optimizer, embedding=embedding, config=config, validation_callback=validation_callback, validation_sequence_tokens=EXPECTED_VALIDATION_SEQUENCE_TOKENS, validation_batch_records=EXPECTED_RECORD_BATCH_SIZE, validation_activation_dtype=torch.bfloat16, training_activation_dtype=torch.bfloat16, checkpoint_steps=signed_p09_checkpoint_grid(valid_positions), scheduler=scheduler, checkpoint_callback=checkpoint, deadline_seconds=float(args.deadline_seconds), resource_guard_callback=tracker.check)
+    result = run_training(decoder, hook, fit_source, schedule.iter_steps(), schedule_steps_count=steps, schedule_seed=seed, schedule_semantic_sha256=schedule.semantic_sha256, schedule_exposure=exposure, optimizer=optimizer, embedding=embedding, config=config, validation_callback=validation_callback, validation_sequence_tokens=EXPECTED_VALIDATION_SEQUENCE_TOKENS, validation_batch_records=EXPECTED_RECORD_BATCH_SIZE, validation_activation_dtype=torch.bfloat16, training_activation_dtype=torch.bfloat16, checkpoint_steps=checkpoint_grid, scheduler=scheduler, checkpoint_callback=checkpoint, deadline_seconds=float(args.deadline_seconds), resource_guard_callback=tracker.check)
     finished_utc = _utc_now()
-    assets = {"fit_manifests": fit_asset, "validation_manifest": _record(validation_path, label="public validation bank manifest"), "embedding": embedding_meta, "starting_state": state_meta, "selection_supplement": supplement, "stage3_agreement": stage3, "qualification": qualification, "watchdog": watchdog, "contract_digest": contract_digest(bank_contract)}
-    receipt = build_fixed_control_receipt(training_result=result, source_commit=source_commit, command=sys.argv, started_utc=started_utc, finished_utc=finished_utc, environment={"python": platform.python_version(), "torch": torch.__version__, "device": str(device), "pid": os.getpid()}, assets=assets, training_contract={"steps": steps, "record_batch_size": EXPECTED_RECORD_BATCH_SIZE, "position_budget": EXPECTED_POSITION_BUDGET, "seed": seed, "checkpoint_grid": list(signed_p09_checkpoint_grid(valid_positions)), "validation_sequence_tokens": EXPECTED_VALIDATION_SEQUENCE_TOKENS, "optimizer": "AdamW foreach=False", "learning_rate": float(args.learning_rate), "weight_decay": float(args.weight_decay), "gradient_clip_norm": float(args.gradient_clip_norm)}, resource_peak={"in_process_peak": tracker.peak, "in_process_low_water": tracker.low_water, "checks": tracker.checks, "external_watchdog": watchdog}, bank_manifest_sha256=computed_fit_sha, state={"method_id": METHOD_ID, "starting_state": state_meta, "embedding_sha256": EXPECTED_EMBEDDING_SHA256})
+    assets = {"fit_manifests": fit_asset, "validation_manifest": _record(validation_path, label="public validation bank manifest"), "embedding": embedding_meta, "starting_state": state_meta, "selection_supplement": supplement, "stage3_agreement": stage3, "qualification": qualification, "watchdog": watchdog, "common_schedule": common_schedule_record, "schedule_receipt": schedule_receipt, "contract_digest": contract_digest(bank_contract)}
+    receipt = build_fixed_control_receipt(training_result=result, source_commit=source_commit, command=sys.argv, started_utc=started_utc, finished_utc=finished_utc, environment={"python": platform.python_version(), "torch": torch.__version__, "device": str(device), "pid": os.getpid()}, assets=assets, training_contract={"steps": steps, "record_batch_size": EXPECTED_RECORD_BATCH_SIZE, "position_budget": EXPECTED_POSITION_BUDGET, "seed": seed, "schedule_bank": schedule.bank, "checkpoint_grid": list(checkpoint_grid), "validation_sequence_tokens": EXPECTED_VALIDATION_SEQUENCE_TOKENS, "optimizer": "AdamW foreach=False", "learning_rate": float(args.learning_rate), "weight_decay": float(args.weight_decay), "gradient_clip_norm": float(args.gradient_clip_norm)}, resource_peak={"in_process_peak": tracker.peak, "in_process_low_water": tracker.low_water, "checks": tracker.checks, "external_watchdog": watchdog}, bank_manifest_sha256=computed_fit_sha, state={"method_id": METHOD_ID, "starting_state": state_meta, "embedding_sha256": EXPECTED_EMBEDDING_SHA256})
     write_fixed_control_receipt(output_root / "receipt.json", receipt)
     print(json.dumps({"status": "PASS", "selected_step": result["selected_step"], "steps": steps, "total_position_draws": exposure["total_draws"], "output_root": str(output_root)}, sort_keys=True))
     return 0
@@ -770,6 +926,10 @@ def _run_production(args: argparse.Namespace) -> int:
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(list(argv) if argv is not None else None)
+    if args.synthetic and args.configuration_dry_run:
+        raise FixedControlCLIError("--synthetic and --configuration-dry-run are mutually exclusive")
+    if args.configuration_dry_run:
+        return _run_configuration_dry_run(args)
     if args.synthetic:
         return _run_synthetic(args)
     return _run_production(args)
