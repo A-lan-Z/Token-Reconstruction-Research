@@ -319,7 +319,14 @@ def _selected_checkpoint(result: Mapping[str, Any], *, arm_name: str) -> Mapping
     return matches[0]
 
 
-def fit_one_arm(inputs: Mapping[str, Any], *, arm_name: str, output_root: Path, deadline_seconds: float | None = None) -> dict[str, Any]:
+def fit_one_arm(
+    inputs: Mapping[str, Any],
+    *,
+    arm_name: str,
+    output_root: Path,
+    deadline_seconds: float | None = None,
+    arm_output_root: Path | None = None,
+) -> dict[str, Any]:
     validation = validate_fit_inputs(inputs, arm_name=arm_name)
     runtime = inputs.get("runtime")
     if runtime is None:
@@ -351,7 +358,7 @@ def fit_one_arm(inputs: Mapping[str, Any], *, arm_name: str, output_root: Path, 
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(runtime.optimizer, T_max=TRAINING_STEPS)
     if tuple(float(v) for v in scheduler.get_last_lr()) != (EXPECTED_BASE_LEARNING_RATE, EXPECTED_DIRECTIONAL_LEARNING_RATE):
         raise DirectionalFitError(f"{arm_name} cosine scheduler does not preserve the 2e-4/1e-4 rates")
-    arm_root = Path(output_root) / arm_name
+    arm_root = Path(arm_output_root) if arm_output_root is not None else Path(output_root) / arm_name
     serial_callback = make_serialization_only_checkpoint_callback(
         output_root=arm_root / "checkpoints",
         runtime=runtime,
@@ -579,7 +586,13 @@ def run_directional_arm(
         provider_started = time.perf_counter()
         inputs = build_inputs(**kwargs)
         provider_preparation_seconds = time.perf_counter() - provider_started
-        completed[arm_name] = fit_one_arm(inputs, arm_name=arm_name, output_root=output_root, deadline_seconds=deadline_seconds)
+        completed[arm_name] = fit_one_arm(
+            inputs,
+            arm_name=arm_name,
+            output_root=output_root,
+            arm_output_root=output_root,
+            deadline_seconds=deadline_seconds,
+        )
         completed[arm_name].setdefault("timing", {})["provider_preparation_seconds"] = provider_preparation_seconds
         del inputs
         gc.collect()

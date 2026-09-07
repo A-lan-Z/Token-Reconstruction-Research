@@ -269,8 +269,8 @@ def test_concrete_provider_adapter_preserves_existing_four_argument_loader_api()
 def test_run_single_arm_writes_arm_scoped_receipt(monkeypatch, tmp_path: Path) -> None:
     calls: list[dict[str, object]] = []
 
-    def fake_fit(inputs, *, arm_name, output_root, deadline_seconds):
-        calls.append({"inputs": inputs, "arm_name": arm_name, "output_root": output_root, "deadline_seconds": deadline_seconds})
+    def fake_fit(inputs, *, arm_name, output_root, deadline_seconds, arm_output_root=None):
+        calls.append({"inputs": inputs, "arm_name": arm_name, "output_root": output_root, "arm_output_root": arm_output_root, "deadline_seconds": deadline_seconds})
         return {
             "arm_name": arm_name,
             "bank_role": fit.ARM_TO_BANK[arm_name],
@@ -298,4 +298,5 @@ def test_run_single_arm_writes_arm_scoped_receipt(monkeypatch, tmp_path: Path) -
     assert receipt["arm"] == "current_directional"
     assert set(receipt["arms"]) == {"current_directional"}
     assert calls[0]["deadline_seconds"] == 7200.0
+    assert calls[0]["arm_output_root"] == output
     assert json.loads((output / "run_receipt.json").read_text())["arm"] == "current_directional"
