@@ -391,6 +391,29 @@
       "audit_sha256": "1f09e48753ecf5ef3561391465e33eca2ead713c48122633db4e0b08bc6bd6c6",
       "truth_opened": false,
       "quality_results": false
+    },
+    {
+      "id": "trr0010_b1_expanded_fixed_fit_receipt_r3",
+      "path": "/tmp/trr-p09-runtime/fixed-control-b1-r3/receipt.json",
+      "bytes": 7111987,
+      "sha256": "bc75d1c6837cd27bc2980cb448d4c309cecb279ab729b70db13367bac3eed47a",
+      "status": "PASS_B1_EXPANDED_FIXED_FIT_COMPLETE",
+      "bank": "B1",
+      "updates": 13000,
+      "total_draws": 6656000,
+      "truth_opened": false,
+      "quality_results": false
+    },
+    {
+      "id": "trr0010_b1_expanded_fixed_selected_state_step13000",
+      "path": "/tmp/trr-p09-runtime/fixed-control-b1-r3/states/checkpoint_step_013000.safetensors",
+      "bytes": 29390268,
+      "sha256": "5757506003f0a4b82cb1cd6de2a82f11345f2dbcbce13c8cf18c4f515de3ec3a",
+      "status": "PASS_B1_EXPANDED_FIXED_SELECTED_STATE",
+      "step": 13000,
+      "receipt_sha256": "bc75d1c6837cd27bc2980cb448d4c309cecb279ab729b70db13367bac3eed47a",
+      "truth_opened": false,
+      "quality_results": false
     }
   ],
   "branch": "task/TRR-0010",
@@ -612,7 +635,7 @@
     "directional_qualification_started": true,
     "capture_complete_no_truth": true,
     "directional_qualification_status": "PASS_LARGEST_CELL_QUALIFICATION_NO_FIT_NO_TRUTH",
-    "substantive_fit_status": "B0_CLEAN_COMPLETE_AUDITED_B1_EXPANDED_FIXED_ACTIVE",
+    "substantive_fit_status": "B0_AND_B1_EXPANDED_FIXED_COMPLETE_DIRECTIONAL_FITS_NOT_STARTED",
     "final_evaluation_status": "PENDING_TRUTH_CLOSED",
     "qualified_B1_manifest_bound": true,
     "qualified_B1_manifest_external_sha256": "0e14dbf74c947cfc6c586e7a5dbf76a27d8f0522fb8e54d2f98c6067bb36d196",
@@ -641,7 +664,7 @@
     "qualification_receipt_path": "experiments/TRR-0010/training/qualification_v2/qualification.json",
     "qualification_receipt_sha256": "58594a477733c2f1ce21d356ec9acead92de6001b2c31bd41f635213700bca66",
     "current_fit_stage": {
-      "status": "B0_CLEAN_COMPLETE_CAPACITY_AUDIT_PASS_B1_EXPANDED_FIXED_ACTIVE",
+      "status": "B0_AND_B1_EXPANDED_FIXED_COMPLETE_DIRECTIONAL_PENDING",
       "B0": {
         "status": "COMPLETE_CAPACITY_AUDITED",
         "updates": 13000,
@@ -664,14 +687,25 @@
         "quality_results": false
       },
       "B1": {
-        "status": "ACTIVE_FINAL1000_AND_DIAGNOSTICS_REMAIN",
+        "status": "COMPLETE_CLEAN_PASS",
         "truth_opened": false,
         "quality_results": false,
-        "updates_completed": 12000,
+        "updates_completed": 13000,
         "updates_target": 13000,
         "errors_observed": 0,
         "arm_role": "expanded_fixed",
-        "directional_fit_started": false
+        "directional_fit_started": false,
+        "receipt": {
+          "path": "/tmp/trr-p09-runtime/fixed-control-b1-r3/receipt.json",
+          "bytes": 7111987,
+          "sha256": "bc75d1c6837cd27bc2980cb448d4c309cecb279ab729b70db13367bac3eed47a"
+        },
+        "selected_state": {
+          "path": "/tmp/trr-p09-runtime/fixed-control-b1-r3/states/checkpoint_step_013000.safetensors",
+          "bytes": 29390268,
+          "sha256": "5757506003f0a4b82cb1cd6de2a82f11345f2dbcbce13c8cf18c4f515de3ec3a",
+          "step": 13000
+        }
       },
       "source": "A2 B0 audit/handoff receipts and root coordination update; B1 expanded-fixed completion receipt remains pending"
     },
@@ -734,13 +768,42 @@
       }
     },
     "directional_fit_started": false,
-    "directional_fit_status": "PENDING_GO_AFTER_B1_EXPANDED_FIXED_RELEASE"
+    "directional_fit_status": "NOT_STARTED_ROOT_HELD",
+    "b1_expanded_fixed_fit_receipt": {
+      "status": "PASS",
+      "receipt": {
+        "id": "trr0010_b1_expanded_fixed_fit_receipt_r3",
+        "path": "/tmp/trr-p09-runtime/fixed-control-b1-r3/receipt.json",
+        "bytes": 7111987,
+        "sha256": "bc75d1c6837cd27bc2980cb448d4c309cecb279ab729b70db13367bac3eed47a",
+        "status": "PASS_B1_EXPANDED_FIXED_FIT_COMPLETE",
+        "bank": "B1",
+        "updates": 13000,
+        "total_draws": 6656000,
+        "truth_opened": false,
+        "quality_results": false
+      },
+      "selected_state": {
+        "id": "trr0010_b1_expanded_fixed_selected_state_step13000",
+        "path": "/tmp/trr-p09-runtime/fixed-control-b1-r3/states/checkpoint_step_013000.safetensors",
+        "bytes": 29390268,
+        "sha256": "5757506003f0a4b82cb1cd6de2a82f11345f2dbcbce13c8cf18c4f515de3ec3a",
+        "status": "PASS_B1_EXPANDED_FIXED_SELECTED_STATE",
+        "step": 13000,
+        "receipt_sha256": "bc75d1c6837cd27bc2980cb448d4c309cecb279ab729b70db13367bac3eed47a",
+        "truth_opened": false,
+        "quality_results": false
+      },
+      "directional_fit_started": false,
+      "truth_opened": false,
+      "quality_results": false
+    }
   },
   "implementation_commit": "a4985c0cd373c26d4361ce1c861fa35bdb25b10e",
   "pending": [
     "Produce and bind the six-method/four-cell public timing cost artifact after the prediction run; until then deployment-cost gates remain unmeasured.",
     "Bind exact imported final prediction-runner/gate/base-only decoder/effective-W/registration/A1+A2 source files and qualify the final forward path under the agreed fail-closed caps.",
-    "Run and bind the frozen four-arm execution receipt and produced state/readout/support hashes before any final evaluation.",
+    "Run and bind the two directional training receipts and the combined four-arm execution manifest before final evaluation.",
     "Bind the final 128 Finance + 128 Pile natural panel/order/H128 digests and exclusion intersection, then the curator-owned paired observation/truth descriptor.",
     "No reconstruction-quality result or promotion claim exists; quality remains unavailable."
   ],
@@ -1107,7 +1170,7 @@
   "reviewed_base_commit": "4602f98eeb03ac121d8bbc230d7e2b219551b914",
   "schema": "token-reconstruction.trr0010-status.v5",
   "scientific_results_available": false,
-  "status": "B0_AUDITED_B1_EXPANDED_FIXED_ACTIVE_COST_ADAPTER_READY_NO_QUALITY_RESULT",
+  "status": "B0_AND_B1_EXPANDED_FIXED_COMPLETE_NO_DIRECTIONAL_FITS_COST_ADAPTER_READY_NO_QUALITY_RESULT",
   "task_id": "TRR-0010",
   "updated_utc": "2026-09-07T14:53:02Z",
   "publication": {
@@ -1466,11 +1529,13 @@
       "truth_opened": false
     },
     "substantive_fits": {
-      "status": "B0_COMPLETE_CAPACITY_AUDITED_B1_EXPANDED_FIXED_ACTIVE",
+      "status": "B0_AND_B1_EXPANDED_FIXED_COMPLETE_DIRECTIONAL_FITS_NOT_STARTED",
       "quality_results": false,
       "B0_audit_sha256": "1f09e48753ecf5ef3561391465e33eca2ead713c48122633db4e0b08bc6bd6c6",
       "B0_truth_opened": false,
-      "directional_fit_started": false
+      "directional_fit_started": false,
+      "B1_receipt_sha256": "bc75d1c6837cd27bc2980cb448d4c309cecb279ab729b70db13367bac3eed47a",
+      "B1_selected_state_sha256": "5757506003f0a4b82cb1cd6de2a82f11345f2dbcbce13c8cf18c4f515de3ec3a"
     },
     "final_evaluation": {
       "status": "PENDING",
@@ -1710,5 +1775,34 @@
       "repository_manifest_sha256": "61c8731a2fe081c3657d7bca6903be73b2a14543db6ffc5316e850cdac6e196",
       "status": "BOUND_EXTERNAL_HANDOFF_NO_TRUTH"
     }
+  },
+  "b1_expanded_fixed_fit_receipt": {
+    "status": "PASS",
+    "receipt": {
+      "id": "trr0010_b1_expanded_fixed_fit_receipt_r3",
+      "path": "/tmp/trr-p09-runtime/fixed-control-b1-r3/receipt.json",
+      "bytes": 7111987,
+      "sha256": "bc75d1c6837cd27bc2980cb448d4c309cecb279ab729b70db13367bac3eed47a",
+      "status": "PASS_B1_EXPANDED_FIXED_FIT_COMPLETE",
+      "bank": "B1",
+      "updates": 13000,
+      "total_draws": 6656000,
+      "truth_opened": false,
+      "quality_results": false
+    },
+    "selected_state": {
+      "id": "trr0010_b1_expanded_fixed_selected_state_step13000",
+      "path": "/tmp/trr-p09-runtime/fixed-control-b1-r3/states/checkpoint_step_013000.safetensors",
+      "bytes": 29390268,
+      "sha256": "5757506003f0a4b82cb1cd6de2a82f11345f2dbcbce13c8cf18c4f515de3ec3a",
+      "status": "PASS_B1_EXPANDED_FIXED_SELECTED_STATE",
+      "step": 13000,
+      "receipt_sha256": "bc75d1c6837cd27bc2980cb448d4c309cecb279ab729b70db13367bac3eed47a",
+      "truth_opened": false,
+      "quality_results": false
+    },
+    "directional_fit_started": false,
+    "truth_opened": false,
+    "quality_results": false
   }
 }
