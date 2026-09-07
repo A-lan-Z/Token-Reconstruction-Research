@@ -73,7 +73,7 @@ The focused command was:
 PYTHONPATH=.:src pytest -q tests/test_trr_p09_*.py
 ```
 
-Result: `58 passed` in `2.70 s`, CPU-only. This includes the end-to-end
+Result: `59 passed` in `2.77 s`, CPU-only. This includes the end-to-end
 synthetic compiler-output/input-parser -> fake-prefix qualification ->
 create-only capture -> composed B0+B1 loader smoke. The smoke checks expanded
 row translation, active-prefix/zero-padding positions, arbitrary order, and
@@ -89,7 +89,7 @@ At the time of this review:
 - `scripts/trr_p09/prepare_streamed_bank.py` SHA-256
   `e76a27f94328648f8fe3da6c6fae48fffd27006b213f9b70b976bcb5f4077c4b`.
 - `tests/test_trr_p09_stage1_public_capture.py` SHA-256
-  `977d4f11c84476a1e36174b39363906fd9f369c5031b37d9a91994970234c252`.
+  `37b82c063ce5ad37220f0577d1f89a6cf5814d5fe059fb351801d4136b581c3f`.
 - `tests/test_trr_p09_bank_artifact.py` SHA-256
   `20bb9aab149c8cb35e4d1164febaea5dd98a2b048e744e5ed86a2993265e370b`.
 - Signed Stage1 plan SHA-256

@@ -217,6 +217,131 @@ def test_compiler_capture_combined_b0_b1_loader_smoke(tmp_path: Path) -> None:
     assert int(scheduled.position_ids[2, 191].item()) == 0
 
 
+def test_prepared_compiler_output_capture_combined_loader_smoke(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Run the actual one-file prepared-input adapter through fake capture."""
+
+    # Shrink only the synthetic contract constants; geometry and parser code
+    # remain the production 192-token/B8 path.  This keeps activation output
+    # small while exercising PREPARED_INPUT_SCHEMA rather than the unit-test
+    # shard schema.
+    for name, value in {
+        "B0_ROWS": 8,
+        "ADDITION_ROWS": 8,
+        "NEW_RECORDS": 8,
+        "TARGET_RECORDS": 16,
+        "SHARD_RECORDS": 8,
+        "TOTAL_SHARDS": 1,
+        "FULL_SHARDS": 1,
+        "FINAL_SHARD_RECORDS": 8,
+    }.items():
+        monkeypatch.setattr(capture, name, value)
+
+    root = tmp_path / "compiled"
+    root.mkdir()
+    rows = capture.TARGET_RECORDS
+    tokens = torch.full((rows, 192), capture.PAD_TOKEN_ID, dtype=torch.int32)
+    masks = torch.zeros((rows, 192), dtype=torch.uint8)
+    positions = torch.zeros((rows, 192), dtype=torch.int64)
+    for row in range(rows):
+        active = 128 if row in (0, capture.B0_ROWS) else 192
+        tokens[row, 0] = capture.BOS_TOKEN_ID
+        tokens[row, 1:active] = torch.arange(1, active, dtype=torch.int32) + row
+        masks[row, :active] = 1
+        positions[row, :active] = torch.arange(active, dtype=torch.int64)
+    payload = root / "inputs.safetensors"
+    save_file({"token_ids": tokens, "attention_mask": masks, "position_ids": positions}, str(payload))
+    records = [
+        {
+            "record_id": f"compiled-{index:04d}",
+            "source_record_id": f"source-{index:04d}",
+            "rendered_sha256": f"{index + 1:064x}",
+            "target_post_bos_token_count": (127 if index == capture.B0_ROWS else 191),
+            "target_full_token_count": 129 if index == capture.B0_ROWS else 193,
+            "sequence_h128_sha256": None,
+        }
+        for index in range(rows)
+    ]
+    records_path = root / "records.json"
+    records_path.write_text(json.dumps(records, sort_keys=True), encoding="utf-8")
+    counter_path = root / "countersignature.json"
+    counter_path.write_text(
+        json.dumps(
+            {
+                "schema": capture.COUNTERSIGNATURE_SCHEMA,
+                "task_id": capture.TASK_ID,
+                "plan": {
+                    "sha256": capture.SIGNED_STAGE1_PLAN_SHA256,
+                    "bytes": capture.SIGNED_STAGE1_PLAN_BYTES,
+                    "commit": "5bfed9ec6a7bb29a988ec0a4b1343b7745d8b81b",
+                },
+                "attestation": {
+                    "root": "COUNTERSIGNED",
+                    "agent1": "COUNTERSIGNED",
+                    "status": "CPU_INPUT_COMPILATION_AUTHORIZED",
+                    "scope": "public-source-token-input-preparation-only",
+                    "model_loaded": False,
+                    "gpu_used": False,
+                    "fitting_started": False,
+                    "final_evaluation_truth_opened": False,
+                },
+            },
+            sort_keys=True,
+        ),
+        encoding="utf-8",
+    )
+    prepared = root / "preparation_manifest.json"
+    prepared.write_text(
+        json.dumps(
+            {
+                "schema": capture.PREPARED_INPUT_SCHEMA,
+                "task_id": capture.TASK_ID,
+                "status": "CPU_INPUTS_COMPILED_NO_ACTIVATIONS",
+                "plan": {
+                    "sha256": capture.SIGNED_STAGE1_PLAN_SHA256,
+                    "bytes": capture.SIGNED_STAGE1_PLAN_BYTES,
+                    "commit": "5bfed9ec6a7bb29a988ec0a4b1343b7745d8b81b",
+                },
+                "countersignature": {"path": str(counter_path)},
+                "geometry": {"records": rows, "sequence_tokens": 192, "b0_prefix_records": capture.B0_ROWS},
+                "artifacts": {"inputs": _descriptor(payload, root=root), "records": _descriptor(records_path, root=root)},
+                "truth_boundary": {
+                    "public_fitting_labels_loaded": True,
+                    "source_text_persisted": False,
+                    "evaluation_truth_opened": False,
+                    "model_loaded": False,
+                    "activations_created": False,
+                },
+            },
+            sort_keys=True,
+        ),
+        encoding="utf-8",
+    )
+    parsed = capture.load_input_manifest(prepared, expected_record_count=8, require_stage1=True)
+    assert parsed.manifest["input_source_schema"] == capture.PREPARED_INPUT_SCHEMA
+    assert parsed.expanded_row_origin == 8
+    prefix_root = tmp_path / "b0"
+    write_fixture_bank(prefix_root, record_count=8, current_record_count=8, geometry=BankGeometry(shard_records=8))
+    output = tmp_path / "b1"
+    plan_path = tmp_path / "synthetic-plan.json"
+    plan_path.write_text("{}", encoding="utf-8")
+    capture.qualify_capture(prefix=_FakePrefix(), input_manifest=parsed, device=torch.device("cpu"), guard=_guard(tmp_path))
+    capture.run_capture(
+        prefix=_FakePrefix(),
+        input_manifest=parsed,
+        plan={"schema": "synthetic"},
+        plan_record=file_record(plan_path, label="synthetic plan"),
+        output_root=output,
+        device=torch.device("cpu"),
+        guard=_guard(tmp_path),
+    )
+    combined = CombinedStreamedBankLoader(prefix_root / "bank_manifest.json", output / "bank_manifest.json")
+    batch = combined.get_records([0, 7, 8, 15])
+    assert batch.global_rows == (0, 7, 8, 15)
+    assert int(batch.attention_mask[2].sum().item()) == 128
+    assert int(batch.position_ids[2, 127].item()) == 127
+    assert int(batch.position_ids[2, 128].item()) == 0
+
+
 def test_capture_writes_immutable_shards_and_resumes_without_forward(tmp_path: Path) -> None:
     manifest = _input_fixture(tmp_path)
     plan_path = tmp_path / "plan.json"
