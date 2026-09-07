@@ -139,8 +139,16 @@ def _resource_guard(
         raise DiagnosticError(f"host RSS guard failed at {stage}")
     if _host_available_bytes() < int(10 * 2**30):
         raise DiagnosticError(f"host MemAvailable guard failed at {stage}")
+    disk_path = Path(args.output_root)
+    while not disk_path.exists():
+        parent = disk_path.parent
+        if parent == disk_path:
+            raise DiagnosticError(f"disk free-space guard failed at {stage}: no existing ancestor")
+        disk_path = parent
+    if not disk_path.is_dir():
+        disk_path = disk_path.parent
     try:
-        disk_free = int(shutil.disk_usage(args.output_root).free)
+        disk_free = int(shutil.disk_usage(disk_path).free)
     except OSError as exc:
         raise DiagnosticError(f"disk free-space guard failed at {stage}") from exc
     if disk_free < int(MINIMUM_DISK_GIB * 2**30):
