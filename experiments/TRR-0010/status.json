@@ -470,6 +470,50 @@
         "full_bank_available_post_bos_positions": 1243710,
         "truth_opened": false
       }
+    },
+    {
+      "path": "experiments/TRR-0010/report/combined_fit_diagnostics_cost_table_v3.json",
+      "bytes": 144801,
+      "sha256": "f0831f79c4a6e737ebbbe6ad9f837fd61967421b421683ddcb8b6db4b01db8c0",
+      "status": "COMPLETE_FOUR_ARM_FIT_DIAGNOSTICS_TRUTH_FREE_NO_FINAL_QUALITY",
+      "id": "combined_fit_diagnostics_cost_table_v3"
+    },
+    {
+      "path": "experiments/TRR-0010/report/current_directional_fit_receipt_v2.json",
+      "bytes": 90880,
+      "sha256": "d61cc966741d4afca5c63025d9ac6b31e006cf2637ab2eb8093a729701f75b62",
+      "status": "CURRENT_DIRECTIONAL_EXPORT_AND_DIAGNOSTICS_BOUND",
+      "id": "current_directional_fit_receipt_v2"
+    },
+    {
+      "path": "experiments/TRR-0010/report/expanded_directional_fit_receipt_v2.json",
+      "bytes": 87623,
+      "sha256": "7b037facdfba36394a55fb6363315d42d41467a1360d1e7ef82a7ab130fddc75",
+      "status": "EXPANDED_DIRECTIONAL_EXPORT_AND_DIAGNOSTICS_BOUND",
+      "id": "expanded_directional_fit_receipt_v2"
+    },
+    {
+      "path": "experiments/TRR-0010/setup/expanded_directional_w_e_drift_v2.json",
+      "bytes": 7129,
+      "sha256": "a8aa10c01414dfe110d94c0009923961ee5d910691402b90fc9fd8d1f7d3550f",
+      "status": "DESCRIPTIVE_SUPPORTED_READOUT_DRIFT_NO_QUALITY_RESULT",
+      "source_commit": "116f2f2",
+      "id": "expanded_directional_w_e_drift_v2"
+    },
+    {
+      "path": "scripts/trr0010_fit_diagnostics_table.py",
+      "bytes": 39526,
+      "sha256": "0694503597a862a9c7d9dc5cf1f0b202a3c2cf3b36050accc0af0485778c7921",
+      "status": "FOUR_ARM_TABLE_ASSEMBLER",
+      "id": "trr0010_fit_diagnostics_table_source"
+    },
+    {
+      "path": "experiments/TRR-0010/planning/final_scoring_rules_binding_v1.json",
+      "bytes": 29171,
+      "sha256": "056050a141740486307b7918d6f08e46c7257e8ee5c4403268570bc5a1553e0c",
+      "source_proposal_sha256": "3b0a68a4a05304e285c1fedcf8a2982bf4bef831e2e5bc0cebb20b8b2dba08b3",
+      "status": "FROZEN_V4_SCORING_RULES_BINDING_FOR_CAPACITY_WRAPPER",
+      "id": "final_scoring_rules_binding_v1"
     }
   ],
   "branch": "task/TRR-0010",
@@ -691,7 +735,7 @@
     "directional_qualification_started": true,
     "capture_complete_no_truth": true,
     "directional_qualification_status": "PASS_LARGEST_CELL_QUALIFICATION_NO_FIT_NO_TRUTH",
-    "substantive_fit_status": "B0_AND_B1_FIXED_READOUT_COMPLETE_CURRENT_DIRECTIONAL_TRAINING_COMPLETE_EXPORT_PENDING_EXPANDED_DIRECTIONAL_NOT_STARTED",
+    "substantive_fit_status": "B0_B1_FIXED_AND_BOTH_DIRECTIONAL_TRAINING_COMPLETE_EXPORTS_AND_DIAGNOSTICS_BOUND",
     "final_evaluation_status": "PENDING_TRUTH_CLOSED",
     "qualified_B1_manifest_bound": true,
     "qualified_B1_manifest_external_sha256": "0e14dbf74c947cfc6c586e7a5dbf76a27d8f0522fb8e54d2f98c6067bb36d196",
@@ -720,7 +764,7 @@
     "qualification_receipt_path": "experiments/TRR-0010/training/qualification_v2/qualification.json",
     "qualification_receipt_sha256": "58594a477733c2f1ce21d356ec9acead92de6001b2c31bd41f635213700bca66",
     "current_fit_stage": {
-      "status": "B0_B1_FIXED_COMPLETE_CURRENT_DIRECTIONAL_TRAINING_COMPLETE_EXPORT_PENDING_EXPANDED_DIRECTIONAL_NOT_STARTED",
+      "status": "B0_B1_FIXED_CURRENT_DIRECTIONAL_EXPANDED_DIRECTIONAL_FIT_COMPLETE_NO_FRESH_QUALITY",
       "B0": {
         "status": "COMPLETE_CAPACITY_AUDITED",
         "updates": 13000,
@@ -763,9 +807,9 @@
           "step": 13000
         }
       },
-      "source": "Fixed v2 table plus current directional raw runner receipt; post-fit export and diagnostic callback recovery pending; no truth or final quality.",
+      "source": "Fixed v2 table plus immutable current and expanded directional fit receipts, export recovery, and diagnostic recovery; all four arms are complete truth-free; fresh quality remains pending.",
       "current_directional": {
-        "status": "TRAINING_COMPLETE_DEPLOYMENT_EXPORT_PENDING",
+        "status": "COMPLETE_DIRECTIONAL_EXPORT_AND_DIAGNOSTICS_BOUND",
         "arm_role": "current_directional",
         "bank_role": "B0",
         "updates": 13000,
@@ -783,13 +827,30 @@
         "optimizer_update_seconds": 597.4261652720743,
         "stream_load_seconds": 38.9768245817977,
         "validation_seconds": 12.298160022997763,
+        "nonoverlap_wall_seconds": 714.2175697820494,
         "raw_runner_receipt": {
           "path": "experiments/TRR-0010/training/directional_fit/current_directional_watchdog_r2/fit/raw_runner_result.json",
           "bytes": 62160,
           "sha256": "de89e05c2d93a7bd44b84fac8d70dea8a064722557e37869ea434c9f9f2019c7"
         },
-        "postfit_export_recovery_pending": true,
-        "frozen64_diagnostics_retained": false,
+        "fit_receipt_bridge": {
+          "path": "experiments/TRR-0010/report/current_directional_fit_receipt_v2.json",
+          "bytes": 90880,
+          "sha256": "d61cc966741d4afca5c63025d9ac6b31e006cf2637ab2eb8093a729701f75b62",
+          "status": "CURRENT_DIRECTIONAL_EXPORT_AND_DIAGNOSTICS_BOUND"
+        },
+        "export_recovery_receipt": {
+          "path": "experiments/TRR-0010/training/directional_fit/current_directional_export_recovery_watchdog/fit/recovery_receipt.json",
+          "status": "EXPORT_RECOVERY_COMPLETE",
+          "truth_opened": false
+        },
+        "diagnostic_recovery_receipt": {
+          "path": "experiments/TRR-0010/training/directional_fit/current_directional_diagnostic_recovery_watchdog_r1/fit/recovery_receipt.json",
+          "status": "RECOVERY_COMPLETE",
+          "wall_seconds": 19.32576330000302,
+          "truth_opened": false
+        },
+        "frozen64_diagnostics_retained": true,
         "truth_opened": false,
         "quality_results": false,
         "selection_metric_observation": {
@@ -799,6 +860,57 @@
           "step13000": 0.958984375,
           "cross_entropy_step0": 0.19891194561178602,
           "cross_entropy_step13000": 0.1771696456109132,
+          "scope": "opened public development validation; not final natural quality"
+        }
+      },
+      "expanded_directional": {
+        "status": "COMPLETE_DIRECTIONAL_EXPORT_AND_DIAGNOSTICS_BOUND",
+        "arm_role": "expanded_directional",
+        "bank_role": "B1",
+        "updates": 13000,
+        "total_draws": 6656000,
+        "draws_per_step": 512,
+        "selected_step": 12000,
+        "selected_state_logical_sha256": "ab7cb4523fc8a024e7098b1b11d7298e847eb730a116a06426c49b94f4e49195",
+        "schedule_semantic_sha256": "be0745ebb56e0ed39c2cf7e9c05a657209126f4c1c552242d3893c52d6718801",
+        "unique_record_position_pairs": 1237403,
+        "repeated_record_position_pairs": 1205642,
+        "max_exposures_per_record_position": 19,
+        "support_count": 45631,
+        "fit_wall_seconds": 1965.8458181800088,
+        "optimizer_update_seconds": 771.0642556621751,
+        "stream_load_seconds": 986.1152571268321,
+        "validation_seconds": 13.772238056029892,
+        "nonoverlap_wall_seconds": 1986.5496898780111,
+        "raw_runner_receipt": {
+          "path": "experiments/TRR-0010/training/directional_fit/expanded_directional_watchdog/fit/raw_runner_result.json",
+          "bytes": 62157,
+          "sha256": "158786f91497a5bc6417b5c347b550165662c4bbb28bd7faeac581f24d60849b",
+          "status": "FIT_COMPLETE"
+        },
+        "run_receipt": {
+          "path": "experiments/TRR-0010/training/directional_fit/expanded_directional_watchdog/fit/run_receipt.json",
+          "bytes": 80853,
+          "sha256": "0aeecd776a1f817efb7b36388c293e670017840c898dd3976cc2dc568a24e716",
+          "status": "FIT_COMPLETE"
+        },
+        "fit_receipt_bridge": {
+          "path": "experiments/TRR-0010/report/expanded_directional_fit_receipt_v2.json",
+          "bytes": 87623,
+          "sha256": "7b037facdfba36394a55fb6363315d42d41467a1360d1e7ef82a7ab130fddc75",
+          "status": "EXPANDED_DIRECTIONAL_EXPORT_AND_DIAGNOSTICS_BOUND"
+        },
+        "frozen64_diagnostics_retained": true,
+        "truth_opened": false,
+        "quality_results": false,
+        "selection_metric_observation": {
+          "selected_step": 12000,
+          "metric": "domain_balanced_token_accuracy",
+          "step0": 0.9681809793307087,
+          "step12000": 0.9867125984251968,
+          "step13000": 0.9866203248031495,
+          "cross_entropy_step0": 0.19891194561178602,
+          "cross_entropy_step12000": 0.0643633826729888,
           "scope": "opened public development validation; not final natural quality"
         }
       }
@@ -862,7 +974,7 @@
       }
     },
     "directional_fit_started": true,
-    "directional_fit_status": "CURRENT_TRAINING_COMPLETE_DEPLOYMENT_EXPORT_PENDING_EXPANDED_NOT_STARTED",
+    "directional_fit_status": "BOTH_DIRECTIONAL_TRAINING_COMPLETE_EXPORTS_DIAGNOSTICS_BOUND",
     "b1_expanded_fixed_fit_receipt": {
       "status": "PASS",
       "receipt": {
@@ -906,10 +1018,10 @@
   },
   "implementation_commit": "a4985c0cd373c26d4361ce1c861fa35bdb25b10e",
   "pending": [
-    "Produce and bind the six-method/four-cell public timing cost artifact after the prediction run; until then deployment-cost gates remain unmeasured.",
     "Bind exact imported final prediction-runner/gate/base-only decoder/effective-W/registration/A1+A2 source files and qualify the final forward path under the agreed fail-closed caps.",
-    "Recover and bind the current directional selected export/fit-diagnostic receipt, run the expanded directional arm, and bind the combined four-arm execution manifest before final evaluation.",
-    "Bind the final 128 Finance + 128 Pile natural panel/order/H128 digests and exclusion intersection, then the curator-owned paired observation/truth descriptor.",
+    "Select and bind the final 128 Finance + 128 Pile natural panel/order/H128 digests and exclusion intersection, then capture paired observations under the curator boundary.",
+    "Run the complete public prediction matrix, produce the production cost artifact, and freeze the prediction/registration evidence before truth access.",
+    "Materialize and validate the curator-owned truth descriptor, then open truth only through the score-after-gate path.",
     "No reconstruction-quality result or promotion claim exists; quality remains unavailable."
   ],
   "provenance": {
@@ -1275,9 +1387,9 @@
   "reviewed_base_commit": "4602f98eeb03ac121d8bbc230d7e2b219551b914",
   "schema": "token-reconstruction.trr0010-status.v5",
   "scientific_results_available": false,
-  "status": "B0_B1_FIXED_CURRENT_DIRECTIONAL_TRAINING_COMPLETE_EXPORT_PENDING_EXPANDED_DIRECTIONAL_NOT_STARTED_NO_QUALITY_RESULT",
+  "status": "B0_B1_FIXED_CURRENT_DIRECTIONAL_EXPANDED_DIRECTIONAL_FIT_COMPLETE_NO_FRESH_QUALITY_RESULT",
   "task_id": "TRR-0010",
-  "updated_utc": "2026-09-07T17:05:22Z",
+  "updated_utc": "2026-09-07T18:20:16.809980+00:00",
   "publication": {
     "status": "OPEN_DRAFT_PR_PUBLISHED",
     "url": "https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/20",
@@ -1956,14 +2068,76 @@
     }
   },
   "combined_fit_diagnostics_cost_table": {
-    "id": "trr0010_combined_fit_diagnostics_cost_table_v2",
-    "path": "experiments/TRR-0010/report/combined_fit_diagnostics_cost_table_v2.json",
-    "bytes": 85379,
-    "sha256": "6c80e6c504afa766e0d30c580b3dc95592f56a8c0c150cae0c4235de313fe9d7",
-    "status": "TRAINING_COMPLETE_DEPLOYMENT_EXPORT_PENDING",
+    "path": "experiments/TRR-0010/report/combined_fit_diagnostics_cost_table_v3.json",
+    "bytes": 144801,
+    "sha256": "f0831f79c4a6e737ebbbe6ad9f837fd61967421b421683ddcb8b6db4b01db8c0",
+    "status": "COMPLETE_FOUR_ARM_FIT_DIAGNOSTICS_TRUTH_FREE_NO_FINAL_QUALITY",
+    "fixed_table_sha256": "4f760524a2d0269861f8424d24ed6d89584f94719c6ecfa888d605bce8924040",
     "truth_opened": false,
     "quality_results": false,
-    "fixed_table_sha256": "4f760524a2d0269861f8424d24ed6d89584f94719c6ecfa888d605bce8924040",
-    "expanded_directional_receipt_bound": false
+    "arm_count": 4,
+    "checkpoint_rows": 28,
+    "assembler": {
+      "path": "scripts/trr0010_fit_diagnostics_table.py",
+      "bytes": 39526,
+      "sha256": "0694503597a862a9c7d9dc5cf1f0b202a3c2cf3b36050accc0af0485778c7921",
+      "status": "FOUR_ARM_TABLE_ASSEMBLER",
+      "source_commit": "f299f472dc398d95f41fe0a36ad558c8124bdf68"
+    }
+  },
+  "directional_fit_started": true,
+  "directional_fit_status": "BOTH_DIRECTIONAL_TRAINING_COMPLETE_EXPORTS_DIAGNOSTICS_BOUND",
+  "directional_fit_receipts": {
+    "current": {
+      "path": "experiments/TRR-0010/report/current_directional_fit_receipt_v2.json",
+      "bytes": 90880,
+      "sha256": "d61cc966741d4afca5c63025d9ac6b31e006cf2637ab2eb8093a729701f75b62",
+      "status": "CURRENT_DIRECTIONAL_EXPORT_AND_DIAGNOSTICS_BOUND"
+    },
+    "expanded": {
+      "path": "experiments/TRR-0010/report/expanded_directional_fit_receipt_v2.json",
+      "bytes": 87623,
+      "sha256": "7b037facdfba36394a55fb6363315d42d41467a1360d1e7ef82a7ab130fddc75",
+      "status": "EXPANDED_DIRECTIONAL_EXPORT_AND_DIAGNOSTICS_BOUND"
+    },
+    "parameter_drift_descriptive": {
+      "path": "experiments/TRR-0010/setup/expanded_directional_w_e_drift_v2.json",
+      "bytes": 7129,
+      "sha256": "a8aa10c01414dfe110d94c0009923961ee5d910691402b90fc9fd8d1f7d3550f",
+      "status": "DESCRIPTIVE_SUPPORTED_READOUT_DRIFT_NO_QUALITY_RESULT",
+      "source_commit": "116f2f2"
+    },
+    "truth_opened": false,
+    "quality_results": false
+  },
+  "report_binding": {
+    "path": "coordination/results/TRR-0010.md",
+    "bytes": 8388,
+    "sha256": "e4e5de2445d01e938d34284af562f2ee88f7b2b73473bd7aea45c2ed1419a0b9",
+    "status": "CURRENT_FOUR_ARM_TRUTH_FREE_FIT_HANDOFF"
+  },
+  "fit_table_assembler_commit": "f299f472dc398d95f41fe0a36ad558c8124bdf68",
+  "final_scoring_rules_binding": {
+    "path": "experiments/TRR-0010/planning/final_scoring_rules_binding_v1.json",
+    "bytes": 29171,
+    "sha256": "056050a141740486307b7918d6f08e46c7257e8ee5c4403268570bc5a1553e0c",
+    "source_proposal_sha256": "3b0a68a4a05304e285c1fedcf8a2982bf4bef831e2e5bc0cebb20b8b2dba08b3",
+    "status": "FROZEN_V4_SCORING_RULES_BINDING_FOR_CAPACITY_WRAPPER"
+  },
+  "capacity_scoring_rules_handoff": {
+    "status": "LOCAL_FILE_HANDOFF_RESOLVED_AFTER_ROOT_FORWARD",
+    "artifact": {
+      "path": "experiments/TRR-0010/planning/final_scoring_rules_binding_v1.json",
+      "bytes": 29171,
+      "sha256": "056050a141740486307b7918d6f08e46c7257e8ee5c4403268570bc5a1553e0c",
+      "source_proposal_sha256": "3b0a68a4a05304e285c1fedcf8a2982bf4bef831e2e5bc0cebb20b8b2dba08b3",
+      "status": "FROZEN_V4_SCORING_RULES_BINDING_FOR_CAPACITY_WRAPPER"
+    },
+    "destination_thread_id": "01a07061-9c25-7e13-bcac-12d57c41c666",
+    "attempted_action": "Send the binding path/hash and declared opaque-ledger paths to the recorded capacity/A2 thread.",
+    "automatic_review_reason": "This sends internal research metadata, file paths, hashes, and scoring rules to a thread destination not established as trusted; the user authorized coordination generally but did not specifically authorize this sensitive payload to that destination.",
+    "retry_policy": "Do not retry or route around the rejection; root must use an approved delivery channel or obtain destination-specific authorization.",
+    "resolution": "Root forwarded the existing task-owned binding path/hash and source proposal hash to the established local capacity worker via approved collaboration; no app-thread retry was used.",
+    "automatic_review_rejection_preserved": true
   }
 }
