@@ -1,6 +1,6 @@
 # TRR-P08 design review
 
-Status: **PROPOSED_PRE_FREEZE**. This review covers the fitting mechanism only;
+Status: **FROZEN_DESIGN_PRE_FIT**. This review covers the fitting mechanism only;
 no fresh source selection, capture, truth access, optimizer run, or target
 matrix is authorized by this document.
 
@@ -54,10 +54,13 @@ The one-third phase boundary is fixed before fitting and is not one point in a
 schedule sweep. It gives the affine component enough counted updates to move
 from the common identity state while retaining two thirds of the budget for
 context learning. The published P06 public validation curves selected their
-best checkpoints at steps 900, 1500, 1700, and 2000 across seeds and visibility
-arms. Thus step 1000 lies inside the observed public optimization window and
-leaves a substantial complete-model phase. This is a public development
-justification; no fresh evaluation answer or hidden result chooses the split.
+best checkpoints for the two visibility arms retained here at steps 1700 and
+2000 for past-only and 1700 and 900 for positionwise-diagonal across the two
+seeds. Thus step 1000 lies inside the observed public optimization window and
+leaves a substantial complete-model phase. The published full-record 1500
+selection is out of scope for this positionwise/past-only design and is not
+used as its schedule rationale. This is a public development justification;
+no fresh evaluation answer or hidden result chooses the split.
 
 The main comparison remains equal-budget: joint arms train every parameter for
 3000 updates, while staged arms train the direct path for 1000 and the complete
@@ -86,10 +89,14 @@ as unavailable rather than repaired by changing the rule or adding updates.
 For each staged visibility arm and seed, the report compares the full decoder
 at its selected checkpoint and at final step 3000 with an affine-only twin
 constructed from that same checkpoint's `W,b,s`. On both frozen transition-error
-cohorts it reports affine-wrong to full-correct corrections, affine-wrong to
-full-wrong residuals, and affine-correct to full-wrong introduced errors. This
-compares the added path with the affine-only prediction directly; a later rise
-in affine accuracy alone is not called contextual correction learning.
+cohorts it reports four transitions: transition-affine wrong to same-final-
+affine correct (direct-path progress), same-final-affine wrong to final-full
+correct (added-path correction), same-final-affine wrong to final-full wrong
+(residual failure), and same-final-affine correct to final-full wrong
+(introduced error). The same-final-affine comparison isolates added-path
+correction; transition-affine versus final-full is retained only as a combined
+progress diagnostic. A later rise in affine accuracy alone is not called
+contextual correction learning.
 
 ## Primary interpretation gates
 
@@ -104,11 +111,13 @@ primary domains, with same-sign seed contrasts.
 
 A useful contextual benefit is ruled out only when both domains have token
 upper confidence bounds below +0.5 points and exact upper bounds below +5
-points, with no opposite seed/domain result. Intervals spanning those margins,
-one-domain support, or mixed signs are inconclusive. Resource or non-finite
-failure, missing selection receipts, or an arm that does not complete its
-fixed exposure makes the comparison inconclusive; a fit-cohort shortfall alone
-does not.
+points, with no seed interaction at or above either positive practical margin.
+The practical support gate is evaluated first, followed by this ruled-out
+gate. Small mixed signs do not override a gate already met; they are reported
+descriptively. If neither gate is met, intervals crossing a registered margin,
+one-domain support, an opposite seed at the relevant direction, or incomplete
+arm/receipt/exposure evidence are inconclusive. A fit-cohort shortfall alone
+does not make the main comparison inconclusive.
 
 No outcome triggers extra phases, a schedule search, sample expansion, global
 promotion, or reinterpretation of P07. The final report will retain Pile and
