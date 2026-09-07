@@ -571,6 +571,24 @@ def _p06_opaque() -> tuple[dict[str, Any], frozenset[str], frozenset[str]]:
     return summary, source, sequence
 
 
+def _p08_opaque(path: Path, *, root: Path) -> tuple[dict[str, Any], frozenset[str], frozenset[str]]:
+    """Load the approved P08 hash-only exchange without opening provenance."""
+
+    resolved = path.expanduser().resolve()
+    allowed_roots = (root.resolve(), Path("/tmp/trr-p08").resolve())
+    if not any(resolved == allowed or allowed in resolved.parents for allowed in allowed_roots):
+        raise SelectionError("P08 opaque reservation must be task-owned or under /tmp/trr-p08")
+    try:
+        summary, source, sequence = planning._load_generic_opaque_reservation(
+            resolved, label="p08"
+        )
+    except planning.PlanError as exc:
+        raise SelectionError(str(exc)) from exc
+    summary = dict(summary)
+    summary["label"] = "p08"
+    return summary, source, sequence
+
+
 def _p06_sequence_digest(token_ids: Sequence[int]) -> str:
     # Keep the approved P06 H128 convention explicit and independent from P04's
     # H129 matcher.  Selection never serializes these token IDs.
@@ -591,6 +609,8 @@ def _classify_candidate(
     p06_sequence: frozenset[str],
     seen_public_hashes: set[str],
     seen_final_sequences: set[str],
+    p08_source: frozenset[str],
+    p08_sequence: frozenset[str],
 ) -> str:
     blocked = trusted._blocked(candidate, exclusions)
     if blocked == "public_source_id":
@@ -609,6 +629,10 @@ def _classify_candidate(
         return "excluded_p06_source_hash"
     if _p06_sequence_digest(candidate.token_ids) in p06_sequence:
         return "excluded_p06_h128_sequence_hash"
+    if candidate.public_record_sha256 in p08_source:
+        return "excluded_p08_source_hash"
+    if _p06_sequence_digest(candidate.token_ids) in p08_sequence:
+        return "excluded_p08_h128_sequence_hash"
     if candidate.public_record_sha256 in seen_public_hashes:
         return "duplicate_rendered_source"
     if candidate.final_sequence_sha256 in seen_final_sequences:
@@ -628,6 +652,8 @@ def _select_domain(
     p04: eligibility.OpaqueExclusions,
     p06_source: frozenset[str],
     p06_sequence: frozenset[str],
+    p08_source: frozenset[str],
+    p08_sequence: frozenset[str],
     seen_public_hashes: set[str],
     seen_final_sequences: set[str],
 ) -> tuple[list[Any], dict[str, int]]:
@@ -642,6 +668,8 @@ def _select_domain(
         "excluded_p04_h129_sequence_hash": 0,
         "excluded_p06_source_hash": 0,
         "excluded_p06_h128_sequence_hash": 0,
+        "excluded_p08_source_hash": 0,
+        "excluded_p08_h128_sequence_hash": 0,
         "invalid": 0,
         "duplicate_rendered_source": 0,
         "duplicate_final_sequence": 0,
@@ -673,6 +701,8 @@ def _select_domain(
             p04=p04,
             p06_source=p06_source,
             p06_sequence=p06_sequence,
+            p08_source=p08_source,
+            p08_sequence=p08_sequence,
             seen_public_hashes=seen_public_hashes,
             seen_final_sequences=seen_final_sequences,
         )
@@ -725,6 +755,35 @@ def _selection_metadata(rows: Mapping[str, Sequence[Any]]) -> dict[str, list[dic
     return result
 
 
+def _assert_zero_p08_intersection(
+    metadata: Mapping[str, Sequence[Mapping[str, Any]]],
+    *,
+    p08_source: frozenset[str],
+    p08_sequence: frozenset[str],
+) -> dict[str, int]:
+    selected_source = {
+        str(row["public_record_sha256"])
+        for rows in metadata.values()
+        for row in rows
+    }
+    selected_sequence = {
+        str(row["final_sequence_sha256"])
+        for rows in metadata.values()
+        for row in rows
+    }
+    source_overlap = len(selected_source & p08_source)
+    sequence_overlap = len(selected_sequence & p08_sequence)
+    if source_overlap or sequence_overlap:
+        raise SelectionError(
+            "corrected selection intersects approved P08 opaque hashes: "
+            f"source={source_overlap}, h128={sequence_overlap}"
+        )
+    return {
+        "public_record_sha256": source_overlap,
+        "final_sequence_sha256": sequence_overlap,
+    }
+
+
 def _exclusion_source_descriptors(exclusions: Any) -> list[dict[str, Any]]:
     return [
         {
@@ -756,6 +815,7 @@ def _build_exclusion_payload(
     p04_descriptor: Mapping[str, Any],
     p04: eligibility.OpaqueExclusions,
     p06_summary: Mapping[str, Any],
+    p08_summary: Mapping[str, Any],
     inventory_record: Mapping[str, Any],
     decision_record: Mapping[str, Any],
 ) -> dict[str, Any]:
@@ -777,12 +837,13 @@ def _build_exclusion_payload(
         "p04_exchange": dict(p04_descriptor),
         "p04_field_summaries": dict(p04.fields),
         "p06_opaque_reservation": dict(p06_summary),
+        "p08_opaque_reservation": dict(p08_summary),
         "identity_inventory": dict(inventory_record),
         "decision_contract": dict(decision_record),
         "known_prior_panels": [
             "TRR-0003/TRR-0004/TRR-0005/TRR-0006/TRR-0007 known fit, validation, and opened-evaluation identities",
             "TRR-0008 exclusion and frozen source-selection ledgers",
-            "approved P04/P06 opaque hash-only exclusions and the P07 no-new-identity reply",
+            "approved P04/P06/P08 opaque hash-only exclusions and the P07 no-new-identity reply",
         ],
         "source_text_or_token_ids_written": False,
         "private_or_truth_payload_read": False,
@@ -829,6 +890,8 @@ def _build_selection_payload(
     planning_record: Mapping[str, Any],
     planning_compatibility: Mapping[str, Any],
     p06_summary: Mapping[str, Any],
+    p08_summary: Mapping[str, Any],
+    p08_intersection: Mapping[str, int],
     p04_descriptor: Mapping[str, Any],
     exclusion_record: Mapping[str, Any],
     source_inputs: Mapping[str, Any],
@@ -883,8 +946,10 @@ def _build_selection_payload(
             "plan": dict(planning_record),
         },
         "p06_hash_compatibility": compatibility,
+        "p08_opaque_reservation": dict(p08_summary),
+        "p08_postselection_intersection": dict(p08_intersection),
         "selection_rule": {
-            "algorithm": "Deterministic TRR-0005 future-holdout order via deterministic_row_order(seed=5005); reject the verified TRR-0007 public identity ledgers, approved P04 source/H129 opaque hashes, approved P06 source/H128 opaque hashes, invalid rows, duplicate rendered sources, and duplicate H128 sequences; retain the first predeclared eligible count per domain.",
+            "algorithm": "Deterministic TRR-0005 future-holdout order via deterministic_row_order(seed=5005); reject the verified TRR-0007 public identity ledgers, approved P04 source/H129 opaque hashes, approved P06 and P08 source/H128 opaque hashes, invalid rows, duplicate rendered sources, and duplicate H128 sequences; retain the first predeclared eligible count per domain.",
             "identity_exclusions": True,
             "source_text_or_token_ids_written": False,
             "record_ids_sha256": {style: _json_digest(ids[style]) for style in STYLE_ORDER},
@@ -897,6 +962,7 @@ def _build_selection_payload(
             "sha256": exclusion_record["sha256"],
             "p04_exchange": dict(p04_descriptor),
             "p06_opaque_reservation": dict(p06_summary),
+            "p08_opaque_reservation": dict(p08_summary),
             "targetfit_per_record_metadata_available": False,
         },
         "selection_diagnostics": {
@@ -986,6 +1052,8 @@ def select_public(args: argparse.Namespace) -> dict[str, Any]:
     )
     p04, p04_descriptor = _p04_opaque()
     p06_summary, p06_source, p06_sequence = _p06_opaque()
+    p08_path = Path(args.p08_opaque).expanduser().resolve()
+    p08_summary, p08_source, p08_sequence = _p08_opaque(p08_path, root=root)
 
     tokenizer = trusted._load_tokenizer(tokenizer_path)
     datasets = {
@@ -1008,15 +1076,21 @@ def select_public(args: argparse.Namespace) -> dict[str, Any]:
             p04=p04,
             p06_source=p06_source,
             p06_sequence=p06_sequence,
+            p08_source=p08_source,
+            p08_sequence=p08_sequence,
             seen_public_hashes=seen_public_hashes,
             seen_final_sequences=seen_final_sequences,
         )
     metadata = _selection_metadata(selected)
+    p08_intersection = _assert_zero_p08_intersection(
+        metadata, p08_source=p08_source, p08_sequence=p08_sequence
+    )
     exclusion_payload = _build_exclusion_payload(
         exclusions=exclusions,
         p04_descriptor=p04_descriptor,
         p04=p04,
         p06_summary=p06_summary,
+        p08_summary=p08_summary,
         inventory_record=inventory_record,
         decision_record=decision_record,
     )
@@ -1038,6 +1112,8 @@ def select_public(args: argparse.Namespace) -> dict[str, Any]:
         planning_record=planning_record,
         planning_compatibility=_compatibility,
         p06_summary=p06_summary,
+        p08_summary=p08_summary,
+        p08_intersection=p08_intersection,
         p04_descriptor=p04_descriptor,
         exclusion_record=exclusion_record,
         source_inputs=source_inputs,
@@ -1054,6 +1130,7 @@ def select_public(args: argparse.Namespace) -> dict[str, Any]:
         "selection": selection_record,
         "exclusions": exclusion_record,
         "records_by_domain": dict(EXPECTED_RECORDS_BY_DOMAIN),
+        "p08_postselection_intersection": dict(p08_intersection),
         "truth_created_or_opened": False,
     }
 
@@ -1177,6 +1254,7 @@ def _parser() -> argparse.ArgumentParser:
     select.add_argument("--tokenizer", type=Path, required=True)
     select.add_argument("--pile-arrow", type=Path, nargs="+", required=True)
     select.add_argument("--finance-arrow", type=Path, nargs="+", required=True)
+    select.add_argument("--p08-opaque", type=Path, required=True, help="approved P08 sanitized hash-only reservation")
     select.add_argument("--output", type=Path, default=Path("experiments/TRR-0009/selection/source_selection.json"))
     select.add_argument("--exclusions-output", type=Path, default=Path("experiments/TRR-0009/selection/source_exclusions.json"))
     reserve = sub.add_parser("reserve", help="export hash-only reservation from completed selection")

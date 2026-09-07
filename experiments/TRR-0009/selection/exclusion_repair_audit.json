@@ -1,0 +1,94 @@
+{
+  "adapter_provenance": {
+    "planner_adapter_scope": "P08 sanitized-schema reader compatibility only; no range, natural-order, sample-size, decision, or model change.",
+    "planner_diff_deletions": 36,
+    "planner_diff_insertions": 92,
+    "planner_diff_lines": 128,
+    "planner_post_adapter_sha256": "9505a4eca9b9751a62367e2d3918b17f00ae8c1ddaf2757b019687de67fcae45",
+    "planner_pre_adapter_sha256": "9505a4eca9b9751a62367e2d3918b17f00ae8c1ddaf2757b019687de67fcae45",
+    "planner_reader_script": "scripts/trr0009_plan.py",
+    "selector_script_sha256": "80889f1701f7227978e4feccb9e8e15776ae1a2848a6c01dcb85b774657c2969"
+  },
+  "aggregate_inventory_p08_exclusions": {
+    "finance_h128_sequence_hash_matches": 27,
+    "finance_public_record_hash_matches": 0,
+    "pile_h128_sequence_hash_matches": 0,
+    "pile_public_record_hash_matches": 0
+  },
+  "approved_p08_input": {
+    "bytes": 80045,
+    "path": "experiments/TRR-0009/coordination/approved_opaque/p08_opaque_hash_exchange_sanitized.json",
+    "schema": "token-reconstruction.trr-p08-sanitized-opaque-hashes.v1",
+    "sequence_hash_count": 512,
+    "sha256": "3383356794d3498830f5cd69ed2c552f4ed527eceed7e05f61cc3c49eba2eb38",
+    "source_hash_count": 512
+  },
+  "corrective_action_pending_root_scope": {
+    "expected_filter_change": "Load the approved P08 source/H128 sets into the selector and pass them through the existing classifier.",
+    "new_output_namespace": "experiments/TRR-0009/selection_v2/",
+    "rerun_started": false,
+    "same_decision_contract_and_method_freeze": true,
+    "same_frozen_ranges_counts_seed": true
+  },
+  "created_utc": "2026-09-07T02:38:50Z",
+  "initial_selection_failure_preserved": {
+    "attempt": "original selection and reservation artifacts above",
+    "failed_attempt_error": "TRR-0009 planning error: p08 opaque reservation schema is not hash-only",
+    "failed_attempt_output_written": false,
+    "failed_attempt_source_scan_started": false,
+    "failed_preselection_inventory_attempt": true
+  },
+  "inventory": {
+    "bytes": 25126,
+    "path": "experiments/TRR-0009/planning/source_inventory_final.json",
+    "sha256": "8821c8e365fd9e2cff386c7a1f5ad379e15f0da63ef280f94e970d04d16ef718",
+    "status": "IDENTITY_INVENTORY_COMPLETE_NO_SELECTION_NO_TRUTH"
+  },
+  "original_exclusions": {
+    "bytes": 18980,
+    "path": "experiments/TRR-0009/selection/source_exclusions.json",
+    "sha256": "d4c2f860c52cebf7c48672df38c9d3f8c99152c29f261a695bb7264436c84b88"
+  },
+  "original_reservation": {
+    "bytes": 60742,
+    "path": "experiments/TRR-0009/selection/opaque_source_sequence_reservation.json",
+    "sha256": "c0a1310c2dc8198ece3eda1eb273a3ef7412a1802ab85819ed709728bf603c52"
+  },
+  "original_selection": {
+    "bytes": 283874,
+    "path": "experiments/TRR-0009/selection/source_selection.json",
+    "sha256": "4ef38b31041fd4989d0f3ecb364c9afb7b4a6728dfa9971f324153b5c75e24ab"
+  },
+  "original_selection_preserved": true,
+  "original_selection_vs_approved_p08": {
+    "h128_final_sequence_hash_intersection": 1,
+    "h128_intersection_by_domain": {
+      "finance": 1,
+      "pile": 0
+    },
+    "public_record_hash_intersection": 0,
+    "selected_records_total": 384
+  },
+  "predictions_created": false,
+  "prior_approved_overlap_checks": {
+    "p04_h129_sequence_metadata_comparison": "UNAVAILABLE_FROM_SELECTED_LEDGER_ONLY",
+    "p04_public_record_hash_intersection": 0,
+    "p06_h128_sequence_hash_intersection": 0,
+    "p06_public_record_hash_intersection": 0,
+    "trr0007_selected_h128_sequence_hash_intersection": 0,
+    "trr0007_selected_public_record_hash_intersection": 0,
+    "trr0008_selected_h128_sequence_hash_intersection": 0,
+    "trr0008_selected_public_record_hash_intersection": 0
+  },
+  "root_cause": {
+    "effect": "The selector could retain a source whose H128 sequence was excluded by the final inventory P08 set; one Finance selected sequence matched P08.",
+    "inventory_filter": "scripts/trr0009_plan.py::_load_p08_option plus inventory opaque_sets=(p06,p08); applied P08 source and H128 sets.",
+    "population_change": "NONE; this is a selector reader/filter coverage defect only.",
+    "selection_filter": "scripts/trr0009_select_public.py::_classify_candidate accepts p04 and p06 sets only; select_public did not load or pass the approved P08 sets."
+  },
+  "schema": "token-reconstruction.trr0009-selection-exclusion-repair-audit.v1",
+  "source_payload_written": false,
+  "status": "ORIGINAL_SELECTION_PRESERVED_EXCLUDED_BEFORE_CAPTURE_P08_FILTER_COVERAGE_DEFECT",
+  "task_id": "TRR-0009",
+  "truth_opened": false
+}

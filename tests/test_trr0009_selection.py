@@ -74,8 +74,80 @@ def test_h128_opaque_sequence_classifier_keeps_ids_out_of_metadata():
         p06_sequence=frozenset({selector._p06_sequence_digest(tokens)}),
         seen_public_hashes=set(),
         seen_final_sequences=set(),
+        p08_source=frozenset(),
+        p08_sequence=frozenset(),
     )
     assert reason == "excluded_p06_h128_sequence_hash"
+
+
+@pytest.mark.parametrize(
+    ("p08_source", "p08_sequence", "expected"),
+    [
+        (frozenset({"a" * 64}), frozenset(), "excluded_p08_source_hash"),
+        (
+            frozenset(),
+            frozenset({selector._p06_sequence_digest(tuple(range(selector.SEQUENCE_TOKENS)))}),
+            "excluded_p08_h128_sequence_hash",
+        ),
+    ],
+)
+def test_p08_source_and_h128_hashes_are_rejected(p08_source, p08_sequence, expected):
+    tokens = tuple(range(selector.SEQUENCE_TOKENS))
+    candidate = SimpleNamespace(
+        style="pile",
+        record_id="synthetic",
+        row_index=7000,
+        token_ids=tokens,
+        public_record_sha256="a" * 64,
+        final_sequence_sha256="b" * 64,
+    )
+    exclusions = SimpleNamespace(
+        ids={"pile": set(), "finance": set()},
+        hashes={"pile": set(), "finance": set()},
+        indices={"pile": set(), "finance": set()},
+    )
+    reason = selector._classify_candidate(
+        candidate,
+        exclusions=exclusions,
+        p04=SimpleNamespace(source_hashes=frozenset(), sequence_hashes_129=frozenset()),
+        p06_source=frozenset(),
+        p06_sequence=frozenset(),
+        seen_public_hashes=set(),
+        seen_final_sequences=set(),
+        p08_source=p08_source,
+        p08_sequence=p08_sequence,
+    )
+    assert reason == expected
+
+
+def _selection_hashes(path):
+    payload = json.loads(selector.Path(path).read_text(encoding="utf-8"))
+    rows = payload["selection_rule"]["records"]
+    return (
+        {str(row["public_record_sha256"]) for group in rows.values() for row in group},
+        {str(row["final_sequence_sha256"]) for group in rows.values() for row in group},
+    )
+
+
+def test_selection_v2_has_zero_intersection_with_all_approved_ledgers():
+    selected_source, selected_sequence = _selection_hashes(
+        "experiments/TRR-0009/selection_v2/source_selection.json"
+    )
+    _, p08_source, p08_sequence = planning._load_generic_opaque_reservation(
+        selector.Path("experiments/TRR-0009/coordination/approved_opaque/p08_opaque_hash_exchange_sanitized.json"),
+        label="p08",
+    )
+    _, p06_source, p06_sequence = planning._load_p06_opaque()
+    p04, _ = selector._p04_opaque()
+    assert selected_source.isdisjoint(p08_source)
+    assert selected_sequence.isdisjoint(p08_sequence)
+    assert selected_source.isdisjoint(p06_source)
+    assert selected_sequence.isdisjoint(p06_sequence)
+    assert selected_source.isdisjoint(p04.source_hashes)
+    for prior in ("experiments/TRR-0007/selection/source_selection.json", "experiments/TRR-0008/selection/source_selection.json"):
+        prior_source, prior_sequence = _selection_hashes(prior)
+        assert selected_source.isdisjoint(prior_source)
+        assert selected_sequence.isdisjoint(prior_sequence)
 
 
 def test_selection_metadata_is_source_free_and_capture_compatible():
