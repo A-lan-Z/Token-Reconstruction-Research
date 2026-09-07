@@ -10,6 +10,7 @@ import pytest
 
 from scripts import trr0010_eval_capture as capture
 from scripts import trr0010_eval_gate as gate
+from scripts import trr0010_eval_register as register
 from scripts import trr0010_prepare_truth as truth
 from scripts import trr0010_select_public as selector
 
@@ -225,6 +226,23 @@ def _producer_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
         "observations": obs_record,
         "panel": panel_record,
         "geometry": {"capture_batch_records": 8, "capture_sequence_tokens": 192, "stored_sequence_tokens": 128},
+        "execution": {"producer_semantics": "public full forward B8x192; retain first 128 positions"},
+        "conditions": {
+            condition: {
+                "cells": {
+                    cell_id: {
+                        "full_forward_retained_only_first_128": True,
+                        "capture_batch_records": 8,
+                        "capture_sequence_tokens": 192,
+                        "stored_sequence_tokens": 128,
+                        "observation": next(row["observation"] for row in cells if row["cell_id"] == cell_id),
+                    }
+                    for cell_id in gate.CELL_ORDER
+                    if cell_id.endswith(f"__{condition}")
+                }
+            }
+            for condition in gate.TARGET_ORDER
+        },
         "truth_opened": False,
     }
     _write(producer / "capture.json", capture_payload)
@@ -245,6 +263,27 @@ def test_capture_repackages_trr9_metadata_under_trr10_schema(tmp_path: Path) -> 
     assert payload["task_id"] == "TRR-0010"
     assert payload["geometry"]["capture_batch_records"] == 8
     assert payload["truth_opened"] is False
+
+
+def test_registration_rejects_runtime_state_substitution(tmp_path: Path) -> None:
+    design_path = _design(tmp_path)
+    design = json.loads(design_path.read_text())
+    actual = []
+    for method_id in gate.METHOD_ORDER:
+        row = design["methods"][method_id]
+        actual.append({
+            "id": method_id,
+            "role": row["role"],
+            "state": row["state"],
+            "resources": row["resources"],
+            "loader": row["loader"],
+        })
+    register._verify_method_rows_match_design(actual, design=design, root=tmp_path)
+    replacement = tmp_path / "assets" / "substituted.state"
+    replacement.write_bytes(b"substitution")
+    actual[0]["state"] = _record(replacement, tmp_path)
+    with pytest.raises(register.RegisterError, match="runtime/frozen state"):
+        register._verify_method_rows_match_design(actual, design=design, root=tmp_path)
 
 
 def test_truth_curator_calls_gate_before_materializer_and_validates_after(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

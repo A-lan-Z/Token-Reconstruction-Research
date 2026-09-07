@@ -725,6 +725,46 @@ def _method_rows(
     return result
 
 
+def _verify_method_rows_match_design(
+    method_rows: Sequence[Mapping[str, Any]],
+    *,
+    design: Mapping[str, Any],
+    root: Path,
+) -> None:
+    """Require runtime method rows to equal the preselection-frozen assets."""
+    frozen_methods = design.get("methods")
+    if not isinstance(frozen_methods, Mapping):
+        raise RegisterError("final design contender bindings are absent")
+    by_id = {str(row.get("id")): row for row in method_rows if isinstance(row, Mapping)}
+    if set(by_id) != set(gate.METHOD_ORDER):
+        raise RegisterError("runtime method rows do not bind all frozen contenders")
+    for method_id in gate.METHOD_ORDER:
+        actual = by_id[method_id]
+        frozen = frozen_methods.get(method_id)
+        if not isinstance(frozen, Mapping):
+            raise RegisterError(f"frozen contender binding is absent: {method_id}")
+        if actual.get("role") != frozen.get("role") or actual.get("role") != gate.METHOD_ROLES[method_id]:
+            raise RegisterError(f"runtime method role differs from frozen design: {method_id}")
+        frozen_state = _binding(frozen.get("state"), root=root, description=f"frozen state {method_id}")
+        _same_record(actual.get("state"), frozen_state, description=f"runtime/frozen state {method_id}")
+        frozen_resources = frozen.get("resources")
+        actual_resources = actual.get("resources")
+        required = gate.METHOD_RESOURCE_REQUIREMENTS[method_id]
+        if not isinstance(frozen_resources, Mapping) or not isinstance(actual_resources, Mapping):
+            raise RegisterError(f"runtime/frozen resources are absent: {method_id}")
+        for resource_name in required:
+            frozen_resource = _binding(frozen_resources.get(resource_name), root=root, description=f"frozen {method_id} resource {resource_name}")
+            actual_resource = actual_resources.get(resource_name)
+            _same_record(actual_resource, frozen_resource, description=f"runtime/frozen {method_id} resource {resource_name}")
+        frozen_loader = frozen.get("loader")
+        actual_loader = actual.get("loader")
+        if not isinstance(frozen_loader, Mapping) or not isinstance(actual_loader, Mapping):
+            raise RegisterError(f"runtime/frozen loader is absent: {method_id}")
+        for key, expected in frozen_loader.items():
+            if actual_loader.get(key) != expected:
+                raise RegisterError(f"runtime loader differs from frozen design: {method_id}/{key}")
+
+
 def build_registration(
     *,
     repository_root: Path,
@@ -780,6 +820,7 @@ def build_registration(
         frequency_reference_paths=frequency_reference_paths,
     )
     methods = _method_rows(method_rows, root=root)
+    _verify_method_rows_match_design(methods, design=design, root=root)
     current_head = _git_head(root)
     code_records = design_meta["code_bindings"]
     declared_head = design.get("code_commit")

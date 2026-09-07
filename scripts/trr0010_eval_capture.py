@@ -210,6 +210,31 @@ def _validate_producer_receipts(*, producer_root: Path, producer_selection_recor
         if row.get("shape") != [gate.RECORDS_PER_CELL, gate.STORED_SEQUENCE_TOKENS, gate.OBSERVATION_HIDDEN_SIZE]:
             raise CaptureAdapterError(f"TRR9 observation geometry changed: {cell_id}")
         _record(Path(str(row.get("observation", {}).get("path", ""))), root=root, description=f"TRR9 observation {cell_id}")
+    execution = capture.get("execution")
+    if (
+        not isinstance(execution, Mapping)
+        or execution.get("producer_semantics") != "public full forward B8x192; retain first 128 positions"
+    ):
+        raise CaptureAdapterError("TRR9 capture does not explicitly attest first-128 retention")
+    conditions = capture.get("conditions")
+    if not isinstance(conditions, Mapping) or set(conditions) != set(gate.TARGET_ORDER):
+        raise CaptureAdapterError("TRR9 capture condition receipts are incomplete")
+    for condition in gate.TARGET_ORDER:
+        condition_receipt = conditions.get(condition)
+        condition_cells = condition_receipt.get("cells") if isinstance(condition_receipt, Mapping) else None
+        if not isinstance(condition_cells, Mapping):
+            raise CaptureAdapterError(f"TRR9 {condition} cell receipts are absent")
+        for style in gate.DOMAIN_ORDER:
+            cell_id = f"{style}__{condition}"
+            cell_receipt = condition_cells.get(cell_id)
+            if not isinstance(cell_receipt, Mapping):
+                raise CaptureAdapterError(f"TRR9 retention receipt is absent: {cell_id}")
+            if cell_receipt.get("full_forward_retained_only_first_128") is not True:
+                raise CaptureAdapterError(f"TRR9 producer did not attest first-128 retention: {cell_id}")
+            if cell_receipt.get("capture_batch_records") != 8 or cell_receipt.get("capture_sequence_tokens") != 192 or cell_receipt.get("stored_sequence_tokens") != 128:
+                raise CaptureAdapterError(f"TRR9 retention geometry changed: {cell_id}")
+            if cell_receipt.get("observation") != rows[cell_id].get("observation"):
+                raise CaptureAdapterError(f"TRR9 retention receipt observation binding changed: {cell_id}")
     geometry = capture.get("geometry")
     if not isinstance(geometry, Mapping) or geometry.get("capture_batch_records") != 8 or geometry.get("capture_sequence_tokens") != 192 or geometry.get("stored_sequence_tokens") != 128:
         raise CaptureAdapterError("TRR9 capture geometry is not B8x192 retaining first 128")
