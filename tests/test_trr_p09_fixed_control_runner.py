@@ -295,6 +295,7 @@ def test_train_step_rejects_a_masked_sampled_position() -> None:
     hook = FixedPublicReadoutHook(method_id="fixed", embedding_sha256=_DIGEST)
     batch = _batch(rows=(2, 5))
     batch.attention_mask[0, 1] = False
+    batch.position_ids[0, 1] = 0
     optimizer = torch.optim.AdamW(decoder.parameters(), lr=0.01)
     with pytest.raises(FixedControlRunnerError, match="masked/invalid"):
         train_one_step(

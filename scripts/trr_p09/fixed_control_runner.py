@@ -402,8 +402,13 @@ def validate_batch(
     expected_positions = torch.arange(expected_sequence_tokens, device=positions.device).expand(
         expected_batch_records, -1
     )
+    # P09 bank sidecars use absolute positions on the active prefix and zero
+    # for right-padding.  Keep this validator aligned with the immutable bank
+    # loader; requiring arange in inactive rows would reject valid streamed
+    # records before the fixed or directional hook sees them.
+    expected_positions = torch.where(mask, expected_positions, torch.zeros_like(expected_positions))
     if not torch.equal(positions, expected_positions):
-        raise FixedControlRunnerError("batch position IDs are not the complete sequence")
+        raise FixedControlRunnerError("batch position IDs do not match active-prefix/zero-padding semantics")
 
 
 def _device_for(module: nn.Module) -> torch.device:
