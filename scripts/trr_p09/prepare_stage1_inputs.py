@@ -877,6 +877,7 @@ def select_candidates(
     template_buckets: Mapping[tuple[str, int], Sequence[tuple[int, InputRow]]] | None = None,
     template_assignments: dict[tuple[str, int, str], tuple[int, InputRow]] | None = None,
     template_skip_audit: dict[tuple[str, int], dict[str, Any]] | None = None,
+    structural_token_ids: Iterable[int] = (BOS_TOKEN_ID, PAD_TOKEN_ID),
 ) -> list[tuple[_Candidate, int]]:
     """Select exact lengths with fixed per-bucket templates and stable source order.
 
@@ -928,7 +929,9 @@ def select_candidates(
                     continue
                 if candidate.full_token_count - 1 < target:
                     continue
-                if assigned_template is not None and _template_structural_conflict(candidate, assigned_template):
+                if assigned_template is not None and _template_structural_conflict(
+                    candidate, assigned_template, structural_token_ids=structural_token_ids
+                ):
                     structural_skips.append(_template_skip_event_digest(
                         candidate,
                         stratum=stratum,
@@ -1126,6 +1129,17 @@ def make_controlled_rows(
                 raise PreparationErrorLocal("immutable B0 template has the wrong replacement count")
             if any(value < 0 or value >= target for value in offsets) or len(set(offsets)) != REPLACEMENTS_PER_ROW:
                 raise PreparationErrorLocal("immutable B0 template offsets do not match target length")
+            conflicting_offsets = tuple(
+                int(offset)
+                for offset in offsets
+                if int(parent[int(offset) + 1]) in special
+            )
+            if conflicting_offsets:
+                raise PreparationErrorLocal(
+                    f"r2 assigned template is structurally incompatible after selection "
+                    f"stratum={stratum} target={target} source_row={candidate.row_index} "
+                    f"template_index={_template_index} conflict_count={len(conflicting_offsets)}"
+                )
         try:
             built = tuple(apply_replacements(parent, offsets, replacements, target_post_bos_token_count=target, structural_token_ids=special))
         except Exception as exc:
@@ -1304,6 +1318,7 @@ def compile_inputs(args: argparse.Namespace) -> dict[str, Any]:
     used_public = {row.public_record_sha256 for row in rows if row.public_record_sha256}
     used_h128 = {row.sequence_h128_sha256 for row in rows if row.sequence_h128_sha256}
     tokenizer = _load_tokenizer(Path(args.tokenizer).expanduser().resolve())
+    special_token_ids = _special_token_ids(tokenizer)
     deadline = _Deadline(__import__("time").monotonic(), float(args.max_seconds))
     source_paths = {
         "alpaca": [Path(args.alpaca_arrow).expanduser().resolve()],
@@ -1385,10 +1400,11 @@ def compile_inputs(args: argparse.Namespace) -> dict[str, Any]:
             template_buckets=b0_template_buckets if controlled else None,
             template_assignments=template_assignments if controlled else None,
             template_skip_audit=template_selection_audit if controlled else None,
+            structural_token_ids=special_token_ids,
         )
         if controlled:
             additions_by_stratum[name], cursor = make_controlled_rows(
-                chosen, name, identity_ids, cursor, _special_token_ids(tokenizer),
+                chosen, name, identity_ids, cursor, special_token_ids,
                 template_buckets=b0_template_buckets,
                 template_assignments=template_assignments,
             )

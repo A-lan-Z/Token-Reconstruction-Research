@@ -20,7 +20,14 @@
     "module": "src/token_reconstruction/trr0005_public_corpus.py",
     "function": "apply_replacements",
     "source_commit": "a44047a4d747ebc39c97311c03d530c798247d2f",
-    "semantics": "Replacement offsets are post-BOS offsets. A candidate is structurally incompatible with a template if any assigned offset addresses BOS_TOKEN_ID or PAD_TOKEN_ID at source_token_ids[offset + 1]. The helper remains authoritative; do not move offsets, substitute replacement IDs, or change the structural-token set."
+    "selector_predicate": "scripts/trr_p09/prepare_stage1_inputs.py::_template_structural_conflict",
+    "canonical_tokenizer_structural_ids": {
+      "source": "scripts/trr0005_prepare_public_corpus.py::_special_token_ids",
+      "count": 3,
+      "sorted_ids": [128000, 128001, 128009],
+      "sorted_ids_sha256": "a4501cb0f16a205700e8b2b9368fa4bee107dc2395331a1301239a4cc720ef4f"
+    },
+    "semantics": "Replacement offsets are post-BOS offsets. A candidate is structurally incompatible with a template if any assigned offset addresses one of the canonical tokenizer structural IDs at source_token_ids[offset + 1]. The trusted helper remains authoritative; do not move offsets, substitute replacement IDs, or change this structural-token set."
   },
   "selection_rule": {
     "bucket_key": [
@@ -116,5 +123,10 @@
       "disposition": "EXCLUDED_PRE_RERUN_STRUCTURAL_FAILURE"
     }
   ],
-  "next_action": "Implement only the selection supplement and its focused regressions, then execute one guarded CPU r2 preparation under the existing signed resource caps after the resulting source commit is recorded."
+  "implementation_binding": {
+    "source_commit": "aed6009b9fd326fc89cdb649f24826a85c4b6c0e",
+    "equivalence_test": "tests/test_trr_p09_stage1_inputs.py::test_controlled_selection_revisits_structural_skip_for_later_template_slot",
+    "equivalence_test_scope": "The selector receives the same canonical structural-ID set used by apply_replacements, including the non-BOS/PAD special ID."
+  },
+  "next_action": "Execute one guarded CPU r2 preparation under the existing signed resource caps with the canonical structural-ID set bound above."
 }

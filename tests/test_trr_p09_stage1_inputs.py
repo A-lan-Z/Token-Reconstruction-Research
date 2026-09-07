@@ -349,10 +349,11 @@ def test_controlled_selection_revisits_structural_skip_for_later_template_slot()
     assignments: dict[tuple[str, int, str], tuple[int, InputRow]] = {}
     skip_audit: dict[tuple[str, int], dict[str, object]] = {}
     selected = select_candidates(
-        [candidate(0, 128000, 2), candidate(1, 7, 10000)], stratum="pile_controlled",
+        [candidate(0, 999, 2), candidate(1, 7, 10000)], stratum="pile_controlled",
         exact_quota={128: 2}, exclusions=exclusions, used_ids=set(),
         used_rendered=set(), used_h128=set(), template_buckets=templates,
         template_assignments=assignments, template_skip_audit=skip_audit,
+        structural_token_ids={128000, 128001, 999},
     )
     assert [item.record_id for item, _target in selected] == ["candidate-1", "candidate-0"]
     assert assignments[("pile_controlled", 128, "candidate-1")][0] == 0
