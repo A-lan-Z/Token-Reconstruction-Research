@@ -15,6 +15,26 @@
     "task_copy_sha256": "0bad461d93041fdb21d284b0ae1684d2268adfb0f9a304f9b97ab4cd39900564"
   },
   "branch": "task/TRR-0010",
+  "compatible_parent_rerun": {
+    "agreement_receipt": {
+      "bytes": 2336,
+      "id": "stage1_template_compatible_selection_agreement",
+      "path": "experiments/TRR-0010/planning/stage1_template_compatible_selection_agreement.json",
+      "sha256": "e79884ebcdeda8a3af6e178822951c1f66d32cefbd69b90f4904786129797970"
+    },
+    "capture_started": false,
+    "fit_started": false,
+    "gpu_started": false,
+    "source_supplement": {
+      "bytes": 7477,
+      "id": "stage1_template_compatible_selection_supplement",
+      "path": "experiments/TRR-0010/planning/stage1_template_compatible_selection_supplement_r1.json",
+      "sha256": "760adf507438111b03c7308740e6666b0961088e6fc8868f999240d58d2814f7",
+      "source_commit": "dc048ceae2e8b3f6f7e704084dbceda5b7ea1a1a"
+    },
+    "status": "IN_PROGRESS_EXTERNAL_RECEIPT_PENDING",
+    "truth_opened": false
+  },
   "evidence_artifacts": [
     {
       "bytes": 10798,
@@ -143,11 +163,33 @@
       "id": "stage1_template_compatible_selection_agreement",
       "path": "experiments/TRR-0010/planning/stage1_template_compatible_selection_agreement.json",
       "sha256": "e79884ebcdeda8a3af6e178822951c1f66d32cefbd69b90f4904786129797970"
+    },
+    {
+      "bytes": 13150,
+      "id": "opened_fixture_zero_delta_v2_result",
+      "path": "experiments/TRR-0010/evaluation/opened_fixture_zero_delta_v2/result.json",
+      "sha256": "cd18d0b83be2297b9a15e41e5bcf365b068856b4af867b38886b0df7cddc6ab2"
+    },
+    {
+      "bytes": 29390316,
+      "id": "opened_fixture_zero_delta_v2_base_only_export",
+      "path": "experiments/TRR-0010/evaluation/opened_fixture_zero_delta_v2/base_decoder_state.safetensors",
+      "sha256": "3558763f08324b03720c900c122d0322f5d2cbdb8d79df8a38795d4df4baef8d"
+    },
+    {
+      "bytes": 1050674192,
+      "id": "opened_fixture_zero_delta_v2_effective_readout_export",
+      "path": "experiments/TRR-0010/evaluation/opened_fixture_zero_delta_v2/effective_readout_w.safetensors",
+      "sha256": "e57fc00928fe6f544781bf1b5d73c7651bb268365a2851fac7f6069314fa6580"
     }
   ],
   "execution": {
     "activation_capture_performed": false,
     "correction_addendum_copied_exactly": true,
+    "excluded_corrected_attempts": [
+      "r2",
+      "r2-retry"
+    ],
     "fresh_evaluation_started": false,
     "fresh_evaluation_truth_opened": false,
     "gpu_qualification_performed": false,
@@ -198,6 +240,93 @@
       },
       "wall_seconds": 1.0
     },
+    "opened_fixture_equivalence_v2": {
+      "aggregate": {
+        "all_base_only_export_exact": true,
+        "all_reloaded_export_exact": true,
+        "all_zero_delta_exact": true,
+        "max_base_only_export_abs": 0.0,
+        "max_reloaded_export_abs": 0.0,
+        "max_zero_delta_abs": 0.0
+      },
+      "base_only_export": {
+        "bytes": 29390316,
+        "id": "opened_fixture_zero_delta_v2_base_only_export",
+        "path": "experiments/TRR-0010/evaluation/opened_fixture_zero_delta_v2/base_decoder_state.safetensors",
+        "sha256": "3558763f08324b03720c900c122d0322f5d2cbdb8d79df8a38795d4df4baef8d"
+      },
+      "child_exit_observed_utc": "2026-09-07T10:44:39Z",
+      "code_commit": "114a8e19d9d32acc49fa29d243172aac7b3b974f",
+      "command": [
+        "env",
+        "OMP_NUM_THREADS=1",
+        "MKL_NUM_THREADS=1",
+        "OPENBLAS_NUM_THREADS=1",
+        "TOKENIZERS_PARALLELISM=false",
+        "PYTHONPATH=.:src:scripts",
+        "timeout",
+        "--signal=TERM",
+        "--kill-after=15s",
+        "240s",
+        "python3",
+        "scripts/trr0010_opened_fixture_equivalence.py",
+        "--repository-root",
+        ".",
+        "--output-root",
+        "experiments/TRR-0010/evaluation/opened_fixture_zero_delta_v2",
+        "--device",
+        "cuda",
+        "--records-per-domain",
+        "2",
+        "--max-seconds",
+        "240"
+      ],
+      "diagnostic_source_sha256": "3e3231e6626aed22332e0d2edabbaae08254064dfec434eac02b80ac05ffc54b",
+      "effective_readout_export": {
+        "bytes": 1050674192,
+        "id": "opened_fixture_zero_delta_v2_effective_readout_export",
+        "path": "experiments/TRR-0010/evaluation/opened_fixture_zero_delta_v2/effective_readout_w.safetensors",
+        "sha256": "e57fc00928fe6f544781bf1b5d73c7651bb268365a2851fac7f6069314fa6580"
+      },
+      "elapsed_seconds": 6.325811991991941,
+      "exit_code": 0,
+      "fit_or_accuracy_scoring": false,
+      "public_embedding_sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+      "receipt_ended_utc": "2026-09-07T10:44:36Z",
+      "resource": {
+        "disk_free_bytes": 285217280000,
+        "disk_free_floor_bytes": 21474836480,
+        "gpu_min_runtime_free_bytes": 12728664064,
+        "gpu_peak_allocated_bytes": 2833441280,
+        "gpu_peak_reserved_bytes": 2871001088,
+        "gpu_pre_free_bytes": 15679356928,
+        "gpu_reserved_limit_bytes": 4294967296,
+        "gpu_runtime_free_floor_bytes": 2147483648,
+        "host_available_floor_bytes": 10737418240,
+        "host_min_available_bytes": 18749104128,
+        "host_peak_rss_bytes": 3679838208,
+        "host_rss_limit_bytes": 6442450944
+      },
+      "result": {
+        "bytes": 13150,
+        "id": "opened_fixture_zero_delta_v2_result",
+        "path": "experiments/TRR-0010/evaluation/opened_fixture_zero_delta_v2/result.json",
+        "sha256": "cd18d0b83be2297b9a15e41e5bcf365b068856b4af867b38886b0df7cddc6ab2"
+      },
+      "started_utc": "2026-09-07T10:44:30Z",
+      "state_sha256": "5cada4a3d04bb5477eaf0be25ed8d8ac25a89283223e9ba14b18fa10416bee14",
+      "status": "PASS",
+      "support_provenance": {
+        "fit_tensor_sha256": "a55814759dfa9d2567587935063fc49e44d8bff949c50014793deb982ebdf35d",
+        "h_activations_opened_for_derivation": false,
+        "post_bos_rows": 124371,
+        "published_trr0009_digest": "8090b9231042d6c9f9c52f3a0a9d8733b8ec1b739a4f28b12ab1057a7126969d",
+        "stored_ids_and_counts_equal": true,
+        "supported_token_count": 17126,
+        "trr0010_directional_digest": "f554d25681904530bf0f52752b50f92ae5da10b99998d06eb0cc30ed25fccd4d"
+      },
+      "truth_opened": false
+    },
     "r1_cpu_input_compilation": {
       "controlled_joint_assignment_accepted": false,
       "no_capture_or_fit_started": true,
@@ -208,15 +337,11 @@
       "status": "EXCLUDED_PRE_CAPTURE",
       "wall_seconds": 32.387874
     },
-    "r2_cpu_input_compilation_started": true,
-    "score_available": false,
-    "substantive_fits_started": false,
-    "r2_cpu_input_compilation_status": "IN_PROGRESS_EXTERNAL_COMPATIBLE_PARENT_RERUN",
     "r2_cpu_input_compilation_receipt_available": false,
-    "excluded_corrected_attempts": [
-      "r2",
-      "r2-retry"
-    ]
+    "r2_cpu_input_compilation_started": true,
+    "r2_cpu_input_compilation_status": "IN_PROGRESS_EXTERNAL_COMPATIBLE_PARENT_RERUN",
+    "score_available": false,
+    "substantive_fits_started": false
   },
   "implementation_commit": "a4985c0cd373c26d4361ce1c861fa35bdb25b10e",
   "pending": [
@@ -239,8 +364,49 @@
       "ordered_exact_nine_cycles": false,
       "stratum_active_length_exact_9x": true
     },
+    "excluded_corrected_attempts": [
+      "r2",
+      "r2-retry"
+    ],
     "old_development_alpaca_keys_expected": 624,
     "old_development_alpaca_keys_observed_in_r1_additions": 63,
+    "opened_fixture_equivalence_v2": {
+      "aggregate": {
+        "all_base_only_export_exact": true,
+        "all_reloaded_export_exact": true,
+        "all_zero_delta_exact": true,
+        "max_base_only_export_abs": 0.0,
+        "max_reloaded_export_abs": 0.0,
+        "max_zero_delta_abs": 0.0
+      },
+      "base_only_export_sha256": "3558763f08324b03720c900c122d0322f5d2cbdb8d79df8a38795d4df4baef8d",
+      "code_commit": "114a8e19d9d32acc49fa29d243172aac7b3b974f",
+      "effective_readout_export_sha256": "e57fc00928fe6f544781bf1b5d73c7651bb268365a2851fac7f6069314fa6580",
+      "resource": {
+        "disk_free_bytes": 285217280000,
+        "disk_free_floor_bytes": 21474836480,
+        "gpu_min_runtime_free_bytes": 12728664064,
+        "gpu_peak_allocated_bytes": 2833441280,
+        "gpu_peak_reserved_bytes": 2871001088,
+        "gpu_pre_free_bytes": 15679356928,
+        "gpu_reserved_limit_bytes": 4294967296,
+        "gpu_runtime_free_floor_bytes": 2147483648,
+        "host_available_floor_bytes": 10737418240,
+        "host_min_available_bytes": 18749104128,
+        "host_peak_rss_bytes": 3679838208,
+        "host_rss_limit_bytes": 6442450944
+      },
+      "result_sha256": "cd18d0b83be2297b9a15e41e5bcf365b068856b4af867b38886b0df7cddc6ab2",
+      "support_provenance": {
+        "fit_tensor_sha256": "a55814759dfa9d2567587935063fc49e44d8bff949c50014793deb982ebdf35d",
+        "h_activations_opened_for_derivation": false,
+        "post_bos_rows": 124371,
+        "published_trr0009_digest": "8090b9231042d6c9f9c52f3a0a9d8733b8ec1b739a4f28b12ab1057a7126969d",
+        "stored_ids_and_counts_equal": true,
+        "supported_token_count": 17126,
+        "trr0010_directional_digest": "f554d25681904530bf0f52752b50f92ae5da10b99998d06eb0cc30ed25fccd4d"
+      }
+    },
     "opened_fixture_support_derivation": {
       "fit_tensor_sha256": "a55814759dfa9d2567587935063fc49e44d8bff949c50014793deb982ebdf35d",
       "h_activations_opened_for_derivation": false,
@@ -250,8 +416,19 @@
       "supported_token_count": 17126,
       "trr0010_digest": "f554d25681904530bf0f52752b50f92ae5da10b99998d06eb0cc30ed25fccd4d"
     },
-    "template_compatible_supplement_source_commit": "dc048ceae2e8b3f6f7e704084dbceda5b7ea1a1a",
-    "template_compatible_supplement_source_sha256": "760adf507438111b03c7308740e6666b0961088e6fc8868f999240d58d2814f7",
+    "stage3_fields_still_required": [
+      "Final B0/B1 bank output records, support-map digests, valid-position counts, B0-prefix equivalence, and exact quota audit.",
+      "Namespace-correct parent-exclusion manifest with zero overlap against all 624 prior-development Alpaca keys.",
+      "Measured resource qualification: merged-W peak, wall/disk bounds, common N/grid, and fit-cap receipt.",
+      "Frozen four-arm training/data/resource contract with actual state, readout, loader, and executed-code hashes.",
+      "Frozen final evaluation design, selected contenders, paired panel/order digests, and the TRR-0010 truth-descriptor binding before truth access."
+    ],
+    "template_compatible_agreement_receipt": {
+      "bytes": 2336,
+      "id": "stage1_template_compatible_selection_agreement",
+      "path": "experiments/TRR-0010/planning/stage1_template_compatible_selection_agreement.json",
+      "sha256": "e79884ebcdeda8a3af6e178822951c1f66d32cefbd69b90f4904786129797970"
+    },
     "template_compatible_supplement_copy": {
       "bytes": 7477,
       "id": "stage1_template_compatible_selection_supplement",
@@ -259,23 +436,8 @@
       "sha256": "760adf507438111b03c7308740e6666b0961088e6fc8868f999240d58d2814f7",
       "source_commit": "dc048ceae2e8b3f6f7e704084dbceda5b7ea1a1a"
     },
-    "template_compatible_agreement_receipt": {
-      "bytes": 2336,
-      "id": "stage1_template_compatible_selection_agreement",
-      "path": "experiments/TRR-0010/planning/stage1_template_compatible_selection_agreement.json",
-      "sha256": "e79884ebcdeda8a3af6e178822951c1f66d32cefbd69b90f4904786129797970"
-    },
-    "excluded_corrected_attempts": [
-      "r2",
-      "r2-retry"
-    ],
-    "stage3_fields_still_required": [
-      "Final B0/B1 bank output records, support-map digests, valid-position counts, B0-prefix equivalence, and exact quota audit.",
-      "Namespace-correct parent-exclusion manifest with zero overlap against all 624 prior-development Alpaca keys.",
-      "Measured resource qualification: merged-W peak, wall/disk bounds, common N/grid, and fit-cap receipt.",
-      "Frozen four-arm training/data/resource contract with actual state, readout, loader, and executed-code hashes.",
-      "Frozen final evaluation design, selected contenders, paired panel/order digests, and the TRR-0010 truth-descriptor binding before truth access."
-    ]
+    "template_compatible_supplement_source_commit": "dc048ceae2e8b3f6f7e704084dbceda5b7ea1a1a",
+    "template_compatible_supplement_source_sha256": "760adf507438111b03c7308740e6666b0961088e6fc8868f999240d58d2814f7"
   },
   "report_path": "coordination/results/TRR-0010.md",
   "reviewed_base_commit": "4602f98eeb03ac121d8bbc230d7e2b219551b914",
@@ -287,32 +449,15 @@
     "no_score_or_accuracy_result": true,
     "no_source_or_signed_plan_edit": true,
     "opened_fixture_equivalence_attempted": true,
+    "opened_fixture_equivalence_pass": true,
+    "opened_fixture_gpu_diagnostic_only": true,
     "opened_fixture_payload_load": false,
+    "opened_fixture_payload_truth_or_accuracy_access": false,
     "opened_fixture_truth_or_accuracy_access": false,
     "public_metadata_audit_only": true,
     "r1_compilation_excluded_before_capture": true
   },
-  "status": "PREPARATION_ONLY_COMPATIBLE_PARENT_RERUN_IN_PROGRESS",
+  "status": "PREPARATION_ONLY_OPENED_FIXTURE_EQUIVALENCE_PASS_R2_PENDING",
   "task_id": "TRR-0010",
-  "updated_utc": "2026-09-07T10:42:48Z",
-  "compatible_parent_rerun": {
-    "status": "IN_PROGRESS_EXTERNAL_RECEIPT_PENDING",
-    "source_supplement": {
-      "bytes": 7477,
-      "id": "stage1_template_compatible_selection_supplement",
-      "path": "experiments/TRR-0010/planning/stage1_template_compatible_selection_supplement_r1.json",
-      "sha256": "760adf507438111b03c7308740e6666b0961088e6fc8868f999240d58d2814f7",
-      "source_commit": "dc048ceae2e8b3f6f7e704084dbceda5b7ea1a1a"
-    },
-    "agreement_receipt": {
-      "bytes": 2336,
-      "id": "stage1_template_compatible_selection_agreement",
-      "path": "experiments/TRR-0010/planning/stage1_template_compatible_selection_agreement.json",
-      "sha256": "e79884ebcdeda8a3af6e178822951c1f66d32cefbd69b90f4904786129797970"
-    },
-    "truth_opened": false,
-    "capture_started": false,
-    "fit_started": false,
-    "gpu_started": false
-  }
+  "updated_utc": "2026-09-07T10:46:17Z"
 }
