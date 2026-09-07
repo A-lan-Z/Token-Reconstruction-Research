@@ -14,6 +14,7 @@ supplied by the frozen caller rather than defaulted here.
 from __future__ import annotations
 
 from collections import Counter
+from copy import deepcopy
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
@@ -23,6 +24,7 @@ import math
 import os
 from pathlib import Path
 import time
+from types import MappingProxyType
 from typing import Any, Protocol
 
 import torch
@@ -61,6 +63,12 @@ class BatchSource(Protocol):
 class LoaderLike(Protocol):
     def iter_batches(self) -> Iterable[BatchLike]:
         """Yield complete loader batches in immutable stream order."""
+
+
+ValidationViewEvaluator = Callable[[Iterable[BatchLike]], Mapping[str, Any]]
+ValidationCallback = Callable[[int, ValidationViewEvaluator], Mapping[str, Any]]
+REQUIRED_VALIDATION_DOMAINS = ("Finance", "Pile")
+DOMAIN_BALANCED_SELECTION_METRIC = "domain_balanced_token_accuracy"
 
 
 class SequentialLoaderSource:
@@ -584,6 +592,98 @@ def evaluate_batches(
     }
 
 
+def aggregate_domain_validation(
+    per_domain: Mapping[str, Mapping[str, Any]],
+    *,
+    required_domains: Sequence[str] = REQUIRED_VALIDATION_DOMAINS,
+) -> dict[str, Any]:
+    """Aggregate per-domain ``evaluate_batches`` results.
+
+    The pooled accuracy remains a diagnostic.  Checkpoint selection must use
+    the explicitly returned equal-domain score.  Exact domain membership and
+    count/accuracy consistency fail closed.
+    """
+
+    domains = tuple(str(domain) for domain in required_domains)
+    if not domains or len(set(domains)) != len(domains):
+        raise FixedControlRunnerError("required validation domains must be unique and nonempty")
+    if not isinstance(per_domain, Mapping) or set(per_domain) != set(domains):
+        actual = sorted(str(key) for key in per_domain) if isinstance(per_domain, Mapping) else []
+        raise FixedControlRunnerError(
+            f"validation domains must be exactly {list(domains)!r}; got {actual!r}"
+        )
+
+    canonical_domains: dict[str, dict[str, Any]] = {}
+    total_rows = 0
+    total_correct = 0
+    balanced_values: list[float] = []
+    weighted_losses: list[tuple[int, float]] = []
+    for domain in domains:
+        metrics = per_domain.get(domain)
+        if not isinstance(metrics, Mapping):
+            raise FixedControlRunnerError(f"validation metrics for {domain!r} are missing")
+        rows = metrics.get("token_rows")
+        correct = metrics.get("correct_tokens")
+        accuracy = metrics.get("token_accuracy")
+        if isinstance(rows, bool) or not isinstance(rows, int) or rows <= 0:
+            raise FixedControlRunnerError(f"validation token_rows for {domain!r} are invalid")
+        if isinstance(correct, bool) or not isinstance(correct, int) or correct < 0 or correct > rows:
+            raise FixedControlRunnerError(f"validation correct_tokens for {domain!r} are invalid")
+        expected_accuracy = correct / rows
+        if isinstance(accuracy, bool) or not isinstance(accuracy, (int, float)):
+            raise FixedControlRunnerError(f"validation token_accuracy for {domain!r} is missing")
+        if not math.isfinite(float(accuracy)) or not math.isclose(
+            float(accuracy), expected_accuracy, rel_tol=0.0, abs_tol=1e-12
+        ):
+            raise FixedControlRunnerError(f"validation token_accuracy for {domain!r} is inconsistent")
+        canonical = dict(metrics)
+        canonical["token_rows"] = rows
+        canonical["correct_tokens"] = correct
+        canonical["token_accuracy"] = expected_accuracy
+        canonical_domains[domain] = canonical
+        total_rows += rows
+        total_correct += correct
+        balanced_values.append(expected_accuracy)
+        loss = metrics.get("cross_entropy_loss")
+        if loss is not None:
+            if isinstance(loss, bool) or not isinstance(loss, (int, float)) or not math.isfinite(float(loss)):
+                raise FixedControlRunnerError(f"validation cross_entropy_loss for {domain!r} is invalid")
+            weighted_losses.append((rows, float(loss)))
+
+    result: dict[str, Any] = {
+        "token_rows": total_rows,
+        "correct_tokens": total_correct,
+        "token_accuracy": total_correct / total_rows,
+        "domain_balanced_token_accuracy": sum(balanced_values) / len(balanced_values),
+        "domain_order": list(domains),
+        "domains": canonical_domains,
+    }
+    if len(weighted_losses) == len(domains):
+        result["cross_entropy_loss"] = sum(rows * loss for rows, loss in weighted_losses) / total_rows
+    return result
+
+
+def _validate_domain_balanced_metrics(
+    metrics: Mapping[str, Any],
+    *,
+    required_domains: Sequence[str] = REQUIRED_VALIDATION_DOMAINS,
+) -> dict[str, Any]:
+    """Validate callback output before checkpoint selection."""
+
+    if not isinstance(metrics, Mapping):
+        raise FixedControlRunnerError("domain validation callback must return a mapping")
+    canonical = aggregate_domain_validation(metrics.get("domains"), required_domains=required_domains)
+    supplied = metrics.get(DOMAIN_BALANCED_SELECTION_METRIC)
+    if isinstance(supplied, bool) or not isinstance(supplied, (int, float)):
+        raise FixedControlRunnerError(
+            f"domain validation callback must return {DOMAIN_BALANCED_SELECTION_METRIC!r}"
+        )
+    if not math.isfinite(float(supplied)) or not math.isclose(
+        float(supplied), canonical[DOMAIN_BALANCED_SELECTION_METRIC], rel_tol=0.0, abs_tol=1e-12
+    ):
+        raise FixedControlRunnerError("domain-balanced selection metric is inconsistent with domain metrics")
+    return {**dict(metrics), **canonical}
+
 
 def run_training(
     decoder: nn.Module,
@@ -598,7 +698,8 @@ def run_training(
     optimizer: torch.optim.Optimizer,
     embedding: torch.Tensor,
     config: RunnerConfig,
-    validation_batches: Callable[[int], Iterable[BatchLike]],
+    validation_batches: Callable[[int], Iterable[BatchLike]] | None = None,
+    validation_callback: ValidationCallback | None = None,
     validation_sequence_tokens: int,
     validation_batch_records: int,
     validation_activation_dtype: torch.dtype | None,
@@ -616,12 +717,12 @@ def run_training(
 
     ``schedule_steps`` is an iterable instead of a Python list so a production
     safetensors schedule reader can stream 12,000 steps without materializing
-    millions of Python integers.  The caller binds the serialized schedule
-    digest and exposure summary before calling this function.  Validation is
-    supplied by a fresh-batch factory because the natural H128 view may have a
-    different sequence width from the 192-wide fit bank.  Domain-balanced
-    aggregation remains an evaluator concern; this function reports raw token
-    counts and the supplied validation metric.
+    millions of Python integers. The caller binds the serialized schedule
+    digest and exposure summary before calling this function. An explicit
+    validation callback may call the supplied per-view evaluator once per
+    frozen domain and must return ``aggregate_domain_validation`` output.
+    Domain-balanced selection therefore fails closed when the callback or a
+    required domain is missing.
     """
 
     config.validate()
@@ -636,6 +737,16 @@ def run_training(
         raise FixedControlRunnerError("checkpoint grid contains an out-of-range step")
     if deadline_seconds is not None and deadline_seconds <= 0:
         raise FixedControlRunnerError("deadline must be positive")
+    if config.selection_metric == DOMAIN_BALANCED_SELECTION_METRIC and validation_callback is None:
+        raise FixedControlRunnerError(
+            "domain-balanced selection requires an explicit validation callback"
+        )
+    if validation_callback is not None and config.selection_metric != DOMAIN_BALANCED_SELECTION_METRIC:
+        raise FixedControlRunnerError(
+            "domain validation callback requires domain-balanced selection metric"
+        )
+    if validation_callback is None and validation_batches is None:
+        raise FixedControlRunnerError("validation batches are required without a validation callback")
     validate_optimizer_coverage(decoder, hook, optimizer)
     device = _device_for(decoder)
     _move_embedding_once(embedding, device)
@@ -650,18 +761,25 @@ def run_training(
     def record_checkpoint(step: int, train_result: StepResult | None) -> None:
         nonlocal validation_seconds
         validation_started = time.perf_counter()
-        metrics = evaluate_batches(
-            decoder,
-            hook,
-            validation_batches(step),
-            embedding=embedding,
-            expected_sequence_tokens=validation_sequence_tokens,
-            expected_hidden_size=config.hidden_size,
-            expected_batch_records=validation_batch_records,
-            position_budget=config.position_budget,
-            activation_dtype=validation_activation_dtype,
-            compute_base_logits=compute_base_logits,
-        )
+        def evaluate_view(batches: Iterable[BatchLike]) -> Mapping[str, Any]:
+            return evaluate_batches(
+                decoder,
+                hook,
+                batches,
+                embedding=embedding,
+                expected_sequence_tokens=validation_sequence_tokens,
+                expected_hidden_size=config.hidden_size,
+                expected_batch_records=validation_batch_records,
+                position_budget=config.position_budget,
+                activation_dtype=validation_activation_dtype,
+                compute_base_logits=compute_base_logits,
+            )
+
+        if validation_callback is None:
+            assert validation_batches is not None
+            metrics = dict(evaluate_view(validation_batches(step)))
+        else:
+            metrics = _validate_domain_balanced_metrics(validation_callback(step, evaluate_view))
         elapsed = time.perf_counter() - validation_started
         validation_seconds += elapsed
         point: dict[str, Any] = {
@@ -672,7 +790,9 @@ def run_training(
             "state_sha256": method_state_digest(decoder, hook),
         }
         if checkpoint_callback is not None:
-            binding = checkpoint_callback(point, decoder, hook)
+            # Serializers cannot inject or rewrite the metric used for selection.
+            callback_point = MappingProxyType(deepcopy(point))
+            binding = checkpoint_callback(callback_point, decoder, hook)
             if binding is not None:
                 point["state_binding"] = dict(binding)
                 checkpoint_bindings.append(dict(binding))

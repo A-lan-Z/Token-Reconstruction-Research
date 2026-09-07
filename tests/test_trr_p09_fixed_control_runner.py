@@ -6,7 +6,7 @@ H128 validation, and create-only receipts with tiny tensors.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any
 
@@ -16,14 +16,17 @@ import torch.nn.functional as F
 from torch import nn
 
 from scripts.trr_p09.fixed_control_runner import (
+    DOMAIN_BALANCED_SELECTION_METRIC,
     FixedControlRunnerError,
     RandomAccessLoaderSource,
     RunnerConfig,
     SchedulePlan,
+    aggregate_domain_validation,
     ScheduleStep,
     build_run_receipt,
     evaluate_batches,
     method_state_digest,
+    run_training,
     select_earliest_maximum,
     train_one_step,
     write_create_only_json,
@@ -338,6 +341,127 @@ def test_earliest_maximum_keeps_step_zero_eligible() -> None:
     with pytest.raises(FixedControlRunnerError, match="step zero"):
         select_earliest_maximum([{"step": 500, "token_accuracy": 1.0}], metric="token_accuracy")
 
+
+
+
+def test_equal_domain_validation_changes_pooled_ranking_and_keeps_step_zero_ties() -> None:
+    aggregate = aggregate_domain_validation(
+        {
+            "Finance": {"token_rows": 256, "correct_tokens": 128, "token_accuracy": 0.5},
+            "Pile": {"token_rows": 64, "correct_tokens": 64, "token_accuracy": 1.0},
+        }
+    )
+    assert aggregate["token_accuracy"] == pytest.approx(0.6)
+    assert aggregate[DOMAIN_BALANCED_SELECTION_METRIC] == pytest.approx(0.75)
+
+    points = [
+        {
+            "step": 0,
+            "validation": {
+                "token_accuracy": 0.60,
+                DOMAIN_BALANCED_SELECTION_METRIC: 0.75,
+            },
+        },
+        {
+            "step": 500,
+            "validation": {
+                "token_accuracy": 0.62,
+                DOMAIN_BALANCED_SELECTION_METRIC: 0.75,
+            },
+        },
+    ]
+    assert select_earliest_maximum(points, metric="token_accuracy")["step"] == 500
+    assert select_earliest_maximum(points, metric=DOMAIN_BALANCED_SELECTION_METRIC)["step"] == 0
+
+
+def test_domain_validation_rejects_missing_or_extra_domains() -> None:
+    metrics = {"token_rows": 4, "correct_tokens": 2, "token_accuracy": 0.5}
+    with pytest.raises(FixedControlRunnerError, match="exactly"):
+        aggregate_domain_validation({"Finance": metrics})
+    with pytest.raises(FixedControlRunnerError, match="exactly"):
+        aggregate_domain_validation({"Finance": metrics, "Pile": metrics, "Other": metrics})
+
+
+def test_run_training_domain_callback_reuses_per_domain_evaluator_and_serializer_cannot_inject_metric() -> None:
+    decoder = TinyDecoder()
+    hook = FixedPublicReadoutHook(method_id="fixed", embedding_sha256=_DIGEST)
+    source = Source(_batch(rows=(2, 5)))
+    embedding = torch.randn(7, 3)
+    optimizer = torch.optim.AdamW(decoder.parameters(), lr=0.01)
+    step = ScheduleStep(0, (2, 5), (0, 1, 0), (1, 2, 3), False)
+    plan = SchedulePlan.from_steps(seed=13, steps=(step,))
+    config = replace(_config(), selection_metric=DOMAIN_BALANCED_SELECTION_METRIC)
+    observed: dict[int, float] = {}
+
+    def validation_callback(step_index, evaluate):
+        per_domain = {
+            "Finance": evaluate([_batch(rows=(10, 11))]),
+            "Pile": evaluate([_batch(rows=(12, 13))]),
+        }
+        aggregate = aggregate_domain_validation(per_domain)
+        observed[step_index] = aggregate[DOMAIN_BALANCED_SELECTION_METRIC]
+        return aggregate
+
+    def checkpoint_serializer(point, _decoder, _hook):
+        # This mutates only the deep-copied callback view.  The live point used
+        # by selection must retain the callback's canonical score.
+        point["validation"][DOMAIN_BALANCED_SELECTION_METRIC] = -1.0
+        return {"serialized": True}
+
+    result = run_training(
+        decoder,
+        hook,
+        source,
+        (step,),
+        schedule_steps_count=1,
+        schedule_seed=plan.seed,
+        schedule_semantic_sha256=plan.semantic_sha256,
+        schedule_exposure=plan.exposure_summary(),
+        optimizer=optimizer,
+        embedding=embedding,
+        config=config,
+        validation_callback=validation_callback,
+        validation_sequence_tokens=4,
+        validation_batch_records=2,
+        validation_activation_dtype=torch.bfloat16,
+        training_activation_dtype=torch.bfloat16,
+        checkpoint_steps=(0, 1),
+        checkpoint_callback=checkpoint_serializer,
+    )
+    assert set(observed) == {0, 1}
+    for point in result["learning_curve"]:
+        assert point["validation"][DOMAIN_BALANCED_SELECTION_METRIC] == pytest.approx(
+            observed[point["step"]]
+        )
+    assert result["checkpoint_state_bindings"] == [{"serialized": True}, {"serialized": True}]
+
+
+def test_run_training_domain_metric_fails_closed_without_callback() -> None:
+    decoder = TinyDecoder()
+    hook = FixedPublicReadoutHook(method_id="fixed", embedding_sha256=_DIGEST)
+    optimizer = torch.optim.AdamW(decoder.parameters(), lr=0.01)
+    step = ScheduleStep(0, (2, 5), (0, 1, 0), (1, 2, 3), False)
+    plan = SchedulePlan.from_steps(seed=13, steps=(step,))
+    with pytest.raises(FixedControlRunnerError, match="explicit validation callback"):
+        run_training(
+            decoder,
+            hook,
+            Source(_batch(rows=(2, 5))),
+            (step,),
+            schedule_steps_count=1,
+            schedule_seed=plan.seed,
+            schedule_semantic_sha256=plan.semantic_sha256,
+            schedule_exposure=plan.exposure_summary(),
+            optimizer=optimizer,
+            embedding=torch.randn(7, 3),
+            config=replace(_config(), selection_metric=DOMAIN_BALANCED_SELECTION_METRIC),
+            validation_batches=lambda _step: [_batch(rows=(2, 5))],
+            validation_sequence_tokens=4,
+            validation_batch_records=2,
+            validation_activation_dtype=torch.bfloat16,
+            training_activation_dtype=torch.bfloat16,
+            checkpoint_steps=(0, 1),
+        )
 
 def test_create_only_receipt_contains_cost_state_and_curve(tmp_path: Path) -> None:
     receipt = build_run_receipt(
