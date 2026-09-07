@@ -2,8 +2,9 @@
 
 This is a bounded handoff checklist, not a new proposal or execution schema. It
 lists the fields that remain unset after the v4 proposal and the signed stage-1
-agreement/amendments. No substantive fit, final source selection, capture, or
-truth result is claimed here.
+agreement/amendments. Stage-1 public capture and public-base validation audit
+are complete; no substantive fit, final source selection, or final-truth result
+is claimed here.
 
 ## Already-bound context
 
@@ -108,9 +109,11 @@ Bind the public development observations used only for checkpoint selection:
 - explicit width-192 fit versus width-128 development geometry. LoRA is not a
   checkpoint-selection condition; selection uses public-base only.
 
-The new A2 public-validation manifest and rows are prepared externally but
-remain pending audit and label binding. The inherited 384-record metadata
-reference is retained for provenance; it is not a bound label/truth artifact.
+The new A2 public-validation manifest and rows are externally prepared and the
+compact audit receipt is now bound. It proves exact IDs, token IDs, masks,
+positions, and H file hashes for all 384 public-base records without model,
+LoRA, activation, or final-truth access. The inherited metadata reference is
+retained for provenance; this remains checkpoint-selection evidence only.
 
 ### 4. Largest-cell resource qualification and caps — capacity + root
 
@@ -184,8 +187,8 @@ selected contenders, then bind:
   denominators, and all main-cell cost/harm gates. No pooled family claim or
   automatic promotion follows from a one-domain result.
 
-The remaining prerequisites are shared forward-batch qualification and
-capacity settings, the audited 384-record validation-label binding, capacity's
-measured largest-cell caps, the exact four-arm/code receipt, and the root/A2
-final-panel and criteria freeze. Until those receipts are bound, this document
-authorizes no substantive fit, final source selection, or truth opening.
+The remaining prerequisites are the future final-evaluation forward-batch
+qualification and capacity settings, capacity's measured largest-cell caps,
+the exact four-arm/code receipt, and the root/A2 final-panel and criteria
+freeze. Until those receipts are bound, this document authorizes no substantive
+fit, final source selection, or truth opening.
