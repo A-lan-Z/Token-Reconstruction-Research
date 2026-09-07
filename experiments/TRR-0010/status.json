@@ -1439,5 +1439,50 @@
     "substantive_fits_started": false,
     "support_by_bank_edit_saved_uncommitted": true,
     "truth_opened": false
+  },
+  "production_adapter_review": {
+    "status": "READ_ONLY_INTEGRATION_REVIEW_MATERIAL_FIXES_REQUIRED",
+    "reviewed_utc": "2026-09-07T14:16:06.025425+00:00",
+    "scope": "Selector to capture to curator to registration production call path; no source rows, truth, model, GPU, or capture execution.",
+    "reviewed_sources": [
+      "scripts/trr0010_select_public.py",
+      "scripts/trr0010_eval_capture.py",
+      "scripts/trr0010_prepare_truth.py",
+      "scripts/trr0010_eval_register.py",
+      "scripts/trr0010_eval_gate.py"
+    ],
+    "passes": [
+      "Selector requires frozen six-contender design state/resource bindings, 128 Finance plus 128 Pile, deterministic natural ranges, paired targets, and P04/P06/TRR7/TRR8/P08 source and H128 exclusion checks.",
+      "Truth preparation revalidates the public gate before curator materialization and validates the descriptor afterward; score CLI revalidates before the sole payload open."
+    ],
+    "findings": [
+      {
+        "id": "capture-retain-first-128-assertion",
+        "severity": "P1",
+        "owner": "capacity",
+        "path": "scripts/trr0010_eval_capture.py",
+        "lines": [
+          213,
+          215,
+          289
+        ],
+        "finding": "The producer receipt check verifies 8x192 and stored 128 geometry but does not verify an explicit producer retain-first-128 marker or equivalent per-cell evidence; repackaging then writes retain_first_128=true unconditionally.",
+        "required_fix": "Fail closed unless producer execution semantics and/or every observation receipt explicitly proves full B8x192 forward with first-128 retention, then propagate that verified value."
+      },
+      {
+        "id": "registration-design-method-crosscheck",
+        "severity": "P1",
+        "owner": "capacity",
+        "path": "scripts/trr0010_eval_register.py",
+        "lines": [
+          248,
+          254,
+          668,
+          702
+        ],
+        "finding": "The frozen design validates six roles and their state/resource records, while _method_rows validates independently supplied runtime rows; no comparison requires each runtime state/effective-W/E/A1+A2 resource binding to equal the corresponding design binding before registration/freeze.",
+        "required_fix": "Cross-check every runtime method state and required readout/reference resource against the design records before writing registration; also validate A1+A2 path_args file bindings if they are runtime inputs."
+      }
+    ]
   }
 }
