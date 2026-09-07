@@ -181,6 +181,7 @@ def score_from_truth_descriptor(
     repository_root: Path,
     frequency_reference_paths: Mapping[str, Path],
     output_path: Path,
+    cost_evidence_path: Path | None = None,
     bootstrap_seed: int = 10010,
     bootstrap_draws: int = 10000,
     require_current_head: bool = False,
@@ -211,6 +212,7 @@ def score_from_truth_descriptor(
             "B1": Path(frequency_reference_paths["B1"]),
         },
         output_path=output_path,
+        cost_evidence_path=cost_evidence_path,
         bootstrap_seed=int(bootstrap_seed),
         bootstrap_draws=int(bootstrap_draws),
         require_current_head=require_current_head,
@@ -238,6 +240,12 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--frequency-reference-b0", type=Path, required=True)
     parser.add_argument("--frequency-reference-b1", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--cost-evidence",
+        type=Path,
+        default=None,
+        help="hash-bound public timing cost artifact from trr0010_cost_evidence.py",
+    )
     parser.add_argument("--boundary-receipt", type=Path, default=None)
     parser.add_argument("--bootstrap-seed", type=int, default=10010)
     parser.add_argument("--bootstrap-draws", type=int, default=10000)
@@ -262,6 +270,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             repository_root=args.repository_root,
             frequency_reference_paths={"B0": args.frequency_reference_b0, "B1": args.frequency_reference_b1},
             output_path=args.output,
+            cost_evidence_path=args.cost_evidence,
             bootstrap_seed=args.bootstrap_seed,
             bootstrap_draws=args.bootstrap_draws,
             require_current_head=args.require_current_head,

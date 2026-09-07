@@ -21,6 +21,7 @@ import torch
 from safetensors import safe_open
 
 from scripts import trr0010_analysis as analysis
+from scripts import trr0010_cost_evidence as cost_evidence
 from scripts import trr0010_eval_gate as gate
 
 
@@ -182,6 +183,170 @@ def _file_record(path: Path) -> dict[str, Any]:
     if not path.is_file():
         raise ScoreError(f"file is unavailable: {path}")
     return {"path": str(path), "bytes": path.stat().st_size, "sha256": gate.sha256_file(path)}
+
+
+def _same_cost_record(left: Mapping[str, Any], right: Mapping[str, Any], *, description: str) -> None:
+    for key in ("path", "bytes", "sha256"):
+        if str(left.get(key)) != str(right.get(key)):
+            raise ScoreError(f"{description} {key} changed")
+
+
+def _validate_cost_comparison(
+    value: Any,
+    *,
+    name: str,
+    numerator_method_id: str,
+    denominator_method_id: str,
+) -> dict[str, Any]:
+    if not isinstance(value, Mapping):
+        raise ScoreError(f"cost comparison is malformed: {name}")
+    status = str(value.get("status", "UNKNOWN"))
+    if status not in {"PASS", "FAIL", "UNKNOWN"}:
+        raise ScoreError(f"cost comparison status changed: {name}")
+    if str(value.get("candidate_method_id")) != numerator_method_id:
+        raise ScoreError(f"cost comparison numerator changed: {name}")
+    denominator_key = "a1_a2_method_id" if denominator_method_id == gate.A1_A2_METHOD_ID else "fixed_method_id"
+    if str(value.get(denominator_key)) != denominator_method_id:
+        raise ScoreError(f"cost comparison denominator changed: {name}")
+    by_cell = value.get("by_cell")
+    if not isinstance(by_cell, Mapping) or set(by_cell) != set(gate.CELL_ORDER):
+        raise ScoreError(f"cost comparison cells changed: {name}")
+    for cell_id, row in by_cell.items():
+        if not isinstance(row, Mapping) or str(row.get("status", "UNKNOWN")) not in {"PASS", "FAIL", "UNKNOWN"}:
+            raise ScoreError(f"cost comparison row is malformed: {name}/{cell_id}")
+        for metric_name in ("runtime", "memory"):
+            metric = row.get(metric_name)
+            if metric is None:
+                if metric_name == "runtime":
+                    raise ScoreError(f"cost comparison runtime is absent: {name}/{cell_id}")
+                continue
+            if not isinstance(metric, Mapping):
+                raise ScoreError(f"cost comparison metric is malformed: {name}/{cell_id}/{metric_name}")
+            if str(metric.get("numerator_method_id")) != numerator_method_id:
+                raise ScoreError(f"cost comparison metric numerator changed: {name}/{cell_id}/{metric_name}")
+            if str(metric.get("denominator_method_id")) != denominator_method_id:
+                raise ScoreError(f"cost comparison metric denominator changed: {name}/{cell_id}/{metric_name}")
+    return dict(value)
+
+
+def _load_cost_evidence(
+    path: Path, *, freeze: Mapping[str, Any], repository_root: Path
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    path = Path(path).expanduser()
+    if not path.is_absolute():
+        path = repository_root / path
+    path = path.resolve()
+    payload = _json_file(path, description="cost evidence")
+    if payload.get("schema") != cost_evidence.COST_SCHEMA or payload.get("task_id") != TASK_ID:
+        raise ScoreError("cost evidence schema or task identity changed")
+    if payload.get("status") != cost_evidence.COST_STATUS:
+        raise ScoreError("cost evidence is not complete public timing evidence")
+    run_record = payload.get("run_manifest")
+    expected_run = freeze.get("run_manifest")
+    if not isinstance(run_record, Mapping) or not isinstance(expected_run, Mapping):
+        raise ScoreError("cost evidence or public freeze run binding is absent")
+    _same_cost_record(run_record, expected_run, description="cost evidence run manifest")
+    criteria = payload.get("criteria")
+    if not isinstance(criteria, Mapping):
+        raise ScoreError("cost evidence criteria are absent")
+    expected_criteria = {
+        "matched_fixed_runtime_ratio_max": cost_evidence.EXPECTED_V4_THRESHOLDS["matched_fixed_runtime_ratio_max"],
+        "matched_fixed_gpu_peak_ratio_max": cost_evidence.EXPECTED_V4_THRESHOLDS["matched_fixed_gpu_peak_ratio_max"],
+        "a1_a2_runtime_ratio_max": cost_evidence.EXPECTED_V4_THRESHOLDS["a1_a2_runtime_ratio_max"],
+    }
+    for name, expected in expected_criteria.items():
+        try:
+            actual = float(criteria[name])
+        except (KeyError, TypeError, ValueError) as exc:
+            raise ScoreError(f"cost evidence criterion is absent: {name}") from exc
+        if not math.isfinite(actual) or not math.isclose(actual, expected, rel_tol=0.0, abs_tol=1e-12):
+            raise ScoreError(f"cost evidence criterion changed: {name}")
+    comparisons = payload.get("comparisons")
+    if not isinstance(comparisons, Mapping):
+        raise ScoreError("cost evidence comparisons are absent")
+    expected_comparisons = {
+        "candidate_vs_fixed": (cost_evidence.PRIMARY_CANDIDATE, cost_evidence.PRIMARY_FIXED),
+        "candidate_vs_current_fixed_robustness": (
+            cost_evidence.PRIMARY_CANDIDATE,
+            cost_evidence.ROBUSTNESS_FIXED,
+        ),
+        "data_expanded_fixed_vs_current_fixed": (
+            gate.EXPANDED_FIXED_METHOD_ID,
+            gate.CURRENT_FIXED_METHOD_ID,
+        ),
+        "candidate_vs_a1_a2": (cost_evidence.PRIMARY_CANDIDATE, gate.A1_A2_METHOD_ID),
+        "data_expanded_fixed_vs_a1_a2": (gate.EXPANDED_FIXED_METHOD_ID, gate.A1_A2_METHOD_ID),
+    }
+    for name, (numerator_method_id, denominator_method_id) in expected_comparisons.items():
+        _validate_cost_comparison(
+            comparisons.get(name),
+            name=name,
+            numerator_method_id=numerator_method_id,
+            denominator_method_id=denominator_method_id,
+        )
+    artifact = _file_record(path)
+    return payload, artifact
+
+
+_COST_ROUTE_COMPARISONS = {
+    "directional": (
+        "candidate_vs_fixed",
+        "candidate_vs_current_fixed_robustness",
+        "candidate_vs_a1_a2",
+    ),
+    "data": (
+        "data_expanded_fixed_vs_current_fixed",
+        "data_expanded_fixed_vs_a1_a2",
+    ),
+}
+
+
+def _unknown_cost_gate(reason: str = "cost evidence is not bound") -> dict[str, Any]:
+    return {"status": "UNKNOWN", "reason": reason, "comparisons": {}}
+
+
+def _route_cost_gate(
+    cost_payload: Mapping[str, Any] | None, *, route: str, cell_id: str
+) -> dict[str, Any]:
+    if cost_payload is None:
+        return _unknown_cost_gate()
+    comparisons = cost_payload.get("comparisons")
+    if not isinstance(comparisons, Mapping):
+        return _unknown_cost_gate("cost evidence comparisons are absent")
+    selected: dict[str, Any] = {}
+    rows: list[Mapping[str, Any]] = []
+    for name in _COST_ROUTE_COMPARISONS[route]:
+        comparison = comparisons.get(name)
+        if not isinstance(comparison, Mapping):
+            selected[name] = {"status": "UNKNOWN", "reason": "required cost comparison is absent"}
+            rows.append(selected[name])
+            continue
+        by_cell = comparison.get("by_cell")
+        row = by_cell.get(cell_id) if isinstance(by_cell, Mapping) else None
+        if not isinstance(row, Mapping):
+            row = {"status": "UNKNOWN", "reason": "required cost cell is absent"}
+        selected[name] = dict(row)
+        rows.append(selected[name])
+    status = _combine_statuses(rows)
+    return {"status": status, "route": route, "cell_id": cell_id, "comparisons": selected}
+
+
+def _cost_readout(cost_payload: Mapping[str, Any] | None) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
+    directional: dict[str, Any] = {}
+    data: dict[str, Any] = {}
+    for cell_id in gate.CELL_ORDER:
+        directional[cell_id] = _route_cost_gate(cost_payload, route="directional", cell_id=cell_id)
+        data[cell_id] = _route_cost_gate(cost_payload, route="data", cell_id=cell_id)
+    route_rows = {
+        "directional": {"status": _combine_statuses(list(directional.values())), "by_cell": directional},
+        "data": {"status": _combine_statuses(list(data.values())), "by_cell": data},
+    }
+    summary = {
+        "status": _combine_statuses(list(route_rows.values())),
+        "routes": route_rows,
+        "source": "bound public cost evidence" if cost_payload is not None else "planner cost evidence not bound",
+    }
+    return summary, directional, data
 
 
 def _is_integer_dtype(dtype: torch.dtype) -> bool:
@@ -1059,9 +1224,14 @@ def _effective_metric_route(
         "components": list(components),
         "cost_gate": dict(cost_gate),
     }
-    if scientific_status == "PASS" and cost_gate.get("status") != "PASS":
-        result["status"] = "UNKNOWN"
-        result["reason"] = "cost_gate_unknown"
+    if scientific_status == "PASS":
+        cost_status = cost_gate.get("status")
+        if cost_status == "FAIL":
+            result["status"] = "FAIL"
+            result["reason"] = "cost_gate_failed"
+        elif cost_status != "PASS":
+            result["status"] = "UNKNOWN"
+            result["reason"] = "cost_gate_unknown"
     return result
 
 
@@ -1069,10 +1239,17 @@ def _decision_readout(
     contrasts: Mapping[str, Mapping[str, Any]],
     remaining_error_reduction: Mapping[str, Mapping[str, Any]],
     gap_closure: Mapping[str, Mapping[str, Any]],
+    *,
+    cost_evidence: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Serialize per-cell v4 checks without pooling or choosing a winner."""
+    """Serialize per-cell v4 checks without pooling or choosing a winner.
 
-    cost_gate = {"status": "UNKNOWN", "reason": "timing and deployment cost evidence is consumed by the planner"}
+    Directional and data routes consume their own named cost comparisons.
+    This prevents a directional runtime result from being reused as the
+    expanded-fixed data-route gate.
+    """
+
+    cost_gate, directional_cost_by_cell, data_cost_by_cell = _cost_readout(cost_evidence)
     directional_cells: dict[str, Any] = {}
     data_cells: dict[str, Any] = {}
     for cell in gate.CELL_ORDER:
@@ -1133,7 +1310,7 @@ def _decision_readout(
                     d_cur_token_relative,
                     directional_gap_checks["token"],
                 ],
-                cost_gate=cost_gate,
+                cost_gate=directional_cost_by_cell[cell],
             ),
             "exact": _effective_metric_route(
                 [
@@ -1141,7 +1318,7 @@ def _decision_readout(
                     robustness_abs["exact"],
                     directional_gap_checks["exact"],
                 ],
-                cost_gate=cost_gate,
+                cost_gate=directional_cost_by_cell[cell],
             ),
         }
         data_metric_routes = {
@@ -1153,7 +1330,7 @@ def _decision_readout(
                     data_unchanged_token_relative,
                     data_gap_checks["token"],
                 ],
-                cost_gate=cost_gate,
+                cost_gate=data_cost_by_cell[cell],
             ),
             "exact": _effective_metric_route(
                 [
@@ -1161,7 +1338,7 @@ def _decision_readout(
                     data_unchanged_abs["exact"],
                     data_gap_checks["exact"],
                 ],
-                cost_gate=cost_gate,
+                cost_gate=data_cost_by_cell[cell],
             ),
         }
         directional_cells[cell] = {
@@ -1174,7 +1351,7 @@ def _decision_readout(
             "gap_closure": directional_gap_checks,
             "metric_routes": directional_metric_routes,
             "status": _combine_alternative_statuses(list(directional_metric_routes.values())),
-            "cost_gate": cost_gate,
+            "cost_gate": directional_cost_by_cell[cell],
         }
         data_cells[cell] = {
             "expanded_fixed_vs_current_fixed": data_fixed_abs,
@@ -1186,7 +1363,7 @@ def _decision_readout(
             "gap_closure": data_gap_checks,
             "metric_routes": data_metric_routes,
             "status": _combine_alternative_statuses(list(data_metric_routes.values())),
-            "cost_gate": cost_gate,
+            "cost_gate": data_cost_by_cell[cell],
         }
 
     def by_domain(rows: Mapping[str, Mapping[str, Any]]) -> dict[str, Any]:
@@ -1202,11 +1379,20 @@ def _decision_readout(
                     ),
                     "status": _combine_statuses(metric_rows),
                 }
+            selected_cost = [row.get("cost_gate", {}) for row in selected]
+            cost_complete = all(
+                isinstance(row, Mapping) and row.get("status") == "PASS"
+                for row in selected_cost
+            )
             result[domain] = {
                 # Deliberately do not OR token and exact outcomes across target
                 # cells into a single useful metric claim.
                 "status": "SEPARATE_METRIC_ROUTES",
-                "effective_status": "UNKNOWN" if cost_gate.get("status") != "PASS" else "SEPARATE_METRIC_ROUTES",
+                "effective_status": (
+                    _combine_statuses(list(metric_routes.values()))
+                    if cost_complete
+                    else "UNKNOWN"
+                ),
                 "metric_routes": metric_routes,
                 "target_cells": [cell for cell in rows if DOMAIN_BY_CELL[cell] == domain],
             }
@@ -1245,6 +1431,7 @@ def _score_loaded(
     *,
     bootstrap_seed: int,
     bootstrap_draws: int,
+    cost_evidence: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     if set(frequency_banks) != {"B0", "B1"}:
         raise ScoreError("score requires both frozen B0 and B1 frequency references")
@@ -1351,7 +1538,9 @@ def _score_loaded(
         )
         for cell in gate.CELL_ORDER
     }
-    decision_readout = _decision_readout(contrasts, remaining_error_reduction, gap_closure)
+    decision_readout = _decision_readout(
+        contrasts, remaining_error_reduction, gap_closure, cost_evidence=cost_evidence
+    )
     return {
         "schema": SCORE_SCHEMA,
         "task_id": TASK_ID,
@@ -1410,6 +1599,7 @@ def score_after_gate(
     frequency_counts: Mapping[int, int] | None = None,
     frequency_counts_by_bank: Mapping[str, Mapping[int, int]] | None = None,
     output_path: Path | None = None,
+    cost_evidence_path: Path | None = None,
     bootstrap_seed: int = analysis.TRR0010_BOOTSTRAP_SEED,
     bootstrap_draws: int = analysis.TRR0010_BOOTSTRAP_DRAWS,
     require_current_head: bool = False,
@@ -1428,6 +1618,12 @@ def score_after_gate(
         repository_root=root,
         require_current_head=require_current_head,
     )
+    bound_cost_evidence: dict[str, Any] | None = None
+    cost_evidence_record: dict[str, Any] | None = None
+    if cost_evidence_path is not None:
+        bound_cost_evidence, cost_evidence_record = _load_cost_evidence(
+            cost_evidence_path, freeze=freeze, repository_root=root
+        )
     bound_frequency, frequency_record = _load_bound_frequency_references(
         freeze,
         frequency_reference_paths=frequency_reference_paths,
@@ -1446,6 +1642,7 @@ def score_after_gate(
         bound_frequency,
         bootstrap_seed=int(bootstrap_seed),
         bootstrap_draws=int(bootstrap_draws),
+        cost_evidence=bound_cost_evidence,
     )
     freeze_record = _file_record(Path(freeze_path).expanduser().resolve())
     result.update(
@@ -1458,6 +1655,7 @@ def score_after_gate(
                 "run_manifest": freeze["run_manifest"],
             },
             "frequency_reference": frequency_record,
+            "cost_evidence": cost_evidence_record,
             "truth_pairing": truth_pairing,
             "truth_opened": True,
             "truth_loader_invocations": 1,
