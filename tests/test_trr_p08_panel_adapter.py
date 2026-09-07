@@ -136,3 +136,16 @@ def test_capture_manifest_matches_prediction_validator_without_payloads(tmp_path
     cells, evidence = run_predictions._validate_observation_manifest(manifest_path, root=tmp_path)
     assert list(cells) == list(capture_public.CELL_ORDER)
     assert evidence["record_ids_sha256"] == {"pile": "a" * 64, "finance": "b" * 64}
+
+
+def test_explicit_prior_bindings_include_current_p06_selection_and_nested_opaque():
+    bindings, paths = panel._explicit_prior_exclusion_bindings(
+        Path("/tmp/trr-p08"),
+        (panel.APPROVED_TRR0008_OPAQUE_PATH,),
+    )
+    assert paths[0] == (Path("/tmp/trr-p08") / panel.PUBLISHED_P06_SELECTION_RELATIVE).resolve()
+    assert bindings["published_p06_selection"]["sha256"] == panel.PUBLISHED_P06_SELECTION_SHA256
+    assert bindings["approved_trr0008_opaque"][0]["counts"] == {
+        "public_record_sha256": 1408,
+        "final_sequence_sha256": 1408,
+    }

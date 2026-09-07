@@ -142,11 +142,28 @@ def bind_opaque_reservation(
     counts = {}
     for key, expected in expected_counts.items():
         entries = hashes.get(key)
-        if not isinstance(entries, list) or len(entries) != expected:
+        # Published reservation exports use a metadata object for each hash
+        # field. The actual reservation is the nested ``values`` array;
+        # top-level mapping keys such as ``distinct_count`` are summaries and
+        # must never be counted as hash values. Keep accepting the compact
+        # list form for the synthetic/legacy contract, but bind both forms by
+        # the actual values length.
+        if isinstance(entries, Mapping):
+            values = entries.get("values")
+        else:
+            values = entries
+        if not isinstance(values, list) or len(values) != expected:
             raise SourceBindingError(
                 f"{label} count mismatch for {key}: expected {expected}"
             )
-        counts[key] = len(entries)
+        if any(
+            not isinstance(value, str)
+            or len(value) != 64
+            or any(char not in "0123456789abcdefABCDEF" for char in value)
+            for value in values
+        ):
+            raise SourceBindingError(f"{label} has malformed hash values for {key}")
+        counts[key] = len(values)
     return {
         "label": label,
         "path": reference["path"],

@@ -90,3 +90,49 @@ def test_opaque_count_mismatch_fails_closed(tmp_path):
             expected_schema="token-reconstruction.test-opaque.v1",
             expected_counts={"public_record_sha256": 2},
         )
+
+
+def test_hash_only_opaque_reservation_binds_nested_values_not_summary_keys(tmp_path):
+    path = tmp_path / "nested-reservation.json"
+    value = {
+        "schema": "token-reconstruction.test-opaque-nested.v1",
+        "privacy_boundary": {"hash_only": True},
+        "counts": {"public_record_sha256": 2, "final_sequence_sha256": 1},
+        "hashes": {
+            "public_record_sha256": {
+                "distinct_count": 2,
+                "ordered_count": 2,
+                "values": ["a" * 64, "b" * 64],
+            },
+            "final_sequence_sha256": {
+                "distinct_count": 1,
+                "ordered_count": 1,
+                "values": ["c" * 64],
+            },
+        },
+    }
+    expected = _write_json(path, value)
+    bound = bind_opaque_reservation(
+        path,
+        expected,
+        expected_schema="token-reconstruction.test-opaque-nested.v1",
+        expected_counts={"public_record_sha256": 2, "final_sequence_sha256": 1},
+    )
+    assert bound["counts"] == {"public_record_sha256": 2, "final_sequence_sha256": 1}
+
+
+def test_hash_only_opaque_rejects_missing_nested_values(tmp_path):
+    path = tmp_path / "missing-values.json"
+    value = {
+        "schema": "token-reconstruction.test-opaque-nested.v1",
+        "privacy_boundary": {"hash_only": True},
+        "hashes": {"public_record_sha256": {"distinct_count": 2}},
+    }
+    expected = _write_json(path, value)
+    with pytest.raises(SourceBindingError, match="count mismatch"):
+        bind_opaque_reservation(
+            path,
+            expected,
+            expected_schema="token-reconstruction.test-opaque-nested.v1",
+            expected_counts={"public_record_sha256": 2},
+        )

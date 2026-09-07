@@ -28,6 +28,7 @@ if str(REPO_ROOT) not in sys.path:
 
 from scripts import trr0005_produce_confirmation as trusted  # noqa: E402
 from scripts.trr_p06 import prepare_public_panel as p06  # noqa: E402
+from scripts.trr_p08 import source_binding as p08_binding  # noqa: E402
 
 
 TASK_ID = "TRR-P08"
@@ -41,6 +42,30 @@ RECORDS_PER_DOMAIN = 256
 CLIP_TOKENS = 128
 CAPTURE_TOKENS = 192
 
+# The P06 source selector's fresh 512-record panel is not part of the
+# inherited P06 published catalog. Bind this exact metadata descriptor
+# explicitly before any P08 source-universe construction.
+PUBLISHED_P06_SELECTION_RELATIVE = Path(
+    "experiments/TRR-P06/runtime/source-selection-r1/selection.json"
+)
+PUBLISHED_P06_SELECTION_SHA256 = (
+    "d53ed8c972ec9ec00c6490dca22a99af833ea839fa68d9c4164ce061ee893a1a"
+)
+APPROVED_TRR0008_OPAQUE_PATH = Path(
+    "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/"
+    "TRR-0008/experiments/TRR-0008/selection/opaque_source_sequence_reservation.json"
+)
+APPROVED_TRR0008_OPAQUE_SHA256 = (
+    "0487b9dda91d7eb791c93e1ba704afcea22abfc21f003cad8b99984f523357a4"
+)
+APPROVED_TRR0008_OPAQUE_SCHEMA = (
+    "token-reconstruction.trr0008-opaque-source-sequence-reservation.v1"
+)
+APPROVED_TRR0008_OPAQUE_COUNTS = {
+    "public_record_sha256": 1408,
+    "final_sequence_sha256": 1408,
+}
+
 
 class PanelPreparationError(RuntimeError):
     """Raised when a P08 source contract is not satisfied."""
@@ -52,6 +77,74 @@ def _utc_now() -> str:
 
 def _sha256_file(path: Path) -> str:
     return p06._sha256_file(Path(path))
+
+
+def _verify_bound_descriptor(path: Path, expected_sha256: str, *, label: str) -> dict[str, Any]:
+    path = Path(path).expanduser().resolve()
+    try:
+        actual = _sha256_file(path)
+    except (OSError, PanelPreparationError, p06.PanelPreparationError) as exc:
+        raise PanelPreparationError(f"{label} is unavailable: {path}") from exc
+    if actual != expected_sha256:
+        raise PanelPreparationError(
+            f"{label} SHA256 mismatch: expected {expected_sha256}, got {actual}"
+        )
+    return {
+        "label": label,
+        "path": str(path),
+        "bytes": path.stat().st_size,
+        "sha256": actual,
+    }
+
+
+def _explicit_prior_exclusion_bindings(
+    root: Path,
+    approved_opaque_paths: Sequence[Path | str],
+    p06_selection_path: Path | str | None = None,
+) -> tuple[dict[str, Any], tuple[Path, ...]]:
+    """Verify exact prior ledgers before passing them to the P06 collector."""
+
+    requested_selection = (
+        PUBLISHED_P06_SELECTION_RELATIVE
+        if p06_selection_path is None
+        else Path(p06_selection_path).expanduser()
+    )
+    if not requested_selection.is_absolute():
+        requested_selection = root / requested_selection
+    expected_selection_path = (root / PUBLISHED_P06_SELECTION_RELATIVE).resolve()
+    if requested_selection.resolve() != expected_selection_path:
+        raise PanelPreparationError(
+            "only the approved current P06 source-selection descriptor may be bound"
+        )
+    p06_selection = _verify_bound_descriptor(
+        requested_selection,
+        PUBLISHED_P06_SELECTION_SHA256,
+        label="published P06 source selection",
+    )
+    opaque_bindings: list[dict[str, Any]] = []
+    opaque_paths: list[Path] = []
+    for raw_path in approved_opaque_paths:
+        candidate = Path(raw_path).expanduser().resolve()
+        if candidate != APPROVED_TRR0008_OPAQUE_PATH.resolve():
+            raise PanelPreparationError(
+                "only the approved TRR-0008 opaque reservation path may be bound"
+            )
+        binding = p08_binding.bind_opaque_reservation(
+            candidate,
+            APPROVED_TRR0008_OPAQUE_SHA256,
+            expected_schema=APPROVED_TRR0008_OPAQUE_SCHEMA,
+            expected_counts=APPROVED_TRR0008_OPAQUE_COUNTS,
+            label="approved TRR-0008 opaque reservation",
+        )
+        opaque_bindings.append(binding)
+        opaque_paths.append(candidate)
+    return (
+        {
+            "published_p06_selection": p06_selection,
+            "approved_trr0008_opaque": opaque_bindings,
+        },
+        (Path(p06_selection["path"]), *opaque_paths),
+    )
 
 
 def _json_load(path: Path, *, label: str) -> dict[str, Any]:
@@ -230,9 +323,17 @@ def build_source_universe(args: argparse.Namespace) -> dict[str, Any]:
     plan_binding = _plan_binding(Path(args.plan))
     ranges = {"pile": list(args.pile_range), "finance": list(args.finance_range)}
     _configure_p06(seed=int(args.selection_seed), ranges=ranges)
+    explicit_bindings, opaque_and_metadata_paths = _explicit_prior_exclusion_bindings(
+        root,
+        tuple(args.approved_opaque or ()),
+        args.p06_selection,
+    )
     exclusions = p06.collect_exclusions(
         root,
-        approved_opaque_paths=tuple(args.approved_opaque or ()),
+        # The P06 catalog predates the P06 fresh 512-record panel. Keep the
+        # current panel's identity metadata as an explicit required descriptor.
+        metadata_paths=(opaque_and_metadata_paths[0],),
+        approved_opaque_paths=opaque_and_metadata_paths[1:],
     )
     value = _universe_metadata(
         root=root,
@@ -240,6 +341,12 @@ def build_source_universe(args: argparse.Namespace) -> dict[str, Any]:
         seed=int(args.selection_seed),
         ranges=ranges,
         exclusions=exclusions,
+    )
+    value["exclusion_binding"]["explicit_prior_bindings"] = explicit_bindings
+    value["exclusion_binding"]["p06_selection_explicitly_bound"] = True
+    value["exclusion_binding"]["approved_opaque_nested_values_contract"] = (
+        "For nested reservation exports, exclusion counts are derived from "
+        "hashes.<field>.values; summary mapping keys are not hash entries."
     )
     output = _write_create_only(Path(args.output), value)
     return {"task_id": TASK_ID, "status": value["status"], "universe": output}
@@ -376,6 +483,12 @@ def _parser() -> argparse.ArgumentParser:
     universe.add_argument("--pile-range", type=int, nargs=2, required=True)
     universe.add_argument("--finance-range", type=int, nargs=2, required=True)
     universe.add_argument("--approved-opaque", type=Path, nargs="*", default=[])
+    universe.add_argument(
+        "--p06-selection",
+        type=Path,
+        default=PUBLISHED_P06_SELECTION_RELATIVE,
+        help="exact approved current P06 source-selection metadata descriptor",
+    )
     universe.add_argument("--output", type=Path, required=True)
 
     freeze = sub.add_parser("freeze")
