@@ -362,10 +362,16 @@ def _directional_diagnostics(arm_record: Mapping[str, Any], *, arm: str) -> tupl
             full_bank = dict(_mapping(full_bank, description=f"directional {arm} full-bank diagnostic"))
             if full_bank.get("endpoint") not in {"start", "end"}:
                 raise FitTableError(f"directional {arm} full-bank endpoint is invalid")
+        frozen64_metrics = item.get("frozen64_metrics")
+        if frozen64_metrics is not None:
+            frozen64_metrics = dict(
+                _mapping(frozen64_metrics, description=f"directional {arm} frozen64 metrics")
+            )
         normalized.append({
             "step": step,
             "fit_records": fit_records,
             "fit_records_sha256": fit_digest,
+            "frozen64_metrics": deepcopy(frozen64_metrics),
             "full_bank_endpoint": deepcopy(full_bank),
             "selection_metric_untouched": untouched,
             "elapsed_seconds": item.get("elapsed_seconds"),
@@ -516,12 +522,17 @@ def _directional_cost(payload: Mapping[str, Any], arm_record: Mapping[str, Any],
     runner_wall = timing.get("whole_wall_seconds")
     restore = timing.get("restore_export_seconds")
     base_export = timing.get("base_decoder_export_seconds")
+    diagnostic_recovery = _optional_number(
+        timing.get("diagnostic_recovery_seconds"), description="directional diagnostic recovery"
+    )
     explicit_components = {
         "provider_preparation_seconds": _optional_number(provider, description="directional provider preparation"),
         "fit_runner_wall_seconds": _optional_number(runner_wall, description="directional runner wall"),
         "post_fit_restore_export_seconds": _optional_number(restore, description="directional restore/export"),
         "post_fit_base_decoder_export_seconds": _optional_number(base_export, description="directional base export"),
     }
+    if diagnostic_recovery is not None:
+        explicit_components["post_fit_diagnostic_recovery_seconds"] = diagnostic_recovery
     measured = [value for value in explicit_components.values() if value is not None]
     receipt_elapsed = payload.get("elapsed_seconds")
     return {
@@ -530,6 +541,7 @@ def _directional_cost(payload: Mapping[str, Any], arm_record: Mapping[str, Any],
         "provider_preparation_seconds": explicit_components["provider_preparation_seconds"],
         "restore_export_seconds": explicit_components["post_fit_restore_export_seconds"],
         "base_decoder_export_seconds": explicit_components["post_fit_base_decoder_export_seconds"],
+        "diagnostic_recovery_seconds": explicit_components.get("post_fit_diagnostic_recovery_seconds"),
         "nested_phase_seconds": {
             key: timing.get(key)
             for key in ("optimizer_update_seconds", "stream_load_seconds", "validation_seconds")
@@ -552,7 +564,7 @@ def _directional_cost(payload: Mapping[str, Any], arm_record: Mapping[str, Any],
             "measured_available_components_seconds": sum(measured),
             "complete": len(measured) == len(explicit_components),
             "phase_sum_is_not_added": True,
-            "note": "Provider preparation, runner process wall, and post-fit exports are separate components. Optimizer/stream/validation phases are nested inside runner wall; wrapper_seconds is not added again.",
+            "note": "Provider preparation, runner process wall, post-fit exports, and any post-fit diagnostic recovery are separate components. Optimizer/stream/validation phases are nested inside runner wall; wrapper_seconds is not added again.",
         },
         "raw_timing": timing,
     }
