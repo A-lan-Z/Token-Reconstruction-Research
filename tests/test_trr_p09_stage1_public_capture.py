@@ -538,6 +538,13 @@ def test_watchdog_receipt_binds_real_wrapper_and_future_lease(tmp_path: Path) ->
         )
 
 
+def test_actual_signed_plan_verifier_binds_new_records_only_field() -> None:
+    plan = REPOSITORY_ROOT / "experiments/TRR-P09/planning/stage1-public-bank-plan.json"
+    verified, record = capture._verify_plan(plan, expected_sha256=capture.SIGNED_STAGE1_PLAN_SHA256)
+    assert verified["capture_caps_and_lease"]["new_records_only"] == capture.NEW_RECORDS
+    assert record["sha256"] == capture.SIGNED_STAGE1_PLAN_SHA256
+
+
 def test_signed_plan_sha_override_cannot_weaken_binding() -> None:
     plan = Path("experiments/TRR-P09/planning/stage1-public-bank-plan.json")
     with pytest.raises(capture.CaptureError, match="signed plan SHA"):

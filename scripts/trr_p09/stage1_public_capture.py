@@ -307,7 +307,7 @@ def _verify_plan(path: Path, *, expected_sha256: str | None = None) -> tuple[dic
     expanded = recipe.get("expanded_bank")
     if not isinstance(expanded, Mapping) or int(expanded.get("new_records", -1)) != NEW_RECORDS:
         raise CaptureError("STAGE1 plan new-record count changed")
-    if caps.get("condition") != STAGE1_CONDITION or int(caps.get("new_records", -1)) != NEW_RECORDS:
+    if caps.get("condition") != STAGE1_CONDITION or int(caps.get("new_records_only", -1)) != NEW_RECORDS:
         raise CaptureError("STAGE1 plan capture condition/count changed")
     storage = caps.get("storage")
     if not isinstance(storage, Mapping):
