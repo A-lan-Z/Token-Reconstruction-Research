@@ -179,12 +179,13 @@ def _producer_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
     for cell_id in gate.CELL_ORDER:
         path = producer / f"{cell_id}.safetensors"
         path.write_bytes(cell_id.encode())
+        observation_descriptor = _record(path, tmp_path)
+        observation_descriptor.update({"shape": [128, 128, 2048], "stored_sequence_tokens": 128, "capture_sequence_tokens": 192, "capture_batch_records": 8})
         cells.append({
             "cell_id": cell_id,
             "records": 128,
-            "shape": [128, 128, 2048],
             "record_ids_sha256": digests[cell_id.split("__", 1)[0]],
-            "observation": _record(path, tmp_path),
+            "observation": observation_descriptor,
         })
     obs_payload = {
         "schema": "token-reconstruction.trr0009-public-observation-manifest.v1",

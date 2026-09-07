@@ -207,9 +207,12 @@ def _validate_producer_receipts(*, producer_root: Path, producer_selection_recor
         domain = cell_id.split("__", 1)[0]
         if row.get("records") != gate.RECORDS_PER_CELL or row.get("record_ids_sha256") != record_digests[domain]:
             raise CaptureAdapterError(f"TRR9 observation source binding changed: {cell_id}")
-        if row.get("shape") != [gate.RECORDS_PER_CELL, gate.STORED_SEQUENCE_TOKENS, gate.OBSERVATION_HIDDEN_SIZE]:
+        observation_descriptor = row.get("observation")
+        if not isinstance(observation_descriptor, Mapping):
+            raise CaptureAdapterError(f"TRR9 observation descriptor is absent: {cell_id}")
+        if observation_descriptor.get("shape") != [gate.RECORDS_PER_CELL, gate.STORED_SEQUENCE_TOKENS, gate.OBSERVATION_HIDDEN_SIZE]:
             raise CaptureAdapterError(f"TRR9 observation geometry changed: {cell_id}")
-        _record(Path(str(row.get("observation", {}).get("path", ""))), root=root, description=f"TRR9 observation {cell_id}")
+        _record(Path(str(observation_descriptor.get("path", ""))), root=root, description=f"TRR9 observation {cell_id}")
     execution = capture.get("execution")
     if (
         not isinstance(execution, Mapping)
@@ -260,7 +263,10 @@ def repackage_trr0009_capture(*, selection_path: Path, producer_root: Path, outp
     repack_cells = []
     for cell_id in gate.CELL_ORDER:
         row = cells[cell_id]
-        repack_cells.append({"cell_id": cell_id, "records": gate.RECORDS_PER_CELL, "shape": list(row["shape"]), "record_ids_sha256": str(row["record_ids_sha256"]), "observation": _record(Path(str(row["observation"]["path"])), root=root, description=f"TRR10 observation {cell_id}")})
+        observation_descriptor = row.get("observation")
+        if not isinstance(observation_descriptor, Mapping):
+            raise CaptureAdapterError(f"TRR9 observation descriptor is absent: {cell_id}")
+        repack_cells.append({"cell_id": cell_id, "records": gate.RECORDS_PER_CELL, "shape": list(observation_descriptor["shape"]), "record_ids_sha256": str(row["record_ids_sha256"]), "observation": _record(Path(str(observation_descriptor["path"])), root=root, description=f"TRR10 observation {cell_id}")})
     observation_payload = {
         "schema": OBSERVATION_SCHEMA,
         "task_id": TASK_ID,
