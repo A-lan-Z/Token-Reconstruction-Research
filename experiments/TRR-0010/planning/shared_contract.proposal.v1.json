@@ -1,0 +1,317 @@
+{
+  "schema": "token-reconstruction.trr0010-shared-contract-proposal.v1",
+  "task_id": "TRR-0010",
+  "status": "PROPOSAL_ONLY_PENDING_A2_BANK_FEASIBILITY_AND_CAPACITY_GEOMETRY_REVIEW",
+  "proposal_scope": "Common design proposal only. No source selection, bank generation, fitting, truth opening, or scientific freeze has occurred.",
+  "starting_resource": {
+    "published_task": "TRR-0009",
+    "published_commit": "4602f98eeb03ac121d8bbc230d7e2b219551b914",
+    "method_id": "continued_fixed_readout",
+    "selected_step": 400,
+    "state_path": "experiments/TRR-0009/training/run_v1/continued_fixed_readout/selected.safetensors",
+    "state_bytes": 29390492,
+    "state_sha256": "5cada4a3d04bb5477eaf0be25ed8d8ac25a89283223e9ba14b18fa10416bee14",
+    "selection_rule": "Use this published selected state; do not choose initialization from fresh answers or TRR-0010 evaluation truth.",
+    "unchanged_reference": {
+      "state_path": "experiments/TRR-0007/enriched_fit_v1/current_enriched/trr0007_residual_mlp512/selected.safetensors",
+      "state_bytes": 29390628,
+      "state_sha256": "2a44a91b01ca1fdc9615eab804872c50c606199704eaf51fa114cc0d7959ddc8"
+    }
+  },
+  "ownership_and_boundaries": {
+    "agent_one": "Directional readout implementation and fits; owns this common-contract proposal.",
+    "agent_two": "Nested public fitting-bank preparation and fixed-readout data-scaling controls.",
+    "shared_artifacts": "Public preparation artifacts are read-only across worktrees and bound by exact path, size, and SHA-256.",
+    "a2_in_deployment": false,
+    "forbidden": "No P03 holdout, private study workspace/results, active-registry edits, paid compute, or truth-driven selection.",
+    "truth_boundary": "Freeze source identities, fit/validation roles, model outputs, thresholds, and the final panel before one common natural-evaluation truth opening."
+  },
+  "crossed_design": {
+    "arms": [
+      {
+        "id": "current_fixed",
+        "bank": "current",
+        "readout": "fixed",
+        "role": "continued-training control for current coverage"
+      },
+      {
+        "id": "current_directional",
+        "bank": "current",
+        "readout": "directional",
+        "role": "directional factor at current coverage"
+      },
+      {
+        "id": "expanded_fixed",
+        "bank": "expanded",
+        "readout": "fixed",
+        "role": "data-scaling control with equal optimizer opportunities"
+      },
+      {
+        "id": "expanded_directional",
+        "bank": "expanded",
+        "readout": "directional",
+        "role": "predeclared primary candidate arm"
+      }
+    ],
+    "factor_contrasts": {
+      "directional_current": "current_directional minus current_fixed",
+      "directional_expanded": "expanded_directional minus expanded_fixed",
+      "data_fixed": "expanded_fixed minus current_fixed",
+      "combined_candidate": "expanded_directional minus current_fixed",
+      "interaction": "(expanded_directional - expanded_fixed) - (current_directional - current_fixed)",
+      "all_four_reported_separately": true
+    },
+    "equal_optimizer_opportunities": true,
+    "same_decoder_schedule_in_all_arms": true,
+    "unchanged_starting_reference_reported": true,
+    "a1_a2_comparators": "A1 and A2 identities, code, and state receipts must be bound by root/A2 before final evaluation; A2 is an evaluation comparator only and is never deployed."
+  },
+  "public_banks": {
+    "current": {
+      "target_unique_fit_records": 1200,
+      "source": "Nested subset of the published TRR-0009 improved public fitting bank.",
+      "published_fit_post_bos_positions": 124371,
+      "current_controlled_replacement_requirement": "If replacement sampling is used, A2 must report at least 128 controlled replacement draws and exact draw semantics before freeze.",
+      "identity_receipt": "PENDING_A2_PUBLIC_BANK_PREPARATION"
+    },
+    "expanded": {
+      "target_unique_fit_records": 12000,
+      "minimum_unique_fit_records_for_order_of_magnitude_claim": 10000,
+      "minimum_new_records_over_current": 8800,
+      "nested_includes_current_bank": true,
+      "substantially_new_examples_required": true,
+      "same_natural_format_and_public_model_forward_requirement": true,
+      "target_record_passes_at_recommended_schedule": 13.3333333333,
+      "minimum_record_passes_for_informative_exposure": 10,
+      "identity_receipt": "PENDING_A2_PUBLIC_BANK_PREPARATION_AND_EXCLUSION_REVIEW",
+      "construction_and_accounting_note": "A2 must bind whether the expanded bank preserves the current mixture or appends natural rows; any mixture change is a data-factor deviation, not silently called pure coverage."
+    },
+    "construction_and_accounting": {
+      "preserve_current_mixture_where_feasible": true,
+      "new_examples_match_declared_domain_style_strata_where_feasible": true,
+      "natural_only_append_warning": "If expanded preparation can only append natural rows on top of the current bank, report the data factor as coverage-plus-mixture rather than pure coverage.",
+      "report_separately": [
+        "unique parent sources",
+        "unique final sequences",
+        "valid token/context positions",
+        "identity support rows",
+        "derived variants and repetitions"
+      ],
+      "derived_variants_are_independent_sources": false
+    },
+    "sampling_requirements": [
+      "Expanded rows must be new unique public examples with varied token identities and contexts, not repetitions or a replacement mixture of the same size.",
+      "Fit-bank rows are excluded from the final natural panel, public validation panel, and known train/validation/opened-evaluation ledgers permitted by the charter.",
+      "A2 reports distinct records, post-BOS positions, supported-token counts, frequency strata, repeated exposures, and exact sampler draws.",
+      "No fit-bank count or support set is chosen using final evaluation answers."
+    ]
+  },
+  "training_geometry_and_schedule": {
+    "status": "PENDING_CAPACITY_VERIFICATION_BEFORE_FREEZE",
+    "published_reference_geometry": {
+      "position_budget": 512,
+      "record_batch_size": 8,
+      "published_fit_record_ids": 1200,
+      "published_validation_record_ids": 48
+    },
+    "geometry_gate": "Verify actual all-valid context geometry, including the reported 192-versus-128 crop distinction, before freezing counts. No silent geometry substitution.",
+    "recommended_optimizer_updates": 12000,
+    "allowed_update_range_before_exact_freeze": [
+      12000,
+      20000
+    ],
+    "exact_update_count_freeze": "Root/A2 freezes one exact count before fitting; all four arms use that same count.",
+    "batch_records": 8,
+    "schedule": "Cosine decay, AdamW, base learning rate 2e-4, weight_decay=0, gradient_clip_norm=1.0, seed 4010; no staging schedule, teacher ranking, search, or A2 fallback.",
+    "checkpoint_interval_updates": 1000,
+    "expanded_bank_coverage_reason": "The A2 reviewed 12,000-update baseline draws 6,144,000 positions per arm; with the estimated 1.24M expanded valid positions this is about five passes. Before freeze, require at least six and target six-to-ten position exposures using the verified count; increase updates within the bound if needed.",
+    "validation_selection": "Earliest maximum of a predeclared domain-balanced public token-accuracy score among checkpoints every 1,000 updates; ties choose earliest.",
+    "fit_context_width": 192,
+    "natural_validation_context_width": 128,
+    "source_interface": "Fit rows and natural-validation clips use separately declared context widths; fitting uses verified all-valid geometry and final clips retain 127 post-BOS positions.",
+    "position_draws_per_update": 512,
+    "position_draws_at_recommended_count": 6144000,
+    "expanded_position_exposure_requirement": {
+      "minimum": 6,
+      "target": [
+        6,
+        10
+      ],
+      "unit": "valid fitting positions",
+      "freeze_rule": "Compute from A2-bound expanded valid-position count before fitting; no silent underexposure."
+    },
+    "checkpoint_grid_updates": [
+      0,
+      1000,
+      2000,
+      4000,
+      8000,
+      12000
+    ],
+    "checkpoint_grid_rule": "Same fixed grid for all four arms; use the fixed public diagnostic subset for curves and full-bank fit metrics at start/end, avoiding full expanded-bank scoring every 100 updates.",
+    "recommended_schedule_receipt": "A2 fixed-control review proposes 12,000 updates; exact geometry/exposure and final count remain pending root freeze."
+  },
+  "directional_readout": {
+    "status": "PROPOSED_METHOD_PENDING_IMPLEMENTATION_REVIEW",
+    "goal": "Genuine token-specific scoring-vector direction freedom beyond gain/bias-only calibration and a global absorbable transform.",
+    "base_readout": "Published FP32 public embedding/readout E remains the immutable anchor for all vocabulary rows.",
+    "parameterization": "For supported rows S only, E_prime[S] = E[S] + A @ B, with A shape [|S|, 32] and B shape [32, 2048]; rows outside S equal E exactly.",
+    "rank": 32,
+    "initialization": "A is zero-initialized; B starts from a deterministic public orthonormal basis generated with seed 4010 and is trainable from the first update. No truth or private model input.",
+    "optimizer": "Directional A and B use the same declared optimizer opportunity and base learning-rate schedule as the decoder in every directional arm.",
+    "regularization": "Proposed 1e-4 weighted L2 on A rows using (1 + 4/sqrt(count_v)) plus 1e-4 L2 on B-B0; count_v comes from fitting data only.",
+    "safety_bound": "Proposed per-row update-norm cap 0.5 x ||E_v||2, checked before serialization; exact bound requires root/capacity review.",
+    "support_definition": "S is every vocabulary row with positive fitting-bank count; absent rows have no adapter parameters and remain the base readout.",
+    "deployment": "One readout artifact containing E plus A/B support updates; full-vocabulary current-H-only argmax, with no routing or search.",
+    "structural_checks": [
+      "Unsupported rows are tensor-equivalent to the public anchor.",
+      "Updates are not constrained to scalar gain/bias or one global transform; non-collinear token-row updates are checked on public/synthetic diagnostics.",
+      "Support IDs, counts, adapter tensors, optimizer state, and serialized artifact sizes are recorded separately."
+    ]
+  },
+  "validation": {
+    "panel": "Opened TRR-0009 matched public natural panel, proposed as TRR-0010 public development only.",
+    "target_unique_records": 384,
+    "domain_counts": {
+      "Finance": 256,
+      "Pile": 128
+    },
+    "target_conditions": [
+      "public_base",
+      "public_lora_2601"
+    ],
+    "target_observations": 768,
+    "post_bos_positions_per_clip": 127,
+    "metric": "Equal-domain-weighted natural token accuracy: mean(Finance token accuracy, Pile token accuracy); target conditions remain paired within source.",
+    "checkpoint_rule": "Earliest maximum at the declared checkpoint interval; no final truth is opened for this selection.",
+    "source_identity_and_sequence_receipt": "PENDING_A2_BINDING_OF_TRR9_384_RECORD_PANEL",
+    "bank_exclusion": "Validation records and derived rows are excluded from both fitting banks and the final natural panel.",
+    "secondary": "The inherited 48-record style-balanced development panel is secondary diagnostic context only, not the checkpoint-selection primary.",
+    "fit_vs_validation_geometry": "Fit context width 192; natural validation clip width 128 with 127 scored post-BOS positions."
+  },
+  "final_evaluation": {
+    "status": "PROPOSAL_ONLY_NO_SOURCE_SELECTION",
+    "target_unique_records": 256,
+    "domain_counts": {
+      "Finance": 128,
+      "Pile": 128
+    },
+    "target_conditions": [
+      "public_base",
+      "public_lora_2601"
+    ],
+    "target_observations": 512,
+    "post_bos_positions_per_clip": 127,
+    "a1_a2_common_subset": {
+      "unique_source_records": 256,
+      "target_observations": 512,
+      "denominator_statement": "A1, A2, all four TRR-0010 arms, and the unchanged reference use the same 256 source records (128 Finance, 128 Pile) and two paired target conditions; source records, not target observations, are the bootstrap unit.",
+      "identity_receipt": "PENDING_ROOT_A2_FINAL_PANEL_FREEZE"
+    },
+    "roles": "One final natural panel is selected once after methods and exclusion ledgers are frozen. No repeated confirmation panels or outcome-driven expansion.",
+    "metrics": [
+      "token errors over post-BOS positions",
+      "exact recovery of all 127 post-BOS positions per clip",
+      "paired gains/losses by source record",
+      "Finance and Pile separately",
+      "frequency-stratum rare/absent regressions"
+    ],
+    "bootstrap": {
+      "unit": "source_record",
+      "draws": 10000,
+      "seed": 10010,
+      "target_conditions_nested": true,
+      "domains_separate": true
+    },
+    "exclusions": "All known fitting, validation, opened-evaluation, TRR-0009, and approved other-study ledgers; no P03 holdout or private workspace access.",
+    "panel_size_rationale": "Upper end of the resource-dependent 64–128/domain anchor range; 128/domain keeps the A1-to-A2 gap denominator explicit while retaining a bounded one-panel run."
+  },
+  "useful_outcome_proposal": {
+    "primary_candidate": "expanded_directional",
+    "fixed_control_selection": "No posthoc fixed-arm winner: expanded_directional must clear both expanded_fixed (matched data) and current_fixed (continued-training control) on the declared useful route; report both control-specific bounds.",
+    "absolute_routes": {
+      "token": {
+        "point_floor_pp": 1.0,
+        "one_sided_lower_bound_pp": 0.0,
+        "route_alpha": 0.025
+      },
+      "exact": {
+        "point_floor_pp": 5.0,
+        "one_sided_lower_bound_pp": 0.0,
+        "route_alpha": 0.025
+      }
+    },
+    "gap_closure": {
+      "formula": "closure_m = (M_candidate - M_A1) / (M_A2 - M_A1), computed per source-record bootstrap draw.",
+      "visible_gap_requirement": {
+        "token_gap_pp": 1.0,
+        "exact_gap_pp": 5.0
+      },
+      "minimum_fraction": 0.25,
+      "lower_bound_requirement": ">= 0.25 on the same declared route",
+      "unknown_rule": "If A2 <= A1 or the A1-to-A2 gap is below its visibility floor, gap closure is UNKNOWN and cannot support promotion.",
+      "same_metric_requirement": "A useful route clears both its absolute candidate-versus-fixed threshold and its A1-to-A2 closure threshold; exact and token routes remain separate."
+    },
+    "family_rule": "At most one exact and one token useful route are predeclared, each route alpha 0.025; no pooled domains, target conditions, or metric families.",
+    "interpretation": "Useful result is mechanism evidence for this crossed study only. It does not automatically replace the reference, retrain, or expand the panel.",
+    "control_requirement": "Both fixed controls are required for a useful primary claim; the four-arm interaction remains descriptive if either control comparison is inconclusive."
+  },
+  "safeguards_and_cost": {
+    "all_cells_required": true,
+    "harm_safeguards": {
+      "exact_lower_bound_pp": -5.0,
+      "token_lower_bound_pp": -1.0,
+      "confidence": "one-sided 95%",
+      "unit": "paired source records"
+    },
+    "rare_absent": {
+      "bins": [
+        "0",
+        "1-4",
+        "5-9",
+        "10-49",
+        "50+"
+      ],
+      "minimum_exposed_source_records": 32,
+      "lower_bound_pp": -1.0,
+      "underpowered": "UNKNOWN, never automatic PASS"
+    },
+    "warmed_inference_runtime_ratio_max": 1.5,
+    "peak_gpu_memory_ratio_max": 1.5,
+    "serialized_candidate_extra_bytes_max": 268435456,
+    "candidate_to_a2_warmed_runtime_ratio_max": 0.5,
+    "training_budget": {
+      "paid_compute": false,
+      "max_updates_per_arm": 20000,
+      "arms": 4,
+      "shared_public_preparation_counted_once": true
+    },
+    "qualification": "Qualify the largest expanded-directional cell and serialized adapter before the full matrix with a fail-closed memory/time guard; stop on allocator, driver, or output-equivalence anomalies.",
+    "streaming": "Public activation generation and expanded-bank preparation are chunked; no unbounded resident corpus or artifact expansion."
+  },
+  "resource_estimate_from_published_trr0009": {
+    "fit_reference_cuda_peak_reserved_bytes": 3917479936,
+    "fit_reference_host_peak_rss_bytes": 5620727808,
+    "reference_arm_wall_seconds": 393.802617079,
+    "directional_adapter_rank32_fp32_parameter_formula": "(support_rows + 2048) * 32 parameters; exact support_rows and optimizer memory are measured after A2 preparation.",
+    "interpretation": "Published peaks are qualification references, not guarantees. Expanded activations and directional state require a fresh preflight and representative qualification before a full run."
+  },
+  "coordination_status": {
+    "agent_two": "A2 accepts the opened TRR-0009 matched-public 384-record panel as a proposed validation selector, subject to binding record/sequence hashes and excluding parent/derived rows from bank additions.",
+    "capacity": "Pending verification of all-valid 192-versus-128 crop geometry, current-bank controlled replacements, directional adapter implementation, and resource qualification.",
+    "root_freeze_required": true,
+    "agreement_status": "PROPOSAL_NOT_YET_COMMONLY_FROZEN",
+    "a2_runner_receipt": {
+      "path": "/tmp/trr-p09-fixed-control-review.md",
+      "sha256": "d0ddc1ccbb9a247b59ecc10fd944bff9311584831283610975e784d0b289a75f",
+      "status": "A2_PROPOSAL_REVIEWED_NOT_FROZEN"
+    }
+  },
+  "non_agreements_pending_review": [
+    "Exact expanded-bank unique count, mixture/strata construction, and source inventory from A2.",
+    "Exact 192-width fitting geometry, valid-position count, and six-to-ten exposure check.",
+    "Exact optimizer update count (A2 baseline 12,000; bounded 12,000–20,000) before fitting.",
+    "Rank-32 factorization, regularization, row cap, and cost thresholds.",
+    "A1/A2 comparator identities and final 128-per-domain panel availability/exclusions."
+  ]
+}
