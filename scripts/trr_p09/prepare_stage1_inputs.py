@@ -726,7 +726,10 @@ def bind_b0_controlled_rows(
         actual = tuple(int(b0_token[slot, int(offset) + 1]) for offset in offsets)
         if len(actual) != REPLACEMENTS_PER_ROW or any(value in specials for value in actual):
             raise PreparationErrorLocal(f"B0 controlled replacement IDs are malformed at slot {slot}")
-        reconstructed = tuple(apply_replacements(parent, offsets, actual, target_post_bos_token_count=target, structural_token_ids=specials))
+        try:
+            reconstructed = tuple(apply_replacements(parent, offsets, actual, target_post_bos_token_count=target, structural_token_ids=specials))
+        except Exception as exc:
+            raise PreparationErrorLocal(f"B0 template reconstruction failed at slot {slot}: {exc}") from exc
         active = int(b0_records[slot].get("active_token_count", b0_records[slot].get("target_full_token_count", 0)))
         observed = tuple(int(value) for value in b0_token[slot, :active].tolist())
         if reconstructed != observed:
@@ -825,6 +828,42 @@ def exact_addition_quotas(b0_records: Sequence[Mapping[str, Any]]) -> dict[str, 
     return result
 
 
+def _template_structural_conflict(
+    candidate: _Candidate,
+    template: InputRow,
+    *,
+    structural_token_ids: Iterable[int] = (BOS_TOKEN_ID, PAD_TOKEN_ID),
+) -> bool:
+    """Apply the trusted helper's structural-token predicate to one template."""
+    structural = {int(value) for value in structural_token_ids}
+    for offset in template.replacement_positions:
+        offset = int(offset)
+        if int(candidate.token_ids[offset + 1]) in structural:
+            return True
+    return False
+
+
+def _template_skip_event_digest(
+    candidate: _Candidate,
+    *,
+    stratum: str,
+    target: int,
+    template_index: int,
+    slot_index: int,
+) -> str:
+    """Digest a structural skip without persisting source IDs or token values."""
+    return digest_bytes(canonical_bytes({
+        "dataset_id": str(candidate.dataset_id),
+        "split": str(candidate.split),
+        "revision": str(candidate.revision),
+        "row_index": int(candidate.row_index),
+        "stratum": str(stratum),
+        "target_post_bos_length": int(target),
+        "template_index": int(template_index),
+        "slot_index": int(slot_index),
+    }))
+
+
 def select_candidates(
     candidates: Sequence[_Candidate],
     *,
@@ -836,17 +875,52 @@ def select_candidates(
     used_h128: set[str],
     used_public: set[str] | None = None,
     template_buckets: Mapping[tuple[str, int], Sequence[tuple[int, InputRow]]] | None = None,
+    template_assignments: dict[tuple[str, int, str], tuple[int, InputRow]] | None = None,
+    template_skip_audit: dict[tuple[str, int], dict[str, Any]] | None = None,
 ) -> list[tuple[_Candidate, int]]:
-    """Select exact lengths target-slot-first, then stable source order."""
+    """Select exact lengths with fixed per-bucket templates and stable source order.
+
+    The candidate traversal and all ordinary rejection rules remain unchanged.
+    For a controlled bucket, each required slot receives its immutable B0
+    template before ranked candidates are traversed.  A BOS/PAD conflict skips
+    only that candidate for that slot; the slot is still filled by the first
+    later eligible candidate, and the skipped candidate remains available for a
+    later slot with its later assigned template.
+    """
     remaining = {int(length): int(count) for length, count in exact_quota.items()}
-    ordered = sorted(candidates, key=lambda c: (stable_source_key(c.dataset_id, c.split, c.revision, c.row_index), c.row_index))
+    ordered = sorted(
+        candidates,
+        key=lambda c: (stable_source_key(c.dataset_id, c.split, c.revision, c.row_index), c.row_index),
+    )
     selected: list[tuple[_Candidate, int]] = []
-    # The signed rule allocates descending target length and then the first
-    # eligible row in the frozen content-blind source order.  Candidate-first
-    # greedy assignment is not equivalent when a row can satisfy several bins.
     for target in sorted(remaining, reverse=True):
-        for _ in range(remaining[target]):
+        templates: Sequence[tuple[int, InputRow]] = ()
+        if template_buckets is not None and stratum.endswith("_controlled"):
+            templates = template_buckets.get((stratum, int(target)), ())
+            if not templates:
+                raise PreparationErrorLocal(
+                    f"no immutable B0 template bucket for {(stratum, int(target))}"
+                )
+            if template_assignments is None:
+                # The production path binds every selected parent to its exact
+                # template.  Keeping this optional preserves the small legacy
+                # unit fixtures that exercise row construction directly.
+                pass
+            if template_skip_audit is not None:
+                template_skip_audit[(stratum, int(target))] = {
+                    "required_slot_count": int(remaining[target]),
+                    "selected_count": 0,
+                    "structural_skip_count": 0,
+                    "skip_event_digests": [],
+                    "residual_ranked_eligible_count": None,
+                }
+        for slot_index in range(remaining[target]):
+            assigned_template_index: int | None = None
+            assigned_template: InputRow | None = None
+            if templates:
+                assigned_template_index, assigned_template = templates[slot_index % len(templates)]
             chosen: _Candidate | None = None
+            structural_skips: list[str] = []
             for candidate in ordered:
                 if _blocked(candidate, exclusions, used_ids, used_rendered, used_h128, used_public) is not None:
                     continue
@@ -854,20 +928,21 @@ def select_candidates(
                     continue
                 if candidate.full_token_count - 1 < target:
                     continue
-                if template_buckets is not None and stratum.endswith("_controlled"):
-                    templates = template_buckets.get((stratum, int(target)))
-                    if not templates:
-                        raise PreparationErrorLocal(f"no immutable B0 template bucket for {(stratum, int(target))}")
-                    structural = {BOS_TOKEN_ID, PAD_TOKEN_ID}
-                    if any(
-                        any(int(candidate.token_ids[int(offset) + 1]) in structural for offset in template.replacement_positions)
-                        for _template_index, template in templates
-                    ):
-                        continue
+                if assigned_template is not None and _template_structural_conflict(candidate, assigned_template):
+                    structural_skips.append(_template_skip_event_digest(
+                        candidate,
+                        stratum=stratum,
+                        target=int(target),
+                        template_index=int(assigned_template_index),
+                        slot_index=int(slot_index),
+                    ))
+                    continue
                 chosen = candidate
                 break
             if chosen is None:
-                raise PreparationErrorLocal(f"{stratum} source pool cannot satisfy target length {target}")
+                raise PreparationErrorLocal(
+                    f"{stratum} source pool cannot satisfy target length {target}"
+                )
             selected.append((chosen, int(target)))
             used_ids.add(chosen.record_id)
             used_rendered.add(chosen.rendered_sha256)
@@ -878,8 +953,34 @@ def select_candidates(
             h = _candidate_source_h128(chosen)
             if h is not None:
                 used_h128.add(h)
+            if assigned_template is not None:
+                assert assigned_template_index is not None
+                if template_assignments is not None:
+                    template_assignments[(stratum, int(target), chosen.record_id)] = (
+                        int(assigned_template_index),
+                        assigned_template,
+                    )
+                if template_skip_audit is not None:
+                    audit = template_skip_audit[(stratum, int(target))]
+                    audit["selected_count"] = int(audit["selected_count"]) + 1
+                    audit["structural_skip_count"] = int(audit["structural_skip_count"]) + len(structural_skips)
+                    audit["skip_event_digests"].extend(structural_skips)
+        if templates and template_skip_audit is not None:
+            audit = template_skip_audit[(stratum, int(target))]
+            residual = 0
+            for candidate in ordered:
+                if _blocked(candidate, exclusions, used_ids, used_rendered, used_h128, used_public) is not None:
+                    continue
+                if stratum.endswith("_controlled") and candidate.full_token_count - 1 < 128:
+                    continue
+                if candidate.full_token_count - 1 < target:
+                    continue
+                residual += 1
+            audit["residual_ranked_eligible_count"] = int(residual)
+            audit["ordered_structural_skip_digest"] = digest_bytes(
+                canonical_bytes(audit.pop("skip_event_digests"))
+            )
     return selected
-
 
 def clip_ids(ids: Sequence[int], target_post_bos: int) -> tuple[int, ...]:
     values = tuple(int(x) for x in ids[: target_post_bos + 1])
@@ -990,6 +1091,7 @@ def make_controlled_rows(
     cursor: int,
     structural_token_ids: Iterable[int] = (BOS_TOKEN_ID, PAD_TOKEN_ID),
     template_buckets: Mapping[tuple[str, int], Sequence[tuple[int, InputRow]]] | None = None,
+    template_assignments: Mapping[tuple[str, int, str], tuple[int, InputRow]] | None = None,
 ) -> tuple[list[InputRow], int]:
     special = {int(value) for value in structural_token_ids}
     rows: list[InputRow] = []
@@ -1005,18 +1107,31 @@ def make_controlled_rows(
                 raise PreparationErrorLocal("controlled replacement helper returned the wrong count")
             replacements = tuple(int(identity_ids[(cursor + i) % len(identity_ids)]) for i in range(len(offsets)))
         else:
-            templates = template_buckets.get(key)
-            if not templates:
-                raise PreparationErrorLocal(f"no immutable B0 template bucket for {key}")
-            _template_index, template = templates[bucket_use[key] % len(templates)]
+            if template_assignments is not None:
+                assignment = template_assignments.get((stratum, int(target), candidate.record_id))
+                if assignment is None:
+                    raise PreparationErrorLocal(
+                        f"missing immutable template assignment for {stratum}|{target}|selected parent"
+                    )
+                _template_index, template = assignment
+            else:
+                templates = template_buckets.get(key)
+                if not templates:
+                    raise PreparationErrorLocal(f"no immutable B0 template bucket for {key}")
+                _template_index, template = templates[bucket_use[key] % len(templates)]
+                bucket_use[key] += 1
             offsets = tuple(int(value) for value in template.replacement_positions)
             replacements = tuple(int(value) for value in template.replacement_token_ids)
             if len(offsets) != REPLACEMENTS_PER_ROW or len(replacements) != REPLACEMENTS_PER_ROW:
                 raise PreparationErrorLocal("immutable B0 template has the wrong replacement count")
             if any(value < 0 or value >= target for value in offsets) or len(set(offsets)) != REPLACEMENTS_PER_ROW:
                 raise PreparationErrorLocal("immutable B0 template offsets do not match target length")
-            bucket_use[key] += 1
-        built = tuple(apply_replacements(parent, offsets, replacements, target_post_bos_token_count=target, structural_token_ids=special))
+        try:
+            built = tuple(apply_replacements(parent, offsets, replacements, target_post_bos_token_count=target, structural_token_ids=special))
+        except Exception as exc:
+            raise PreparationErrorLocal(
+                f"r2 template application failed stratum={stratum} target={target} source_row={candidate.row_index}: {exc}"
+            ) from exc
         rows.append(InputRow(
             record_id=record_id,
             source_record_id=candidate.record_id,
@@ -1036,7 +1151,6 @@ def make_controlled_rows(
         ))
         cursor += len(offsets)
     return rows, cursor
-
 
 def diagnostic_indices(rows: Sequence[InputRow]) -> dict[str, Any]:
     chosen: list[int] = []
@@ -1259,6 +1373,8 @@ def compile_inputs(args: argparse.Namespace) -> dict[str, Any]:
     b0_parent_rows, b0_parent_meta = load_b0_control_parents(published_root)
     rows, b0_control_audit = bind_b0_controlled_rows(rows, b0_records, b0_token, b0_parent_rows, datasets, tokenizer, identity_ids, deadline)
     b0_template_buckets = build_b0_template_buckets(rows[:B0_ROWS])
+    template_assignments: dict[tuple[str, int, str], tuple[int, InputRow]] = {}
+    template_selection_audit: dict[tuple[str, int], dict[str, Any]] = {}
     additions_by_stratum: dict[str, list[InputRow]] = {}
     cursor = 3600  # B0 controlled rows consume the first published cycle.
     for name, domain, controlled, _target, addition_quota in STRATA:
@@ -1267,11 +1383,14 @@ def compile_inputs(args: argparse.Namespace) -> dict[str, Any]:
             exclusions=exclusions, used_ids=used_ids, used_rendered=used_rendered,
             used_h128=used_h128, used_public=used_public,
             template_buckets=b0_template_buckets if controlled else None,
+            template_assignments=template_assignments if controlled else None,
+            template_skip_audit=template_selection_audit if controlled else None,
         )
         if controlled:
             additions_by_stratum[name], cursor = make_controlled_rows(
                 chosen, name, identity_ids, cursor, _special_token_ids(tokenizer),
                 template_buckets=b0_template_buckets,
+                template_assignments=template_assignments,
             )
         else:
             additions_by_stratum[name] = make_natural_rows(chosen, name)
@@ -1282,6 +1401,10 @@ def compile_inputs(args: argparse.Namespace) -> dict[str, Any]:
         raise PreparationErrorLocal(f"compiled {len(rows)} rows, expected {TARGET_ROWS}")
     if cursor != 36000:
         raise PreparationErrorLocal(f"controlled identity exposure cursor {cursor} != 36000")
+    b0_control_audit["r2_template_selection"] = {
+        f"{key[0]}|{key[1]}": value
+        for key, value in sorted(template_selection_audit.items())
+    }
     b0_control_audit["r2_template_assignment"] = controlled_template_assignment_audit(rows[:B0_ROWS], rows[B0_ROWS:])
     diagnostic = per_bank_diagnostic_indices(rows)
     exposure = exposure_summary(rows)

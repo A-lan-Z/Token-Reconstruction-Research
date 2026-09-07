@@ -315,6 +315,56 @@ def test_controlled_selection_skips_parent_with_structural_fixed_template_slot()
     assert [item.record_id for item, _target in selected] == ["candidate-1"]
 
 
+def test_controlled_selection_revisits_structural_skip_for_later_template_slot() -> None:
+    def template(index: int, offsets: tuple[int, ...]) -> InputRow:
+        return InputRow(
+            record_id=f"b0-template-{index}", source_record_id=f"b0-parent-{index}", dataset_key="pile",
+            stratum="pile_controlled", source_row_index=index, rendered_sha256=f"{index + 1:064x}",
+            source_full_token_count=129, target_post_bos_token_count=128,
+            token_ids=tuple([128000] + list(range(1, 129))), synthetic=True,
+            replacement_positions=offsets,
+            replacement_token_ids=tuple(range(1000 + index * 30, 1030 + index * 30)),
+        )
+
+    templates = {
+        ("pile_controlled", 128): (
+            (0, template(0, tuple(range(0, 30)))),
+            (1, template(1, tuple(range(1, 31)))),
+        ),
+    }
+
+    def candidate(index: int, first_source_token: int, row_index: int):
+        return type("Candidate", (), {
+            "record_id": f"candidate-{index}", "dataset_key": "pile", "dataset_id": "pile",
+            "split": "train", "revision": "rev", "row_index": row_index,
+            "rendered_sha256": f"{index + 100:064x}",
+            "token_ids": tuple([128000, first_source_token] + list(range(2, 129))),
+            "full_token_count": 129,
+        })()
+
+    exclusions = {
+        "record_ids": set(), "rendered_sha256": set(), "public_record_sha256": set(),
+        "h128_sha256": set(), "source_indices": {},
+    }
+    assignments: dict[tuple[str, int, str], tuple[int, InputRow]] = {}
+    skip_audit: dict[tuple[str, int], dict[str, object]] = {}
+    selected = select_candidates(
+        [candidate(0, 128000, 2), candidate(1, 7, 10000)], stratum="pile_controlled",
+        exact_quota={128: 2}, exclusions=exclusions, used_ids=set(),
+        used_rendered=set(), used_h128=set(), template_buckets=templates,
+        template_assignments=assignments, template_skip_audit=skip_audit,
+    )
+    assert [item.record_id for item, _target in selected] == ["candidate-1", "candidate-0"]
+    assert assignments[("pile_controlled", 128, "candidate-1")][0] == 0
+    assert assignments[("pile_controlled", 128, "candidate-0")][0] == 1
+    audit = skip_audit[("pile_controlled", 128)]
+    assert audit["required_slot_count"] == 2
+    assert audit["selected_count"] == 2
+    assert audit["structural_skip_count"] == 1
+    assert audit["residual_ranked_eligible_count"] == 0
+    assert len(str(audit["ordered_structural_skip_digest"])) == 64
+
+
 def test_parent_exclusion_manifest_binds_dataset_scoped_rows(monkeypatch, tmp_path: Path) -> None:
     import hashlib
     import json
