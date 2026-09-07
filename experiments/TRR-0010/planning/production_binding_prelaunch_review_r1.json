@@ -1,0 +1,38 @@
+{
+  "schema": "token-reconstruction.trr0010-root-prelaunch-review.v1",
+  "task_id": "TRR-0010",
+  "reviewed_utc": "2026-09-07 15:37:28 UTC",
+  "status": "LAUNCH_HELD_PENDING_CORRECTED_BINDINGS_AND_EXECUTABLE_VALIDATION",
+  "reviewer": "Agent1 root coordinator",
+  "scope": "Production configuration review before any directional fit or GPU lease.",
+  "findings": [
+    {
+      "binding": "experiments/TRR-0010/setup/production_arm_binding_current_stage3_v1.json",
+      "sha256": "dda2847c3c3cf372b740e01598d8eb0c31d8be454d377b1153d8f4b13584ae53",
+      "issue": "Current/B0 arm inherited the expanded/B1 schedule in both the artifact and semantic descriptors.",
+      "expected_schedule_sha256": "ba53cd4bad54bc88670f346a7f959eb0ce5278ec28eac8bdf6463cd44936ec6f",
+      "observed_schedule_sha256": "be0745ebb56e0ed39c2cf7e9c05a657209126f4c1c552242d3893c52d6718801"
+    },
+    {
+      "scope": "Both v1 production arm bindings",
+      "issue": "CPU configuration placeholders were retained as resource qualification: zero measured peaks and a 1000000000000-byte GPU limit. These are not accepted GPU qualification evidence."
+    }
+  ],
+  "disposition": {
+    "directional_updates_executed": 0,
+    "incorrect_configuration_used_for_gpu_fit": false,
+    "original_v1_files": "Preserve as excluded CPU configuration evidence; do not use for production.",
+    "replacement": "Capacity owns corrected v2 descriptors; timing owns strict provider validation; planning owns full source/env/argv binding.",
+    "provider_correction_commit": "2f43b747abdd6c6cf7fe24a58cb36e187cd06b82",
+    "provider_correction_test_result": "4 focused tests passed, including wrong schedule and placeholder resource rejection; actual v2 executable validation still required.",
+    "scientific_settings_changed": false,
+    "fixed_controls": "Both complete and unaffected.",
+    "final_evaluation_started": false,
+    "final_truth_opened": false
+  },
+  "remaining_launch_requirements": [
+    "Actual v2 descriptors pass signed contract, bank, schedule, support and measured qualification validation.",
+    "Full executed source/env/argv binding and fresh live resource preflight.",
+    "Root exclusive per-arm lease and GO; no overlapping GPU jobs."
+  ]
+}
