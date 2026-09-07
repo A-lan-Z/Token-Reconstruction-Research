@@ -8,7 +8,10 @@
     "public_validation_audit": "experiments/TRR-P09/setup/public-validation-r1-audit.json",
     "fixed_diagnostic_binding": "experiments/TRR-P09/setup/fixed-diagnostic-binding-r1.json",
     "fixed_diagnostic_binder": "scripts/trr_p09/bind_fixed_diagnostic.py",
-    "fixed_control_source_freeze": "experiments/TRR-P09/review/fixed-control-source-freeze-r1.json"
+    "fixed_control_source_freeze": "experiments/TRR-P09/review/fixed-control-source-freeze-r1.json",
+    "fixed_control_b0_r3_run_binding": "/tmp/trr-p09-runtime/fixed-control-b0-r3-run-binding.json",
+    "fixed_control_b0_r3_lease": "/tmp/trr-p09-runtime/fixed-control-b0-r3-lease.json",
+    "fixed_control_b0_r3_preload": "/tmp/trr-p09-runtime/preload-r3-b0-gates.json"
   },
   "bank_planning": {
     "access_boundary": {
@@ -75,7 +78,7 @@
       "pending_joint_identity_and_capacity_contract": true,
       "target_records": 12000
     },
-    "status": "STAGE1_PUBLIC_BASE_CAPTURE_COMPLETE_NO_TRUTH",
+    "status": "STAGE3_B0_FIT_IN_PROGRESS_NO_RESULT",
     "stage1_plan": {
       "path": "experiments/TRR-P09/planning/stage1-public-bank-plan.json",
       "sha256": "bca93d6099760791c5ecbf3be8177d250cc672c62b2177a3d72d79b934c3826c",
@@ -347,7 +350,8 @@
           "qualification_elapsed_seconds": 0.5327323320088908
         }
       ]
-    }
+    },
+    "fitting_started": true
   },
   "excluded_unstaged_paths": [
     "scripts/trr_p09/prepare_streamed_bank.py",
@@ -393,14 +397,13 @@
     "runner_base": "b71feb433815f12e3274aa7525c8bbb23971e552"
   },
   "remaining_bindings_before_real_run": [
-    "complete the Agent1-owned largest-cell fit qualification and bind its accepted receipt",
-    "complete and accept the final joint fit-contract and loader handoff",
-    "run exactly the two fixed-control fits (B0 and B1) under the frozen r5 configuration",
+    "complete the active B0 fixed-control fit r3; no completed steps, metrics, or result have been reported",
+    "run exactly the B1 fixed-control fit after the B0 handoff under the frozen r5 configuration",
     "freeze and hand off both fit outputs and metrics; keep target observation and evaluation truth unopened until the approved final handoff"
   ],
   "schema": "token-reconstruction.trr-p09-implementation-manifest.v1",
   "scientific_execution": {
-    "fit_run": false,
+    "fit_run": true,
     "gpu_run": true,
     "model_checkpoint_opened": true,
     "p09_activation_bank_captured": true,
@@ -429,19 +432,27 @@
       "forward_batch_qualification": "QUALIFICATION_PASS"
     },
     "capture_status": "CAPTURE_COMPLETE_NO_TRUTH_WATCHDOG_PASS",
-    "gpu_released": true,
+    "gpu_released": false,
     "public_validation_completed": true,
     "fixed_diagnostic_bound": true,
-    "fixed_control_fit_qualification": "PENDING_AGENT1_QUALIFICATION",
-    "shared_fit_contract": "PENDING_FINAL_JOINT_HANDOFF",
+    "fixed_control_fit_qualification": "STATIC_PRELOAD_PASS_R3_ACTIVE",
+    "shared_fit_contract": "FROZEN_ACTIVE_R3_BINDING",
     "fixed_metrics_implementation": "COMPLETE_SOURCE_FROZEN",
     "fixed_control_source_frozen": true,
     "fixed_control_source_freeze_status": "PASS_SOURCE_BYTES_FROZEN_NO_FIT_NO_TRUTH",
     "fit_count": 0,
-    "optimizer_steps_executed": 0
+    "optimizer_steps_executed": null,
+    "fit_run_status": "IN_PROGRESS",
+    "active_fit_arm": "current_fixed",
+    "active_fit_bank": "B0",
+    "active_fit_attempt": "r3",
+    "active_fit_source_commit": "c5b7c58ae6c358996fcdde8677996c44fc3a2809",
+    "corrected_fit_source_commit": "e811207308518a2364785888ff39eb04d35e8c2f",
+    "optimizer_steps_status": "NOT_YET_REPORTED_ACTIVE_RUN",
+    "b1_started": false
   },
   "source_commit": "0c7279e30a41a5016ff97c9bcaa5e282db2dabe0",
-  "status": "STAGE1_FIXED_CONTROL_SOURCE_FROZEN_NO_FIT_NO_TRUTH",
+  "status": "STAGE3_B0_FIT_IN_PROGRESS_NO_RESULT",
   "task_id": "TRR-P09",
   "validation": {
     "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p09_fixed_control_runner.py tests/test_trr_p09_fixed_control_adapter.py tests/test_trr_p09_bank_artifact.py",
@@ -584,7 +595,7 @@
     "base_branch": "task/TRR-0009",
     "base_sha": "4602f98eeb03ac121d8bbc230d7e2b219551b914",
     "head_branch": "task/TRR-P09",
-    "evidence_commit": "ebe05e88ddfebae0155fb016885c6c8938c32840",
+    "evidence_commit": "c5b7c58ae6c358996fcdde8677996c44fc3a2809",
     "approval_block_resolved_by_explicit_user_approval": true,
     "historical_approval_block": {
       "bytes": 1353,
@@ -593,7 +604,7 @@
       "status": "HISTORICAL_AUTO_REVIEW_BLOCK_RESOLVED"
     }
   },
-  "source_head_commit": "24a5fa69dfbbd621708a666ed561c56c1472f5aa",
+  "source_head_commit": "c5b7c58ae6c358996fcdde8677996c44fc3a2809",
   "cost_lineage": {
     "path": "experiments/TRR-P09/planning/starting-state-cost-lineage.md",
     "sha256": "8f81b372d51d58d61f88f6c778825240ad67e95ece8d6804bcf8542307e36c9e",
@@ -675,7 +686,7 @@
     "gpu_launch_authorized": false,
     "fresh_bank_generation_authorized": true
   },
-  "updated_utc": "2026-09-07T13:28:17Z",
+  "updated_utc": "2026-09-07T14:23:04Z",
   "r2_cpu_audit": {
     "receipt": "experiments/TRR-P09/setup/stage1-input-preparation-r2-receipt.json",
     "receipt_sha256": "e8e0e2bad1bba8ba71482dd28babfff4bcdf391cf224a95551705d2643171c5d",
@@ -1270,5 +1281,71 @@
       "run exactly the two fixed-control fits (B0 and B1) under the frozen r5 configuration",
       "freeze and hand off both fit outputs and metrics; keep target observation and evaluation truth unopened until the approved final handoff"
     ]
+  },
+  "b0_fit_in_progress": {
+    "task_id": "TRR-P09",
+    "status": "IN_PROGRESS_INITIAL_CHECKPOINT_ONLY",
+    "arm": "current_fixed",
+    "bank": "B0",
+    "attempt": "r3",
+    "pid": 23356,
+    "run_binding": {
+      "path": "/tmp/trr-p09-runtime/fixed-control-b0-r3-run-binding.json",
+      "bytes": 66703,
+      "sha256": "62d98af7f2439723cef138ea06c4cad29e617e03133cb64ec6ed817ba5a39e4f"
+    },
+    "source_commit": "c5b7c58ae6c358996fcdde8677996c44fc3a2809",
+    "corrected_source_commit": "e811207308518a2364785888ff39eb04d35e8c2f",
+    "focused_test_result": "41 passed (recorded; no rerun in this metadata checkpoint)",
+    "static_preload": {
+      "path": "/tmp/trr-p09-runtime/preload-r3-b0-gates.json",
+      "bytes": 979,
+      "sha256": "1250e91b3ddcd9f396d97f704d8ccbd7a1c0b28855c1087629d10a47cd8c4c9d",
+      "status": "PASS_FIXED_CONTROL_PRELOAD_B0"
+    },
+    "root_static_preload": {
+      "path": "/tmp/trr-p09-runtime/root-preload-gates-r3.json",
+      "bytes": 6009,
+      "sha256": "96c1c48bef49c644df8c38f125c19e3e5e2ed3da5269533f0c283ae556e5eb7b",
+      "status": "PASS_ROOT_REVIEW_STATIC_PRODUCTION_GATES"
+    },
+    "lease": {
+      "path": "/tmp/trr-p09-runtime/fixed-control-b0-r3-lease.json",
+      "bytes": 628,
+      "sha256": "17aec487b2e64c252792cef791360060432483e8a08238f30c4435833183f66e",
+      "status": "GRANTED",
+      "start_utc": "2026-09-07T14:13:54.556498Z",
+      "end_utc": "2026-09-07T16:23:54.556498Z"
+    },
+    "r2_rejected_attempt": {
+      "status": "EXCLUDED_PRE_MODEL_SUPPLEMENT_HASH_REJECTED",
+      "reason": "Pre-model signed supplement hash gate rejected; zero updates",
+      "run_binding_path": "/tmp/trr-p09-runtime/fixed-control-b0-r2-run-binding.json",
+      "run_binding_bytes": 66037,
+      "run_binding_sha256": "e602e0562b1db5f3862f1e032915ffe24d806d629bfdf91c4d3bed662168fec8",
+      "watchdog_finish_path": "/tmp/trr-p09-runtime/watchdog-fixed-control-b0-r2/finish.json",
+      "watchdog_finish_bytes": 1109,
+      "watchdog_finish_sha256": "d390e9c5c1c009f3f4c14adb0ed90b08e7a3a1ef5e59a105abcfa1ebc608a514",
+      "stderr_path": "/tmp/trr-p09-runtime/watchdog-fixed-control-b0-r2/stderr.txt",
+      "stderr_sha256": "267c814fdb0138dd7fb1937956883303dcb3e32cfe7b0fa397eaf77c8db1d2e5",
+      "release_path": "/tmp/trr-p09-runtime/fixed-control-b0-r2-lease-release.json",
+      "release_bytes": 313,
+      "release_sha256": "24202224fac140ae812335c577cd221703a8ed48523989f6e8081f097b7a9c8f",
+      "model_loaded": false,
+      "optimizer_updates": 0,
+      "child_exit": 125,
+      "wrapper_exit": 125
+    },
+    "initial_checkpoint_verified": true,
+    "fit_started": true,
+    "errors_reported": false,
+    "fit_runs_completed": 0,
+    "completed_steps": null,
+    "optimizer_steps_completed": null,
+    "metrics": null,
+    "result": null,
+    "b1_started": false,
+    "target_observation_opened": false,
+    "truth_opened": false
   }
 }
