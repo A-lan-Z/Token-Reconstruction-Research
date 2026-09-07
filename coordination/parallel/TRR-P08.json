@@ -1,7 +1,7 @@
 {
   "schema": "token-reconstruction.task-local-state.v1",
   "task_id": "TRR-P08",
-  "status": "MAIN_PASS_8_ARMS_SELECTED_STATES_FROZEN_R2_PUBLIC_CAPTURE_COMPLETE_NO_TRUTH_PREDICTION_PENDING",
+  "status": "SCIENTIFIC_COMPLETE_PUBLICATION_PENDING",
   "branch": "task/TRR-P08",
   "worktree": "/tmp/trr-p08",
   "parent": {
@@ -18,33 +18,36 @@
   "ownership": {
     "setup": "TRR-P08",
     "provenance_inventory": "TRR-P08",
-    "source_selection": "implementation_owner_hash_export_pending",
-    "fitting_execution": "implementation_owner",
+    "source_selection": "implementation_owner_complete",
+    "fitting_execution": "implementation_owner_complete",
     "scientific_design_review": "design_owner"
   },
   "access_boundary": {
     "p03_holdout_opened": false,
     "trr0009_unpublished_science_read": false,
     "fresh_selection_or_capture_run": true,
-    "truth_opened": false,
+    "truth_opened": true,
     "gpu_or_heavy_compute_started": true,
     "global_state_or_registry_modified": false,
     "other_worktree_modified": false,
     "source_rows_or_plaintext_read_by_p08": true,
-    "token_values_or_truth_read_by_p08": false,
+    "token_values_or_truth_read_by_p08": true,
     "model_or_tensor_payload_loaded_by_p08": false,
     "fresh_records_selected": true,
     "fresh_capture_started": true,
     "fit_or_optimizer_steps_started": true,
     "model_or_tensor_payload_loaded": true,
-    "selection_access_note": "Approved evaluator-side selector transiently read public source rows/tokenizer; selection metadata persisted identities/digests only and no source text or token arrays."
+    "selection_access_note": "Evaluator-side source selection/capture and post-freeze truth materialization/scoring completed; raw observation and truth payloads remain outside Git.",
+    "truth_opened_after_joint_freeze": true,
+    "truth_payload_persisted_in_repository": false,
+    "scorer_truth_opened": false
   },
-  "next_step": "Prediction may proceed under root/design ownership using the frozen r2 states and public observations; retain truth closed until the required joint freeze.",
+  "next_step": "Root publication review and PR metadata only; no further experiments, source selection, capture, prediction, truth materialization, or scoring.",
   "created_utc": "2026-09-07T00:12:47.039245+00:00",
-  "updated_utc": "2026-09-07T03:28:16Z",
+  "updated_utc": "2026-09-07T04:08:38Z",
   "plan": {
     "path": "experiments/TRR-P08/plan.json",
-    "status": "FROZEN_DESIGN_PRE_FIT",
+    "status": "FROZEN_DESIGN_SCIENTIFIC_RUN_COMPLETE",
     "sha256": "9d1eb8dca89c76f4064c0c380636cb9d585672f7fae796d5295d6507b788caa3",
     "bytes": 18285,
     "fit_arms": 8,
@@ -81,11 +84,41 @@
     "capture_preflight_plan_r1_excluded": "experiments/TRR-P08/setup/capture-preflight-plan-r1.json",
     "capture_approval_r3": "experiments/TRR-P08/setup/capture-approval-r3.json",
     "capture_failure_r2": "experiments/TRR-P08/setup/capture-failure-r2.json",
-    "capture_success_r3": "experiments/TRR-P08/setup/capture-success-r3.json"
+    "capture_success_r3": "experiments/TRR-P08/setup/capture-success-r3.json",
+    "evidence_inventory_r3": {
+      "bytes": 5287,
+      "path": "experiments/TRR-P08/setup/evidence-inventory-r3.json",
+      "sha256": "57add6c6fe39c67abb755073553b342ba0ae59cdc581c11710042b4a165f0cd1",
+      "status": "PUBLICATION_INVENTORY"
+    },
+    "publication_preflight_r1": {
+      "bytes": 3166,
+      "path": "experiments/TRR-P08/setup/publication-preflight-r1.json",
+      "sha256": "9f4b4f13c39509eaae10b4d8692e84e67e5d378a78499dc9683ea4eb8e5545a2",
+      "status": "PARENT_P07_BOUNDARY_VERIFIED"
+    },
+    "score_summary_r3": {
+      "bytes": 27029,
+      "path": "experiments/TRR-P08/review/score-summary-r3.json",
+      "sha256": "21b6bca8f705adbd222ed24cf65ee1f27474d45202740751c303d204e7531dbd",
+      "status": "FINAL_DERIVED_SCORE_SUMMARY"
+    },
+    "score_execution_r3": {
+      "bytes": 2307,
+      "path": "experiments/TRR-P08/review/score-execution-r3.json",
+      "sha256": "ca7db6bc13e4682860b1bb362497a8e195eff81c12e5e76729d8785ba2dfe463",
+      "status": "PASS"
+    },
+    "truth_manifest_r3": {
+      "bytes": 41077,
+      "path": "experiments/TRR-P08/review/truth-manifest-r3.json",
+      "sha256": "c31e681e814cd093369f43faa846c2b316dea717a1213dbc4edea28f9dcbb679",
+      "status": "METADATA_COPY_TRUTH_ARRAYS_EXTERNAL"
+    }
   },
   "verification": {
     "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p08_panel_adapter.py tests/test_trr_p08_source_binding.py tests/test_trr_p08_fit_staged.py",
-    "result": "21 focused tests passed; 50 full P08 tests passed",
+    "result": "21 focused tests passed; 55 full P08 tests passed; final scientific outputs complete.",
     "payload_loaded": false,
     "metadata_preflight": {
       "command": "PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode preflight --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --output-root /tmp/trr-p08-preflight-smoke-final-20260907 --device cpu --max-seconds 120",
@@ -136,10 +169,10 @@
     "capture_consumer_schema": "token-reconstruction.trr-p08-public-observation-manifest.v1 accepted by scripts/trr_p08/run_predictions.py",
     "full_p08_tests": {
       "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p08*.py",
-      "passed": 50,
+      "passed": 55,
       "elapsed_seconds": 5.02,
       "status": "PASS",
-      "execution_note": "Completed post-fit suite; no rerun in this bookkeeping update."
+      "execution_note": "Completed post-fit suite; no rerun in final metadata update."
     },
     "focused_result": "21 passed",
     "repair_validation": {
@@ -169,12 +202,77 @@
       "watchdog_min_host_available_bytes": 18006745088,
       "child_elapsed_seconds": 14.273845965013606
     },
-    "capture_failure_r2": "experiments/TRR-P08/setup/capture-failure-r2.json"
+    "capture_failure_r2": "experiments/TRR-P08/setup/capture-failure-r2.json",
+    "prediction": {
+      "status": "PASS",
+      "manifest": {
+        "bytes": 321798,
+        "path": "experiments/TRR-P08/runtime/predictions-r3/p08_predictions.json",
+        "sha256": "f4974384cc760bd304f3ab18b34ea886e554f0bdc171407491647ac19718f8ae",
+        "status": "P08_FROZEN_PREDICTIONS_COMPLETE_NO_TRUTH"
+      },
+      "run_manifest": {
+        "bytes": 1207,
+        "path": "experiments/TRR-P08/runtime/predictions-r3/run_manifest.json",
+        "sha256": "9c9585960d1ddf9af57791efa7e831ac97dd3a4177992e529a77662fd12162a4",
+        "status": "PASS"
+      },
+      "predictions_count": 32,
+      "truth_opened": false
+    },
+    "joint_freeze": {
+      "status": "PASS",
+      "receipt": {
+        "bytes": 82245,
+        "path": "experiments/TRR-P08/runtime/joint-freeze-r3/joint_freeze.json",
+        "sha256": "4de6ee0986b6f62ec64073bed87d23fe899c599ccf9b333e0114964e7579ba9e",
+        "status": "JOINT_FREEZE_VALIDATED_NO_TRUTH"
+      },
+      "provenance": {
+        "bytes": 5061,
+        "path": "experiments/TRR-P08/runtime/joint-freeze-r3/joint_freeze_provenance.json",
+        "sha256": "1823e8d19e96bb8e2bd406bf3dea448a42f92f6a616f793353e858252ea11f52",
+        "status": "PROVENANCE_RECORDED_NO_TRUTH"
+      },
+      "truth_opened": false
+    },
+    "truth_materialization": {
+      "status": "PASS_AFTER_JOINT_FREEZE",
+      "manifest": {
+        "bytes": 41077,
+        "path": "experiments/TRR-P08/review/truth-manifest-r3.json",
+        "sha256": "c31e681e814cd093369f43faa846c2b316dea717a1213dbc4edea28f9dcbb679",
+        "status": "METADATA_COPY_TRUTH_ARRAYS_EXTERNAL"
+      },
+      "external_path": "/tmp/trr-p08-evaluator-truth-r3/truth.manifest.json",
+      "truth_payload_persisted_in_repository": false
+    },
+    "scoring": {
+      "status": "PASS_AFTER_JOINT_FREEZE",
+      "result": {
+        "bytes": 58826576,
+        "path": "experiments/TRR-P08/runtime/scored-r3/results.json",
+        "sha256": "cf1c62672f5bbddd804451e0fd129fed043ea4b7026a979e44dbbfb9770aa7d8",
+        "status": "TRR-P08_SCORED_AFTER_JOINT_FREEZE"
+      },
+      "summary": {
+        "bytes": 27029,
+        "path": "experiments/TRR-P08/review/score-summary-r3.json",
+        "sha256": "21b6bca8f705adbd222ed24cf65ee1f27474d45202740751c303d204e7531dbd",
+        "status": "FINAL_DERIVED_SCORE_SUMMARY"
+      },
+      "execution": {
+        "bytes": 2307,
+        "path": "experiments/TRR-P08/review/score-execution-r3.json",
+        "sha256": "ca7db6bc13e4682860b1bb362497a8e195eff81c12e5e76729d8785ba2dfe463",
+        "status": "PASS"
+      },
+      "gate": "USEFUL_CONTEXTUAL_BENEFIT_RULED_OUT",
+      "general_staging_gate": "GENERAL_STAGING_INCONCLUSIVE"
+    }
   },
   "pending": [
-    "r1 universe/selection/export remain excluded as EXCLUDED_PRE_CAPTURE_BINDING_DEFECT",
-    "r2 public observations are complete and local-only; compact hashes/receipts are retained, raw observation tensors are not tracked",
-    "prediction remains root/design-owned and truth scoring remains gated until the required joint freeze"
+    "root publication review, publication inventory receipt, and PR metadata"
   ],
   "source_universe_proposal": {
     "status": "R1_EXCLUDED_PRE_CAPTURE_BINDING_DEFECT_R2_PREPARED_NOT_RUN",
@@ -316,8 +414,8 @@
     "r2_capture_success_receipt": "experiments/TRR-P08/setup/capture-success-r3.json"
   },
   "resource_boundary": {
-    "status": "R2_CAPTURE_PASS_GPU_RELEASED",
-    "resource_snapshot_is_historical": false,
+    "status": "SCIENTIFIC_RUNS_COMPLETE_GPU_RELEASED",
+    "resource_snapshot_is_historical": true,
     "live_refresh_required_before_qualification": false,
     "gpu_or_heavy_compute_started": true,
     "qualification_window_requires_root_grant": false,
@@ -340,7 +438,7 @@
     "gpu_launch_authorized": false,
     "capture_repair_required": false,
     "r1_capture_allowed": false,
-    "r2_repair_prepared_not_run": true,
+    "r2_repair_prepared_not_run": false,
     "required_opaque_ledger_keys": [
       "approved_trr0007_opaque",
       "approved_trr0008_opaque",
@@ -365,7 +463,9 @@
     "r2_capture_receipt": "experiments/TRR-P08/runtime/public-capture-r3/capture.json",
     "r2_capture_success_receipt": "experiments/TRR-P08/setup/capture-success-r3.json",
     "prediction_owner": "implementation_and_design",
-    "truth_opened": false
+    "truth_opened": false,
+    "r2_repair_run_and_capture_complete": true,
+    "truth_opened_after_joint_freeze": true
   },
   "communication_authorization": {
     "status": "AUTHORIZED_SCOPED",
@@ -466,6 +566,71 @@
       "panel_manifest_sha256": "e9193a8b151110082452ccdd596d06a0274f11d1f28eabaffa790d0922f3da1a",
       "raw_observations_local_only": true,
       "truth_opened": false
+    },
+    "prediction": {
+      "path": "experiments/TRR-P08/runtime/predictions-r3/p08_predictions.json",
+      "bytes": 321798,
+      "sha256": "f4974384cc760bd304f3ab18b34ea886e554f0bdc171407491647ac19718f8ae",
+      "status": "P08_FROZEN_PREDICTIONS_COMPLETE_NO_TRUTH",
+      "elapsed_seconds": 170.17991253599757
+    },
+    "prediction_run_manifest": {
+      "bytes": 1207,
+      "path": "experiments/TRR-P08/runtime/predictions-r3/run_manifest.json",
+      "sha256": "9c9585960d1ddf9af57791efa7e831ac97dd3a4177992e529a77662fd12162a4",
+      "status": "PASS"
+    },
+    "joint_freeze": {
+      "bytes": 82245,
+      "path": "experiments/TRR-P08/runtime/joint-freeze-r3/joint_freeze.json",
+      "sha256": "4de6ee0986b6f62ec64073bed87d23fe899c599ccf9b333e0114964e7579ba9e",
+      "status": "JOINT_FREEZE_VALIDATED_NO_TRUTH"
+    },
+    "joint_freeze_provenance": {
+      "bytes": 5061,
+      "path": "experiments/TRR-P08/runtime/joint-freeze-r3/joint_freeze_provenance.json",
+      "sha256": "1823e8d19e96bb8e2bd406bf3dea448a42f92f6a616f793353e858252ea11f52",
+      "status": "PROVENANCE_RECORDED_NO_TRUTH"
+    },
+    "joint_freeze_clarification": {
+      "bytes": 883,
+      "path": "experiments/TRR-P08/runtime/joint-freeze-r3/joint_freeze_provenance_clarification.json",
+      "sha256": "b4b094050d92c3790b9eeb84028b3a889ad0136b59f151bc01593a5c438e51fd",
+      "status": "METADATA_TIMESTAMP_CLARIFICATION"
+    },
+    "truth_materialization": {
+      "path": "experiments/TRR-P08/review/truth-manifest-r3.json",
+      "bytes": 41077,
+      "sha256": "c31e681e814cd093369f43faa846c2b316dea717a1213dbc4edea28f9dcbb679",
+      "external_path": "/tmp/trr-p08-evaluator-truth-r3/truth.manifest.json",
+      "status": "METADATA_COPY_TRUTH_ARRAYS_EXTERNAL"
+    },
+    "scoring": {
+      "result": {
+        "bytes": 58826576,
+        "path": "experiments/TRR-P08/runtime/scored-r3/results.json",
+        "sha256": "cf1c62672f5bbddd804451e0fd129fed043ea4b7026a979e44dbbfb9770aa7d8",
+        "status": "TRR-P08_SCORED_AFTER_JOINT_FREEZE"
+      },
+      "summary": {
+        "bytes": 27029,
+        "path": "experiments/TRR-P08/review/score-summary-r3.json",
+        "sha256": "21b6bca8f705adbd222ed24cf65ee1f27474d45202740751c303d204e7531dbd",
+        "status": "FINAL_DERIVED_SCORE_SUMMARY"
+      },
+      "execution": {
+        "bytes": 2307,
+        "path": "experiments/TRR-P08/review/score-execution-r3.json",
+        "sha256": "ca7db6bc13e4682860b1bb362497a8e195eff81c12e5e76729d8785ba2dfe463",
+        "status": "PASS"
+      },
+      "status": "PASS_AFTER_JOINT_FREEZE"
+    },
+    "report": {
+      "bytes": 18269,
+      "path": "coordination/results/TRR-P08.md",
+      "sha256": "f7e0e20c9d1eeec2236986bedaf2614a0d314579c584e08f0f95b6137d1fbe88",
+      "status": "FINAL_REPORT_COMMITTED"
     }
   },
   "qualification": {
