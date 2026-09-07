@@ -50,6 +50,32 @@ def test_synthetic_selection_to_capture_adapter_is_truth_free(tmp_path: Path) ->
     assert receipt["execution"]["truth_opened"] is False
 
 
+def test_capture_output_explicit_trr10_scope_is_narrow_and_create_only(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    allowed = repo / "experiments" / "TRR-0010" / "evaluation"
+    accepted = capture._capture_output(allowed / "producer", root=repo, allowed_output_root=allowed)
+    assert accepted == (allowed / "producer").resolve()
+
+    with pytest.raises(capture.CaptureError, match="reviewed TRR-0010 evaluation root"):
+        capture._capture_output(
+            allowed / "other",
+            root=repo,
+            allowed_output_root=repo / "experiments" / "other" / "evaluation",
+        )
+    with pytest.raises(capture.CaptureError, match="capture output must be below"):
+        capture._capture_output(
+            repo / "experiments" / "TRR-0009" / "evaluation" / "escape",
+            root=repo,
+            allowed_output_root=allowed,
+        )
+    legacy = capture._capture_output(
+        repo / "experiments" / "TRR-0009" / "evaluation" / "legacy",
+        root=repo,
+    )
+    assert legacy == (repo / "experiments" / "TRR-0009" / "evaluation" / "legacy").resolve()
+
+
 def test_capture_cli_entrypoint_requires_explicit_execution(tmp_path: Path, capsys) -> None:
     selection = tmp_path / "selection.json"
     selection.write_text("{}", encoding="utf-8")

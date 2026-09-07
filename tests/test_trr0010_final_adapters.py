@@ -1,6 +1,7 @@
 """Synthetic fail-closed tests for the TRR-0010 final adapters."""
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
 from collections.abc import Mapping
@@ -300,6 +301,60 @@ def _producer_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
     }
     _write(producer / "capture.json", capture_payload)
     return selection_path, producer, bridge
+
+
+def test_capture_bridge_passes_reviewed_scope_and_preserves_producer_chain(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    bridge = repo / "experiments" / "TRR-0010" / "evaluation" / "bridge.json"
+    bridge.parent.mkdir(parents=True)
+    bridge.write_text("{}\n", encoding="utf-8")
+    bridge_record = gate.file_record(bridge, root=repo)
+    seen: dict[str, object] = {}
+
+    monkeypatch.setattr(
+        capture,
+        "write_producer_selection_bridge",
+        lambda **_kwargs: bridge_record,
+    )
+
+    def fake_capture(producer_args: argparse.Namespace) -> None:
+        seen["allowed_output_root"] = producer_args.allowed_output_root
+        try:
+            raise ValueError("underlying producer path failure")
+        except ValueError as cause:
+            raise RuntimeError("trusted producer wrapper failure") from cause
+
+    monkeypatch.setattr(capture.trr9_capture, "capture_public", fake_capture)
+    output = repo / "experiments" / "TRR-0010" / "evaluation" / "capture"
+    args = argparse.Namespace(
+        execute=True,
+        repository_root=repo,
+        selection=repo / "selection.json",
+        design=repo / "design.json",
+        selection_binding=repo / "selection_binding.json",
+        producer_selection=bridge,
+        producer_output_root=repo / "experiments" / "TRR-0010" / "evaluation" / "producer",
+        tokenizer=repo / "tokenizer",
+        pile_arrow=[repo / "pile.arrow"],
+        finance_arrow=[repo / "finance.arrow"],
+        model_snapshot=repo / "model",
+        lora_config=None,
+        lora_update=None,
+        output_root=output,
+        device="cpu",
+    )
+    with pytest.raises(capture.CaptureAdapterError, match="exception_chain") as raised:
+        capture.capture_public(args)
+
+    assert seen["allowed_output_root"] == repo / "experiments" / "TRR-0010" / "evaluation"
+    assert "underlying producer path failure" in str(raised.value)
+    failure = json.loads((output / "failure.json").read_text(encoding="utf-8"))
+    assert failure["truth_opened"] is False
+    assert [item["type"] for item in failure["exception_chain"]] == ["RuntimeError", "ValueError"]
+    assert failure["exception_chain"][-1]["message"] == "underlying producer path failure"
 
 
 def test_capture_repackages_trr9_metadata_under_trr10_schema(tmp_path: Path) -> None:

@@ -50,6 +50,18 @@ def _utc_now() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
+def _exception_chain(exc: BaseException) -> list[dict[str, str]]:
+    """Return the complete chained exception context for fail-closed receipts."""
+    chain: list[dict[str, str]] = []
+    current: BaseException | None = exc
+    seen: set[int] = set()
+    while current is not None and id(current) not in seen:
+        seen.add(id(current))
+        chain.append({"type": type(current).__name__, "message": str(current)})
+        current = current.__cause__ or current.__context__
+    return chain
+
+
 def _root(value: Path) -> Path:
     root = Path(value).expanduser().resolve()
     if root.is_symlink() or not root.is_dir():
@@ -350,11 +362,49 @@ def capture_public(args: argparse.Namespace) -> dict[str, Any]:
         tokenizer=args.tokenizer, pile_arrow=args.pile_arrow, finance_arrow=args.finance_arrow,
         model_snapshot=args.model_snapshot, lora_config=args.lora_config, lora_update=args.lora_update,
         output_root=args.producer_output_root, device=args.device,
+        # The trusted producer keeps its TRR-0009 default scope.  This
+        # explicit reviewed scope is the only cross-task exception and is
+        # checked again by the producer before it creates any output.
+        allowed_output_root=root / "experiments" / TASK_ID / "evaluation",
     )
     try:
         trr9_capture.capture_public(producer_args)
     except Exception as exc:
-        raise CaptureAdapterError("trusted TRR9 producer failed; no TRR10 package was written") from exc
+        # Preserve a task-local, truth-free failure even when the producer
+        # fails before it can write observations/capture.json.  The chained
+        # exception is included in both the receipt and CLI exception so a
+        # wrapper cannot hide the concrete producer defect.
+        chain = _exception_chain(exc)
+        try:
+            output = Path(args.output_root).expanduser()
+            if not output.is_absolute():
+                output = root / output
+            failure_payload = {
+                "schema": "token-reconstruction.trr0010-public-capture-failure.v1",
+                "task_id": TASK_ID,
+                "status": "PUBLIC_OBSERVATIONS_CAPTURE_FAILED_NO_TRUTH",
+                "started_utc": _utc_now(),
+                "ended_utc": _utc_now(),
+                "error_type": type(exc).__name__,
+                "error": str(exc),
+                "exception_chain": chain,
+                "producer_output_root": str(Path(args.producer_output_root).expanduser().resolve()),
+                "producer_output_scope": str((root / "experiments" / TASK_ID / "evaluation").resolve()),
+                "selection_bridge": dict(bridge_record),
+                "truth_opened": False,
+                "source_text_written": False,
+                "token_ids_written": False,
+                "target_labels_loaded": False,
+            }
+            _write_create_only(output / "failure.json", failure_payload, root=root, description="TRR10 capture failure receipt")
+        except Exception:
+            # The original producer exception remains the authoritative
+            # failure when a second create-only receipt cannot be written.
+            pass
+        detail = json.dumps(chain, sort_keys=True)
+        raise CaptureAdapterError(
+            f"trusted TRR9 producer failed; no TRR10 package was written; exception_chain={detail}"
+        ) from exc
     return repackage_trr0009_capture(selection_path=args.selection, producer_root=args.producer_output_root, output_root=args.output_root, repository_root=root, producer_selection_path=Path(bridge_record["path"]), selection_binding_path=args.selection_binding, design_path=args.design)
 
 
