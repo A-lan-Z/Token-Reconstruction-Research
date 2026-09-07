@@ -1,0 +1,108 @@
+{
+  "base_commit_before_scoped_commit": "7e3c9ecfe2b21489eb3de19b7be67e43dafcf90d",
+  "recorded_utc": "2026-09-07T17:58:32Z",
+  "schema": "token-reconstruction.trr0010-eval-runner-guard-validation.v1",
+  "scope": {
+    "active_fit_touched": false,
+    "gpu_initialized": false,
+    "note": "The initial smoke assertion expected an obsolete status literal; the watchdog itself returned PASS. A corrected rerun is the recorded smoke above.",
+    "production_prediction_executed": false,
+    "truth_opened": false
+  },
+  "scoped_files": [
+    {
+      "bytes": 60804,
+      "path": "scripts/trr0010_eval_runner.py",
+      "sha256": "77c294c57ef60c9ced5284422047bf4283072632aff976e01e3f12b9181b3920"
+    },
+    {
+      "bytes": 13553,
+      "path": "tests/test_trr0010_eval_runner.py",
+      "sha256": "be01a70ad77484d665ccb4070d17a534c0b62b17cd8e1b4bd7c6437c27ad7cd8"
+    },
+    {
+      "bytes": 16617,
+      "path": "experiments/TRR-0010/setup/final_evaluation_execution_plan_v1.md",
+      "sha256": "c16f516c1a506c3c0e5af46c9e2ff4f4306f3f2f7ccf1bbbb89668ab2122e17d"
+    }
+  ],
+  "status": "CPU_VALIDATED_NO_GPU_OR_TRUTH",
+  "task_id": "TRR-0010",
+  "test_commands": [
+    {
+      "command": "python3 -m pytest -q tests/test_trr0010_eval_runner.py tests/test_trr0010_eval_gate.py",
+      "result": "PASS",
+      "summary": "30 passed in 2.45s"
+    },
+    {
+      "command": "python3 -m py_compile scripts/trr0010_eval_runner.py",
+      "result": "PASS"
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASS"
+    }
+  ],
+  "watchdog_create_only_smoke": {
+    "artifacts": {
+      "command.json": {
+        "path": "/tmp/trr0010-watchdog-create-check.Prm34V/out/command.json",
+        "sha256": "bf3aabe99ffb602b26da576071b01631a395b26251a22bff361749e0bb1e175b"
+      },
+      "finish.json": {
+        "path": "/tmp/trr0010-watchdog-create-check.Prm34V/out/finish.json",
+        "sha256": "d499b287b1d3d54f0c22466b07b3aaa33560a15ff37a8f0b4da3ca8d2caab1d4"
+      },
+      "resource_guard.json": {
+        "path": "/tmp/trr0010-watchdog-create-check.Prm34V/out/resource_guard.json",
+        "sha256": "dcc6a19caa794cf1f33faba922e2287d36e348ff8b7a5d29b32d27d76ae8b760"
+      },
+      "resource_samples.jsonl": {
+        "path": "/tmp/trr0010-watchdog-create-check.Prm34V/out/resource_samples.jsonl",
+        "sha256": "c0262b77c254ab1463cb00d9a86a5faca923c383abe40f3bee9e2063e62f6db4"
+      },
+      "stderr.txt": {
+        "path": "/tmp/trr0010-watchdog-create-check.Prm34V/out/stderr.txt",
+        "sha256": "e3b0c44298fc1c1493afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout.txt": {
+        "path": "/tmp/trr0010-watchdog-create-check.Prm34V/out/stdout.txt",
+        "sha256": "95965928547ab757fbf18971c23f3e2f9f5341360ca080ba58420c915b11c45b"
+      },
+      "time.json": {
+        "path": "/tmp/trr0010-watchdog-create-check.Prm34V/out/time.json",
+        "sha256": "6a4edd0c7d934da16cb1256f0fb08ed398fa283428041bf6e5956dcbcd4646b7"
+      }
+    },
+    "command": [
+      "python3",
+      "scripts/trr0010_p09_watchdog.py",
+      "--output-root",
+      "/tmp/trr0010-watchdog-create-check.Prm34V/out",
+      "--timeout-seconds",
+      "30",
+      "--poll-seconds",
+      "0.05",
+      "--max-rss-bytes",
+      "1073741824",
+      "--min-available-bytes",
+      "1048576",
+      "--kill-grace-seconds",
+      "1",
+      "--max-output-bytes",
+      "1048576",
+      "--cwd",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010",
+      "--label",
+      "TRR-0010-watchdog-create-only-smoke",
+      "--",
+      "python3",
+      "-c",
+      "print(\"watchdog smoke\")"
+    ],
+    "finish_status": "PASS",
+    "output_root": "/tmp/trr0010-watchdog-create-check.Prm34V/out",
+    "repeat_invocation_rejected": true,
+    "result": "PASS"
+  }
+}

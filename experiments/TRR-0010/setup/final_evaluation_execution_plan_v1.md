@@ -67,17 +67,30 @@ P09 state if their source bytes or loader implementation changes; otherwise
 the registration gate must revalidate their exact file and imported-source
 hashes before predictions.
 
-Use fail-closed live preflight and an exclusive lease. Proposed caps are
-binary-byte limits, pending parent confirmation at launch:
+Use fail-closed live preflight and an exclusive lease. The reviewed caps below
+are binary-byte limits and become executable only when the final registration
+binds the same values:
 
 - capture: 900 seconds including model load and I/O; CUDA reserved <=10 GiB;
   GPU free >=11 GiB before load and >=2 GiB at runtime; host available >=12
   GiB before load and >=8 GiB at runtime; process RSS <=12 GiB; disk free
   >=20 GiB; output <=5 GiB;
-- prediction: 900 seconds per standalone method, with fixed CUDA reserved <=8 GiB
-  and directional <=10 GiB, and the same host/GPU/disk floors; the full A1+A2
-  method receives a 2400-second whole-method cap because its historical four-cell
-  runtime is approximately 1050 seconds plus loading.
+- prediction: one external watchdog surrounds the complete six-method by
+  four-cell matrix with a 3,600-second whole-matrix deadline. The runner's
+  registered inner policy is fixed/A1+A2 CUDA reserved <=8 GiB, directional
+  CUDA reserved <=10 GiB, GPU free >=2 GiB, host available >=8 GiB, process
+  RSS <=12 GiB, disk free >=20 GiB, and output <=5 GiB. There are no
+  standalone per-method prediction deadlines: the CLI always executes the
+  complete matrix.
+
+The runner checks the inner policy before and after each method load, at cell
+and record boundaries, after each serialized cell artifact, and after method
+cleanup. At each method boundary it checks live reserved bytes, resets CUDA
+peak counters, and then applies the method-specific peak cap so a prior
+directional peak cannot fail a following fixed method. These checks are
+outside the synchronized warmup/measured intervals; the run manifest records
+their count and overhead separately from inference latency. The outer
+watchdog owns process-group wall time, output bytes, and teardown.
 
 The measured zero-delta fixture used 2.871 GB peak CUDA reserved and 3.68 GB
 host RSS. The P09 directional qualification measured 7,600,078,848 bytes
@@ -108,7 +121,7 @@ PRODUCER_ROOT="$ROOT/experiments/TRR-0010/evaluation/producer_capture"
 OBS_ROOT="$ROOT/experiments/TRR-0010/evaluation/observations_v1"
 REG_PAYLOAD="$ROOT/experiments/TRR-0010/evaluation/registration_payload.json"
 REGISTRATION="$ROOT/experiments/TRR-0010/evaluation/registration.json"
-PRED_ROOT="$ROOT/experiments/TRR-0010/evaluation/predictions_v1"
+PRED_ROOT="$ROOT/experiments/TRR-0010/evaluation/public_prediction_watchdog_r1"
 RUN_MANIFEST="$PRED_ROOT/run_manifest.json"
 FREEZE="$ROOT/experiments/TRR-0010/evaluation/public_freeze.json"
 COST="$ROOT/experiments/TRR-0010/evaluation/cost_evidence.json"
@@ -167,17 +180,50 @@ python3 "$ROOT/scripts/trr0010_eval_register.py" --payload "$REG_PAYLOAD"
    under `experiments/TRR-0010/evaluation`. Registration must reject any
    pending/null method row.
 
-4. Run exactly the six-method by four-cell public prediction matrix. The runner
-   writes 24 prediction/timing records and a create-only manifest; it must not
-   load tokenizer text, labels, or truth:
+4. Run exactly the six-method by four-cell public prediction matrix under the
+   external process-group watchdog. The final registration must bind its
+   `output_root` to the watchdog-created `PRED_ROOT`; the root must be absent
+   before launch so the watchdog's create-only receipt tree also contains all
+   prediction and timing artifacts. Record and execute this exact argv array
+   from the repository root; do not use a shell wrapper or interpolated
+   placeholder environment:
 
-```bash
-python3 "$ROOT/scripts/trr0010_eval_runner.py" \
-  --repository-root "$ROOT" --registration "$REGISTRATION" --device cuda
+```json
+[
+  "python3",
+  "scripts/trr0010_p09_watchdog.py",
+  "--output-root",
+  "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/public_prediction_watchdog_r1",
+  "--timeout-seconds", "3600",
+  "--poll-seconds", "0.5",
+  "--max-rss-bytes", "12884901888",
+  "--min-available-bytes", "8589934592",
+  "--kill-grace-seconds", "2",
+  "--max-output-bytes", "5368709120",
+  "--cwd",
+  "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010",
+  "--label", "TRR-0010-public-predictions-full-matrix",
+  "--",
+  "env",
+  "OMP_NUM_THREADS=1",
+  "MKL_NUM_THREADS=1",
+  "OPENBLAS_NUM_THREADS=1",
+  "TOKENIZERS_PARALLELISM=false",
+  "PYTHONPATH=.:src:scripts",
+  "python3",
+  "scripts/trr0010_eval_runner.py",
+  "--repository-root",
+  "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010",
+  "--registration",
+  "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/registration.json",
+  "--device", "cuda"
+]
 ```
 
-   Preserve the run manifest even on failure. Do not rerun a failed contender
-   with changed batch geometry, schedule, or state binding.
+   The runner writes 24 prediction/timing records and a create-only manifest;
+   it must not load tokenizer text, labels, or truth. Preserve the watchdog
+   and run failure receipts. Do not rerun a failed contender with changed batch
+   geometry, schedule, or state binding.
 
 5. Validate and freeze all public outputs before any curator or score action:
 

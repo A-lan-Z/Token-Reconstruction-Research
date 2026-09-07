@@ -3,10 +3,11 @@ from __future__ import annotations
 
 import json
 import shutil
+import time
 import types
 from pathlib import Path
 import sys
-from typing import Any
+from typing import Any, Mapping
 
 import pytest
 import torch
@@ -45,6 +46,7 @@ def _bind_runtime_embedding(fixture: dict[str, Any], *, hidden_size: int = 2) ->
     registration_path = fixture["registration"]
     registration = json.loads(registration_path.read_text(encoding="utf-8"))
     registration["runtime_embedding"] = gate.file_record(path, root=root)
+    registration["resource_guard"] = {"inference": dict(runner.REGISTERED_INFERENCE_CAPS)}
     registration_path.write_text(json.dumps(registration, sort_keys=True) + "\n", encoding="utf-8")
     return path
 
@@ -108,6 +110,94 @@ def test_execute_emits_complete_matrix_and_passes_public_gate(
         and "adapter_evidence" in item["payload"]
         for item in result["freeze"]["timings"].values()
     )
+
+
+def test_resource_guard_rejects_fixed_cuda_peak_without_cuda_context() -> None:
+    caps = runner._method_resource_caps(
+        runner.REGISTERED_INFERENCE_CAPS, gate.CURRENT_FIXED_METHOD_ID
+    )
+    snapshot = {
+        "host_available_bytes": caps["host_available_floor_bytes_runtime"],
+        "host_rss_bytes": caps["host_rss_limit_bytes"],
+        "disk_free_bytes": caps["disk_free_floor_bytes"],
+        "gpu": {
+            "available": True,
+            "free_bytes": caps["gpu_free_floor_bytes_runtime"],
+            "max_reserved_bytes": caps["cuda_reserved_limit_bytes"] + 1,
+        },
+    }
+    with pytest.raises(runner.RunnerError, match="reserved-GPU cap failed"):
+        runner._enforce_resource_guard(
+            snapshot,
+            caps,
+            started=time.perf_counter(),
+            stage="synthetic_fixed_threshold",
+            require_gpu=True,
+        )
+
+
+def test_resource_guard_ignores_prior_peak_after_current_reservation_check() -> None:
+    caps = runner._method_resource_caps(
+        runner.REGISTERED_INFERENCE_CAPS, gate.CURRENT_FIXED_METHOD_ID
+    )
+    snapshot = {
+        "host_available_bytes": caps["host_available_floor_bytes_runtime"],
+        "host_rss_bytes": caps["host_rss_limit_bytes"],
+        "disk_free_bytes": caps["disk_free_floor_bytes"],
+        "gpu": {
+            "available": True,
+            "free_bytes": caps["gpu_free_floor_bytes_runtime"],
+            "reserved_bytes": caps["cuda_reserved_limit_bytes"],
+            "max_reserved_bytes": caps["directional_cuda_reserved_limit_bytes"] + 1,
+        },
+    }
+    runner._enforce_resource_guard(
+        snapshot,
+        caps,
+        started=time.perf_counter(),
+        stage="synthetic_current_reservation",
+        require_gpu=True,
+        gpu_peak_field="reserved_bytes",
+    )
+
+
+def test_guard_callbacks_are_outside_timed_inference(monkeypatch: pytest.MonkeyPatch) -> None:
+    activation = torch.zeros((gate.STORED_SEQUENCE_TOKENS, 2), dtype=torch.bfloat16)
+    mask = torch.ones(gate.STORED_SEQUENCE_TOKENS, dtype=torch.bool)
+    positions = torch.arange(gate.STORED_SEQUENCE_TOKENS, dtype=torch.long)
+
+    def rows(cell: Mapping[str, Any], *, records: int, hidden_size: int):
+        del cell, hidden_size
+        assert records == 1
+        yield 0, activation, mask, positions
+
+    monkeypatch.setattr(runner, "_iter_rows", rows)
+    calls: list[str] = []
+
+    def guard(stage: str) -> None:
+        calls.append(stage)
+        time.sleep(0.01)
+
+    started = time.perf_counter()
+    _values, timing = runner._run_cell(
+        adapter=_CallableIds(0),
+        cell={},
+        records=1,
+        hidden_size=2,
+        device=torch.device("cpu"),
+        method_id="synthetic",
+        guard_callback=guard,
+    )
+    elapsed = time.perf_counter() - started
+    assert calls == [
+        "before_cell",
+        "after_cell_begin",
+        "before_record_0",
+        "after_record_0",
+        "after_cell",
+    ]
+    assert elapsed - timing["measured_seconds_sum"] > 0.02
+
 
 
 class _BaseDecoder(torch.nn.Module):

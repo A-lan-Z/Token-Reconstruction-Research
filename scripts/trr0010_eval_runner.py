@@ -18,6 +18,7 @@ import importlib
 import json
 from pathlib import Path
 import resource
+import shutil
 import subprocess
 import sys
 import time
@@ -51,6 +52,21 @@ class LoadedMethod:
 
 
 METHOD_FACTORY = Callable[[str, Mapping[str, Any], torch.Tensor, torch.device], Any]
+
+# These are the execution caps signed for the final public matrix. The outer
+# process-group watchdog owns the same wall/output policy, while this runner
+# checks live GPU, host, RSS, and disk state at method/record boundaries. Keep
+# the policy explicit so an old per-method-only proposal cannot be executed.
+REGISTERED_INFERENCE_CAPS = {
+    "whole_matrix_max_seconds": 3600,
+    "fixed_cuda_reserved_limit_bytes": 8 * 2**30,
+    "directional_cuda_reserved_limit_bytes": 10 * 2**30,
+    "gpu_free_floor_bytes_runtime": 2 * 2**30,
+    "host_available_floor_bytes_runtime": 8 * 2**30,
+    "host_rss_limit_bytes": 12 * 2**30,
+    "disk_free_floor_bytes": 20 * 2**30,
+    "output_bytes_limit": 5 * 2**30,
+}
 
 
 def _utc_now() -> str:
@@ -118,6 +134,115 @@ def _cuda_peak(device: torch.device) -> dict[str, int | None]:
         "cuda_peak_allocated_bytes": int(torch.cuda.max_memory_allocated(device)),
         "cuda_peak_reserved_bytes": int(torch.cuda.max_memory_reserved(device)),
     }
+
+
+def _registered_inference_caps(registration: Mapping[str, Any]) -> dict[str, int]:
+    """Validate the final registration's explicit whole-matrix guard policy."""
+
+    raw_guard = registration.get("resource_guard")
+    inference = raw_guard.get("inference") if isinstance(raw_guard, Mapping) else None
+    if not isinstance(inference, Mapping):
+        raise RunnerError("registration inference resource guard is absent")
+    stale = {"max_seconds_per_method", "a1_a2_max_seconds_per_method"}.intersection(inference)
+    if stale:
+        raise RunnerError(
+            "registration still uses unsupported per-method prediction caps: "
+            + ", ".join(sorted(stale))
+        )
+    checked: dict[str, int] = {}
+    for key, expected in REGISTERED_INFERENCE_CAPS.items():
+        try:
+            actual = int(inference[key])
+        except (KeyError, TypeError, ValueError) as exc:
+            raise RunnerError(f"registration inference resource cap is missing or malformed: {key}") from exc
+        if actual != int(expected):
+            raise RunnerError(
+                f"registration inference resource cap differs from the reviewed policy: "
+                f"{key}={actual}, expected {int(expected)}"
+            )
+        checked[key] = actual
+    return checked
+
+
+def _method_resource_caps(policy: Mapping[str, int], method_id: str) -> dict[str, int]:
+    if method_id not in gate.METHOD_ORDER:
+        raise RunnerError(f"unknown method for resource guard: {method_id}")
+    result = dict(policy)
+    result["cuda_reserved_limit_bytes"] = int(
+        policy["directional_cuda_reserved_limit_bytes"]
+        if method_id in gate.DIRECTIONAL_METHOD_IDS
+        else policy["fixed_cuda_reserved_limit_bytes"]
+    )
+    return result
+
+
+def _resource_snapshot(*, device: torch.device, output_root: Path) -> dict[str, Any]:
+    """Read live resources without changing inference state."""
+
+    host_available = _host_available_bytes()
+    host_rss = _rss_bytes()
+    if host_available is None or host_rss is None:
+        raise RunnerError("live host memory telemetry is unavailable")
+    try:
+        disk_free = int(shutil.disk_usage(Path(output_root).expanduser().resolve().parent).free)
+    except OSError as exc:
+        raise RunnerError("live disk telemetry is unavailable") from exc
+    gpu: dict[str, Any] = {"available": False}
+    if device.type == "cuda":
+        if not torch.cuda.is_available():
+            raise RunnerError("CUDA became unavailable during public prediction")
+        _synchronize(device)
+        free_bytes, total_bytes = torch.cuda.mem_get_info(device)
+        gpu = {
+            "available": True,
+            "free_bytes": int(free_bytes),
+            "total_bytes": int(total_bytes),
+            "reserved_bytes": int(torch.cuda.memory_reserved(device)),
+            "max_reserved_bytes": int(torch.cuda.max_memory_reserved(device)),
+            "allocated_bytes": int(torch.cuda.memory_allocated(device)),
+            "max_allocated_bytes": int(torch.cuda.max_memory_allocated(device)),
+        }
+    return {
+        "host_available_bytes": int(host_available),
+        "host_rss_bytes": int(host_rss),
+        "disk_free_bytes": disk_free,
+        "gpu": gpu,
+    }
+
+
+def _enforce_resource_guard(
+    snapshot: Mapping[str, Any],
+    caps: Mapping[str, int],
+    *,
+    started: float,
+    stage: str,
+    require_gpu: bool,
+    gpu_peak_field: str = "max_reserved_bytes",
+) -> None:
+    """Fail closed on live limits; callers invoke this outside timed inference."""
+
+    if time.perf_counter() - started > float(caps["whole_matrix_max_seconds"]):
+        raise RunnerError(f"resource wall-time cap exceeded at {stage}")
+    host_available = snapshot.get("host_available_bytes")
+    if not isinstance(host_available, int) or host_available < int(caps["host_available_floor_bytes_runtime"]):
+        raise RunnerError(f"host available-memory cap failed at {stage}")
+    host_rss = snapshot.get("host_rss_bytes")
+    if not isinstance(host_rss, int) or host_rss > int(caps["host_rss_limit_bytes"]):
+        raise RunnerError(f"host RSS cap failed at {stage}")
+    disk_free = snapshot.get("disk_free_bytes")
+    if not isinstance(disk_free, int) or disk_free < int(caps["disk_free_floor_bytes"]):
+        raise RunnerError(f"disk-free cap failed at {stage}")
+    if not require_gpu:
+        return
+    gpu = snapshot.get("gpu")
+    if not isinstance(gpu, Mapping) or gpu.get("available") is not True:
+        raise RunnerError(f"GPU telemetry is unavailable at {stage}")
+    if int(gpu.get("free_bytes", -1)) < int(caps["gpu_free_floor_bytes_runtime"]):
+        raise RunnerError(f"free-GPU cap failed at {stage}")
+    if gpu_peak_field not in {"reserved_bytes", "max_reserved_bytes"}:
+        raise RunnerError(f"unsupported GPU peak field: {gpu_peak_field}")
+    if int(gpu.get(gpu_peak_field, -1)) > int(caps["cuda_reserved_limit_bytes"]):
+        raise RunnerError(f"reserved-GPU cap failed at {stage} ({gpu_peak_field})")
 
 
 def _write_json_create(path: Path, payload: Mapping[str, Any], *, root: Path) -> dict[str, Any]:
@@ -784,15 +909,32 @@ def _prediction_artifact(
     return record
 
 
-def _run_cell(*, adapter: Any, cell: Mapping[str, Any], records: int, hidden_size: int, device: torch.device, method_id: str) -> tuple[torch.Tensor, dict[str, Any]]:
+def _run_cell(
+    *,
+    adapter: Any,
+    cell: Mapping[str, Any],
+    records: int,
+    hidden_size: int,
+    device: torch.device,
+    method_id: str,
+    guard_callback: Callable[[str], None] | None = None,
+) -> tuple[torch.Tensor, dict[str, Any]]:
+    if guard_callback is not None:
+        guard_callback("before_cell")
     begin_cell = getattr(adapter, "begin_cell", None)
     if callable(begin_cell):
         begin_cell()
+    if guard_callback is not None:
+        guard_callback("after_cell_begin")
     values = torch.empty((records, gate.STORED_SEQUENCE_TOKENS), dtype=torch.long)
     warm_sum = 0.0
     measured_sum = 0.0
     per_record: list[float] = []
     for index, activation, mask, positions in _iter_rows(cell, records=records, hidden_size=hidden_size):
+        # Resource checks deliberately surround, rather than enter, the timed
+        # warmup/measured intervals so guard overhead is never decoder latency.
+        if guard_callback is not None:
+            guard_callback(f"before_record_{index}")
         _synchronize(device)
         started = time.perf_counter()
         warm = _normalize_prediction(adapter(activation, mask, positions), mask, method_id=method_id)
@@ -808,6 +950,10 @@ def _run_cell(*, adapter: Any, cell: Mapping[str, Any], records: int, hidden_siz
         if not torch.equal(warm, measured):
             raise RunnerError(f"warmup/measured IDs differ: {method_id}/{index}")
         values[index] = measured
+        if guard_callback is not None:
+            guard_callback(f"after_record_{index}")
+    if guard_callback is not None:
+        guard_callback("after_cell")
     evidence_fn = getattr(adapter, "evidence", None)
     adapter_evidence: dict[str, Any] = {}
     if callable(evidence_fn):
@@ -853,9 +999,72 @@ def execute(*, registration_path: Path, repository_root: Path, device_name: str 
     if run_path.exists() or run_path.is_symlink():
         raise RunnerError(f"run manifest is not create-only: {run_path}")
     device = torch.device(device_name)
-    if device.type == "cuda" and not torch.cuda.is_available():
-        raise RunnerError("CUDA is unavailable")
+    registered_caps = _registered_inference_caps(registration)
+    guard_state = {"checks": 0, "overhead_seconds": 0.0}
+
+    def guard_check(
+        stage: str,
+        method_id: str | None = None,
+        *,
+        gpu_peak_field: str = "max_reserved_bytes",
+    ) -> None:
+        guard_started = time.perf_counter()
+        try:
+            # Before a method is selected, use the largest registered CUDA cap
+            # so the initial preflight is conservative. Loaded methods switch
+            # to their fixed/A1+A2 or directional cap.
+            effective_method = method_id or gate.CURRENT_DIRECTIONAL_METHOD_ID
+            caps = _method_resource_caps(registered_caps, effective_method)
+            snapshot = _resource_snapshot(device=device, output_root=output_root)
+            _enforce_resource_guard(
+                snapshot,
+                caps,
+                started=started,
+                stage=stage,
+                require_gpu=device.type == "cuda",
+                gpu_peak_field=gpu_peak_field,
+            )
+        finally:
+            guard_state["checks"] += 1
+            guard_state["overhead_seconds"] += time.perf_counter() - guard_started
+
+    def preserve_failure(exc: BaseException) -> None:
+        failure = output_root / "run_manifest.failure.json"
+        if failure.exists() or failure.is_symlink():
+            return
+        try:
+            _write_json_create(
+                failure,
+                {
+                    "schema": "token-reconstruction.trr0010-run-failure.v1",
+                    "task_id": gate.TASK_ID,
+                    "status": "PUBLIC_EVALUATION_FAILED_CLOSED",
+                    "truth_opened": False,
+                    "source_text_written": False,
+                    "source_text_loaded": False,
+                    "token_ids_written": False,
+                    "target_labels_loaded": False,
+                    "candidate_arrays_persisted": False,
+                    "started_utc": started_utc,
+                    "ended_utc": _utc_now(),
+                    "error_type": type(exc).__name__,
+                    "error": str(exc),
+                    "resource_guard": {
+                        "registered_caps": dict(registered_caps),
+                        "checks": int(guard_state["checks"]),
+                        "overhead_seconds": float(guard_state["overhead_seconds"]),
+                    },
+                },
+                root=root,
+            )
+        except Exception:
+            # The original failure remains the authoritative exception.
+            pass
+
     try:
+        if device.type == "cuda" and not torch.cuda.is_available():
+            raise RunnerError("CUDA is unavailable")
+        guard_check("initial")
         synthetic_embedding: torch.Tensor | None = None
         embedding_evidence: dict[str, Any] = {
             "mode": "per_method_registered_readout",
@@ -874,7 +1083,19 @@ def execute(*, registration_path: Path, repository_root: Path, device_name: str 
         model_startup: dict[str, Any] = {}
         for method_id in gate.METHOD_ORDER:
             row = rows_by_id[method_id]
+            # A prior method's max-reserved counter is historical. First check
+            # the live reservation against the next method's cap, then reset
+            # the peak counter and run the method-specific peak check. This
+            # prevents a directional 10-GiB peak from falsely failing the
+            # following fixed/A1+A2 8-GiB method while still failing closed if
+            # the previous method did not release its live allocation.
+            guard_check(
+                f"before_{method_id}_load_current",
+                method_id,
+                gpu_peak_field="reserved_bytes",
+            )
             _reset_cuda_peak(device)
+            guard_check(f"before_{method_id}_load", method_id)
             preparation_started = time.perf_counter()
             method_embedding: torch.Tensor | None = synthetic_embedding
             readout_evidence: dict[str, Any] = {}
@@ -920,6 +1141,7 @@ def execute(*, registration_path: Path, repository_root: Path, device_name: str 
             _synchronize(device)
             cold_peak = _cuda_peak(device)
             prep_seconds = float(time.perf_counter() - preparation_started)
+            guard_check(f"after_{method_id}_load", method_id)
             preparation_accounting = {
                 "seconds": prep_seconds,
                 "method_loads": 1,
@@ -944,7 +1166,17 @@ def execute(*, registration_path: Path, repository_root: Path, device_name: str 
             for cell_id in gate.CELL_ORDER:
                 cell = checked["observation_bindings"][cell_id]
                 _reset_cuda_peak(device)
-                values, timing = _run_cell(adapter=loaded.adapter, cell=cell, records=gate.RECORDS_PER_CELL, hidden_size=hidden_size, device=device, method_id=method_id)
+                values, timing = _run_cell(
+                    adapter=loaded.adapter,
+                    cell=cell,
+                    records=gate.RECORDS_PER_CELL,
+                    hidden_size=hidden_size,
+                    device=device,
+                    method_id=method_id,
+                    guard_callback=lambda stage, method_id=method_id, cell_id=cell_id: guard_check(
+                        f"{method_id}/{cell_id}/{stage}", method_id
+                    ),
+                )
                 steady_peak = _cuda_peak(device)
                 style, condition = cell_id.split("__", 1)
                 prediction_path = output_root / "predictions" / style / condition / f"{method_id}.safetensors"
@@ -996,12 +1228,14 @@ def execute(*, registration_path: Path, repository_root: Path, device_name: str 
                 key = f"{method_id}::{cell_id}"
                 predictions[key] = prediction_record
                 timings[key] = timing_record
+                guard_check(f"after_{method_id}/{cell_id}_write", method_id)
             del loaded
             if method_embedding is not synthetic_embedding:
                 del method_embedding
             gc.collect()
             if device.type == "cuda":
                 torch.cuda.empty_cache()
+            guard_check(f"after_{method_id}_cleanup", method_id)
         run_payload = {
             "schema": gate.RUN_SCHEMA,
             "task_id": gate.TASK_ID,
@@ -1024,6 +1258,16 @@ def execute(*, registration_path: Path, repository_root: Path, device_name: str 
             "observation_bindings": checked["observation_bindings"],
             "code_bindings": checked["code_bindings"],
             "timing_plan": checked["timing_plan"],
+            "resource_guard": {
+                "schema": "token-reconstruction.trr0010-public-prediction-resource-guard.v1",
+                "registered_caps": dict(registered_caps),
+                "checks": int(guard_state["checks"]),
+                "guard_overhead_seconds": float(guard_state["overhead_seconds"]),
+                "scope": (
+                    "live host/GPU/disk checks run outside the timed warmup/measured decoder intervals; "
+                    "the outer watchdog separately guards process-group wall time and output bytes"
+                ),
+            },
             "runtime_embedding": embedding_evidence,
             "model_startup": model_startup,
             "predictions": predictions,
@@ -1047,15 +1291,11 @@ def execute(*, registration_path: Path, repository_root: Path, device_name: str 
         except gate.GateError as exc:
             raise RunnerError(f"TRR-0010 public output gate failed: {exc}") from exc
         return {"status": run_payload["status"], "run_manifest": gate.file_record(run_path, root=root), "freeze": freeze, "elapsed_seconds": run_payload["elapsed_seconds"]}
-    except RunnerError:
+    except RunnerError as exc:
+        preserve_failure(exc)
         raise
     except Exception as exc:
-        failure = output_root / "run_manifest.failure.json"
-        if not failure.exists() and not failure.is_symlink():
-            try:
-                _write_json_create(failure, {"schema": "token-reconstruction.trr0010-run-failure.v1", "task_id": gate.TASK_ID, "status": "PUBLIC_EVALUATION_FAILED_CLOSED", "truth_opened": False, "source_text_written": False, "source_text_loaded": False, "token_ids_written": False, "target_labels_loaded": False, "candidate_arrays_persisted": False, "started_utc": started_utc, "ended_utc": _utc_now(), "error_type": type(exc).__name__, "error": str(exc)}, root=root)
-            except Exception:
-                pass
+        preserve_failure(exc)
         raise RunnerError("TRR-0010 public evaluation failed closed") from exc
     finally:
         gc.collect()
