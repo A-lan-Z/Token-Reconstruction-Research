@@ -40,6 +40,8 @@ DEFAULT_MIN_AVAILABLE_BYTES = 10 * 1024**3
 DEFAULT_TIMEOUT_SECONDS = 3600.0
 DEFAULT_POLL_SECONDS = 0.5
 DEFAULT_KILL_GRACE_SECONDS = 2.0
+POST_EXIT_RECHECK_SECONDS = 0.02
+POST_EXIT_RECHECK_POLL_SECONDS = 0.002
 WRAPPER_FAILURE_EXIT = 125
 TIMEOUT_EXIT = 124
 SAFE_ENVIRONMENT_KEYS = (
@@ -143,6 +145,36 @@ def _pid_group(pid: int) -> int:
         return int(fields[2])
     except (IndexError, ValueError) as exc:
         raise ResourceReadError(f"live process stat is malformed: {path}") from exc
+
+
+def _process_state_for_diagnosis(pid: int) -> str:
+    """Return a non-throwing process state snapshot for failure evidence."""
+
+    path = Path("/proc") / str(pid) / "stat"
+    try:
+        text = path.read_text(encoding="ascii")
+    except (OSError, UnicodeError) as exc:
+        return f"unavailable:{type(exc).__name__}"
+    try:
+        return text.rsplit(")", 1)[1].strip().split()[0]
+    except (IndexError, ValueError):
+        return "malformed"
+
+
+def _recheck_leader_exit(process: subprocess.Popen[bytes]) -> int | None:
+    """Bound the poll/wait race before declaring live telemetry unreadable."""
+
+    returncode = process.poll()
+    if returncode is not None:
+        return returncode
+    deadline = time.monotonic() + POST_EXIT_RECHECK_SECONDS
+    while returncode is None and time.monotonic() < deadline:
+        remaining = deadline - time.monotonic()
+        try:
+            returncode = process.wait(timeout=min(POST_EXIT_RECHECK_POLL_SECONDS, max(0.0, remaining)))
+        except subprocess.TimeoutExpired:
+            returncode = process.poll()
+    return returncode
 
 
 def _process_group_members(pgid: int, *, require_member: bool) -> list[dict[str, int]]:
@@ -448,14 +480,8 @@ def main(argv: list[str] | None = None) -> int:
                 # live resource.  If the leader has exited, descendants are
                 # still sampled with require_member=False; only a genuinely
                 # live unreadable group fails closed.
-                leader_returncode = process.poll()
-                if leader_returncode is None:
-                    # Reap a child that exited between poll and /proc reads.
-                    # A zero-time wait never masks a live unreadable process.
-                    try:
-                        leader_returncode = process.wait(timeout=0)
-                    except subprocess.TimeoutExpired:
-                        pass
+                leader_state_before_recheck = _process_state_for_diagnosis(process.pid)
+                leader_returncode = _recheck_leader_exit(process)
                 if leader_returncode is not None:
                     try:
                         sample = _sample(pgid, require_member=False, elapsed_seconds=elapsed)
@@ -465,6 +491,7 @@ def main(argv: list[str] | None = None) -> int:
                         # when no non-zombie process remains in the group.  A
                         # live descendant, or an unreadable state check, stays
                         # fail-closed so the guard cannot lose coverage.
+                        leader_state_after_recheck = _process_state_for_diagnosis(process.pid)
                         try:
                             live_member = _has_live_process_group_member(pgid, ignored_pids={process.pid})
                         except ResourceReadError as member_exc:
@@ -474,17 +501,27 @@ def main(argv: list[str] | None = None) -> int:
                             break
                         if live_member:
                             termination_reason = "live_resource_data_unreadable"
-                            errors.append(str(retry_exc))
+                            errors.append(
+                                f"{retry_exc}; leader_returncode={leader_returncode}; "
+                                f"leader_state_after_recheck={leader_state_after_recheck}"
+                            )
                             termination_actions = _terminate_group(process, pgid, options.kill_grace_seconds)
                             break
                         sample = None
                         errors.append(
                             "post_exit_resource_sample_ignored: "
                             + str(retry_exc)
+                            + f"; leader_returncode={leader_returncode}; "
+                            + f"leader_state_after_recheck={leader_state_after_recheck}"
                         )
                 else:
+                    leader_state_after_recheck = _process_state_for_diagnosis(process.pid)
                     termination_reason = "live_resource_data_unreadable"
-                    errors.append(str(exc))
+                    errors.append(
+                        f"{exc}; leader_returncode=None; "
+                        f"leader_state_before_recheck={leader_state_before_recheck}; "
+                        f"leader_state_after_recheck={leader_state_after_recheck}"
+                    )
                     termination_actions = _terminate_group(process, pgid, options.kill_grace_seconds)
                     break
             if sample is not None:
