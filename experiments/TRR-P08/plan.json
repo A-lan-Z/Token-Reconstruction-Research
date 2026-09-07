@@ -1,0 +1,204 @@
+{
+  "schema": "token-reconstruction.trr-p08-plan.v1",
+  "task_id": "TRR-P08",
+  "status": "FROZEN_DESIGN_PRE_FIT",
+  "packet_sha256": "8edf99fcb311eadc1f17b5694dd82001ba6053aefcf8c828a3d0e19a53bb0059",
+  "parent_branch": "task/TRR-P07",
+  "parent_commit": "cffb10c14d3b74f4bd0227804e3ac380aa475686",
+  "reviewed_head": "cffb10c14d3b74f4bd0227804e3ac380aa475686",
+  "claim_scope": "bounded public-data fitting-mechanism study of staged affine-first versus joint fitting; exploratory and task-local, not a canonical benchmark replacement or global promotion",
+  "objective": {
+    "question": "Does training the competent direct affine path first, then training the complete decoder, improve reconstruction or the incremental value of past activations relative to equal-budget joint fitting?",
+    "primary_estimand": "For each primary public-base domain, I = (Past - Positionwise)_staged - (Past - Positionwise)_joint, using replicate-averaged paired token and exact-record metrics.",
+    "secondary_estimands": [
+      "Staged - Joint for Past and for Positionwise separately, to distinguish a general staging benefit from a visibility-specific interaction.",
+      "Past - Positionwise within each fitting schedule.",
+      "The same contrasts on the paired public_lora_2601 target as a transfer diagnostic, never as the primary gate."
+    ],
+    "interpretation": "A positive interaction supports a bounded claim that staged fitting changes the contextual benefit under this architecture, public fit distribution, two seeds, target conditions, and H128 geometry. A common staged gain in both masks indicates a fitting-procedure benefit rather than a context-specific effect. Neither result identifies a universal mechanism."
+  },
+  "scope": {
+    "new_fits": true,
+    "fit_arms": 8,
+    "visibility_factors": [
+      {
+        "id": "positionwise",
+        "method_id": "p08_positionwise",
+        "keys": "j=i among valid H128 positions",
+        "role": "positionwise control"
+      },
+      {
+        "id": "past_only",
+        "method_id": "p08_past_only",
+        "keys": "0 <= j <= i among valid H128 positions",
+        "role": "past-only contextual arm"
+      }
+    ],
+    "fit_factors": [
+      {
+        "id": "joint",
+        "method_id_suffix": "joint",
+        "role": "all decoder parameters trainable from update 1 through update 3000"
+      },
+      {
+        "id": "staged_affine1000_complete2000",
+        "method_id_suffix": "staged",
+        "role": "direct affine W,b,s only for updates 1..1000, then all direct and attention parameters for updates 1001..3000"
+      }
+    ],
+    "replicates": {
+      "seeds": [
+        6106,
+        6107
+      ],
+      "paired_schedule": "For each seed, all four arms consume the identical ordered record-batch and post-BOS position-draw schedule. Seeds are replicate strata, not extra source records.",
+      "independent_staged_runs": "The two staged visibility arms run their own 1000-update affine phase. The phases are logically duplicated and fully charged; no state sharing or hidden cost discount is used."
+    },
+    "exclusions": [
+      "no P03 holdout or hidden records",
+      "no TRR-0009 unpublished work",
+      "no teacher, ranking, candidate simulation, A2 fallback, guessed-token feedback, or target-token input",
+      "no schedule sweep, phase-length sweep, architecture sweep, or automatic sample expansion",
+      "no active-registry update and no canonical benchmark replacement"
+    ]
+  },
+  "common_numerical_contract": {
+    "hidden_size": 2048,
+    "vocabulary_size": 128256,
+    "bos_token_id": 128000,
+    "pad_token_id": 128001,
+    "sequence_tokens_including_bos": 128,
+    "scored_post_bos_positions": 127,
+    "attention_context_width": 128,
+    "attention_score_mode": "cosine_qk_normalized_scale4.0 for both visibility arms and both fit schedules",
+    "activation_normalization": "float32 layer_norm eps=1e-5",
+    "output_normalization": "float32 L2 normalization before the shared public F32 embedding table",
+    "embedding_table": {
+      "path": "outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+      "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+      "sharing": "one immutable table for every arm and target"
+    },
+    "direct_affine_initialization": {
+      "kind": "standard_identity_affine",
+      "path": null,
+      "sha256": null,
+      "tensors": "W=I, b=0, s=3.0 in float32 for every arm",
+      "sharing": "identical numerical initialization for all visibility and schedule arms within a seed",
+      "reason": "the joint arm and staged arm must start from the same standard state; staged affine-first training earns any competent direct path during its counted first phase"
+    },
+    "attention_initialization": "Q/K/V deterministic initialization from the replicate seed; output weight and bias zero-initialized, as in the reviewed P06 family",
+    "precision": "inherit reviewed P06 numerical settings: F32 parameters/logits, public F32 E, no diagnostic-only deterministic-kernel flag, fixed Torch thread settings recorded in receipts",
+    "optimizer": {
+      "name": "AdamW",
+      "learning_rate": 0.001,
+      "weight_decay": 0.0,
+      "gradient_clip_norm": 1.0,
+      "record_batch_size": 8,
+      "post_bos_draws_per_update": 512,
+      "total_updates_per_arm": 3000,
+      "total_query_draws_per_arm": 1536000,
+      "schedule": "fixed shared schedule per seed; no arm can choose or reshuffle draws"
+    }
+  },
+  "fit_data_and_selection": {
+    "fit_source": "the reviewed public coverage_mix_v1 fit bank used by P06, cropped to H128 before schedule construction, masking, fitting, and selection",
+    "fit_manifest": "experiments/TRR-P06/setup/public_fit_manifest_resolved.json",
+    "fit_records": 1200,
+    "fit_post_bos_positions": 112825,
+    "validation_source": "the disjoint public validation bank bound by the resolved fit manifest",
+    "validation_records": 48,
+    "validation_post_bos_positions": 2982,
+    "selection_metric": "full-vocabulary micro token_accuracy over all valid public-validation post-BOS positions",
+    "selection_schedule": "evaluate step 0 and every 100 updates through step 3000 for every arm; select the earliest maximum; no natural evaluation answer enters selection",
+    "fit_exposure_fairness": "all arms use the same public records, labels, H128 crop, schedule positions, optimizer hyperparameters, and total update/draw budget; staged phase updates count toward the 3000-update total",
+    "staged_optimizer_state": "one optimizer is created at step 0; W,b,s moments continue across the phase boundary, while attention parameters are frozen during the first phase and begin accumulating state only when made trainable at update 1001",
+    "transition_error_diagnostic": {
+      "purpose": "test whether the added path learns on errors made by the affine component at the transition, without using a perfect or post-selected subset",
+      "timing": "after update 1000 and before phase-2 updates or any fresh-panel prediction",
+      "reuse": "the same seed-specific ledger is reused by both staged visibility arms and is never reselected using phase-2, validation, natural-panel, or truth results",
+      "reported_metrics": "full public-fit and full public-validation affine-only accuracy/error counts at transition; full-vs-affine-only correction, residual, and introduced-error counts at staged selected and final states; validation curves and selected-step metrics for every arm",
+      "interpretation_limit": "ledger correction is a public-fit trainability diagnostic, not natural generalization or a promotion gate by itself",
+      "validation_cohort": "On the full disjoint public validation bank at the same affine-only transition state, freeze every wrong post-BOS position in published validation order; do not downsample to a perfect or easy subset. If there are no errors, mark this diagnostic unavailable rather than changing the cohort.",
+      "fit_cohort": "for each seed, run the affine-only transition model on the public fit bank and take up to 256 wrong post-BOS positions using the first available errors in fixed bins [1,15], [16,39], [40,79], [80,127], targeting 64 per bin and preserving fit-record then position order",
+      "affine_baseline": "For each frozen cohort, retain the transition affine-only predictions and W,b,s state. At each staged arm selected checkpoint and at final step 3000, construct an affine-only twin from that same checkpoint W,b,s and compare the complete decoder prediction with the affine-only prediction on the frozen transition-error cohort.",
+      "comparison": "At each staged selected checkpoint and at final step 3000, construct an affine-only twin from that same checkpoint W,b,s and compare it with the complete decoder on the full public-validation transition-error cohort and the fixed available fit-error cohort. Report (a) transition-affine wrong -> same-final-affine correct as direct-path progress, (b) same-final-affine wrong -> final-full correct as added-path corrections, (c) same-final-affine wrong -> final-full wrong as residual failures, and (d) same-final-affine correct -> final-full wrong as introduced errors, for both staged visibility masks and both seeds. The same-final-affine comparison isolates added-path correction; transition-affine versus final-full is retained only as a combined progress diagnostic and is not called evidence of contextual correction by itself.",
+      "phase_boundary_justification": "Use one third of the fixed 3000-update budget for affine-only training (1000) and two thirds for complete training (2000). For the two visibility arms retained here, published P06 selected checkpoints were steps 1700 and 2000 for past-only and 1700 and 900 for positionwise-diagonal across the two seeds; 1000 lies inside that observed public optimization window without authorizing a schedule sweep. The published full-record 1500 selection is out of scope for this positionwise/past-only design and is not used as its schedule rationale.",
+      "shortfall_rule": "If a bin has fewer than 64 errors, use all available errors in that bin, record the shortfall, and mark only the fit-cohort diagnostic incomplete. If the full cohort is empty, report the diagnostic as unavailable. Do not change bins, add updates, or select an already-perfect subset; the full public-validation cohort remains the held-out development diagnostic.",
+      "qualification_invalidation": "A fit-cohort shortfall does not invalidate the eight-arm fit or the natural evaluation; it makes the fit-side correction diagnostic limited and is reported alongside the full public-validation diagnostic.",
+      "selection_early": "A staged arm may select step 0..1000 under the common earliest-maximum rule. Report that its selected state is still affine-only or transition-phase, retain the valid selected-state metric, and do not force a phase-2 selection or declare a run failure."
+    },
+    "early_selection_policy": "A staged arm selected before or at step 1000 is valid evidence about equal-budget selection; report it as an early affine/transition selection and do not rescue it with a later checkpoint."
+  },
+  "fresh_evaluation": {
+    "source_role": "modest new natural panel selected and captured by setup after this plan is approved; exact universe, exclusions, and ordered IDs are frozen before predictions",
+    "records_per_domain": 256,
+    "domains": [
+      "pile",
+      "finance"
+    ],
+    "target_conditions": [
+      "public_base",
+      "public_lora_2601"
+    ],
+    "primary_target": "public_base",
+    "secondary_target": "public_lora_2601 paired changed-target transfer diagnostic; never used for arm selection or the primary gate",
+    "pairing": "the same source record is evaluated under both target conditions when the changed capture is available",
+    "geometry": "H128 observations, matching masks and position IDs, score positions 1..127 only, padding excluded from keys, queries, and denominators",
+    "eligibility": "natural records with at least 128 valid positions, separated from fit, validation, opened parent evaluation, and setup's approved identity/exclusion ledgers",
+    "selection": "domain-only public source selection fixed before prediction; no correctness, token, loss, or model output field is consulted",
+    "metrics": [
+      "micro token accuracy over valid post-BOS positions",
+      "per-record token accuracy",
+      "exact 127-token clip recovery",
+      "paired token gains/losses and exact both/gain/loss/neither counts",
+      "position-bin descriptive deltas with actual valid future counts"
+    ],
+    "truth_boundary": "all arm predictions, selected states, target captures, masks, and timing choices are frozen before evaluator truth is opened"
+  },
+  "estimands_and_uncertainty": {
+    "primary": "interaction I per public-base domain: (Past_staged - Positionwise_staged) - (Past_joint - Positionwise_joint)",
+    "general_staging": "Staged - Joint separately for Past and Positionwise; report whether both masks move together",
+    "visibility": "Past - Positionwise separately within Joint and Staged",
+    "replicate_aggregation": "average per-seed correctness counts within each source before bootstrap; do not average token IDs or treat seeds as independent records",
+    "bootstrap": {
+      "draws": 10000,
+      "seed": 8080,
+      "unit": "source record within each domain and target",
+      "shared_indices": "reuse the same source-index draw across all four arms, both visibility masks, both schedules, and the paired target condition within a domain",
+      "interval": "two-sided percentile 95% paired source-cluster interval",
+      "strata": "domain only; public_base is primary and public_lora_2601 is reported separately"
+    },
+    "practical_margins": {
+      "interaction_token_benefit_pp": 0.5,
+      "interaction_exact_benefit_pp": 5.0,
+      "interaction_harm_token_pp": -0.5,
+      "interaction_harm_exact_pp": -5.0,
+      "rationale": "the interaction is a difference of visibility contrasts, so a 0.5-point token margin is a modest practical signal below the P07 one-point checkpoint margin while the five-point exact margin retains a meaningful whole-clip requirement; these are task-local progression criteria"
+    }
+  },
+  "decision_and_stopping": {
+    "qualification_inconclusive": "resource/non-finite failure, missing validation/selection receipt, or any arm not completing the fixed 3000-update exposure makes the fitting comparison or natural result inconclusive. A transition fit-cohort quota shortfall marks only that diagnostic incomplete; full public-validation diagnostics and the eight-arm natural comparison may still proceed.",
+    "contextual_staging_support": "both public-base domains show interaction support by token or exact margin with 95% lower endpoint above zero, no interaction harm cell, and per-seed interaction point estimates have the same nonnegative sign in each domain",
+    "general_staging_benefit": "call a general staging benefit only when both visibility masks show a staged-minus-joint contrast meeting a registered +0.5 pp token or +5 pp exact margin with lower CI above zero in both primary domains, with same-sign per-seed contrasts; otherwise report the contrast descriptively",
+    "contextual_staging_not_supported": "call useful contextual staging ruled out only when, in both public-base domains, the interaction token upper CI is below +0.5 pp and the interaction exact upper CI is below +5 pp, with no seed or domain materially opposite; this rules out the registered practical benefit while allowing smaller effects",
+    "inconclusive": "After the support and useful-benefit-ruled-out gates fail, classify the comparison as inconclusive when a domain or seed estimate crosses a registered practical boundary, support is present in only one domain, required arm/receipt/exposure evidence is incomplete, or an early staged selection leaves the interaction uncertain. A fit-cohort diagnostic shortfall alone is not an inconclusive result for the main comparison; retain the reference and do not add phases.",
+    "automatic_actions": "no global promotion, no extra phases, no schedule sweep, no automatic confirmation, and no reinterpretation of P07's result",
+    "gate_order": "Apply the practical support gate first, then the practical useful-benefit-ruled-out gate, and only then classify the remainder as inconclusive. Small mixed signs do not override a gate that has already been met; they are reported descriptively within the gate result.",
+    "seed_reproducibility_support": "For a contextual support call, no primary domain may have a seed interaction point estimate <= -0.5 token pp or <= -5 exact pp.",
+    "seed_reproducibility_ruled_out": "For a useful-benefit-ruled-out call, no primary domain may have a seed interaction point estimate >= +0.5 token pp or >= +5 exact pp; a positive seed at or above either registered benefit margin contradicts ruling out that practical benefit."
+  },
+  "resource_and_cost": {
+    "preflight": "source-only geometry and public-resource checks, then one disposable two-step full backward H128 batch-8 x 512 cell before main fitting",
+    "largest_cell": "all direct and attention parameters trainable with the common H128 geometry; record peak GPU reserved/free, host RSS/available, wall time, and optimizer-state allocation",
+    "execution": "sequential restart-safe arms under watchdog; stop on guard, allocator, driver, or non-finite anomalies",
+    "cost_reporting": "record phase-specific and total wall time, optimizer updates, query draws, validation, checkpoint serialization, and warmed inference separately; do not compare batch throughput with single-record latency",
+    "expected_fit_work": "8 arms x 3000 updates = 24000 optimizer updates and 12288000 query draws, with four staged arms explicitly including 1000 affine-only plus 2000 complete updates"
+  },
+  "deliverables": {
+    "plan": "experiments/TRR-P08/plan.json",
+    "review": "experiments/TRR-P08/review/design-review.md",
+    "result": "coordination/results/TRR-P08.md",
+    "manifest": "experiments/TRR-P08/manifest.json",
+    "status": "task-local receipts only; no global STATE or registry edits"
+  }
+}

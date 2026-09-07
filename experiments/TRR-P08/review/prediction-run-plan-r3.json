@@ -1,0 +1,105 @@
+{
+  "access_boundary": {
+    "candidate_arrays_persisted": false,
+    "capture_gate_required": true,
+    "prediction_started": false,
+    "source_text_loaded": false,
+    "target_labels_loaded": false,
+    "truth_opened": false
+  },
+  "capture_acceptance_requirements": [
+    "capture-watchdog-r3 PASS with inner capture PASS",
+    "public-capture-r3/observations.json exists and binds r2 frozen universe/selection",
+    "all four observation cells have [256,128,2048] H128 geometry and valid masks/positions",
+    "truth_opened=false and source/token payloads absent from manifest"
+  ],
+  "commands": {
+    "cwd": "/tmp/trr-p08",
+    "guarded_prediction": "PYTHONPATH=.:src python3 scripts/trr_p06/resource_watchdog.py --output-root experiments/TRR-P08/runtime/watchdog-predictions-r3 --timeout-seconds 1800 --poll-seconds 0.5 --max-rss-bytes 17179869184 --min-available-bytes 10737418240 --label TRR-P08-predictions-r3 --cwd /tmp/trr-p08 -- env CUDA_VISIBLE_DEVICES=0 HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 PYTHONPATH=.:src python3 scripts/trr_p08/run_predictions.py --repository-root /tmp/trr-p08 --fit-receipt experiments/TRR-P08/runtime/main-r2/main_fit_receipt.json --observation-manifest experiments/TRR-P08/runtime/public-capture-r3/observations.json --embedding-path /home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors --output-root experiments/TRR-P08/runtime/predictions-r3 --device cuda --torch-threads 4 --torch-interop-threads 1 --batch-records 8 --projection-chunk 512 --minimum-free-gib 8 --maximum-gpu-reserved-gib 6 --maximum-host-rss-gib 16 --minimum-host-available-gib 10 --max-seconds 1800",
+    "output_root": "experiments/TRR-P08/runtime/predictions-r3",
+    "watchdog_output_root": "experiments/TRR-P08/runtime/watchdog-predictions-r3"
+  },
+  "created_utc": "2026-09-07T03:25:30Z",
+  "dependencies": {
+    "embedding_table": {
+      "bytes": 1050673488,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+      "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+    },
+    "main_fit_receipt": {
+      "bytes": 19958391,
+      "path": "/tmp/trr-p08/experiments/TRR-P08/runtime/main-r2/main_fit_receipt.json",
+      "sha256": "44b2a965c92d64938e5ff322222678c8cfaf4ba84ff93b62d6f49cfce39d7a86"
+    },
+    "r2_frozen_universe": {
+      "bytes": 73403,
+      "path": "/tmp/trr-p08/experiments/TRR-P08/runtime/source-universe-r2/frozen.json",
+      "sha256": "23a8c632e232552e3dd5a33bcb1d5b07387505a971fb6c7df55ab1f8d5316a72"
+    },
+    "r2_selection": {
+      "bytes": 372627,
+      "path": "/tmp/trr-p08/experiments/TRR-P08/runtime/source-selection-r2/selection.json",
+      "sha256": "e8023ed00ae3efbaa1b86f1290aa4de6b23da48dd70f7b10d9e147fbf6fbfb86"
+    },
+    "r3_observation_manifest": {
+      "path": "experiments/TRR-P08/runtime/public-capture-r3/observations.json",
+      "required_schema": "token-reconstruction.trr-p08-public-observation-manifest.v1",
+      "status": "PENDING_CAPTURE_R3_PASS"
+    },
+    "selected_state_freeze": {
+      "bytes": 6315,
+      "path": "/tmp/trr-p08/experiments/TRR-P08/runtime/selected-state-freeze-r2/selected_state_freeze.json",
+      "sha256": "a44f33a1700b1af1393e124f9b37a175c1e876cb221c1a226b9ea1be206e4ced"
+    }
+  },
+  "geometry": {
+    "batch_records": 8,
+    "hidden_size": 2048,
+    "measured_passes_per_group": 3,
+    "observation_cells": 4,
+    "projection_chunk": 512,
+    "records_per_domain": 256,
+    "repeat_ids_and_ties_required": true,
+    "scored_post_bos_tokens": 127,
+    "sequence_tokens_including_bos": 128,
+    "state_cell_groups": 32,
+    "states": 8,
+    "vocabulary_size": 128256,
+    "warmup_passes_per_group": 1
+  },
+  "no_run_note": "Create-only plan. Prediction must wait for a reviewed capture-r3 PASS and a fresh resource grant.",
+  "prediction_script": {
+    "bytes": 43294,
+    "path": "/tmp/trr-p08/scripts/trr_p08/run_predictions.py",
+    "sha256": "feef7b28d2a1ce7af6e686e2ec4c7c02ea2102976f4e8e2eb6b527b270f910a9"
+  },
+  "preserved_prior_failure": {
+    "reason": "P08 adapter delegated validation without CANDIDATE_RANGES; no model loaded and no observations written",
+    "status": "CHILD_EXITED_NONZERO_PREMODEL",
+    "watchdog_root": "experiments/TRR-P08/runtime/capture-watchdog-r2"
+  },
+  "resource_policy": {
+    "cpu_interop_threads": 1,
+    "cpu_threads": 4,
+    "maximum_gpu_reserved_gib": 6,
+    "maximum_host_rss_gib": 16,
+    "minimum_free_gpu_gib": 8,
+    "minimum_host_available_gib": 10,
+    "timeout_seconds": 1800
+  },
+  "schema": "token-reconstruction.trr-p08-prediction-run-plan.v3",
+  "source_code_commit_at_plan": "7ba89241b6e6faeb6c30e73d48a6faeb919c5b8c",
+  "state_freeze_binding": {
+    "fit_receipt_path": "experiments/TRR-P08/runtime/main-r2/main_fit_receipt.json",
+    "runner_contract": "run_predictions validates the fit receipt and all eight selected state files; the selected-state-freeze receipt is an independent precondition.",
+    "selected_state_count": 8,
+    "selected_state_freeze_path": "experiments/TRR-P08/runtime/selected-state-freeze-r2/selected_state_freeze.json"
+  },
+  "status": "PREPARED_NOT_RUN_CAPTURE_R3_PENDING",
+  "task_id": "TRR-P08",
+  "timing_boundary": {
+    "measured_interval": "full 256-record passes with common batch-8/512-row readout, per-batch guards, and device synchronization",
+    "observation_deserialization_timed_separately": true,
+    "resource_guard_and_synchronization_included": true
+  }
+}

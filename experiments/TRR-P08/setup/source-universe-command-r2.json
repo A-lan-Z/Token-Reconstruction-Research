@@ -1,0 +1,114 @@
+{
+  "schema": "token-reconstruction.trr-p08-source-universe-command.v2",
+  "task_id": "TRR-P08",
+  "status": "PREPARED_NOT_RUN_BINDING_REPAIR",
+  "created_utc": "2026-09-07T02:44:00Z",
+  "repair_reason": "The r1 collector omitted the approved TRR-0007 opaque ledger and therefore permitted one final-sequence overlap. The r1 universe, selection, and export remain preserved as excluded pre-capture evidence.",
+  "plan": {
+    "path": "experiments/TRR-P08/plan.json",
+    "sha256": "9d1eb8dca89c76f4064c0c380636cb9d585672f7fae796d5295d6507b788caa3",
+    "selection_seed": 8108,
+    "candidate_ranges_half_open": {
+      "pile": [
+        0,
+        7000
+      ],
+      "finance": [
+        20000,
+        26000
+      ]
+    },
+    "records_per_domain": 256
+  },
+  "required_p06_selection": {
+    "path": "experiments/TRR-P06/runtime/source-selection-r1/selection.json",
+    "bytes": 373091,
+    "sha256": "d53ed8c972ec9ec00c6490dca22a99af833ea839fa68d9c4164ce061ee893a1a",
+    "records_per_domain": 256
+  },
+  "required_opaque_ledgers": [
+    {
+      "key": "approved_trr0007_opaque",
+      "path": "/tmp/trr-p06/experiments/TRR-P06/setup/approved-trr0007/p06_opaque_source_sequence_reservation.json",
+      "bytes": 41283,
+      "sha256": "09e845fec244a38873c5bf127f6d984af91af503fb42d3a8411451ce41cdedf4",
+      "schema": "token-reconstruction.trr0007-opaque-source-sequence-reservation.v1",
+      "counts": {
+        "public_record_sha256": 256,
+        "final_sequence_sha256": 256
+      }
+    },
+    {
+      "key": "approved_trr0008_opaque",
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0008/experiments/TRR-0008/selection/opaque_source_sequence_reservation.json",
+      "bytes": 216396,
+      "sha256": "0487b9dda91d7eb791c93e1ba704afcea22abfc21f003cad8b99984f523357a4",
+      "schema": "token-reconstruction.trr0008-opaque-source-sequence-reservation.v1",
+      "counts": {
+        "public_record_sha256": 1408,
+        "final_sequence_sha256": 1408
+      }
+    },
+    {
+      "key": "approved_trr0009_opaque",
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/selection/opaque_source_sequence_reservation.json",
+      "bytes": 60742,
+      "sha256": "c0a1310c2dc8198ece3eda1eb273a3ef7412a1802ab85819ed709728bf603c52",
+      "schema": "token-reconstruction.trr0009-opaque-source-sequence-reservation.v1",
+      "counts": {
+        "public_record_sha256": 384,
+        "final_sequence_sha256": 384
+      }
+    },
+    {
+      "key": "approved_trr0009_replacement_opaque",
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/selection_v2/opaque_source_sequence_reservation.json",
+      "bytes": 60745,
+      "sha256": "73e07e1fd2c964eface6af387229bac738b96ecc5b7e1ee3059f57f9a8c2b4f8",
+      "schema": "token-reconstruction.trr0009-opaque-source-sequence-reservation.v1",
+      "counts": {
+        "public_record_sha256": 384,
+        "final_sequence_sha256": 384
+      }
+    }
+  ],
+  "exact_command": "PYTHONPATH=.:src python3 scripts/trr_p08/prepare_public_panel.py universe --repository-root /tmp/trr-p08 --plan experiments/TRR-P08/plan.json --selection-seed 8108 --pile-range 0 7000 --finance-range 20000 26000 --p06-selection experiments/TRR-P06/runtime/source-selection-r1/selection.json --approved-opaque /tmp/trr-p06/experiments/TRR-P06/setup/approved-trr0007/p06_opaque_source_sequence_reservation.json /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0008/experiments/TRR-0008/selection/opaque_source_sequence_reservation.json /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/selection/opaque_source_sequence_reservation.json /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/selection_v2/opaque_source_sequence_reservation.json --output experiments/TRR-P08/runtime/source-universe-r2/proposed.json",
+  "freeze_command": "PYTHONPATH=.:src python3 scripts/trr_p08/prepare_public_panel.py freeze --execute --universe experiments/TRR-P08/runtime/source-universe-r2/proposed.json --output experiments/TRR-P08/runtime/source-universe-r2/frozen.json",
+  "expected_outputs": {
+    "proposed": "experiments/TRR-P08/runtime/source-universe-r2/proposed.json",
+    "frozen": "experiments/TRR-P08/runtime/source-universe-r2/frozen.json"
+  },
+  "execution": {
+    "enumeration_started": false,
+    "selection_started": false,
+    "source_rows_read": false,
+    "tokenizer_loaded": false,
+    "model_loaded": false,
+    "truth_opened": false,
+    "capture_started": false
+  },
+  "r1_preserved_excluded": {
+    "universe_path": "experiments/TRR-P08/runtime/source-universe-r1/frozen.json",
+    "universe_sha256": "d9f818bd2d99388bd5d3b746134188c272fcf35502e425cedcff95dfc1b5b304",
+    "selection_path": "experiments/TRR-P08/runtime/source-selection-r1/selection.json",
+    "selection_sha256": "75f8d66007d6ae5558ded8b0fc428fc88db8aa5a04f4d372bd187f5934079274",
+    "disposition": "EXCLUDED_PRE_CAPTURE_BINDING_DEFECT"
+  },
+  "next_gate": "Await root/implementation release; do not enumerate or capture from r1 or execute r2 until a new grant.",
+  "replacement_export": {
+    "status": "RECEIVED_APPROVED_AGENT1_REPLACEMENT",
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/selection_v2/opaque_source_sequence_reservation.json",
+    "bytes": 60745,
+    "sha256": "73e07e1fd2c964eface6af387229bac738b96ecc5b7e1ee3059f57f9a8c2b4f8",
+    "schema": "token-reconstruction.trr0009-opaque-source-sequence-reservation.v1",
+    "counts": {
+      "public_record_sha256": 384,
+      "final_sequence_sha256": 384
+    },
+    "original_trr0009_retained": true,
+    "union_required_if_received": true,
+    "source_intersection_with_original_p08": 0,
+    "h128_intersection_with_original_p08": 0,
+    "no_selection_or_capture_started": true
+  }
+}

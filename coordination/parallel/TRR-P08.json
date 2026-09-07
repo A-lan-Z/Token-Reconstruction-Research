@@ -1,0 +1,682 @@
+{
+  "schema": "token-reconstruction.task-local-state.v1",
+  "task_id": "TRR-P08",
+  "status": "PUBLICATION_COMPLETE_OPEN_UNMERGED",
+  "branch": "task/TRR-P08",
+  "worktree": "/tmp/trr-p08",
+  "parent": {
+    "branch": "task/TRR-P07",
+    "commit": "cffb10c14d3b74f4bd0227804e3ac380aa475686",
+    "merge_allowed": false
+  },
+  "packet": {
+    "path": "coordination/requests/TRR-P08.md",
+    "bytes": 5710,
+    "sha256": "8edf99fcb311eadc1f17b5694dd82001ba6053aefcf8c828a3d0e19a53bb0059",
+    "saved_verbatim": true
+  },
+  "ownership": {
+    "setup": "TRR-P08",
+    "provenance_inventory": "TRR-P08",
+    "source_selection": "implementation_owner_complete",
+    "fitting_execution": "implementation_owner_complete",
+    "scientific_design_review": "design_owner"
+  },
+  "access_boundary": {
+    "p03_holdout_opened": false,
+    "trr0009_unpublished_science_read": false,
+    "fresh_selection_or_capture_run": true,
+    "truth_opened": true,
+    "gpu_or_heavy_compute_started": true,
+    "global_state_or_registry_modified": false,
+    "other_worktree_modified": false,
+    "source_rows_or_plaintext_read_by_p08": true,
+    "token_values_or_truth_read_by_p08": true,
+    "model_or_tensor_payload_loaded_by_p08": false,
+    "fresh_records_selected": true,
+    "fresh_capture_started": true,
+    "fit_or_optimizer_steps_started": true,
+    "model_or_tensor_payload_loaded": true,
+    "selection_access_note": "Evaluator-side source selection/capture and post-freeze truth materialization/scoring completed; raw observation and truth payloads remain outside Git.",
+    "truth_opened_after_joint_freeze": true,
+    "truth_payload_persisted_in_repository": false,
+    "scorer_truth_opened": false
+  },
+  "next_step": "Root remote verification only; PR 18 remains open and unmerged.",
+  "created_utc": "2026-09-07T00:12:47.039245+00:00",
+  "updated_utc": "2026-09-07T05:46:31.532077+00:00",
+  "plan": {
+    "path": "experiments/TRR-P08/plan.json",
+    "status": "FROZEN_DESIGN_SCIENTIFIC_RUN_COMPLETE",
+    "sha256": "9d1eb8dca89c76f4064c0c380636cb9d585672f7fae796d5295d6507b788caa3",
+    "bytes": 18285,
+    "fit_arms": 8,
+    "records_per_domain": 256,
+    "staged_phase_updates": "1000 affine-only + 2000 complete",
+    "source_selection_started": true
+  },
+  "setup_artifacts": {
+    "asset_inventory": "experiments/TRR-P08/setup/asset_inventory.json",
+    "asset_inventory_report": "experiments/TRR-P08/setup/asset-inventory.md",
+    "preflight": "experiments/TRR-P08/setup/preflight.json",
+    "capture_binding": "experiments/TRR-P08/setup/capture_binding.json",
+    "source_binding_module": "scripts/trr_p08/source_binding.py",
+    "source_binding_tests": "tests/test_trr_p08_source_binding.py",
+    "fit_staged_preflight_smoke": "experiments/TRR-P08/setup/fit-staged-preflight-smoke.json",
+    "fit_staged_preflight_final": "experiments/TRR-P08/setup/fit-staged-preflight-final.json",
+    "panel_preparation_runner": "scripts/trr_p08/prepare_public_panel.py",
+    "capture_runner": "scripts/trr_p08/capture_public.py",
+    "panel_adapter_tests": "tests/test_trr_p08_panel_adapter.py",
+    "cpu_ready_receipt": "experiments/TRR-P08/setup/cpu-ready-receipt.json",
+    "source_universe_command": "experiments/TRR-P08/setup/source-universe-command.json",
+    "qualifier_launch_plan": "experiments/TRR-P08/setup/qualifier-launch-plan.json",
+    "qualification_gate_receipt": "experiments/TRR-P08/setup/qualification-gate-r3.json",
+    "main_fit_evidence": "experiments/TRR-P08/setup/main-fit-evidence-r2.json",
+    "selected_state_freeze": "experiments/TRR-P08/runtime/selected-state-freeze-r2/selected_state_freeze.json",
+    "source_universe_frozen": "experiments/TRR-P08/runtime/source-universe-r1/frozen.json",
+    "source_selection": "experiments/TRR-P08/runtime/source-selection-r1/selection.json",
+    "selection_disjointness_audit": "experiments/TRR-P08/setup/selection-disjointness-audit-r1.json",
+    "capture_preflight_plan": "experiments/TRR-P08/setup/capture-preflight-plan-r2.json",
+    "selection_disjointness_audit_status": "REVIEW_REQUIRED_REMOVED_LEDGER_SEQUENCE_OVERLAP",
+    "source_universe_command_repair": "experiments/TRR-P08/setup/source-universe-command-r2.json",
+    "exclusion_binding_repair": "experiments/TRR-P08/setup/exclusion-binding-repair-r2.json",
+    "r1_selection_disposition": "EXCLUDED_PRE_CAPTURE_BINDING_DEFECT",
+    "capture_preflight_plan_r1_excluded": "experiments/TRR-P08/setup/capture-preflight-plan-r1.json",
+    "capture_approval_r3": "experiments/TRR-P08/setup/capture-approval-r3.json",
+    "capture_failure_r2": "experiments/TRR-P08/setup/capture-failure-r2.json",
+    "capture_success_r3": "experiments/TRR-P08/setup/capture-success-r3.json",
+    "evidence_inventory_r3": {
+      "bytes": 7316,
+      "path": "experiments/TRR-P08/setup/evidence-inventory-r3.json",
+      "sha256": "7dbfe947a81f5068b21e6707cebec7524ea357ca2b6136ae0ce6a64a1a68accc",
+      "status": "PUBLICATION_INVENTORY"
+    },
+    "publication_preflight_r1": {
+      "bytes": 3166,
+      "path": "experiments/TRR-P08/setup/publication-preflight-r1.json",
+      "sha256": "9f4b4f13c39509eaae10b4d8692e84e67e5d378a78499dc9683ea4eb8e5545a2",
+      "status": "PARENT_P07_BOUNDARY_VERIFIED"
+    },
+    "score_summary_r3": {
+      "bytes": 27029,
+      "path": "experiments/TRR-P08/review/score-summary-r3.json",
+      "sha256": "21b6bca8f705adbd222ed24cf65ee1f27474d45202740751c303d204e7531dbd",
+      "status": "FINAL_DERIVED_SCORE_SUMMARY"
+    },
+    "score_execution_r3": {
+      "bytes": 2307,
+      "path": "experiments/TRR-P08/review/score-execution-r3.json",
+      "sha256": "ca7db6bc13e4682860b1bb362497a8e195eff81c12e5e76729d8785ba2dfe463",
+      "status": "PASS"
+    },
+    "truth_manifest_r3": {
+      "bytes": 41077,
+      "path": "experiments/TRR-P08/review/truth-manifest-r3.json",
+      "sha256": "c31e681e814cd093369f43faa846c2b316dea717a1213dbc4edea28f9dcbb679",
+      "status": "METADATA_COPY_TRUTH_ARRAYS_EXTERNAL"
+    }
+  },
+  "verification": {
+    "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p08_panel_adapter.py tests/test_trr_p08_source_binding.py tests/test_trr_p08_fit_staged.py",
+    "result": "21 focused tests passed; 55 full P08 tests passed; final scientific outputs complete.",
+    "payload_loaded": false,
+    "metadata_preflight": {
+      "command": "PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode preflight --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --output-root /tmp/trr-p08-preflight-smoke-final-20260907 --device cpu --max-seconds 120",
+      "result": "SOURCE_ONLY_PREFLIGHT_PASS",
+      "receipt_path": "experiments/TRR-P08/setup/fit-staged-preflight-final.json",
+      "receipt_bytes": 2428,
+      "receipt_sha256": "a84d4c6785147b8019d165985a07d1ca7b94f40ab6d5807b551feb50249cfb9f",
+      "source_commit_in_receipt": "cc22371a0106706f6c05a4b8403a1f1883fbb863",
+      "source_runner_commit": "55792fd",
+      "source_manifest_sha256": "d7b0133024ed6c3f20cbcea0558c182f6131e3bff898ab04a0afbd549e0d1df3",
+      "source_manifest_shapes": {
+        "embedding_table": [
+          128256,
+          2048
+        ],
+        "fit_observations": [
+          1200,
+          192,
+          2048
+        ],
+        "fit_truth": [
+          1200,
+          192
+        ],
+        "fit_valid_mask": [
+          1200,
+          192
+        ],
+        "validation_observations": [
+          48,
+          192,
+          2048
+        ],
+        "validation_truth": [
+          48,
+          192
+        ],
+        "validation_valid_mask": [
+          48,
+          192
+        ]
+      },
+      "payload_loaded": false,
+      "gpu_started": false,
+      "resource_scope": "metadata-only shape and initialization binding; qualification remains separately gated"
+    },
+    "panel_adapter_payload_loaded": false,
+    "capture_consumer_schema": "token-reconstruction.trr-p08-public-observation-manifest.v1 accepted by scripts/trr_p08/run_predictions.py",
+    "full_p08_tests": {
+      "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p08*.py",
+      "passed": 55,
+      "elapsed_seconds": 5.02,
+      "status": "PASS",
+      "execution_note": "Completed post-fit suite; no rerun in final metadata update."
+    },
+    "focused_result": "21 passed",
+    "repair_validation": {
+      "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p08_source_binding.py tests/test_trr_p08_panel_adapter.py",
+      "result": "14 passed",
+      "status": "PASS",
+      "payload_loaded": false,
+      "source_rows_or_token_values_read": false,
+      "selection_or_capture_started": false
+    },
+    "capture": {
+      "status": "PASS",
+      "receipt": "experiments/TRR-P08/runtime/public-capture-r3/capture.json",
+      "receipt_bytes": 22432,
+      "receipt_sha256": "8ba438eefe691bfb2b02e99e8d4033c762dafd15f5276f7aadad569b0075c10d",
+      "success_evidence": "experiments/TRR-P08/setup/capture-success-r3.json",
+      "source_commit": "20b682500dd923c7abed9e672baeefa3887bf81d",
+      "universe_sha256": "23a8c632e232552e3dd5a33bcb1d5b07387505a971fb6c7df55ab1f8d5316a72",
+      "selection_sha256": "e8023ed00ae3efbaa1b86f1290aa4de6b23da48dd70f7b10d9e147fbf6fbfb86",
+      "cells": 4,
+      "records_per_domain": 256,
+      "stored_tokens": 128,
+      "scored_post_bos_tokens": 127,
+      "truth_opened": false,
+      "prediction_started": false,
+      "watchdog_peak_group_rss_bytes": 4260491264,
+      "watchdog_min_host_available_bytes": 18006745088,
+      "child_elapsed_seconds": 14.273845965013606
+    },
+    "capture_failure_r2": "experiments/TRR-P08/setup/capture-failure-r2.json",
+    "prediction": {
+      "status": "PASS",
+      "manifest": {
+        "bytes": 321798,
+        "path": "experiments/TRR-P08/runtime/predictions-r3/p08_predictions.json",
+        "sha256": "f4974384cc760bd304f3ab18b34ea886e554f0bdc171407491647ac19718f8ae",
+        "status": "P08_FROZEN_PREDICTIONS_COMPLETE_NO_TRUTH"
+      },
+      "run_manifest": {
+        "bytes": 1207,
+        "path": "experiments/TRR-P08/runtime/predictions-r3/run_manifest.json",
+        "sha256": "9c9585960d1ddf9af57791efa7e831ac97dd3a4177992e529a77662fd12162a4",
+        "status": "PASS"
+      },
+      "predictions_count": 32,
+      "truth_opened": false
+    },
+    "joint_freeze": {
+      "status": "PASS",
+      "receipt": {
+        "bytes": 82245,
+        "path": "experiments/TRR-P08/runtime/joint-freeze-r3/joint_freeze.json",
+        "sha256": "4de6ee0986b6f62ec64073bed87d23fe899c599ccf9b333e0114964e7579ba9e",
+        "status": "JOINT_FREEZE_VALIDATED_NO_TRUTH"
+      },
+      "provenance": {
+        "bytes": 5061,
+        "path": "experiments/TRR-P08/runtime/joint-freeze-r3/joint_freeze_provenance.json",
+        "sha256": "1823e8d19e96bb8e2bd406bf3dea448a42f92f6a616f793353e858252ea11f52",
+        "status": "PROVENANCE_RECORDED_NO_TRUTH"
+      },
+      "truth_opened": false
+    },
+    "truth_materialization": {
+      "status": "PASS_AFTER_JOINT_FREEZE",
+      "manifest": {
+        "bytes": 41077,
+        "path": "experiments/TRR-P08/review/truth-manifest-r3.json",
+        "sha256": "c31e681e814cd093369f43faa846c2b316dea717a1213dbc4edea28f9dcbb679",
+        "status": "METADATA_COPY_TRUTH_ARRAYS_EXTERNAL"
+      },
+      "external_path": "/tmp/trr-p08-evaluator-truth-r3/truth.manifest.json",
+      "truth_payload_persisted_in_repository": false
+    },
+    "scoring": {
+      "status": "PASS_AFTER_JOINT_FREEZE",
+      "result": {
+        "bytes": 58826576,
+        "path": "experiments/TRR-P08/runtime/scored-r3/results.json",
+        "sha256": "cf1c62672f5bbddd804451e0fd129fed043ea4b7026a979e44dbbfb9770aa7d8",
+        "status": "TRR-P08_SCORED_AFTER_JOINT_FREEZE"
+      },
+      "summary": {
+        "bytes": 27029,
+        "path": "experiments/TRR-P08/review/score-summary-r3.json",
+        "sha256": "21b6bca8f705adbd222ed24cf65ee1f27474d45202740751c303d204e7531dbd",
+        "status": "FINAL_DERIVED_SCORE_SUMMARY"
+      },
+      "execution": {
+        "bytes": 2307,
+        "path": "experiments/TRR-P08/review/score-execution-r3.json",
+        "sha256": "ca7db6bc13e4682860b1bb362497a8e195eff81c12e5e76729d8785ba2dfe463",
+        "status": "PASS"
+      },
+      "gate": "USEFUL_CONTEXTUAL_BENEFIT_RULED_OUT",
+      "general_staging_gate": "GENERAL_STAGING_INCONCLUSIVE"
+    }
+  },
+  "pending": [],
+  "source_universe_proposal": {
+    "status": "R1_EXCLUDED_PRE_CAPTURE_BINDING_DEFECT_R2_PREPARED_NOT_RUN",
+    "command_receipt": "experiments/TRR-P08/setup/source-universe-command.json",
+    "selection_seed": 8108,
+    "candidate_ranges_half_open": {
+      "pile": [
+        0,
+        7000
+      ],
+      "finance": [
+        20000,
+        26000
+      ]
+    },
+    "candidate_row_count_before_eligibility": 13000,
+    "records_per_domain": 256,
+    "approved_catalog_sha256": "03bb3e10f88c047ef15e0b1949960fde8ceb9d09f007e9cd2350b52d8edb1dae",
+    "approved_opaque_sha256": "0487b9dda91d7eb791c93e1ba704afcea22abfc21f003cad8b99984f523357a4",
+    "enumeration_started": true,
+    "selection_started": true,
+    "universal_disjointness_claim": false,
+    "code_commit": "48b75f1",
+    "approved_p06_selection_sha256": "d53ed8c972ec9ec00c6490dca22a99af833ea839fa68d9c4164ce061ee893a1a",
+    "approved_p06_selection_path": "experiments/TRR-P06/runtime/source-selection-r1/selection.json",
+    "approved_p06_selection_bytes": 373091,
+    "approved_p06_selected_record_count": 512,
+    "approved_opaque_value_counts": {
+      "public_record_sha256": 1408,
+      "final_sequence_sha256": 1408
+    },
+    "approved_opaque_nested_values_bound": true,
+    "approved_opaque_schema": "token-reconstruction.trr0008-opaque-source-sequence-reservation.v1",
+    "inherited_catalog_still_bound": true,
+    "frozen_universe_path": "experiments/TRR-P08/runtime/source-universe-r1/frozen.json",
+    "frozen_universe_bytes": 66135,
+    "frozen_universe_sha256": "d9f818bd2d99388bd5d3b746134188c272fcf35502e425cedcff95dfc1b5b304",
+    "selection_path": "experiments/TRR-P08/runtime/source-selection-r1/selection.json",
+    "selection_bytes": 372627,
+    "selection_sha256": "75f8d66007d6ae5558ded8b0fc428fc88db8aa5a04f4d372bd187f5934079274",
+    "selection_status": "FROZEN_TRR-P08_SOURCE_SELECTION_NO_TRUTH",
+    "selection_code_commit": "ef925c550e39ea557f9fea516d9d21473a9eb163",
+    "selection_audit": {
+      "scanned": 646,
+      "excluded": 85,
+      "duplicates": 3,
+      "invalid": 46,
+      "selected_total": 512
+    },
+    "selection_access": "approved evaluator-side selection transiently read public rows/tokenizer; no source text or token arrays persisted",
+    "disjointness_audit": "experiments/TRR-P08/setup/selection-disjointness-audit-r1.json",
+    "capture_preflight_plan": "experiments/TRR-P08/setup/capture-preflight-plan-r2.json",
+    "disjointness_audit_status": "R1_REVIEW_REQUIRED_REMOVED_LEDGER_SEQUENCE_OVERLAP",
+    "removed_trr0007_ledger_review": {
+      "path": "/tmp/trr-p06/experiments/TRR-P06/setup/approved-trr0007/p06_opaque_source_sequence_reservation.json",
+      "sha256": "09e845fec244a38873c5bf127f6d984af91af503fb42d3a8411451ce41cdedf4",
+      "fresh_public_overlap": 0,
+      "fresh_final_sequence_overlap": 1,
+      "replacement_trr0008_overlap": {
+        "public_record_sha256": 0,
+        "final_sequence_sha256": 0
+      },
+      "reselection_run": false
+    },
+    "r1_disposition": "EXCLUDED_PRE_CAPTURE_BINDING_DEFECT",
+    "r2_command_receipt": "experiments/TRR-P08/setup/source-universe-command-r2.json",
+    "r2_repair_receipt": "experiments/TRR-P08/setup/exclusion-binding-repair-r2.json",
+    "r2_enumeration_started": false,
+    "r2_selection_started": false,
+    "r2_capture_started": true,
+    "required_opaque_ledgers": [
+      {
+        "key": "approved_trr0007_opaque",
+        "path": "/tmp/trr-p06/experiments/TRR-P06/setup/approved-trr0007/p06_opaque_source_sequence_reservation.json",
+        "bytes": 41283,
+        "sha256": "09e845fec244a38873c5bf127f6d984af91af503fb42d3a8411451ce41cdedf4",
+        "counts": {
+          "public_record_sha256": 256,
+          "final_sequence_sha256": 256
+        }
+      },
+      {
+        "key": "approved_trr0008_opaque",
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0008/experiments/TRR-0008/selection/opaque_source_sequence_reservation.json",
+        "bytes": 216396,
+        "sha256": "0487b9dda91d7eb791c93e1ba704afcea22abfc21f003cad8b99984f523357a4",
+        "counts": {
+          "public_record_sha256": 1408,
+          "final_sequence_sha256": 1408
+        }
+      },
+      {
+        "key": "approved_trr0009_opaque",
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/selection/opaque_source_sequence_reservation.json",
+        "bytes": 60742,
+        "sha256": "c0a1310c2dc8198ece3eda1eb273a3ef7412a1802ab85819ed709728bf603c52",
+        "counts": {
+          "public_record_sha256": 384,
+          "final_sequence_sha256": 384
+        }
+      },
+      {
+        "key": "approved_trr0009_replacement_opaque",
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/selection_v2/opaque_source_sequence_reservation.json",
+        "bytes": 60745,
+        "sha256": "73e07e1fd2c964eface6af387229bac738b96ecc5b7e1ee3059f57f9a8c2b4f8",
+        "schema": "token-reconstruction.trr0009-opaque-source-sequence-reservation.v1",
+        "counts": {
+          "public_record_sha256": 384,
+          "final_sequence_sha256": 384
+        }
+      }
+    ],
+    "required_opaque_ledger_keys": [
+      "approved_trr0007_opaque",
+      "approved_trr0008_opaque",
+      "approved_trr0009_opaque",
+      "approved_trr0009_replacement_opaque"
+    ],
+    "original_trr0009_retained": true,
+    "replacement_export_union_required": true,
+    "replacement_export_status": "RECEIVED_APPROVED_AGENT1_REPLACEMENT",
+    "frozen_universe_disposition": "R1_EXCLUDED_PRE_CAPTURE_BINDING_DEFECT",
+    "selection_disposition": "R1_EXCLUDED_PRE_CAPTURE_BINDING_DEFECT",
+    "replacement_export": {
+      "key": "approved_trr0009_replacement_opaque",
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/selection_v2/opaque_source_sequence_reservation.json",
+      "bytes": 60745,
+      "sha256": "73e07e1fd2c964eface6af387229bac738b96ecc5b7e1ee3059f57f9a8c2b4f8",
+      "schema": "token-reconstruction.trr0009-opaque-source-sequence-reservation.v1",
+      "counts": {
+        "public_record_sha256": 384,
+        "final_sequence_sha256": 384
+      }
+    },
+    "capture_preflight_plan_r1_excluded": "experiments/TRR-P08/setup/capture-preflight-plan-r1.json",
+    "r2_capture_status": "PUBLIC_OBSERVATIONS_CAPTURE_COMPLETE_NO_TRUTH",
+    "r2_capture_receipt": "experiments/TRR-P08/runtime/public-capture-r3/capture.json",
+    "r2_capture_success_receipt": "experiments/TRR-P08/setup/capture-success-r3.json"
+  },
+  "resource_boundary": {
+    "status": "SCIENTIFIC_RUNS_COMPLETE_GPU_RELEASED",
+    "resource_snapshot_is_historical": true,
+    "live_refresh_required_before_qualification": false,
+    "gpu_or_heavy_compute_started": true,
+    "qualification_window_requires_root_grant": false,
+    "main_fit_requires_root_grant": false,
+    "no_post_main_gpu_or_heavy_compute": true,
+    "no_post_capture_gpu_or_heavy_compute": true
+  },
+  "coordination_request": {
+    "no_new_reservation_required": true,
+    "approved_trr0009_opaque_export": {
+      "status": "ROOT_APPROVED_SANITIZED_HASH_ONLY_EXCHANGE_COMPLETE",
+      "received": true,
+      "read": false,
+      "path": "experiments/TRR-P08/runtime/source-selection-r1/opaque_hash_exchange_sanitized.json",
+      "bytes": 80045,
+      "sha256": "3383356794d3498830f5cd69ed2c552f4ed527eceed7e05f61cc3c49eba2eb38",
+      "scope": "hash-only scheduling/exclusion exchange; no source values or science"
+    },
+    "compute_release": "RELEASED_AFTER_MAIN_PASS",
+    "gpu_launch_authorized": false,
+    "capture_repair_required": false,
+    "r1_capture_allowed": false,
+    "r2_repair_prepared_not_run": false,
+    "required_opaque_ledger_keys": [
+      "approved_trr0007_opaque",
+      "approved_trr0008_opaque",
+      "approved_trr0009_opaque",
+      "approved_trr0009_replacement_opaque"
+    ],
+    "original_trr0009_retained": true,
+    "replacement_export_union_required": true,
+    "replacement_export_status": "RECEIVED_APPROVED_AGENT1_REPLACEMENT",
+    "replacement_export": {
+      "key": "approved_trr0009_replacement_opaque",
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/selection_v2/opaque_source_sequence_reservation.json",
+      "bytes": 60745,
+      "sha256": "73e07e1fd2c964eface6af387229bac738b96ecc5b7e1ee3059f57f9a8c2b4f8",
+      "schema": "token-reconstruction.trr0009-opaque-source-sequence-reservation.v1",
+      "counts": {
+        "public_record_sha256": 384,
+        "final_sequence_sha256": 384
+      }
+    },
+    "r2_capture_status": "PASS_PUBLIC_OBSERVATIONS_NO_TRUTH",
+    "r2_capture_receipt": "experiments/TRR-P08/runtime/public-capture-r3/capture.json",
+    "r2_capture_success_receipt": "experiments/TRR-P08/setup/capture-success-r3.json",
+    "prediction_owner": "implementation_and_design",
+    "truth_opened": false,
+    "r2_repair_run_and_capture_complete": true,
+    "truth_opened_after_joint_freeze": true
+  },
+  "communication_authorization": {
+    "status": "AUTHORIZED_SCOPED",
+    "agent1_thread_id": "01a07029-b0e2-71d2-af08-ecd9aacc645f",
+    "scope": [
+      "scheduling",
+      "exclusion-status exchange"
+    ],
+    "p08_new_reservation_requested": false,
+    "trr0009_unpublished_science_read": false,
+    "compute_release_received": true,
+    "hash_only_exchange": {
+      "status": "COMPLETE_ROOT_SENT",
+      "path": "experiments/TRR-P08/runtime/source-selection-r1/opaque_hash_exchange_sanitized.json",
+      "bytes": 80045,
+      "sha256": "3383356794d3498830f5cd69ed2c552f4ed527eceed7e05f61cc3c49eba2eb38",
+      "read_by_p08_setup": false,
+      "target_scope": "approved Agent1 scheduling/exclusion coordination"
+    },
+    "pending_user_approval": false
+  },
+  "runtime_evidence": {
+    "source_commit": "00504aac40f2b3758c65c14c6dcc8f1b4c6064e5",
+    "preflight": {
+      "path": "experiments/TRR-P08/runtime/preflight-r3/preflight.json",
+      "bytes": 2425,
+      "sha256": "e4050abe32930b85bc6fa8b170679dae8eacf8e45aa9f200bae226647d230293"
+    },
+    "qualification": {
+      "path": "experiments/TRR-P08/runtime/qualification-r2/qualification.json",
+      "bytes": 5493,
+      "sha256": "a8e9bf25907594b026dd2d585949c29f40da4bfd5b3fa277fb63de230e111e6f"
+    },
+    "watchdog_finish": {
+      "path": "experiments/TRR-P08/runtime/qualification-watchdog-r2/finish.json",
+      "bytes": 1086,
+      "sha256": "bde73813994972925deffda5606bd00cb356862ab9b0a9ab04f14ff196814241"
+    },
+    "watchdog_time": {
+      "path": "experiments/TRR-P08/runtime/qualification-watchdog-r2/time.json",
+      "bytes": 1315,
+      "sha256": "2e73cae276cb7bd0ea2113f3680b6319b71542cb3d1ff678d4eebcca12d10dee"
+    },
+    "watchdog_resource_guard": {
+      "path": "experiments/TRR-P08/runtime/qualification-watchdog-r2/resource_guard.json",
+      "bytes": 4439,
+      "sha256": "814ba98121c09c38871ccb21b5e58e13a76ea93ef822a6f8d8565fef041f1dfc"
+    },
+    "watchdog_command": {
+      "path": "experiments/TRR-P08/runtime/qualification-watchdog-r2/command.json",
+      "bytes": 2017,
+      "sha256": "7ad2870508d7373822d2c2ef6f9e3a974e530fecfec2501a42f990519de8c89f"
+    },
+    "watchdog_samples": {
+      "path": "experiments/TRR-P08/runtime/qualification-watchdog-r2/resource_samples.jsonl",
+      "bytes": 2835,
+      "sha256": "d12eb7861abdf546cc32b4f1bebb271049c909830ff089cf338570d79134310d"
+    },
+    "main_started": false,
+    "main_fit": {
+      "path": "experiments/TRR-P08/runtime/main-r2/main_fit_receipt.json",
+      "bytes": 19958391,
+      "sha256": "44b2a965c92d64938e5ff322222678c8cfaf4ba84ff93b62d6f49cfce39d7a86",
+      "status": "PASS",
+      "launch_source_commit": "00504aac40f2b3758c65c14c6dcc8f1b4c6064e5",
+      "receipt_source_commit": "ef925c550e39ea557f9fea516d9d21473a9eb163",
+      "started_utc": "2026-09-07T01:39:51.058210+00:00",
+      "finished_utc": "2026-09-07T01:52:24.375144+00:00",
+      "elapsed_seconds": 756.12291,
+      "arm_count": 8,
+      "all_arms_pass": true,
+      "fresh_capture_started": false,
+      "truth_opened": false
+    },
+    "main_watchdog": {
+      "finish_path": "experiments/TRR-P08/runtime/main-watchdog-r2/finish.json",
+      "finish_bytes": 1090,
+      "finish_sha256": "5905f30bf3e29922082312679d3496714bcafd04a2eac66eac0284728f7a6695",
+      "resource_guard_path": "experiments/TRR-P08/runtime/main-watchdog-r2/resource_guard.json",
+      "resource_guard_bytes": 453474,
+      "resource_guard_sha256": "7934df644d03261680ded58efc73ae13b1fef107c51b764955a7851c10921cb6",
+      "peak_group_rss_bytes": 7569088512,
+      "minimum_sampled_host_available_bytes": 17729118208,
+      "status": "PASS",
+      "child_return_code": 0
+    },
+    "capture": {
+      "path": "experiments/TRR-P08/runtime/public-capture-r3/capture.json",
+      "bytes": 22432,
+      "sha256": "8ba438eefe691bfb2b02e99e8d4033c762dafd15f5276f7aadad569b0075c10d",
+      "status": "PASS_PUBLIC_OBSERVATIONS_CAPTURE_COMPLETE_NO_TRUTH",
+      "source_commit": "20b682500dd923c7abed9e672baeefa3887bf81d",
+      "watchdog_finish_path": "experiments/TRR-P08/runtime/capture-watchdog-r3/finish.json",
+      "watchdog_finish_sha256": "b95b987b2d308a95880074ac0159e782703d8c2b7069ab64d67da5cc94e394a3",
+      "observation_manifest_path": "experiments/TRR-P08/runtime/public-capture-r3/observations.json",
+      "observation_manifest_sha256": "90060e2bc29780ac2ed04b09f82111bef4b6d3f3469b17f6db903c78707a8fc4",
+      "panel_manifest_path": "experiments/TRR-P08/runtime/public-capture-r3/panel.json",
+      "panel_manifest_sha256": "e9193a8b151110082452ccdd596d06a0274f11d1f28eabaffa790d0922f3da1a",
+      "raw_observations_local_only": true,
+      "truth_opened": false
+    },
+    "prediction": {
+      "path": "experiments/TRR-P08/runtime/predictions-r3/p08_predictions.json",
+      "bytes": 321798,
+      "sha256": "f4974384cc760bd304f3ab18b34ea886e554f0bdc171407491647ac19718f8ae",
+      "status": "P08_FROZEN_PREDICTIONS_COMPLETE_NO_TRUTH",
+      "elapsed_seconds": 170.17991253599757
+    },
+    "prediction_run_manifest": {
+      "bytes": 1207,
+      "path": "experiments/TRR-P08/runtime/predictions-r3/run_manifest.json",
+      "sha256": "9c9585960d1ddf9af57791efa7e831ac97dd3a4177992e529a77662fd12162a4",
+      "status": "PASS"
+    },
+    "joint_freeze": {
+      "bytes": 82245,
+      "path": "experiments/TRR-P08/runtime/joint-freeze-r3/joint_freeze.json",
+      "sha256": "4de6ee0986b6f62ec64073bed87d23fe899c599ccf9b333e0114964e7579ba9e",
+      "status": "JOINT_FREEZE_VALIDATED_NO_TRUTH"
+    },
+    "joint_freeze_provenance": {
+      "bytes": 5061,
+      "path": "experiments/TRR-P08/runtime/joint-freeze-r3/joint_freeze_provenance.json",
+      "sha256": "1823e8d19e96bb8e2bd406bf3dea448a42f92f6a616f793353e858252ea11f52",
+      "status": "PROVENANCE_RECORDED_NO_TRUTH"
+    },
+    "joint_freeze_clarification": {
+      "bytes": 883,
+      "path": "experiments/TRR-P08/runtime/joint-freeze-r3/joint_freeze_provenance_clarification.json",
+      "sha256": "b4b094050d92c3790b9eeb84028b3a889ad0136b59f151bc01593a5c438e51fd",
+      "status": "METADATA_TIMESTAMP_CLARIFICATION"
+    },
+    "truth_materialization": {
+      "path": "experiments/TRR-P08/review/truth-manifest-r3.json",
+      "bytes": 41077,
+      "sha256": "c31e681e814cd093369f43faa846c2b316dea717a1213dbc4edea28f9dcbb679",
+      "external_path": "/tmp/trr-p08-evaluator-truth-r3/truth.manifest.json",
+      "status": "METADATA_COPY_TRUTH_ARRAYS_EXTERNAL"
+    },
+    "scoring": {
+      "result": {
+        "bytes": 58826576,
+        "path": "experiments/TRR-P08/runtime/scored-r3/results.json",
+        "sha256": "cf1c62672f5bbddd804451e0fd129fed043ea4b7026a979e44dbbfb9770aa7d8",
+        "status": "TRR-P08_SCORED_AFTER_JOINT_FREEZE"
+      },
+      "summary": {
+        "bytes": 27029,
+        "path": "experiments/TRR-P08/review/score-summary-r3.json",
+        "sha256": "21b6bca8f705adbd222ed24cf65ee1f27474d45202740751c303d204e7531dbd",
+        "status": "FINAL_DERIVED_SCORE_SUMMARY"
+      },
+      "execution": {
+        "bytes": 2307,
+        "path": "experiments/TRR-P08/review/score-execution-r3.json",
+        "sha256": "ca7db6bc13e4682860b1bb362497a8e195eff81c12e5e76729d8785ba2dfe463",
+        "status": "PASS"
+      },
+      "status": "PASS_AFTER_JOINT_FREEZE"
+    },
+    "report": {
+      "bytes": 18269,
+      "path": "coordination/results/TRR-P08.md",
+      "sha256": "f7e0e20c9d1eeec2236986bedaf2614a0d314579c584e08f0f95b6137d1fbe88",
+      "status": "FINAL_REPORT_COMMITTED"
+    }
+  },
+  "qualification": {
+    "status": "PASS",
+    "updates": 2,
+    "elapsed_seconds": 6.081546,
+    "peak_cuda_allocated_bytes": 2483009024,
+    "peak_cuda_reserved_bytes": 2936012800,
+    "minimum_cuda_free_bytes": 12655263744,
+    "minimum_host_available_bytes": 18372296704,
+    "process_max_rss_bytes": 5622001664,
+    "watchdog_peak_group_rss_bytes": 4066291712,
+    "watchdog_min_host_available_bytes": 18214072320,
+    "main_fit_started": true,
+    "main_fit_status": "PASS",
+    "main_fit_source_commit": "00504aac40f2b3758c65c14c6dcc8f1b4c6064e5",
+    "selected_states_frozen": true
+  },
+  "publication_blocker": "experiments/TRR-P08/setup/publication-blocked-r1.json",
+  "publication": {
+    "status": "COMPLETE_OPEN_UNMERGED",
+    "receipt": {
+      "bytes": 388,
+      "path": "experiments/TRR-P08/setup/publication-receipt-r1.json",
+      "sha256": "ec5a52c2d6a33440434524b932417cc89d3262570f0a08b15b5cdc74f0fac34a",
+      "status": "OPEN_UNMERGED_PR"
+    },
+    "pr_url": "https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/18",
+    "pr_number": 18,
+    "pr_state": "open",
+    "merged": false,
+    "merge_allowed": false,
+    "base_branch": "task/TRR-P07",
+    "base_sha": "cffb10c14d3b74f4bd0227804e3ac380aa475686",
+    "head_branch": "task/TRR-P08",
+    "evidence_commit": "aa1848ae428ff2c386eb9dc689927d28ca799703",
+    "approval_block_resolved_by_explicit_user_approval": true,
+    "historical_approval_block": {
+      "bytes": 912,
+      "path": "experiments/TRR-P08/setup/publication-blocked-r1.json",
+      "sha256": "627165a98199281b40710934d4318becd22641f6dcd3e4755a3fc5a1e596a951",
+      "status": "HISTORICAL_AUTO_REVIEW_BLOCK_RESOLVED"
+    }
+  },
+  "publication_receipt": {
+    "bytes": 388,
+    "path": "experiments/TRR-P08/setup/publication-receipt-r1.json",
+    "sha256": "ec5a52c2d6a33440434524b932417cc89d3262570f0a08b15b5cdc74f0fac34a",
+    "status": "OPEN_UNMERGED_PR"
+  }
+}

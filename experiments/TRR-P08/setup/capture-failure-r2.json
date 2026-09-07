@@ -1,0 +1,79 @@
+{
+  "schema": "token-reconstruction.trr-p08-capture-failure.v1",
+  "task_id": "TRR-P08",
+  "status": "CHILD_EXITED_NONZERO_PRESERVED_R2",
+  "source_commit": "9507c856086eeeb9294d85f606d4c930121d67e8",
+  "attempt": {
+    "watchdog_root": "experiments/TRR-P08/runtime/capture-watchdog-r2",
+    "capture_root": "experiments/TRR-P08/runtime/public-capture-r2",
+    "capture_root_created": false,
+    "child_return_code": 1,
+    "wrapper_exit_code": 1,
+    "guard_termination_reason": null,
+    "watchdog_status": "CHILD_EXITED_NONZERO"
+  },
+  "diagnosis": {
+    "classification": "ADAPTER_BINDING_ERROR_BEFORE_MODEL_LOAD",
+    "error": "Inherited P06 selection validator read panel.CANDIDATE_RANGES, but the P08 capture adapter had not rebound that metadata field.",
+    "model_loaded": false,
+    "source_rows_materialized": false,
+    "observation_written": false,
+    "truth_opened": false,
+    "prediction_started": false,
+    "geometry_changed": false,
+    "selection_changed": false
+  },
+  "resource_evidence": {
+    "peak_group_rss_bytes": 542175232,
+    "minimum_sampled_host_available_bytes": 20047495168,
+    "guard_thresholds": {
+      "max_rss_bytes": 17179869184,
+      "min_available_bytes": 10737418240
+    },
+    "guard_failures": []
+  },
+  "receipt_files": [
+    {
+      "path": "experiments/TRR-P08/runtime/capture-watchdog-r2/command.json",
+      "bytes": 4179,
+      "sha256": "a8a8e44f9f6dca1012ce76bb95e098b8b7785cf249717828f31d9328cca4aaa3"
+    },
+    {
+      "path": "experiments/TRR-P08/runtime/capture-watchdog-r2/finish.json",
+      "bytes": 1104,
+      "sha256": "84da7a493d496f3c4e71b8fd4b6ef6b5ff1a592b7e2251c035d293493af576cc"
+    },
+    {
+      "path": "experiments/TRR-P08/runtime/capture-watchdog-r2/resource_guard.json",
+      "bytes": 1747,
+      "sha256": "e9480123622b7eb47a6ae4d538fa8833ca555e17a8ea245d1435eba4af966aab"
+    },
+    {
+      "path": "experiments/TRR-P08/runtime/capture-watchdog-r2/resource_samples.jsonl",
+      "bytes": 840,
+      "sha256": "8fa2e1d7449e9898f597a1731e33c8e4b271eb409c10923a0749db546ef69d4d"
+    },
+    {
+      "path": "experiments/TRR-P08/runtime/capture-watchdog-r2/stderr.txt",
+      "bytes": 1019,
+      "sha256": "bdc65e44eded8b63af26990ed3ca8c0e86885a46e416ff9fa6106d138b9fd1a5"
+    },
+    {
+      "path": "experiments/TRR-P08/runtime/capture-watchdog-r2/stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/TRR-P08/runtime/capture-watchdog-r2/time.json",
+      "bytes": 2429,
+      "sha256": "5f4367ad057bd04b376b9fa9d6687cf71ac531804987ca696bc2fca29ae77059"
+    }
+  ],
+  "repair": {
+    "fix_commit": "7ba89241b6e6faeb6c30e73d48a6faeb919c5b8c",
+    "fix": "Rebind P08 panel.CANDIDATE_RANGES from the frozen universe before inherited selection validation.",
+    "focused_tests": "11 passed",
+    "metadata_validator": "r2 selection validator passed: 256 pile + 256 finance; truth_opened=false",
+    "next_attempt": "r3 create-only roots after root-approved r2 failure-preserving retry"
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "schema": "token-reconstruction.trr-p08-capture-preflight-plan.v1",
+  "task_id": "TRR-P08",
+  "status": "BLOCKED_R1_EXCLUDED_REPAIRED_UNIVERSE_PENDING",
+  "created_utc": "2026-09-07T02:12:00Z",
+  "source_binding": {
+    "disjointness_audit": {
+      "path": "experiments/TRR-P08/setup/selection-disjointness-audit-r1.json",
+      "status": "REVIEW_REQUIRED_R1_REMOVED_LEDGER_COLLISION"
+    },
+    "opaque_exchange": {
+      "path": "experiments/TRR-P08/runtime/source-selection-r1/opaque_hash_exchange_sanitized.json",
+      "bytes": 80045,
+      "sha256": "3383356794d3498830f5cd69ed2c552f4ed527eceed7e05f61cc3c49eba2eb38",
+      "read_by_this_plan": false
+    },
+    "superseded_r1": {
+      "universe": {
+        "path": "experiments/TRR-P08/runtime/source-universe-r1/frozen.json",
+        "bytes": 66135,
+        "sha256": "d9f818bd2d99388bd5d3b746134188c272fcf35502e425cedcff95dfc1b5b304"
+      },
+      "selection": {
+        "path": "experiments/TRR-P08/runtime/source-selection-r1/selection.json",
+        "bytes": 372627,
+        "sha256": "75f8d66007d6ae5558ded8b0fc428fc88db8aa5a04f4d372bd187f5934079274",
+        "records_total": 512,
+        "records_per_domain": 256,
+        "truth_opened": false
+      }
+    },
+    "repaired_r2": {
+      "universe": {
+        "path": "experiments/TRR-P08/runtime/source-universe-r2/frozen.json",
+        "status": "NOT_CREATED_REPAIR_PENDING"
+      },
+      "selection": {
+        "path": "experiments/TRR-P08/runtime/source-selection-r2/selection.json",
+        "status": "NOT_CREATED_REPAIR_PENDING"
+      },
+      "required_ledger_contract": "experiments/TRR-P08/setup/exclusion-binding-repair-r2.json"
+    },
+    "disposition": "EXCLUDED_PRE_CAPTURE_BINDING_DEFECT",
+    "replacement_export_union_required": true,
+    "replacement_export_status": "RECEIVED_APPROVED_AGENT1_REPLACEMENT",
+    "required_opaque_ledger_keys": [
+      "approved_trr0007_opaque",
+      "approved_trr0008_opaque",
+      "approved_trr0009_opaque",
+      "approved_trr0009_replacement_opaque"
+    ],
+    "replacement_export": {
+      "key": "approved_trr0009_replacement_opaque",
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/selection_v2/opaque_source_sequence_reservation.json",
+      "bytes": 60745,
+      "sha256": "73e07e1fd2c964eface6af387229bac738b96ecc5b7e1ee3059f57f9a8c2b4f8",
+      "schema": "token-reconstruction.trr0009-opaque-source-sequence-reservation.v1",
+      "counts": {
+        "public_record_sha256": 384,
+        "final_sequence_sha256": 384
+      }
+    }
+  },
+  "geometry": {
+    "capture_batch_records": 8,
+    "capture_sequence_tokens_including_bos": 192,
+    "stored_hidden_positions_including_bos": 128,
+    "scored_post_bos_positions": 127,
+    "hidden_size": 2048,
+    "vocab_size": 128256,
+    "cells": 4,
+    "target_conditions": [
+      "public_base",
+      "public_lora_2601"
+    ],
+    "cells_processed_sequentially": true
+  },
+  "published_preflight_estimate": {
+    "source": "experiments/TRR-P06/setup/capture_preflight-r1.json",
+    "status": "READ_ONLY_ESTIMATE_NO_CAPTURE",
+    "dtype": "bfloat16",
+    "conservative_model_hidden_full_vocab_logits_gib": 2.6747020856,
+    "retained_hidden_activation_batch8_h128_bytes": 4194304,
+    "full_hidden_plus_logits_batch8_h192_bytes": 400293888,
+    "guard_min_free_gpu_gib": 8,
+    "guard_max_reserved_gpu_gib": 6,
+    "guard_max_host_rss_gib": 16,
+    "guard_min_host_available_gib": 10,
+    "runtime_reference": {
+      "path": "experiments/TRR-P06/runtime/public-capture-r2/capture.json",
+      "status": "PUBLIC_OBSERVATIONS_CAPTURE_COMPLETE_NO_TRUTH",
+      "elapsed_seconds": 12.62272135700914,
+      "records": 512,
+      "raw_observation_cell_size_bytes_approx": 134500000,
+      "estimated_total_raw_observation_bytes_approx": 538000000
+    },
+    "qualification_rule": "Refresh live GPU/host availability; the external watchdog and the capture helper's per-cell guards must pass. Stop on allocator, driver, non-finite, or guard failure."
+  },
+  "preflight_snapshot_command": "nvidia-smi --query-gpu=name,memory.total,memory.used,memory.free,temperature.gpu --format=csv,noheader && awk '/MemAvailable:/ {print $2}' /proc/meminfo",
+  "output_policy": {
+    "observations_local_only": true,
+    "raw_observation_payloads_tracked": false,
+    "publish_metadata_and_hashes_only": true,
+    "truth_materialization_or_scoring": false,
+    "requires_root_gpu_grant": true,
+    "not_executed": true
+  },
+  "blocking_review": {
+    "status": "REQUIRED_BEFORE_CAPTURE",
+    "classification": "EXCLUDED_PRE_CAPTURE_BINDING_DEFECT",
+    "r1_audit": "experiments/TRR-P08/setup/selection-disjointness-audit-r1.json",
+    "finding": "r1 fresh P08 final-sequence overlap count 1 with the omitted TRR-0007 ledger; r1 is permanently excluded from capture",
+    "repair": "Bind current P06 selection plus approved TRR-0007, TRR-0008, and TRR-0009 opaque ledgers; preserve original TRR-0009 and union any later Agent1 replacement export.",
+    "execution_started": false
+  },
+  "superseded_r1_guarded_capture_command": "PYTHONPATH=.:src python3 scripts/trr_p06/resource_watchdog.py --output-root experiments/TRR-P08/runtime/capture-watchdog-r1 --timeout-seconds 1800 --poll-seconds 0.5 --max-rss-bytes 17179869184 --min-available-bytes 10737418240 --label TRR-P08-public-capture-r1 --cwd /tmp/trr-p08 -- env CUDA_VISIBLE_DEVICES=0 HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 PYTHONPATH=.:src python3 scripts/trr_p08/capture_public.py --execute --repository-root /tmp/trr-p08 --universe experiments/TRR-P08/runtime/source-universe-r1/frozen.json --selection experiments/TRR-P08/runtime/source-selection-r1/selection.json --tokenizer /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6 --pile-arrow /home/alanz/.cache/huggingface/datasets/NeelNanda___pile-10k/default/0.0.0/127bfedcd5047750df5ccf3a12979a47bfa0bafa/pile-10k-train.arrow --finance-arrow /home/alanz/.cache/huggingface/datasets/Josephgflowers___finance-instruct-500k/default/0.0.0/583a98fb0ec14d904e9423b671d9d0fea88891b6/finance-instruct-500k-train-00000-of-00002.arrow /home/alanz/.cache/huggingface/datasets/Josephgflowers___finance-instruct-500k/default/0.0.0/583a98fb0ec14d904e9423b671d9d0fea88891b6/finance-instruct-500k-train-00001-of-00002.arrow --model-snapshot /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6 --lora-config /home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/public-calibration/generation.json --lora-update /home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors --output-root experiments/TRR-P08/runtime/public-capture-r1 --device cuda",
+  "guarded_capture_command": "NOT_RUN_UNTIL_R2_UNIVERSE_AND_SELECTION_ARE_CREATED_AND_VALIDATED",
+  "repair_command_receipt": "experiments/TRR-P08/setup/source-universe-command-r2.json"
+}

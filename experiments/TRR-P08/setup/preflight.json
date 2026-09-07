@@ -1,0 +1,85 @@
+{
+  "schema": "token-reconstruction.trr-p08-preflight.v1",
+  "task_id": "TRR-P08",
+  "status": "METADATA_ONLY_NO_JOB_AUTHORIZED",
+  "generated_utc": "2026-09-07T00:21:24.106429+00:00",
+  "basis": {
+    "published_p06_plan": {
+      "path": "experiments/TRR-P06/plan.json",
+      "sha256": "80c51201dfd3f291bce2a6a33c4b58cdea72a2c1fd85d0520983a367fd3a3832",
+      "bytes": 21306
+    },
+    "published_p06_geometry": "H128, batch 8 records, 512 post-BOS draws per update, full-vocabulary readout, actual full-valid H128 mask",
+    "published_p06_reference_schedule": "3000 updates, AdamW lr=1e-3, validation every 100, two public-fit replicates 6106/6107",
+    "p08_staged_budget_rule": "affine phase is included in the common total exposure; phase lengths remain pending plan freeze"
+  },
+  "largest_cell_reference_geometry": {
+    "batch_records": 8,
+    "sequence_tokens_including_bos": 128,
+    "hidden_size": 2048,
+    "vocabulary_size": 128256,
+    "post_bos_draws_per_update": 512,
+    "trainable_parameters_reference": 5247361,
+    "estimated_activation_batch_fp32_bytes": 8388608,
+    "estimated_adam_m_v_fp32_bytes": 41978888,
+    "estimated_attention_scores_fp32_bytes": 524288,
+    "estimated_embedding_table_fp32_bytes": 1050673488,
+    "estimated_model_parameter_fp32_bytes": 20989444,
+    "estimated_selected_logits_fp32_bytes": 262668288,
+    "qualification_cell": "one complete-mask backward cell before any matrix"
+  },
+  "inherited_reference_guards": {
+    "maximum_host_rss_gib": 16.0,
+    "minimum_host_available_gib": 10.0,
+    "maximum_reserved_gpu_gib": 6.0,
+    "minimum_free_gpu_gib": 8.0,
+    "timeout_seconds": 1800,
+    "note": "Reference guard values from published P06 plan; not an execution authorization for P08."
+  },
+  "live_snapshot_read_only": {
+    "host_total_bytes": 32411611136,
+    "host_available_bytes": 20704288768,
+    "gpu_name": "NVIDIA GeForce RTX 5080",
+    "gpu_total_mib": 16303,
+    "gpu_used_mib": 2982,
+    "gpu_free_mib": 12996,
+    "gpu_temperature_c": 28,
+    "cpu_count": 32,
+    "job_started": false
+  },
+  "required_before_execution": [
+    "root/design approval of P08 crossed fitting plan and phase lengths",
+    "root binding of every approved hash-only exclusion ledger, including any TRR-0009 reservation export",
+    "freeze source universe and deterministic selection rule before enumeration",
+    "qualify the largest complete-mask backward cell with external fail-closed guard",
+    "freeze all arm states, predictions, and costs before any evaluation truth access"
+  ],
+  "no_truth_or_payload_access": true,
+  "transition_diagnostic_estimate": {
+    "source_commit": "5be5faa218424d0a806686829e0b7015932b6294",
+    "basis": "static H128/full-vocabulary geometry from frozen P08 fit plan; no tensor payload loaded and no execution performed",
+    "fit_post_bos_positions_per_seed": 112825,
+    "validation_post_bos_positions_per_seed": 2982,
+    "seeds": 2,
+    "selection_chunk_count_lower_bound_across_seeds": 454,
+    "selection_chunk_count_upper_bound_from_batch_reset_across_seeds": 624,
+    "correction_row_prediction_calls": 32,
+    "correction_chunk_count_lower_bound": 112,
+    "all_diagnostic_chunk_count_lower_bound": 566,
+    "one_logits_chunk_bytes": 262668288,
+    "one_logits_chunk_mib": 250.5,
+    "embedding_tensor_bytes": 1050673152,
+    "embedding_tensor_gib": 0.978515625,
+    "cumulative_logits_output_lower_bound_gib": 138.4599609375,
+    "wall_seconds": null,
+    "wall_time_status": "UNMEASURED_METADATA_ESTIMATE_ONLY",
+    "internal_guard": {
+      "callback": "fit_staged._train_arm diagnostic_guard",
+      "checks": "before/after embedding validation, before/after every diagnostic batch and readout chunk",
+      "uses_existing_limits": true,
+      "numerical_outputs_changed": false
+    },
+    "external_watchdog_required": true,
+    "fresh_source_preflight_required": true
+  }
+}

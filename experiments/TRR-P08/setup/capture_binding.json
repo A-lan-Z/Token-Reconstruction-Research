@@ -1,0 +1,120 @@
+{
+  "schema": "token-reconstruction.trr-p08-capture-binding.v1",
+  "task_id": "TRR-P08",
+  "status": "REPAIR_REQUIRED_R1_EXCLUDED_R2_PENDING",
+  "source_selection": {
+    "status": "EXCLUDED_PRE_CAPTURE_BINDING_DEFECT",
+    "path": "experiments/TRR-P08/runtime/source-selection-r1/selection.json",
+    "bytes": 372627,
+    "sha256": "75f8d66007d6ae5558ded8b0fc428fc88db8aa5a04f4d372bd187f5934079274",
+    "selected": true,
+    "records_total": 512,
+    "records_per_domain": 256,
+    "capture_allowed": false,
+    "disposition": "EXCLUDED_PRE_CAPTURE_BINDING_DEFECT"
+  },
+  "model": {
+    "id": "meta-llama/Llama-3.2-1B-Instruct",
+    "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "cut_depth": 4,
+    "hidden_size": 2048
+  },
+  "geometry": {
+    "capture_batch_records": 8,
+    "capture_sequence_tokens": 192,
+    "stored_sequence_tokens_including_bos": 128,
+    "scored_post_bos_positions": 127,
+    "same_observation_for_all_arms": true,
+    "same_source_order_across_targets": true
+  },
+  "target_conditions": [
+    {
+      "id": "public_base",
+      "kind": "published_public_base",
+      "update_loaded": false
+    },
+    {
+      "id": "public_lora_2601",
+      "kind": "published_public_changed_target",
+      "config_path": "outputs/TRR-0002/public-calibration/generation.json",
+      "update_path": "outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors",
+      "update_loaded": false
+    }
+  ],
+  "observation_contract": {
+    "retain_hidden_states": "H_0..H_127 plus matching bool mask and position IDs",
+    "truth_or_source_rows_loaded": false,
+    "source_text_or_token_ids_written": false,
+    "raw_observations_publication": "local-only external payloads; publish metadata and hashes",
+    "padding_masked_from_keys_queries_and_denominators": true
+  },
+  "access_boundary": {
+    "model_loaded": false,
+    "capture_started": false,
+    "truth_opened": false,
+    "trr0009_unpublished_science_read": false,
+    "p03_holdout_opened": false
+  },
+  "adapter": {
+    "source_universe_runner": "scripts/trr_p08/prepare_public_panel.py",
+    "capture_runner": "scripts/trr_p08/capture_public.py",
+    "prediction_consumer": "scripts/trr_p08/run_predictions.py",
+    "observation_manifest_schema": "token-reconstruction.trr-p08-public-observation-manifest.v1",
+    "consumer_accepts_observation_schema": true,
+    "consumer_geometry_validator": "scripts/trr_p08/run_predictions.py::_validate_observation_manifest",
+    "selection_and_capture_are_create_only": true,
+    "source_rows_or_tokens_persisted": false
+  },
+  "preflight_plan": "experiments/TRR-P08/setup/capture-preflight-plan-r2.json",
+  "superseded_r1": {
+    "universe": {
+      "path": "experiments/TRR-P08/runtime/source-universe-r1/frozen.json",
+      "bytes": 66135,
+      "sha256": "d9f818bd2d99388bd5d3b746134188c272fcf35502e425cedcff95dfc1b5b304",
+      "disposition": "EXCLUDED_PRE_CAPTURE_BINDING_DEFECT"
+    },
+    "selection": {
+      "path": "experiments/TRR-P08/runtime/source-selection-r1/selection.json",
+      "bytes": 372627,
+      "sha256": "75f8d66007d6ae5558ded8b0fc428fc88db8aa5a04f4d372bd187f5934079274",
+      "disposition": "EXCLUDED_PRE_CAPTURE_BINDING_DEFECT"
+    }
+  },
+  "required_repaired_inputs": {
+    "universe": {
+      "path": "experiments/TRR-P08/runtime/source-universe-r2/frozen.json",
+      "status": "NOT_CREATED_REPAIR_PENDING"
+    },
+    "selection": {
+      "path": "experiments/TRR-P08/runtime/source-selection-r2/selection.json",
+      "status": "NOT_CREATED_REPAIR_PENDING"
+    },
+    "required_opaque_ledger_keys": [
+      "approved_trr0007_opaque",
+      "approved_trr0008_opaque",
+      "approved_trr0009_opaque",
+      "approved_trr0009_replacement_opaque"
+    ],
+    "original_trr0009_retained": true,
+    "replacement_export_union_required": true,
+    "replacement_export_status": "RECEIVED_APPROVED_AGENT1_REPLACEMENT",
+    "replacement_export": {
+      "key": "approved_trr0009_replacement_opaque",
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/selection_v2/opaque_source_sequence_reservation.json",
+      "bytes": 60745,
+      "sha256": "73e07e1fd2c964eface6af387229bac738b96ecc5b7e1ee3059f57f9a8c2b4f8",
+      "schema": "token-reconstruction.trr0009-opaque-source-sequence-reservation.v1",
+      "counts": {
+        "public_record_sha256": 384,
+        "final_sequence_sha256": 384
+      }
+    }
+  },
+  "repair_binding": {
+    "classification": "EXCLUDED_PRE_CAPTURE_BINDING_DEFECT",
+    "receipt": "experiments/TRR-P08/setup/exclusion-binding-repair-r2.json",
+    "universe_command": "experiments/TRR-P08/setup/source-universe-command-r2.json",
+    "r1_capture_or_truth_access": false
+  },
+  "superseded_preflight_plan": "experiments/TRR-P08/setup/capture-preflight-plan-r1.json"
+}

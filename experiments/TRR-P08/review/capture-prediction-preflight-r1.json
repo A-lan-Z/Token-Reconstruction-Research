@@ -1,0 +1,316 @@
+{
+  "access_boundary": {
+    "preflight_gpu_job_started": false,
+    "preflight_inference_started": false,
+    "preflight_model_loaded": false,
+    "preflight_observations_materialized": false,
+    "preflight_truth_opened": false
+  },
+  "code_bindings": {
+    "capture_script": {
+      "bytes": 16829,
+      "path": "/tmp/trr-p08/scripts/trr_p08/capture_public.py",
+      "sha256": "b0819e330362ba6f0baab2fa883460ff5aad071b9e4d3044272603fee3d5d70f"
+    },
+    "external_watchdog": {
+      "bytes": 27292,
+      "path": "/tmp/trr-p08/scripts/trr_p06/resource_watchdog.py",
+      "sha256": "2384b51e3220d6bbd0c6b723d414e2f3350fceacb974ec88fa0757ffbcc7d652"
+    },
+    "fit_receipt": {
+      "bytes": 19958391,
+      "path": "/tmp/trr-p08/experiments/TRR-P08/runtime/main-r2/main_fit_receipt.json",
+      "sha256": "44b2a965c92d64938e5ff322222678c8cfaf4ba84ff93b62d6f49cfce39d7a86"
+    },
+    "fit_source_commit": "ef925c550e39ea557f9fea516d9d21473a9eb163",
+    "fit_source_diff_from_current": "capture_public.py, run_predictions.py, and resource_watchdog.py unchanged from fit source commit",
+    "plan": {
+      "bytes": 18285,
+      "path": "/tmp/trr-p08/experiments/TRR-P08/plan.json",
+      "sha256": "9d1eb8dca89c76f4064c0c380636cb9d585672f7fae796d5295d6507b788caa3"
+    },
+    "prediction_script": {
+      "bytes": 43294,
+      "path": "/tmp/trr-p08/scripts/trr_p08/run_predictions.py",
+      "sha256": "feef7b28d2a1ce7af6e686e2ec4c7c02ea2102976f4e8e2eb6b527b270f910a9"
+    },
+    "selected_state_freeze": {
+      "bytes": 6315,
+      "path": "/tmp/trr-p08/experiments/TRR-P08/runtime/selected-state-freeze-r2/selected_state_freeze.json",
+      "sha256": "a44f33a1700b1af1393e124f9b37a175c1e876cb221c1a226b9ea1be206e4ced"
+    },
+    "source_selection": {
+      "bytes": 372627,
+      "path": "/tmp/trr-p08/experiments/TRR-P08/runtime/source-selection-r1/selection.json",
+      "sha256": "75f8d66007d6ae5558ded8b0fc428fc88db8aa5a04f4d372bd187f5934079274"
+    },
+    "source_universe": {
+      "bytes": 66135,
+      "path": "/tmp/trr-p08/experiments/TRR-P08/runtime/source-universe-r1/frozen.json",
+      "sha256": "d9f818bd2d99388bd5d3b746134188c272fcf35502e425cedcff95dfc1b5b304"
+    },
+    "static_preflight_basis": {
+      "bytes": 3878,
+      "path": "/tmp/trr-p08/experiments/TRR-P08/setup/preflight.json",
+      "sha256": "700c1327a34818057bbe805d09181b34e02f66935d14f51328610a6985da2555"
+    }
+  },
+  "commands": {
+    "capture": {
+      "argv": [
+        "env",
+        "CUDA_VISIBLE_DEVICES=0",
+        "HF_HUB_OFFLINE=1",
+        "HF_DATASETS_OFFLINE=1",
+        "TRANSFORMERS_OFFLINE=1",
+        "TOKENIZERS_PARALLELISM=false",
+        "OMP_NUM_THREADS=4",
+        "MKL_NUM_THREADS=4",
+        "PYTHONPATH=.:src:scripts",
+        "/usr/bin/python3",
+        "/tmp/trr-p08/scripts/trr_p06/resource_watchdog.py",
+        "--output-root",
+        "experiments/TRR-P08/runtime/watchdog-capture-r1",
+        "--timeout-seconds",
+        "1800",
+        "--poll-seconds",
+        "0.5",
+        "--max-rss-bytes",
+        "17179869184",
+        "--min-available-bytes",
+        "10737418240",
+        "--cwd",
+        "/tmp/trr-p08",
+        "--label",
+        "TRR-P08-public-capture-r1",
+        "--",
+        "env",
+        "CUDA_VISIBLE_DEVICES=0",
+        "HF_HUB_OFFLINE=1",
+        "HF_DATASETS_OFFLINE=1",
+        "TRANSFORMERS_OFFLINE=1",
+        "TOKENIZERS_PARALLELISM=false",
+        "OMP_NUM_THREADS=4",
+        "MKL_NUM_THREADS=4",
+        "PYTHONPATH=.:src:scripts",
+        "/usr/bin/python3",
+        "/tmp/trr-p08/scripts/trr_p08/capture_public.py",
+        "--execute",
+        "--repository-root",
+        "/tmp/trr-p08",
+        "--universe",
+        "experiments/TRR-P08/runtime/source-universe-r1/frozen.json",
+        "--selection",
+        "experiments/TRR-P08/runtime/source-selection-r1/selection.json",
+        "--tokenizer",
+        "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+        "--pile-arrow",
+        "/home/alanz/.cache/huggingface/datasets/NeelNanda___pile-10k/default/0.0.0/127bfedcd5047750df5ccf3a12979a47bfa0bafa/pile-10k-train.arrow",
+        "--finance-arrow",
+        "/home/alanz/.cache/huggingface/datasets/Josephgflowers___finance-instruct-500k/default/0.0.0/583a98fb0ec14d904e9423b671d9d0fea88891b6/finance-instruct-500k-train-00000-of-00002.arrow",
+        "/home/alanz/.cache/huggingface/datasets/Josephgflowers___finance-instruct-500k/default/0.0.0/583a98fb0ec14d904e9423b671d9d0fea88891b6/finance-instruct-500k-train-00001-of-00002.arrow",
+        "--model-snapshot",
+        "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+        "--lora-config",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/public-calibration/generation.json",
+        "--lora-update",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors",
+        "--output-root",
+        "experiments/TRR-P08/runtime/capture-r1",
+        "--device",
+        "cuda"
+      ],
+      "label": "TRR-P08-public-capture-r1",
+      "shell_command": "env CUDA_VISIBLE_DEVICES=0 HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 PYTHONPATH=.:src:scripts /usr/bin/python3 /tmp/trr-p08/scripts/trr_p06/resource_watchdog.py --output-root experiments/TRR-P08/runtime/watchdog-capture-r1 --timeout-seconds 1800 --poll-seconds 0.5 --max-rss-bytes 17179869184 --min-available-bytes 10737418240 --cwd /tmp/trr-p08 --label TRR-P08-public-capture-r1 -- env CUDA_VISIBLE_DEVICES=0 HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 PYTHONPATH=.:src:scripts /usr/bin/python3 /tmp/trr-p08/scripts/trr_p08/capture_public.py --execute --repository-root /tmp/trr-p08 --universe experiments/TRR-P08/runtime/source-universe-r1/frozen.json --selection experiments/TRR-P08/runtime/source-selection-r1/selection.json --tokenizer /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6 --pile-arrow /home/alanz/.cache/huggingface/datasets/NeelNanda___pile-10k/default/0.0.0/127bfedcd5047750df5ccf3a12979a47bfa0bafa/pile-10k-train.arrow --finance-arrow /home/alanz/.cache/huggingface/datasets/Josephgflowers___finance-instruct-500k/default/0.0.0/583a98fb0ec14d904e9423b671d9d0fea88891b6/finance-instruct-500k-train-00000-of-00002.arrow /home/alanz/.cache/huggingface/datasets/Josephgflowers___finance-instruct-500k/default/0.0.0/583a98fb0ec14d904e9423b671d9d0fea88891b6/finance-instruct-500k-train-00001-of-00002.arrow --model-snapshot /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6 --lora-config /home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/public-calibration/generation.json --lora-update /home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors --output-root experiments/TRR-P08/runtime/capture-r1 --device cuda",
+      "watchdog_output_root": "experiments/TRR-P08/runtime/watchdog-capture-r1"
+    },
+    "prediction": {
+      "argv": [
+        "env",
+        "CUDA_VISIBLE_DEVICES=0",
+        "HF_HUB_OFFLINE=1",
+        "HF_DATASETS_OFFLINE=1",
+        "TRANSFORMERS_OFFLINE=1",
+        "TOKENIZERS_PARALLELISM=false",
+        "OMP_NUM_THREADS=4",
+        "MKL_NUM_THREADS=4",
+        "PYTHONPATH=.:src:scripts",
+        "/usr/bin/python3",
+        "/tmp/trr-p08/scripts/trr_p06/resource_watchdog.py",
+        "--output-root",
+        "experiments/TRR-P08/runtime/watchdog-predictions-r1",
+        "--timeout-seconds",
+        "1800",
+        "--poll-seconds",
+        "0.5",
+        "--max-rss-bytes",
+        "17179869184",
+        "--min-available-bytes",
+        "10737418240",
+        "--cwd",
+        "/tmp/trr-p08",
+        "--label",
+        "TRR-P08-predictions-r1",
+        "--",
+        "env",
+        "CUDA_VISIBLE_DEVICES=0",
+        "HF_HUB_OFFLINE=1",
+        "HF_DATASETS_OFFLINE=1",
+        "TRANSFORMERS_OFFLINE=1",
+        "TOKENIZERS_PARALLELISM=false",
+        "OMP_NUM_THREADS=4",
+        "MKL_NUM_THREADS=4",
+        "PYTHONPATH=.:src:scripts",
+        "/usr/bin/python3",
+        "/tmp/trr-p08/scripts/trr_p08/run_predictions.py",
+        "--repository-root",
+        "/tmp/trr-p08",
+        "--fit-receipt",
+        "experiments/TRR-P08/runtime/main-r2/main_fit_receipt.json",
+        "--observation-manifest",
+        "experiments/TRR-P08/runtime/capture-r1/observations.json",
+        "--embedding-path",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+        "--output-root",
+        "experiments/TRR-P08/runtime/predictions-r1",
+        "--device",
+        "cuda",
+        "--torch-threads",
+        "4",
+        "--torch-interop-threads",
+        "1",
+        "--batch-records",
+        "8",
+        "--projection-chunk",
+        "512",
+        "--minimum-free-gib",
+        "8",
+        "--maximum-gpu-reserved-gib",
+        "6",
+        "--maximum-host-rss-gib",
+        "16",
+        "--minimum-host-available-gib",
+        "10",
+        "--max-seconds",
+        "1800"
+      ],
+      "label": "TRR-P08-predictions-r1",
+      "shell_command": "env CUDA_VISIBLE_DEVICES=0 HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 PYTHONPATH=.:src:scripts /usr/bin/python3 /tmp/trr-p08/scripts/trr_p06/resource_watchdog.py --output-root experiments/TRR-P08/runtime/watchdog-predictions-r1 --timeout-seconds 1800 --poll-seconds 0.5 --max-rss-bytes 17179869184 --min-available-bytes 10737418240 --cwd /tmp/trr-p08 --label TRR-P08-predictions-r1 -- env CUDA_VISIBLE_DEVICES=0 HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 PYTHONPATH=.:src:scripts /usr/bin/python3 /tmp/trr-p08/scripts/trr_p08/run_predictions.py --repository-root /tmp/trr-p08 --fit-receipt experiments/TRR-P08/runtime/main-r2/main_fit_receipt.json --observation-manifest experiments/TRR-P08/runtime/capture-r1/observations.json --embedding-path /home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors --output-root experiments/TRR-P08/runtime/predictions-r1 --device cuda --torch-threads 4 --torch-interop-threads 1 --batch-records 8 --projection-chunk 512 --minimum-free-gib 8 --maximum-gpu-reserved-gib 6 --maximum-host-rss-gib 16 --minimum-host-available-gib 10 --max-seconds 1800",
+      "watchdog_output_root": "experiments/TRR-P08/runtime/watchdog-predictions-r1"
+    }
+  },
+  "compatibility_review": {
+    "capture": {
+      "decision": "compatible exact path; require fresh live guard and preserve P08 capture receipts/failures",
+      "p06_reference": {
+        "capture_elapsed_seconds": 12.62272135700914,
+        "geometry": "batch-8 x 192",
+        "qualification_status": "passed",
+        "task": "TRR-P06",
+        "truth_opened": false,
+        "worst_cuda_peak_allocated_bytes": 2481656832,
+        "worst_cuda_peak_reserved_bytes": 2499805184
+      },
+      "p08_adapter_reuses": "scripts/trr_p06/capture_public.py::_capture_condition and public-prefix qualification",
+      "p08_inner_qualification": "_qualify_public_prefix_padding runs before each public condition; the finance 8x192 cell is the largest qualification cell",
+      "separate_qualify_flag": false
+    },
+    "prediction": {
+      "decision": "compatible state-independent geometry; first P08 guarded cell is the live representative qualification before accepting the remaining matrix",
+      "p06_reference": {
+        "cell_passes": 96,
+        "cells": 4,
+        "elapsed_seconds": 104.19651730600162,
+        "states": 6,
+        "task": "TRR-P06",
+        "truth_opened": false,
+        "worst_cuda_peak_reserved_bytes": 2661285888,
+        "worst_process_rss_bytes": 3606114304
+      },
+      "p08_runner_numerical_boundary": "H128, batch-8, full-vocabulary, 512-row chunks, one warmup plus three measured passes, repeat IDs/ties exact",
+      "separate_qualify_flag": false
+    }
+  },
+  "execution_order": [
+    "refresh live GPU/host guard and require exclusive reservation",
+    "run the guarded capture command; retain any failure.json and do not reuse partial observations",
+    "verify capture manifest geometry, masks, positions, and no-truth flags",
+    "run the guarded prediction command; built-in first cell is the representative H128/chunk512 qualification and every cell remains guarded",
+    "verify repeat ID/tie equality and freeze outputs before any truth reader"
+  ],
+  "generated_utc": "2026-09-07T02:17:04Z",
+  "geometry": {
+    "capture": {
+      "batch_records": 8,
+      "cells": 4,
+      "conditions": [
+        "public_base",
+        "public_lora_2601"
+      ],
+      "dtype": "bfloat16",
+      "full_sequence_tokens_including_bos": 192,
+      "hidden_size": 2048,
+      "records_per_domain": 256,
+      "stored_sequence_tokens_including_bos": 128
+    },
+    "prediction": {
+      "batch_records": 8,
+      "cells": 4,
+      "full_vocabulary": 128256,
+      "hidden_size": 2048,
+      "measured_passes": 3,
+      "passes_per_cell": 4,
+      "projection_chunk": 512,
+      "records_per_domain": 256,
+      "scored_post_bos_tokens": 127,
+      "sequence_tokens_including_bos": 128,
+      "states": 8,
+      "warmup_passes": 1
+    }
+  },
+  "help_checks": {
+    "capture_help": "PASS; no separate --qualify flag; --execute is required",
+    "prediction_help": "PASS; no separate --qualify flag; production contract enforces batch-8/projection-512"
+  },
+  "notes": [
+    "No P08 source payload, model, observation tensor, truth, or inference was loaded while creating this preflight.",
+    "The P06 capture reference is the same adapter primitive and exact 8x192 public-prefix geometry; P08 requires a fresh guarded execution receipt.",
+    "The P08 prediction runner has no separate qualify mode. The first guarded cell is retained as the representative live qualification, with P06 measured state-independent memory as the static bound.",
+    "No microbatch or precision substitution is proposed; production batch/chunk geometry is unchanged."
+  ],
+  "schema": "token-reconstruction.trr-p08-capture-prediction-preflight.v1",
+  "source_commit": "056df62ba6a84e22ce97168c317fda691ed49419",
+  "static_estimate": {
+    "capture": {
+      "conservative_wall_seconds": 60.0,
+      "expected_reserved_gib_upper_bound_from_p06": 2.328125,
+      "full_forward_hidden_plus_vocab_accounting_bytes": 400293888,
+      "guard_free_gib": 8.0,
+      "guard_reserved_gib": 6.0,
+      "hidden_activation_bytes_batch8x192_bf16": 6291456,
+      "stored_observation_bytes_four_cells_bf16": 536870912,
+      "stored_observation_bytes_per_cell_bf16": 134217728,
+      "timeout_seconds": 1800.0
+    },
+    "host_guard": {
+      "maximum_rss_gib": 16.0,
+      "minimum_available_gib": 10.0
+    },
+    "prediction": {
+      "conservative_wall_seconds": 600.0,
+      "embedding_bytes": 1050673488,
+      "embedding_gib": 0.978515625,
+      "expected_reserved_gib_upper_bound_from_p06": 2.48046875,
+      "guard_free_gib": 8.0,
+      "guard_reserved_gib": 6.0,
+      "one_512x128256_fp32_logits_bytes": 262668288,
+      "one_512x128256_fp32_logits_mib": 250.5,
+      "p06_to_p08_cell_ratio": 1.3333333333333333,
+      "scaled_core_seconds_from_p06": 138.9286897413355,
+      "timeout_seconds": 1800.0,
+      "total_state_cell_passes": 128
+    }
+  },
+  "status": "METADATA_ONLY_NO_JOB_AUTHORIZED",
+  "task_id": "TRR-P08"
+}

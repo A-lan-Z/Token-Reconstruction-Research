@@ -1,0 +1,83 @@
+{
+  "schema": "token-reconstruction.trr-p08-capture-approval.v1",
+  "task_id": "TRR-P08",
+  "status": "APPROVED_ROOT_GRANT_CAPTURE_RUNNING",
+  "created_utc": "2026-09-07T03:21:21Z",
+  "authorization": {
+    "scope": "r2-only guarded public observation capture; no prediction or truth access",
+    "source_selection_reviewed": true,
+    "required_ledger_audit": "experiments/TRR-P08/runtime/source-selection-r2/selection_audit.json",
+    "required_ledger_audit_sha256": "1376eac05969d2708de0b6031993b0a167482a415620faecee9248694e65a9f2",
+    "new_universe_reviewed": true,
+    "new_selection_reviewed": true,
+    "r1_capture_allowed": false
+  },
+  "source": {
+    "git_head": "9507c856086eeeb9294d85f606d4c930121d67e8",
+    "universe": {
+      "path": "experiments/TRR-P08/runtime/source-universe-r2/frozen.json",
+      "bytes": 73403,
+      "sha256": "23a8c632e232552e3dd5a33bcb1d5b07387505a971fb6c7df55ab1f8d5316a72"
+    },
+    "selection": {
+      "path": "experiments/TRR-P08/runtime/source-selection-r2/selection.json",
+      "bytes": 372627,
+      "sha256": "e8023ed00ae3efbaa1b86f1290aa4de6b23da48dd70f7b10d9e147fbf6fbfb86"
+    },
+    "r1_excluded": {
+      "universe_sha256": "d9f818bd2d99388bd5d3b746134188c272fcf35502e425cedcff95dfc1b5b304",
+      "selection_sha256": "75f8d66007d6ae5558ded8b0fc428fc88db8aa5a04f4d372bd187f5934079274",
+      "disposition": "EXCLUDED_PRE_CAPTURE_BINDING_DEFECT"
+    }
+  },
+  "preflight": {
+    "plan_path": "experiments/TRR-P08/setup/capture-preflight-plan-r2.json",
+    "plan_status": "PREPARED_NOT_RUN_R2_REPAIRED_SELECTION_PENDING",
+    "guarded_command": "PYTHONPATH=.:src python3 scripts/trr_p06/resource_watchdog.py --output-root experiments/TRR-P08/runtime/capture-watchdog-r2 --timeout-seconds 1800 --poll-seconds 0.5 --max-rss-bytes 17179869184 --min-available-bytes 10737418240 --label TRR-P08-public-capture-r2 --cwd /tmp/trr-p08 -- env CUDA_VISIBLE_DEVICES=0 HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 PYTHONPATH=.:src python3 scripts/trr_p08/capture_public.py --execute --repository-root /tmp/trr-p08 --universe experiments/TRR-P08/runtime/source-universe-r2/frozen.json --selection experiments/TRR-P08/runtime/source-selection-r2/selection.json --tokenizer /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6 --pile-arrow /home/alanz/.cache/huggingface/datasets/NeelNanda___pile-10k/default/0.0.0/127bfedcd5047750df5ccf3a12979a47bfa0bafa/pile-10k-train.arrow --finance-arrow /home/alanz/.cache/huggingface/datasets/Josephgflowers___finance-instruct-500k/default/0.0.0/583a98fb0ec14d904e9423b671d9d0fea88891b6/finance-instruct-500k-train-00000-of-00002.arrow /home/alanz/.cache/huggingface/datasets/Josephgflowers___finance-instruct-500k/default/0.0.0/583a98fb0ec14d904e9423b671d9d0fea88891b6/finance-instruct-500k-train-00001-of-00002.arrow --model-snapshot /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6 --lora-config /home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/public-calibration/generation.json --lora-update /home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors --output-root experiments/TRR-P08/runtime/public-capture-r2 --device cuda",
+    "observed_utc": "2026-09-07T03:21:21Z",
+    "gpu": {
+      "index": 0,
+      "name": "NVIDIA GeForce RTX 5080",
+      "total_mib": 16303,
+      "used_mib": 3305,
+      "free_mib": 12673,
+      "temperature_c": 34,
+      "free_gib": 12.3759765625,
+      "free_headroom_over_8gib": 4.3759765625
+    },
+    "host_memory": {
+      "mem_total_kb": 31651964,
+      "mem_available_kb": 19865516,
+      "mem_available_bytes": 20342288384,
+      "mem_available_gib": 18.945232391357422,
+      "headroom_over_10gib": 8.945232391357422
+    },
+    "guard_thresholds": {
+      "watchdog_timeout_seconds": 1800,
+      "watchdog_max_rss_bytes": 17179869184,
+      "watchdog_min_available_bytes": 10737418240,
+      "capture_min_free_gpu_bytes": 8589934592,
+      "capture_max_reserved_gpu_bytes": 6442450944,
+      "capture_max_host_rss_bytes": 17179869184,
+      "capture_min_host_available_bytes": 10737418240,
+      "exclusive_gpu_recheck_required": true,
+      "stop_on": [
+        "OOM",
+        "non-finite activation",
+        "allocator or driver anomaly",
+        "source mismatch",
+        "guard violation",
+        "timeout"
+      ]
+    },
+    "snapshot_only": true
+  },
+  "execution": {
+    "selection_started_before_capture": true,
+    "capture_started": true,
+    "truth_opened": false,
+    "prediction_started": false,
+    "output_root": "experiments/TRR-P08/runtime/public-capture-r2",
+    "watchdog_output_root": "experiments/TRR-P08/runtime/capture-watchdog-r2"
+  }
+}

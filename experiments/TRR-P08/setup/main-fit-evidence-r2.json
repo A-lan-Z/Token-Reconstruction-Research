@@ -1,0 +1,132 @@
+{
+  "schema": "token-reconstruction.trr-p08-main-fit-evidence.v1",
+  "task_id": "TRR-P08",
+  "status": "PASS_8_ARMS_SELECTED_STATES_FROZEN",
+  "created_utc": "2026-09-07T02:02:00Z",
+  "launch": {
+    "source_commit": "00504aac40f2b3758c65c14c6dcc8f1b4c6064e5",
+    "run_start": {
+      "path": "experiments/TRR-P08/runtime/main-r2/run_start.json",
+      "bytes": 241,
+      "sha256": "98ad301ffc55222f8a8b5640b78fe6eafeaada4eb6c6a4f703c5c2ef01428a32"
+    },
+    "started_utc": "2026-09-07T01:39:51.058210+00:00",
+    "command": "PYTHONPATH=.:src python3 scripts/trr_p06/resource_watchdog.py --output-root experiments/TRR-P08/runtime/main-watchdog-r2 --timeout-seconds 1800 --poll-seconds 0.5 --max-rss-bytes 17179869184 --min-available-bytes 10737418240 --label TRR-P08-main-r2 --cwd /tmp/trr-p08 -- env PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode main --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --preflight-receipt experiments/TRR-P08/runtime/preflight-r3/preflight.json --qualification-receipt experiments/TRR-P08/runtime/qualification-r2/qualification.json --output-root experiments/TRR-P08/runtime/main-r2 --device cuda --torch-threads 4 --torch-interop-threads 1 --minimum-free-gib 8 --maximum-gpu-reserved-gib 6 --maximum-host-rss-gib 16 --minimum-host-available-gib 10 --max-seconds 1800"
+  },
+  "completion": {
+    "fit_receipt": {
+      "path": "experiments/TRR-P08/runtime/main-r2/main_fit_receipt.json",
+      "bytes": 19958391,
+      "sha256": "44b2a965c92d64938e5ff322222678c8cfaf4ba84ff93b62d6f49cfce39d7a86"
+    },
+    "fit_status": "PASS",
+    "finished_utc": "2026-09-07T01:52:24.375144+00:00",
+    "elapsed_seconds": 756.12291,
+    "child_return_code": 0,
+    "watchdog_status": "PASS",
+    "watchdog_finish": {
+      "path": "experiments/TRR-P08/runtime/main-watchdog-r2/finish.json",
+      "bytes": 1090,
+      "sha256": "5905f30bf3e29922082312679d3496714bcafd04a2eac66eac0284728f7a6695"
+    },
+    "watchdog_time": {
+      "path": "experiments/TRR-P08/runtime/main-watchdog-r2/time.json",
+      "bytes": 1406,
+      "sha256": "304cd542fea3bb29a3bf7fe0936b506d8ce49c509132cc91e6b34f99b3c36d11"
+    }
+  },
+  "source_provenance": {
+    "launch_source_commit": "00504aac40f2b3758c65c14c6dcc8f1b4c6064e5",
+    "fit_receipt_source_commit": "ef925c550e39ea557f9fea516d9d21473a9eb163",
+    "selected_freeze_source_commit": "ef925c550e39ea557f9fea516d9d21473a9eb163",
+    "selected_freeze_receipt": {
+      "path": "experiments/TRR-P08/runtime/selected-state-freeze-r2/selected_state_freeze.json",
+      "bytes": 6315,
+      "sha256": "a44f33a1700b1af1393e124f9b37a175c1e876cb221c1a226b9ea1be206e4ced"
+    },
+    "provenance_receipt": {
+      "path": "experiments/TRR-P08/runtime/selected-state-freeze-r2/provenance.json",
+      "bytes": 1839,
+      "sha256": "2d9c7cd58e50b3aaa982b1a66b0f60578cfeb3ee9f09fd7271f2daee8ac67717"
+    },
+    "source_drift_explanation": "The fit launched at 00504aa. A metadata-only selected-state-freeze commit advanced the repository to ef925c5 while the child was running; the provenance receipt verifies scripts/trr_p08/fit_staged.py was unchanged across that interval. Immutable arm and fit receipts retain their recorded source commits."
+  },
+  "matrix": {
+    "arm_count": 8,
+    "arm_statuses": "all PASS",
+    "seeds": [6106, 6107],
+    "updates_per_arm": 3000,
+    "selected_steps": {
+      "6106::p08_positionwise_staged": 2200,
+      "6106::p08_past_only_staged": 1200,
+      "6106::p08_positionwise_joint": 1500,
+      "6106::p08_past_only_joint": 1500,
+      "6107::p08_positionwise_staged": 1900,
+      "6107::p08_past_only_staged": 2300,
+      "6107::p08_positionwise_joint": 1800,
+      "6107::p08_past_only_joint": 2100
+    },
+    "geometry": {
+      "fit_records": 1200,
+      "validation_records": 48,
+      "sequence_tokens": 128,
+      "hidden_size": 2048,
+      "record_batch_size": 8,
+      "position_budget": 512
+    }
+  },
+  "resource": {
+    "limits": {
+      "timeout_seconds": 1800,
+      "max_rss_bytes": 17179869184,
+      "minimum_host_available_bytes": 10737418240,
+      "minimum_free_gpu_gib": 8,
+      "maximum_reserved_gpu_gib": 6
+    },
+    "peak_group_rss_bytes": 7569088512,
+    "minimum_sampled_host_available_bytes": 17729118208,
+    "resource_guard": {
+      "path": "experiments/TRR-P08/runtime/main-watchdog-r2/resource_guard.json",
+      "bytes": 453474,
+      "sha256": "7934df644d03261680ded58efc73ae13b1fef107c51b764955a7851c10921cb6"
+    },
+    "resource_samples": {
+      "path": "experiments/TRR-P08/runtime/main-watchdog-r2/resource_samples.jsonl",
+      "bytes": 334695,
+      "sha256": "26cffd10083bba355865c4c3d768cc77aa94b4fa693cf6afe6ce24d274683116"
+    }
+  },
+  "access_boundary": {
+    "public_fit_payload_loaded": true,
+    "source_token_access": false,
+    "target_truth_access": false,
+    "evaluator_truth_opened": false,
+    "p03_holdout_opened": false,
+    "trr0009_unpublished_science_read": false,
+    "fresh_capture_started": false
+  },
+  "verification": {
+    "qualification": {
+      "path": "experiments/TRR-P08/runtime/qualification-r2/qualification.json",
+      "sha256": "a8e9bf25907594b026dd2d585949c29f40da4bfd5b3fa277fb63de230e111e6f",
+      "status": "PASS",
+      "updates": 2,
+      "elapsed_seconds": 6.081546,
+      "peak_cuda_reserved_bytes": 2936012800,
+      "peak_process_rss_bytes": 5622001664
+    },
+    "focused_pre_fit_tests": {
+      "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p08_panel_adapter.py tests/test_trr_p08_source_binding.py tests/test_trr_p08_fit_staged.py",
+      "passed": 21,
+      "status": "PASS"
+    },
+    "full_p08_tests": {
+      "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p08*.py",
+      "passed": 50,
+      "elapsed_seconds": 5.02,
+      "status": "PASS",
+      "execution_note": "Recorded from the completed post-fit suite; no rerun was performed during this bookkeeping update."
+    }
+  },
+  "next_step": "Root review/publication bookkeeping. No additional fit, selection, capture, truth opening, or experiment is authorized by this receipt."
+}
