@@ -54,5 +54,32 @@
     "qualify the largest complete-mask backward cell with external fail-closed guard",
     "freeze all arm states, predictions, and costs before any evaluation truth access"
   ],
-  "no_truth_or_payload_access": true
+  "no_truth_or_payload_access": true,
+  "transition_diagnostic_estimate": {
+    "source_commit": "5be5faa218424d0a806686829e0b7015932b6294",
+    "basis": "static H128/full-vocabulary geometry from frozen P08 fit plan; no tensor payload loaded and no execution performed",
+    "fit_post_bos_positions_per_seed": 112825,
+    "validation_post_bos_positions_per_seed": 2982,
+    "seeds": 2,
+    "selection_chunk_count_lower_bound_across_seeds": 454,
+    "selection_chunk_count_upper_bound_from_batch_reset_across_seeds": 624,
+    "correction_row_prediction_calls": 32,
+    "correction_chunk_count_lower_bound": 112,
+    "all_diagnostic_chunk_count_lower_bound": 566,
+    "one_logits_chunk_bytes": 262668288,
+    "one_logits_chunk_mib": 250.5,
+    "embedding_tensor_bytes": 1050673152,
+    "embedding_tensor_gib": 0.978515625,
+    "cumulative_logits_output_lower_bound_gib": 138.4599609375,
+    "wall_seconds": null,
+    "wall_time_status": "UNMEASURED_METADATA_ESTIMATE_ONLY",
+    "internal_guard": {
+      "callback": "fit_staged._train_arm diagnostic_guard",
+      "checks": "before/after embedding validation, before/after every diagnostic batch and readout chunk",
+      "uses_existing_limits": true,
+      "numerical_outputs_changed": false
+    },
+    "external_watchdog_required": true,
+    "fresh_source_preflight_required": true
+  }
 }
