@@ -21,7 +21,9 @@
     "trr0009_unpublished_science_accessed": false,
     "truth_accessed": false,
     "truth_materialized": false,
-    "truth_payload_persisted_in_repository": false
+    "truth_payload_persisted_in_repository": false,
+    "r2_selection_frozen_before_model_or_target_load": true,
+    "r2_zero_overlap_reviewed": true
   },
   "artifacts": {
     "preflight": {
@@ -851,10 +853,38 @@
       "joint_freeze": "PENDING: experiments/TRR-P08/runtime/root-joint-freeze.json",
       "prediction": "PENDING: experiments/TRR-P08/runtime/predictions-r1/",
       "repair": {
-        "capture_blocked_until_repaired_selection": true,
-        "source_selection_r2": "PENDING: experiments/TRR-P08/runtime/source-selection-r2/selection.json",
-        "source_universe_r2": "PENDING: experiments/TRR-P08/runtime/source-universe-r2/frozen.json",
-        "status": "PENDING_SETUP_REPAIR"
+        "capture_blocked_until_repaired_selection": false,
+        "source_selection_r2": {
+          "bytes": 372627,
+          "path": "experiments/TRR-P08/runtime/source-selection-r2/selection.json",
+          "sha256": "e8023ed00ae3efbaa1b86f1290aa4de6b23da48dd70f7b10d9e147fbf6fbfb86",
+          "status": "FROZEN_TRR-P08_SOURCE_SELECTION_NO_TRUTH"
+        },
+        "source_universe_r2": {
+          "bytes": 73403,
+          "path": "experiments/TRR-P08/runtime/source-universe-r2/frozen.json",
+          "sha256": "23a8c632e232552e3dd5a33bcb1d5b07387505a971fb6c7df55ab1f8d5316a72",
+          "status": "FROZEN_SOURCE_UNIVERSE"
+        },
+        "repair_receipt": {
+          "bytes": 5006,
+          "path": "experiments/TRR-P08/setup/exclusion-binding-repair-r2.json",
+          "sha256": "4e7f2e374e1dab513723008e64cd9bc44c854cddbdf004ef52da584ac5e409dc",
+          "status": "PREPARED_NOT_RUN_EXCLUDED_R1_REPLACEMENT_BOUND"
+        },
+        "universe_command_receipt": {
+          "bytes": 5997,
+          "path": "experiments/TRR-P08/setup/source-universe-command-r2.json",
+          "sha256": "e1656fe55642f0703dbffa5726ef79e3099eab06bec6528178aaae993d7ee978",
+          "status": "PREPARED_NOT_RUN_BINDING_REPAIR"
+        },
+        "selection_review": {
+          "bytes": 8296,
+          "path": "experiments/TRR-P08/review/source-selection-r2-review.json",
+          "sha256": "fe9afbd5f1145f9fe5f7e33bb68e0fb40c5ae9423e60cf4d119e3f87705d300e",
+          "status": "PASS_REPAIRED_SELECTION_PRE_CAPTURE"
+        },
+        "status": "R2_REPAIRED_METADATA_REVIEW_PASS_PRE_CAPTURE"
       },
       "selection": {
         "bytes": 372627,
@@ -871,12 +901,49 @@
       "universe_frozen": {
         "bytes": 66135,
         "path": "experiments/TRR-P08/runtime/source-universe-r1/frozen.json",
-        "sha256": "d9f818bd2d99388bd5d3b746134188c272fcf35502e425cedcff95dfc1b5b304"
+        "sha256": "d9f818bd2d99388bd5d3b746134188c272fcf35502e425cedcff95dfc1b5b304",
+        "status": "EXCLUDED_PRE_CAPTURE_BINDING_DEFECT"
       },
       "universe_proposed": {
         "bytes": 65887,
         "path": "experiments/TRR-P08/runtime/source-universe-r1/proposed.json",
         "sha256": "08e2cbb7c4754c6f61e3d6fa85d09d442c0095e2114725adbf7dc3a4ff020602"
+      },
+      "universe_r1_excluded": {
+        "bytes": 66135,
+        "path": "experiments/TRR-P08/runtime/source-universe-r1/frozen.json",
+        "sha256": "d9f818bd2d99388bd5d3b746134188c272fcf35502e425cedcff95dfc1b5b304",
+        "status": "EXCLUDED_PRE_CAPTURE_BINDING_DEFECT"
+      },
+      "universe_r2_frozen": {
+        "bytes": 73403,
+        "path": "experiments/TRR-P08/runtime/source-universe-r2/frozen.json",
+        "sha256": "23a8c632e232552e3dd5a33bcb1d5b07387505a971fb6c7df55ab1f8d5316a72",
+        "status": "FROZEN_SOURCE_UNIVERSE"
+      },
+      "selection_r2": {
+        "bytes": 372627,
+        "path": "experiments/TRR-P08/runtime/source-selection-r2/selection.json",
+        "sha256": "e8023ed00ae3efbaa1b86f1290aa4de6b23da48dd70f7b10d9e147fbf6fbfb86",
+        "status": "FROZEN_TRR-P08_SOURCE_SELECTION_NO_TRUTH"
+      },
+      "selection_review": {
+        "bytes": 8296,
+        "path": "experiments/TRR-P08/review/source-selection-r2-review.json",
+        "sha256": "fe9afbd5f1145f9fe5f7e33bb68e0fb40c5ae9423e60cf4d119e3f87705d300e",
+        "status": "PASS_REPAIRED_SELECTION_PRE_CAPTURE"
+      },
+      "selection_disjointness_audit_r2": {
+        "bytes": 5422,
+        "path": "experiments/TRR-P08/runtime/source-selection-r2/selection-disjointness-audit-r2.json",
+        "sha256": "1376eac05969d2708de0b6031993b0a167482a415620faecee9248694e65a9f2",
+        "status": "PASS_R2_REPAIRED_REQUIRED_LEDGER_DISJOINTNESS"
+      },
+      "capture_approval_r2": {
+        "bytes": 4927,
+        "path": "experiments/TRR-P08/setup/capture-approval-r2.json",
+        "sha256": "27eac7a978808d61fa29741ebeff01e7d676b2dbcf86df9a68e17b1c41a53bc0",
+        "status": "APPROVED_ROOT_GRANT_CAPTURE_RUNNING"
       }
     }
   },
@@ -931,17 +998,27 @@
     "omitted_ledgers": {
       "trr0007_approved_opaque": {
         "coverage": "256/256 approved identities",
-        "path": "PENDING_SETUP_APPROVED_TRR0007_LEDGER_PATH",
+        "path": "/tmp/trr-p06/experiments/TRR-P06/setup/approved-trr0007/p06_opaque_source_sequence_reservation.json",
         "read_scope": "hash-only metadata; no source or token payload",
-        "sha256": "PENDING_SETUP_REPAIR_RECEIPT",
-        "sha256_prefix": "09e845..."
+        "sha256": "09e845fec244a38873c5bf127f6d984af91af503fb42d3a8411451ce41cdedf4"
       },
-      "trr0009_approved_reservation": {
-        "new_identity_count": 384,
-        "path": "PENDING_SETUP_APPROVED_TRR0009_RESERVATION_PATH",
-        "read_scope": "approved hash-only reservation metadata only",
-        "sha256": "PENDING_SETUP_REPAIR_RECEIPT",
-        "sha256_prefix": "c0a1310..."
+      "trr0008_approved_opaque": {
+        "coverage": "1408/1408 approved identities",
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0008/experiments/TRR-0008/selection/opaque_source_sequence_reservation.json",
+        "read_scope": "hash-only metadata; no source or token payload",
+        "sha256": "0487b9dda91d7eb791c93e1ba704afcea22abfc21f003cad8b99984f523357a4"
+      },
+      "trr0009_approved_opaque": {
+        "coverage": "384/384 approved identities",
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/selection/opaque_source_sequence_reservation.json",
+        "read_scope": "hash-only metadata; no source or token payload",
+        "sha256": "c0a1310c2dc8198ece3eda1eb273a3ef7412a1802ab85819ed709728bf603c52"
+      },
+      "trr0009_replacement_approved_opaque": {
+        "coverage": "384/384 approved identities",
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/selection_v2/opaque_source_sequence_reservation.json",
+        "read_scope": "hash-only metadata; no source or token payload",
+        "sha256": "73e07e1fd2c964eface6af387229bac738b96ecc5b7e1ee3059f57f9a8c2b4f8"
       }
     },
     "original_selection": {
@@ -961,9 +1038,81 @@
       "same_records_per_domain": 256,
       "same_selection_seed": 8108,
       "sample_expansion": false,
-      "schedule_change": false
+      "schedule_change": false,
+      "satisfied_before_capture": true,
+      "r2_same_declared_source_ranges": true,
+      "r2_same_fit_states_and_seeds": true,
+      "r2_same_records_per_domain": 256,
+      "r2_same_selection_seed": 8108
     },
-    "status": "REPAIR_REQUIRED_BEFORE_CAPTURE"
+    "status": "R2_REPAIRED_SELECTION_READY_PRE_CAPTURE",
+    "repair_receipt": {
+      "bytes": 5006,
+      "path": "experiments/TRR-P08/setup/exclusion-binding-repair-r2.json",
+      "sha256": "4e7f2e374e1dab513723008e64cd9bc44c854cddbdf004ef52da584ac5e409dc",
+      "status": "PREPARED_NOT_RUN_EXCLUDED_R1_REPLACEMENT_BOUND"
+    },
+    "universe_command_receipt": {
+      "bytes": 5997,
+      "path": "experiments/TRR-P08/setup/source-universe-command-r2.json",
+      "sha256": "e1656fe55642f0703dbffa5726ef79e3099eab06bec6528178aaae993d7ee978",
+      "status": "PREPARED_NOT_RUN_BINDING_REPAIR"
+    },
+    "r2_review": {
+      "bytes": 8296,
+      "path": "experiments/TRR-P08/review/source-selection-r2-review.json",
+      "sha256": "fe9afbd5f1145f9fe5f7e33bb68e0fb40c5ae9423e60cf4d119e3f87705d300e",
+      "status": "PASS_REPAIRED_SELECTION_PRE_CAPTURE"
+    },
+    "r2_outputs": {
+      "universe": {
+        "bytes": 73403,
+        "path": "experiments/TRR-P08/runtime/source-universe-r2/frozen.json",
+        "sha256": "23a8c632e232552e3dd5a33bcb1d5b07387505a971fb6c7df55ab1f8d5316a72",
+        "status": "FROZEN_SOURCE_UNIVERSE"
+      },
+      "selection": {
+        "bytes": 372627,
+        "path": "experiments/TRR-P08/runtime/source-selection-r2/selection.json",
+        "sha256": "e8023ed00ae3efbaa1b86f1290aa4de6b23da48dd70f7b10d9e147fbf6fbfb86",
+        "status": "FROZEN_TRR-P08_SOURCE_SELECTION_NO_TRUTH"
+      }
+    },
+    "r2_overlap_audit": {
+      "approved_trr0007_opaque": {
+        "public_record_sha256": 0,
+        "final_sequence_sha256": 0
+      },
+      "approved_trr0008_opaque": {
+        "public_record_sha256": 0,
+        "final_sequence_sha256": 0
+      },
+      "approved_trr0009_opaque": {
+        "public_record_sha256": 0,
+        "final_sequence_sha256": 0
+      },
+      "approved_trr0009_replacement_opaque": {
+        "public_record_sha256": 0,
+        "final_sequence_sha256": 0
+      },
+      "union": {
+        "public_record_sha256": 0,
+        "final_sequence_sha256": 0
+      },
+      "pass": true
+    },
+    "r2_official_audit": {
+      "bytes": 5422,
+      "path": "experiments/TRR-P08/runtime/source-selection-r2/selection-disjointness-audit-r2.json",
+      "sha256": "1376eac05969d2708de0b6031993b0a167482a415620faecee9248694e65a9f2",
+      "status": "PASS_R2_REPAIRED_REQUIRED_LEDGER_DISJOINTNESS"
+    },
+    "capture_approval_r2": {
+      "bytes": 4927,
+      "path": "experiments/TRR-P08/setup/capture-approval-r2.json",
+      "sha256": "27eac7a978808d61fa29741ebeff01e7d676b2dbcf86df9a68e17b1c41a53bc0",
+      "status": "APPROVED_ROOT_GRANT_CAPTURE_RUNNING"
+    }
   },
   "failures": {
     "excluded_attempts": [
@@ -1020,11 +1169,16 @@
       "sha256": "f46b824de74ce31fd97880f16da4e4dd3b7f2a157ff9d778f4ac3db7b78520cb"
     },
     "prediction_freeze": "PENDING",
-    "repaired_source_selection": "PENDING_SETUP_REPAIR",
+    "repaired_source_selection": {
+      "bytes": 372627,
+      "path": "experiments/TRR-P08/runtime/source-selection-r2/selection.json",
+      "sha256": "e8023ed00ae3efbaa1b86f1290aa4de6b23da48dd70f7b10d9e147fbf6fbfb86",
+      "status": "FROZEN_TRR-P08_SOURCE_SELECTION_NO_TRUTH"
+    },
     "report": {
-      "bytes": 6580,
+      "bytes": 11537,
       "path": "coordination/results/TRR-P08.md",
-      "sha256": "cc97fa7043a7b19081edf530cd2cf24927216cb9d28f00387157a10204c8a113"
+      "sha256": "88d00c4ac006902837d106e6415b647dff136ecddaf667b1d19772b28c0539d4"
     },
     "root_design_approval": {
       "bytes": 984,
@@ -1039,29 +1193,82 @@
     },
     "source_selection": {
       "bytes": 372627,
-      "path": "experiments/TRR-P08/runtime/source-selection-r1/selection.json",
-      "sha256": "75f8d66007d6ae5558ded8b0fc428fc88db8aa5a04f4d372bd187f5934079274"
+      "path": "experiments/TRR-P08/runtime/source-selection-r2/selection.json",
+      "sha256": "e8023ed00ae3efbaa1b86f1290aa4de6b23da48dd70f7b10d9e147fbf6fbfb86",
+      "status": "FROZEN_TRR-P08_SOURCE_SELECTION_NO_TRUTH"
     },
     "source_universe": {
+      "bytes": 73403,
+      "path": "experiments/TRR-P08/runtime/source-universe-r2/frozen.json",
+      "sha256": "23a8c632e232552e3dd5a33bcb1d5b07387505a971fb6c7df55ab1f8d5316a72",
+      "status": "FROZEN_SOURCE_UNIVERSE"
+    },
+    "truth_manifest": "PENDING_PRIVATE_OUTSIDE_REPOSITORY",
+    "source_selection_r1_excluded": {
+      "bytes": 372627,
+      "path": "experiments/TRR-P08/runtime/source-selection-r1/selection.json",
+      "sha256": "75f8d66007d6ae5558ded8b0fc428fc88db8aa5a04f4d372bd187f5934079274",
+      "status": "EXCLUDED_PRE_CAPTURE_BINDING_DEFECT"
+    },
+    "source_universe_r1_excluded": {
       "bytes": 66135,
       "path": "experiments/TRR-P08/runtime/source-universe-r1/frozen.json",
-      "sha256": "d9f818bd2d99388bd5d3b746134188c272fcf35502e425cedcff95dfc1b5b304"
+      "sha256": "d9f818bd2d99388bd5d3b746134188c272fcf35502e425cedcff95dfc1b5b304",
+      "status": "EXCLUDED_PRE_CAPTURE_BINDING_DEFECT"
     },
-    "truth_manifest": "PENDING_PRIVATE_OUTSIDE_REPOSITORY"
+    "source_selection_r2": {
+      "bytes": 372627,
+      "path": "experiments/TRR-P08/runtime/source-selection-r2/selection.json",
+      "sha256": "e8023ed00ae3efbaa1b86f1290aa4de6b23da48dd70f7b10d9e147fbf6fbfb86",
+      "status": "FROZEN_TRR-P08_SOURCE_SELECTION_NO_TRUTH"
+    },
+    "source_universe_r2": {
+      "bytes": 73403,
+      "path": "experiments/TRR-P08/runtime/source-universe-r2/frozen.json",
+      "sha256": "23a8c632e232552e3dd5a33bcb1d5b07387505a971fb6c7df55ab1f8d5316a72",
+      "status": "FROZEN_SOURCE_UNIVERSE"
+    },
+    "source_selection_r2_review": {
+      "bytes": 8296,
+      "path": "experiments/TRR-P08/review/source-selection-r2-review.json",
+      "sha256": "fe9afbd5f1145f9fe5f7e33bb68e0fb40c5ae9423e60cf4d119e3f87705d300e",
+      "status": "PASS_REPAIRED_SELECTION_PRE_CAPTURE"
+    },
+    "exclusion_binding_repair": {
+      "bytes": 5006,
+      "path": "experiments/TRR-P08/setup/exclusion-binding-repair-r2.json",
+      "sha256": "4e7f2e374e1dab513723008e64cd9bc44c854cddbdf004ef52da584ac5e409dc",
+      "status": "PREPARED_NOT_RUN_EXCLUDED_R1_REPLACEMENT_BOUND"
+    },
+    "exclusion_binding_command": {
+      "bytes": 5997,
+      "path": "experiments/TRR-P08/setup/source-universe-command-r2.json",
+      "sha256": "e1656fe55642f0703dbffa5726ef79e3099eab06bec6528178aaae993d7ee978",
+      "status": "PREPARED_NOT_RUN_BINDING_REPAIR"
+    },
+    "source_selection_r2_audit": {
+      "bytes": 5422,
+      "path": "experiments/TRR-P08/runtime/source-selection-r2/selection-disjointness-audit-r2.json",
+      "sha256": "1376eac05969d2708de0b6031993b0a167482a415620faecee9248694e65a9f2",
+      "status": "PASS_R2_REPAIRED_REQUIRED_LEDGER_DISJOINTNESS"
+    },
+    "capture_approval_r2": {
+      "bytes": 4927,
+      "path": "experiments/TRR-P08/setup/capture-approval-r2.json",
+      "sha256": "27eac7a978808d61fa29741ebeff01e7d676b2dbcf86df9a68e17b1c41a53bc0",
+      "status": "APPROVED_ROOT_GRANT_CAPTURE_RUNNING"
+    }
   },
   "limitations": [
     "Public fit and validation curves are development evidence; no fresh-panel quality conclusion is made here.",
     "Fit-side transition error cohorts are quota-limited as recorded in fit-review.json; this is nonfatal and does not authorize reselection.",
     "Raw observation payloads and private truth must remain outside the repository; metadata and hashes are retained.",
     "The changed public target is a paired transfer diagnostic, not an unseen-target claim.",
-    "The original r1 source selection is excluded before capture because the effective exclusion collector omitted approved TRR-0007 and TRR-0009 bindings; metadata audit found 0 source-level and 1 H128-sequence overlap with each, 2 unique H128 overlaps total. No r1 rows were captured or scored."
+    "The original r1 source selection remains excluded before capture because its collector omitted approved TRR-0007 and TRR-0009 bindings; the repaired r2 metadata selection binds all four required opaque ledgers and has zero public-record and final-sequence intersections with each ledger and their union. No r1 rows were captured or scored."
   ],
   "manifest_hash_excluded_to_avoid_cycle": true,
   "pending": [
-    "setup must bind the approved TRR-0007 256/256 opaque ledger and approved TRR-0009 384-identity reservation",
-    "setup must regenerate the same-seed 256/domain source selection and verify zero source/H128 overlap before capture",
-    "root review of repaired source universe and selection; original r1 selection remains excluded",
-    "public observation capture under an approved guarded window",
+    "guarded public observation capture from the repaired r2 selection",
     "prediction matrix and tie artifacts frozen before truth",
     "metadata-only joint-freeze receipt",
     "authorized private truth materialization outside repository",
@@ -1078,9 +1285,9 @@
     "report_complete": false,
     "scoring_complete": false,
     "selected_states_frozen_no_truth": true,
-    "source_selection_frozen_no_truth": false,
+    "source_selection_frozen_no_truth": true,
     "source_selection_r1_frozen_no_truth_but_excluded": true,
-    "source_selection_repair_complete": false,
+    "source_selection_repair_complete": true,
     "source_universe_frozen": true,
     "truth_materialization_complete": false
   },
@@ -1133,10 +1340,10 @@
     "evidence_review_commit": "d646d88c9ab2c673b622929c535e92e6e962ef54",
     "fit_receipt": "ef925c550e39ea557f9fea516d9d21473a9eb163",
     "fit_run_start": "00504aac40f2b3758c65c14c6dcc8f1b4c6064e5",
-    "manifest_generation_commit": "cb6ff623d9c04b0a7539bf5654416fef9d422f89",
+    "manifest_generation_commit": "046d4e5",
     "selected_state_freeze": "ef925c550e39ea557f9fea516d9d21473a9eb163"
   },
-  "status": "CAPTURE_BLOCKED_PRE_CAPTURE_BINDING_DEFECT",
+  "status": "R2_SOURCE_SELECTION_FROZEN_PENDING_CAPTURE",
   "task_id": "TRR-P08",
-  "updated_utc": "2026-09-07T02:34:23Z"
+  "updated_utc": "2026-09-07T03:26:26Z"
 }
