@@ -1,0 +1,35 @@
+{
+  "bank": "B0",
+  "clarification": {
+    "all_checkpoint_files": "For all seven checkpoints, the audit performed full-file SHA-256 verification plus safe_open metadata/header and shape inspection.",
+    "corrected_interpretation": "The audit_access_boundary.state_files_opened sentence in the immutable r3 JSON describes the all-checkpoint header/hash pass; this sidecar records the selected-checkpoint CPU tensor load separately and precisely.",
+    "forward_or_scoring_performed": false,
+    "public_H_embedding_private_truth_or_LoRA_accessed_by_audit": false,
+    "selected_checkpoint": "The selected step-8000 checkpoint additionally had tensor values loaded on CPU into the identical residual_mlp512 architecture (hidden_size=2048, vocabulary_size=128256, context_width=128, bottleneck_size=512) and strict load_state_dict validation.",
+    "selected_checkpoint_file_sha256": "d2477cdf11422cb2d028196d72775825246f65f7e07394952375b3929627475a",
+    "selected_checkpoint_path": "/tmp/trr-p09-runtime/fixed-control-b0-r3/states/checkpoint_step_008000.safetensors",
+    "selected_cpu_loader": "token_reconstruction.trr0007_positionwise.build_residual_mlp512 + Module.load_state_dict(strict=True)",
+    "selected_logical_state_sha256": "58aeaf1b3e16c760cc3bbaccd8413a5f2674fd07f59e4f527a53b8bf3ca0243a",
+    "strict_load_result": {
+      "missing_keys": [],
+      "tensor_key_count": 15,
+      "unexpected_keys": []
+    }
+  },
+  "created_utc": "2026-09-07T14:51:39Z",
+  "immutable_audit": {
+    "repository_path": "experiments/TRR-P09/results/current-fixed-r3/audit.json",
+    "repository_sha256": "1f09e48753ecf5ef3561391465e33eca2ead713c48122633db4e0b08bc6bd6c6",
+    "runtime_path": "/tmp/trr-p09-runtime/fixed-control-b0-r3-audit-r3/audit.json",
+    "sha256": "1f09e48753ecf5ef3561391465e33eca2ead713c48122633db4e0b08bc6bd6c6"
+  },
+  "raw_receipt_runtime_binding": {
+    "bytes": 7108670,
+    "committed": false,
+    "path": "/tmp/trr-p09-runtime/fixed-control-b0-r3-audit-r3/raw_receipt.json",
+    "sha256": "e0b52b43a6da7146a2eefa777cb59f02a29f0c5231528200dd5edd2c015e5ced"
+  },
+  "schema": "token-reconstruction.trr-p09-fixed-control-b0-audit-access-boundary-clarification.v1",
+  "status": "PASS",
+  "task_id": "TRR-P09"
+}
