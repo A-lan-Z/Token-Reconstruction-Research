@@ -179,3 +179,79 @@ def test_export_probe_reloads_base_and_effective_readout_exactly(tmp_path):
     assert result["reload_check"]["exact_logits"] is True
     assert result["reload_check"]["exact_argmax"] is True
     assert result["reload_check"]["max_abs"] == 0.0
+    assert result["training_checkpoint"]["path"].endswith("training_checkpoint_step_000002.safetensors")
+    assert result["training_checkpoint"]["bytes"] > 0
+
+
+def test_manifest_validation_views_gather_interleaved_rows_from_separate_files(tmp_path):
+    """Validation must preserve declared domain order across separately bound files."""
+
+    record_count = 6
+    sequence_tokens = 4
+    hidden_size = 2
+
+    observations = torch.stack(
+        [torch.full((sequence_tokens, hidden_size), float(10 + row)) for row in range(record_count)]
+    )
+    token_ids = torch.stack(
+        [torch.full((sequence_tokens,), 100 + row, dtype=torch.long) for row in range(record_count)]
+    )
+    masks = torch.ones(record_count, sequence_tokens, dtype=torch.bool)
+    paths_and_keys = (
+        ("h.safetensors", "h", observations),
+        ("labels.safetensors", "labels", token_ids),
+        ("mask.safetensors", "mask", masks),
+    )
+
+    def descriptor(relative_name, tensor_key, tensor):
+        path = tmp_path / relative_name
+        save_file({tensor_key: tensor}, str(path))
+        raw = path.read_bytes()
+        return {
+            "path": relative_name,
+            "bytes": len(raw),
+            "sha256": hashlib.sha256(raw).hexdigest(),
+            "tensor_key": tensor_key,
+            "shape": list(tensor.shape),
+        }
+
+    resources = {
+        "validation_observations": descriptor(*paths_and_keys[0][:2], paths_and_keys[0][2]),
+        "validation_truth": descriptor(*paths_and_keys[1][:2], paths_and_keys[1][2]),
+        "validation_valid_mask": descriptor(*paths_and_keys[2][:2], paths_and_keys[2][2]),
+    }
+    manifest_payload = {
+        "resources": resources,
+        "validation_grouping": {
+            "record_count": record_count,
+            "groups_in_record_order": ["Finance", "Pile", "Finance", "Pile", "Finance", "Pile"],
+            "post_bos_positions_by_style": {"Finance": 9, "Pile": 9},
+        },
+    }
+    manifest_path = tmp_path / "validation_manifest.json"
+    manifest_path.write_text(json.dumps(manifest_payload, sort_keys=True), encoding="utf-8")
+    manifest_raw = manifest_path.read_bytes()
+    manifest_descriptor = {
+        "path": str(manifest_path),
+        "bytes": len(manifest_raw),
+        "sha256": hashlib.sha256(manifest_raw).hexdigest(),
+    }
+
+    views = provider._manifest_validation_views(
+        manifest_descriptor,
+        expected_tokens=sequence_tokens,
+        expected_batch=1,
+    )
+    assert {domain: len(view.record_indices) for domain, view in views.items()} == {
+        "Finance": 3,
+        "Pile": 3,
+    }
+    for domain, expected_rows in {"Finance": (0, 2, 4), "Pile": (1, 3, 5)}.items():
+        batches = list(views[domain].batches())
+        assert [batch.global_rows[0] for batch in batches] == list(expected_rows)
+        for batch in batches:
+            row = batch.global_rows[0]
+            assert torch.equal(batch.activations[0], observations[row])
+            assert torch.equal(batch.token_ids[0], token_ids[row])
+            assert torch.equal(batch.attention_mask[0], masks[row])
+            assert torch.equal(batch.position_ids[0], torch.arange(sequence_tokens))

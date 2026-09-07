@@ -54,6 +54,9 @@ REQUIRED_A2_SOURCES = (
     "scripts/trr_p09/fixed_control_runner.py",
     "scripts/trr_p09/prepare_streamed_bank.py",
 )
+OPTIONAL_A2_SOURCES = (
+    "scripts/trr_p09/b0_immutable_loader.py",
+)
 ValidationCallback = Callable[[int, Callable[[Iterable[Any]], Mapping[str, Any]]], Mapping[str, Any]]
 DOMAIN_BALANCED_SELECTION_METRIC = "domain_balanced_token_accuracy"
 
@@ -134,8 +137,13 @@ def validate_qualification_bindings(manifest: Mapping[str, Any]) -> dict[str, An
         raise QualificationError("qualifier artifact descriptors are malformed")
 
     sources = manifest.get("a2_sources")
-    if not isinstance(sources, Mapping) or set(sources) != set(REQUIRED_A2_SOURCES):
-        raise QualificationError("qualifier A2 source binding set is incomplete")
+    allowed_sources = set(REQUIRED_A2_SOURCES) | set(OPTIONAL_A2_SOURCES)
+    if (
+        not isinstance(sources, Mapping)
+        or not set(REQUIRED_A2_SOURCES).issubset(set(sources))
+        or not set(sources).issubset(allowed_sources)
+    ):
+        raise QualificationError("qualifier A2 source binding set is incomplete or has unknown roles")
     verified_sources: dict[str, dict[str, Any]] = {}
     for relative_path, value in sources.items():
         if not isinstance(value, Mapping):
@@ -172,6 +180,21 @@ def validate_qualification_bindings(manifest: Mapping[str, Any]) -> dict[str, An
         raise QualificationError("merged primary qualifier must set compute_base_logits=false")
     if float(settings["directional_learning_rate"]) != DEFAULT_DIRECTIONAL_LEARNING_RATE:
         raise QualificationError("directional learning rate differs from the frozen model default")
+    b0_binding = manifest.get("b0_binding")
+    if b0_binding is None and isinstance(artifacts, Mapping):
+        b0_binding = artifacts.get("b0_binding")
+    verified_b0_binding: dict[str, Any] | None = None
+    if b0_binding is not None:
+        if not isinstance(b0_binding, Mapping):
+            raise QualificationError("B0 binding descriptor is malformed")
+        b0_path = _verify_descriptor(b0_binding, label="B0 immutable binding")
+        verified_b0_binding = {
+            "path": str(b0_path),
+            "bytes": int(b0_path.stat().st_size),
+            "sha256": _sha256_file(b0_path),
+            "status": b0_binding.get("status"),
+        }
+
     schedule = manifest.get("schedule")
     if not isinstance(schedule, Mapping):
         raise QualificationError("qualification schedule metadata is missing")
@@ -196,6 +219,7 @@ def validate_qualification_bindings(manifest: Mapping[str, Any]) -> dict[str, An
     return {
         "artifacts": verified_artifacts,
         "a2_sources": verified_sources,
+        "b0_binding": verified_b0_binding,
         "settings": {str(key): value for key, value in settings.items()},
         "schedule": {str(key): value for key, value in schedule.items()},
         "validation_geometry": {str(key): value for key, value in validation_geometry.items()},

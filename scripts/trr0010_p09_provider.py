@@ -13,6 +13,7 @@ run an update itself.
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping, Sequence
+from contextlib import ExitStack
 from dataclasses import dataclass
 import hashlib
 import importlib.util
@@ -107,7 +108,7 @@ def _load_module(path: Path, name: str) -> ModuleType:
     return module
 
 
-def _load_a2_modules(receipt: Mapping[str, Any]) -> tuple[ModuleType, ModuleType, ModuleType]:
+def _load_a2_modules(receipt: Mapping[str, Any]) -> tuple[ModuleType, ModuleType, ModuleType, ModuleType | None]:
     sources = receipt.get("a2_sources")
     if not isinstance(sources, Mapping):
         raise ProviderError("A2 source bindings are missing")
@@ -129,8 +130,18 @@ def _load_a2_modules(receipt: Mapping[str, Any]) -> tuple[ModuleType, ModuleType
         paths[names[0]], "token_reconstruction.trr_p09_fixed_control_adapter"
     )
     runner = _load_module(paths[names[1]], "trr0010_bound_p09_runner")
-    loader = _load_module(paths[names[2]], "trr0010_bound_p09_loader")
-    return adapter, runner, loader
+    # The B0 adapter imports this exact canonical loader name.  Keep the
+    # module path hash-bound while making it available under that name.
+    loader = _load_module(paths[names[2]], "scripts.trr_p09.prepare_streamed_bank")
+    b0_module: ModuleType | None = None
+    b0_relative = "scripts/trr_p09/b0_immutable_loader.py"
+    b0_value = sources.get(b0_relative)
+    if b0_value is not None:
+        if not isinstance(b0_value, Mapping):
+            raise ProviderError("B0 loader source binding is malformed")
+        b0_path = _verify_descriptor(b0_value, label=f"A2 source {b0_relative}")
+        b0_module = _load_module(b0_path, "scripts.trr_p09.b0_immutable_loader")
+    return adapter, runner, loader, b0_module
 
 
 def _metadata_int(metadata: Mapping[str, Any], *keys: str) -> int | None:
@@ -250,20 +261,60 @@ class _ValidationBatch:
 
 
 class _ValidationView:
-    """Lazy direct safetensors view for one declared validation domain."""
+    """Lazy validation view with exact row gathering per bound resource."""
 
-    def __init__(self, descriptor: Mapping[str, Any], *, label: str, expected_tokens: int, expected_batch: int) -> None:
-        raw_file = descriptor.get("file", descriptor)
-        if not isinstance(raw_file, Mapping):
-            raise ProviderError(f"validation {label} file binding is malformed")
-        self.path = _verify_descriptor(raw_file, label=f"validation {label}")
-        keys = descriptor.get("keys", {})
-        if not isinstance(keys, Mapping):
-            raise ProviderError(f"validation {label} tensor-key binding is malformed")
-        self.activation_key = str(keys.get("activations", "activations"))
-        self.token_key = str(keys.get("token_ids", "token_ids"))
-        self.mask_key = str(keys.get("attention_mask", "attention_mask"))
-        self.position_key = keys.get("position_ids")
+    def __init__(
+        self,
+        descriptor: Mapping[str, Any],
+        *,
+        label: str,
+        expected_tokens: int,
+        expected_batch: int,
+    ) -> None:
+        raw_resources = descriptor.get("resources")
+        if raw_resources is not None:
+            if not isinstance(raw_resources, Mapping):
+                raise ProviderError(f"validation {label} resources are malformed")
+            resource_specs: dict[str, Mapping[str, Any]] = {}
+            for role, default_key in (
+                ("activations", "activations"),
+                ("token_ids", "token_ids"),
+                ("attention_mask", "attention_mask"),
+            ):
+                value = raw_resources.get(role)
+                if not isinstance(value, Mapping):
+                    raise ProviderError(f"validation {label} resource is missing: {role}")
+                resource_specs[role] = value
+            position_value = raw_resources.get("position_ids")
+            if position_value is not None:
+                if not isinstance(position_value, Mapping):
+                    raise ProviderError(f"validation {label} position resource is malformed")
+                resource_specs["position_ids"] = position_value
+        else:
+            raw_file = descriptor.get("file", descriptor)
+            if not isinstance(raw_file, Mapping):
+                raise ProviderError(f"validation {label} file binding is malformed")
+            keys = descriptor.get("keys", {})
+            if not isinstance(keys, Mapping):
+                raise ProviderError(f"validation {label} tensor-key binding is malformed")
+            resource_specs = {
+                role: {**raw_file, "tensor_key": str(keys.get(role, default_key))}
+                for role, default_key in (
+                    ("activations", "activations"),
+                    ("token_ids", "token_ids"),
+                    ("attention_mask", "attention_mask"),
+                )
+            }
+            if keys.get("position_ids") is not None:
+                resource_specs["position_ids"] = {**raw_file, "tensor_key": str(keys["position_ids"])}
+
+        self.resources: dict[str, tuple[Path, str]] = {}
+        for role, value in resource_specs.items():
+            path = _verify_descriptor(value, label=f"validation {label} {role}")
+            key = value.get("tensor_key")
+            if not isinstance(key, str) or not key:
+                raise ProviderError(f"validation {label} tensor key is missing: {role}")
+            self.resources[role] = (path, key)
         self.sequence_tokens = int(descriptor.get("sequence_tokens", expected_tokens))
         self.batch_records = int(descriptor.get("batch_records", expected_batch))
         if self.sequence_tokens != int(expected_tokens) or self.batch_records != int(expected_batch):
@@ -278,35 +329,82 @@ class _ValidationView:
         if not isinstance(records, Sequence) or isinstance(records, (str, bytes)):
             raise ProviderError(f"validation {label} record indices are malformed")
         self.record_indices = tuple(int(value) for value in records)
-        if not self.record_indices or len(self.record_indices) % self.batch_records:
-            raise ProviderError(f"validation {label} records are not batch aligned")
+        if (
+            not self.record_indices
+            or len(self.record_indices) % self.batch_records
+            or any(index < 0 for index in self.record_indices)
+            or len(set(self.record_indices)) != len(self.record_indices)
+        ):
+            raise ProviderError(f"validation {label} records are invalid or not batch aligned")
         self.expected_post_bos_rows = int(
             descriptor.get("expected_post_bos_rows", len(self.record_indices) * (self.sequence_tokens - 1))
         )
+        if self.expected_post_bos_rows <= 0:
+            raise ProviderError(f"validation {label} has no declared scored rows")
+
+    @staticmethod
+    def _gather_rows(handle: Any, key: str, indices: Sequence[int]) -> torch.Tensor:
+        """Gather arbitrary source rows in the caller-declared order."""
+
+        accessor = handle.get_slice(key)
+        unique = sorted(set(int(index) for index in indices))
+        runs: list[tuple[int, int]] = []
+        if unique:
+            start = previous = unique[0]
+            for index in unique[1:]:
+                if index != previous + 1:
+                    runs.append((start, previous + 1))
+                    start = index
+                previous = index
+            runs.append((start, previous + 1))
+        rows: dict[int, torch.Tensor] = {}
+        for start, stop in runs:
+            block = accessor[start:stop].contiguous()
+            for offset, index in enumerate(range(start, stop)):
+                rows[index] = block[offset]
+        try:
+            return torch.stack([rows[int(index)] for index in indices], dim=0)
+        except (KeyError, RuntimeError) as exc:
+            raise ProviderError(f"validation tensor row gathering failed for {key}") from exc
 
     def batches(self) -> Iterable[_ValidationBatch]:
-        with safe_open(str(self.path), framework="pt", device="cpu") as handle:
-            required = (self.activation_key, self.token_key, self.mask_key)
-            if any(key not in handle.keys() for key in required):
-                raise ProviderError(f"validation file lacks required tensor keys: {required}")
+        with ExitStack() as stack:
+            handles: dict[Path, Any] = {}
+            for path, key in self.resources.values():
+                if path not in handles:
+                    handles[path] = stack.enter_context(safe_open(str(path), framework="pt", device="cpu"))
+                if key not in handles[path].keys():
+                    raise ProviderError(f"validation file lacks tensor key {key!r}: {path}")
             for start in range(0, len(self.record_indices), self.batch_records):
                 stop = start + self.batch_records
-                activations = handle.get_slice(self.activation_key)[start:stop].contiguous()
-                token_ids = handle.get_slice(self.token_key)[start:stop].contiguous()
-                attention_mask = handle.get_slice(self.mask_key)[start:stop].contiguous().to(dtype=torch.bool)
-                if self.position_key is None:
-                    position_ids = torch.arange(self.sequence_tokens, dtype=torch.long).expand(self.batch_records, -1).clone()
+                indices = self.record_indices[start:stop]
+                activation_path, activation_key = self.resources["activations"]
+                token_path, token_key = self.resources["token_ids"]
+                mask_path, mask_key = self.resources["attention_mask"]
+                activations = self._gather_rows(handles[activation_path], activation_key, indices)
+                token_ids = self._gather_rows(handles[token_path], token_key, indices)
+                attention_mask = self._gather_rows(handles[mask_path], mask_key, indices).to(dtype=torch.bool)
+                if "position_ids" in self.resources:
+                    position_path, position_key = self.resources["position_ids"]
+                    position_ids = self._gather_rows(handles[position_path], position_key, indices).to(dtype=torch.long)
                 else:
-                    key = str(self.position_key)
-                    if key not in handle.keys():
-                        raise ProviderError("validation position_ids key is absent")
-                    position_ids = handle.get_slice(key)[start:stop].contiguous().to(dtype=torch.long)
+                    position_ids = torch.arange(self.sequence_tokens, dtype=torch.long).expand(
+                        self.batch_records, -1
+                    ).clone()
+                if (
+                    activations.ndim != 3
+                    or tuple(activations.shape[:2]) != (self.batch_records, self.sequence_tokens)
+                    or tuple(token_ids.shape) != (self.batch_records, self.sequence_tokens)
+                    or tuple(attention_mask.shape) != (self.batch_records, self.sequence_tokens)
+                    or tuple(position_ids.shape) != (self.batch_records, self.sequence_tokens)
+                ):
+                    raise ProviderError("validation resource tensor geometry differs from the binding")
                 yield _ValidationBatch(
                     activations=activations,
                     token_ids=token_ids.to(dtype=torch.long),
                     attention_mask=attention_mask,
                     position_ids=position_ids,
-                    global_rows=tuple(self.record_indices[start:stop]),
+                    global_rows=tuple(indices),
                 )
 
 
@@ -358,8 +456,6 @@ def _manifest_validation_views(
         raise ProviderError("validation observation shape is missing")
     if int(shapes[1]) != int(expected_tokens):
         raise ProviderError("validation manifest sequence width differs from binding")
-    _verify_descriptor(resource_descriptors["truth"], label="validation truth")
-    _verify_descriptor(resource_descriptors["mask"], label="validation mask")
     views: dict[str, _ValidationView] = {}
     declared_positions = grouping.get("post_bos_positions_by_style")
     for domain in REQUIRED_DOMAINS:
@@ -367,11 +463,10 @@ def _manifest_validation_views(
         if not indices or len(indices) % int(expected_batch):
             raise ProviderError(f"validation {domain} records are not batch aligned")
         descriptor = {
-            "file": resource_descriptors["observations"],
-            "keys": {
-                "activations": resource_descriptors["observations"].get("tensor_key", "activations"),
-                "token_ids": resource_descriptors["truth"].get("tensor_key", "token_ids"),
-                "attention_mask": resource_descriptors["mask"].get("tensor_key", "attention_mask"),
+            "resources": {
+                "activations": resource_descriptors["observations"],
+                "token_ids": resource_descriptors["truth"],
+                "attention_mask": resource_descriptors["mask"],
             },
             "sequence_tokens": int(expected_tokens),
             "batch_records": int(expected_batch),
@@ -488,6 +583,19 @@ def _checkpoint_export_factory(
                 "base_binding_sha256": base_binding["sha256"],
             },
         )
+        training_checkpoint = save_directional_state(
+            root / f"training_checkpoint_step_{step:06d}.safetensors",
+            runtime.hook,
+            selected_step=step,
+            base_state=base_binding,
+            fit_manifest=bank_binding,
+            metadata={
+                "serialization_only": True,
+                "qualification_probe_checkpoint": True,
+                "optimizer_state_external": True,
+                "provider_contract_sha256": contract_digest,
+            },
+        )
         effective_export = export_effective_embedding(
             effective_path,
             runtime.hook,
@@ -539,6 +647,7 @@ def _checkpoint_export_factory(
         return {
             "status": "PROBE_EXPORTED_RELOADED_EXACT",
             "base_decoder": base_export,
+            "training_checkpoint": training_checkpoint,
             "effective_readout": effective_export,
             "fixture": {
                 "kind": "public_fitting_bank_schedule_step_zero_batch_first_two_records",
@@ -577,7 +686,7 @@ def build_inputs(
     support_ids_path, _ = _artifact(binding_receipt, "support_ids")
     support_counts_path, _ = _artifact(binding_receipt, "support_counts")
     contract = _read_json(contract_path, label="final contract")
-    a2_adapter, runner, loader_module = _load_a2_modules(binding_receipt)
+    a2_adapter, runner, loader_module, b0_module = _load_a2_modules(binding_receipt)
     preparation_guard("after_a2_import")
 
     hidden_size = int(settings["hidden_size"])
@@ -621,10 +730,14 @@ def build_inputs(
         raise ProviderError("support count differs from the final contract")
     preparation_guard("after_support_load")
 
-    loader_type = getattr(loader_module, "StreamedBankLoader", None)
-    if loader_type is None:
-        raise ProviderError("A2 loader does not expose StreamedBankLoader")
-    loader = loader_type(bank_path, device="cpu")
+    b0_binding = binding_receipt.get("b0_binding")
+    if not isinstance(b0_binding, Mapping):
+        raise ProviderError("combined B0+B1 qualification requires a hash-bound b0_binding")
+    b0_binding_path = _verify_descriptor(b0_binding, label="B0 immutable binding")
+    combined_loader_type = getattr(b0_module, "CombinedB0StreamedBankLoader", None) if b0_module is not None else None
+    if combined_loader_type is None:
+        raise ProviderError("A2 B0 source does not expose CombinedB0StreamedBankLoader")
+    loader = combined_loader_type(b0_binding_path, bank_path, device="cpu")
     source_type = getattr(runner, "RandomAccessLoaderSource", None)
     if source_type is None:
         raise ProviderError("A2 runner does not expose RandomAccessLoaderSource")
@@ -690,7 +803,9 @@ def build_inputs(
             "adapter": str(getattr(a2_adapter, "__file__", "")),
             "runner": str(getattr(runner, "__file__", "")),
             "loader": str(getattr(loader_module, "__file__", "")),
+            "combined_loader": str(getattr(b0_module, "__file__", "")),
         },
+        "b0_binding": dict(b0_binding),
         "support_count": int(support_ids.numel()),
         "schedule": schedule_receipt,
         "validation_domains": {
@@ -705,6 +820,7 @@ def build_inputs(
         "adapter_module": a2_adapter,
         "runner_module": runner,
         "loader_module": loader_module,
+        "combined_loader_module": b0_module,
         "base_decoder": base_decoder,
         "public_embedding": public_embedding,
         "support_ids": support_ids,
