@@ -1,6 +1,6 @@
 # TRR-P09 implementation checkpoint
 
-This checkpoint provides the shared fixed/directional runner primitives at source commit `0c7279e30a41a5016ff97c9bcaa5e282db2dabe0`, based on the proposed P09 adapter and streamed-bank contract; the common scientific contract is still pending. No public activation bank, model checkpoint, target observation, truth, GPU, or scientific fit was opened or run. A separate permitted public-source/tokenizer count audit is recorded below; it did not load a model or select a P09 row.
+This checkpoint provides the shared fixed/directional runner primitives at source commit `0c7279e30a41a5016ff97c9bcaa5e282db2dabe0`, based on the proposed P09 adapter and streamed-bank contract; the common scientific contract is still pending. The GPU was used only for three bounded public-base qualification attempts, all excluded before activation-bank capture. The public model was loaded for the latter two attempts; no activation bank, target observation, evaluation truth, or scientific fit was opened or persisted. A separate permitted public-source/tokenizer count audit is recorded below; it did not load a model or select a P09 row.
 
 The runner now has a required random-access loader adapter for arbitrary scheduled rows, preserving order and duplicates; validates nonnegative scheduled rows, complete batch geometry, BOS/position IDs, and every sampled position's attention mask; and records lazy-load and optimizer-update timing separately. One shared optimizer contract covers all unique trainable decoder and readout-hook parameters, rejects omitted or unowned trainable parameters, clips the same complete set, and checks post-update finiteness. Checkpoint state digests include both decoder and hook state. Per-step state hashing remains opt-in and is disabled by the shared loop; checkpoint hashing is the normal path.
 
@@ -12,7 +12,7 @@ The bounded planning recommendation is a 12,000-row proportional expansion, pend
 
 A permitted public Alpaca count/tokenization audit rendered all 52,002 rows with the pinned public tokenizer. It found 50,778 rows after 1,224 keyed fit/validation identity exclusions, with 39,765/24,401/14,317/6,824 rows meeting post-BOS thresholds 64/96/128/160. These are count-only upper bounds: the exclusion metadata has a 4,193-value union containing 4,073 opaque sequence/reservation digests, and zero rendered-text SHA-256 hits against that union do not establish disjointness because the namespaces/canonicalizations differ. The audit receipt and exact command/environment provenance are `experiments/TRR-P09/planning/alpaca-capacity-audit.json` (SHA-256 `d1f11364cabe6db876bb83f09ce1d8d7db1cdc3f76ac2e8bafaed149ba33a5c9`) and `experiments/TRR-P09/planning/alpaca-capacity-audit-provenance.json` (SHA-256 `c9c6828e16d87a7316f36b10d7a832a7cd04c20a73c035b4178062e3926fc2d2`). The executed CLI is `scripts/trr_p09/audit_alpaca_capacity.py` (SHA-256 `db8b54c290a1ee5c8915a6c315c6969ee4cea3284da246f57d044b0cbbd8b80e`). The human proposal is `experiments/TRR-P09/planning/bank-proposal.md`.
 
-The initial r1 attempt did execute source selection, but it is preserved and excluded before capture. The corrected r2 source selection has now completed under the accepted CPU-only supplement; it still produced no public-model forward, activation-bank capture, fitting, final-panel evaluation, or truth access. Capture remains blocked until the setup-owned r2 metadata is revised to remove its stale legacy ten-cycle descriptor and the capture qualification gate passes.
+The initial r1 attempt did execute source selection, but it is preserved and excluded before capture. The corrected r2 source selection has now completed under the accepted CPU-only supplement; the CPU preparation itself produced no public-model forward or activation-bank capture. The corrected metadata revision is bound below. Two subsequent public-base qualification attempts are recorded separately; both are excluded, so activation capture and fitting remain blocked pending the implementation fix and a passing qualification.
 
 Validation command (from the isolated P09 worktree):
 
@@ -22,7 +22,7 @@ PYTHONPATH=.:src pytest -q tests/test_trr_p09_fixed_control_runner.py tests/test
 
 Result: 25 passed in 1.90s. Syntax validation also passed with `python3 -m py_compile scripts/trr_p09/fixed_control_runner.py src/token_reconstruction/trr_p09_fixed_control_adapter.py`. A later setup-owned integrity checkpoint receipt records the same focused module suite at source commit `eaa1f1e5aa0be1e6d0dcb896834f4d6ac4e43861`: 28 passed, 0 failed in 3.005 seconds. The receipt is `experiments/TRR-P09/setup/integrated-checkpoint-tests.json` (SHA-256 `44658a8098ad2406b98ea17111d4ce163b00e95fd03548021da24a2c4bf4ece0`); it is fixture/integrity evidence only and did not open a public bank, model, forward, fit, GPU, or truth.
 
-Before any real qualification or fit, the study caller still must bind the finalized serialized schedule reader/digest/exposure contract, domain-balanced validation metric, checkpoint state serializer/callback, and outer fail-closed resource watchdog/CLI. The generic loop has no production asset loader, state-file writer, resource guard, or scientific constants and is therefore an implementation checkpoint, not a fit-ready scientific run. Setup-owned bank payloads and unrelated implementation files remain excluded; the planning files listed above are metadata-only Agent 2 evidence and contain no bank payload, model output, selection, or truth.
+Before any production capture or fit, the study caller still must bind the finalized serialized schedule reader/digest/exposure contract, domain-balanced validation metric, checkpoint state serializer/callback, and outer fail-closed resource watchdog/CLI. The generic loop has no production asset loader, state-file writer, resource guard, or scientific constants and is therefore an implementation checkpoint, not a fit-ready scientific run. Setup-owned bank payloads and unrelated implementation files remain excluded; the planning files listed above are metadata-only Agent 2 evidence and contain no bank payload, model output, selection, or truth.
 
 ## Publication metadata
 
@@ -36,9 +36,10 @@ The public stage-1 input recipe is now bound by
 countersigned in
 `experiments/TRR-P09/setup/stage1-plan-countersignature-r1.json` (SHA-256
 `5a08ea2699ce038d7895239932312326852df5ff8514b878e150b7da622853a1`). This
-authorizes guarded CPU input preparation under the signed recipe. It does not
-open a model, create activations, start a fit, acquire an evaluation lease, or
-open truth. The text above records the pre-receipt state; the completed r1 CPU
+authorizes guarded CPU input preparation under the signed recipe. The
+subsequent root-authorized bounded qualification attempts and their exclusions
+are recorded below; neither produced a persisted activation bank, fit, or truth
+result. The text above records the pre-receipt state; the completed r1 CPU
 preparation and its pre-capture exclusion are recorded below as a create-only
 receipt.
 
@@ -106,12 +107,12 @@ an excluded attempt for provenance.
 The corrected CPU preparation completed under the jointly countersigned narrow
 addendum and template-compatible supplement. The receipt is
 `experiments/TRR-P09/setup/stage1-input-preparation-r2-receipt.json` (SHA-256
-`9b5b575fcd0454ca43c46f68e99cf9444cdde65c234a46aa571ef48051955798`); its
-output manifest is
-`/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/preparation_manifest.json`
+`e8e0e2bad1bba8ba71482dd28babfff4bcdf391cf224a95551705d2643171c5d`); the
+metadata-only revision is
+`/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/preparation_manifest-r2-corrected.json`
 (SHA-256
-`262d13d7cf86c72e97ef8d1ad9656a2f34603fd3c0d147f1648769c2e8c21123`) and
-records are SHA-256
+`79bbd55c3e66555501e0abc886e69b5a4ff85bca5301a129f6e5d398524e844f`) and
+the unchanged payload records are SHA-256
 `367cfba0ffe78f59454861a76f23830f480a8745cc6b35e6b4a0d05eca53638b`. The
 watchdog reported PASS, return code 0, 32.880936 seconds, peak group RSS
 1,609,445,376 bytes, and no resource errors. The run source commit was
@@ -134,17 +135,46 @@ additions have zero record-ID, source-row-key, current-fit, or rendered-hash
 overlap, including zero overlap with all 624 non-B0 prior-development Alpaca
 keys.
 
-The setup manifest retains a stale legacy field named
-`full_ten_cycle_composition` and its associated identity digest, describing
-the superseded signed-order construction. That field is not used as the r2
-controlled-row result: the independently checked r2 template assignment and
-exact-nine audit above are authoritative for this review. Setup must revise
-the r2 receipt/manifest metadata before capture so the machine-readable
-record agrees with the corrected construction. The r1 output remains
-excluded; its B0 order permutation and 63 prior-development Alpaca overlaps
-are preserved as failed provenance, and the two earlier structural-token
-failures plus the pre-final slot-compatibility failure remain excluded
-attempts.
+The corrected metadata-only revision now supersedes the original preparation
+manifest. Its `r2_actual_occurrence_audit` records the actual B0 3,600
+occurrences plus 32,400 r2 template-assignment occurrences, with full digest
+`0e1b7726cc1e394dba8ccaf528d22216205e1d595f3b8bb853c879c3a77df53b`; the
+legacy signed-order comparison remains explicitly historical. The r1 output
+remains excluded; its B0 order permutation and 63 prior-development Alpaca
+overlaps are preserved as failed provenance, and the two earlier
+structural-token failures plus the pre-final slot-compatibility failure remain
+excluded attempts.
+
+
+## Public-base qualification attempts (2026-09-07)
+
+Three root-authorized qualification attempts consumed the bounded public-base
+lease and are excluded before activation capture. The compact evidence record is
+`experiments/TRR-P09/setup/stage1-qualification-attempts-r2.json` (SHA-256
+`ca748ccfc049edd73d04b0b3d55c46658537c2680f83687cd34ac477f84d2f16`). The first attempt used code commit
+`09ab9958ad167f17e6e5973a2ca15306a9c4b1fe` and failed during plan verification
+with `STAGE1 plan capture condition/count changed`, before model load. It ran
+from `2026-09-07T11:15:35.877964Z` to
+`2026-09-07T11:15:36.893870Z` (1.023437 s), with peak group RSS
+512,315,392 bytes and minimum sampled host availability 19,681,001,472
+bytes. Its watchdog child exited nonzero without guard termination.
+
+The retry used code commit `b6fc36290ac738a6279bec2fe3b08320eae1ef26`,
+loaded the public model, completed the original and repeat checks, and then
+failed with `qualification batch has no future padding pattern`. It ran from
+`2026-09-07T11:20:31.289107Z` to
+`2026-09-07T11:20:38.877870Z` (7.596591 s), with peak group RSS
+1,694,908,416 bytes and minimum sampled host availability 18,701,070,336
+bytes. Its watchdog also exited on the child failure without resource
+termination. A third retry then completed two representative batches and five
+forwards with exact repeat/padding checks in 0.532312922 seconds, but its
+external watchdog failed closed during teardown when `/proc/92747/status` became
+unreadable; the child returned 0 and the wrapper returned 125 after SIGTERM.
+The entire third attempt is excluded despite the child qualification receipt
+being `QUALIFICATION_PASS`. Across all three attempts there is no accepted
+qualification, no activation-bank output, no fit, and no evaluation truth
+access. Runtime receipts remain immutable under
+`/tmp/trr-p09-runtime/stage1-qualification-r2*`.
 
 ## Immutable B0 loader binding
 
@@ -158,8 +188,10 @@ mask, I64 positions, and I32 tokens, with active-prefix positions and zero
 padding. Its two synthetic tests passed; no real B0 H slice, model, GPU, fit,
 or evaluation truth was opened.
 
-The scientific status remains preparation-only: no P09 activation capture,
-model forward, fit, or truth access is authorized by this receipt.
+The scientific status remains pre-capture: no P09 activation bank was
+persisted, no fit was started, and no evaluation truth was opened. The two
+public-base qualification attempts above are excluded failures, not scientific
+results.
 
 ## Synthetic shard I/O qualification (2026-09-07)
 

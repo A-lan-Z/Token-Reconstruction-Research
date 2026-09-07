@@ -9,11 +9,13 @@
       "agent1_public_base_validation_binding_reused_if_approved": true,
       "final_panel_or_truth_opened": false,
       "fitting_started": false,
-      "model_loaded": false,
+      "model_loaded": true,
       "new_validation_pool_created": false,
       "public_forward_count": 0,
       "public_source_and_tokenizer_read": true,
-      "source_selection_executed": true
+      "source_selection_executed": true,
+      "qualification_public_model_only": true,
+      "qualification_forward_count": 2
     },
     "alpaca_capacity_audit": "experiments/TRR-P09/planning/alpaca-capacity-audit.json",
     "alpaca_capacity_audit_sha256": "d1f11364cabe6db876bb83f09ce1d8d7db1cdc3f76ac2e8bafaed149ba33a5c9",
@@ -251,6 +253,64 @@
       "module_commit": "86e66aa3df4f421875e98aec95b0efab56c4ea33",
       "real_header_validation": "PASS_NO_H_SLICES",
       "synthetic_test": "tests/test_trr_p09_b0_immutable_loader.py:2 passed"
+    },
+    "qualification_attempts": {
+      "path": "experiments/TRR-P09/setup/stage1-qualification-attempts-r2.json",
+      "sha256": "ca748ccfc049edd73d04b0b3d55c46658537c2680f83687cd34ac477f84d2f16",
+      "status": "ALL_ATTEMPTS_EXCLUDED_PENDING_WATCHDOG_FIX",
+      "attempt_count": 3,
+      "public_model_loaded": true,
+      "public_model_forward_count": 7,
+      "activation_bank_captured": false,
+      "fit_started": false,
+      "evaluation_truth_opened": false,
+      "attempts": [
+        {
+          "attempt": "stage1-qualification-r2",
+          "status": "EXCLUDED_QUALIFICATION_ATTEMPT",
+          "reason": "pre_model_plan_verification_failure",
+          "code_commit": "09ab9958ad167f17e6e5973a2ca15306a9c4b1fe",
+          "start_utc": "2026-09-07T11:15:35.877964Z",
+          "end_utc": "2026-09-07T11:15:36.893870Z",
+          "elapsed_seconds": 1.023437,
+          "model_snapshot_loaded": false,
+          "public_model_forward_count": 0,
+          "watchdog_status": "CHILD_EXITED_NONZERO",
+          "peak_group_rss_bytes": 512315392,
+          "minimum_sampled_host_mem_available_bytes": 19681001472,
+          "failure": "STAGE1 plan capture condition/count changed"
+        },
+        {
+          "attempt": "stage1-qualification-r2-retry",
+          "status": "EXCLUDED_QUALIFICATION_ATTEMPT",
+          "reason": "future_padding_pattern_failure_after_public_model_load",
+          "code_commit": "b6fc36290ac738a6279bec2fe3b08320eae1ef26",
+          "start_utc": "2026-09-07T11:20:31.289107Z",
+          "end_utc": "2026-09-07T11:20:38.877870Z",
+          "elapsed_seconds": 7.596591,
+          "model_snapshot_loaded": true,
+          "public_model_forward_count": 2,
+          "watchdog_status": "CHILD_EXITED_NONZERO",
+          "peak_group_rss_bytes": 1694908416,
+          "minimum_sampled_host_mem_available_bytes": 18701070336,
+          "failure": "qualification batch has no future padding pattern"
+        },
+        {
+          "attempt": "stage1-qualification-r2-retry2",
+          "status": "EXCLUDED_QUALIFICATION_ATTEMPT",
+          "reason": "child_qualification_pass_but_external_watchdog_teardown_fail_closed",
+          "code_commit": "6bd9dec0be81856c0c70cc8fbb4e75230b5ef0c1",
+          "start_utc": "2026-09-07T11:28:24.832139Z",
+          "end_utc": "2026-09-07T11:28:31.948748Z",
+          "elapsed_seconds": 7.152101,
+          "model_snapshot_loaded": true,
+          "public_model_forward_count": 5,
+          "watchdog_status": "FAIL_CLOSED",
+          "peak_group_rss_bytes": 1716686848,
+          "minimum_sampled_host_mem_available_bytes": 18652905472,
+          "failure": "live_resource_data_unreadable"
+        }
+      ]
     }
   },
   "excluded_unstaged_paths": [
@@ -297,28 +357,29 @@
     "runner_base": "b71feb433815f12e3274aa7525c8bbb23971e552"
   },
   "remaining_bindings_before_real_run": [
-    "complete capture qualification and bind public model/tokenizer snapshots plus resource/watchdog receipts",
-    "bind the corrected r2 input manifest/records to the capture run and preserve create-only outputs",
-    "do not begin public model capture, fitting, or evaluation truth access until all capture gates pass"
+    "repair qualification/watchdog teardown handling and rerun the bounded public_base qualification under root-owned guards",
+    "bind a passing qualification receipt with a clean watchdog before any public activation-bank capture",
+    "keep fitting and evaluation truth access unopened until capture gates pass"
   ],
   "schema": "token-reconstruction.trr-p09-implementation-manifest.v1",
   "scientific_execution": {
     "fit_run": false,
-    "gpu_run": false,
-    "model_checkpoint_opened": false,
+    "gpu_run": true,
+    "model_checkpoint_opened": true,
     "p09_activation_bank_captured": false,
     "p09_source_selection_executed": true,
     "public_bank_opened": false,
-    "public_model_forward_count": 0,
+    "public_model_forward_count": 7,
     "public_source_rows_read": true,
     "public_source_tokenizer_capacity_audit": true,
     "public_tokenizer_read": true,
     "target_observation_opened": false,
     "truth_opened": false,
-    "public_forward_count": 0
+    "public_forward_count": 7,
+    "qualification_scope": "three bounded public_base qualification attempts; all excluded before activation capture"
   },
   "source_commit": "0c7279e30a41a5016ff97c9bcaa5e282db2dabe0",
-  "status": "STAGE1_R2_CPU_INPUTS_COMPILED_NO_ACTIVATIONS_READY_FOR_CAPTURE",
+  "status": "STAGE1_QUALIFICATION_ATTEMPTS_EXCLUDED_PENDING_WATCHDOG_FIX",
   "task_id": "TRR-P09",
   "validation": {
     "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p09_fixed_control_runner.py tests/test_trr_p09_fixed_control_adapter.py tests/test_trr_p09_bank_artifact.py",
@@ -369,7 +430,7 @@
     "sha256": "8f81b372d51d58d61f88f6c778825240ad67e95ece8d6804bcf8542307e36c9e",
     "scope": "published public ancestry of P09 starting checkpoint 5cada4a3d04bb5477eaf0be25ed8d8ac25a89283223e9ba14b18fa10416bee14",
     "grand_total_seconds": "NOT_REPORTED; receipt scopes overlap and base pretraining/A1/standalone selection costs are UNKNOWN",
-    "access": "published JSON/Markdown metadata only; no payload/model/private truth opened"
+    "access": "published public metadata/source plus bounded public_base qualification; no private/final truth, activation bank, or fit payload opened"
   },
   "stage1_signed_compilation": {
     "plan": {
@@ -437,23 +498,25 @@
     "cpu_input_compilation_authorized": true,
     "cpu_input_compilation_status": "R2_COMPLETED_METADATA_REVISED",
     "cpu_fit_authorized": false,
-    "public_forward_authorized": false,
-    "status": "STAGE1_R2_CPU_COMPILED_NO_CAPTURE_NO_FIT",
+    "public_forward_authorized": true,
+    "status": "STAGE1_QUALIFICATION_ATTEMPTS_EXCLUDED_PENDING_WATCHDOG_FIX",
     "synthetic_io_status": "PASS_SYNTHETIC_IO_ONLY_2X_BOUND_UNDER_20GIB"
   },
-  "updated_utc": "2026-09-07T11:25:06Z",
+  "updated_utc": "2026-09-07T11:32:19Z",
   "r2_cpu_audit": {
     "receipt": "experiments/TRR-P09/setup/stage1-input-preparation-r2-receipt.json",
-    "receipt_sha256": "9b5b575fcd0454ca43c46f68e99cf9444cdde65c234a46aa571ef48051955798",
+    "receipt_sha256": "e8e0e2bad1bba8ba71482dd28babfff4bcdf391cf224a95551705d2643171c5d",
     "status": "PASS_CPU_INPUTS_COMPILED_NO_ACTIVATIONS",
-    "metadata_review": "PASS_EXCEPT_SETUP_LEGACY_TEN_CYCLE_FIELDS_PENDING_REPAIR",
+    "metadata_review": "PASS_METADATA_ONLY_PAYLOAD_UNCHANGED",
     "r1_disposition": "EXCLUDED_PRE_CAPTURE_B0_ORDER_AND_624_ALPACA_DEVELOPMENT_LEDGER_GAP",
     "failed_attempts_preserved": true,
     "model_loaded": false,
     "activation_bank_captured": false,
     "gpu_run": false,
     "fit_run": false,
-    "truth_opened": false
+    "truth_opened": false,
+    "metadata_revision_path": "/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/preparation_manifest-r2-corrected.json",
+    "metadata_revision_sha256": "79bbd55c3e66555501e0abc886e69b5a4ff85bca5301a129f6e5d398524e844f"
   },
   "stage1_r2_compilation": {
     "status": "PASS_CPU_INPUTS_COMPILED_NO_ACTIVATIONS",
@@ -543,5 +606,63 @@
     },
     "truth_boundary": "SYNTHETIC_ONLY_NO_PUBLIC_MODEL_OR_PAYLOAD_OR_TRUTH",
     "capture_result": false
+  },
+  "qualification_attempts": {
+    "path": "experiments/TRR-P09/setup/stage1-qualification-attempts-r2.json",
+    "sha256": "ca748ccfc049edd73d04b0b3d55c46658537c2680f83687cd34ac477f84d2f16",
+    "status": "ALL_ATTEMPTS_EXCLUDED_PENDING_WATCHDOG_FIX",
+    "attempt_count": 3,
+    "public_model_loaded": true,
+    "public_model_forward_count": 7,
+    "activation_bank_captured": false,
+    "fit_started": false,
+    "evaluation_truth_opened": false,
+    "attempts": [
+      {
+        "attempt": "stage1-qualification-r2",
+        "status": "EXCLUDED_QUALIFICATION_ATTEMPT",
+        "reason": "pre_model_plan_verification_failure",
+        "code_commit": "09ab9958ad167f17e6e5973a2ca15306a9c4b1fe",
+        "start_utc": "2026-09-07T11:15:35.877964Z",
+        "end_utc": "2026-09-07T11:15:36.893870Z",
+        "elapsed_seconds": 1.023437,
+        "model_snapshot_loaded": false,
+        "public_model_forward_count": 0,
+        "watchdog_status": "CHILD_EXITED_NONZERO",
+        "peak_group_rss_bytes": 512315392,
+        "minimum_sampled_host_mem_available_bytes": 19681001472,
+        "failure": "STAGE1 plan capture condition/count changed"
+      },
+      {
+        "attempt": "stage1-qualification-r2-retry",
+        "status": "EXCLUDED_QUALIFICATION_ATTEMPT",
+        "reason": "future_padding_pattern_failure_after_public_model_load",
+        "code_commit": "b6fc36290ac738a6279bec2fe3b08320eae1ef26",
+        "start_utc": "2026-09-07T11:20:31.289107Z",
+        "end_utc": "2026-09-07T11:20:38.877870Z",
+        "elapsed_seconds": 7.596591,
+        "model_snapshot_loaded": true,
+        "public_model_forward_count": 2,
+        "watchdog_status": "CHILD_EXITED_NONZERO",
+        "peak_group_rss_bytes": 1694908416,
+        "minimum_sampled_host_mem_available_bytes": 18701070336,
+        "failure": "qualification batch has no future padding pattern"
+      },
+      {
+        "attempt": "stage1-qualification-r2-retry2",
+        "status": "EXCLUDED_QUALIFICATION_ATTEMPT",
+        "reason": "child_qualification_pass_but_external_watchdog_teardown_fail_closed",
+        "code_commit": "6bd9dec0be81856c0c70cc8fbb4e75230b5ef0c1",
+        "start_utc": "2026-09-07T11:28:24.832139Z",
+        "end_utc": "2026-09-07T11:28:31.948748Z",
+        "elapsed_seconds": 7.152101,
+        "model_snapshot_loaded": true,
+        "public_model_forward_count": 5,
+        "watchdog_status": "FAIL_CLOSED",
+        "peak_group_rss_bytes": 1716686848,
+        "minimum_sampled_host_mem_available_bytes": 18652905472,
+        "failure": "live_resource_data_unreadable"
+      }
+    ]
   }
 }
