@@ -108,7 +108,7 @@ def _configure_numerics(settings: Mapping[str, Any]) -> dict[str, Any]:
         "torch_num_threads": torch.get_num_threads(),
         "torch_num_interop_threads": torch.get_num_interop_threads(),
         "cuda_matmul_allow_tf32": bool(torch.backends.cuda.matmul.allow_tf32),
-        "cuda_cudnn_allow_tf32": bool(torch.backends.cuda.cudnn.allow_tf32),
+        "cuda_cudnn_allow_tf32": bool(torch.backends.cudnn.allow_tf32),
         "float32_matmul_precision": torch.get_float32_matmul_precision(),
     }
 

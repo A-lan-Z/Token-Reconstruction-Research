@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import os
+import subprocess
+import sys
 
 import pytest
 import torch
@@ -13,6 +16,35 @@ from scripts import trr0009_eval_register as register
 from scripts import trr0009_eval_runner as runner
 from scripts import trr0009_eval_truth as truth_adapter
 from scripts import trr0009_model as model_contract
+
+
+
+def test_configure_numerics_uses_real_cpu_torch_cudnn_namespace() -> None:
+    """Exercise numerical setup in a clean CPU process.
+
+    The production path must read the real ``torch.backends.cudnn`` namespace;
+    a CUDA-only or misspelled namespace fails before model loading.
+    """
+    repository_root = Path(__file__).resolve().parents[1]
+    script = """
+import torch
+from scripts import trr0009_eval_contract as contract
+from scripts import trr0009_eval_runner as runner
+configured = runner._configure_numerics(contract.NUMERICAL_SETTINGS)
+assert configured["cuda_cudnn_allow_tf32"] == bool(torch.backends.cudnn.allow_tf32)
+assert configured["cuda_matmul_allow_tf32"] == bool(torch.backends.cuda.matmul.allow_tf32)
+"""
+    env = dict(os.environ)
+    env["PYTHONPATH"] = str(repository_root)
+    result = subprocess.run(
+        [sys.executable, "-c", script],
+        cwd=repository_root,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
 
 
 def _fixture(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, *, public_fitting_tensor_metadata: bool = False, records: int = 8):
