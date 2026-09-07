@@ -39,7 +39,7 @@ from .fixed_control_runner import (
     method_state_digest,
     write_create_only_json,
 )
-from token_reconstruction.trr_p09_fixed_control_adapter import BankContract, FixedPublicReadoutHook
+from token_reconstruction.trr_p09_fixed_control_adapter import BankContract, FixedPublicReadoutHook, ReadoutHook
 
 
 CALLER_SCHEMA = "token-reconstruction.trr-p09-fixed-control-caller.v1"
@@ -678,7 +678,7 @@ def make_fixed_checkpoint_callback(
 
 
 
-CheckpointCallback = Callable[[Mapping[str, Any], nn.Module, FixedPublicReadoutHook], Mapping[str, Any] | None]
+CheckpointCallback = Callable[[Mapping[str, Any], nn.Module, ReadoutHook], Mapping[str, Any] | None]
 
 
 def compose_checkpoint_callbacks(*callbacks: CheckpointCallback | None) -> CheckpointCallback:
@@ -696,7 +696,7 @@ def compose_checkpoint_callbacks(*callbacks: CheckpointCallback | None) -> Check
     def callback(
         point: Mapping[str, Any],
         decoder: nn.Module,
-        hook: FixedPublicReadoutHook,
+        hook: ReadoutHook,
     ) -> Mapping[str, Any]:
         merged: dict[str, Any] = {}
         for child in active:
@@ -806,7 +806,7 @@ def make_fitting_metric_callback(
     def callback(
         point: Mapping[str, Any],
         decoder: nn.Module,
-        hook: FixedPublicReadoutHook,
+        hook: ReadoutHook,
     ) -> Mapping[str, Any]:
         try:
             step = int(point["step"])
