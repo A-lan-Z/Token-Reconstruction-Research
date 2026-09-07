@@ -795,6 +795,21 @@ def diagnostic_indices(rows: Sequence[InputRow]) -> dict[str, Any]:
     return {"seed": DIAGNOSTIC_SEED, "stratum_quotas": DIAGNOSTIC_QUOTAS, "indices": chosen, "indices_sha256": digest_bytes(canonical_bytes(chosen))}
 
 
+def per_bank_diagnostic_indices(rows: Sequence[InputRow]) -> dict[str, Any]:
+    """Freeze independent 64-row diagnostics for the current and expanded banks."""
+    if len(rows) < B0_ROWS:
+        raise PreparationErrorLocal("expanded bank is shorter than the immutable B0 prefix")
+    current = diagnostic_indices(rows[:B0_ROWS])
+    expanded = diagnostic_indices(rows)
+    return {
+        "seed": DIAGNOSTIC_SEED,
+        "per_bank_record_count": sum(DIAGNOSTIC_QUOTAS.values()),
+        "current_bank": current,
+        "expanded_bank": expanded,
+        "shared_across": "fixed_and_directional_arms_within_each_bank_only",
+    }
+
+
 def exposure_summary(rows: Sequence[InputRow]) -> dict[str, Any]:
     positions = int(sum(row.target_post_bos_token_count for row in rows))
     exact_n = max(12000, 1000 * math.ceil((5 * positions / 512) / 1000))
@@ -997,7 +1012,7 @@ def compile_inputs(args: argparse.Namespace) -> dict[str, Any]:
         raise PreparationErrorLocal(f"compiled {len(rows)} rows, expected {TARGET_ROWS}")
     if cursor != 36000:
         raise PreparationErrorLocal(f"controlled identity exposure cursor {cursor} != 36000")
-    diagnostic = diagnostic_indices(rows)
+    diagnostic = per_bank_diagnostic_indices(rows)
     exposure = exposure_summary(rows)
     # Semantic B0 input prefix digest binds the actual copied token/mask/position bytes.
     prefix_payload = canonical_bytes({"token_ids": b0_token.tolist(), "attention_mask": b0_mask.tolist(), "position_ids": b0_pos.tolist()})

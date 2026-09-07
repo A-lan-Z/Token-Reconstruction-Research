@@ -19,6 +19,7 @@ from scripts.trr_p09.prepare_stage1_inputs import (
     PreparationErrorLocal,
     exact_addition_quotas,
     diagnostic_indices,
+    per_bank_diagnostic_indices,
     h128_digest,
     make_controlled_rows,
     select_candidates,
@@ -227,3 +228,20 @@ def test_selection_rejects_public_record_hash_without_rejecting_rendered_namespa
         exclusions=exclusions, used_ids=set(), used_rendered=set(), used_h128=set(), used_public=set(),
     )
     assert [item.record_id for item, _ in selected] == [eligible.record_id]
+
+def test_per_bank_diagnostics_bind_current_and_expanded_subsets_separately() -> None:
+    rows = []
+    strata = [item[0] for item in STRATA]
+    for index in range(1200):
+        stratum = strata[index % len(strata)]
+        rows.append(InputRow(
+            record_id=f"{stratum}-{index}", source_record_id=f"source-{index}",
+            dataset_key=stratum.split("_")[0], stratum=stratum, source_row_index=index,
+            rendered_sha256=f"{index + 1:064x}", source_full_token_count=65,
+            target_post_bos_token_count=64, token_ids=tuple([128000] + list(range(1, 65))),
+        ))
+    value = per_bank_diagnostic_indices(rows)
+    assert value["per_bank_record_count"] == 64
+    assert len(value["current_bank"]["indices"]) == 64
+    assert len(value["expanded_bank"]["indices"]) == 64
+    assert value["current_bank"]["seed"] == value["expanded_bank"]["seed"] == 4010
