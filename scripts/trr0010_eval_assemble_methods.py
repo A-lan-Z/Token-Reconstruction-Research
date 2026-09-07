@@ -168,7 +168,9 @@ def _normalise_known_row(row: Mapping[str, Any], *, method_id: str) -> dict[str,
             "a2_enabled": False,
         }
         for key, value in expected.items():
-            if loader.get(key) is not value if isinstance(value, bool) else loader.get(key) != value:
+            actual = loader.get(key)
+            matches = actual is value if isinstance(value, bool) else actual == value
+            if not matches:
                 raise AssemblyError(f"known method {method_id} loader semantics changed: {key}")
         if not isinstance(loader.get("module"), str) or not isinstance(loader.get("function"), str):
             raise AssemblyError(f"known method {method_id} loader module/function is absent")
@@ -256,10 +258,9 @@ def _load_directional(path: Path, *, method_id: str) -> dict[str, Any]:
         raise AssemblyError(f"directional descriptor method_row is absent: {path}")
     if row.get("id") != method_id or row.get("role") != gate.METHOD_ROLES[method_id]:
         raise AssemblyError(f"directional descriptor identity/role changed: {path}")
-    if payload.get("status") not in (None, "SELECTED_DIRECTIONAL_DEPLOYMENT", "SELECTED_DIRECTIONAL_METHOD"):
+    if payload.get("status") not in ("SELECTED_DIRECTIONAL_DEPLOYMENT", "SELECTED_DIRECTIONAL_METHOD"):
         raise AssemblyError(f"directional descriptor is not a selected deployment: {path}")
-    if payload.get("truth_opened") is True or payload.get("source_text_loaded") is True or payload.get("target_labels_loaded") is True:
-        raise AssemblyError(f"directional descriptor records forbidden access: {path}")
+    _truth_free(payload, description=f"directional descriptor {path}")
     missing = sorted(REQUIRED_METHOD_FIELDS - set(row))
     if missing:
         raise AssemblyError(f"directional descriptor is missing fields {missing}: {path}")
