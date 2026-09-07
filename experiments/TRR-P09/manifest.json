@@ -3,12 +3,92 @@
     "manifest": "experiments/TRR-P09/manifest.json",
     "result": "coordination/results/TRR-P09.md"
   },
+  "bank_planning": {
+    "access_boundary": {
+      "activation_bank_opened": false,
+      "agent1_public_base_validation_binding_reused_if_approved": true,
+      "final_panel_or_truth_opened": false,
+      "fitting_started": false,
+      "model_loaded": false,
+      "new_validation_pool_created": false,
+      "public_forward_count": 0,
+      "public_source_and_tokenizer_read": true,
+      "source_selection_executed": false
+    },
+    "alpaca_capacity_audit": "experiments/TRR-P09/planning/alpaca-capacity-audit.json",
+    "alpaca_capacity_audit_sha256": "d1f11364cabe6db876bb83f09ce1d8d7db1cdc3f76ac2e8bafaed149ba33a5c9",
+    "audit_cli": "scripts/trr_p09/audit_alpaca_capacity.py",
+    "audit_cli_sha256": "db8b54c290a1ee5c8915a6c315c6969ee4cea3284da246f57d044b0cbbd8b80e",
+    "audit_provenance": "experiments/TRR-P09/planning/alpaca-capacity-audit-provenance.json",
+    "audit_provenance_sha256": "c9c6828e16d87a7316f36b10d7a832a7cd04c20a73c035b4178062e3926fc2d2",
+    "b0_reference": {
+      "fixed_readout_start_state": {
+        "path": "experiments/TRR-0007/enriched_fit_v1/current_enriched/trr0007_residual_mlp512/selected.safetensors",
+        "selected_step": 2100,
+        "sha256": "2a44a91b01ca1fdc9615eab804872c50c606199704eaf51fa114cc0d7959ddc8"
+      },
+      "h128_positions": 112825,
+      "post_bos_positions": 124371,
+      "records": 1200,
+      "support_ids": 17126
+    },
+    "capacity_counts": {
+      "alpaca_keyed_exclusions": 1224,
+      "alpaca_raw_rows": 52002,
+      "alpaca_usable_keyed_upper_bound": 50778,
+      "finance_conservative_fit_partition_rows": 9760,
+      "finance_reserved_range": "[12000,20000)",
+      "opaque_digest_union_count": 4193,
+      "opaque_namespace_correct_final_audit_pending": true,
+      "pile_conservative_fit_partition_rows": 4495,
+      "pile_reserved_range": "[7000,10000)"
+    },
+    "proposal": "experiments/TRR-P09/planning/bank-proposal.md",
+    "proposal_sha256": "05dc7acac2ae05b4dc55c5f7abfbb0ee2ad3a228b5e761775fa78a22e282091d",
+    "recommendation": {
+      "controlled_by_source": {
+        "finance": 600,
+        "pile": 600
+      },
+      "controlled_records": 1200,
+      "natural_by_source": {
+        "alpaca": 6000,
+        "finance": 1800,
+        "pile": 3000
+      },
+      "natural_multiplier_vs_b0": 10,
+      "natural_records": 10800,
+      "pending_joint_identity_and_capacity_contract": true,
+      "target_records": 12000
+    },
+    "status": "PROPOSED_PUBLIC_CAPACITY_AUDIT_ONLY"
+  },
   "excluded_unstaged_paths": [
     "scripts/trr_p09/prepare_streamed_bank.py",
-    "tests/test_trr_p09_bank_artifact.py",
-    "experiments/TRR-P09/planning/",
-    "scripts/trr_p09/audit_alpaca_capacity.py"
+    "tests/test_trr_p09_bank_artifact.py"
   ],
+  "implementation_checkpoint": {
+    "runner_result_preserved": "coordination/results/TRR-P09.md",
+    "source_commit": "0c7279e30a41a5016ff97c9bcaa5e282db2dabe0",
+    "status": "IMPLEMENTATION_CHECKPOINT_NO_SCIENTIFIC_RUN",
+    "validation_history": {
+      "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p09_fixed_control_runner.py tests/test_trr_p09_fixed_control_adapter.py tests/test_trr_p09_bank_artifact.py",
+      "elapsed_seconds": 1.9,
+      "failed": 0,
+      "owned_files": [
+        {
+          "path": "scripts/trr_p09/fixed_control_runner.py",
+          "sha256": "0a54945968f5f797b53b09df72150f4f44dd2e623ae2929db68751d60389cc2e"
+        },
+        {
+          "path": "tests/test_trr_p09_fixed_control_runner.py",
+          "sha256": "29d4406e1226fa38e5648dd5aa9fa5dcbd07716c2664b8ac88d9ed191b4a5719"
+        }
+      ],
+      "passed": 25,
+      "syntax_command": "python3 -m py_compile scripts/trr_p09/fixed_control_runner.py src/token_reconstruction/trr_p09_fixed_control_adapter.py"
+    }
+  },
   "parent_commits": {
     "adapter": "0aee09c4abb8d65b6ed3a42dc8ae93789509a518",
     "bank_contract_proposal": "7abfa5d",
@@ -19,19 +99,29 @@
     "domain-balanced validation aggregation and frozen selection metric",
     "checkpoint state serializer/callback and immutable state files",
     "outer fail-closed resource watchdog and production CLI",
-    "final scientific constants and public asset hash bindings"
+    "final scientific constants and public asset hash bindings",
+    "namespace-correct public identity ledger for Alpaca opaque sequence/reservation digests",
+    "joint root/Agent 1 approval of the proportional 12,000-row source contract and deterministic strata quotas",
+    "B0 byte-equivalent prefix and public_base validation binding verification before any P09 source selection",
+    "storage/resource preflight for the expanded streamed activation bank"
   ],
   "schema": "token-reconstruction.trr-p09-implementation-manifest.v1",
   "scientific_execution": {
     "fit_run": false,
     "gpu_run": false,
     "model_checkpoint_opened": false,
+    "p09_activation_bank_captured": false,
+    "p09_source_selection_executed": false,
     "public_bank_opened": false,
+    "public_model_forward_count": 0,
+    "public_source_rows_read": true,
+    "public_source_tokenizer_capacity_audit": true,
+    "public_tokenizer_read": true,
     "target_observation_opened": false,
     "truth_opened": false
   },
   "source_commit": "0c7279e30a41a5016ff97c9bcaa5e282db2dabe0",
-  "status": "IMPLEMENTATION_CHECKPOINT_NO_SCIENTIFIC_RUN",
+  "status": "PREPARATION_IN_PROGRESS_CONTRACT_PENDING",
   "task_id": "TRR-P09",
   "validation": {
     "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p09_fixed_control_runner.py tests/test_trr_p09_fixed_control_adapter.py tests/test_trr_p09_bank_artifact.py",
