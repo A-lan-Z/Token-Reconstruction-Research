@@ -39,9 +39,9 @@
     "model_or_tensor_payload_loaded": true,
     "selection_access_note": "Approved evaluator-side selector transiently read public source rows/tokenizer; selection metadata persisted identities/digests only and no source text or token arrays."
   },
-  "next_step": "Root review/publication bookkeeping; implementation owns the approved hash-only source reservation export. No additional fit, capture, truth opening, or experiment is authorized by this status.",
+  "next_step": "Root review of bounded disjointness audit and static capture plan; no capture, prediction, truth opening, or additional compute is authorized by this status.",
   "created_utc": "2026-09-07T00:12:47.039245+00:00",
-  "updated_utc": "2026-09-07T02:03:00Z",
+  "updated_utc": "2026-09-07T02:13:00Z",
   "plan": {
     "path": "experiments/TRR-P08/plan.json",
     "status": "FROZEN_DESIGN_PRE_FIT",
@@ -71,7 +71,9 @@
     "main_fit_evidence": "experiments/TRR-P08/setup/main-fit-evidence-r2.json",
     "selected_state_freeze": "experiments/TRR-P08/runtime/selected-state-freeze-r2/selected_state_freeze.json",
     "source_universe_frozen": "experiments/TRR-P08/runtime/source-universe-r1/frozen.json",
-    "source_selection": "experiments/TRR-P08/runtime/source-selection-r1/selection.json"
+    "source_selection": "experiments/TRR-P08/runtime/source-selection-r1/selection.json",
+    "selection_disjointness_audit": "experiments/TRR-P08/setup/selection-disjointness-audit-r1.json",
+    "capture_preflight_plan": "experiments/TRR-P08/setup/capture-preflight-plan-r1.json"
   },
   "verification": {
     "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p08_panel_adapter.py tests/test_trr_p08_source_binding.py tests/test_trr_p08_fit_staged.py",
@@ -185,7 +187,9 @@
       "invalid": 46,
       "selected_total": 512
     },
-    "selection_access": "approved evaluator-side selection transiently read public rows/tokenizer; no source text or token arrays persisted"
+    "selection_access": "approved evaluator-side selection transiently read public rows/tokenizer; no source text or token arrays persisted",
+    "disjointness_audit": "experiments/TRR-P08/setup/selection-disjointness-audit-r1.json",
+    "capture_preflight_plan": "experiments/TRR-P08/setup/capture-preflight-plan-r1.json"
   },
   "resource_boundary": {
     "status": "MAIN_PASS_GPU_RELEASED",
@@ -199,9 +203,13 @@
   "coordination_request": {
     "no_new_reservation_required": true,
     "approved_trr0009_opaque_export": {
-      "status": "PENDING_ROOT_OWNED_APPROVED_HASH_ONLY_EXPORT",
-      "received": false,
-      "read": false
+      "status": "ROOT_APPROVED_SANITIZED_HASH_ONLY_EXCHANGE_COMPLETE",
+      "received": true,
+      "read": false,
+      "path": "experiments/TRR-P08/runtime/source-selection-r1/opaque_hash_exchange_sanitized.json",
+      "bytes": 80045,
+      "sha256": "3383356794d3498830f5cd69ed2c552f4ed527eceed7e05f61cc3c49eba2eb38",
+      "scope": "hash-only scheduling/exclusion exchange; no source values or science"
     },
     "compute_release": "RELEASED_AFTER_MAIN_PASS",
     "gpu_launch_authorized": false
@@ -215,7 +223,16 @@
     ],
     "p08_new_reservation_requested": false,
     "trr0009_unpublished_science_read": false,
-    "compute_release_received": true
+    "compute_release_received": true,
+    "hash_only_exchange": {
+      "status": "COMPLETE_ROOT_SENT",
+      "path": "experiments/TRR-P08/runtime/source-selection-r1/opaque_hash_exchange_sanitized.json",
+      "bytes": 80045,
+      "sha256": "3383356794d3498830f5cd69ed2c552f4ed527eceed7e05f61cc3c49eba2eb38",
+      "read_by_p08_setup": false,
+      "target_scope": "approved Agent1 scheduling/exclusion coordination"
+    },
+    "pending_user_approval": false
   },
   "runtime_evidence": {
     "source_commit": "00504aac40f2b3758c65c14c6dcc8f1b4c6064e5",
