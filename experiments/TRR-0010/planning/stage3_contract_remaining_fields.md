@@ -62,12 +62,13 @@ Bind one immutable B0/B1 preparation receipt containing:
   unique parent sources, final sequences, valid positions, support rows, and
   repeated/derived variants.
 
-The signed target and strata are planning inputs; the actual B1 artifacts and
-counts remain unset until A2's compatible-parent preparation is complete. A
-provisional successful CPU count receipt reports 12,000 records, 1,243,710
-valid positions, and support size 45,631, which yields `N=13000` under the
-formula below. It is not yet the final artifact/manifest binding and does not
-authorize fitting by itself.
+A qualified B1 metadata manifest, support descriptor, and stage-1 capture
+binding are now recorded: 12,000 records (1,200 unchanged B0 plus 10,800
+additions), 1,243,710 valid positions, and support size 45,631, yielding
+`N=13000` under the formula below. The raw shards and support payloads remain
+external; shared forward-batch geometry qualification and the final capacity
+settings are still pending, so this metadata binding does not authorize fitting
+by itself.
 
 ### 2. Exact N, checkpoint grid, and four-arm schedule — root + A2 + capacity
 
@@ -106,6 +107,10 @@ Bind the public development observations used only for checkpoint selection:
   checkpoint selection or final-truth data;
 - explicit width-192 fit versus width-128 development geometry. LoRA is not a
   checkpoint-selection condition; selection uses public-base only.
+
+The new A2 public-validation manifest and rows are prepared externally but
+remain pending audit and label binding. The inherited 384-record metadata
+reference is retained for provenance; it is not a bound label/truth artifact.
 
 ### 4. Largest-cell resource qualification and caps — capacity + root
 
@@ -179,7 +184,8 @@ selected contenders, then bind:
   denominators, and all main-cell cost/harm gates. No pooled family claim or
   automatic promotion follows from a one-domain result.
 
-A2's actual bank/support receipt, capacity's measured caps, and the root/A2
-final-panel and criteria freeze are the remaining prerequisites. Until those
-receipts are bound, this document authorizes no fit, capture, source selection,
-or truth opening.
+The remaining prerequisites are shared forward-batch qualification and
+capacity settings, the audited 384-record validation-label binding, capacity's
+measured largest-cell caps, the exact four-arm/code receipt, and the root/A2
+final-panel and criteria freeze. Until those receipts are bound, this document
+authorizes no substantive fit, final source selection, or truth opening.

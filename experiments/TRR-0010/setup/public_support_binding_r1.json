@@ -1,0 +1,137 @@
+{
+  "schema": "token-reconstruction.trr-p09-public-support-binding.v1",
+  "status": "PASS_PUBLIC_SUPPORT_VECTORS_CPU_ONLY",
+  "source_input": {
+    "path": "/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/inputs.safetensors",
+    "bytes": 29952264,
+    "sha256": "8150184a349bebd31e24b128d23f096702898024a87a405322ee3ba95fa6682e",
+    "accessed_tensors": [
+      "token_ids",
+      "attention_mask"
+    ],
+    "excluded_tensors": [
+      "hidden_states",
+      "activations",
+      "position_ids"
+    ]
+  },
+  "canonicalization": {
+    "labels": "token_ids[:,1:][attention_mask[:,1:]]",
+    "counts": "torch.bincount(minlength=128256)",
+    "support": "positive counts sorted ascending",
+    "digest_namespace": "scripts.trr0010_model.support_digest / trr0010-support-v1"
+  },
+  "banks": [
+    {
+      "bank": "B0",
+      "path": "/tmp/trr-p09-runtime/public-support-r1/support-b0-seed4010.safetensors",
+      "bytes": 274352,
+      "sha256": "0673f9df86a591342ea931ec21ac30f680b8ab052d5e66555ca7d5011f6414ce",
+      "tensor_keys": [
+        "support_ids",
+        "support_counts"
+      ],
+      "tensor_shapes": {
+        "support_ids": [
+          17126
+        ],
+        "support_counts": [
+          17126
+        ]
+      },
+      "tensor_dtypes": {
+        "support_ids": "torch.int64",
+        "support_counts": "torch.int64"
+      },
+      "support_count": 17126,
+      "positive_occurrences": 124371,
+      "vocabulary_size": 128256,
+      "support_digest_trr0010": "f554d25681904530bf0f52752b50f92ae5da10b99998d06eb0cc30ed25fccd4d",
+      "support_ids_tensor_sha256": "59ba55bd1e8a9da209b120875a3cf90696dcb2fd38e4e3763e27114b6ad5c4d4",
+      "support_counts_tensor_sha256": "99b212354ed2d3a11efcfc78085f3218edb05ea503d19f50ce9b29bf5c190fb0",
+      "frequency_vector_tensor_sha256": "a284e1ee8e408e05dd5a0c7663553edc226de8474702889165aa54b3b71a52a0",
+      "post_bos_valid_positions": 124371,
+      "min_count": 1,
+      "max_count": 3940
+    },
+    {
+      "bank": "B1",
+      "path": "/tmp/trr-p09-runtime/public-support-r1/support-b1-seed4010.safetensors",
+      "bytes": 730432,
+      "sha256": "83c62a5fa65d41edf11bbd4def030777aebb0571cb15377dd63532b58788f19c",
+      "tensor_keys": [
+        "support_ids",
+        "support_counts"
+      ],
+      "tensor_shapes": {
+        "support_ids": [
+          45631
+        ],
+        "support_counts": [
+          45631
+        ]
+      },
+      "tensor_dtypes": {
+        "support_ids": "torch.int64",
+        "support_counts": "torch.int64"
+      },
+      "support_count": 45631,
+      "positive_occurrences": 1243710,
+      "vocabulary_size": 128256,
+      "support_digest_trr0010": "f91eaf39433496ba6fd36c5c5233e1d8abbaa2527ff7d75e7b304ec4df4fbd0e",
+      "support_ids_tensor_sha256": "690f61c8600bd52dd6260d14edb05258d7ea90bfe10328702a8598ebb8ecae90",
+      "support_counts_tensor_sha256": "d5a3fd4fbc106b3830a1eddc069fc27fa2b1c6a66209f60a7b041e8304e82a15",
+      "frequency_vector_tensor_sha256": "1d57c1a31fef15a7d7348235f0a2e6090c56f564bf6a1de8d58f69354de563c5",
+      "post_bos_valid_positions": 1243710,
+      "min_count": 1,
+      "max_count": 38046
+    }
+  ],
+  "truth_boundary": {
+    "public_token_ids_read": true,
+    "public_attention_masks_read": true,
+    "model_opened": false,
+    "hidden_states_read": false,
+    "activation_bank_read": false,
+    "evaluation_truth_opened": false,
+    "source_text_read": false
+  },
+  "payload_policy": "support safetensors are local runtime payloads; compact metadata is the committed evidence",
+  "production_interface": {
+    "loader_contract": "load the two named tensors from one bank file; support_ids and support_counts are rank-1 torch.int64 vectors of equal length",
+    "tensor_roles": {
+      "support_ids": "sorted unique positive-support vocabulary IDs",
+      "support_counts": "positive post-BOS occurrence count matching support_ids by index"
+    },
+    "combined_payloads_are_authoritative": true,
+    "one_key_copies_not_required": true,
+    "payloads_local_only": true
+  },
+  "digest_namespace_comparison": {
+    "purpose": "historical namespace comparison only; these digests are not interchangeable",
+    "trr0010": {
+      "implementation": "scripts/trr0010_model.py::support_digest",
+      "prefix": "trr0010-support-v1\\0"
+    },
+    "trr0009_historical": {
+      "implementation": "scripts/trr0009_model.py::support_digest",
+      "prefix": "trr0009-support-v1\\0"
+    },
+    "banks": {
+      "B0": {
+        "trr0010": "f554d25681904530bf0f52752b50f92ae5da10b99998d06eb0cc30ed25fccd4d",
+        "trr0009_historical": "8090b9231042d6c9f9c52f3a0a9d8733b8ec1b739a4f28b12ab1057a7126969d"
+      },
+      "B1": {
+        "trr0010": "f91eaf39433496ba6fd36c5c5233e1d8abbaa2527ff7d75e7b304ec4df4fbd0e",
+        "trr0009_historical": "f11ac047e7a49f90c42a0768c222504ad00da07b5e3ec28ae7dbac6b4de11af6"
+      }
+    }
+  },
+  "evidence_scope": {
+    "public_cpu_input_only": true,
+    "source_model_or_hidden_states_opened": false,
+    "evaluation_truth_opened": false,
+    "support_payload_storage": "/tmp/trr-p09-runtime/public-support-r1"
+  }
+}

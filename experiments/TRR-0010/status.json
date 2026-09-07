@@ -214,6 +214,30 @@
       "bytes": 34096,
       "sha256": "f90e0f42ed1551913cbb1ca52672121e7cf9840eb48aceb630248809ba075619",
       "status": "PUBLISHED_384_PUBLIC_BASE_METADATA_NO_TRUTH"
+    },
+    {
+      "id": "qualified_bank_manifest_binding_r1",
+      "path": "experiments/TRR-0010/setup/qualified_bank_manifest_binding_r1.json",
+      "bytes": 1047,
+      "sha256": "657d73a2d9787bdb321260d1757c4a6e8c27c23dc1e07a30273bf7e2ff41c7d2",
+      "source_path": "/tmp/trr-p09/experiments/TRR-P09/setup/qualified-bank-manifest-r1.json",
+      "status": "QUALIFIED_BANK_METADATA_BINDING"
+    },
+    {
+      "id": "public_support_binding_r1",
+      "path": "experiments/TRR-0010/setup/public_support_binding_r1.json",
+      "bytes": 5091,
+      "sha256": "1c202ab7518404c12726b75147e1246d72fc40bbaf7c4c043edf0792a5e65351",
+      "source_commit": "14e96625a5ccb2da96b8ae27ebe8ef0940d415ec",
+      "status": "PASS_PUBLIC_SUPPORT_VECTORS_CPU_ONLY"
+    },
+    {
+      "id": "stage1_capture_binding_r1",
+      "path": "experiments/TRR-0010/setup/stage1_capture_binding_r1.json",
+      "bytes": 9098,
+      "sha256": "caabf6d8e4983bf453cfe64b3548cc3cedaa245f7dad08bf438d81d72a65837a",
+      "source_commit": "14e96625a5ccb2da96b8ae27ebe8ef0940d415ec",
+      "status": "CAPTURE_COMPLETE_NO_TRUTH_FORWARD_BATCH_QUALIFICATION_PENDING"
     }
   ],
   "branch": "task/TRR-0010",
@@ -234,7 +258,7 @@
       "sha256": "760adf507438111b03c7308740e6666b0961088e6fc8868f999240d58d2814f7",
       "source_commit": "dc048ceae2e8b3f6f7e704084dbceda5b7ea1a1a"
     },
-    "status": "COMPLETE_CAPTURE_RECEIPTS_BOUND_B1_METADATA_REVISION_PENDING",
+    "status": "COMPLETE_CAPTURE_QUALIFIED_BANK_METADATA_BOUND_NO_TRUTH",
     "truth_opened": false,
     "source_selection": false
   },
@@ -426,13 +450,21 @@
     "capture_complete_no_truth": true,
     "directional_qualification_status": "PENDING_LARGEST_CELL_MERGED_W_QUALIFICATION",
     "substantive_fit_status": "PENDING",
-    "final_evaluation_status": "PENDING_TRUTH_CLOSED"
+    "final_evaluation_status": "PENDING_TRUTH_CLOSED",
+    "qualified_B1_manifest_bound": true,
+    "qualified_B1_manifest_external_sha256": "0e14dbf74c947cfc6c586e7a5dbf76a27d8f0522fb8e54d2f98c6067bb36d196",
+    "qualified_B1_raw_shards_copied": false,
+    "stage1_forward_batch_qualification_status": "PENDING_SHARED_GEOMETRY_QUALIFICATION",
+    "support_binding_status": "PASS_PUBLIC_SUPPORT_VECTORS_CPU_ONLY",
+    "public_validation_384_status": "PENDING_A2_VALIDATION_AUDIT_AND_LABEL_BINDING",
+    "public_validation_384_labels_bound": false
   },
   "implementation_commit": "a4985c0cd373c26d4361ce1c861fa35bdb25b10e",
   "pending": [
-    "Finalize the authoritative B1 metadata revision for captured global additions [1200,12000); the f1ad bank_manifest is capture-declared metadata only and is not final B1.",
-    "Complete directional merged-W largest-cell qualification and bind measured resource caps; stage-1 public-capture qualification is separate.",
-    "Before substantive fits, bind the frozen four-arm contract and directional loader/state interfaces using the completed B0/B1 inputs and common N=13000 schedule.",
+    "Complete shared forward-batch geometry qualification and capacity settings; the stage1 capture descriptor remains pending this gate.",
+    "Complete A2 audit and label binding for the 384-record public validation manifest; labels remain unbound and no truth is open.",
+    "Complete directional merged-W largest-cell qualification and bind measured wall, disk, host-RSS, and isolated-GPU caps.",
+    "Before substantive fits, bind the frozen four-arm contract and directional loader/state interfaces using the qualified B1 metadata and common N=13000 schedule.",
     "After fits, bind selected contenders, paired final-panel/order digests, and the TRR-0010 truth descriptor before final evaluation truth.",
     "No reconstruction-quality result or promotion claim exists; quality remains unavailable."
   ],
@@ -502,7 +534,8 @@
       "trr0010_digest": "f554d25681904530bf0f52752b50f92ae5da10b99998d06eb0cc30ed25fccd4d"
     },
     "stage3_fields_still_required": [
-      "Authoritative B1 metadata revision and final payload/sidecar binding for global additions [1200,12000); capture-declared f1ad manifest remains non-final.",
+      "Shared forward-batch geometry qualification and capacity settings for the completed B0/B1 capture.",
+      "A2 audit and label binding for the 384-record public validation manifest; labels remain pending.",
       "Directional merged-W largest-cell qualification with measured wall, disk, host-RSS, and isolated-GPU caps.",
       "Frozen four-arm training contract and produced state/readout/code bindings before substantive fits.",
       "Frozen final evaluation design, selected contenders, paired panel/order digests, and truth descriptor before final truth access.",
@@ -662,15 +695,119 @@
         "truth_opened": false,
         "quality_results": false
       }
+    },
+    "qualified_bank_binding": {
+      "status": "QUALIFIED_CAPTURE_METADATA_REVISION",
+      "external_manifest": {
+        "path": "/tmp/trr-p09-runtime/stage1-capture-r2/bank_manifest-qualified-r1.json",
+        "bytes": 145390,
+        "sha256": "0e14dbf74c947cfc6c586e7a5dbf76a27d8f0522fb8e54d2f98c6067bb36d196"
+      },
+      "compact_binding": {
+        "path": "experiments/TRR-0010/setup/qualified_bank_manifest_binding_r1.json",
+        "bytes": 1047,
+        "sha256": "657d73a2d9787bdb321260d1757c4a6e8c27c23dc1e07a30273bf7e2ff41c7d2"
+      },
+      "original_manifest_preserved_as_historical": {
+        "path": "/tmp/trr-p09-runtime/stage1-capture-r2/bank_manifest.json",
+        "bytes": 143983,
+        "sha256": "f1ad02c2836c53992299e3459d886bf87c2f0d2d437c86224ea4db689c1b2216"
+      },
+      "payloads_unchanged": true,
+      "global_record_range_half_open": [
+        1200,
+        12000
+      ],
+      "new_record_count": 10800,
+      "raw_shards_copied": false,
+      "final_b1_payload_manifest_bound": true,
+      "forward_batch_qualification": "PENDING_SHARED_GEOMETRY_QUALIFICATION"
+    },
+    "support_binding": {
+      "status": "PASS_PUBLIC_SUPPORT_VECTORS_CPU_ONLY",
+      "binding": {
+        "path": "experiments/TRR-0010/setup/public_support_binding_r1.json",
+        "bytes": 5091,
+        "sha256": "1c202ab7518404c12726b75147e1246d72fc40bbaf7c4c043edf0792a5e65351"
+      },
+      "source_commit": "14e96625a5ccb2da96b8ae27ebe8ef0940d415ec",
+      "B0": {
+        "support_count": 17126,
+        "post_bos_valid_positions": 124371,
+        "support_digest_trr0010": "f554d25681904530bf0f52752b50f92ae5da10b99998d06eb0cc30ed25fccd4d",
+        "payload_copied": false
+      },
+      "B1": {
+        "support_count": 45631,
+        "post_bos_valid_positions": 1243710,
+        "support_digest_trr0010": "f91eaf39433496ba6fd36c5c5233e1d8abbaa2527ff7d75e7b304ec4df4fbd0e",
+        "payload_copied": false
+      },
+      "truth_boundary": {
+        "public_token_ids_read": true,
+        "public_attention_masks_read": true,
+        "hidden_states_read": false,
+        "evaluation_truth_opened": false,
+        "source_text_read": false
+      }
+    },
+    "capture_binding": {
+      "status": "CAPTURE_COMPLETE_NO_TRUTH_FORWARD_BATCH_QUALIFICATION_PENDING",
+      "binding": {
+        "path": "experiments/TRR-0010/setup/stage1_capture_binding_r1.json",
+        "bytes": 9098,
+        "sha256": "caabf6d8e4983bf453cfe64b3548cc3cedaa245f7dad08bf438d81d72a65837a"
+      },
+      "source_commit": "14e96625a5ccb2da96b8ae27ebe8ef0940d415ec",
+      "accepted_qualification_attempt": 6,
+      "historical_excluded_attempts": {
+        "path": "experiments/TRR-P09/setup/stage1-qualification-attempts-r2.json",
+        "sha256": "21187abe870792af65b8aacc9f691ab81558b7483b0ef5e720af6a8dce621592",
+        "excluded_count": 5,
+        "preserved": true
+      },
+      "forward_batch_qualification": "PENDING_SHARED_GEOMETRY_QUALIFICATION",
+      "truth_opened": false
+    },
+    "public_validation_384": {
+      "status": "PENDING_A2_VALIDATION_AUDIT_AND_LABEL_BINDING",
+      "published_metadata_reference": {
+        "path": "experiments/TRR-0010/planning/public_source_bindings_r0.json",
+        "bytes": 34096,
+        "sha256": "f90e0f42ed1551913cbb1ca52672121e7cf9840eb48aceb630248809ba075619",
+        "records": 384,
+        "domain_counts": {
+          "Finance": 256,
+          "Pile": 128
+        },
+        "condition": "public_base",
+        "capture_metadata_sha256": "2a8ec28780de7b85ee2139d5e062aaf8cecd095fffa24bd1fc2aa9767b1c27b8",
+        "truth_opened": false
+      },
+      "new_validation_manifest_external": {
+        "path": "/tmp/trr-p09-runtime/public-validation-r1/validation_manifest.json",
+        "bytes": 468369,
+        "sha256": "2ae3c36d62a3219f0df24ef6d87a9c76418b408d946ba52bcedd020b6b403d38",
+        "status": "PENDING_A2_AUDIT",
+        "copied": false
+      },
+      "validation_rows_external": {
+        "path": "/tmp/trr-p09-runtime/public-validation-r1/validation_rows.json",
+        "sha256": "3877baf2a8ad894cb7c971aadd1591854852f77091bdbdb218b3617a6971919f",
+        "status": "PENDING_A2_AUDIT",
+        "copied": false
+      },
+      "labels_bound": false,
+      "truth_opened": false
     }
   },
   "report_path": "coordination/results/TRR-0010.md",
   "reviewed_base_commit": "4602f98eeb03ac121d8bbc230d7e2b219551b914",
   "schema": "token-reconstruction.trr0010-status.v5",
   "scientific_results_available": false,
-  "status": "STAGE1_PUBLIC_CAPTURE_COMPLETE_NO_TRUTH_B1_METADATA_REVISION_PENDING_FITS_PENDING",
+  "status": "STAGE1_CAPTURE_QUALIFIED_BANK_METADATA_BOUND_NO_TRUTH_FITS_PENDING",
   "task_id": "TRR-0010",
-  "updated_utc": "2026-09-07T12:15:55Z",
+  "updated_utc": "2026-09-07T12:44:36Z",
   "publication": {
     "status": "OPEN_DRAFT_PR_PUBLISHED",
     "url": "https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/20",
@@ -771,17 +908,117 @@
       "B1_valid_post_bos_positions": 1243710,
       "schedule_payloads_copied": false,
       "truth_opened": false
+    },
+    "qualified_bank_manifest": {
+      "status": "QUALIFIED_CAPTURE_METADATA_REVISION",
+      "external_manifest": {
+        "path": "/tmp/trr-p09-runtime/stage1-capture-r2/bank_manifest-qualified-r1.json",
+        "bytes": 145390,
+        "sha256": "0e14dbf74c947cfc6c586e7a5dbf76a27d8f0522fb8e54d2f98c6067bb36d196"
+      },
+      "compact_binding": {
+        "path": "experiments/TRR-0010/setup/qualified_bank_manifest_binding_r1.json",
+        "bytes": 1047,
+        "sha256": "657d73a2d9787bdb321260d1757c4a6e8c27c23dc1e07a30273bf7e2ff41c7d2"
+      },
+      "original_manifest_preserved_as_historical": {
+        "path": "/tmp/trr-p09-runtime/stage1-capture-r2/bank_manifest.json",
+        "bytes": 143983,
+        "sha256": "f1ad02c2836c53992299e3459d886bf87c2f0d2d437c86224ea4db689c1b2216"
+      },
+      "payloads_unchanged": true,
+      "global_record_range_half_open": [
+        1200,
+        12000
+      ],
+      "new_record_count": 10800,
+      "raw_shards_copied": false,
+      "final_b1_payload_manifest_bound": true,
+      "forward_batch_qualification": "PENDING_SHARED_GEOMETRY_QUALIFICATION"
+    },
+    "support_binding": {
+      "status": "PASS_PUBLIC_SUPPORT_VECTORS_CPU_ONLY",
+      "binding": {
+        "path": "experiments/TRR-0010/setup/public_support_binding_r1.json",
+        "bytes": 5091,
+        "sha256": "1c202ab7518404c12726b75147e1246d72fc40bbaf7c4c043edf0792a5e65351"
+      },
+      "source_commit": "14e96625a5ccb2da96b8ae27ebe8ef0940d415ec",
+      "B0": {
+        "support_count": 17126,
+        "post_bos_valid_positions": 124371,
+        "support_digest_trr0010": "f554d25681904530bf0f52752b50f92ae5da10b99998d06eb0cc30ed25fccd4d",
+        "payload_copied": false
+      },
+      "B1": {
+        "support_count": 45631,
+        "post_bos_valid_positions": 1243710,
+        "support_digest_trr0010": "f91eaf39433496ba6fd36c5c5233e1d8abbaa2527ff7d75e7b304ec4df4fbd0e",
+        "payload_copied": false
+      },
+      "truth_boundary": {
+        "public_token_ids_read": true,
+        "public_attention_masks_read": true,
+        "hidden_states_read": false,
+        "evaluation_truth_opened": false,
+        "source_text_read": false
+      }
+    },
+    "capture_binding": {
+      "status": "CAPTURE_COMPLETE_NO_TRUTH_FORWARD_BATCH_QUALIFICATION_PENDING",
+      "binding": {
+        "path": "experiments/TRR-0010/setup/stage1_capture_binding_r1.json",
+        "bytes": 9098,
+        "sha256": "caabf6d8e4983bf453cfe64b3548cc3cedaa245f7dad08bf438d81d72a65837a"
+      },
+      "source_commit": "14e96625a5ccb2da96b8ae27ebe8ef0940d415ec",
+      "accepted_qualification_attempt": 6,
+      "historical_excluded_attempts": {
+        "path": "experiments/TRR-P09/setup/stage1-qualification-attempts-r2.json",
+        "sha256": "21187abe870792af65b8aacc9f691ab81558b7483b0ef5e720af6a8dce621592",
+        "excluded_count": 5,
+        "preserved": true
+      },
+      "forward_batch_qualification": "PENDING_SHARED_GEOMETRY_QUALIFICATION",
+      "truth_opened": false
     }
   },
   "validated_bindings": {
-    "combined_loader": {
-      "status": "PASS_METADATA_BINDING_ONLY",
-      "verification_receipt_path": "/tmp/trr-p09-runtime/loader-verification-r2.json",
-      "verification_receipt_sha256": "f024073b266148ffa36a3df70a6cccd1e09c833a20a4ba90532cf0a04e5a8f08",
-      "namespace_half_open": [
-        0,
+    "qualified_bank": {
+      "status": "QUALIFIED_CAPTURE_METADATA_REVISION",
+      "external_manifest": {
+        "path": "/tmp/trr-p09-runtime/stage1-capture-r2/bank_manifest-qualified-r1.json",
+        "bytes": 145390,
+        "sha256": "0e14dbf74c947cfc6c586e7a5dbf76a27d8f0522fb8e54d2f98c6067bb36d196"
+      },
+      "compact_binding": {
+        "path": "experiments/TRR-0010/setup/qualified_bank_manifest_binding_r1.json",
+        "bytes": 1047,
+        "sha256": "657d73a2d9787bdb321260d1757c4a6e8c27c23dc1e07a30273bf7e2ff41c7d2"
+      },
+      "original_manifest_preserved_as_historical": {
+        "path": "/tmp/trr-p09-runtime/stage1-capture-r2/bank_manifest.json",
+        "bytes": 143983,
+        "sha256": "f1ad02c2836c53992299e3459d886bf87c2f0d2d437c86224ea4db689c1b2216"
+      },
+      "payloads_unchanged": true,
+      "global_record_range_half_open": [
+        1200,
         12000
       ],
+      "new_record_count": 10800,
+      "raw_shards_copied": false,
+      "final_b1_payload_manifest_bound": true,
+      "forward_batch_qualification": "PENDING_SHARED_GEOMETRY_QUALIFICATION"
+    },
+    "combined_loader": {
+      "status": "BOUND_CAPTURE_DESCRIPTOR_SHARED_GEOMETRY_QUALIFICATION_PENDING",
+      "binding": {
+        "path": "experiments/TRR-0010/setup/stage1_capture_binding_r1.json",
+        "bytes": 9098,
+        "sha256": "caabf6d8e4983bf453cfe64b3548cc3cedaa245f7dad08bf438d81d72a65837a"
+      },
+      "forward_batch_qualification": "PENDING_SHARED_GEOMETRY_QUALIFICATION",
       "model_id": "meta-llama/Llama-3.2-1B-Instruct",
       "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
       "forward_entrypoint": "ContiguousPublicPrefix.forward_full",
@@ -792,43 +1029,67 @@
       "payloads_copied": false
     },
     "support": {
-      "status": "VERIFIED_B1_SUPPORT_METADATA_ONLY",
-      "support_count": 45631,
-      "container_path": "/tmp/trr-p09-runtime/public-support-r1/support-b1-seed4010.safetensors",
-      "container_bytes": 730432,
-      "container_sha256": "83c62a5fa65d41edf11bbd4def030777aebb0571cb15377dd63532b58788f19c",
-      "support_ids_and_counts_same_container": true,
-      "canonical_support_digest": "f91eaf39433496ba6fd36c5c5233e1d8abbaa2527ff7d75e7b304ec4df4fbd0e",
-      "payload_copied": false
+      "status": "PASS_PUBLIC_SUPPORT_VECTORS_CPU_ONLY",
+      "binding": {
+        "path": "experiments/TRR-0010/setup/public_support_binding_r1.json",
+        "bytes": 5091,
+        "sha256": "1c202ab7518404c12726b75147e1246d72fc40bbaf7c4c043edf0792a5e65351"
+      },
+      "source_commit": "14e96625a5ccb2da96b8ae27ebe8ef0940d415ec",
+      "B0": {
+        "support_count": 17126,
+        "post_bos_valid_positions": 124371,
+        "support_digest_trr0010": "f554d25681904530bf0f52752b50f92ae5da10b99998d06eb0cc30ed25fccd4d",
+        "payload_copied": false
+      },
+      "B1": {
+        "support_count": 45631,
+        "post_bos_valid_positions": 1243710,
+        "support_digest_trr0010": "f91eaf39433496ba6fd36c5c5233e1d8abbaa2527ff7d75e7b304ec4df4fbd0e",
+        "payload_copied": false
+      },
+      "truth_boundary": {
+        "public_token_ids_read": true,
+        "public_attention_masks_read": true,
+        "hidden_states_read": false,
+        "evaluation_truth_opened": false,
+        "source_text_read": false
+      }
     },
     "public_base_validation_384": {
-      "status": "BOUND_PUBLISHED_METADATA_ONLY_NO_TRUTH",
-      "binding_path": "experiments/TRR-0010/planning/public_source_bindings_r0.json",
-      "binding_bytes": 34096,
-      "binding_sha256": "f90e0f42ed1551913cbb1ca52672121e7cf9840eb48aceb630248809ba075619",
-      "records": 384,
-      "domain_counts": {
-        "Finance": 256,
-        "Pile": 128
+      "status": "PENDING_A2_VALIDATION_AUDIT_AND_LABEL_BINDING",
+      "published_metadata_reference": {
+        "path": "experiments/TRR-0010/planning/public_source_bindings_r0.json",
+        "bytes": 34096,
+        "sha256": "f90e0f42ed1551913cbb1ca52672121e7cf9840eb48aceb630248809ba075619",
+        "records": 384,
+        "domain_counts": {
+          "Finance": 256,
+          "Pile": 128
+        },
+        "condition": "public_base",
+        "capture_metadata_sha256": "2a8ec28780de7b85ee2139d5e062aaf8cecd095fffa24bd1fc2aa9767b1c27b8",
+        "truth_opened": false
       },
-      "condition": "public_base",
-      "panel_path": "experiments/TRR-0009/evaluation/public_observations_v2/panel.json",
-      "panel_bytes": 1212,
-      "panel_sha256": "3c12da3ba3c862d4a448cd6c40d82b6781bb550e37f69b8cd7d5329d7c9a85c3",
-      "observation_metadata_path": "experiments/TRR-0009/evaluation/public_observations_v2/observations.json",
-      "observation_metadata_bytes": 5457,
-      "observation_metadata_sha256": "8ad89e2598e7b1e774c43b3fd1d0f1a990615069cd1f488e8aa139463087d430",
-      "capture_metadata_path": "experiments/TRR-0009/evaluation/public_observations_v2/capture.json",
-      "capture_metadata_bytes": 22527,
-      "capture_metadata_sha256": "2a8ec28780de7b85ee2139d5e062aaf8cecd095fffa24bd1fc2aa9767b1c27b8",
-      "scored_post_bos_tokens": 127,
-      "source_text_loaded": false,
-      "target_labels_loaded": false,
+      "new_validation_manifest_external": {
+        "path": "/tmp/trr-p09-runtime/public-validation-r1/validation_manifest.json",
+        "bytes": 468369,
+        "sha256": "2ae3c36d62a3219f0df24ef6d87a9c76418b408d946ba52bcedd020b6b403d38",
+        "status": "PENDING_A2_AUDIT",
+        "copied": false
+      },
+      "validation_rows_external": {
+        "path": "/tmp/trr-p09-runtime/public-validation-r1/validation_rows.json",
+        "sha256": "3877baf2a8ad894cb7c971aadd1591854852f77091bdbdb218b3617a6971919f",
+        "status": "PENDING_A2_AUDIT",
+        "copied": false
+      },
+      "labels_bound": false,
       "truth_opened": false
     },
     "directional_qualification": {
       "status": "PENDING_LARGEST_CELL_MERGED_W_QUALIFICATION",
-      "stage1_public_capture_qualification_does_not_substitute": true,
+      "stage1_capture_qualification_does_not_substitute": true,
       "quality_results": false
     },
     "substantive_fits": {
