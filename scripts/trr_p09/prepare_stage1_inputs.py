@@ -67,6 +67,16 @@ CONTROLLED_IDS = 3600
 REPLACEMENTS_PER_ROW = 30
 DIAGNOSTIC_SEED = 4010
 STABLE_SEED = 7007
+PARENT_EXCLUSION_MANIFEST_REL = Path(
+    "experiments/TRR-0007/support/broader_bank_v5/public_parent_exclusion_manifest.json"
+)
+PARENT_EXCLUSION_MANIFEST_SHA256 = "bd1359f1184091570023e22a7682d1f97c08f8f05e47f69f6b3e6be089cd0181"
+PARENT_EXCLUSION_SOURCE_ROW_COUNTS = {"alpaca": 1224, "pile": 384, "finance": 240}
+PARENT_EXCLUSION_CURRENT_FIT_COUNTS = {"alpaca": 600, "pile": 360, "finance": 240}
+CORRECTION_ADDENDUM_REL = Path("experiments/TRR-P09/planning/stage1-correction-addendum-r1.json")
+CORRECTION_ADDENDUM_SHA256 = "0bad461d93041fdb21d284b0ae1684d2268adfb0f9a304f9b97ab4cd39900564"
+CORRECTION_ADDENDUM_BYTES = 6364
+CORRECTION_COUNTERSIGNATURE_REL = Path("experiments/TRR-P09/setup/stage1-correction-addendum-countersignature-r1.json")
 
 # These are immutable published inputs.  The repository-local P09 plan binds
 # their metadata; the external root is explicit because published worktrees
@@ -320,6 +330,38 @@ def verify_countersignature(path: Path) -> dict[str, Any]:
     return value
 
 
+def verify_correction_countersignature(root: Path) -> dict[str, Any]:
+    """Verify the jointly countersigned r2 correction before compilation."""
+    root = Path(root).expanduser().resolve()
+    addendum_path = root / CORRECTION_ADDENDUM_REL
+    _regular_hash(addendum_path, CORRECTION_ADDENDUM_SHA256, label="stage1 correction addendum")
+    if addendum_path.stat().st_size != CORRECTION_ADDENDUM_BYTES:
+        raise PreparationErrorLocal("stage1 correction addendum byte count changed")
+    signature_path = root / CORRECTION_COUNTERSIGNATURE_REL
+    if signature_path.is_symlink() or not signature_path.is_file():
+        raise PreparationErrorLocal("joint stage1 correction countersignature is unavailable")
+    value = json.loads(signature_path.read_text(encoding="utf-8"))
+    bound = value.get("addendum", {})
+    if bound.get("sha256") != CORRECTION_ADDENDUM_SHA256 or int(bound.get("bytes", -1)) != CORRECTION_ADDENDUM_BYTES:
+        raise PreparationErrorLocal("joint countersignature does not bind the correction addendum")
+    attestation = value.get("attestation", {})
+    if attestation.get("root") != "COUNTERSIGNED" or attestation.get("agent1") != "COUNTERSIGNED":
+        raise PreparationErrorLocal("joint stage1 correction countersignature is incomplete")
+    if not attestation.get("original_plan_unchanged") or not attestation.get("r1_preserved_and_excluded"):
+        raise PreparationErrorLocal("joint stage1 correction scope is too broad")
+    return {
+        "path": str(signature_path),
+        "bytes": signature_path.stat().st_size,
+        "sha256": digest_file(signature_path),
+        "addendum_path": str(addendum_path),
+        "addendum_bytes": CORRECTION_ADDENDUM_BYTES,
+        "addendum_sha256": CORRECTION_ADDENDUM_SHA256,
+        "root": "COUNTERSIGNED",
+        "agent1": "COUNTERSIGNED",
+        "scope": "CPU-only r2 input preparation; no GPU/capture/fit/truth",
+    }
+
+
 def _json_records(value: Any, *, label: str) -> list[dict[str, Any]]:
     if isinstance(value, Mapping):
         value = value.get("records")
@@ -391,6 +433,89 @@ def load_identity_ids(published_root: Path) -> list[int]:
     return [int(x) for x in values]
 
 
+def load_parent_exclusion_manifest(published_root: Path) -> dict[str, Any]:
+    """Load the complete published parent row-key/identity exclusion ledger.
+
+    The manifest is public metadata only.  Its dataset-scoped row keys are
+    required because opaque sequence/reservation digests cannot be compared to
+    the renderer's candidate namespaces.
+    """
+    path = Path(published_root).expanduser().resolve() / PARENT_EXCLUSION_MANIFEST_REL
+    _regular_hash(path, PARENT_EXCLUSION_MANIFEST_SHA256, label="TRR-0007 parent exclusion manifest")
+    value = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(value, Mapping):
+        raise PreparationErrorLocal("parent exclusion manifest is not an object")
+    selector = value.get("selector_exclusion_sets")
+    if not isinstance(selector, Mapping):
+        raise PreparationErrorLocal("parent exclusion selector sets are missing")
+    source_rows = selector.get("source_row_keys")
+    if not isinstance(source_rows, list):
+        raise PreparationErrorLocal("parent source-row exclusion set is missing")
+    source_indices: dict[str, set[int]] = defaultdict(set)
+    for item in source_rows:
+        if not isinstance(item, Mapping):
+            raise PreparationErrorLocal("parent source-row exclusion item is malformed")
+        dataset_key = str(item.get("dataset_key", ""))
+        row_index = item.get("row_index")
+        if dataset_key not in PARENT_EXCLUSION_SOURCE_ROW_COUNTS or isinstance(row_index, bool) or not isinstance(row_index, int) or row_index < 0:
+            raise PreparationErrorLocal("parent source-row exclusion namespace is malformed")
+        source_indices[dataset_key].add(int(row_index))
+    observed_source_counts = {key: len(source_indices.get(key, set())) for key in PARENT_EXCLUSION_SOURCE_ROW_COUNTS}
+    if observed_source_counts != PARENT_EXCLUSION_SOURCE_ROW_COUNTS or sum(observed_source_counts.values()) != len(source_rows):
+        raise PreparationErrorLocal(f"parent source-row exclusion counts changed: {observed_source_counts}")
+
+    selector_ids = selector.get("record_ids")
+    if not isinstance(selector_ids, list) or any(not isinstance(item, str) or not item for item in selector_ids):
+        raise PreparationErrorLocal("parent record-id exclusion set is malformed")
+    record_ids = set(selector_ids)
+    if len(record_ids) != len(selector_ids):
+        raise PreparationErrorLocal("parent record-id exclusion set contains duplicates")
+
+    current_fit = value.get("current_fit_records_excluded")
+    if not isinstance(current_fit, list):
+        raise PreparationErrorLocal("parent current-fit exclusion records are missing")
+    current_counts: Counter[str] = Counter()
+    rendered: set[str] = set()
+    for item in current_fit:
+        if not isinstance(item, Mapping):
+            raise PreparationErrorLocal("parent current-fit exclusion item is malformed")
+        dataset_key = str(item.get("dataset_key", ""))
+        if dataset_key not in PARENT_EXCLUSION_CURRENT_FIT_COUNTS:
+            raise PreparationErrorLocal("parent current-fit exclusion dataset changed")
+        current_counts[dataset_key] += 1
+        for key in ("record_id", "source_record_id"):
+            identifier = item.get(key)
+            if isinstance(identifier, str) and identifier:
+                record_ids.add(identifier)
+        rendered_hash = item.get("rendered_sha256")
+        if not isinstance(rendered_hash, str) or len(rendered_hash) != 64:
+            raise PreparationErrorLocal("parent current-fit rendered digest is malformed")
+        rendered.add(rendered_hash)
+    if dict(current_counts) != PARENT_EXCLUSION_CURRENT_FIT_COUNTS or sum(current_counts.values()) != len(current_fit):
+        raise PreparationErrorLocal(f"parent current-fit exclusion counts changed: {dict(current_counts)}")
+
+    opaque = selector.get("opaque_sequence_or_reservation_digests")
+    if not isinstance(opaque, list) or any(not isinstance(item, str) or len(item) != 64 for item in opaque):
+        raise PreparationErrorLocal("parent opaque exclusion digest set is malformed")
+    return {
+        "record_ids": record_ids,
+        "rendered_sha256": rendered,
+        "source_indices": source_indices,
+        "metadata": {
+            "path": str(path),
+            "bytes": path.stat().st_size,
+            "sha256": digest_file(path),
+            "source_row_key_counts": observed_source_counts,
+            "source_row_key_count": sum(observed_source_counts.values()),
+            "selector_record_id_count": len(selector_ids),
+            "current_fit_record_count": len(current_fit),
+            "current_fit_counts": dict(current_counts),
+            "opaque_sequence_or_reservation_digest_count": len(opaque),
+            "namespace_rule": "dataset_key plus row_index/source-row identity; opaque sequence/reservation digests remain a separate namespace",
+        },
+    }
+
+
 def collect_identity_exclusions(plan: Mapping[str, Any], root: Path, published_root: Path) -> dict[str, Any]:
     """Compile namespace-separated hash/ID sets from bound public metadata only."""
     ids: set[str] = set()
@@ -407,6 +532,15 @@ def collect_identity_exclusions(plan: Mapping[str, Any], root: Path, published_r
             value = row.get(key)
             if isinstance(value, str) and value:
                 target.add(value)
+    # Bind the complete published parent row-key ledger before any new source
+    # scan.  This includes the 624 Alpaca development rows that are absent from
+    # the P09 Finance/Pile source-selection metadata.
+    parent_exclusions = load_parent_exclusion_manifest(published_root)
+    ids.update(parent_exclusions["record_ids"])
+    rendered.update(parent_exclusions["rendered_sha256"])
+    for dataset_key, values in parent_exclusions["source_indices"].items():
+        source_indices[dataset_key].update(values)
+    source_files.append(parent_exclusions["metadata"])
     # The plan's approved opaque ledgers are hash-only files.  Their values are
     # never printed or serialized; only namespaces declared by the plan are read.
     ledger_specs = plan["already_bound_inputs"]["exclusion_metadata"]["approved_opaque_ledgers"]
@@ -439,6 +573,7 @@ def collect_identity_exclusions(plan: Mapping[str, Any], root: Path, published_r
         "h128_sha256": h128,
         "source_indices": source_indices,
         "source_files": source_files,
+        "parent_manifest": parent_exclusions["metadata"],
     }
     exclusions["summary"] = {
         "record_id_count": len(ids),
@@ -454,6 +589,10 @@ def collect_identity_exclusions(plan: Mapping[str, Any], root: Path, published_r
             "h128_sha256": sorted(h128),
             "source_indices": {key: sorted(values) for key, values in sorted(source_indices.items())},
         })),
+        "parent_manifest_sha256": parent_exclusions["metadata"]["sha256"],
+        "parent_source_row_key_counts": dict(parent_exclusions["metadata"]["source_row_key_counts"]),
+        "parent_current_fit_counts": dict(parent_exclusions["metadata"]["current_fit_counts"]),
+        "parent_selector_record_id_count": int(parent_exclusions["metadata"]["selector_record_id_count"]),
     }
     return exclusions
 
@@ -747,16 +886,115 @@ def make_natural_rows(selected: Sequence[tuple[_Candidate, int]], stratum: str) 
     ]
 
 
-def make_controlled_rows(selected: Sequence[tuple[_Candidate, int]], stratum: str, identity_ids: Sequence[int], cursor: int, structural_token_ids: Iterable[int] = (BOS_TOKEN_ID, PAD_TOKEN_ID)) -> tuple[list[InputRow], int]:
+def build_b0_template_buckets(
+    rows: Sequence[InputRow],
+    *,
+    expected_total: int | None = 120,
+) -> dict[tuple[str, int], tuple[tuple[int, InputRow], ...]]:
+    """Index immutable B0 replacement templates by stratum and exact length."""
+    buckets: dict[tuple[str, int], list[tuple[int, InputRow]]] = defaultdict(list)
+    for index, row in enumerate(rows):
+        if not row.synthetic:
+            continue
+        if len(row.replacement_positions) != REPLACEMENTS_PER_ROW or len(row.replacement_token_ids) != REPLACEMENTS_PER_ROW:
+            raise PreparationErrorLocal(f"B0 template at row {index} lacks 30 replacement pairs")
+        key = (str(row.stratum), int(row.target_post_bos_token_count))
+        buckets[key].append((int(index), row))
+    if expected_total is not None and sum(len(values) for values in buckets.values()) != expected_total:
+        raise PreparationErrorLocal("B0 template count changed")
+    return {key: tuple(sorted(values, key=lambda pair: pair[0])) for key, values in buckets.items()}
+
+
+def _template_pair_digest(row: InputRow) -> str:
+    return digest_bytes(canonical_bytes({
+        "replacement_positions": list(row.replacement_positions),
+        "replacement_token_ids": list(row.replacement_token_ids),
+    }))
+
+
+def controlled_template_assignment_audit(
+    b0_rows: Sequence[InputRow],
+    addition_rows: Sequence[InputRow],
+    *,
+    expected_b0_templates: int | None = 120,
+    expected_controlled_addition_rows: int | None = 1080,
+) -> dict[str, Any]:
+    """Verify exact nine-use B0 template assignment without exposing token values."""
+    templates = build_b0_template_buckets(b0_rows, expected_total=expected_b0_templates)
+    expected: Counter[tuple[str, int, str]] = Counter()
+    observed: Counter[tuple[str, int, str]] = Counter()
+    b0_bucket_counts: Counter[tuple[str, int]] = Counter()
+    addition_bucket_counts: Counter[tuple[str, int]] = Counter()
+    for key, values in templates.items():
+        for _index, row in values:
+            digest = _template_pair_digest(row)
+            expected[(key[0], key[1], digest)] += 9
+            b0_bucket_counts[key] += 1
+    for row in addition_rows:
+        if not row.synthetic:
+            continue
+        key = (str(row.stratum), int(row.target_post_bos_token_count))
+        digest = _template_pair_digest(row)
+        observed[(key[0], key[1], digest)] += 1
+        addition_bucket_counts[key] += 1
+    if observed != expected:
+        raise PreparationErrorLocal("controlled additions do not use each B0 template exactly nine times")
+    expected_rows = sum(expected.values())
+    observed_rows = sum(observed.values())
+    if expected_controlled_addition_rows is not None and (observed_rows != expected_controlled_addition_rows or sum(addition_bucket_counts.values()) != expected_controlled_addition_rows):
+        raise PreparationErrorLocal(f"controlled addition row count changed: {observed_rows}")
+    expected_buckets = {f"{key[0]}|{key[1]}": int(value) for key, value in sorted(b0_bucket_counts.items())}
+    addition_buckets = {f"{key[0]}|{key[1]}": int(value) for key, value in sorted(addition_bucket_counts.items())}
+    return {
+        "status": "EXACT_B0_TEMPLATES_NINE_TIMES_PER_STRATUM_LENGTH",
+        "assignment_order": "ascending original B0 index within each (stratum,target_post_bos_length) bucket, round-robin in existing new-row allocation order",
+        "template_repeat_factor": 9,
+        "b0_template_count": 120,
+        "controlled_addition_rows": observed_rows,
+        "controlled_addition_replacement_occurrences": observed_rows * REPLACEMENTS_PER_ROW,
+        "b0_template_bucket_counts": expected_buckets,
+        "controlled_addition_bucket_counts": addition_buckets,
+        "b0_template_multiset_digest": digest_bytes(canonical_bytes(sorted(expected.items()))),
+        "controlled_addition_multiset_digest": digest_bytes(canonical_bytes(sorted(observed.items()))),
+        "exact_nine_use_check": True,
+        "b0_rows_preserved": True,
+        "source_token_values_persisted_in_audit": False,
+    }
+
+
+def make_controlled_rows(
+    selected: Sequence[tuple[_Candidate, int]],
+    stratum: str,
+    identity_ids: Sequence[int],
+    cursor: int,
+    structural_token_ids: Iterable[int] = (BOS_TOKEN_ID, PAD_TOKEN_ID),
+    template_buckets: Mapping[tuple[str, int], Sequence[tuple[int, InputRow]]] | None = None,
+) -> tuple[list[InputRow], int]:
     special = {int(value) for value in structural_token_ids}
     rows: list[InputRow] = []
-    for ordinal, (candidate, target) in enumerate(sorted(selected, key=lambda pair: (-pair[1], pair[0].row_index))):
+    bucket_use: Counter[tuple[str, int]] = Counter()
+    ordered_selected = sorted(selected, key=lambda pair: (-pair[1], pair[0].row_index))
+    for ordinal, (candidate, target) in enumerate(ordered_selected):
         parent = clip_ids(candidate.token_ids, target)
         record_id = f"TRR-P09/controlled-v1/{candidate.record_id}::row-{ordinal:03d}"
-        offsets = tuple(_planned_replacement_positions(parent, target_post_bos_token_count=target, record_key=record_id, seed=STABLE_SEED, structural_token_ids=special))
-        if len(offsets) != REPLACEMENTS_PER_ROW:
-            raise PreparationErrorLocal("controlled replacement helper returned the wrong count")
-        replacements = tuple(int(identity_ids[(cursor + i) % len(identity_ids)]) for i in range(len(offsets)))
+        key = (str(stratum), int(target))
+        if template_buckets is None:
+            offsets = tuple(_planned_replacement_positions(parent, target_post_bos_token_count=target, record_key=record_id, seed=STABLE_SEED, structural_token_ids=special))
+            if len(offsets) != REPLACEMENTS_PER_ROW:
+                raise PreparationErrorLocal("controlled replacement helper returned the wrong count")
+            replacements = tuple(int(identity_ids[(cursor + i) % len(identity_ids)]) for i in range(len(offsets)))
+        else:
+            templates = template_buckets.get(key)
+            if not templates:
+                raise PreparationErrorLocal(f"no immutable B0 template bucket for {key}")
+            _template_index, template = templates[bucket_use[key] % len(templates)]
+            offsets = tuple(int(value) for value in template.replacement_positions)
+            replacements = tuple(int(value) for value in template.replacement_token_ids)
+            if len(offsets) != REPLACEMENTS_PER_ROW or len(replacements) != REPLACEMENTS_PER_ROW:
+                raise PreparationErrorLocal("immutable B0 template has the wrong replacement count")
+            if any(value < 0 or value >= target for value in offsets) or len(set(offsets)) != REPLACEMENTS_PER_ROW:
+                raise PreparationErrorLocal("immutable B0 template offsets do not match target length")
+            bucket_use[key] += 1
         built = tuple(apply_replacements(parent, offsets, replacements, target_post_bos_token_count=target, structural_token_ids=special))
         rows.append(InputRow(
             record_id=record_id,
@@ -831,7 +1069,7 @@ def _write_json_create(path: Path, value: Any) -> None:
     path.write_text(json.dumps(value, indent=2, sort_keys=True, allow_nan=False) + "\n", encoding="utf-8")
 
 
-def publish_output(output_root: Path, rows: Sequence[InputRow], *, plan: Mapping[str, Any], countersign: Mapping[str, Any], source_files: Mapping[str, Any], exclusions: Mapping[str, Any], b0_meta: Mapping[str, Any], b0_token: torch.Tensor, b0_mask: torch.Tensor, b0_pos: torch.Tensor, b0_prefix_digest: str, diagnostic: Mapping[str, Any], exposure: Mapping[str, Any], b0_control_audit: Mapping[str, Any]) -> dict[str, Any]:
+def publish_output(output_root: Path, rows: Sequence[InputRow], *, plan: Mapping[str, Any], countersign: Mapping[str, Any], correction_countersignature: Mapping[str, Any] | None, source_files: Mapping[str, Any], exclusions: Mapping[str, Any], b0_meta: Mapping[str, Any], b0_token: torch.Tensor, b0_mask: torch.Tensor, b0_pos: torch.Tensor, b0_prefix_digest: str, diagnostic: Mapping[str, Any], exposure: Mapping[str, Any], b0_control_audit: Mapping[str, Any]) -> dict[str, Any]:
     output_root = Path(output_root).expanduser().resolve()
     if output_root.exists() or output_root.is_symlink():
         raise PreparationErrorLocal(f"output root is create-only and already exists: {output_root}")
@@ -870,6 +1108,7 @@ def publish_output(output_root: Path, rows: Sequence[InputRow], *, plan: Mapping
             "created_utc": utc_now(),
             "plan": {"path": str(countersign["plan"]["path"]), "bytes": PLAN_BYTES, "sha256": PLAN_SHA256, "commit": COUNTERSIGN_COMMIT},
             "countersignature": {"path": "experiments/TRR-P09/setup/stage1-plan-countersignature-r1.json", "attested": True},
+            "correction_countersignature": dict(correction_countersignature) if correction_countersignature is not None else None,
             "geometry": {"records": len(rows), "sequence_tokens": SEQUENCE_WIDTH, "b0_prefix_records": B0_ROWS, "new_records": ADDITION_ROWS, "logical_capture_shard_records": 64, "logical_capture_shards": 169, "input_dtype": "int32", "mask_dtype": "uint8", "position_dtype": "int64"},
             "capture_contract": {"expanded_row_origin": B0_ROWS, "new_row_slice": [B0_ROWS, TARGET_ROWS], "capture_consumes_only_new_rows": True, "input_payload_is_one_hash_bound_cpu_file": True},
             "artifacts": {
@@ -911,6 +1150,7 @@ def compile_inputs(args: argparse.Namespace) -> dict[str, Any]:
     plan_path = Path(args.plan).expanduser().resolve()
     plan = load_and_verify_plan(plan_path)
     countersign = verify_countersignature(Path(args.plan_countersignature))
+    correction_countersignature = verify_correction_countersignature(Path(args.repository_root))
     published_root = Path(args.published_trr0007_root).expanduser().resolve()
     b0_records, b0_token, b0_mask, b0_pos, b0_meta = load_b0(published_root)
     validate_b0_quota(b0_records)
@@ -997,12 +1237,16 @@ def compile_inputs(args: argparse.Namespace) -> dict[str, Any]:
         scan_stats[key] = report
     b0_parent_rows, b0_parent_meta = load_b0_control_parents(published_root)
     rows, b0_control_audit = bind_b0_controlled_rows(rows, b0_records, b0_token, b0_parent_rows, datasets, tokenizer, identity_ids, deadline)
+    b0_template_buckets = build_b0_template_buckets(rows[:B0_ROWS])
     additions_by_stratum: dict[str, list[InputRow]] = {}
     cursor = 3600  # B0 controlled rows consume the first published cycle.
     for name, domain, controlled, _target, addition_quota in STRATA:
         chosen = select_candidates(candidate_pools[domain], stratum=name, exact_quota=exact_quotas[name], exclusions=exclusions, used_ids=used_ids, used_rendered=used_rendered, used_h128=used_h128, used_public=used_public)
         if controlled:
-            additions_by_stratum[name], cursor = make_controlled_rows(chosen, name, identity_ids, cursor, _special_token_ids(tokenizer))
+            additions_by_stratum[name], cursor = make_controlled_rows(
+                chosen, name, identity_ids, cursor, _special_token_ids(tokenizer),
+                template_buckets=b0_template_buckets,
+            )
         else:
             additions_by_stratum[name] = make_natural_rows(chosen, name)
         deadline.check(f"{name} selection")
@@ -1012,6 +1256,7 @@ def compile_inputs(args: argparse.Namespace) -> dict[str, Any]:
         raise PreparationErrorLocal(f"compiled {len(rows)} rows, expected {TARGET_ROWS}")
     if cursor != 36000:
         raise PreparationErrorLocal(f"controlled identity exposure cursor {cursor} != 36000")
+    b0_control_audit["r2_template_assignment"] = controlled_template_assignment_audit(rows[:B0_ROWS], rows[B0_ROWS:])
     diagnostic = per_bank_diagnostic_indices(rows)
     exposure = exposure_summary(rows)
     # Semantic B0 input prefix digest binds the actual copied token/mask/position bytes.
@@ -1044,7 +1289,7 @@ def compile_inputs(args: argparse.Namespace) -> dict[str, Any]:
         "role": "B1_additions_and_signed_future_recipe",
     }
     b0_control_audit["total_replacement_occurrences"] = 36000
-    summary = publish_output(Path(args.output_root), rows, plan=plan, countersign=countersign, source_files=source_files, exclusions=exclusions, b0_meta=b0_meta, b0_token=b0_token, b0_mask=b0_mask, b0_pos=b0_pos, b0_prefix_digest=b0_prefix_digest, diagnostic=diagnostic, exposure=exposure, b0_control_audit=b0_control_audit)
+    summary = publish_output(Path(args.output_root), rows, plan=plan, countersign=countersign, correction_countersignature=correction_countersignature, source_files=source_files, exclusions=exclusions, b0_meta=b0_meta, b0_token=b0_token, b0_mask=b0_mask, b0_pos=b0_pos, b0_prefix_digest=b0_prefix_digest, diagnostic=diagnostic, exposure=exposure, b0_control_audit=b0_control_audit)
     summary["scan_stats"] = scan_stats
     print(json.dumps(summary, indent=2, sort_keys=True))
     return summary

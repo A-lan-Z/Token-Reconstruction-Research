@@ -10,6 +10,7 @@ import tempfile
 
 import pytest
 
+from scripts.trr_p09 import prepare_stage1_inputs as prep
 from scripts.trr_p09.prepare_stage1_inputs import (
     BIN_RANGES,
     DIAGNOSTIC_QUOTAS,
@@ -27,6 +28,8 @@ from scripts.trr_p09.prepare_stage1_inputs import (
     replacement_cycle_audit,
     _public_record_sha256,
     _scan_declared_hashes,
+    build_b0_template_buckets,
+    controlled_template_assignment_audit,
 )
 
 
@@ -245,3 +248,70 @@ def test_per_bank_diagnostics_bind_current_and_expanded_subsets_separately() -> 
     assert len(value["current_bank"]["indices"]) == 64
     assert len(value["expanded_bank"]["indices"]) == 64
     assert value["current_bank"]["seed"] == value["expanded_bank"]["seed"] == 4010
+
+
+def test_r2_controlled_assignment_reuses_each_b0_template_nine_times() -> None:
+    b0 = []
+    for template_index in range(2):
+        b0.append(InputRow(
+            record_id=f"b0-template-{template_index}", source_record_id=f"b0-parent-{template_index}",
+            dataset_key="pile", stratum="pile_controlled", source_row_index=template_index,
+            rendered_sha256=f"{template_index + 1:064x}", source_full_token_count=65,
+            target_post_bos_token_count=64, token_ids=tuple([128000] + list(range(1, 65))),
+            synthetic=True, replacement_positions=tuple(range(1 + template_index, 31 + template_index)),
+            replacement_token_ids=tuple(1000 * (template_index + 1) + value for value in range(30)),
+        ))
+    buckets = build_b0_template_buckets(b0, expected_total=None)
+    candidates = []
+    for index in range(18):
+        candidates.append((type("Candidate", (), {
+            "record_id": f"candidate-{index}", "dataset_key": "pile", "dataset_id": "pile",
+            "split": "train", "revision": "rev", "row_index": index,
+            "rendered_sha256": f"{index + 10:064x}",
+            "token_ids": tuple([128000] + list(range(1, 65))), "full_token_count": 65,
+        })(), 64))
+    additions, cursor = make_controlled_rows(
+        candidates, "pile_controlled", list(range(4000, 7600)), 0,
+        template_buckets=buckets,
+    )
+    assert cursor == 18 * 30
+    audit = controlled_template_assignment_audit(
+        b0, additions, expected_b0_templates=2, expected_controlled_addition_rows=18,
+    )
+    assert audit["exact_nine_use_check"] is True
+    assert audit["controlled_addition_rows"] == 18
+    assert audit["b0_template_bucket_counts"] == {"pile_controlled|64": 2}
+    assert audit["controlled_addition_bucket_counts"] == {"pile_controlled|64": 18}
+
+
+def test_parent_exclusion_manifest_binds_dataset_scoped_rows(monkeypatch, tmp_path: Path) -> None:
+    import hashlib
+    import json
+    manifest = {
+        "selector_exclusion_sets": {
+            "source_row_keys": [
+                {"dataset_key": "alpaca", "row_index": 4},
+                {"dataset_key": "alpaca", "row_index": 9},
+                {"dataset_key": "pile", "row_index": 3},
+                {"dataset_key": "finance", "row_index": 8},
+            ],
+            "record_ids": ["parent-record"],
+            "opaque_sequence_or_reservation_digests": ["a" * 64],
+        },
+        "current_fit_records_excluded": [
+            {"dataset_key": "alpaca", "record_id": "fit-a0", "source_record_id": "fit-source-a0", "rendered_sha256": "b" * 64},
+            {"dataset_key": "alpaca", "record_id": "fit-a1", "source_record_id": "fit-source-a1", "rendered_sha256": "c" * 64},
+            {"dataset_key": "pile", "record_id": "fit-p0", "source_record_id": "fit-source-p0", "rendered_sha256": "d" * 64},
+            {"dataset_key": "finance", "record_id": "fit-f0", "source_record_id": "fit-source-f0", "rendered_sha256": "e" * 64},
+        ],
+    }
+    path = tmp_path / "manifest.json"
+    path.write_text(json.dumps(manifest))
+    monkeypatch.setattr(prep, "PARENT_EXCLUSION_MANIFEST_REL", Path("manifest.json"))
+    monkeypatch.setattr(prep, "PARENT_EXCLUSION_MANIFEST_SHA256", hashlib.sha256(path.read_bytes()).hexdigest())
+    monkeypatch.setattr(prep, "PARENT_EXCLUSION_SOURCE_ROW_COUNTS", {"alpaca": 2, "pile": 1, "finance": 1})
+    monkeypatch.setattr(prep, "PARENT_EXCLUSION_CURRENT_FIT_COUNTS", {"alpaca": 2, "pile": 1, "finance": 1})
+    result = prep.load_parent_exclusion_manifest(tmp_path)
+    assert result["source_indices"] == {"alpaca": {4, 9}, "pile": {3}, "finance": {8}}
+    assert {"fit-a0", "fit-source-a0", "parent-record"}.issubset(result["record_ids"])
+    assert result["metadata"]["source_row_key_count"] == 4
