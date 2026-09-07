@@ -8,6 +8,7 @@ exclusive GPU lease:
 env PYTHONPATH=.:src:scripts OMP_NUM_THREADS=8 MKL_NUM_THREADS=8 OPENBLAS_NUM_THREADS=8 TOKENIZERS_PARALLELISM=false \
   python3 scripts/trr0009_train.py \
   --device cuda \
+  --max-seconds 1800 \
   --qualification-only \
   --output-root experiments/TRR-0009/training/qualification_v1
 ```
@@ -33,5 +34,6 @@ separate create-only command after a PASS:
 env PYTHONPATH=.:src:scripts OMP_NUM_THREADS=8 MKL_NUM_THREADS=8 OPENBLAS_NUM_THREADS=8 TOKENIZERS_PARALLELISM=false \
   python3 scripts/trr0009_train.py \
   --device cuda \
+  --max-seconds 1800 \
   --output-root experiments/TRR-0009/training/run_v1
 ```
