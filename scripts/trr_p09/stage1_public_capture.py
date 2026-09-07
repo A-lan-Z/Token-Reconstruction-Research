@@ -1465,7 +1465,11 @@ def run_capture(
         "authorization": dict((execution_bindings or {}).get("authorization", {})),
         "watchdog": dict((execution_bindings or {}).get("watchdog", {})),
         "model_binding": dict((execution_bindings or {}).get("model_binding", {})),
-        "truth_boundary": {"truth_opened": False, "target_labels_loaded": False, "source_text_loaded": False},
+        "truth_boundary": {
+            "public_fitting_labels_loaded": True,
+            "evaluation_truth_opened": False,
+            "source_text_loaded": False,
+        },
     }
     receipt_path = output_root / "capture-receipt.json"
     if not receipt_path.exists():
@@ -1526,6 +1530,8 @@ def _verify_model_identity(plan: Mapping[str, Any], model_snapshot: Path) -> dic
     config = _source_record(supplied / "config.json", label="pinned public model config")
     generation = _source_record(supplied / "generation_config.json", label="pinned public generation config")
     tokenizer_revision = str(plan.get("already_bound_inputs", {}).get("tokenizer", {}).get("snapshot_revision", ""))
+    if not tokenizer_revision or tokenizer_revision != revision:
+        raise CaptureError("pinned tokenizer revision is not the signed public revision")
     tokenizer_candidates = [supplied / "tokenizer.json", supplied / "tokenizer_config.json"]
     tokenizer = next((path for path in tokenizer_candidates if path.is_file()), None)
     if tokenizer is None:
