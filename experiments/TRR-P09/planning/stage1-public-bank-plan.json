@@ -1,0 +1,414 @@
+{
+  "schema": "token-reconstruction.trr-p09-stage1-public-bank-plan.v1",
+  "task_id": "TRR-P09",
+  "status": "PROPOSED_STAGE1_PLAN_NO_SELECTION_NO_FREEZE",
+  "created_date": "2026-09-07",
+  "provenance": {
+    "review_recipe": {
+      "path": "experiments/TRR-P09/planning/trr0010-contract-review.md",
+      "commit": "2fba16a",
+      "sha256": "b627a50e4ba57da2e68809df41a0320c7c427483ca668f76ba42213f0f88c6f4",
+      "status": "REVIEWED_CONDITIONAL_NOT_A_FREEZE"
+    },
+    "setup_inventory": {
+      "path": "experiments/TRR-P09/setup/published-input-inventory-r0.json",
+      "sha256": "bfd4f313a785f9f79e8da6dc5f8a9cd8e5c2d7f3efddd4c4e4a2d65e14d46811",
+      "status": "METADATA_BOUND_SETUP_RECEIPT"
+    },
+    "setup_schema": {
+      "path": "experiments/TRR-P09/setup/bank-artifact-schema-r0.json",
+      "sha256": "5f061e666f0f278261bfa7e3b6187f16ea596c085c83943bf7b50db4fd279cd6",
+      "status": "SCHEMA_BOUND_PAYLOAD_DIGESTS_PENDING"
+    },
+    "capture_cap_addendum": {
+      "path": "experiments/TRR-P09/planning/trr0010-stage1-capture-cap-addendum.md",
+      "sha256": "1ebbeb7a600c7847cf2e03be23c208618718826a7c00c085776088736c7efd27",
+      "status": "IMPLEMENTATION_ADDENDUM_HASH_BOUND_PENDING_ROOT_AND_AGENT1_SIGNOFF",
+      "note": "Corrected implementation addendum; cap values remain proposed until the stage-1 contract is jointly signed and live resources are refreshed."
+    },
+    "source_binding_coordination": "PENDING_DIRECT_SETUP_AGENT_COORDINATION",
+    "agent1_contract_review": {
+      "path": "experiments/TRR-P09/planning/trr0010-agent1-integration-review.md",
+      "sha256": "845f39e65e8f965527dcbd5bb5e4eb1c097a3d1bf34ce7c4ed1bfe1efedf2f34",
+      "status": "READ_ONLY_INTEGRATION_REVIEW"
+    }
+  },
+  "access_boundary": {
+    "public_metadata_only": true,
+    "source_selection_executed": false,
+    "model_loaded": false,
+    "public_forward_started": false,
+    "activation_bank_created": false,
+    "fit_started": false,
+    "truth_opened": false,
+    "final_panel_selected": false,
+    "agent1_worktree_modified": false,
+    "global_state_or_registry_modified": false
+  },
+  "already_bound_inputs": {
+    "parent": {
+      "task": "TRR-0009",
+      "branch": "task/TRR-0009",
+      "commit": "4602f98eeb03ac121d8bbc230d7e2b219551b914",
+      "manifest_path": "experiments/TRR-0009/manifest.json",
+      "manifest_sha256": "00d2e9bcb75962072dabdac50ad38b32e9ad638fae77c9da75faec1760048e64"
+    },
+    "public_model": {
+      "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+      "snapshot_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "snapshot_path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+      "weight_bytes": 2471645608,
+      "weight_sha256": "1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f",
+      "loader_settings": {
+        "local_files_only": true,
+        "dtype": "torch.bfloat16",
+        "attn_implementation": "sdpa",
+        "prefix_layers": 4,
+        "forward_entrypoint": "ContiguousPublicPrefix.forward_full"
+      }
+    },
+    "tokenizer": {
+      "snapshot_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "bos_token_id": 128000,
+      "renderer_caps": {
+        "user_characters": 1200,
+        "output_characters": 1200,
+        "complete_sequence_width": 192
+      }
+    },
+    "public_embedding": {
+      "role": "shared_public_readout_embedding_E",
+      "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+      "status": "CONTRACT_METADATA_PENDING_SETUP_RECEIPT"
+    },
+    "starting_state": {
+      "method_id": "continued_fixed_readout",
+      "path": "experiments/TRR-0009/training/run_v1/continued_fixed_readout/selected.safetensors",
+      "selected_step": 400,
+      "sha256": "5cada4a3d04bb5477eaf0be25ed8d8ac25a89283223e9ba14b18fa10416bee14",
+      "role": "sole_TRR0010_starting_state",
+      "status": "PUBLISHED_READ_ONLY"
+    },
+    "historical_ancestor": {
+      "path": "experiments/TRR-0007/enriched_fit_v1/current_enriched/trr0007_residual_mlp512/selected.safetensors",
+      "sha256": "2a44a91b01ca1fdc9615eab804872c50c606199704eaf51fa114cc0d7959ddc8",
+      "role": "historical_ancestor_metadata_only",
+      "cost_accounting": "may_be_reported_as_shared_pretraining_ancestor_cost; not a TRR0010 arm or baseline"
+    },
+    "source_datasets": {
+      "alpaca": {
+        "dataset": "tatsu-lab/alpaca",
+        "split": "train",
+        "revision": "dce01c9b08f87459cf36a430d809084718273017",
+        "arrow_sha256": "f45103036ed651f4c06d0a3c3e0fb7d53acb3074ed5c8e804a69c1efc1cea794",
+        "capacity_audit_rows": 52002,
+        "selection_range": "all rows after the frozen namespace-correct exclusion ledger"
+      },
+      "pile": {
+        "dataset": "NeelNanda/pile-10k",
+        "split": "train",
+        "revision": "127bfedcd5047750df5ccf3a12979a47bfa0bafa",
+        "arrow_sha256": "77ddf02e2a69373a944bc8bc8ac8f7b9926f5c62203d727341a24d709bf81113",
+        "addition_scan_range": [2000, 7000],
+        "reserved_final_range": [7000, 10000]
+      },
+      "finance": {
+        "dataset": "Josephgflowers/Finance-Instruct-500k",
+        "split": "train",
+        "revision": "583a98fb0ec14d904e9423b671d9d0fea88891b6",
+        "arrow_shard_sha256": [
+          "b49ca0980a0b02fecbef2220eee0ef5d3c3c893ae42b4e1910edec993c3d164e",
+          "ce4b0786646cd68561da736f145fd5df7ba2f4e754e0caa3ae646d6be9900bd3"
+        ],
+        "addition_scan_range": [2000, 12000],
+        "reserved_final_range": [12000, 20000]
+      }
+    },
+    "current_bank_B0": {
+      "record_count": 1200,
+      "post_bos_positions": 124371,
+      "stored_sequence_width": 192,
+      "hidden_size": 2048,
+      "corpus_plan": {
+        "path": "experiments/TRR-0007/support/broader_bank_v5/corpus_plan.json",
+        "sha256": "35d74424df60a1d62f7962850eaa3132fa57dd7001024f915cc4fc470a6d0e76"
+      },
+      "bank_receipt": {
+        "path": "experiments/TRR-0007/support/broader_bank_v5/bank_construction_receipt.json",
+        "sha256": "aeb152b7098f6f1546f2d7889fd971667fb6ddaa10d4eb85b03375383179c00f"
+      },
+      "fit_handoff": {
+        "path": "experiments/TRR-0007/improved_fit_v1/improved_fit_handoff_v2.json",
+        "sha256": "af335cf3bfb3b28258d846abbece8f4d65b4b6208156d57bb85617ad83ef60d7"
+      },
+      "coverage_comparison": {
+        "path": "experiments/TRR-0007/support/coverage_comparison.json",
+        "sha256": "b39c597b36f3df4b205c5eae61d53eee02bafcfdac8c66f82a0213708258ad3e"
+      },
+      "payload_digests": null,
+      "payload_digest_status": "PENDING_PAYLOAD_AUDIT",
+      "prefix_equal_fields": [
+        "record_id_order",
+        "parent_record_id_order",
+        "sequence_id_order",
+        "token_ids",
+        "attention_mask",
+        "position_ids",
+        "activations"
+      ]
+    },
+    "exclusion_metadata": {
+      "source_inventory_path": "experiments/TRR-0009/planning/source_inventory_final.json",
+      "source_inventory_sha256": "8821c8e365fd9e2cff386c7a1f5ad379e15f0da63ef280f94e970d04d16ef718",
+      "selection_exclusions_path": "experiments/TRR-0009/selection_v2/source_exclusions.json",
+      "selection_exclusions_sha256": "bba988428e6e1d13c2916b5e9c001acd86aa37d838bda553744eecd0f88d806f",
+      "agent1_public_development_identities": null,
+      "approved_opaque_ledgers": null,
+      "status": "DIRECT_COORDINATION_REQUIRED_BEFORE_SELECTION"
+    },
+    "setup_receipts": {
+      "published_input_inventory": {
+        "path": "experiments/TRR-P09/setup/published-input-inventory-r0.json",
+        "sha256": "bfd4f313a785f9f79e8da6dc5f8a9cd8e5c2d7f3efddd4c4e4a2d65e14d46811"
+      },
+      "resource_snapshot": {
+        "path": "experiments/TRR-P09/setup/resource-snapshot-r0.json",
+        "sha256": "2916fc1a4b65e121846eb1d935e3d7a949b8da2c7fe23dc63bcb1b18fa891c8c",
+        "status": "READ_ONLY_PLANNING_SNAPSHOT_NOT_RESERVATION"
+      }
+    }
+  },
+  "stage1_deterministic_recipe": {
+    "expanded_bank": {
+      "B0_records": 1200,
+      "new_records": 10800,
+      "target_records": 12000,
+      "controlled_share": "10 percent of final rows",
+      "prefix_rule": "expanded rows 0:1200 must be byte-equivalent B0 records and tensors"
+    },
+    "strata": [
+      {
+        "id": "alpaca_natural",
+        "B0_rows": 600,
+        "target_rows": 6000,
+        "addition_rows": 5400,
+        "target_bin_counts_40_63_64_95_96_127_128_191": [1390, 2260, 1610, 740],
+        "addition_bin_counts_40_63_64_95_96_127_128_191": [1251, 2034, 1449, 666]
+      },
+      {
+        "id": "pile_natural",
+        "B0_rows": 300,
+        "target_rows": 3000,
+        "addition_rows": 2700,
+        "target_bin_counts_40_63_64_95_96_127_128_191": [620, 890, 570, 920],
+        "addition_bin_counts_40_63_64_95_96_127_128_191": [558, 801, 513, 828]
+      },
+      {
+        "id": "finance_natural",
+        "B0_rows": 180,
+        "target_rows": 1800,
+        "addition_rows": 1620,
+        "target_bin_counts_40_63_64_95_96_127_128_191": [360, 570, 300, 570],
+        "addition_bin_counts_40_63_64_95_96_127_128_191": [324, 513, 270, 513]
+      },
+      {
+        "id": "pile_controlled",
+        "B0_rows": 60,
+        "target_rows": 600,
+        "addition_rows": 540,
+        "target_bin_counts_40_63_64_95_96_127_128_191": [0, 0, 0, 600],
+        "addition_bin_counts_40_63_64_95_96_127_128_191": [0, 0, 0, 540]
+      },
+      {
+        "id": "finance_controlled",
+        "B0_rows": 60,
+        "target_rows": 600,
+        "addition_rows": 540,
+        "target_bin_counts_40_63_64_95_96_127_128_191": [0, 0, 0, 600],
+        "addition_bin_counts_40_63_64_95_96_127_128_191": [0, 0, 0, 540]
+      }
+    ],
+    "length_allocation": {
+      "bins_post_bos": [
+        [40, 63],
+        [64, 95],
+        [96, 127],
+        [128, 191]
+      ],
+      "per_exact_length_target": "10 * published B0 count at that exact post-BOS length",
+      "B0_contribution": 1,
+      "addition_contribution": 9,
+      "minimum_full_rendered_tokens": "target_post_bos_length + 1 BOS",
+      "clip_rule": "clip only after BOS to the exact target post-BOS length",
+      "allocation_order": "published descending target length then slot order; record exact order in selection receipt",
+      "capacity_failure": "fail closed if any exact length quota cannot be filled"
+    },
+    "stable_source_order": {
+      "key": "SHA256(\"TRR-0007|7007|{dataset_id}|{split}|{revision}|row:{row_index}\")",
+      "direction": "ascending",
+      "score_or_answer_sorting": false,
+      "row_identity_fields_bound": ["dataset_id", "split", "revision", "row_index"]
+    },
+    "controlled_replacement": {
+      "post_bos_parent_length": [128, 191],
+      "position_bin_quotas_one_based": {
+        "1_15": 3,
+        "16_39": 6,
+        "40_79": 9,
+        "80_127": 12
+      },
+      "occurrences_per_record": 30,
+      "B1_occurrences_per_controlled_source": 18000,
+      "B1_total_occurrences": 36000,
+      "structural_positions_removed": ["BOS", "PAD"],
+      "replacement_assignment": "reuse frozen ordered published 3600-ID list in ten deterministic cycles, preserving B0 first cycle",
+      "support_list_sha256": "0e84f625e24fb4a2038972cf417923dc20a8cc2fd85e55ac6e9b7a846f5ca576"
+    },
+    "public_development_exclusions": {
+      "apply_before_B1_selection": true,
+      "agent1_public_base_rows": null,
+      "approved_opaque_ledgers": null,
+      "reserved_final_ranges": {
+        "pile": [7000, 10000],
+        "finance": [12000, 20000]
+      },
+      "namespace_canonicalization": "bind exact canonical bytes per ledger; rendered, sequence, and reservation digests are not interchangeable"
+    },
+    "fixed_diagnostic": {
+      "per_bank_record_count": 64,
+      "seed": 4010,
+      "stratum_quotas": {
+        "alpaca_natural": 32,
+        "pile_natural": 16,
+        "finance_natural": 10,
+        "pile_controlled": 3,
+        "finance_controlled": 3
+      },
+      "rank_key": "SHA256(\"TRR-0010|fixed-diagnostic|4010|{record_id}\") ascending within each stratum",
+      "selection_source": "each bank's complete bound rows",
+      "shared_across": "that bank's fixed and directional readout arms only",
+      "indices": null,
+      "indices_sha256": null,
+      "status": "DETERMINISTIC_RULE_BOUND_INDICES_PENDING_SELECTION"
+    },
+    "training_schedule": {
+      "formula": "N = max(12000, 1000 * ceil((5 * actual_B1_valid_positions / 512) / 1000))",
+      "grid": [0, 1000, 2000, 4000, 8000, 12000, "N"],
+      "same_N_all_arms": true,
+      "actual_B1_valid_positions": null,
+      "exact_N": null,
+      "status": "DERIVE_AFTER_B1_POSITION_BINDING"
+    }
+  },
+  "capture_caps_and_lease": {
+    "status": "PENDING_CORRECTED_IMPLEMENTATION_CAP_RECEIPT",
+    "condition": "public_base",
+    "new_records_only": 10800,
+    "storage": {
+      "activation_dtype": "torch.bfloat16",
+      "activation_geometry": ["records", 192, 2048],
+      "duplicate_H128_artifact": false,
+      "shard_records": 64,
+      "native_forward_batch": 8,
+      "full_64_shards": 168,
+      "final_shard_records": 48,
+      "total_shards": 169,
+      "H192_bytes_new_records": 8493465600,
+      "mask_and_int64_position_sidecar_bytes_before_serialization": 18662400,
+      "B0_H192_bytes_preserved_separately": 943718400,
+      "storage_policy": "stream one 64-record shard, release activation tensor after durable write and hash; never use B64 or microbatch substitution"
+    },
+    "producer_bindings_pending_receipt": {
+      "adapter_reference": {
+        "path": "/tmp/trr-p09/scripts/trr0009_eval_capture.py",
+        "sha256": "3b0338062c62a049caedcc968a2a5d505135b6117ad65706f32dd624aa1394d3"
+      },
+      "public_capture_helper": {
+        "path": "/tmp/trr-p09/src/token_reconstruction/public_activation.py",
+        "sha256": "3be43dd5b6a5918a48f289971ab2a833977a7f9d87094e6001c5c7cdc60ab76f"
+      },
+      "public_prefix_backend": {
+        "path": "/tmp/trr-p09/src/token_reconstruction/public_prefix.py",
+        "sha256": "b9dca1d8d56c7c07413015aea4bde79e8ceac827c32ee9bc0d1a236ea1dd35f6"
+      },
+      "trusted_producer_loader": {
+        "path": "/tmp/trr-p09/scripts/trr0005_produce_confirmation.py",
+        "sha256": "7289ee5db30bc0b2d3c1b50b1d5b6ca1ac235001371f61b92adf10e2dd979e2b"
+      },
+      "trusted_prefix_loader": {
+        "path": "/tmp/trr-p09/scripts/trr0004_produce_confirmation.py",
+        "sha256": "b1ae4e199de62f350df0ce9890caa90a70b0611a22051ce6bc304e0ccc4e1b2a"
+      },
+      "padding_qualification_helper": {
+        "path": "/tmp/trr-p09/scripts/trr0004_prepare_public_activations.py",
+        "sha256": "6f1a9b6d7ee4aad89ee8152021e6e431b8652a6f7c162167a6180229feed70e8"
+      },
+      "inherited_capture_producer": {
+        "path": "/tmp/trr-p09/scripts/trr0006_capture_public.py",
+        "sha256": "ade20eda4cc6ca3d25861558e5256d1b119ad1419e2bf909c1715fed612f20c7"
+      }
+    },
+    "qualification": {
+      "max_representative_B8_batches": 3,
+      "includes_longest_or_padded_pattern": true,
+      "repeated_active_outputs_must_be_torch_equal": true,
+      "requires_future_padding_equivalence": true,
+      "unpadded_or_B1_substitution_allowed": false,
+      "wall_seconds_cap": 600
+    },
+    "production_caps": {
+      "gpu_reserved_child_bytes_max": 8589934592,
+      "gpu_free_before_launch_bytes_min": 8589934592,
+      "gpu_free_during_child_bytes_min": 2147483648,
+      "child_rss_bytes_max": 12884901888,
+      "host_available_before_launch_bytes_min": 10737418240,
+      "host_available_during_child_bytes_min": 6442450944,
+      "retained_capture_data_bytes_max": 21474836480,
+      "filesystem_free_bytes_min": 21474836480,
+      "production_wall_seconds_cap": 7200,
+      "status": "PROPOSED_PENDING_IMPLEMENTATION_COMMIT_AND_LIVE_REFRESH"
+    },
+    "lease": {
+      "duration_minutes": 130,
+      "begins": "only_at_explicit_root_launch",
+      "qualification_minutes": 10,
+      "capture_minutes": 120,
+      "source_construction_inside_lease": false,
+      "source_construction_executor": "CPU outside capture lease",
+      "partial_output_policy": "preserve failure receipt and shard hashes; do not promote incomplete capture"
+    }
+  },
+  "existing_implementation_handles": {
+    "streamed_bank_schema": "experiments/TRR-P09/setup/bank-artifact-schema-r0.json",
+    "streamed_bank_loader": "scripts/trr_p09/prepare_streamed_bank.py",
+    "bank_integrity_tests": "tests/test_trr_p09_bank_artifact.py",
+    "setup_preparation_proposal": "experiments/TRR-P09/setup/bank-preparation-proposal-r0.md",
+    "agent1_directional_integration_review": "experiments/TRR-P09/planning/trr0010-agent1-integration-review.md",
+    "no_new_capture_framework": true
+  },
+  "deterministic_future_outputs": {
+    "source_selection_receipt": null,
+    "B1_record_id_order_and_parent_mapping": null,
+    "B1_record_and_sequence_hashes": null,
+    "B1_payload_and_sidecar_hashes": null,
+    "per_bank_fixed_diagnostic_indices_and_hash": null,
+    "actual_B1_valid_positions": null,
+    "exact_common_N": null,
+    "capture_qualification_receipt": null,
+    "stage1_public_base_capture_manifest": null,
+    "stage1_public_base_capture_sha256": null,
+    "measured_resource_caps": null,
+    "final_bank_hash": null,
+    "all_status": "PENDING_SELECTION_CAPTURE_AND_JOINT_STAGE1_SIGNOFF"
+  },
+  "approval_gates": [
+    "setup and Agent1 sign exact source/model/tokenizer/E/B0/exclusion bindings",
+    "corrected implementation capture-cap addendum is committed and hash-bound",
+    "prelaunch live resource snapshot satisfies caps",
+    "deterministic source selection receipt is create-only and fail-closed",
+    "per-bank diagnostic rules are bound before any schedule read",
+    "largest representative qualification passes before 10,800-record capture",
+    "no final bank hash or diagnostic indices are claimed by this plan"
+  ],
+  "scientific_scope": "Stage-1 public fitting-bank preparation only; no final evaluation, truth, fitting result, promotion, or universal method claim."
+}
