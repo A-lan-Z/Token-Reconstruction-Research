@@ -40,6 +40,7 @@ DEFAULT_MIN_AVAILABLE_BYTES = 10 * 1024**3
 DEFAULT_TIMEOUT_SECONDS = 3600.0
 DEFAULT_POLL_SECONDS = 0.5
 DEFAULT_KILL_GRACE_SECONDS = 2.0
+DEFAULT_MAX_OUTPUT_BYTES = 5 * 1024**3
 POST_EXIT_RECHECK_SECONDS = 0.02
 POST_EXIT_RECHECK_MAX_SECONDS = 2.0
 POST_EXIT_RECHECK_POLL_SECONDS = 0.002
@@ -106,6 +107,31 @@ def _create_output_root(path: Path) -> Path:
         raise WatchdogError(f"output directory must be create-only: {path}")
     path.mkdir(parents=True)
     return path.resolve()
+
+
+def _output_tree_bytes(root: Path) -> int:
+    """Measure the guarded output tree without following symlinks.
+
+    The child fit output is nested beneath the watchdog root in production, so
+    this includes both the child artifacts and retained stdout/stderr/samples.
+    An unexpected symlink or unreadable entry fails closed.
+    """
+
+    total = 0
+    try:
+        for directory, directories, files in os.walk(root, followlinks=False):
+            for name in directories + files:
+                path = Path(directory) / name
+                if path.is_symlink():
+                    raise WatchdogError(f"output tree contains a symlink: {path}")
+            for name in files:
+                path = Path(directory) / name
+                total += int(path.stat().st_size)
+    except WatchdogError:
+        raise
+    except OSError as exc:
+        raise ResourceReadError(f"cannot read guarded output size: {root}") from exc
+    return total
 
 
 def _read_mem_available_bytes() -> int:
@@ -368,6 +394,7 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--max-rss-bytes", type=int, default=DEFAULT_MAX_RSS_BYTES)
     parser.add_argument("--min-available-bytes", type=int, default=DEFAULT_MIN_AVAILABLE_BYTES)
     parser.add_argument("--kill-grace-seconds", type=float, default=DEFAULT_KILL_GRACE_SECONDS)
+    parser.add_argument("--max-output-bytes", type=int, default=DEFAULT_MAX_OUTPUT_BYTES)
     parser.add_argument("--cwd", type=Path, default=None)
     parser.add_argument("--label", default=TASK_ID)
     return parser
@@ -393,7 +420,7 @@ def main(argv: list[str] | None = None) -> int:
     options, command = _parse_invocation(list(sys.argv[1:] if argv is None else argv))
     if options.timeout_seconds <= 0 or options.poll_seconds <= 0 or options.kill_grace_seconds < 0:
         raise WatchdogError("timeout, poll, and grace values are invalid")
-    if options.max_rss_bytes <= 0 or options.min_available_bytes <= 0:
+    if options.max_rss_bytes <= 0 or options.min_available_bytes <= 0 or options.max_output_bytes <= 0:
         raise WatchdogError("resource thresholds must be positive")
     # Check the user-supplied final path before canonicalisation so a dangling
     # symlink cannot redirect a supposedly create-only output directory.
@@ -423,6 +450,7 @@ def main(argv: list[str] | None = None) -> int:
             "poll_seconds": float(options.poll_seconds),
             "max_rss_bytes": int(options.max_rss_bytes),
             "min_available_bytes": int(options.min_available_bytes),
+            "max_output_bytes": int(options.max_output_bytes),
             "kill_grace_seconds": float(options.kill_grace_seconds),
         },
         "process_group": "new_session_start_new_session_true",
@@ -538,12 +566,22 @@ def main(argv: list[str] | None = None) -> int:
                     termination_actions = _terminate_group(process, pgid, options.kill_grace_seconds)
                     break
             if sample is not None:
+                try:
+                    output_bytes = _output_tree_bytes(output_root)
+                except (ResourceReadError, WatchdogError) as exc:
+                    termination_reason = "output_resource_data_unreadable"
+                    errors.append(f"{type(exc).__name__}: {exc}")
+                    termination_actions = _terminate_group(process, pgid, options.kill_grace_seconds)
+                    break
+                sample["output_bytes"] = int(output_bytes)
                 samples.append(sample)
                 _append_jsonl(samples_handle, sample)
                 if sample["group_rss_bytes"] > int(options.max_rss_bytes):
                     termination_reason = "group_rss_limit_exceeded"
                 elif sample["host_mem_available_bytes"] < int(options.min_available_bytes):
                     termination_reason = "host_mem_available_limit_exceeded"
+                elif int(output_bytes) > int(options.max_output_bytes):
+                    termination_reason = "output_bytes_limit_exceeded"
             if termination_reason is None and elapsed >= float(options.timeout_seconds):
                 termination_reason = "declared_timeout_exceeded"
             if termination_reason is not None:
@@ -602,6 +640,7 @@ def main(argv: list[str] | None = None) -> int:
         wrapper_exit = WRAPPER_FAILURE_EXIT
 
     peak_rss = max((int(sample["group_rss_bytes"]) for sample in samples), default=0)
+    peak_output = max((int(sample.get("output_bytes", 0)) for sample in samples), default=0)
     min_available = min((int(sample["host_mem_available_bytes"]) for sample in samples), default=initial_mem_available or 0)
     guard_receipt = {
         "schema": "token-reconstruction.trr0010-resource-watchdog-guard.v1",
@@ -611,6 +650,8 @@ def main(argv: list[str] | None = None) -> int:
         "initial_host_mem_available_bytes": initial_mem_available,
         "sample_count": len(samples),
         "peak_group_rss_bytes": peak_rss,
+        "peak_output_bytes": peak_output,
+        "max_output_bytes": int(options.max_output_bytes),
         "minimum_sampled_host_mem_available_bytes": min_available,
         "termination_reason": termination_reason,
         "termination_actions": termination_actions,
