@@ -95,15 +95,22 @@
   "narrow_future_addendum": {
     "r1_unchanged": true,
     "b0_policy": "Keep immutable B0 tensors and ordered 3600-occurrence templates exactly as observed.",
-    "b1_policy": "If a new r2 is authorized, use the observed B0 ordered occurrence sequence for each of nine additions, preserving signed strata, lengths, positions, and domain multiplicities; do not overwrite r1.",
-    "freshness_policy": "Repair and verify Alpaca development exclusions before any new compilation/capture; this is a pre-capture binding correction, not a panel expansion.",
+    "b1_policy": "If a new r2 is authorized, preserve immutable B0 templates and assign each added controlled row the observed B0 ordered template from its same (stratum, active-length) bucket, round-robin in original B0 index order; each B0 template is used exactly 9 times across additions. Preserve signed strata, lengths, positions, and domain multiplicities; do not overwrite r1.",
+    "freshness_policy": "Before any new compilation/capture, bind and namespace-validate all 1,224 Alpaca source-row keys from the published parent manifest (including the 624 development keys); reselect replacement parents with the same deterministic ranking and quotas after those exclusions. This is a pre-capture binding correction, not a panel expansion.",
     "signed_plan_conflict": {
       "plan_field": "stage1_deterministic_recipe.controlled_replacement.replacement_assignment",
       "plan_text": "reuse frozen ordered published 3600-ID list in ten deterministic cycles, preserving B0 first cycle",
       "immutable_prefix_field": "stage1_deterministic_recipe.expanded_bank.prefix_rule",
       "immutable_prefix_text": "expanded rows 0:1200 must be byte-equivalent B0 records and tensors",
       "resolution": "Treat immutable observed B0 order as authoritative for the prefix and repeat that observed ordered occurrence sequence for nine new cycles; preserve identity set, multiplicity, offsets, lengths, and domain allocation."
+    },
+    "exclusion_manifest_binding": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_bank_v5/public_parent_exclusion_manifest.json",
+      "sha256": "bd1359f1184091570023e22a7682d1f97c08f8f05e47f69f6b3e6be089cd0181",
+      "required_alpaca_source_row_keys": 1224,
+      "development_subset_not_bound_by_r1": 624,
+      "namespace_rule": "match dataset_key + row_index/source-row identity; do not substitute opaque sequence/reservation digests"
     }
   },
-  "deviation": "The pre-run local signed-order assertion was not exercised by focused synthetic tests and the runtime was changed to preserve/audit the immutable B0 rather than fail on an order-only mismatch. The discrepancy should have been escalated before r1; r1 is retained with the exact audit above."
+  "deviation": "The pre-run local signed-order assertion was not exercised by focused synthetic tests and the runtime was changed to preserve/audit the immutable B0 rather than fail on an order-only mismatch. The discrepancy should have been escalated before r1; r1 is retained with the exact audit above. Reselecting any future additions after the 624-key binding is required; r1 parent identities are not reused blindly."
 }
