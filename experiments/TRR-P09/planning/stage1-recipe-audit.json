@@ -1,0 +1,135 @@
+{
+  "schema": "token-reconstruction.trr-p09-stage1-recipe-audit.v1",
+  "task_id": "TRR-P09",
+  "status": "RECIPE_AUDIT_PASS_SELECTION_BLOCKED_PENDING_COMPILER_REVIEW",
+  "reviewed_utc": "2026-09-07T09:02:00Z",
+  "purpose": "Independent metadata and published-constructor audit of the signed stage-1 recipe before any P09 source selection.",
+  "access_boundary": {
+    "public_metadata_and_published_source_only": true,
+    "public_model_loaded": false,
+    "public_forward_count": 0,
+    "activation_payload_opened": false,
+    "source_selection_executed": false,
+    "final_or_private_truth_opened": false,
+    "agent1_worktree_accessed_or_modified": false,
+    "fit_or_optimizer_steps_started": false
+  },
+  "signed_plan": {
+    "path": "experiments/TRR-P09/planning/stage1-public-bank-plan.json",
+    "sha256": "bca93d6099760791c5ecbf3be8177d250cc672c62b2177a3d72d79b934c3826c",
+    "status_at_review": "PROPOSED_STAGE1_PLAN_NO_SELECTION_NO_FREEZE",
+    "agent1_countersign_commit": "5bfed9ec6a7bb29a988ec0a4b1343b7745d8b81b"
+  },
+  "published_inputs": {
+    "b0_record_metadata": {
+      "path": "experiments/TRR-0007/support/broader_capture_v2/enriched_fit_records.json",
+      "sha256": "808cfd0f95ea3ee66c1d4094f3c10f1e346ba986a6d77138a61b8f8f13c4a738",
+      "records": 1200,
+      "post_bos_positions": 124371
+    },
+    "published_recipe": {
+      "path": "experiments/TRR-0007/support/broader_recipe_v2/improved_public_sampling_recipe.json",
+      "sha256": "602530bb3e0d530b0f08c6be2f05b9833f0e149d45f658bf456c6b0cb6dc9478"
+    },
+    "published_bank_receipt": {
+      "path": "experiments/TRR-0007/support/broader_bank_v5/bank_construction_receipt.json",
+      "sha256": "aeb152b7098f6f1546f2d7889fd971667fb6ddaa10d4eb85b03375383179c00f"
+    },
+    "published_constructor": {
+      "path": ".worktrees/TRR-0007/scripts/trr0007_support_construct.py",
+      "sha256": "1d670d38650d70425ab4a39d077cf353dd5c12ff8a3bd810a56ee83f79666ce5"
+    }
+  },
+  "checks": [
+    {
+      "id": "b0_strata_and_bin_counts",
+      "status": "PASS",
+      "evidence": {
+        "strata": {
+          "alpaca_natural": {"records": 600, "bins_40_63_64_95_96_127_128_191": [139, 226, 161, 74]},
+          "pile_natural": {"records": 300, "bins_40_63_64_95_96_127_128_191": [62, 89, 57, 92]},
+          "finance_natural": {"records": 180, "bins_40_63_64_95_96_127_128_191": [36, 57, 30, 57]},
+          "pile_controlled": {"records": 60, "bins_40_63_64_95_96_127_128_191": [0, 0, 0, 60]},
+          "finance_controlled": {"records": 60, "bins_40_63_64_95_96_127_128_191": [0, 0, 0, 60]}
+        },
+        "exact_length_histogram_sha256": "13417ea987d1f40924a37feaa01424854eba7ddb6223769fa5ba390e8b7e21d0",
+        "target_bin_counts_are_tenfold_b0": true,
+        "addition_bin_counts_are_ninefold_b0": true
+      }
+    },
+    {
+      "id": "exact_length_allocation",
+      "status": "PASS_INHERITED_SEMANTICS_CAPACITY_PENDING",
+      "evidence": {
+        "minimum_full_rendered_tokens": "target_post_bos_length + 1 BOS",
+        "clip": "after BOS to the exact target post-BOS length",
+        "source_order": "SHA256(TRR-0007|7007|dataset_id|split|revision|row:index), ascending",
+        "slot_order": "published descending target length, then slot",
+        "constructor_behavior": "first remaining source with full_token_count >= target + 1",
+        "failure_rule": "fail closed when any exact length quota is unavailable"
+      },
+      "limitation": "The P09 compiler was not present in scripts/trr_p09 at this audit. Exact post-exclusion source capacity and the recorded 12,000-row allocation order remain unverified."
+    },
+    {
+      "id": "controlled_position_policy",
+      "status": "PASS_INHERITED_SEMANTICS",
+      "evidence": {
+        "parent_post_bos_range": [128, 191],
+        "one_based_position_quotas": {"1_15": 3, "16_39": 6, "40_79": 9, "80_127": 12},
+        "occurrences_per_record": 30,
+        "structural_positions_removed": ["BOS", "PAD"],
+        "stored_coordinate": "zero-based offset = one-based post-BOS position - 1",
+        "position_choice": "digest rotation plus midpoint rule, fail closed when a bin lacks ordinary positions"
+      }
+    },
+    {
+      "id": "controlled_support_list_and_order",
+      "status": "PASS_B0_PREFIX_PENDING_P09_EXTENSION_RECEIPT",
+      "evidence": {
+        "published_ordered_ids": 3600,
+        "published_distinct_ids": 3600,
+        "published_support_list_sha256": "0e84f625e24fb4a2038972cf417923dc20a8cc2fd85e55ac6e9b7a846f5ca576",
+        "published_b0_occurrences": 3600,
+        "published_constructor_order": "controlled_pile_context then controlled_finance_context; each descending target length then slot",
+        "signed_p09_extension": "ten deterministic cycles over 36,000 total occurrences, preserving the B0 first cycle",
+        "arithmetic": {"pile_controlled": 18000, "finance_controlled": 18000, "total": 36000}
+      },
+      "required_before_selection": "The compiler must preserve the exact published B0 prefix mapping and emit a cycle/row occurrence digest. The JSON label B1_occurrences_per_controlled_source is interpreted per controlled source dataset, not per individual row."
+    },
+    {
+      "id": "count_only_public_capacity",
+      "status": "PASS_COUNT_ONLY_UPPER_BOUND_NOT_FINAL_CAPACITY",
+      "evidence": {
+        "alpaca_usable_after_keyed_exclusions": 50778,
+        "alpaca_post_bos_at_least_64": 39765,
+        "alpaca_post_bos_at_least_96": 24401,
+        "alpaca_post_bos_at_least_128": 14317,
+        "alpaca_post_bos_at_least_160": 6824,
+        "pile_candidate_count_before_full_namespace_length_audit": 4640,
+        "finance_candidate_count_before_full_namespace_length_audit": 9760,
+        "new_pile_parent_requirement": 3240,
+        "new_finance_parent_requirement": 2160,
+        "source": "experiments/TRR-P09/planning/bank-proposal.md and alpaca-capacity-audit.json"
+      },
+      "limitation": "These are count/tokenization bounds. Approved opaque ledgers, exact length quotas, and namespace-correct zero-overlap compilation can still reduce eligibility; no rows were selected."
+    },
+    {
+      "id": "p09_compiler_review",
+      "status": "NOT_PRESENT_AT_AUDIT_TIME",
+      "evidence": {
+        "checked_paths": ["scripts/trr_p09", "experiments/TRR-P09/setup"],
+        "production_selection_or_compiler_found": false,
+        "model_or_tensor_payload_opened": false
+      }
+    }
+  ],
+  "required_compiler_checks_before_selection": [
+    "Verify the signed plan SHA and all bound input file hashes before reading source rows.",
+    "Apply the complete namespace-correct exclusion union and fail closed unless a zero-overlap receipt is produced.",
+    "Preserve B0 rows 0:1200 and the exact published controlled-ID assignment as an immutable prefix.",
+    "Emit exact-length quota counts, stable source keys, parent mappings, and allocation order; never fill a short quota by repeating rows or reshaping bins.",
+    "Emit controlled replacement row order/cycle/order digests with 30 positions per row and 18,000 occurrences per controlled source dataset.",
+    "Record exact future output hashes and stop before model loading if any quota, exclusion, B0-prefix, or support-list check fails."
+  ],
+  "decision": "No scientific recipe contradiction was found in the published metadata or constructor. Selection is not cleared by this receipt: review the setup compiler and its create-only metadata receipt, then independently verify exact capacity and B0-prefix/support-order preservation before any CPU source selection."
+}
