@@ -46,7 +46,11 @@ records `optimizer_state_external=true`; it cannot claim a resumable update.
 `restore_selected_and_export` verifies checkpoint path, bytes, SHA-256, and
 selected-step/contract/bank/schedule/source-binding metadata before loading,
 then writes the full effective-E artifact and verifies deployment
-logits/argmax through the existing model tests. A resumed fit requires a
+logits/argmax through the existing model tests. Call
+`export_selected_base_decoder_state` after that restore to write the
+BASE-ONLY selected decoder through the established TRR-0007 positionwise
+saver; this is the evaluator's `state/base_decoder_state`, while the
+combined directional checkpoint remains a training artifact. A resumed fit requires a
 separately hash-bound optimizer-state artifact and the same `foreach=False` /
 group validation; absent that artifact, resume is rejected by contract.
 

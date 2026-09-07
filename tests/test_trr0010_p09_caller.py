@@ -8,13 +8,18 @@ import pytest
 import torch
 from safetensors.torch import load_file
 
-from token_reconstruction.trr0007_positionwise import build_residual_mlp512
+from token_reconstruction.trr0007_positionwise import (
+    RESIDUAL_MLP_METHOD_ID,
+    build_residual_mlp512,
+    load_positionwise_model_state,
+)
 from trr0010_p09_caller import (
     A2SourceBinding,
     FrozenArtifact,
     P09CallerError,
     ProductionBindings,
     ResourceQualification,
+    export_selected_base_decoder_state,
     make_serialization_only_checkpoint_callback,
     prepare_directional_runtime,
     restore_selected_and_export,
@@ -200,6 +205,42 @@ def test_serialization_callback_and_selected_export_are_coherent(tmp_path: Path)
     deployed = runtime.hook.merged_forward(activation, valid, exported)
     assert torch.equal(primary, deployed)
     assert torch.equal(primary.argmax(dim=-1), deployed.argmax(dim=-1))
+
+
+def test_selected_base_export_is_loadable_and_excludes_directional_rows(tmp_path: Path) -> None:
+    runtime, embedding = _runtime(tmp_path)
+    callback = make_serialization_only_checkpoint_callback(
+        output_root=tmp_path / "checkpoints",
+        runtime=runtime,
+        base_state={"sha256": "d" * 64},
+        fit_manifest={"sha256": "e" * 64},
+    )
+    checkpoint_receipt = callback({"step": 7}, runtime.decoder, runtime.hook)
+    restore_receipt = restore_selected_and_export(
+        checkpoint_path=Path(checkpoint_receipt["checkpoint"]["path"]),
+        expected_checkpoint=checkpoint_receipt["checkpoint"],
+        export_path=tmp_path / "selected_effective.safetensors",
+        runtime=runtime,
+        public_embedding=embedding,
+        selected_step=7,
+    )
+    base_receipt = export_selected_base_decoder_state(
+        path=tmp_path / "base_decoder_state.safetensors",
+        runtime=runtime,
+        selected_receipt=restore_receipt,
+        selected_step=7,
+    )
+    loaded = load_positionwise_model_state(
+        Path(base_receipt["path"]),
+        method_id=RESIDUAL_MLP_METHOD_ID,
+        hidden_size=8,
+        vocabulary_size=17,
+        context_width=4,
+        bottleneck_size=3,
+    )
+    assert all(torch.equal(loaded.state_dict()[name], value) for name, value in runtime.decoder.state_dict().items())
+    assert base_receipt["metadata"]["base_state_role"] == "BASE_ONLY_SELECTED_DECODER"
+    assert base_receipt["metadata"]["directional_readout_excluded"] is True
 
 
 def test_serialization_callback_allows_terminal_zero_schedule(tmp_path: Path) -> None:

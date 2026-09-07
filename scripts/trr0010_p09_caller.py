@@ -29,6 +29,11 @@ from trr0010_model import (
     export_effective_embedding,
     save_directional_state,
 )
+from token_reconstruction.trr0007_positionwise import (
+    RESIDUAL_MLP_METHOD_ID,
+    ResidualMLPPositionwiseDecoder,
+    save_positionwise_state,
+)
 from trr0010_p09_integration import validate_p09_module
 
 
@@ -568,6 +573,73 @@ def restore_selected_and_export(
     }
 
 
+def export_selected_base_decoder_state(
+    *,
+    path: Path,
+    runtime: DirectionalRuntime,
+    selected_receipt: Mapping[str, Any],
+    selected_step: int,
+    metadata: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Export the selected decoder base in the established positionwise format.
+
+    The directional checkpoint remains the restart/training artifact.  This
+    create-only export deliberately contains only ``runtime.decoder`` so the
+    evaluator can load ``state/base_decoder_state`` with the published
+    TRR-0007 loader, while ``effective_readout_w`` remains the separate
+    deployment readout artifact.
+    """
+
+    if not isinstance(runtime.decoder, ResidualMLPPositionwiseDecoder):
+        raise P09CallerError("selected base export requires the residual MLP512 decoder")
+    if selected_step < 0:
+        raise P09CallerError("selected step cannot be negative")
+    try:
+        receipt_step = int(selected_receipt["selected_step"])
+        checkpoint_sha256 = _sha(
+            selected_receipt["checkpoint_sha256"],
+            "selected receipt checkpoint_sha256",
+        )
+        checkpoint_path = str(selected_receipt["checkpoint_path"])
+    except (KeyError, TypeError, ValueError) as exc:
+        raise P09CallerError("selected restore receipt is incomplete") from exc
+    if receipt_step != selected_step or not checkpoint_path:
+        raise P09CallerError("selected base export does not match the restored checkpoint")
+    checkpoint_file = Path(checkpoint_path).expanduser().resolve()
+    try:
+        expected_checkpoint_bytes = int(selected_receipt["checkpoint_bytes"])
+    except (KeyError, TypeError, ValueError) as exc:
+        raise P09CallerError("selected restore receipt lacks checkpoint_bytes") from exc
+    _verify_file(
+        checkpoint_file,
+        expected_bytes=expected_checkpoint_bytes,
+        expected_sha256=checkpoint_sha256,
+        label="selected restore checkpoint for base export",
+    )
+    export_metadata: dict[str, Any] = {
+        "base_state_role": "BASE_ONLY_SELECTED_DECODER",
+        "directional_readout_excluded": True,
+        "selected_directional_checkpoint_sha256": checkpoint_sha256,
+        "selected_directional_checkpoint_path": checkpoint_path,
+        "p09_contract_sha256": runtime.bindings.contract.sha256,
+        "p09_bank_sha256": runtime.bindings.bank_manifest.sha256,
+        "p09_schedule_sha256": runtime.bindings.schedule.sha256,
+        "p09_a2_source_binding_digest": runtime.bindings.source_binding_digest(),
+    }
+    if metadata:
+        export_metadata.update({str(key): value for key, value in metadata.items()})
+    return save_positionwise_state(
+        Path(path),
+        runtime.decoder,
+        method_id=RESIDUAL_MLP_METHOD_ID,
+        selected_step=selected_step,
+        initialization="restored selected directional checkpoint base parameters",
+        distribution="TRR-0010 directional continuation; base-only deployment state",
+        bottleneck_size=runtime.decoder.bottleneck_size,
+        metadata=export_metadata,
+    )
+
+
 __all__ = [
     "A2SourceBinding",
     "DirectionalRuntime",
@@ -578,6 +650,7 @@ __all__ = [
     "make_serialization_only_checkpoint_callback",
     "prepare_directional_runtime",
     "restore_selected_and_export",
+    "export_selected_base_decoder_state",
     "validate_optimizer_configuration",
     "verify_production_bindings",
 ]
