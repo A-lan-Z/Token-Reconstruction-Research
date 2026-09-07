@@ -145,10 +145,13 @@ def test_raw_runner_result_is_accepted_without_inventing_postfit_metadata(tmp_pa
 
     result = table.assemble_table(fixed_table_path=FIXED, current_directional_path=raw_path)
     arm = result["arms"]["current_directional"]
-    assert arm["status"] == "COMPLETE_WITH_METADATA_PENDING"
+    assert arm["status"] == "TRAINING_COMPLETE_DEPLOYMENT_EXPORT_PENDING"
     assert arm["fit_started"] is True
     assert arm["checkpoint_curve"][-1]["step"] == 13000
     assert arm["diagnostics"] == []
+    assert arm["selected_step"] == 8000
+    assert arm["selected_state"] is None
+    assert arm["exposure"]["support_token_ids"] is None
     assert "full_and_frozen64_diagnostics" in arm["source"]["missing_fields"]
     assert "selected_state_footprints" in arm["source"]["missing_fields"]
-    assert "support_token_ids" in arm["source"]["missing_fields"]
+    assert result["status"] == "TRAINING_COMPLETE_DEPLOYMENT_EXPORT_PENDING"

@@ -288,7 +288,7 @@ def _optional_int(value: Any, *, description: str) -> int | None:
         raise FitTableError(f"{description} must be an integer or null") from exc
 
 
-def _directional_payload(path: Path, *, expected_arm: str) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
+def _directional_payload(path: Path, *, expected_arm: str) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any], str]:
     source = _file_binding(path, description=f"directional {expected_arm} receipt")
     payload = _read_json(Path(source["path"]), description=f"directional {expected_arm} receipt")
     if payload.get("task_id") not in (None, TASK_ID):
@@ -297,6 +297,7 @@ def _directional_payload(path: Path, *, expected_arm: str) -> tuple[dict[str, An
         raise FitTableError(f"directional {expected_arm} receipt opened truth")
     arm: Mapping[str, Any] | None = None
     runner: Mapping[str, Any] | None = None
+    source_kind = "run_receipt_wrapper"
     wrapper = payload.get("arms")
     if isinstance(wrapper, Mapping):
         candidate = wrapper.get(expected_arm)
@@ -308,6 +309,7 @@ def _directional_payload(path: Path, *, expected_arm: str) -> tuple[dict[str, An
             runner = runner_value
     elif isinstance(payload.get("learning_curve"), Sequence) and not isinstance(payload.get("learning_curve"), (str, bytes)):
         # This is a raw A2 runner result.  It has no post-fit export receipt.
+        source_kind = "raw_runner_result"
         runner = payload
         arm = {"arm_name": expected_arm, "bank_role": ARM_TO_BANK[expected_arm]}
     else:
@@ -324,7 +326,7 @@ def _directional_payload(path: Path, *, expected_arm: str) -> tuple[dict[str, An
         raise FitTableError(f"directional {expected_arm} arm identity changed")
     if arm.get("bank_role", ARM_TO_BANK[expected_arm]) != ARM_TO_BANK[expected_arm]:
         raise FitTableError(f"directional {expected_arm} bank role changed")
-    return dict(payload), dict(arm), {**dict(runner), "_source": source}
+    return dict(payload), dict(arm), {**dict(runner), "_source": source}, source_kind
 
 
 def _directional_curve(runner: Mapping[str, Any], *, arm: str) -> list[dict[str, Any]]:
@@ -415,13 +417,76 @@ def _support_count(*values: Any) -> int | None:
         for key in keys:
             if value.get(key) is not None:
                 return _optional_int(value[key], description=f"support count {key}")
+        metadata = value.get("metadata")
+        if isinstance(metadata, Mapping):
+            found = _support_count(metadata)
+            if found is not None:
+                return found
+        checkpoint = value.get("checkpoint")
+        if isinstance(checkpoint, Mapping):
+            found = _support_count(checkpoint)
+            if found is not None:
+                return found
     return None
+
+
+def _runner_selected_checkpoint(runner: Mapping[str, Any], *, arm: str) -> dict[str, Any] | None:
+    """Extract the selected serialized checkpoint binding from a raw runner result."""
+
+    values = runner.get("checkpoint_state_bindings")
+    if values is None:
+        return None
+    values_seq = _sequence(values, description=f"directional {arm} checkpoint_state_bindings")
+    if len(values_seq) == 0:
+        return None
+    selected_step = _optional_int(runner.get("selected_step"), description=f"directional {arm} selected_step")
+    matches: list[Mapping[str, Any]] = []
+    for value in values_seq:
+        entry = _mapping(value, description=f"directional {arm} checkpoint binding")
+        checkpoint = entry.get("checkpoint")
+        if not isinstance(checkpoint, Mapping):
+            continue
+        metadata = checkpoint.get("metadata")
+        metadata_map = metadata if isinstance(metadata, Mapping) else {}
+        candidate_step = metadata_map.get("selected_step", checkpoint.get("selected_step", checkpoint.get("step")))
+        try:
+            candidate_step = int(candidate_step)
+        except (TypeError, ValueError):
+            continue
+        if candidate_step == selected_step:
+            matches.append(checkpoint)
+    if len(matches) != 1:
+        raise FitTableError(f"directional {arm} selected checkpoint binding is missing or ambiguous")
+    checkpoint = matches[0]
+    record = _declared_artifact(checkpoint, description=f"directional {arm} selected checkpoint")
+    metadata = checkpoint.get("metadata")
+    if isinstance(metadata, Mapping):
+        logical = metadata.get("runner_point_state_sha256")
+        if logical is not None:
+            if not isinstance(logical, str) or len(logical) != 64:
+                raise FitTableError(f"directional {arm} selected checkpoint logical digest is invalid")
+            record["logical_sha256"] = logical
+        support = metadata.get("support_count")
+        if support is not None:
+            record["support_token_ids"] = _optional_int(support, description=f"directional {arm} support count")
+    tensor_digest = checkpoint.get("state_tensor_digest")
+    if tensor_digest is not None:
+        if not isinstance(tensor_digest, str) or len(tensor_digest) != 64:
+            raise FitTableError(f"directional {arm} selected checkpoint tensor digest is invalid")
+        record["tensor_sha256"] = tensor_digest
+    if checkpoint.get("state_bytes") is not None:
+        record["tensor_payload_bytes"] = _optional_int(checkpoint.get("state_bytes"), description=f"directional {arm} tensor payload bytes")
+    record["selected_step"] = selected_step
+    record["serialization_only"] = True
+    return record
 
 
 def _directional_state(arm_record: Mapping[str, Any], *, arm: str, runner: Mapping[str, Any]) -> dict[str, Any] | None:
     selected = _find_artifact(arm_record.get("selected_checkpoint"), description=f"directional {arm} selected checkpoint")
     if selected is None:
         selected = _find_artifact(arm_record.get("selected_state"), description=f"directional {arm} selected state")
+    if selected is None:
+        selected = _runner_selected_checkpoint(runner, arm=arm)
     base = _find_artifact(arm_record.get("base_decoder_state"), description=f"directional {arm} base decoder state")
     readout = _find_artifact(arm_record.get("effective_readout"), description=f"directional {arm} effective readout")
     selected_step = runner.get("selected_step")
@@ -484,6 +549,8 @@ def _directional_cost(payload: Mapping[str, Any], arm_record: Mapping[str, Any],
                 if seconds is not None
             ],
             "sum_explicit_components_seconds": sum(measured) if len(measured) == len(explicit_components) else None,
+            "measured_available_components_seconds": sum(measured),
+            "complete": len(measured) == len(explicit_components),
             "phase_sum_is_not_added": True,
             "note": "Provider preparation, runner process wall, and post-fit exports are separate components. Optimizer/stream/validation phases are nested inside runner wall; wrapper_seconds is not added again.",
         },
@@ -492,7 +559,7 @@ def _directional_cost(payload: Mapping[str, Any], arm_record: Mapping[str, Any],
 
 
 def _directional_arm(path: Path, *, arm: str) -> dict[str, Any]:
-    payload, arm_record, runner = _directional_payload(path, expected_arm=arm)
+    payload, arm_record, runner, source_kind = _directional_payload(path, expected_arm=arm)
     curve = _directional_curve(runner, arm=arm)
     diagnostics, diagnostic_pending = _directional_diagnostics(arm_record, arm=arm)
     exposure = _exposure_from_runner(runner, arm=arm)
@@ -502,10 +569,15 @@ def _directional_arm(path: Path, *, arm: str) -> dict[str, Any]:
         missing_fields.append("full_and_frozen64_diagnostics")
     if state is None:
         missing_fields.append("selected_state_footprints")
-    support_count = _support_count(arm_record, runner, exposure)
+    elif state.get("base_decoder_state") is None or state.get("effective_readout_w") is None:
+        missing_fields.append("deployment_export_artifacts")
+    support_count = _support_count(arm_record, runner, exposure, state.get("selected_checkpoint") if state else None)
     if support_count is None:
         missing_fields.append("support_token_ids")
-    status = "COMPLETE_DIRECTIONAL_RECEIPT" if not missing_fields else "COMPLETE_WITH_METADATA_PENDING"
+    if source_kind == "raw_runner_result":
+        status = "TRAINING_COMPLETE_DEPLOYMENT_EXPORT_PENDING"
+    else:
+        status = "COMPLETE_DIRECTIONAL_RECEIPT" if not missing_fields else "COMPLETE_WITH_METADATA_PENDING"
     return {
         "arm": arm,
         "bank": ARM_TO_BANK[arm],
@@ -522,6 +594,8 @@ def _directional_arm(path: Path, *, arm: str) -> dict[str, Any]:
         "source": {
             "receipt": runner.get("_source"),
             "raw_runner_status": runner.get("status"),
+            "receipt_form": source_kind,
+            "deployment_export_pending": source_kind == "raw_runner_result" or "deployment_export_artifacts" in missing_fields,
             "missing_fields": missing_fields,
             **({"diagnostic_pending_reason": diagnostic_pending} if diagnostic_pending else {}),
         },
@@ -554,11 +628,14 @@ def _summary_row(arm: Mapping[str, Any]) -> dict[str, Any]:
     cost = arm.get("cost") if isinstance(arm.get("cost"), Mapping) else {}
     state = arm.get("selected_state") if isinstance(arm.get("selected_state"), Mapping) else {}
     nonoverlap = cost.get("nonoverlap_wall_cost") if isinstance(cost.get("nonoverlap_wall_cost"), Mapping) else {}
+    nonoverlap_seconds = nonoverlap.get("sum_explicit_components_seconds")
+    if nonoverlap_seconds is None:
+        nonoverlap_seconds = nonoverlap.get("measured_available_components_seconds", nonoverlap.get("measured_total_seconds"))
     return {
         "arm": arm.get("arm"),
         "status": arm.get("status"),
         "selected_step": arm.get("selected_step"),
-        "updates": exposure.get("steps"),
+        "updates": exposure.get("steps", cost.get("raw", {}).get("updates") if isinstance(cost.get("raw"), Mapping) else None),
         "total_draws": exposure.get("total_draws"),
         "available_post_bos_positions": exposure.get("available_post_bos_positions"),
         "sampled_unique_record_position_pairs": exposure.get("actual_sampled_unique_record_position_pairs", exposure.get("unique_record_position_pairs")),
@@ -566,8 +643,10 @@ def _summary_row(arm: Mapping[str, Any]) -> dict[str, Any]:
         "repeated_record_position_pairs": exposure.get("repeated_record_position_pairs"),
         "support_token_ids": exposure.get("support_token_ids"),
         "fit_wall_seconds": cost.get("process_wall_seconds"),
-        "nonoverlap_wall_seconds": nonoverlap.get("sum_explicit_components_seconds", nonoverlap.get("measured_total_seconds")),
-        "selected_state_bytes": state.get("bytes") if "bytes" in state else None,
+        "nonoverlap_wall_seconds": nonoverlap_seconds,
+        "selected_state_bytes": state.get("bytes") if "bytes" in state else (
+            state.get("selected_checkpoint", {}).get("bytes") if isinstance(state.get("selected_checkpoint"), Mapping) else None
+        ),
     }
 
 
@@ -605,8 +684,17 @@ def assemble_table(
         else:
             arms[arm] = _directional_arm(_path(path, description=f"directional {arm} receipt"), arm=arm)
     ordered_arms = {arm: arms[arm] for arm in ARM_ORDER}
-    pending = [arm for arm in ARM_ORDER if ordered_arms[arm]["status"].startswith("PENDING") or "PENDING" in ordered_arms[arm]["status"]]
-    status = "COMPLETE_FOUR_ARM_FIT_DIAGNOSTICS" if not pending else "FIXED_ARMS_BOUND_DIRECTIONAL_ARMS_PENDING"
+    missing_receipts = [arm for arm in ARM_ORDER if ordered_arms[arm]["status"] == "PENDING_MISSING_RECEIPT"]
+    metadata_pending = [
+        arm for arm in ARM_ORDER
+        if arm not in missing_receipts and "PENDING" in str(ordered_arms[arm]["status"])
+    ]
+    if any(ordered_arms[arm]["status"] == "TRAINING_COMPLETE_DEPLOYMENT_EXPORT_PENDING" for arm in ARM_ORDER):
+        status = "TRAINING_COMPLETE_DEPLOYMENT_EXPORT_PENDING"
+    elif missing_receipts or metadata_pending:
+        status = "FIXED_ARMS_BOUND_DIRECTIONAL_ARMS_PENDING"
+    else:
+        status = "COMPLETE_FOUR_ARM_FIT_DIAGNOSTICS"
     return {
         "schema": SCHEMA,
         "task_id": TASK_ID,
@@ -625,7 +713,8 @@ def assemble_table(
             "wall_cost_nonoverlap": True,
             "scope": "truth-free public fitting and checkpoint diagnostics",
             "note": "Fixed process wall and directional provider/runner/export components are measured once. Nested optimizer, stream-load, validation, and diagnostic phase times are retained for readability and are not added to process wall; wrapper elapsed is not added again.",
-            "missing_directional_receipts": pending,
+            "missing_directional_receipts": missing_receipts,
+            "directional_metadata_pending": metadata_pending,
         },
         "quality_boundary": {
             "fit_diagnostics_only": True,

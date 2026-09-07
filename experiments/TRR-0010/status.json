@@ -691,7 +691,7 @@
     "directional_qualification_started": true,
     "capture_complete_no_truth": true,
     "directional_qualification_status": "PASS_LARGEST_CELL_QUALIFICATION_NO_FIT_NO_TRUTH",
-    "substantive_fit_status": "B0_AND_B1_FIXED_READOUT_COMPLETE_DIRECTIONAL_FITS_NOT_STARTED",
+    "substantive_fit_status": "B0_AND_B1_FIXED_READOUT_COMPLETE_CURRENT_DIRECTIONAL_TRAINING_COMPLETE_EXPORT_PENDING_EXPANDED_DIRECTIONAL_NOT_STARTED",
     "final_evaluation_status": "PENDING_TRUTH_CLOSED",
     "qualified_B1_manifest_bound": true,
     "qualified_B1_manifest_external_sha256": "0e14dbf74c947cfc6c586e7a5dbf76a27d8f0522fb8e54d2f98c6067bb36d196",
@@ -720,7 +720,7 @@
     "qualification_receipt_path": "experiments/TRR-0010/training/qualification_v2/qualification.json",
     "qualification_receipt_sha256": "58594a477733c2f1ce21d356ec9acead92de6001b2c31bd41f635213700bca66",
     "current_fit_stage": {
-      "status": "B0_AND_B1_FIXED_READOUT_COMPLETE_DIRECTIONAL_PENDING",
+      "status": "B0_B1_FIXED_COMPLETE_CURRENT_DIRECTIONAL_TRAINING_COMPLETE_EXPORT_PENDING_EXPANDED_DIRECTIONAL_NOT_STARTED",
       "B0": {
         "status": "COMPLETE_CAPACITY_AUDITED",
         "updates": 13000,
@@ -763,7 +763,45 @@
           "step": 13000
         }
       },
-      "source": "A2 B0/B1 audit and handoff receipts plus root coordination update; both fixed-readout completions (B0 current-fixed and B1 expanded-fixed) are bound; directional fits remain held"
+      "source": "Fixed v2 table plus current directional raw runner receipt; post-fit export and diagnostic callback recovery pending; no truth or final quality.",
+      "current_directional": {
+        "status": "TRAINING_COMPLETE_DEPLOYMENT_EXPORT_PENDING",
+        "arm_role": "current_directional",
+        "bank_role": "B0",
+        "updates": 13000,
+        "total_draws": 6656000,
+        "draws_per_step": 512,
+        "selected_step": 0,
+        "selected_state_logical_sha256": "ac1e9d41f5058bbcf61fdab938e81e9e0818d759f49f0ebfd53cb91d2ef09ab7",
+        "schedule_semantic_sha256": "9aaad9c030f2f9b801f91f956c97f858966580edd21229cebb350dcde358f2c3",
+        "unique_record_position_pairs": 124371,
+        "repeated_record_position_pairs": 124371,
+        "max_exposures_per_record_position": 89,
+        "replacement_steps": 8,
+        "support_count": 17126,
+        "fit_wall_seconds": 684.4807228490245,
+        "optimizer_update_seconds": 597.4261652720743,
+        "stream_load_seconds": 38.9768245817977,
+        "validation_seconds": 12.298160022997763,
+        "raw_runner_receipt": {
+          "path": "experiments/TRR-0010/training/directional_fit/current_directional_watchdog_r2/fit/raw_runner_result.json",
+          "bytes": 62160,
+          "sha256": "de89e05c2d93a7bd44b84fac8d70dea8a064722557e37869ea434c9f9f2019c7"
+        },
+        "postfit_export_recovery_pending": true,
+        "frozen64_diagnostics_retained": false,
+        "truth_opened": false,
+        "quality_results": false,
+        "selection_metric_observation": {
+          "selected_step": 0,
+          "metric": "domain_balanced_token_accuracy",
+          "step0": 0.9681809793307087,
+          "step13000": 0.958984375,
+          "cross_entropy_step0": 0.19891194561178602,
+          "cross_entropy_step13000": 0.1771696456109132,
+          "scope": "opened public development validation; not final natural quality"
+        }
+      }
     },
     "cost_evidence_adapter": {
       "status": "SYNTHETIC_PUBLIC_TIMING_PASS_NO_PRODUCTION_ARTIFACT",
@@ -823,8 +861,8 @@
         "status": "BOUND_EXTERNAL_HANDOFF_NO_TRUTH"
       }
     },
-    "directional_fit_started": false,
-    "directional_fit_status": "NOT_STARTED_ROOT_HELD",
+    "directional_fit_started": true,
+    "directional_fit_status": "CURRENT_TRAINING_COMPLETE_DEPLOYMENT_EXPORT_PENDING_EXPANDED_NOT_STARTED",
     "b1_expanded_fixed_fit_receipt": {
       "status": "PASS",
       "receipt": {
@@ -853,13 +891,24 @@
       "directional_fit_started": false,
       "truth_opened": false,
       "quality_results": false
+    },
+    "combined_fit_diagnostics_cost_table": {
+      "id": "trr0010_combined_fit_diagnostics_cost_table_v2",
+      "path": "experiments/TRR-0010/report/combined_fit_diagnostics_cost_table_v2.json",
+      "bytes": 85379,
+      "sha256": "6c80e6c504afa766e0d30c580b3dc95592f56a8c0c150cae0c4235de313fe9d7",
+      "status": "TRAINING_COMPLETE_DEPLOYMENT_EXPORT_PENDING",
+      "truth_opened": false,
+      "quality_results": false,
+      "fixed_table_sha256": "4f760524a2d0269861f8424d24ed6d89584f94719c6ecfa888d605bce8924040",
+      "expanded_directional_receipt_bound": false
     }
   },
   "implementation_commit": "a4985c0cd373c26d4361ce1c861fa35bdb25b10e",
   "pending": [
     "Produce and bind the six-method/four-cell public timing cost artifact after the prediction run; until then deployment-cost gates remain unmeasured.",
     "Bind exact imported final prediction-runner/gate/base-only decoder/effective-W/registration/A1+A2 source files and qualify the final forward path under the agreed fail-closed caps.",
-    "Run and bind the two directional training receipts and the combined four-arm execution manifest before final evaluation.",
+    "Recover and bind the current directional selected export/fit-diagnostic receipt, run the expanded directional arm, and bind the combined four-arm execution manifest before final evaluation.",
     "Bind the final 128 Finance + 128 Pile natural panel/order/H128 digests and exclusion intersection, then the curator-owned paired observation/truth descriptor.",
     "No reconstruction-quality result or promotion claim exists; quality remains unavailable."
   ],
@@ -1226,9 +1275,9 @@
   "reviewed_base_commit": "4602f98eeb03ac121d8bbc230d7e2b219551b914",
   "schema": "token-reconstruction.trr0010-status.v5",
   "scientific_results_available": false,
-  "status": "B0_AND_B1_FIXED_READOUT_COMPLETE_NO_DIRECTIONAL_FITS_COST_ADAPTER_READY_NO_QUALITY_RESULT",
+  "status": "B0_B1_FIXED_CURRENT_DIRECTIONAL_TRAINING_COMPLETE_EXPORT_PENDING_EXPANDED_DIRECTIONAL_NOT_STARTED_NO_QUALITY_RESULT",
   "task_id": "TRR-0010",
-  "updated_utc": "2026-09-07T16:14:48Z",
+  "updated_utc": "2026-09-07T17:05:22Z",
   "publication": {
     "status": "OPEN_DRAFT_PR_PUBLISHED",
     "url": "https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/20",
@@ -1585,13 +1634,17 @@
       "truth_opened": false
     },
     "substantive_fits": {
-      "status": "B0_AND_B1_FIXED_READOUT_COMPLETE_DIRECTIONAL_FITS_NOT_STARTED",
+      "status": "B0_B1_FIXED_CURRENT_DIRECTIONAL_TRAINING_COMPLETE_EXPORT_PENDING_EXPANDED_DIRECTIONAL_NOT_STARTED",
       "quality_results": false,
       "B0_audit_sha256": "1f09e48753ecf5ef3561391465e33eca2ead713c48122633db4e0b08bc6bd6c6",
       "B0_truth_opened": false,
-      "directional_fit_started": false,
+      "directional_fit_started": true,
       "B1_receipt_sha256": "bc75d1c6837cd27bc2980cb448d4c309cecb279ab729b70db13367bac3eed47a",
-      "B1_selected_state_sha256": "5757506003f0a4b82cb1cd6de2a82f11345f2dbcbce13c8cf18c4f515de3ec3a"
+      "B1_selected_state_sha256": "5757506003f0a4b82cb1cd6de2a82f11345f2dbcbce13c8cf18c4f515de3ec3a",
+      "current_directional_raw_runner_sha256": "de89e05c2d93a7bd44b84fac8d70dea8a064722557e37869ea434c9f9f2019c7",
+      "current_directional_selected_step": 0,
+      "current_directional_postfit_export_pending": true,
+      "truth_opened": false
     },
     "final_evaluation": {
       "status": "PENDING",
@@ -1901,5 +1954,16 @@
       "full_bank_available_post_bos_positions": 1243710,
       "truth_opened": false
     }
+  },
+  "combined_fit_diagnostics_cost_table": {
+    "id": "trr0010_combined_fit_diagnostics_cost_table_v2",
+    "path": "experiments/TRR-0010/report/combined_fit_diagnostics_cost_table_v2.json",
+    "bytes": 85379,
+    "sha256": "6c80e6c504afa766e0d30c580b3dc95592f56a8c0c150cae0c4235de313fe9d7",
+    "status": "TRAINING_COMPLETE_DEPLOYMENT_EXPORT_PENDING",
+    "truth_opened": false,
+    "quality_results": false,
+    "fixed_table_sha256": "4f760524a2d0269861f8424d24ed6d89584f94719c6ecfa888d605bce8924040",
+    "expanded_directional_receipt_bound": false
   }
 }
