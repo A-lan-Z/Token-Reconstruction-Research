@@ -8,6 +8,7 @@ import time
 import pytest
 import torch
 
+import trr0010_p09_qualifier as qualifier
 from token_reconstruction.trr0007_positionwise import build_residual_mlp512
 from trr0010_p09_qualifier import (
     QualificationError,
@@ -15,6 +16,7 @@ from trr0010_p09_qualifier import (
     enforce_resource_guard,
     validate_exclusive_lease,
     validate_qualification_bindings,
+    qualify_discarded_updates,
     _validate_validation_contract,
     verify_zero_delta_equivalence,
 )
@@ -189,3 +191,59 @@ def test_pooled_selection_rejects_domain_callback() -> None:
     config = SimpleNamespace(selection_metric="token_accuracy")
     with pytest.raises(QualificationError, match="only valid"):
         _validate_validation_contract(config, lambda step, evaluate_view: {})
+
+
+def test_qualifier_forwards_domain_callback_and_reports_partial_without_export(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    captured: dict[str, object] = {}
+    runtime = SimpleNamespace(decoder=object(), hook=object(), optimizer=object())
+    runner = SimpleNamespace()
+    runner.validate_batch = lambda *args, **kwargs: None
+
+    def run_training(*args, **kwargs):
+        captured.update(kwargs)
+        return {"timing": {"update_seconds": 0.1}, "learning_curve": [], "selected_step": 0}
+
+    runner.run_training = run_training
+    source = SimpleNamespace(batch_for_global_rows=lambda rows: object())
+    step = SimpleNamespace(step=0, batch_global_rows=(0,))
+    callback = lambda current_step, evaluate_view: {
+        "domain_balanced_token_accuracy": 1.0,
+        "domains": {"Finance": {}, "Pile": {}},
+    }
+    monkeypatch.setattr(qualifier, "_module_device", lambda module: torch.device("cpu"))
+    monkeypatch.setattr(qualifier, "verify_zero_delta_equivalence", lambda **kwargs: {"exact_logits": True})
+    monkeypatch.setattr(qualifier, "resource_snapshot", lambda **kwargs: {
+        "host_available_bytes": 20 * 2**30,
+        "host_rss_bytes": 1 * 2**30,
+        "disk_free_bytes": 100 * 2**30,
+        "gpu": {"available": True, "free_bytes": 12 * 2**30, "max_reserved_bytes": 1 * 2**30},
+    })
+    monkeypatch.setattr(qualifier, "enforce_resource_guard", lambda *args, **kwargs: None)
+    monkeypatch.setattr(qualifier, "_optimizer_state_bytes", lambda optimizer: 1)
+    monkeypatch.setattr(qualifier, "_write_create_only", lambda path, value: {"path": str(path), "bytes": 1, "sha256": "a" * 64})
+    result = qualify_discarded_updates(
+        binding_receipt={"settings": {"probe_steps": 1}, "schedule": {"seed": 1, "semantic_sha256": "a" * 64, "exposure": {}}},
+        lease_caps={"device": "cpu", "max_seconds": 30},
+        runtime=runtime,
+        runner=runner,
+        source=source,
+        schedule_steps=(step,),
+        embedding=torch.empty(0),
+        config=SimpleNamespace(
+            steps=1, train_sequence_tokens=4, hidden_size=8, record_batch_size=1,
+            selection_metric="domain_balanced_token_accuracy",
+        ),
+        validation_batches=None,
+        validation_callback=callback,
+        validation_sequence_tokens=4,
+        validation_batch_records=1,
+        validation_activation_dtype=None,
+        training_activation_dtype=None,
+        output_root=tmp_path,
+    )
+    assert captured["validation_callback"] is callback
+    assert captured["validation_batches"] is None
+    assert result["status"] == "QUALIFICATION_PARTIAL_NO_CHECKPOINT_EXPORT"
+    assert result["qualification_complete"] is False
