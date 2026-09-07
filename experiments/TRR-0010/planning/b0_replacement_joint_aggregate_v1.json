@@ -1,0 +1,73 @@
+{
+  "algorithm": {
+    "b0_filter": "b0_prefix_row is not null and stratum in {finance_controlled,pile_controlled}",
+    "b1_filter": "b0_prefix_row is null and stratum in {finance_controlled,pile_controlled}",
+    "expected_b1_multiplicity": "9 * B0 counter per key",
+    "joint_key": "(stratum, target_post_bos_token_count, replacement_position_after_bos, replacement_token_id)",
+    "order_key": "records.json order, then each row replacement_positions_after_bos order"
+  },
+  "counts": {
+    "b0_controlled_rows": 120,
+    "b0_occurrences": 3600,
+    "b0_token_multiplicity_distribution": {
+      "1": 3600
+    },
+    "b0_unique_global_tokens": 3600,
+    "b1_controlled_rows": 1080,
+    "b1_occurrences": 32400,
+    "b1_token_multiplicity_distribution": {
+      "9": 3600
+    },
+    "b1_unique_global_tokens": 3600,
+    "global_token_multiset_exact_9x": true,
+    "joint_b0_only_keys": 3209,
+    "joint_b0_unique_keys": 3600,
+    "joint_b1_only_keys": 31899,
+    "joint_b1_unique_keys": 32290,
+    "joint_exact_9x": false,
+    "joint_mismatch_keys": 35499,
+    "ordered_exact_nine_cycles": false,
+    "ordered_offset_equal_positions": 6835,
+    "ordered_token_equal_positions": 270,
+    "ordered_tuple_equal_positions": 20,
+    "stratum_active_length_exact_9x": true
+  },
+  "cross_stratum_origin": {
+    "all_tokens_total_occurrences_in_b1": {
+      "9": 3600
+    },
+    "per_origin_token_cross_stratum_occurrences": {
+      "4": 3600
+    },
+    "per_origin_token_same_stratum_occurrences": {
+      "5": 3600
+    }
+  },
+  "interpretation": "Global token IDs and counts are exactly preserved ninefold from B0 to B1, but joint domain/active-length/offset/token assignment and ordered cycle are not preserved.",
+  "schema": "token-reconstruction.trr0010-b0-replacement-joint-aggregate.v1",
+  "scope": {
+    "activations_read": false,
+    "hidden_truth_read": false,
+    "recompiled": false,
+    "scientific_scores": false
+  },
+  "sequence_digests": {
+    "b0_joint_sorted_json_sha256": "15df356f7815df1167523dca7c841fe6b849a4fef555c477ff86da2cc7c271ab",
+    "b0_json_sha256": "c02f3ae527685f5c390867d000d3c2d921ecaff439359490c4d890df19453085",
+    "b1_joint_sorted_json_sha256": "64c2ed90e2e9a848b091b74a2f7cdbd07464c6300347a27c0c8daa4f0e266862",
+    "b1_json_sha256": "34550e9d19081e183d2b32b77a5b3f17067cd944cd600fe05d0c4e4346f13464",
+    "expected_b0_repeated_9_json_sha256": "bf33674e336fc07220f30476ae2e3a3dff71c206806f1303700da22e24986f60"
+  },
+  "source": {
+    "legacy_plan_sha256": "35d74424df60a1d62f7962850eaa3132fa57dd7001024f915cc4fc470a6d0e76",
+    "manifest_sha256": "c6d6915bb0e539336928725e9c32288157f15dbb96fe08544925e84cc40474e1",
+    "receipt_b0_actual_replacement_digest": "8499eb0e0706b6a8c74a258d09857336e135eb345bbc3603c6940a23a991d56e",
+    "records_bytes": 10767025,
+    "records_path": "/tmp/trr-p09-runtime/stage1-input-preparation-r1/records.json",
+    "records_sha256": "30fe4216fd3fb6b76e4aec79324fafd73a398ed901e07b4681b815cce2dc98a4",
+    "signed_3600_list_sha256": "0e84f625e24fb4a2038972cf417923dc20a8cc2fd85e55ac6e9b7a846f5ca576",
+    "signed_receipt_commit": "a6c07e7"
+  },
+  "status": "DESCRIPTIVE_PUBLIC_METADATA_ONLY",
+  "task_id": "TRR-0010"
+}
