@@ -1,0 +1,34 @@
+# TRR-0009 evaluator readiness receipt
+
+Recorded UTC: 2026-09-07. This is an implementation receipt; it does not authorize GPU capture, prediction, timing, truth preparation, or scoring.
+
+The task-local path is wired as `selection -> scripts/trr0009_eval_capture.py capture --execute -> trusted TRR5/TRR6 public producer -> TRR9 observation/panel/capture receipts -> registration/runner -> public gate/freeze -> scripts/trr0009_eval_truth.py prepare/score`. The capture entry point now invokes the qualified public producer on the frozen selection, performs the existing 8x192 largest-cell qualification and fail-closed resource guard, and writes only compact BF16 observations and truth-free receipts. `capture_from_observations` remains a CPU fixture adapter; production capture uses `capture_public`.
+
+The public gate checks complete path/bytes/SHA bindings for selection, Arrow/tokenizer/model inputs, capture source code, observation safetensor metadata, selected row-ID digests, current-H/full-vocabulary loader declarations, published state semantics, and (when the adaptable TRR9 state is present) exact support IDs/counts and support digest against the enriched fitting-frequency map. The pre-truth validator compares the entire authoritative freeze object, including prediction and timing maps, after rerunning the public gate.
+
+The post-gate truth adapter has concrete `prepare` and `score` commands. `prepare` revalidates the public freeze, loads the frozen selection through the trusted TRR6 materializer, writes a private sidecar outside the repository and prediction root, and records hashed tokenizer/Arrow inputs. `score` validates the metadata-only header and sidecar, rechecks the exact frozen frequency binding, then opens the sidecar once. No truth or fresh evaluation was run in this task turn.
+
+CPU validation passed:
+
+- `PYTHONPATH=.:src pytest -q tests/test_trr0009_score.py tests/test_trr0009_timing.py tests/test_trr0009_capture.py tests/test_trr0009_integrity.py tests/test_trr0009_selection.py tests/test_trr0009_model.py` — rerun after the timing/scorer updates; see the latest task receipt for the exact count.
+- `python3 -m py_compile` passed for all changed TRR9 evaluator/capture/contract/gate/truth/score files.
+
+The remaining execution dependencies are owner-provided trained states, an enriched fitting-frequency artifact whose support/count digest matches the adaptable state, a frozen registration using the declared loader interface, and a separately released GPU/resource window. The current design keeps direct post-logit inference only; no materialized dictionary path is qualified or used.
+
+## Command/config and wrapper follow-up
+
+The production command/config receipt is `experiments/TRR-0009/evaluation/commands_v1.md`. It fixes Finance/Pile counts at 256/128, maps planning `retained_reference` to evaluator `published_reference`, and documents the exact capture, registration, runner, public-gate, truth-preparation, and score invocations. `registration_payload.template.json` carries the four loader rows; `support_binding.template.json` carries the capacity-owned 17,126-ID support/count/frequency bindings without inventing final state hashes. `trr8_loader_equivalence_fixture.json` binds only the existing TRR8 public observation files and archived current/reference prediction files for a later, explicitly released read-only loader check; it contains no truth or source-label payload.
+
+The fixed continuation state header and loader were checked on CPU: state SHA-256 `5cada4a3d04bb5477eaf0be25ed8d8ac25a89283223e9ba14b18fa10416bee14`, selected step 400, `trr0007-positionwise.v1`, current-H/full-vocabulary metadata, and `load_positionwise_model_state` geometry `(2048, 128256, 128)`.
+
+The real `trr0009_eval_runner.execute` entrypoint was exercised on the synthetic public fixture with only the model/embedding/device calls stubbed. It traversed registered observations, per-record warmup/measured calls, create-only prediction/timing files, registration recheck, run manifest, and the public gate: **38 passed** in the focused CPU suite. Syntax checks and all three new JSON artifacts also pass.
+
+The owned timing module now contains the live fail-closed balanced executor. It consumes the frozen registration and 40-block plan, loads the four methods plus an exact fixed-state alias, checks fixed/alias IDs before measurement, runs synchronized one-warmup/one-measured calls for all 32 rows in each cell, and records raw blocks, per-record variability, startup, memory, guard telemetry/overhead, and code/input/state hashes. The focused CPU test exercises all 40 blocks and 20 entries per block with the same prediction boundary; no production GPU timing has been run or authorized from this receipt.
+
+The scorer now emits the all-token candidate-vs-fixed harm bootstrap at one-sided alpha .05 from the same seeded source-record draws as the primary .025 interval. Rare-bin rows use the frozen `0` and `1-4` gate labels and include the all-eight/all-four-cell schema flags, so the real score output is accepted by the decision parser instead of relying on manually augmented fixtures. Public fitting frequency metadata explicitly permits public tensor/support-buffer loading while still rejecting private, fresh, or truth access.
+
+The adaptive selected state is now available for binding: `experiments/TRR-0009/training/run_v1/continued_adaptable_readout/selected.safetensors`, 29,870,540 bytes, SHA-256 `93661674c5e92144b84779737dee46a604afeb1ce1553966e464f0c84b2133c3`, selected step 400. Its CPU header is `token-reconstruction.trr0009-supported-readout.v1`, current-H/full-vocabulary, 17,126 supported IDs, and support digest `8090b9231042d6c9f9c52f3a0a9d8733b8ec1b739a4f28b12ab1057a7126969d`. The support vectors embedded in the state recompute to that digest; the external support/frequency file records still require the capacity owner’s artifact before registration.
+
+A CPU-only adaptive loader check also passed against the frozen current-bank residual base (`2a44a91b...d8c`): `load_supported_readout_state` constructed `SupportedTokenReadout` with geometry `(hidden=2048, vocab=128256, context=128)`, support count 17,126, and the expected support digest. No forward evaluation, capture, GPU, truth, or fresh selection was performed.
+
+The capacity support export is bound for registration: adaptive state bytes/SHA `29870540`/`93661674c5e92144b84779737dee46a604afeb1ce1553966e464f0c84b2133c3`, support count `17126`, digest `8090b9231042d6c9f9c52f3a0a9d8733b8ec1b739a4f28b12ab1057a7126969d`, and single-tensor loader records in `evaluation/loadable_support.json` (SHA `a6bb03c9c4bad30fa34f06b6e5c513509f03033837b698cb87f4a64dc6750e11`). The loader binds the separate one-tensor files; the 1,301,040-byte multi-tensor container remains provenance-only. The selected method-freeze receipt is `training/method_freeze.json`; no source selection or fresh capture has started.
