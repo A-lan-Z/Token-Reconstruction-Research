@@ -63,7 +63,11 @@ Bind one immutable B0/B1 preparation receipt containing:
   repeated/derived variants.
 
 The signed target and strata are planning inputs; the actual B1 artifacts and
-counts remain unset until A2's compatible-parent preparation is complete.
+counts remain unset until A2's compatible-parent preparation is complete. A
+provisional successful CPU count receipt reports 12,000 records, 1,243,710
+valid positions, and support size 45,631, which yields `N=13000` under the
+formula below. It is not yet the final artifact/manifest binding and does not
+authorize fitting by itself.
 
 ### 2. Exact N, checkpoint grid, and four-arm schedule — root + A2 + capacity
 
@@ -93,9 +97,13 @@ Bind the public development observations used only for checkpoint selection:
   final-sequence/H128 digests, public-base target/label or observation
   descriptor, and exclusion receipt proving that the panel and derived rows
   are outside B0/B1 and the final panel;
-- the agreed 64-record diagnostic subset's exact cardinality/domain split,
-  IDs/order, sequence digest, and public-P0 observation/label binding. This is
-  diagnostic only and must not silently become selection or final-truth data;
+- each bank's 64-record fit-diagnostic subset, with quotas Alpaca 32, Pile
+  natural 16, Finance natural 10, Pile controlled 3, and Finance controlled
+  3; bind its IDs/order and sequence digest. Use the same indices for fixed
+  and directional arms within a bank, rank with the frozen
+  `TRR0010|fixed-diagnostic|4010|record_id` rule, and retain full fit width
+  192. These subsets are diagnostic only and must not silently become
+  checkpoint selection or final-truth data;
 - explicit width-192 fit versus width-128 development geometry. LoRA is not a
   checkpoint-selection condition; selection uses public-base only.
 
@@ -109,28 +117,33 @@ support and merged full-W path:
   the largest expanded-directional cell;
 - exact agreed wall, disk, host-RSS, and isolated-GPU caps, plus the common
   preparation/export accounting and the warmed candidate/A1+A2 cost rule;
-- serialized base/state/W/support reload hashes and output-equivalence checks,
-  including the nonzero-Delta full-logit/argmax assertion. The deployed
-  directional method loads a base-only decoder state plus one effective W; it
-  does not retain E beside W or rebuild W per record.
+- before fitting, bind the base/support reload checks and resource guard; after
+  fitting and before final evaluation, bind each produced state/W/support hash
+  and the serialized output-equivalence checks, including the nonzero-Delta
+  full-logit/argmax assertion. The deployed directional method loads a
+  base-only decoder state plus one effective W; it does not retain E beside W
+  or rebuild W per record.
 
 The current 6.389/11.477 GiB estimates and the opened-fixture GPU diagnostic
 are planning/smoke evidence only. They do not satisfy this qualification.
 
 ### 5. Four-arm runner, code bindings, and A1+A2 adapter — Agent1 + timing
 
-Bind the exact executable source and resource identities before fitting:
+Bind the exact executable source and training-input identities before fitting;
+bind produced state/readout identities before final evaluation:
 
 - full commit and hashes for the four-arm runner, gate, model/readout loader,
   registration adapter, and every loaded method/A2 module; code bindings must
   match the files imported at runtime;
-- the TRR9 starting state above, B0/B1 E/support/W artifacts, and each arm's
-  serialized state/readout hashes. Directional inference uses the exported
-  merged W directly; fixed arms use the declared public readout;
-- the published A1+A2 adapter call: propose 512 candidates, use chunk 256,
-  then slice the A2 result to K=256. Bind the public prefix/lens/reference
-  assets and an opened-fixture equivalence receipt; do not relabel this as a
-  native top-256 implementation;
+- the TRR9 starting state above, B0/B1 inputs/support artifacts, and fixed
+  public readout before fitting; after fitting, bind each arm's produced
+  serialized state/readout hashes before evaluation. Directional inference
+  uses the exported merged W directly; fixed arms use the declared public
+  readout;
+- the published A1+A2 adapter call: propose 512 candidates with chunk 256,
+  retain the first 256 proposals before candidate simulations, and bind the
+  public prefix/lens/reference assets plus an opened-fixture equivalence
+  receipt. Do not relabel this as a native top-256 implementation;
 - scorer registration of every active method under both B0 and B1, with the
   same per-cell registration/order and a truth descriptor that carries the
   registration hash, panel record IDs/order, input-bank hashes, and truth
