@@ -1,7 +1,7 @@
 {
   "schema": "token-reconstruction.task-local-state.v1",
   "task_id": "TRR-P08",
-  "status": "MAIN_PASS_8_ARMS_SELECTED_STATES_FROZEN_PUBLIC_FIT_COMPLETE_R1_EXCLUDED_REPAIR_PENDING",
+  "status": "MAIN_PASS_8_ARMS_SELECTED_STATES_FROZEN_R2_PUBLIC_CAPTURE_COMPLETE_NO_TRUTH_PREDICTION_PENDING",
   "branch": "task/TRR-P08",
   "worktree": "/tmp/trr-p08",
   "parent": {
@@ -34,14 +34,14 @@
     "token_values_or_truth_read_by_p08": false,
     "model_or_tensor_payload_loaded_by_p08": false,
     "fresh_records_selected": true,
-    "fresh_capture_started": false,
+    "fresh_capture_started": true,
     "fit_or_optimizer_steps_started": true,
     "model_or_tensor_payload_loaded": true,
     "selection_access_note": "Approved evaluator-side selector transiently read public source rows/tokenizer; selection metadata persisted identities/digests only and no source text or token arrays."
   },
-  "next_step": "Preserve r1 universe/selection/export as EXCLUDED_PRE_CAPTURE_BINDING_DEFECT; review the mandatory all-ledger r2 contract, await any Agent1 replacement export for union, then obtain a new root grant before any enumeration or capture.",
+  "next_step": "Prediction may proceed under root/design ownership using the frozen r2 states and public observations; retain truth closed until the required joint freeze.",
   "created_utc": "2026-09-07T00:12:47.039245+00:00",
-  "updated_utc": "2026-09-07T02:45:28Z",
+  "updated_utc": "2026-09-07T03:28:16Z",
   "plan": {
     "path": "experiments/TRR-P08/plan.json",
     "status": "FROZEN_DESIGN_PRE_FIT",
@@ -78,7 +78,10 @@
     "source_universe_command_repair": "experiments/TRR-P08/setup/source-universe-command-r2.json",
     "exclusion_binding_repair": "experiments/TRR-P08/setup/exclusion-binding-repair-r2.json",
     "r1_selection_disposition": "EXCLUDED_PRE_CAPTURE_BINDING_DEFECT",
-    "capture_preflight_plan_r1_excluded": "experiments/TRR-P08/setup/capture-preflight-plan-r1.json"
+    "capture_preflight_plan_r1_excluded": "experiments/TRR-P08/setup/capture-preflight-plan-r1.json",
+    "capture_approval_r3": "experiments/TRR-P08/setup/capture-approval-r3.json",
+    "capture_failure_r2": "experiments/TRR-P08/setup/capture-failure-r2.json",
+    "capture_success_r3": "experiments/TRR-P08/setup/capture-success-r3.json"
   },
   "verification": {
     "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p08_panel_adapter.py tests/test_trr_p08_source_binding.py tests/test_trr_p08_fit_staged.py",
@@ -146,13 +149,32 @@
       "payload_loaded": false,
       "source_rows_or_token_values_read": false,
       "selection_or_capture_started": false
-    }
+    },
+    "capture": {
+      "status": "PASS",
+      "receipt": "experiments/TRR-P08/runtime/public-capture-r3/capture.json",
+      "receipt_bytes": 22432,
+      "receipt_sha256": "8ba438eefe691bfb2b02e99e8d4033c762dafd15f5276f7aadad569b0075c10d",
+      "success_evidence": "experiments/TRR-P08/setup/capture-success-r3.json",
+      "source_commit": "20b682500dd923c7abed9e672baeefa3887bf81d",
+      "universe_sha256": "23a8c632e232552e3dd5a33bcb1d5b07387505a971fb6c7df55ab1f8d5316a72",
+      "selection_sha256": "e8023ed00ae3efbaa1b86f1290aa4de6b23da48dd70f7b10d9e147fbf6fbfb86",
+      "cells": 4,
+      "records_per_domain": 256,
+      "stored_tokens": 128,
+      "scored_post_bos_tokens": 127,
+      "truth_opened": false,
+      "prediction_started": false,
+      "watchdog_peak_group_rss_bytes": 4260491264,
+      "watchdog_min_host_available_bytes": 18006745088,
+      "child_elapsed_seconds": 14.273845965013606
+    },
+    "capture_failure_r2": "experiments/TRR-P08/setup/capture-failure-r2.json"
   },
   "pending": [
-    "r1 universe/selection/export are excluded before capture because the omitted TRR-0007 ledger has one final-sequence collision",
-    "r2 all-ledger universe/selection repair is prepared but not executed; current P06 plus approved TRR-0007/TRR-0008/TRR-0009 bindings are mandatory",
-    "preserve the original TRR-0009 ledger and union the approved Agent1 replacement export before a future authorized selection",
-    "paired capture/prediction/truth scoring remain gated and unstarted"
+    "r1 universe/selection/export remain excluded as EXCLUDED_PRE_CAPTURE_BINDING_DEFECT",
+    "r2 public observations are complete and local-only; compact hashes/receipts are retained, raw observation tensors are not tracked",
+    "prediction remains root/design-owned and truth scoring remains gated until the required joint freeze"
   ],
   "source_universe_proposal": {
     "status": "R1_EXCLUDED_PRE_CAPTURE_BINDING_DEFECT_R2_PREPARED_NOT_RUN",
@@ -222,7 +244,7 @@
     "r2_repair_receipt": "experiments/TRR-P08/setup/exclusion-binding-repair-r2.json",
     "r2_enumeration_started": false,
     "r2_selection_started": false,
-    "r2_capture_started": false,
+    "r2_capture_started": true,
     "required_opaque_ledgers": [
       {
         "key": "approved_trr0007_opaque",
@@ -288,16 +310,20 @@
         "final_sequence_sha256": 384
       }
     },
-    "capture_preflight_plan_r1_excluded": "experiments/TRR-P08/setup/capture-preflight-plan-r1.json"
+    "capture_preflight_plan_r1_excluded": "experiments/TRR-P08/setup/capture-preflight-plan-r1.json",
+    "r2_capture_status": "PUBLIC_OBSERVATIONS_CAPTURE_COMPLETE_NO_TRUTH",
+    "r2_capture_receipt": "experiments/TRR-P08/runtime/public-capture-r3/capture.json",
+    "r2_capture_success_receipt": "experiments/TRR-P08/setup/capture-success-r3.json"
   },
   "resource_boundary": {
-    "status": "MAIN_PASS_GPU_RELEASED",
+    "status": "R2_CAPTURE_PASS_GPU_RELEASED",
     "resource_snapshot_is_historical": false,
     "live_refresh_required_before_qualification": false,
     "gpu_or_heavy_compute_started": true,
     "qualification_window_requires_root_grant": false,
     "main_fit_requires_root_grant": false,
-    "no_post_main_gpu_or_heavy_compute": true
+    "no_post_main_gpu_or_heavy_compute": true,
+    "no_post_capture_gpu_or_heavy_compute": true
   },
   "coordination_request": {
     "no_new_reservation_required": true,
@@ -312,7 +338,7 @@
     },
     "compute_release": "RELEASED_AFTER_MAIN_PASS",
     "gpu_launch_authorized": false,
-    "capture_repair_required": true,
+    "capture_repair_required": false,
     "r1_capture_allowed": false,
     "r2_repair_prepared_not_run": true,
     "required_opaque_ledger_keys": [
@@ -334,7 +360,12 @@
         "public_record_sha256": 384,
         "final_sequence_sha256": 384
       }
-    }
+    },
+    "r2_capture_status": "PASS_PUBLIC_OBSERVATIONS_NO_TRUTH",
+    "r2_capture_receipt": "experiments/TRR-P08/runtime/public-capture-r3/capture.json",
+    "r2_capture_success_receipt": "experiments/TRR-P08/setup/capture-success-r3.json",
+    "prediction_owner": "implementation_and_design",
+    "truth_opened": false
   },
   "communication_authorization": {
     "status": "AUTHORIZED_SCOPED",
@@ -420,6 +451,21 @@
       "minimum_sampled_host_available_bytes": 17729118208,
       "status": "PASS",
       "child_return_code": 0
+    },
+    "capture": {
+      "path": "experiments/TRR-P08/runtime/public-capture-r3/capture.json",
+      "bytes": 22432,
+      "sha256": "8ba438eefe691bfb2b02e99e8d4033c762dafd15f5276f7aadad569b0075c10d",
+      "status": "PASS_PUBLIC_OBSERVATIONS_CAPTURE_COMPLETE_NO_TRUTH",
+      "source_commit": "20b682500dd923c7abed9e672baeefa3887bf81d",
+      "watchdog_finish_path": "experiments/TRR-P08/runtime/capture-watchdog-r3/finish.json",
+      "watchdog_finish_sha256": "b95b987b2d308a95880074ac0159e782703d8c2b7069ab64d67da5cc94e394a3",
+      "observation_manifest_path": "experiments/TRR-P08/runtime/public-capture-r3/observations.json",
+      "observation_manifest_sha256": "90060e2bc29780ac2ed04b09f82111bef4b6d3f3469b17f6db903c78707a8fc4",
+      "panel_manifest_path": "experiments/TRR-P08/runtime/public-capture-r3/panel.json",
+      "panel_manifest_sha256": "e9193a8b151110082452ccdd596d06a0274f11d1f28eabaffa790d0922f3da1a",
+      "raw_observations_local_only": true,
+      "truth_opened": false
     }
   },
   "qualification": {
