@@ -57,6 +57,16 @@ DEFAULT_MAX_HOST_RSS_GIB = 16.0
 _PAYLOAD_KEYS = ("activations", "attention_mask", "position_ids", "token_ids")
 
 
+def _expected_active_prefix_positions(mask: torch.Tensor) -> torch.Tensor:
+    """Return P09 positions with zeroes in inactive padding rows."""
+
+    value = torch.as_tensor(mask, dtype=torch.bool)
+    if value.ndim != 2:
+        raise BankContractError("attention_mask must be a rank-2 batch")
+    arange = torch.arange(value.shape[1], dtype=torch.long, device=value.device).expand(value.shape[0], -1)
+    return torch.where(value, arange, torch.zeros_like(arange))
+
+
 class BankContractError(ValueError):
     """Raised when a streamed-bank contract is incomplete or changed."""
 
@@ -431,6 +441,13 @@ def _validate_payload_tensors(tensors: Mapping[str, torch.Tensor], *, rows: int,
         raise BankContractError("attention_mask must be bool or uint8")
     if torch.as_tensor(tensors["position_ids"]).dtype not in (torch.int32, torch.int64):
         raise BankContractError("position_ids must be int32 or int64")
+    mask = torch.as_tensor(tensors["attention_mask"], dtype=torch.bool)
+    if not bool(mask[:, 0].all().item()):
+        raise BankContractError("a public sequence has no BOS/first position")
+    positions = torch.as_tensor(tensors["position_ids"], dtype=torch.long)
+    expected_positions = _expected_active_prefix_positions(mask)
+    if not torch.equal(positions, expected_positions):
+        raise BankContractError("position_ids do not match active-prefix positions with zero padding")
 
 
 def _relative(path: Path, root: Path) -> str:
@@ -664,7 +681,7 @@ def build_bank_manifest(
             "activation_key_semantics": "activations is complete public-model H",
             "token_ids_semantics": "public fitting token labels; no final-evaluation truth",
             "mask_semantics": "contiguous prefix mask for each complete sequence",
-            "position_semantics": "absolute positions 0..191 for each complete sequence",
+            "position_semantics": "absolute positions on active prefix; zero in inactive padding",
         },
         "record_identity": {
             "sidecar_fields": [
@@ -982,10 +999,24 @@ def validate_bank_manifest(path: Path) -> dict[str, Any]:
         raise BankContractError("bank counts are missing")
     count = int(bank.get("record_count", 0))
     current = int(bank.get("current_prefix_record_count", -1))
+    expanded_origin = int(bank.get("expanded_row_origin", 0))
+    if expanded_origin < 0:
+        raise BankContractError("expanded row origin must be nonnegative")
     if count <= 0 or count % configured.batch_records or current < 0 or current > count:
         raise BankContractError("bank counts are invalid")
     if current % configured.batch_records:
         raise BankContractError("current prefix is not batch aligned")
+    global_range = bank.get("global_row_range")
+    if global_range is not None:
+        if not isinstance(global_range, Mapping):
+            raise BankContractError("bank global row range is malformed")
+        expected_global = {
+            "start": expanded_origin,
+            "stop": expanded_origin + count,
+            "count": count,
+        }
+        if {key: int(global_range.get(key, -1)) for key in expected_global} != expected_global:
+            raise BankContractError("bank global row range differs from expanded row origin")
     if manifest.get("create_only") is not True:
         raise BankContractError("bank must be create-only")
     tensor_layout = manifest.get("tensor_layout")
@@ -1028,7 +1059,8 @@ def verify_bank_integrity(manifest_path: Path) -> dict[str, Any]:
     ]
     shards = manifest["sharding"]["shards"]
     expected_total = int(manifest["bank"]["record_count"])
-    cursor = 0
+    expanded_origin = int(manifest["bank"].get("expanded_row_origin", 0))
+    cursor = expanded_origin
     seen_record_ids: set[str] = set()
     verified_shards: list[dict[str, Any]] = []
     for shard_index, item in enumerate(shards):
@@ -1127,15 +1159,20 @@ def verify_bank_integrity(manifest_path: Path) -> dict[str, Any]:
             }
         )
         cursor = stop
-    if cursor != expected_total:
-        raise BankContractError(f"shards cover {cursor} rows, expected {expected_total}")
+    expected_stop = expanded_origin + expected_total
+    if cursor != expected_stop:
+        raise BankContractError(
+            f"shards cover expanded rows through {cursor}, expected stop {expected_stop}"
+        )
     return {
         "schema": "token-reconstruction.trr-p09-bank-integrity-gate.v1",
         "task_id": TASK_ID,
         "manifest": manifest_digest,
         "input_snapshots": input_bindings,
         "shard_count": len(verified_shards),
-        "record_count": cursor,
+        "record_count": expected_total,
+        "expanded_row_origin": expanded_origin,
+        "global_row_range": {"start": expanded_origin, "stop": expected_stop, "count": expected_total},
         "verified_shards": verified_shards,
         "static_files": static_files,
         "hashes_performed_once": True,
@@ -1164,6 +1201,8 @@ class StreamedBankLoader:
         if device.startswith("cuda") and not torch.cuda.is_available():
             raise BankContractError("requested loader CUDA device is unavailable")
         self.device = torch.device(device)
+        self.expanded_row_origin = int(self.manifest["bank"].get("expanded_row_origin", 0))
+        self.global_row_stop = self.expanded_row_origin + int(self.manifest["bank"]["record_count"])
 
     def _assert_integrity_current(self) -> None:
         _check_static_files(self._integrity["static_files"])
@@ -1202,11 +1241,9 @@ class StreamedBankLoader:
                     if not bool(mask[:, 0].all().item()):
                         raise BankContractError("a public sequence has no BOS/first position")
                     positions = tensors["position_ids"].to(dtype=torch.long)
-                    expected = torch.arange(self.geometry.sequence_tokens, dtype=torch.long).expand(
-                        self.geometry.batch_records, -1
-                    )
+                    expected = _expected_active_prefix_positions(mask)
                     if not torch.equal(positions, expected):
-                        raise BankContractError("position_ids are not the complete 0..191 sequence")
+                        raise BankContractError("position_ids do not match active-prefix positions with zero padding")
                     local_rows = rows[start:stop]
                     batch = StreamBatch(
                         activations=tensors["activations"].to(self.device),
@@ -1235,8 +1272,7 @@ class StreamedBankLoader:
         requested = [int(index) for index in global_indices]
         if not requested:
             raise BankContractError("get_records requires at least one row")
-        total = int(self.manifest["bank"]["record_count"])
-        if any(index < 0 or index >= total for index in requested):
+        if any(index < self.expanded_row_origin or index >= self.global_row_stop for index in requested):
             raise BankContractError("schedule row is outside the bank")
         shards = list(self.manifest["sharding"]["shards"])
         grouped: dict[int, list[tuple[int, int]]] = {}
@@ -1290,9 +1326,9 @@ class StreamedBankLoader:
             raise BankContractError("scheduled row metadata is incomplete")
         mask = tensors["attention_mask"].to(dtype=torch.bool)
         positions = tensors["position_ids"].to(dtype=torch.long)
-        expected = torch.arange(self.geometry.sequence_tokens, dtype=torch.long).expand(len(requested), -1)
+        expected = _expected_active_prefix_positions(mask)
         if not bool(mask[:, 0].all().item()) or not torch.equal(positions, expected):
-            raise BankContractError("scheduled rows do not contain complete public sequences")
+            raise BankContractError("scheduled rows do not contain active-prefix positions with zero padding")
         rows = [value for value in output_rows if value is not None]
         return StreamBatch(
             activations=tensors["activations"].to(self.device),
@@ -1312,6 +1348,80 @@ class StreamedBankLoader:
         for item in shards:
             self._assert_integrity_current()
             yield from self._read_shard(item)
+
+
+class CombinedStreamedBankLoader:
+    """Compose immutable B0 and B1 banks over one expanded row namespace.
+
+    The B1 capture deliberately publishes only new rows, whose sidecars use
+    expanded global rows beginning at 1200.  This adapter keeps that translation
+    explicit while giving the training loop the same arbitrary-index interface
+    as :class:`StreamedBankLoader`.
+    """
+
+    interface = "trr-p09.combined-streamed-bank-loader.v1"
+
+    def __init__(
+        self,
+        prefix_manifest_path: Path,
+        addition_manifest_path: Path,
+        *,
+        device: str = "cpu",
+    ) -> None:
+        self.prefix = StreamedBankLoader(prefix_manifest_path, device=device)
+        self.addition = StreamedBankLoader(addition_manifest_path, device=device)
+        if self.prefix.expanded_row_origin != 0:
+            raise BankContractError("B0 prefix bank must begin at expanded row zero")
+        if self.prefix.global_row_stop != self.addition.expanded_row_origin:
+            raise BankContractError("B0/B1 banks have a gap or overlap in expanded rows")
+        if self.prefix.geometry != self.addition.geometry:
+            raise BankContractError("B0/B1 bank geometry differs")
+        self.geometry = self.prefix.geometry
+        self.device = self.prefix.device
+        self.expanded_row_origin = 0
+        self.global_row_stop = self.addition.global_row_stop
+
+    def get_records(self, global_indices: Sequence[int]) -> StreamBatch:
+        requested = [int(index) for index in global_indices]
+        if not requested:
+            raise BankContractError("get_records requires at least one row")
+        if any(index < self.expanded_row_origin or index >= self.global_row_stop for index in requested):
+            raise BankContractError("schedule row is outside the combined bank")
+        prefix_positions = [(out, index) for out, index in enumerate(requested) if index < self.prefix.global_row_stop]
+        addition_positions = [(out, index) for out, index in enumerate(requested) if index >= self.addition.expanded_row_origin]
+        tensors: dict[str, list[torch.Tensor | None]] = {key: [None] * len(requested) for key in _PAYLOAD_KEYS}
+        record_ids: list[str | None] = [None] * len(requested)
+        sequence_ids: list[str | None] = [None] * len(requested)
+
+        def scatter(child: StreamedBankLoader, positions: list[tuple[int, int]]) -> None:
+            if not positions:
+                return
+            child_batch = child.get_records([index for _, index in positions])
+            for child_index, (output_index, _) in enumerate(positions):
+                tensors["activations"][output_index] = child_batch.activations[child_index]
+                tensors["attention_mask"][output_index] = child_batch.attention_mask[child_index]
+                tensors["position_ids"][output_index] = child_batch.position_ids[child_index]
+                tensors["token_ids"][output_index] = child_batch.token_ids[child_index]
+                record_ids[output_index] = child_batch.record_ids[child_index]
+                sequence_ids[output_index] = child_batch.sequence_ids[child_index]
+
+        scatter(self.prefix, prefix_positions)
+        scatter(self.addition, addition_positions)
+        if any(value is None for values in tensors.values() for value in values) or any(value is None for value in record_ids + sequence_ids):
+            raise BankContractError("combined scheduled row metadata is incomplete")
+        return StreamBatch(
+            activations=torch.stack([value for value in tensors["activations"] if value is not None], dim=0),
+            token_ids=torch.stack([value for value in tensors["token_ids"] if value is not None], dim=0),
+            attention_mask=torch.stack([value for value in tensors["attention_mask"] if value is not None], dim=0),
+            position_ids=torch.stack([value for value in tensors["position_ids"] if value is not None], dim=0),
+            global_rows=tuple(requested),
+            record_ids=tuple(value for value in record_ids if value is not None),
+            sequence_ids=tuple(value for value in sequence_ids if value is not None),
+        )
+
+    def iter_batches(self) -> Iterator[StreamBatch]:
+        yield from self.prefix.iter_batches()
+        yield from self.addition.iter_batches()
 
 
 def _parser() -> argparse.ArgumentParser:

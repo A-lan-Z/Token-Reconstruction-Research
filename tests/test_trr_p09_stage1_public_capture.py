@@ -18,7 +18,7 @@ import torch
 from safetensors.torch import save_file
 from safetensors import safe_open
 
-from scripts.trr_p09.prepare_streamed_bank import BankGeometry, file_record
+from scripts.trr_p09.prepare_streamed_bank import BankGeometry, CombinedStreamedBankLoader, file_record, write_fixture_bank
 from scripts.trr_p09 import stage1_public_capture as capture
 
 
@@ -171,6 +171,52 @@ def test_qualify_repeats_b8_and_future_padding(tmp_path: Path) -> None:
     assert prefix.calls == 3  # original, repeat, future-padding variant
 
 
+def test_compiler_capture_combined_b0_b1_loader_smoke(tmp_path: Path) -> None:
+    """Exercise synthetic compiler output through capture and B0+B1 loading."""
+
+    # _input_fixture is the small capture-input compiler fixture: its rows,
+    # sidecars, active masks, and zero-padded positions pass the same parser
+    # used by the production input schema.
+    manifest = _input_fixture(tmp_path, rows=16, expanded_origin=64)
+    parsed = capture.load_input_manifest(
+        manifest.path, expected_record_count=16, require_stage1=False
+    )
+    assert parsed.expanded_row_origin == 64
+    prefix_root = tmp_path / "b0"
+    write_fixture_bank(prefix_root, record_count=64, current_record_count=64)
+    addition_root = tmp_path / "b1"
+    plan_path = tmp_path / "plan.json"
+    plan_path.write_text("{}", encoding="utf-8")
+    capture.qualify_capture(
+        prefix=_FakePrefix(),
+        input_manifest=parsed,
+        device=torch.device("cpu"),
+        guard=_guard(tmp_path),
+    )
+    capture.run_capture(
+        prefix=_FakePrefix(),
+        input_manifest=parsed,
+        plan={"schema": "synthetic"},
+        plan_record=file_record(plan_path, label="synthetic plan"),
+        output_root=addition_root,
+        device=torch.device("cpu"),
+        guard=_guard(tmp_path),
+    )
+    combined = CombinedStreamedBankLoader(
+        prefix_root / "bank_manifest.json",
+        addition_root / "bank_manifest.json",
+    )
+    scheduled = combined.get_records([0, 63, 64, 71, 79, 64])
+    assert scheduled.global_rows == (0, 63, 64, 71, 79, 64)
+    assert scheduled.record_ids[0] == "fixture-record-0000"
+    assert scheduled.record_ids[2] == "fixture-record-0000"
+    # The first B1 row is the padded synthetic compiler representative.
+    assert int(scheduled.attention_mask[2].sum().item()) == 128
+    assert int(scheduled.position_ids[2, 127].item()) == 127
+    assert int(scheduled.position_ids[2, 128].item()) == 0
+    assert int(scheduled.position_ids[2, 191].item()) == 0
+
+
 def test_capture_writes_immutable_shards_and_resumes_without_forward(tmp_path: Path) -> None:
     manifest = _input_fixture(tmp_path)
     plan_path = tmp_path / "plan.json"
@@ -265,6 +311,53 @@ def test_prepared_full_payload_adapts_to_expanded_b1_rows(tmp_path: Path) -> Non
     assert manifest.shards[0].source_start == capture.B0_ROWS
     assert manifest.shards[0].records[0]["global_row"] == capture.B0_ROWS
     assert manifest.shards[-1].records[-1]["global_row"] == capture.TARGET_RECORDS - 1
+
+
+def test_watchdog_receipt_binds_real_wrapper_and_future_lease(tmp_path: Path) -> None:
+    plan_path = tmp_path / "plan.json"
+    input_path = tmp_path / "input.json"
+    wrapper_path = tmp_path / "resource_watchdog.py"
+    plan_path.write_text("{}", encoding="utf-8")
+    input_path.write_text("{}", encoding="utf-8")
+    wrapper_path.write_text("#!/usr/bin/env python3\n", encoding="utf-8")
+    plan_record = file_record(plan_path, label="synthetic plan")
+    input_record = file_record(input_path, label="synthetic input")
+    wrapper_record = file_record(wrapper_path, label="synthetic watchdog")
+    caps = capture.CaptureCaps()
+    value = {
+        "schema": capture.WATCHDOG_SCHEMA,
+        "task_id": capture.TASK_ID,
+        "status": "ARMED",
+        "condition": capture.STAGE1_CONDITION,
+        "mode": "qualify",
+        "bindings": {
+            "plan_sha256": plan_record["sha256"],
+            "input_manifest_sha256": input_record["sha256"],
+        },
+        "command": [str(wrapper_path), "--child"],
+        "executable": dict(wrapper_record, path=str(wrapper_path)),
+        "lease": {"expires_utc": "2099-01-01T00:00:00Z"},
+        "limits": {
+            "wall_seconds_cap": caps.qualification_wall_seconds,
+            "gpu_reserved_bytes_max": caps.max_reserved_gpu_bytes,
+            "gpu_free_bytes_min": caps.min_gpu_free_before_bytes,
+            "host_rss_bytes_max": caps.max_rss_bytes,
+        },
+        "post_child_race_safe": True,
+    }
+    receipt_path = tmp_path / "watchdog.json"
+    receipt_path.write_text(json.dumps(value, sort_keys=True), encoding="utf-8")
+    checked, checked_record = capture._verify_watchdog_receipt(
+        receipt_path, mode="qualify", plan_record=plan_record, input_record=input_record, caps=caps
+    )
+    assert checked["executable"]["sha256"] == wrapper_record["sha256"]
+    assert checked_record["sha256"] == capture.sha256_file(receipt_path)
+    value.pop("executable")
+    receipt_path.write_text(json.dumps(value, sort_keys=True), encoding="utf-8")
+    with pytest.raises(capture.CaptureError, match="executable binding"):
+        capture._verify_watchdog_receipt(
+            receipt_path, mode="qualify", plan_record=plan_record, input_record=input_record, caps=caps
+        )
 
 
 def test_signed_plan_sha_override_cannot_weaken_binding() -> None:

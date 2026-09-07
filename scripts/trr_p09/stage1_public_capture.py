@@ -25,6 +25,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import platform
@@ -1574,6 +1575,27 @@ def _verify_watchdog_receipt(
     command = value.get("command")
     if not command or not isinstance(command, (str, list, tuple)):
         raise CaptureError("external watchdog command is absent")
+    executable = value.get("executable", value.get("wrapper"))
+    if not isinstance(executable, Mapping) or not isinstance(executable.get("path"), str):
+        raise CaptureError("external watchdog executable binding is absent")
+    executable_path = Path(str(executable["path"])).expanduser().resolve()
+    executable_record = _source_record(executable_path, label="external capture watchdog executable")
+    if int(executable.get("bytes", -1)) != int(executable_record["bytes"]):
+        raise CaptureError("external watchdog executable byte binding differs")
+    if str(executable.get("sha256", "")) != str(executable_record["sha256"]):
+        raise CaptureError("external watchdog executable SHA differs")
+    command_text = command if isinstance(command, str) else " ".join(str(item) for item in command)
+    if str(executable_path) not in command_text and str(executable["path"]) not in command_text:
+        raise CaptureError("external watchdog command does not invoke its bound executable")
+    lease = value.get("lease")
+    if not isinstance(lease, Mapping) or not isinstance(lease.get("expires_utc"), str):
+        raise CaptureError("external watchdog lease expiry is absent")
+    try:
+        watchdog_expiry = datetime.fromisoformat(str(lease["expires_utc"]).replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise CaptureError("external watchdog lease expiry is malformed") from exc
+    if watchdog_expiry <= datetime.now(timezone.utc):
+        raise CaptureError("external watchdog lease has expired")
     limits = value.get("limits")
     if not isinstance(limits, Mapping):
         raise CaptureError("external watchdog limits are absent")
@@ -1665,8 +1687,11 @@ def _verify_authorization_receipt(
             raise CaptureError("production extrapolation is bound to a different qualification")
         if int(extrapolation.get("production_wall_seconds_cap", -1)) != int(caps.production_wall_seconds):
             raise CaptureError("production extrapolation wall cap differs")
-        estimate = float(extrapolation.get("estimated_wall_seconds", -1.0))
-        if estimate < 0.0 or estimate > caps.production_wall_seconds:
+        try:
+            estimate = float(extrapolation.get("estimated_wall_seconds", -1.0))
+        except (TypeError, ValueError) as exc:
+            raise CaptureError("production extrapolated wall time is malformed") from exc
+        if not math.isfinite(estimate) or estimate < 0.0 or estimate > caps.production_wall_seconds:
             raise CaptureError("production extrapolated wall time exceeds the signed cap")
         if qualification.get("status") != "QUALIFICATION_PASS":
             raise CaptureError("production extrapolation is not based on a passing qualification")
