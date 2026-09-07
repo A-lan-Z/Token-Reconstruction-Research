@@ -25,7 +25,7 @@ The tensor sizes are:
 
 - one B8x192x2048 BF16 forward output: 6,291,456 bytes;
 - one 64-record H192 shard: 50,331,648 bytes (48 MiB);
-- 10,800 records: 169 shards, with the final shard containing 32 records;
+- 10,800 records: 169 shards, with the final shard containing 48 records;
 - all H192 activations: 8,493,465,600 bytes (about 7.91 GiB), before sidecars
   and file metadata;
 - mask and int64 position sidecars for all records: 18,662,400 bytes before
