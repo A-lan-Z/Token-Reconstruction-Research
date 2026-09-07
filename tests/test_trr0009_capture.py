@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
 import torch
 
 from scripts import trr0009_eval_capture as capture
@@ -74,3 +75,33 @@ def test_failure_diagnostics_preserves_exception_chain_and_execution_context(tmp
     ]
     assert "underlying CUDA loader detail" in diagnostics["traceback"]
     assert diagnostics["code_commit"] is None
+
+
+def test_producer_dispatch_passes_actual_lora_update_path(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    received: dict[str, object] = {}
+
+    def fake_capture_prefix(**kwargs: object) -> tuple[object, dict[str, object]]:
+        received.update(kwargs)
+        raise RuntimeError("sentinel trusted-loader failure")
+
+    monkeypatch.setattr(capture.trusted, "_capture_prefix", fake_capture_prefix)
+    update_path = tmp_path / "public_lora_2601.safetensors"
+    config_path = tmp_path / "generation.json"
+    with pytest.raises(capture.CaptureError, match="public_lora_2601 public-prefix load failed"):
+        capture._capture_condition_with_producer(
+            condition="public_lora_2601",
+            records={},
+            batches={},
+            model_snapshot=tmp_path / "model",
+            lora_config_path=config_path,
+            lora_update_path=update_path,
+            output_root=tmp_path / "output",
+            counts={"pile": 1, "finance": 1},
+            record_ids_sha256={"pile": "p", "finance": "f"},
+            selection_sha256="s",
+            repository_root=tmp_path,
+            device=torch.device("cpu"),
+        )
+
+    assert received["lora_update"] == update_path
+    assert received["lora_config_path"] == config_path

@@ -403,7 +403,7 @@ def _capture_condition_with_producer(
             condition=condition,
             model_snapshot=model_snapshot,
             lora_config_path=lora_config_path,
-            lora_update=lora_update,
+            lora_update=lora_update_path,
             device=device,
         )
     except Exception as exc:
