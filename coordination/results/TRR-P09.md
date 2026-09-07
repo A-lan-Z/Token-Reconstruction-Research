@@ -1,6 +1,6 @@
 # TRR-P09 implementation checkpoint
 
-This checkpoint provides the shared fixed/directional runner primitives at source commit `0c7279e30a41a5016ff97c9bcaa5e282db2dabe0`, based on the proposed P09 adapter and streamed-bank contract; the common scientific contract is still pending. The GPU was used only for three bounded public-base qualification attempts, all excluded before activation-bank capture. The public model was loaded for the latter two attempts; no activation bank, target observation, evaluation truth, or scientific fit was opened or persisted. A separate permitted public-source/tokenizer count audit is recorded below; it did not load a model or select a P09 row.
+This checkpoint provides the shared fixed/directional runner primitives at source commit `0c7279e30a41a5016ff97c9bcaa5e282db2dabe0`, based on the proposed P09 adapter and streamed-bank contract; the common scientific contract is still pending. The GPU was used only for five bounded public-base qualification attempts, all excluded before activation-bank capture. The public model was loaded for the latter two attempts; no activation bank, target observation, evaluation truth, or scientific fit was opened or persisted. A separate permitted public-source/tokenizer count audit is recorded below; it did not load a model or select a P09 row.
 
 The runner now has a required random-access loader adapter for arbitrary scheduled rows, preserving order and duplicates; validates nonnegative scheduled rows, complete batch geometry, BOS/position IDs, and every sampled position's attention mask; and records lazy-load and optimizer-update timing separately. One shared optimizer contract covers all unique trainable decoder and readout-hook parameters, rejects omitted or unowned trainable parameters, clips the same complete set, and checks post-update finiteness. Checkpoint state digests include both decoder and hook state. Per-step state hashing remains opt-in and is disabled by the shared loop; checkpoint hashing is the normal path.
 
@@ -12,7 +12,7 @@ The bounded planning recommendation is a 12,000-row proportional expansion, pend
 
 A permitted public Alpaca count/tokenization audit rendered all 52,002 rows with the pinned public tokenizer. It found 50,778 rows after 1,224 keyed fit/validation identity exclusions, with 39,765/24,401/14,317/6,824 rows meeting post-BOS thresholds 64/96/128/160. These are count-only upper bounds: the exclusion metadata has a 4,193-value union containing 4,073 opaque sequence/reservation digests, and zero rendered-text SHA-256 hits against that union do not establish disjointness because the namespaces/canonicalizations differ. The audit receipt and exact command/environment provenance are `experiments/TRR-P09/planning/alpaca-capacity-audit.json` (SHA-256 `d1f11364cabe6db876bb83f09ce1d8d7db1cdc3f76ac2e8bafaed149ba33a5c9`) and `experiments/TRR-P09/planning/alpaca-capacity-audit-provenance.json` (SHA-256 `c9c6828e16d87a7316f36b10d7a832a7cd04c20a73c035b4178062e3926fc2d2`). The executed CLI is `scripts/trr_p09/audit_alpaca_capacity.py` (SHA-256 `db8b54c290a1ee5c8915a6c315c6969ee4cea3284da246f57d044b0cbbd8b80e`). The human proposal is `experiments/TRR-P09/planning/bank-proposal.md`.
 
-The initial r1 attempt did execute source selection, but it is preserved and excluded before capture. The corrected r2 source selection has now completed under the accepted CPU-only supplement; the CPU preparation itself produced no public-model forward or activation-bank capture. The corrected metadata revision is bound below. Two subsequent public-base qualification attempts are recorded separately; both are excluded, so activation capture and fitting remain blocked pending the implementation fix and a passing qualification.
+The initial r1 attempt did execute source selection, but it is preserved and excluded before capture. The corrected r2 source selection has now completed under the accepted CPU-only supplement; the CPU preparation itself produced no public-model forward or activation-bank capture. The corrected metadata revision is bound below. Five subsequent public-base qualification attempts are recorded separately; all are excluded, so activation capture and fitting remain blocked pending the implementation fix and a passing qualification.
 
 Validation command (from the isolated P09 worktree):
 
@@ -148,10 +148,10 @@ excluded attempts.
 
 ## Public-base qualification attempts (2026-09-07)
 
-Three root-authorized qualification attempts consumed the bounded public-base
+Five root-authorized qualification attempts consumed the bounded public-base
 lease and are excluded before activation capture. The compact evidence record is
 `experiments/TRR-P09/setup/stage1-qualification-attempts-r2.json` (SHA-256
-`ca748ccfc049edd73d04b0b3d55c46658537c2680f83687cd34ac477f84d2f16`). The first attempt used code commit
+`21187abe870792af65b8aacc9f691ab81558b7483b0ef5e720af6a8dce621592`). The first attempt used code commit
 `09ab9958ad167f17e6e5973a2ca15306a9c4b1fe` and failed during plan verification
 with `STAGE1 plan capture condition/count changed`, before model load. It ran
 from `2026-09-07T11:15:35.877964Z` to
@@ -171,9 +171,12 @@ forwards with exact repeat/padding checks in 0.532312922 seconds, but its
 external watchdog failed closed during teardown when `/proc/92747/status` became
 unreadable; the child returned 0 and the wrapper returned 125 after SIGTERM.
 The entire third attempt is excluded despite the child qualification receipt
-being `QUALIFICATION_PASS`. Across all three attempts there is no accepted
-qualification, no activation-bank output, no fit, and no evaluation truth
-access. Runtime receipts remain immutable under
+being `QUALIFICATION_PASS`. The fourth and fifth retries likewise completed
+two representative batches and five forwards with exact repeat/padding checks
+(0.525853747 and 0.532732332 seconds), but each external watchdog failed closed
+during leader teardown with unreadable RSS; both child processes returned 0 and
+wrappers returned 125. All five attempts are excluded; there is no accepted
+qualification, activation-bank output, fit, or evaluation-truth access. Runtime receipts remain immutable under
 `/tmp/trr-p09-runtime/stage1-qualification-r2*`.
 
 ## Immutable B0 loader binding
