@@ -212,7 +212,20 @@ def _validate_producer_receipts(*, producer_root: Path, producer_selection_recor
             raise CaptureAdapterError(f"TRR9 observation descriptor is absent: {cell_id}")
         if observation_descriptor.get("shape") != [gate.RECORDS_PER_CELL, gate.STORED_SEQUENCE_TOKENS, gate.OBSERVATION_HIDDEN_SIZE]:
             raise CaptureAdapterError(f"TRR9 observation geometry changed: {cell_id}")
-        _record(Path(str(observation_descriptor.get("path", ""))), root=root, description=f"TRR9 observation {cell_id}")
+        actual_record = _record(
+            Path(str(observation_descriptor.get("path", ""))),
+            root=root,
+            description=f"TRR9 observation {cell_id}",
+        )
+        # The producer descriptor is part of the immutable input binding. It
+        # is not enough to hash whatever happens to be at the path now and
+        # then write that fresh record into the TRR10 receipt: a changed H
+        # payload would otherwise be silently rebound during repackaging.
+        for key in ("path", "bytes", "sha256"):
+            if observation_descriptor.get(key) != actual_record.get(key):
+                raise CaptureAdapterError(
+                    f"TRR9 observation descriptor changed at {cell_id}: {key}"
+                )
     execution = capture.get("execution")
     if (
         not isinstance(execution, Mapping)

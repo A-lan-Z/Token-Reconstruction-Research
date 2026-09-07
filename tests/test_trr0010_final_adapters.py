@@ -266,6 +266,20 @@ def test_capture_repackages_trr9_metadata_under_trr10_schema(tmp_path: Path) -> 
     assert payload["truth_opened"] is False
 
 
+def test_capture_rejects_changed_producer_observation_payload(tmp_path: Path) -> None:
+    selection_path, producer, bridge = _producer_fixture(tmp_path)
+    changed = producer / "finance__public_base.safetensors"
+    changed.write_bytes(changed.read_bytes() + b"changed")
+    with pytest.raises(capture.CaptureAdapterError, match="descriptor changed"):
+        capture.repackage_trr0009_capture(
+            selection_path=selection_path,
+            producer_root=producer,
+            output_root=tmp_path / "experiments" / "TRR-0010" / "evaluation" / "capture",
+            repository_root=tmp_path,
+            producer_selection_path=bridge,
+        )
+
+
 def test_registration_rejects_runtime_state_substitution(tmp_path: Path) -> None:
     design_path = _design(tmp_path)
     design = json.loads(design_path.read_text())
