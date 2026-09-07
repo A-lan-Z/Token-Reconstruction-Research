@@ -1,0 +1,249 @@
+{
+  "candidate_arrays_persisted": false,
+  "capture_run": false,
+  "checkpoint": {
+    "bytes": 404113384,
+    "metadata_selected_step": 12000,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/training/directional_fit/expanded_directional_watchdog/fit/checkpoints/checkpoint_step_012000.safetensors",
+    "selected_state_sha256": "ab7cb4523fc8a024e7098b1b11d7298e847eb730a116a06426c49b94f4e49195",
+    "sha256": "c722053aa61b4048bf67917fd185ede140e4b4b9df471cb0504debdec8ce6f5a",
+    "state_tensor_digest": "3b3cbd9ec2515f2bc7d025c9b8fc6c41d5b870f2c46e0e62ea44792f4dab3aba"
+  },
+  "deployment_semantics": {
+    "a2_enabled": false,
+    "base_decoder_only_state": true,
+    "current_activation_h_only": true,
+    "effective_readout_w_replaces_public_embedding": true,
+    "full_vocabulary_cross_entropy": true,
+    "history_enabled": false,
+    "one_materialized_full_vocabulary_readout_at_load": true,
+    "trainable_delta_retained": false,
+    "truth_free": true
+  },
+  "diagnostics": {
+    "fit_record_count": 64,
+    "full_bank_endpoint_steps": [
+      0,
+      13000
+    ],
+    "note": "This descriptor binds the selected deployment files; diagnostic metrics remain separate public fitting evidence and are not evaluation truth.",
+    "raw_diagnostic_artifacts_under_fit": true,
+    "raw_diagnostic_directory": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/training/directional_fit/expanded_directional_watchdog/fit/diagnostics",
+    "selection_isolated": true
+  },
+  "equivalence": {
+    "base_decoder_vs_selected_directional_checkpoint": {
+      "base_tensor_count": 15,
+      "mapping": "base_export_key k equals selected checkpoint key base.k",
+      "proof": {
+        "bytes": 8984,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/setup/expanded_directional_selected_export_cpu_verification_v1.json",
+        "sha256": "7f398e4137b99a3277f61f82f7bf5e76d51b3a93b686d22c00ae0614bb986998"
+      },
+      "selected_step": 12000,
+      "tensor_exact": true,
+      "tensor_keys_equal": true
+    },
+    "effective_readout_vs_public_embedding_plus_delta": {
+      "chunk_rows": 2048,
+      "effective_readout_sha256": "228e8c31af4ee5269e39c495d169f0476cfa477f039b1b415fce352eb1505b87",
+      "formula": "serialized_W == FP32(public_E + serialized_delta_rows at support_ids)",
+      "max_abs_diff": 0.0,
+      "mismatches": 0,
+      "proof": {
+        "bytes": 8984,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/setup/expanded_directional_selected_export_cpu_verification_v1.json",
+        "sha256": "7f398e4137b99a3277f61f82f7bf5e76d51b3a93b686d22c00ae0614bb986998"
+      },
+      "public_embedding_sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+      "rows_compared": 128256,
+      "support_count": 45631,
+      "tensor_exact": true
+    },
+    "status": "PASS_CPU_STRICT_BASE_AND_EXACT_EFFECTIVE_W",
+    "strict_deployment_loader": "load_positionwise_model_state on exported base-only state; CPU PASS and eval=True"
+  },
+  "id": "expanded_directional",
+  "method_row": {
+    "cells": [
+      "pile__public_base",
+      "pile__public_lora_2601",
+      "finance__public_base",
+      "finance__public_lora_2601"
+    ],
+    "freeze_status": "SELECTED_STEP_12000_DEPLOYMENT_FROM_COMPLETED_EXPANDED_FIT",
+    "id": "expanded_directional",
+    "loader": {
+      "a2_enabled": false,
+      "current_h_only": true,
+      "deployment_readout": "effective_readout_w",
+      "effective_readout_dtype": "torch.float32",
+      "effective_readout_shape": [
+        128256,
+        2048
+      ],
+      "effective_readout_tensor_key": "embeddings",
+      "full_vocabulary": true,
+      "function": "load_positionwise_model_state",
+      "history_enabled": false,
+      "interface": "trr0010.current_h.full_vocabulary.v1",
+      "kwargs": {
+        "bottleneck_size": 512,
+        "context_width": 128,
+        "hidden_size": 2048,
+        "method_id": "trr0007_residual_mlp512",
+        "vocabulary_size": 128256
+      },
+      "module": "token_reconstruction.trr0007_positionwise",
+      "path_args": {},
+      "tensor_args": {},
+      "trainable_delta_retained": false
+    },
+    "records_per_cell": {
+      "finance__public_base": 128,
+      "finance__public_lora_2601": 128,
+      "pile__public_base": 128,
+      "pile__public_lora_2601": 128
+    },
+    "resources": {
+      "base_decoder_state": {
+        "bytes": 29390988,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/training/directional_fit/expanded_directional_watchdog/fit/base_decoder_state.safetensors",
+        "sha256": "7a5c8ef230423c3a379988e55390d2a905abd83221e4c049ee467d3833451d33"
+      },
+      "effective_readout_w": {
+        "bytes": 1050674640,
+        "dtype": "torch.float32",
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/training/directional_fit/expanded_directional_watchdog/fit/effective_readout_w.safetensors",
+        "sha256": "228e8c31af4ee5269e39c495d169f0476cfa477f039b1b415fce352eb1505b87",
+        "shape": [
+          128256,
+          2048
+        ],
+        "tensor_key": "embeddings"
+      }
+    },
+    "role": "expanded_directional",
+    "state": {
+      "bytes": 29390988,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/training/directional_fit/expanded_directional_watchdog/fit/base_decoder_state.safetensors",
+      "sha256": "7a5c8ef230423c3a379988e55390d2a905abd83221e4c049ee467d3833451d33"
+    }
+  },
+  "notes": [
+    "The expanded runner completed all 13,000 updates and selected step 12,000 by earliest maximum domain-balanced public validation token accuracy.",
+    "The base-only decoder export and materialized effective W both carry selected-step 12,000, B1, schedule, contract, and directional checkpoint bindings in their safetensors metadata.",
+    "CPU verification reloaded the selected checkpoint base tensors, checked all 15 against the base-only export, and proved serialized W equals FP32(E+Delta) exactly over all 128256 rows.",
+    "The effective W is the one full-vocabulary deployment readout; trainable directional tensors and optimizer state are not retained by the deployment loader.",
+    "No source selection, activation capture, final prediction registration, evaluation truth access, or scoring was performed by this descriptor assembly."
+  ],
+  "prediction_run": false,
+  "registration_run": false,
+  "resource_evidence": {
+    "external_min_host_available_bytes": 17946533888,
+    "external_peak_group_rss_bytes": 4790394880,
+    "inner_min_host_available_bytes": 18999902208,
+    "inner_peak_gpu_allocated_bytes": 5724620800,
+    "inner_peak_gpu_reserved_bytes": 7193231360,
+    "inner_peak_host_rss_bytes": 2284371968,
+    "production_caps": {
+      "disk_free_floor_bytes": 21474836480,
+      "gpu_free_floor_bytes": 2147483648,
+      "gpu_reserved_limit_bytes": 10737418240,
+      "host_available_floor_bytes": 8589934592,
+      "host_rss_limit_bytes": 12884901888,
+      "wall_limit_seconds": 7200
+    },
+    "watchdog_child_return_code": 0,
+    "watchdog_status": "PASS",
+    "watchdog_wrapper_exit_code": 0
+  },
+  "resources": {
+    "base_decoder_state": {
+      "bytes": 29390988,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/training/directional_fit/expanded_directional_watchdog/fit/base_decoder_state.safetensors",
+      "sha256": "7a5c8ef230423c3a379988e55390d2a905abd83221e4c049ee467d3833451d33"
+    },
+    "effective_readout_w": {
+      "bytes": 1050674640,
+      "dtype": "torch.float32",
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/training/directional_fit/expanded_directional_watchdog/fit/effective_readout_w.safetensors",
+      "sha256": "228e8c31af4ee5269e39c495d169f0476cfa477f039b1b415fce352eb1505b87",
+      "shape": [
+        128256,
+        2048
+      ],
+      "tensor_key": "embeddings"
+    }
+  },
+  "role": "expanded_directional",
+  "schema": "token-reconstruction.trr0010-selected-directional-deployment.v1",
+  "selected_step": 12000,
+  "selection_rule": {
+    "earliest_maximum_confirmed": true,
+    "grid": [
+      0,
+      1000,
+      2000,
+      4000,
+      8000,
+      12000,
+      13000
+    ],
+    "metric": "domain_balanced_token_accuracy",
+    "selected_step": 12000,
+    "selection_source": "retained completed expanded runner receipt; no recovery-time reselection"
+  },
+  "source_selection_run": false,
+  "source_text_loaded": false,
+  "source_text_written": false,
+  "status": "SELECTED_DIRECTIONAL_DEPLOYMENT",
+  "target_labels_loaded": false,
+  "task_id": "TRR-0010",
+  "token_ids_written": false,
+  "training_provenance": {
+    "fit_loop_called": true,
+    "fit_status": "COMPLETED",
+    "inner_resource_guard": {
+      "bytes": 14483893,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/training/directional_fit/expanded_directional_watchdog/fit/resource_guard_receipt.json",
+      "sha256": "e1722b159f96cebbe36ac88e9c7a4f3155bd3cb1be73bb55c85bea0b66b4d447"
+    },
+    "resource_guard": {
+      "bytes": 1325067,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/training/directional_fit/expanded_directional_watchdog/resource_guard.json",
+      "sha256": "2b031c84a54de215fb132d84d68b9a3096bb418393aff0e237467b53dbb145fd"
+    },
+    "run_receipt": {
+      "bytes": 80853,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/training/directional_fit/expanded_directional_watchdog/fit/run_receipt.json",
+      "sha256": "0aeecd776a1f817efb7b36388c293e670017840c898dd3976cc2dc568a24e716"
+    },
+    "runner_receipt": {
+      "bytes": 62157,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/training/directional_fit/expanded_directional_watchdog/fit/raw_runner_result.json",
+      "sha256": "158786f91497a5bc6417b5c347b550165662c4bbb28bd7faeac581f24d60849b"
+    },
+    "timing": {
+      "fit_loop_included_provider_preparation": false,
+      "optimizer_update_seconds": 771.0642556621751,
+      "provider_preparation_seconds": 17.07060979300877,
+      "runner_call_excludes_provider_preparation": true,
+      "stream_load_seconds": 986.1152571268321,
+      "validation_seconds": 13.772238056029892,
+      "whole_wall_seconds": 1965.8458181800088
+    },
+    "training_updates": 13000,
+    "watchdog_finish": {
+      "bytes": 1092,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/training/directional_fit/expanded_directional_watchdog/finish.json",
+      "sha256": "a25b072191336b4cd339955577f7ccc2eeba52256d013ee5cf8851d53104a6df"
+    },
+    "watchdog_time": {
+      "bytes": 1332,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/training/directional_fit/expanded_directional_watchdog/time.json",
+      "sha256": "41ad10f175f411ada01d3ece946f2bd69f1e200319f58ad6521f54829dc3f4f9"
+    }
+  },
+  "truth_opened": false
+}
