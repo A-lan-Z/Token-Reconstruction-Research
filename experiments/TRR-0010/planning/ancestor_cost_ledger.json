@@ -1,0 +1,727 @@
+{
+  "schema": "token-reconstruction.trr0010-ancestor-cost-ledger.v1",
+  "task_id": "TRR-0010",
+  "generated_utc": "2026-09-07T09:52:38.278664Z",
+  "scope": {
+    "source_task": "TRR-0009",
+    "source_commit": "4602f98eeb03ac121d8bbc230d7e2b219551b914",
+    "source_worktree": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009",
+    "source_manifest": {
+      "task_id": "TRR-0009",
+      "path": "experiments/TRR-0009/manifest.json",
+      "bytes": 106214,
+      "sha256": "00d2e9bcb75962072dabdac50ad38b32e9ad638fae77c9da75faec1760048e64"
+    },
+    "declared_ancestors_only": [
+      "TRR-0005",
+      "TRR-0007"
+    ],
+    "read_scope": "Published manifests, published cost summaries, and declared ancestor reports only; no private truth, new data, model execution, or fit rerun.",
+    "purpose": "Reconstruct the shared-start and incremental fitting ledger for TRR-0010 without presenting selected-checkpoint time as the full historical fitting cost."
+  },
+  "accounting_policy": {
+    "no_double_counting": [
+      "Use each task's whole-run campaign wall for cumulative arithmetic; arm-wall sums are alternate detail and are not added to whole-run walls.",
+      "TRR-0009 shared preparation is charged once even though each arm receipt repeats it.",
+      "TRR-0007 accepted, prior-diagnostic, and superseded preparation components sum to its reported campaign-preparation total; use that total rather than adding the components again.",
+      "Selection/checkpoint validation, challenge, qualification, loading, and I/O remain separately reported when their decomposition is not isolated from a whole-run wall."
+    ],
+    "unknown_is_not_zero": true,
+    "historical_campaign_sum": {
+      "seconds": 2098.154381422,
+      "hours": 0.5828206615061111,
+      "meaning": "Historical published campaign effort across TRR-0005, TRR-0007, and TRR-0009. This includes the TRR-0009 adaptable comparator and unchanged-anchor reload, so it must not be described as required preparation for one selected decoder or as the exact shared-start lineage cost.",
+      "components": [
+        {
+          "task_id": "TRR-0005",
+          "scope": "historical eight-fit campaign",
+          "seconds": 801.7
+        },
+        {
+          "task_id": "TRR-0007",
+          "scope": "whole fit executions including shared setup and diagnostics",
+          "seconds": 526.384407
+        },
+        {
+          "task_id": "TRR-0009",
+          "scope": "continuation training whole run",
+          "seconds": 770.069974422
+        }
+      ]
+    },
+    "selected_lineage_lower_bound": {
+      "seconds": 478.9622898269881,
+      "components": [
+        {
+          "task_id": "TRR-0007",
+          "scope": "selected current-enriched residual full 3000-step arm",
+          "seconds": 123.13956650999899,
+          "selected_step": 2100
+        },
+        {
+          "task_id": "TRR-0009",
+          "scope": "selected continued-fixed full arm",
+          "seconds": 355.82272331698914,
+          "selected_step": 400
+        }
+      ],
+      "interpretation": "Known full-arm fitting wall along the TRR-0009 shared-start lineage through the selected fixed continuation. It is a lower bound: it excludes unmeasured initializer construction, shared preparation, validation/checkpoint-selection decomposition, and any unknown earlier lineage effort.",
+      "not_included": [
+        "TRR-0009 continued-adaptable comparator fitting, which is a separate historical comparator arm.",
+        "TRR-0009 unchanged-anchor reload/evaluation, which has no gradient fitting.",
+        "The retained published reference and bounded A1+A2 diagnostic, neither of which has a declared fit wall here."
+      ]
+    }
+  },
+  "shared_start_and_selected_state_identity": {
+    "trr0007_shared_start": {
+      "task_id": "TRR-0007",
+      "method_id": "trr0007_current_enriched__residual_mlp512",
+      "fit_bank": "current_enriched",
+      "selected_step": 2100,
+      "state_path": "experiments/TRR-0007/enriched_fit_v1/current_enriched/trr0007_residual_mlp512/selected.safetensors",
+      "state_bytes": 29390628,
+      "state_sha256": "2a44a91b01ca1fdc9615eab804872c50c606199704eaf51fa114cc0d7959ddc8",
+      "fit_wall_seconds": 123.13956651,
+      "interpretation": "Published competent current-bank residual selected state used by TRR-0009 as its one prefit starting checkpoint; this is selected-state identity, not the complete TRR-0007 four-arm campaign cost.",
+      "evidence": [
+        {
+          "task_id": "TRR-0009",
+          "path": "experiments/TRR-0009/manifest.json",
+          "bytes": 106214,
+          "sha256": "00d2e9bcb75962072dabdac50ad38b32e9ad638fae77c9da75faec1760048e64"
+        },
+        {
+          "task_id": "TRR-0007",
+          "path": "experiments/TRR-0007/manifest.json",
+          "bytes": 55772,
+          "sha256": "e0e0bca00746825edffde0960e793a3877d74098a3d901e0c327925449ea4a7b"
+        },
+        {
+          "task_id": "TRR-0007",
+          "path": "coordination/results/TRR-0007.md",
+          "bytes": 28727,
+          "sha256": "5ded66b734f5e7997798ea93656bd0e9b098ee557f4b9fd0dff1cd046f656341"
+        }
+      ],
+      "initializer_trace": {
+        "base_method_id": "affine_trained_diagonal_attention128",
+        "published_initialization": "TRR-0005 neutral identity-affine W/b/s=3; deterministic diagonal QKV seed 4005; residual up zero",
+        "builder_trace": "build_residual_mlp512 -> build_current_positionwise -> build_decoder(BASE_METHOD_ID=DIAGONAL_ATTENTION_METHOD)",
+        "separately_fitted_initializer": false,
+        "initializer_fit_wall_seconds": "NOT_APPLICABLE: the published run starts from neutral construction rather than a prior fitted affine checkpoint",
+        "initializer_construction_wall_seconds": "UNKNOWN_SEPARATE",
+        "evidence": [
+          {
+            "task_id": "TRR-0007",
+            "path": "experiments/TRR-0007/method_freeze.json",
+            "bytes": 22602,
+            "sha256": "301248af5cbdf95388ec1d39b42b00529227e4e3aa72613646dcd15a1f0dcfe9"
+          },
+          {
+            "task_id": "TRR-0007",
+            "path": "experiments/TRR-0007/enriched_fit_v1/run_evidence.json",
+            "bytes": 164835,
+            "sha256": "80959b3bac25d76158a0fcaf9381a71915c3d5bc19f4f63faa15665f721d5cc6"
+          },
+          {
+            "task_id": "TRR-0007",
+            "path": "src/token_reconstruction/trr0007_positionwise.py",
+            "bytes": 18152,
+            "sha256": "89fcd036a57407c8c49294aa5fd15ccef46f02b6fabcc35435d097f1213de485"
+          },
+          {
+            "task_id": "TRR-0005",
+            "path": "src/token_reconstruction/trr0005_joint_decoder.py",
+            "bytes": 55256,
+            "sha256": "9cab3cf5ad664c37d91bcd90fe1852df71da25800ddf37291a57000908d3d38f"
+          }
+        ]
+      }
+    },
+    "trr0009_selected_states": [
+      {
+        "method_id": "continued_adaptable_readout",
+        "selected_step": 400,
+        "state_path": "experiments/TRR-0009/training/run_v1/continued_adaptable_readout/selected.safetensors",
+        "state_bytes": 29870540,
+        "state_sha256": "93661674c5e92144b84779737dee46a604afeb1ce1553966e464f0c84b2133c3",
+        "arm_wall_seconds": 393.80261707899626,
+        "gradient_update_wall_seconds": 107.9819799256511
+      },
+      {
+        "method_id": "continued_fixed_readout",
+        "selected_step": 400,
+        "state_path": "experiments/TRR-0009/training/run_v1/continued_fixed_readout/selected.safetensors",
+        "state_bytes": 29390492,
+        "state_sha256": "5cada4a3d04bb5477eaf0be25ed8d8ac25a89283223e9ba14b18fa10416bee14",
+        "arm_wall_seconds": 355.82272331698914,
+        "gradient_update_wall_seconds": 92.3284733351611
+      },
+      {
+        "method_id": "unchanged_anchor",
+        "selected_step": 0,
+        "state_path": "experiments/TRR-0007/enriched_fit_v1/current_enriched/trr0007_residual_mlp512/selected.safetensors",
+        "state_bytes": 29390628,
+        "state_sha256": "2a44a91b01ca1fdc9615eab804872c50c606199704eaf51fa114cc0d7959ddc8",
+        "arm_wall_seconds": 8.388725268974667,
+        "gradient_update_wall_seconds": 0.0,
+        "interpretation": "Published anchor reloaded/evaluated in the TRR-0009 training run; no additional fitting."
+      }
+    ],
+    "retained_published_reference": {
+      "method_id": "retained_reference",
+      "state_path": "experiments/TRR-0005/joint_fit_v1/enriched/affine_trained_diagonal_attention128/selected.safetensors",
+      "state_bytes": 20990652,
+      "state_sha256": "696eb9fc951e85356a06575faf18a2011616692a086bdac3b2fa368e69d599a2",
+      "fit_in_trr0009": false,
+      "interpretation": "Historical published context; no new TRR-0009 fit."
+    }
+  },
+  "known_fitting_costs": {
+    "declared_ancestor_campaigns": [
+      {
+        "task_id": "TRR-0005",
+        "scope": "historical eight-fit public campaign",
+        "authoritative_wall_seconds": 801.7,
+        "fit_count": 8,
+        "schedule_per_arm": "3000 updates x 512 post-BOS draws = 1,536,000 draws",
+        "selection_or_checkpoint_overhead": "Not separately isolated in the published total.",
+        "evidence": [
+          {
+            "task_id": "TRR-0005",
+            "path": "experiments/TRR-0005/manifest.json",
+            "bytes": 2504324,
+            "sha256": "ef670253241886e7d224b1c57fbdcaa9bb6974253fd24975e098f4255fe0c7d0"
+          },
+          {
+            "task_id": "TRR-0005",
+            "path": "coordination/results/TRR-0005.md",
+            "bytes": 11603,
+            "sha256": "67c82d2b9b51cc32d405b0eacf751f40ffd17cae221a873d0cb53591e82dc30f"
+          }
+        ]
+      },
+      {
+        "task_id": "TRR-0007",
+        "scope": "four-arm fit campaign",
+        "authoritative_whole_fit_execution_seconds": 526.384407,
+        "alternate_four_arm_fit_wall_sum_seconds": 481.94894,
+        "schedule_per_arm": "3000 steps x 512 post-BOS draws = 1,536,000 draws",
+        "selected_start_component_seconds": 123.13956651,
+        "selection_or_checkpoint_overhead": "Included in the whole-fit execution scope; not separately isolated.",
+        "evidence": [
+          {
+            "task_id": "TRR-0007",
+            "path": "experiments/TRR-0007/manifest.json",
+            "bytes": 55772,
+            "sha256": "e0e0bca00746825edffde0960e793a3877d74098a3d901e0c327925449ea4a7b"
+          },
+          {
+            "task_id": "TRR-0007",
+            "path": "coordination/results/TRR-0007.md",
+            "bytes": 28727,
+            "sha256": "5ded66b734f5e7997798ea93656bd0e9b098ee557f4b9fd0dff1cd046f656341"
+          }
+        ]
+      }
+    ],
+    "trr0009_incremental": {
+      "whole_run_authoritative_seconds": 770.069974422,
+      "gradient_bearing_continuation_arm_wall_sum_seconds": 749.6253403959854,
+      "all_arm_wall_sum_seconds": 758.0140656649601,
+      "arm_wall_detail_seconds": {
+        "continued_adaptable_readout": 393.80261707899626,
+        "continued_fixed_readout": 355.82272331698914,
+        "unchanged_anchor_reload_and_evaluation": 8.388725268974667
+      },
+      "shared_preparation_once_seconds": 9.148822391987778,
+      "schedule": {
+        "steps": 3000,
+        "validation_every": 100,
+        "selection_metric": "earliest maximum validation style_balanced_token_accuracy",
+        "selected_steps": {
+          "continued_adaptable_readout": 400,
+          "continued_fixed_readout": 400,
+          "unchanged_anchor": 0
+        }
+      },
+      "checkpoint_selection_effort_seconds": "UNKNOWN_SEPARATE; validation and selection are inside the recorded whole run, with no separately attributable wall.",
+      "evidence": [
+        {
+          "task_id": "TRR-0009",
+          "path": "experiments/TRR-0009/manifest.json",
+          "bytes": 106214,
+          "sha256": "00d2e9bcb75962072dabdac50ad38b32e9ad638fae77c9da75faec1760048e64"
+        },
+        {
+          "task_id": "TRR-0009",
+          "path": "experiments/TRR-0009/training/run_v1/run_receipt.json",
+          "bytes": 37541,
+          "sha256": "6ad636b789fc6b39b432a1ce67c1f2347d627f7655fafa55244404d295da18d2"
+        }
+      ]
+    },
+    "selected_lineage_lower_bound": {
+      "seconds": 478.9622898269881,
+      "components": [
+        {
+          "task_id": "TRR-0007",
+          "scope": "selected current-enriched residual full 3000-step arm",
+          "seconds": 123.13956650999899,
+          "selected_step": 2100
+        },
+        {
+          "task_id": "TRR-0009",
+          "scope": "selected continued-fixed full arm",
+          "seconds": 355.82272331698914,
+          "selected_step": 400
+        }
+      ],
+      "interpretation": "Known full-arm fitting wall along the TRR-0009 shared-start lineage through the selected fixed continuation. It is a lower bound: it excludes unmeasured initializer construction, shared preparation, validation/checkpoint-selection decomposition, and any unknown earlier lineage effort.",
+      "not_included": [
+        "TRR-0009 continued-adaptable comparator fitting, which is a separate historical comparator arm.",
+        "TRR-0009 unchanged-anchor reload/evaluation, which has no gradient fitting.",
+        "The retained published reference and bounded A1+A2 diagnostic, neither of which has a declared fit wall here."
+      ]
+    }
+  },
+  "known_shared_preparation_and_capture": [
+    {
+      "task_id": "TRR-0005",
+      "kind": "full corpus preparation",
+      "seconds": 20.013262748994748,
+      "inner_operation_seconds": 18.15817883699492,
+      "interpretation": "Published preparation receipt; keep separate from the eight-fit aggregate.",
+      "evidence": [
+        {
+          "task_id": "TRR-0005",
+          "path": "experiments/TRR-0005/manifest.json",
+          "bytes": 2504324,
+          "sha256": "ef670253241886e7d224b1c57fbdcaa9bb6974253fd24975e098f4255fe0c7d0"
+        },
+        {
+          "task_id": "TRR-0005",
+          "path": "coordination/results/TRR-0005.md",
+          "bytes": 11603,
+          "sha256": "67c82d2b9b51cc32d405b0eacf751f40ffd17cae221a873d0cb53591e82dc30f"
+        }
+      ]
+    },
+    {
+      "task_id": "TRR-0007",
+      "kind": "campaign preparation total",
+      "seconds": 101.4525131330156,
+      "components_seconds": {
+        "accepted_public_bank_preparation": 23.666454503996647,
+        "prior_public_diagnostic_preparation": 19.87686328701966,
+        "superseded_or_repeated_preparation": 57.90919534199929
+      },
+      "activation_capture_seconds": 8.2246617,
+      "interpretation": "The three preparation components are a partition of the reported campaign total; do not add them to that total.",
+      "evidence": [
+        {
+          "task_id": "TRR-0007",
+          "path": "experiments/TRR-0007/manifest.json",
+          "bytes": 55772,
+          "sha256": "e0e0bca00746825edffde0960e793a3877d74098a3d901e0c327925449ea4a7b"
+        },
+        {
+          "task_id": "TRR-0007",
+          "path": "coordination/results/TRR-0007.md",
+          "bytes": 28727,
+          "sha256": "5ded66b734f5e7997798ea93656bd0e9b098ee557f4b9fd0dff1cd046f656341"
+        }
+      ]
+    },
+    {
+      "task_id": "TRR-0009",
+      "kind": "continuation shared adapter/model preparation",
+      "seconds": 9.148822391987778,
+      "interpretation": "Charged once; repeated per-arm receipt is not an additional preparation cost.",
+      "evidence": [
+        {
+          "task_id": "TRR-0009",
+          "path": "experiments/TRR-0009/manifest.json",
+          "bytes": 106214,
+          "sha256": "00d2e9bcb75962072dabdac50ad38b32e9ad638fae77c9da75faec1760048e64"
+        },
+        {
+          "task_id": "TRR-0009",
+          "path": "experiments/TRR-0009/training/run_v1/run_receipt.json",
+          "bytes": 37541,
+          "sha256": "6ad636b789fc6b39b432a1ce67c1f2347d627f7655fafa55244404d295da18d2"
+        }
+      ]
+    },
+    {
+      "task_id": "TRR-0009",
+      "kind": "fresh public observation capture shared across methods",
+      "seconds": 16.95859758599545,
+      "interpretation": "One capture shared by the method matrix; not a per-method multiplier.",
+      "evidence": [
+        {
+          "task_id": "TRR-0009",
+          "path": "experiments/TRR-0009/manifest.json",
+          "bytes": 106214,
+          "sha256": "00d2e9bcb75962072dabdac50ad38b32e9ad638fae77c9da75faec1760048e64"
+        },
+        {
+          "task_id": "TRR-0009",
+          "path": "experiments/TRR-0009/evaluation/public_observations_v2/capture.json",
+          "bytes": 22527,
+          "sha256": "2a8ec28780de7b85ee2139d5e062aaf8cecd095fffa24bd1fc2aa9767b1c27b8"
+        }
+      ]
+    },
+    {
+      "task_id": "TRR-0005",
+      "kind": "fresh observation capture",
+      "seconds": 16.961,
+      "interpretation": "Ancestor benchmark capture; separate historical context.",
+      "evidence": [
+        {
+          "task_id": "TRR-0005",
+          "path": "experiments/TRR-0005/manifest.json",
+          "bytes": 2504324,
+          "sha256": "ef670253241886e7d224b1c57fbdcaa9bb6974253fd24975e098f4255fe0c7d0"
+        },
+        {
+          "task_id": "TRR-0005",
+          "path": "coordination/results/TRR-0005.md",
+          "bytes": 11603,
+          "sha256": "67c82d2b9b51cc32d405b0eacf751f40ffd17cae221a873d0cb53591e82dc30f"
+        }
+      ]
+    }
+  ],
+  "reported_nonfit_and_evaluation_costs": {
+    "trr0009_training_challenge_seconds": 3.878089745005127,
+    "trr0009_largest_cell_qualification_seconds": 10.092721462249756,
+    "trr0009_prediction_wall_seconds": 145.87059250602033,
+    "trr0009_precision_timing_wall_seconds": 235.26032017401303,
+    "trr0009_capture_wall_seconds": 16.95859758599545,
+    "interpretation": "Reported lifecycle/evaluation values, not added to the cumulative fitting sum. Challenge/qualification are separate receipts; prediction/timing/capture are deployment/evaluation work.",
+    "evidence": [
+      {
+        "task_id": "TRR-0009",
+        "path": "experiments/TRR-0009/manifest.json",
+        "bytes": 106214,
+        "sha256": "00d2e9bcb75962072dabdac50ad38b32e9ad638fae77c9da75faec1760048e64"
+      },
+      {
+        "task_id": "TRR-0009",
+        "path": "experiments/TRR-0009/training/run_v1/run_receipt.json",
+        "bytes": 37541,
+        "sha256": "6ad636b789fc6b39b432a1ce67c1f2347d627f7655fafa55244404d295da18d2"
+      },
+      {
+        "task_id": "TRR-0009",
+        "path": "experiments/TRR-0009/training/qualification_v4/qualification.json",
+        "bytes": 25586,
+        "sha256": "fed367ae4ce26aa0a2ee3d932522f481f02232ba1214474d7a50790a2391134e"
+      },
+      {
+        "task_id": "TRR-0009",
+        "path": "experiments/TRR-0009/evaluation/public_observations_v2/capture.json",
+        "bytes": 22527,
+        "sha256": "2a8ec28780de7b85ee2139d5e062aaf8cecd095fffa24bd1fc2aa9767b1c27b8"
+      },
+      {
+        "task_id": "TRR-0009",
+        "path": "experiments/TRR-0009/evaluation/predictions_v2/run_manifest.json",
+        "bytes": 144050,
+        "sha256": "baf0de29de9f4ce3697232c2a42addf27cf4fd03c753c52dc9de07fa5a68d844"
+      },
+      {
+        "task_id": "TRR-0009",
+        "path": "experiments/TRR-0009/evaluation/timing/result_v2.json",
+        "bytes": 2775396,
+        "sha256": "8f8e7a549cb9a58efad312bc4428b37856850ded275ee8bd49e487cea7711475"
+      },
+      {
+        "task_id": "TRR-0009",
+        "path": "experiments/TRR-0009/evaluation/timing/cost_summary_v2.json",
+        "bytes": 15960,
+        "sha256": "15bb335ca8ed02a7196675f740946cc1a129bc3bb50e09bb94a910feb0abf765"
+      },
+      {
+        "task_id": "TRR-0009",
+        "path": "experiments/TRR-0009/evaluation/registration_v2.json",
+        "bytes": 23432,
+        "sha256": "d90105d7768d0db26c255eb81d3006d2b16359cd13ad403ca38b179cf6375dd9"
+      }
+    ]
+  },
+  "resource_footprints_without_time": {
+    "normalized_embedding_E": {
+      "bytes": 1050673488,
+      "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+      "interpretation": "Shared E footprint is known; its original preparation/load time is not a separate historical fitting cost."
+    },
+    "trr0009_peak_memory": {
+      "shared_host_peak_rss_bytes": 5620727808,
+      "continued_adaptable_cuda_peak_reserved_bytes": 3917479936,
+      "continued_fixed_cuda_peak_reserved_bytes": 3915382784
+    }
+  },
+  "checkpoint_selection_and_full_run": {
+    "trr0007": {
+      "selected_steps": {
+        "current_enriched_trained_diagonal": 1600,
+        "current_enriched_residual_mlp512": 2100,
+        "improved_public_bank_trained_diagonal": 2400,
+        "improved_public_bank_residual_mlp512": 2100
+      },
+      "full_run_seconds": 526.384407,
+      "selection_cost_seconds": "UNKNOWN_SEPARATE; selected curves/checkpoint validation are included in this full-run scope."
+    },
+    "trr0009": {
+      "selected_steps": {
+        "continued_adaptable_readout": 400,
+        "continued_fixed_readout": 400,
+        "unchanged_anchor": 0
+      },
+      "full_run_seconds": 770.069974422,
+      "selection_cost_seconds": "UNKNOWN_SEPARATE; validation every 100 steps and earliest-maximum selection are recorded, but no isolated selection wall exists."
+    }
+  },
+  "unknown_historical_costs": [
+    {
+      "item": "Historical A1 lens fitting and preparation",
+      "seconds": "UNKNOWN",
+      "reason": "TRR-0005 explicitly states that the historical A1 lens was reused and its original fitting provenance and preparation cost were unavailable.",
+      "evidence": [
+        {
+          "task_id": "TRR-0005",
+          "path": "coordination/results/TRR-0005.md",
+          "bytes": 11603,
+          "sha256": "67c82d2b9b51cc32d405b0eacf751f40ffd17cae221a873d0cb53591e82dc30f"
+        }
+      ]
+    },
+    {
+      "item": "TRR-0007 bounded A1+A2 comparator fit",
+      "seconds": "UNKNOWN",
+      "reason": "The published TRR-0007 method entry has fit_wall_seconds:null; it was a bounded diagnostic rather than a fitted arm.",
+      "evidence": [
+        {
+          "task_id": "TRR-0007",
+          "path": "experiments/TRR-0007/manifest.json",
+          "bytes": 55772,
+          "sha256": "e0e0bca00746825edffde0960e793a3877d74098a3d901e0c327925449ea4a7b"
+        },
+        {
+          "task_id": "TRR-0007",
+          "path": "coordination/results/TRR-0007.md",
+          "bytes": 28727,
+          "sha256": "5ded66b734f5e7997798ea93656bd0e9b098ee557f4b9fd0dff1cd046f656341"
+        }
+      ]
+    },
+    {
+      "item": "Retained TRR-6/TRR-5 reference fitting provenance",
+      "seconds": "UNKNOWN",
+      "reason": "The retained reference has no TRR-0009 fit and its earlier historical fit wall is not declared in the TRR-0009 lineage evidence.",
+      "evidence": [
+        {
+          "task_id": "TRR-0009",
+          "path": "experiments/TRR-0009/manifest.json",
+          "bytes": 106214,
+          "sha256": "00d2e9bcb75962072dabdac50ad38b32e9ad638fae77c9da75faec1760048e64"
+        },
+        {
+          "task_id": "TRR-0007",
+          "path": "experiments/TRR-0007/manifest.json",
+          "bytes": 55772,
+          "sha256": "e0e0bca00746825edffde0960e793a3877d74098a3d901e0c327925449ea4a7b"
+        },
+        {
+          "task_id": "TRR-0005",
+          "path": "coordination/results/TRR-0005.md",
+          "bytes": 11603,
+          "sha256": "67c82d2b9b51cc32d405b0eacf751f40ffd17cae221a873d0cb53591e82dc30f"
+        }
+      ]
+    },
+    {
+      "item": "Foundation-model pretraining and any ancestors before declared TRR-0005/TRR-0007 evidence",
+      "seconds": "UNKNOWN",
+      "reason": "Outside the TRR-0009 manifest's declared ancestor evidence; no inference is made.",
+      "evidence": [
+        {
+          "task_id": "TRR-0009",
+          "path": "experiments/TRR-0009/manifest.json",
+          "bytes": 106214,
+          "sha256": "00d2e9bcb75962072dabdac50ad38b32e9ad638fae77c9da75faec1760048e64"
+        }
+      ]
+    },
+    {
+      "item": "Checkpoint-selection/validation-only decomposition",
+      "seconds": "UNKNOWN",
+      "reason": "Published whole-run walls include validation and selection, but receipts do not isolate their wall time.",
+      "evidence": [
+        {
+          "task_id": "TRR-0007",
+          "path": "experiments/TRR-0007/manifest.json",
+          "bytes": 55772,
+          "sha256": "e0e0bca00746825edffde0960e793a3877d74098a3d901e0c327925449ea4a7b"
+        },
+        {
+          "task_id": "TRR-0007",
+          "path": "coordination/results/TRR-0007.md",
+          "bytes": 28727,
+          "sha256": "5ded66b734f5e7997798ea93656bd0e9b098ee557f4b9fd0dff1cd046f656341"
+        },
+        {
+          "task_id": "TRR-0009",
+          "path": "experiments/TRR-0009/manifest.json",
+          "bytes": 106214,
+          "sha256": "00d2e9bcb75962072dabdac50ad38b32e9ad638fae77c9da75faec1760048e64"
+        },
+        {
+          "task_id": "TRR-0009",
+          "path": "experiments/TRR-0009/training/run_v1/run_receipt.json",
+          "bytes": 37541,
+          "sha256": "6ad636b789fc6b39b432a1ce67c1f2347d627f7655fafa55244404d295da18d2"
+        }
+      ]
+    },
+    {
+      "item": "Disk-cold startup and original E construction time",
+      "seconds": "UNKNOWN",
+      "reason": "TRR-0007 and TRR-0009 mark disk-cold startup as unmeasured; E file size and load receipts do not establish original construction time.",
+      "evidence": [
+        {
+          "task_id": "TRR-0007",
+          "path": "experiments/TRR-0007/manifest.json",
+          "bytes": 55772,
+          "sha256": "e0e0bca00746825edffde0960e793a3877d74098a3d901e0c327925449ea4a7b"
+        },
+        {
+          "task_id": "TRR-0007",
+          "path": "coordination/results/TRR-0007.md",
+          "bytes": 28727,
+          "sha256": "5ded66b734f5e7997798ea93656bd0e9b098ee557f4b9fd0dff1cd046f656341"
+        },
+        {
+          "task_id": "TRR-0009",
+          "path": "experiments/TRR-0009/manifest.json",
+          "bytes": 106214,
+          "sha256": "00d2e9bcb75962072dabdac50ad38b32e9ad638fae77c9da75faec1760048e64"
+        },
+        {
+          "task_id": "TRR-0009",
+          "path": "experiments/TRR-0009/training/run_v1/run_receipt.json",
+          "bytes": 37541,
+          "sha256": "6ad636b789fc6b39b432a1ce67c1f2347d627f7655fafa55244404d295da18d2"
+        }
+      ]
+    }
+  ],
+  "evidence_index": [
+    {
+      "task_id": "TRR-0009",
+      "path": "experiments/TRR-0009/manifest.json",
+      "bytes": 106214,
+      "sha256": "00d2e9bcb75962072dabdac50ad38b32e9ad638fae77c9da75faec1760048e64"
+    },
+    {
+      "task_id": "TRR-0009",
+      "path": "experiments/TRR-0009/training/run_v1/run_receipt.json",
+      "bytes": 37541,
+      "sha256": "6ad636b789fc6b39b432a1ce67c1f2347d627f7655fafa55244404d295da18d2"
+    },
+    {
+      "task_id": "TRR-0009",
+      "path": "experiments/TRR-0009/training/qualification_v4/qualification.json",
+      "bytes": 25586,
+      "sha256": "fed367ae4ce26aa0a2ee3d932522f481f02232ba1214474d7a50790a2391134e"
+    },
+    {
+      "task_id": "TRR-0009",
+      "path": "experiments/TRR-0009/training/run_v1/challenge_receipt.json",
+      "bytes": 747,
+      "sha256": "c8bbfcd1e94f750de7ef6601cff42d081eeafc3e1092663814a9ecb9133616b8"
+    },
+    {
+      "task_id": "TRR-0009",
+      "path": "experiments/TRR-0009/evaluation/public_observations_v2/capture.json",
+      "bytes": 22527,
+      "sha256": "2a8ec28780de7b85ee2139d5e062aaf8cecd095fffa24bd1fc2aa9767b1c27b8"
+    },
+    {
+      "task_id": "TRR-0009",
+      "path": "experiments/TRR-0009/evaluation/predictions_v2/run_manifest.json",
+      "bytes": 144050,
+      "sha256": "baf0de29de9f4ce3697232c2a42addf27cf4fd03c753c52dc9de07fa5a68d844"
+    },
+    {
+      "task_id": "TRR-0009",
+      "path": "experiments/TRR-0009/evaluation/timing/result_v2.json",
+      "bytes": 2775396,
+      "sha256": "8f8e7a549cb9a58efad312bc4428b37856850ded275ee8bd49e487cea7711475"
+    },
+    {
+      "task_id": "TRR-0009",
+      "path": "experiments/TRR-0009/evaluation/timing/cost_summary_v2.json",
+      "bytes": 15960,
+      "sha256": "15bb335ca8ed02a7196675f740946cc1a129bc3bb50e09bb94a910feb0abf765"
+    },
+    {
+      "task_id": "TRR-0009",
+      "path": "experiments/TRR-0009/evaluation/registration_v2.json",
+      "bytes": 23432,
+      "sha256": "d90105d7768d0db26c255eb81d3006d2b16359cd13ad403ca38b179cf6375dd9"
+    },
+    {
+      "task_id": "TRR-0007",
+      "path": "experiments/TRR-0007/manifest.json",
+      "bytes": 55772,
+      "sha256": "e0e0bca00746825edffde0960e793a3877d74098a3d901e0c327925449ea4a7b"
+    },
+    {
+      "task_id": "TRR-0007",
+      "path": "coordination/results/TRR-0007.md",
+      "bytes": 28727,
+      "sha256": "5ded66b734f5e7997798ea93656bd0e9b098ee557f4b9fd0dff1cd046f656341"
+    },
+    {
+      "task_id": "TRR-0005",
+      "path": "experiments/TRR-0005/manifest.json",
+      "bytes": 2504324,
+      "sha256": "ef670253241886e7d224b1c57fbdcaa9bb6974253fd24975e098f4255fe0c7d0"
+    },
+    {
+      "task_id": "TRR-0005",
+      "path": "coordination/results/TRR-0005.md",
+      "bytes": 11603,
+      "sha256": "67c82d2b9b51cc32d405b0eacf751f40ffd17cae221a873d0cb53591e82dc30f"
+    },
+    {
+      "task_id": "TRR-0007",
+      "path": "experiments/TRR-0007/method_freeze.json",
+      "bytes": 22602,
+      "sha256": "301248af5cbdf95388ec1d39b42b00529227e4e3aa72613646dcd15a1f0dcfe9"
+    },
+    {
+      "task_id": "TRR-0007",
+      "path": "experiments/TRR-0007/enriched_fit_v1/run_evidence.json",
+      "bytes": 164835,
+      "sha256": "80959b3bac25d76158a0fcaf9381a71915c3d5bc19f4f63faa15665f721d5cc6"
+    },
+    {
+      "task_id": "TRR-0007",
+      "path": "src/token_reconstruction/trr0007_positionwise.py",
+      "bytes": 18152,
+      "sha256": "89fcd036a57407c8c49294aa5fd15ccef46f02b6fabcc35435d097f1213de485"
+    },
+    {
+      "task_id": "TRR-0005",
+      "path": "src/token_reconstruction/trr0005_joint_decoder.py",
+      "bytes": 55256,
+      "sha256": "9cab3cf5ad664c37d91bcd90fe1852df71da25800ddf37291a57000908d3d38f"
+    }
+  ]
+}
