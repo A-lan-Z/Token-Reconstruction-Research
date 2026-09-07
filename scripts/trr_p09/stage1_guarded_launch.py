@@ -32,9 +32,9 @@ from typing import Any, Mapping, Sequence
 
 TASK_ID = "TRR-P09"
 PLAN_SHA256 = "bca93d6099760791c5ecbf3be8177d250cc672c62b2177a3d72d79b934c3826c"
-WRAPPER_PATH = Path("/tmp/trr-p06/scripts/trr_p06/resource_watchdog.py")
-WRAPPER_BYTES = 27292
-WRAPPER_SHA256 = "2384b51e3220d6bbd0c6b723d414e2f3350fceacb974ec88fa0757ffbcc7d652"
+WRAPPER_PATH = Path(__file__).resolve().with_name("resource_watchdog.py")
+WRAPPER_BYTES = 27519
+WRAPPER_SHA256 = "058281b074277b29695727e2abce8f2dc93db706ed19409cfdfb0bf96bab49e3"
 QUALIFICATION_WALL_SECONDS = 600
 PRODUCTION_WALL_SECONDS = 7200
 FORWARD_BATCH_RECORDS = 8
