@@ -41,6 +41,7 @@ DEFAULT_TIMEOUT_SECONDS = 3600.0
 DEFAULT_POLL_SECONDS = 0.5
 DEFAULT_KILL_GRACE_SECONDS = 2.0
 POST_EXIT_RECHECK_SECONDS = 0.02
+POST_EXIT_RECHECK_MAX_SECONDS = 2.0
 POST_EXIT_RECHECK_POLL_SECONDS = 0.002
 WRAPPER_FAILURE_EXIT = 125
 TIMEOUT_EXIT = 124
@@ -161,13 +162,17 @@ def _process_state_for_diagnosis(pid: int) -> str:
         return "malformed"
 
 
-def _recheck_leader_exit(process: subprocess.Popen[bytes]) -> int | None:
+def _recheck_leader_exit(
+    process: subprocess.Popen[bytes],
+    *,
+    timeout_seconds: float = POST_EXIT_RECHECK_SECONDS,
+) -> int | None:
     """Bound the poll/wait race before declaring live telemetry unreadable."""
 
     returncode = process.poll()
     if returncode is not None:
         return returncode
-    deadline = time.monotonic() + POST_EXIT_RECHECK_SECONDS
+    deadline = time.monotonic() + max(0.0, float(timeout_seconds))
     while returncode is None and time.monotonic() < deadline:
         remaining = deadline - time.monotonic()
         try:
@@ -481,7 +486,15 @@ def main(argv: list[str] | None = None) -> int:
                 # still sampled with require_member=False; only a genuinely
                 # live unreadable group fails closed.
                 leader_state_before_recheck = _process_state_for_diagnosis(process.pid)
-                leader_returncode = _recheck_leader_exit(process)
+                recheck_seconds = min(
+                    max(0.0, float(options.kill_grace_seconds)),
+                    POST_EXIT_RECHECK_MAX_SECONDS,
+                )
+                leader_returncode = _recheck_leader_exit(process, timeout_seconds=recheck_seconds)
+                # The exit-confirmation window is part of the guarded wall
+                # time.  Refresh the clock before retrying telemetry or
+                # deciding whether the declared timeout was exceeded.
+                elapsed = time.monotonic() - started
                 if leader_returncode is not None:
                     try:
                         sample = _sample(pgid, require_member=False, elapsed_seconds=elapsed)
