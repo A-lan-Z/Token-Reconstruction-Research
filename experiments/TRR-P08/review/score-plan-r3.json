@@ -1,0 +1,191 @@
+{
+  "schema": "token-reconstruction.trr-p08-score-execution-plan.v1",
+  "task_id": "TRR-P08",
+  "status": "SCORED_AFTER_JOINT_FREEZE",
+  "approved_plan_sha256": "9d1eb8dca89c76f4064c0c380636cb9d585672f7fae796d5295d6507b788caa3",
+  "truth_policy": {
+    "materializer": "scripts/trr_p08/materialize_truth.py",
+    "truth_output_must_be_outside_repository": true,
+    "truth_arrays_must_never_be_tracked": true,
+    "joint_freeze_must_be_revalidated_before_truth": true,
+    "source_rows_read_only_after_freeze": true,
+    "model_or_target_load_during_truth_materialization": false,
+    "no_truth_access_before_root_grant": true
+  },
+  "joint_freeze_command_template": [
+    "PYTHONPATH=.:src",
+    "python3",
+    "scripts/trr_p08/freeze_matrix.py",
+    "--repository-root",
+    "/tmp/trr-p08",
+    "--plan",
+    "experiments/TRR-P08/plan.json",
+    "--approval",
+    "experiments/TRR-P08/review/root-design-approval.json",
+    "--fit-receipt",
+    "experiments/TRR-P08/runtime/main-r2/main_fit_receipt.json",
+    "--prediction-manifest",
+    "experiments/TRR-P08/runtime/predictions-r3/p08_predictions.json",
+    "--observation-manifest",
+    "experiments/TRR-P08/runtime/public-capture-r3/observations.json",
+    "--output",
+    "experiments/TRR-P08/runtime/joint-freeze-r3/joint_freeze.json",
+    "--expected-plan-sha256",
+    "9d1eb8dca89c76f4064c0c380636cb9d585672f7fae796d5295d6507b788caa3"
+  ],
+  "truth_materialization_command_template": [
+    "PYTHONPATH=.:src",
+    "python3",
+    "scripts/trr_p08/materialize_truth.py",
+    "--execute",
+    "--repository-root",
+    "/tmp/trr-p08",
+    "--joint-freeze",
+    "experiments/TRR-P08/runtime/joint-freeze-r3/joint_freeze.json",
+    "--source-selection",
+    "experiments/TRR-P08/runtime/source-selection-r2/selection.json",
+    "--universe",
+    "experiments/TRR-P08/runtime/source-universe-r2/frozen.json",
+    "--output-dir",
+    "/tmp/trr-p08-evaluator-truth-r3",
+    "--expected-plan-sha256",
+    "9d1eb8dca89c76f4064c0c380636cb9d585672f7fae796d5295d6507b788caa3"
+  ],
+  "score_command_template": [
+    "PYTHONPATH=.:src",
+    "python3",
+    "/tmp/trr-p08-score-run.py",
+    "--execute",
+    "--joint-freeze",
+    "/tmp/trr-p08/experiments/TRR-P08/runtime/joint-freeze-r3/joint_freeze.json",
+    "--truth-manifest",
+    "/tmp/trr-p08-evaluator-truth-r3/truth.manifest.json",
+    "--output",
+    "/tmp/trr-p08/experiments/TRR-P08/runtime/scored-r3/results.json",
+    "--receipt",
+    "/tmp/trr-p08-score-execution-r3.json",
+    "--bootstrap-draws",
+    "10000",
+    "--bootstrap-seed",
+    "8080"
+  ],
+  "scoring_contract": {
+    "domains": [
+      "pile",
+      "finance"
+    ],
+    "targets": [
+      "public_base",
+      "public_lora_2601"
+    ],
+    "source_records_per_domain": 256,
+    "replicate_seeds": [
+      6106,
+      6107
+    ],
+    "methods_per_seed": 4,
+    "prediction_cells": 4,
+    "prediction_descriptors": 32,
+    "bootstrap_draws": 10000,
+    "bootstrap_seed": 8080,
+    "bootstrap_unit": "source-record cluster",
+    "target_pairing": "same source-index schedule reused across paired targets within each domain",
+    "replicate_aggregation": "fractional correctness/exact/gain/loss counts averaged within source before bootstrap",
+    "output_contains_truth_arrays": false
+  },
+  "cpu_estimate": {
+    "prediction_arrays_int64_bytes": 8388608,
+    "truth_arrays_int32_bytes": 262144,
+    "two_domain_bootstrap_schedules_int64_bytes": 40960000,
+    "bootstrap_schedule_megabytes": 39.0625,
+    "expected_peak_rss": "under 512 MiB for the scorer; reserve 2 GiB",
+    "expected_wall_seconds": "30-180 on one CPU process; use a 900-second fail-closed timeout",
+    "parallelism": "single process with OMP/MKL/OPENBLAS threads set to 1",
+    "basis": "10,000x256 schedules per domain plus 32 prediction arrays of 256x128; no model inference"
+  },
+  "provenance_requirements": {
+    "truth_manifest_records": [
+      "joint_freeze_sha256",
+      "selection_sha256",
+      "prediction_manifest_sha256",
+      "record_ids_sha256",
+      "final_sequence_sha256",
+      "started_utc",
+      "ended_utc",
+      "elapsed_seconds",
+      "command",
+      "code_commit"
+    ],
+    "score_receipt_records": [
+      "joint_freeze_sha256",
+      "truth_manifest_sha256",
+      "started_utc",
+      "ended_utc",
+      "elapsed_seconds",
+      "command",
+      "environment",
+      "bootstrap_draws",
+      "bootstrap_seed",
+      "output_sha256",
+      "returncode"
+    ],
+    "raw_truth_paths": "private /tmp path only; not included in tracked inventory"
+  },
+  "failed_or_excluded_attempts": [
+    {
+      "path": "experiments/TRR-P08/runtime/source-selection-r1/selection.json",
+      "status": "EXCLUDED_PRE_CAPTURE_BINDING_DEFECT",
+      "reason": "omitted approved exclusion ledgers; superseded before capture"
+    }
+  ],
+  "execution_gate": "Root granted truth+scoring after independent joint-freeze validation; execute only after the implementation timestamped provenance sidecar is present. Truth output remains external and scoring output remains task-owned.",
+  "actual_bound_artifacts": {
+    "joint_freeze": {
+      "path": "experiments/TRR-P08/runtime/joint-freeze-r3/joint_freeze.json",
+      "sha256": "4de6ee0986b6f62ec64073bed87d23fe899c599ccf9b333e0114964e7579ba9e",
+      "status": "JOINT_FREEZE_VALIDATED_NO_TRUTH"
+    },
+    "prediction_manifest": {
+      "path": "experiments/TRR-P08/runtime/predictions-r3/p08_predictions.json",
+      "sha256": "f4974384cc760bd304f3ab18b34ea886e554f0bdc171407491647ac19718f8ae",
+      "status": "P08_FROZEN_PREDICTIONS_COMPLETE_NO_TRUTH"
+    },
+    "observation_manifest": {
+      "path": "experiments/TRR-P08/runtime/public-capture-r3/observations.json",
+      "sha256": "90060e2bc29780ac2ed04b09f82111bef4b6d3f3469b17f6db903c78707a8fc4"
+    },
+    "source_selection": {
+      "path": "experiments/TRR-P08/runtime/source-selection-r2/selection.json"
+    },
+    "source_universe": {
+      "path": "experiments/TRR-P08/runtime/source-universe-r2/frozen.json"
+    }
+  },
+  "actual_execution": {
+    "truth_materialization": {
+      "manifest_path": "/tmp/trr-p08-evaluator-truth-r3/truth.manifest.json",
+      "manifest_sha256": "c31e681e814cd093369f43faa846c2b316dea717a1213dbc4edea28f9dcbb679",
+      "tracked_copy": "experiments/TRR-P08/review/truth-manifest-r3.json",
+      "started_utc": "2026-09-07T03:43:41Z",
+      "ended_utc": "2026-09-07T03:43:45Z",
+      "elapsed_seconds": 3.964318,
+      "truth_arrays_outside_repository": true
+    },
+    "scoring": {
+      "receipt_path": "/tmp/trr-p08-score-execution-r3.json",
+      "receipt_sha256": "ca7db6bc13e4682860b1bb362497a8e195eff81c12e5e76729d8785ba2dfe463",
+      "tracked_copy": "experiments/TRR-P08/review/score-execution-r3.json",
+      "result_path": "experiments/TRR-P08/runtime/scored-r3/results.json",
+      "result_sha256": "cf1c62672f5bbddd804451e0fd129fed043ea4b7026a979e44dbbfb9770aa7d8",
+      "started_utc": "2026-09-07T03:44:03Z",
+      "ended_utc": "2026-09-07T03:44:08Z",
+      "elapsed_seconds": 5.650697
+    }
+  },
+  "reproducibility_artifacts": {
+    "tracked_wrapper": "scripts/trr_p08/score_run_r3.py",
+    "tracked_truth_manifest": "experiments/TRR-P08/review/truth-manifest-r3.json",
+    "tracked_score_execution": "experiments/TRR-P08/review/score-execution-r3.json",
+    "truth_arrays": "external /tmp only; never tracked"
+  }
+}
