@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import time
 
+import pytest
 from safetensors.torch import save_file
 import torch
 
@@ -63,6 +65,22 @@ def test_observation_loader_validates_masks_positions_and_dtype(tmp_path: Path, 
     assert loaded["mask"].tolist() == [[True, True, True, True], [True, True, False, False]]
     assert len(loaded["attention_mask_sha256"]) == 64
     assert len(loaded["position_ids_sha256"]) == 64
+
+
+def test_observation_manifest_rejects_legacy_p06_contract(tmp_path: Path):
+    path = tmp_path / "legacy-p06-observations.json"
+    path.write_text(
+        json.dumps(
+            {
+                "schema": "token-reconstruction.trr-p06-public-observation-manifest.v1",
+                "task_id": "TRR-P06",
+                "status": "FROZEN_PUBLIC_OBSERVATIONS_NO_TRUTH",
+            }
+        ),
+        encoding="utf-8",
+    )
+    with pytest.raises(runner.PredictionError, match="frozen no-truth panel"):
+        runner._validate_observation_manifest(path, root=tmp_path)
 
 
 def test_cell_timing_has_warmup_measured_repeat_and_load_boundary(tmp_path: Path, monkeypatch):

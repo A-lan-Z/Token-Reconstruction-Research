@@ -51,9 +51,6 @@ TIMING_SCHEMA = "token-reconstruction.trr-p08-prediction-timing.v1"
 FAILURE_SCHEMA = "token-reconstruction.trr-p08-prediction-failure.v1"
 OBSERVATION_SCHEMAS = {
     "token-reconstruction.trr-p08-public-observation-manifest.v1",
-    # Setup may retain the P06 serializer while changing only its task-owned
-    # root and bindings; geometry/flags below still bind the actual P08 panel.
-    "token-reconstruction.trr-p06-public-observation-manifest.v1",
 }
 OBSERVATION_STATUSES = {
     "FROZEN_PUBLIC_OBSERVATIONS_NO_TRUTH",
@@ -280,7 +277,7 @@ def _validate_observation_manifest(path: Path, *, root: Path) -> tuple[dict[str,
     manifest = _load_json(path, description="P08 public observation manifest")
     if manifest.get("schema") not in OBSERVATION_SCHEMAS or manifest.get("status") not in OBSERVATION_STATUSES:
         raise PredictionError("observation manifest is not a frozen no-truth panel")
-    if manifest.get("task_id") not in (TASK_ID, "TRR-P06"):
+    if manifest.get("task_id") != TASK_ID:
         raise PredictionError("observation manifest task identity changed")
     geometry = manifest.get("geometry")
     if isinstance(geometry, Mapping):
@@ -668,6 +665,10 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             "target_labels_loaded": False,
             "candidate_arrays_persisted": False,
             "code_commit": _git_head(root),
+            # Bind the exact invocation in the pre-truth manifest.  The
+            # create-only joint-freeze receipt verifies this list before any
+            # scorer is allowed to materialize truth.
+            "command": list(sys.argv),
             "fit_receipt": fit_evidence["receipt_record"],
             "observation_manifest": observation_evidence["manifest_record"],
             "fit_source_commit": fit_evidence["receipt"].get("source_commit"),
