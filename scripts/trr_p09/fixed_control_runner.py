@@ -546,8 +546,11 @@ def evaluate_batches(
     total_rows = 0
     correct = 0
     loss_sum = 0.0
+    batch_count = 0
+    position_chunk_count = 0
     with torch.inference_mode():
         for batch in batches:
+            batch_count += 1
             validate_batch(
                 batch,
                 expected_global_rows=None,
@@ -563,6 +566,7 @@ def evaluate_batches(
             indices = torch.nonzero(mask, as_tuple=False)
             indices = indices[indices[:, 1] > 0]
             for chunk in indices.split(position_budget):
+                position_chunk_count += 1
                 record_slots = chunk[:, 0].to(device=device)
                 position_slots = chunk[:, 1].to(device=device)
                 base_logits = None
@@ -594,6 +598,9 @@ def evaluate_batches(
         "token_accuracy": correct / total_rows,
         "cross_entropy_loss": loss_sum / total_rows,
         "compute_base_logits": compute_base_logits,
+        "batch_count": batch_count,
+        "position_chunk_count": position_chunk_count,
+        "full_vocab_logits_rows": total_rows,
     }
 
 

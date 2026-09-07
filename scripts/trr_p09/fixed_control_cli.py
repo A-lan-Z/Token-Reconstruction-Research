@@ -51,6 +51,8 @@ from scripts.trr_p09.fixed_control_caller import (  # noqa: E402
     load_serialized_schedule,
     make_domain_validation_callback,
     make_fixed_checkpoint_callback,
+    compose_checkpoint_callbacks,
+    make_fitting_metric_callback,
     signed_p09_checkpoint_grid,
     write_fixed_control_receipt,
 )
@@ -64,6 +66,10 @@ from scripts.trr_p09.fixed_control_runner import (  # noqa: E402
 from scripts.trr_p09.b0_immutable_loader import (  # noqa: E402
     B0ImmutableLoader,
     CombinedB0StreamedBankLoader,
+)
+from scripts.trr_p09.public_validation_loader import (  # noqa: E402
+    PublicValidationLoader,
+    PublicValidationLoaderError,
 )
 from scripts.trr_p09.prepare_streamed_bank import (  # noqa: E402
     StreamBatch,
@@ -483,6 +489,86 @@ def _label_rows(path: Path) -> list[dict[str, Any]]:
 
 
 
+
+def _load_fixed_diagnostic_rows(path: Path, *, bank: str, row_limit: int, expected_sha256: str | None = None) -> tuple[dict[str, Any], tuple[int, ...]]:
+    """Load the setup-owned frozen 64-row diagnostic binding."""
+
+    path = _require_file(path, label="fixed diagnostic binding")
+    actual_sha = sha256_file(path)
+    if expected_sha256 is not None and actual_sha != _require_sha(expected_sha256, label="expected fixed diagnostic SHA"):
+        raise FixedControlCLIError("fixed diagnostic binding hash differs")
+    value = _load_json(path, label="fixed diagnostic binding")
+    if value.get("schema") != "token-reconstruction.trr-p09-fixed-diagnostic-binding.v1" or value.get("task_id") != TASK_ID:
+        raise FixedControlCLIError("fixed diagnostic binding schema/task differs")
+    if value.get("status") != "PASS_FIXED_DIAGNOSTIC64_BOUND_PUBLIC_INPUTS_ONLY":
+        raise FixedControlCLIError("fixed diagnostic binding is not a public-input PASS")
+    verification = value.get("verification")
+    if not isinstance(verification, Mapping) or verification.get("evaluation_truth_opened") is not False or verification.get("source_plaintext_read") is not False:
+        raise FixedControlCLIError("fixed diagnostic binding crosses the truth/source boundary")
+    banks = value.get("banks")
+    if not isinstance(banks, Mapping) or not isinstance(banks.get(bank), Mapping):
+        raise FixedControlCLIError(f"fixed diagnostic binding lacks bank {bank}")
+    binding = dict(banks[bank])
+    indices = binding.get("global_indices")
+    rows = binding.get("rows")
+    if binding.get("bank") != bank or int(binding.get("record_count", -1)) != 64 or not isinstance(indices, list) or not isinstance(rows, list) or len(indices) != 64 or len(rows) != 64:
+        raise FixedControlCLIError("fixed diagnostic binding row count/schema differs")
+    parsed_indices = tuple(int(row) for row in indices)
+    if len(set(parsed_indices)) != 64 or any(row < 0 or row >= int(row_limit) for row in parsed_indices):
+        raise FixedControlCLIError("fixed diagnostic binding contains an out-of-range/duplicate row")
+    if str(binding.get("global_indices_sha256")) != hashlib.sha256(_canonical_bytes(list(parsed_indices))).hexdigest():
+        raise FixedControlCLIError("fixed diagnostic global-index digest differs")
+    by_row: dict[int, Mapping[str, Any]] = {}
+    for row in rows:
+        if not isinstance(row, Mapping):
+            raise FixedControlCLIError("fixed diagnostic row descriptor is malformed")
+        global_row = int(row.get("global_row", -1))
+        if global_row in by_row:
+            raise FixedControlCLIError("fixed diagnostic row descriptor is duplicated")
+        by_row[global_row] = row
+    if set(by_row) != set(parsed_indices):
+        raise FixedControlCLIError("fixed diagnostic descriptor/index sets differ")
+    descriptor_digest = hashlib.sha256(_canonical_bytes([dict(row) for row in rows])).hexdigest()
+    if str(binding.get("rows_sha256")) != descriptor_digest:
+        raise FixedControlCLIError("fixed diagnostic descriptor digest differs")
+    binding["binding_file"] = _record(path, label="fixed diagnostic binding")
+    binding["binding_sha256"] = actual_sha
+    binding["row_descriptors_by_global_row"] = by_row
+    return binding, parsed_indices
+
+
+def _validate_fixed_diagnostic_rows(
+    binding: Mapping[str, Any],
+    row_indices: Sequence[int],
+    loader: Any,
+) -> None:
+    """Compare the frozen diagnostic identities/masks to the active bank loader."""
+
+    batch = loader.get_records(tuple(int(row) for row in row_indices))
+    descriptors = binding.get("row_descriptors_by_global_row")
+    if not isinstance(descriptors, Mapping):
+        raise FixedControlCLIError("fixed diagnostic descriptors were not loaded")
+    for index, global_row in enumerate(row_indices):
+        descriptor = descriptors.get(int(global_row))
+        if not isinstance(descriptor, Mapping):
+            raise FixedControlCLIError("fixed diagnostic descriptor is missing")
+        if batch.record_ids[index] != str(descriptor.get("record_id", "")):
+            raise FixedControlCLIError(f"fixed diagnostic record identity differs at row {global_row}")
+        mask = batch.attention_mask[index].detach().cpu().contiguous()
+        positions = batch.position_ids[index].detach().cpu().contiguous()
+        tokens = batch.token_ids[index].detach().cpu().contiguous()
+        if tensor_digest(mask.to(dtype=torch.uint8)) != str(descriptor.get("attention_mask_sha256", "")):
+            raise FixedControlCLIError(f"fixed diagnostic mask digest differs at row {global_row}")
+        if tensor_digest(positions) != str(descriptor.get("position_ids_sha256", "")):
+            raise FixedControlCLIError(f"fixed diagnostic position digest differs at row {global_row}")
+        active = int(mask.to(dtype=torch.bool).sum().item())
+        if active <= 0 or active > EXPECTED_SEQUENCE_TOKENS:
+            raise FixedControlCLIError(f"fixed diagnostic active length is invalid at row {global_row}")
+        sequence = tokens[:active].to(dtype=torch.int32).contiguous()
+        if tensor_digest(sequence) != str(descriptor.get("sequence_sha256", "")):
+            raise FixedControlCLIError(f"fixed diagnostic sequence digest differs at row {global_row}")
+
+
 class _ValidationCropLoader:
     """Expose the signed H128 validation view from a full-width bank."""
 
@@ -587,6 +673,7 @@ def _run_synthetic(args: argparse.Namespace) -> int:
     output_root.mkdir(parents=True)
     steps = int(args.steps or 2)
     seed = int(args.seed if args.seed is not None else 13)
+    torch.manual_seed(seed)
     fit_loader = _SyntheticLoader(count=8)
     val_loader = _SyntheticLoader(count=4)
     fit_mask = torch.ones(8, 4, dtype=torch.bool)
@@ -697,6 +784,31 @@ def _run_configuration_dry_run(args: argparse.Namespace) -> int:
     )
     if not torch.equal(batch.position_ids.to(dtype=torch.long), expected_positions):
         raise FixedControlCLIError("combined loader position/mask convention changed")
+    diagnostic_meta = None
+    diagnostic_rows = None
+    if args.fixed_diagnostic_binding is not None:
+        diagnostic_meta, diagnostic_rows = _load_fixed_diagnostic_rows(
+            Path(args.fixed_diagnostic_binding),
+            bank=str(args.schedule_bank or schedule.bank),
+            row_limit=len(fit_rows) if schedule.bank == "B1" else len(prefix_rows),
+            expected_sha256=args.expected_fixed_diagnostic_sha256,
+        )
+        _validate_fixed_diagnostic_rows(diagnostic_meta, diagnostic_rows, loader)
+    validation_meta = None
+    validation_batch = None
+    validation_rows_path = getattr(args, "validation_rows", None) or getattr(args, "validation_labels", None)
+    if args.validation_manifest is not None or validation_rows_path is not None:
+        if args.validation_manifest is None or validation_rows_path is None:
+            raise FixedControlCLIError("configuration dry-run validation binding needs both manifest and rows")
+        try:
+            validation_loader = PublicValidationLoader(Path(args.validation_manifest), Path(validation_rows_path))
+            validation_rows = (0, 7, 255, 256, 263, 383)
+            validation_batch = validation_loader.get_records(validation_rows)
+        except PublicValidationLoaderError as exc:
+            raise FixedControlCLIError(str(exc)) from exc
+        if tuple(validation_batch.activations.shape) != (len(validation_rows), EXPECTED_VALIDATION_SEQUENCE_TOKENS, EXPECTED_HIDDEN_SIZE):
+            raise FixedControlCLIError("public validation dry-run geometry changed")
+        validation_meta = validation_loader.metadata()
     output_root.mkdir(parents=True)
     receipt = {
         "schema": "token-reconstruction.trr-p09-fixed-control-configuration-dry-run.v1",
@@ -706,6 +818,7 @@ def _run_configuration_dry_run(args: argparse.Namespace) -> int:
         "source_commit": _git_commit(_REPOSITORY_ROOT),
         "scope": "CPU-only configuration validation; no model, embedding, validation labels, optimizer, fit, or evaluation truth",
         "fit_binding": fit_asset,
+        "fixed_diagnostic": diagnostic_meta,
         "schedule": {
             "file": _record(common_schedule_path, label="serialized common schedule"),
             "bank": schedule.bank,
@@ -729,10 +842,11 @@ def _run_configuration_dry_run(args: argparse.Namespace) -> int:
             "record_ids_sha256": hashlib.sha256(("\\n".join(batch.record_ids) + "\\n").encode()).hexdigest(),
             "mask_position_contract": "arange(T) on active positions, zero on inactive padding",
         },
+        "validation": validation_meta,
         "truth_boundary": {
             "model_loaded": False,
             "embedding_loaded": False,
-            "validation_labels_loaded": False,
+            "validation_labels_loaded": bool(validation_meta is not None),
             "optimizer_created": False,
             "fit_started": False,
             "evaluation_truth_opened": False,
@@ -754,7 +868,10 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--expected-schedule-sha256")
     parser.add_argument("--schedule-bank", choices=("B0", "B1"))
     parser.add_argument("--validation-manifest", type=Path)
-    parser.add_argument("--validation-labels", type=Path)
+    parser.add_argument("--validation-rows", type=Path)
+    parser.add_argument("--validation-labels", type=Path, help="legacy alias for --validation-rows")
+    parser.add_argument("--fixed-diagnostic-binding", type=Path)
+    parser.add_argument("--expected-fixed-diagnostic-sha256")
     parser.add_argument("--embedding", type=Path)
     parser.add_argument("--state", type=Path)
     parser.add_argument("--selection-supplement", type=Path)
@@ -779,8 +896,10 @@ def _parser() -> argparse.ArgumentParser:
 
 
 def _require_production_args(args: argparse.Namespace) -> None:
-    names = ("fit_prefix_manifest", "fit_addition_manifest", "common_schedule", "schedule_bank", "expected_schedule_sha256", "validation_manifest", "validation_labels", "embedding", "state", "selection_supplement", "stage3_agreement", "qualification_receipt", "watchdog_receipt", "seed", "learning_rate", "weight_decay", "gradient_clip_norm")
+    names = ("fit_prefix_manifest", "fit_addition_manifest", "common_schedule", "schedule_bank", "expected_schedule_sha256", "validation_manifest", "fixed_diagnostic_binding", "embedding", "state", "selection_supplement", "stage3_agreement", "qualification_receipt", "watchdog_receipt", "seed", "learning_rate", "weight_decay", "gradient_clip_norm")
     missing = [name for name in names if getattr(args, name) is None]
+    if args.validation_rows is None and args.validation_labels is None:
+        missing.append("validation_rows")
     if missing:
         raise FixedControlCLIError("production mode lacks required arguments: " + ", ".join(missing))
     if args.device == "cuda" and not torch.cuda.is_available():
@@ -870,24 +989,23 @@ def _run_production(args: argparse.Namespace) -> int:
         exposure=exposure,
     )
 
-    val_manifest, val_rows = _read_bank_rows(validation_path)
-    labels = join_public_validation_labels(_label_rows(Path(args.validation_labels)), required_domains=DEFAULT_VALIDATION_DOMAINS)
-    val_geometry = val_manifest["geometry"]
-    if int(val_geometry["sequence_tokens"]) != EXPECTED_SEQUENCE_TOKENS:
-        raise FixedControlCLIError("validation storage must preserve complete 192-token capture geometry")
-    if int(val_geometry["hidden_size"]) != EXPECTED_HIDDEN_SIZE:
-        raise FixedControlCLIError("validation hidden width differs from fit")
-    _validate_label_identities(
-        labels,
-        val_rows,
-        expanded_row_origin=int(val_manifest["bank"].get("expanded_row_origin", 0)),
-    )
-    val_loader = StreamedBankLoader(validation_path, device="cpu")
+    validation_rows_path = Path(args.validation_rows or args.validation_labels).expanduser().resolve()
+    try:
+        val_loader = PublicValidationLoader(validation_path, validation_rows_path)
+    except PublicValidationLoaderError as exc:
+        raise FixedControlCLIError(str(exc)) from exc
+    labels = val_loader.label_join
+    val_rows = list(val_loader.rows)
     fit_loader = CombinedB0StreamedBankLoader(prefix_path, addition_path, device="cpu")
-    fit_source = RandomAccessLoaderSource(fit_loader)
-    val_source = RandomAccessLoaderSource(
-        _ValidationCropLoader(val_loader, sequence_tokens=int(args.validation_sequence_tokens))
+    diagnostic_binding, diagnostic_rows = _load_fixed_diagnostic_rows(
+        Path(args.fixed_diagnostic_binding),
+        bank=str(schedule.bank),
+        row_limit=schedule_row_limit,
+        expected_sha256=args.expected_fixed_diagnostic_sha256,
     )
+    _validate_fixed_diagnostic_rows(diagnostic_binding, diagnostic_rows, fit_loader)
+    fit_source = RandomAccessLoaderSource(fit_loader)
+    val_source = RandomAccessLoaderSource(val_loader)
     def validation_factory(_step: int, _domain: str, rows: tuple[int, ...]) -> Iterable[Any]:
         if len(rows) % EXPECTED_RECORD_BATCH_SIZE:
             raise FixedControlCLIError("validation domain row count is not batch aligned")
@@ -902,7 +1020,7 @@ def _run_production(args: argparse.Namespace) -> int:
     config = RunnerConfig(steps=steps, record_batch_size=EXPECTED_RECORD_BATCH_SIZE, position_budget=EXPECTED_POSITION_BUDGET, validation_every=int(args.validation_every), selection_metric=DOMAIN_BALANCED_SELECTION_METRIC, seed=seed, learning_rate=float(args.learning_rate), weight_decay=float(args.weight_decay), gradient_clip_norm=float(args.gradient_clip_norm), train_sequence_tokens=EXPECTED_SEQUENCE_TOKENS, hidden_size=EXPECTED_HIDDEN_SIZE, expected_activation_dtype=str(torch.bfloat16))
     bank_contract = BankContract(
         fit_manifest=AssetBinding("combined-fit-bank-manifests", "combined://b0+b1", 1, computed_fit_sha),
-        validation_manifest=AssetBinding("public-validation-bank-manifest", str(validation_path), int(validation_path.stat().st_size), sha256_file(validation_path)),
+        validation_manifest=AssetBinding("public-validation-preparation-manifest", str(validation_path), int(validation_path.stat().st_size), sha256_file(validation_path)),
         embedding=AssetBinding("public-normalized-E", str(args.embedding), int(embedding_meta["file"]["bytes"]), EXPECTED_EMBEDDING_SHA256),
         schedule=AssetBinding("serialized-common-schedule", str(common_schedule_record["path"]), int(common_schedule_record["bytes"]), str(common_schedule_record["sha256"])),
         fit_shape=(schedule_row_limit, EXPECTED_SEQUENCE_TOKENS, EXPECTED_HIDDEN_SIZE),
@@ -914,10 +1032,24 @@ def _run_production(args: argparse.Namespace) -> int:
         schedule_semantic_sha256=schedule.semantic_sha256,
     )
     checkpoint = make_fixed_checkpoint_callback(output_root=output_root / "states", bank_contract=bank_contract, bank_manifest_sha256=computed_fit_sha, base_state_sha256=EXPECTED_STATE_SHA256, fit_manifest_sha256=computed_fit_sha)
+    diagnostic_callback = make_fitting_metric_callback(
+        source=fit_source,
+        embedding=embedding,
+        fixed_rows=diagnostic_rows,
+        full_bank_rows=tuple(range(schedule_row_limit)),
+        final_step=steps,
+        expected_sequence_tokens=EXPECTED_SEQUENCE_TOKENS,
+        expected_hidden_size=EXPECTED_HIDDEN_SIZE,
+        record_batch_size=EXPECTED_RECORD_BATCH_SIZE,
+        position_budget=EXPECTED_POSITION_BUDGET,
+        activation_dtype=torch.bfloat16,
+        fixed_row_count=64,
+    )
+    checkpoint = compose_checkpoint_callbacks(checkpoint, diagnostic_callback)
     started_utc = _utc_now()
     result = run_training(decoder, hook, fit_source, schedule.iter_steps(), schedule_steps_count=steps, schedule_seed=seed, schedule_semantic_sha256=schedule.semantic_sha256, schedule_exposure=exposure, optimizer=optimizer, embedding=embedding, config=config, validation_callback=validation_callback, validation_sequence_tokens=EXPECTED_VALIDATION_SEQUENCE_TOKENS, validation_batch_records=EXPECTED_RECORD_BATCH_SIZE, validation_activation_dtype=torch.bfloat16, training_activation_dtype=torch.bfloat16, checkpoint_steps=checkpoint_grid, scheduler=scheduler, checkpoint_callback=checkpoint, deadline_seconds=float(args.deadline_seconds), resource_guard_callback=tracker.check)
     finished_utc = _utc_now()
-    assets = {"fit_manifests": fit_asset, "validation_manifest": _record(validation_path, label="public validation bank manifest"), "embedding": embedding_meta, "starting_state": state_meta, "selection_supplement": supplement, "stage3_agreement": stage3, "qualification": qualification, "watchdog": watchdog, "common_schedule": common_schedule_record, "schedule_receipt": schedule_receipt, "contract_digest": contract_digest(bank_contract)}
+    assets = {"fit_manifests": fit_asset, "validation_manifest": val_loader.metadata(), "validation_rows": _record(validation_rows_path, label="public validation rows"), "embedding": embedding_meta, "starting_state": state_meta, "selection_supplement": supplement, "stage3_agreement": stage3, "qualification": qualification, "watchdog": watchdog, "fixed_diagnostic": diagnostic_binding, "common_schedule": common_schedule_record, "schedule_receipt": schedule_receipt, "contract_digest": contract_digest(bank_contract)}
     receipt = build_fixed_control_receipt(training_result=result, source_commit=source_commit, command=sys.argv, started_utc=started_utc, finished_utc=finished_utc, environment={"python": platform.python_version(), "torch": torch.__version__, "device": str(device), "pid": os.getpid()}, assets=assets, training_contract={"steps": steps, "record_batch_size": EXPECTED_RECORD_BATCH_SIZE, "position_budget": EXPECTED_POSITION_BUDGET, "seed": seed, "schedule_bank": schedule.bank, "checkpoint_grid": list(checkpoint_grid), "validation_sequence_tokens": EXPECTED_VALIDATION_SEQUENCE_TOKENS, "optimizer": "AdamW foreach=False", "learning_rate": float(args.learning_rate), "weight_decay": float(args.weight_decay), "gradient_clip_norm": float(args.gradient_clip_norm)}, resource_peak={"in_process_peak": tracker.peak, "in_process_low_water": tracker.low_water, "checks": tracker.checks, "external_watchdog": watchdog}, bank_manifest_sha256=computed_fit_sha, state={"method_id": METHOD_ID, "starting_state": state_meta, "embedding_sha256": EXPECTED_EMBEDDING_SHA256})
     write_fixed_control_receipt(output_root / "receipt.json", receipt)
     print(json.dumps({"status": "PASS", "selected_step": result["selected_step"], "steps": steps, "total_position_draws": exposure["total_draws"], "output_root": str(output_root)}, sort_keys=True))

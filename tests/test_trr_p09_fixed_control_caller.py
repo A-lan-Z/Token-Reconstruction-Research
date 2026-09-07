@@ -13,7 +13,9 @@ from scripts.trr_p09.fixed_control_caller import (
     DEFAULT_VALIDATION_DOMAINS,
     FixedControlCallerError,
     build_fixed_control_receipt,
+    compose_checkpoint_callbacks,
     fixed_control_cost_summary,
+    make_fitting_metric_callback,
     inherited_schedule_steps,
     load_serialized_schedule,
     join_public_validation_labels,
@@ -347,3 +349,49 @@ def test_fixed_receipt_contains_curve_exposure_cost_and_selected_state(tmp_path:
     assert output.exists()
     with pytest.raises(FixedControlCallerError, match="already exists"):
         write_fixed_control_receipt(output, receipt)
+
+
+def test_fitting_metric_callback_keeps_fixed_rows_at_grid_and_full_bank_at_end() -> None:
+    from tests.test_trr_p09_fixed_control_runner import Source, TinyDecoder, _batch
+
+    source = Source(_batch(rows=(0, 1), sequence_tokens=4))
+    decoder = TinyDecoder()
+    hook = FixedPublicReadoutHook(method_id="fixed", embedding_sha256=_DIGEST)
+    callback = make_fitting_metric_callback(
+        source=source,
+        embedding=torch.randn(7, 3),
+        fixed_rows=(0, 1),
+        full_bank_rows=(0, 1),
+        final_step=1,
+        expected_sequence_tokens=4,
+        expected_hidden_size=3,
+        record_batch_size=2,
+        position_budget=2,
+        activation_dtype=torch.bfloat16,
+        fixed_row_count=2,
+    )
+    start = callback({"step": 0}, decoder, hook)
+    end = callback({"step": 1}, decoder, hook)
+    assert [scope["scope"] for scope in start["fitting_diagnostics"]["scopes"]] == ["frozen64", "full_bank"]
+    assert [scope["scope"] for scope in end["fitting_diagnostics"]["scopes"]] == ["frozen64", "full_bank"]
+    assert all(scope["row_count"] == 2 for scope in end["fitting_diagnostics"]["scopes"])
+    assert all(scope["metrics"]["token_rows"] == 6 for scope in end["fitting_diagnostics"]["scopes"])
+    assert all(scope["batch_count"] == 1 for scope in end["fitting_diagnostics"]["scopes"])
+    assert start["fitting_diagnostics"]["selection_metric_untouched"] is True
+    serializer = compose_checkpoint_callbacks(lambda _point, _decoder, _hook: {"checkpoint": {"ok": True}}, callback)
+    composed = serializer({"step": 0}, decoder, hook)
+    assert "fitting_diagnostics" in composed and "checkpoint" in composed
+
+
+def test_checkpoint_callback_composition_rejects_selection_injection() -> None:
+    decoder = nn.Linear(2, 2)
+    hook = FixedPublicReadoutHook(method_id="fixed", embedding_sha256=_DIGEST)
+    first = lambda _point, _decoder, _hook: {"checkpoint": {"ok": True}}
+    merged = compose_checkpoint_callbacks(first, lambda _point, _decoder, _hook: {"diagnostics": {"ok": True}})
+    assert merged({"step": 0}, decoder, hook) == {
+        "checkpoint": {"ok": True},
+        "diagnostics": {"ok": True},
+    }
+    bad = compose_checkpoint_callbacks(lambda _point, _decoder, _hook: {"domain_balanced_token_accuracy": 0.5})
+    with pytest.raises(FixedControlCallerError, match="selection"):
+        bad({"step": 0}, decoder, hook)

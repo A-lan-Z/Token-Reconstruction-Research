@@ -15,6 +15,7 @@ import hashlib
 import json
 import math
 import os
+import time
 from pathlib import Path
 from typing import Any
 from types import MappingProxyType
@@ -26,12 +27,14 @@ from torch import nn
 
 from .fixed_control_runner import (
     BatchLike,
+    BatchSource,
     DOMAIN_BALANCED_SELECTION_METRIC,
     FixedControlRunnerError,
     SchedulePlan,
     ScheduleStep,
     aggregate_domain_validation,
     build_run_receipt,
+    evaluate_batches,
     canonical_digest,
     method_state_digest,
     write_create_only_json,
@@ -674,6 +677,155 @@ def make_fixed_checkpoint_callback(
     return callback
 
 
+
+CheckpointCallback = Callable[[Mapping[str, Any], nn.Module, FixedPublicReadoutHook], Mapping[str, Any] | None]
+
+
+def compose_checkpoint_callbacks(*callbacks: CheckpointCallback | None) -> CheckpointCallback:
+    """Compose serializers/diagnostics without changing runner selection.
+
+    ``run_training`` evaluates and freezes the validation selection metric before
+    invoking its checkpoint callback.  This helper only merges disjoint state
+    bindings, and rejects any callback that tries to inject a selection metric.
+    """
+
+    active = tuple(callback for callback in callbacks if callback is not None)
+    if not active:
+        raise FixedControlCallerError("at least one checkpoint callback is required")
+
+    def callback(
+        point: Mapping[str, Any],
+        decoder: nn.Module,
+        hook: FixedPublicReadoutHook,
+    ) -> Mapping[str, Any]:
+        merged: dict[str, Any] = {}
+        for child in active:
+            value = child(point, decoder, hook)
+            if value is None:
+                continue
+            if not isinstance(value, Mapping):
+                raise FixedControlCallerError("checkpoint callback must return a mapping")
+            if "selection_metric" in value or DOMAIN_BALANCED_SELECTION_METRIC in value:
+                raise FixedControlCallerError("diagnostic callback cannot rewrite selection")
+            overlap = set(merged).intersection(value)
+            if overlap:
+                raise FixedControlCallerError(
+                    f"checkpoint callback bindings overlap: {sorted(overlap)!r}"
+                )
+            merged.update(dict(value))
+        return merged
+
+    return callback
+
+
+def make_fitting_metric_callback(
+    *,
+    source: BatchSource,
+    embedding: torch.Tensor,
+    fixed_rows: Sequence[int],
+    full_bank_rows: Sequence[int],
+    final_step: int,
+    expected_sequence_tokens: int,
+    expected_hidden_size: int,
+    record_batch_size: int,
+    position_budget: int,
+    activation_dtype: torch.dtype | None = None,
+    compute_base_logits: bool = True,
+    fixed_row_count: int = 64,
+) -> CheckpointCallback:
+    """Create a read-only fitting diagnostic callback.
+
+    The callback evaluates the immutable ``fixed_rows`` at every checkpoint
+    callback (the caller supplies the frozen 64-row artifact) and evaluates
+    ``full_bank_rows`` only at steps zero and ``final_step``.  It records the
+    exact denominator, batch/chunk counts, full-vocabulary row count, and
+    elapsed scope time.  Its result is nested under ``fitting_diagnostics`` by
+    :func:`compose_checkpoint_callbacks`; no selection metric is returned or
+    altered.
+    """
+
+    fixed = tuple(int(row) for row in fixed_rows)
+    full = tuple(int(row) for row in full_bank_rows)
+    if len(fixed) != int(fixed_row_count):
+        raise FixedControlCallerError(
+            f"frozen fitting diagnostic must contain exactly {fixed_row_count} rows"
+        )
+    if not full:
+        raise FixedControlCallerError("full-bank diagnostic rows cannot be empty")
+    if any(row < 0 for row in fixed + full) or len(set(fixed)) != len(fixed) or len(set(full)) != len(full):
+        raise FixedControlCallerError("fitting diagnostic rows must be unique and nonnegative")
+    if not set(fixed).issubset(set(full)):
+        raise FixedControlCallerError("frozen diagnostic rows must be drawn from the full-bank rows")
+    if isinstance(final_step, bool) or not isinstance(final_step, int) or final_step <= 0:
+        raise FixedControlCallerError("fitting diagnostic final step is invalid")
+    if record_batch_size <= 0 or position_budget <= 0:
+        raise FixedControlCallerError("fitting diagnostic geometry is invalid")
+    if len(fixed) % record_batch_size or len(full) % record_batch_size:
+        raise FixedControlCallerError("fitting diagnostic rows must be batch aligned")
+
+    def batches(rows: Sequence[int]) -> Iterator[BatchLike]:
+        for start in range(0, len(rows), record_batch_size):
+            chunk = tuple(rows[start : start + record_batch_size])
+            if len(chunk) != record_batch_size:
+                raise FixedControlCallerError("fitting diagnostic batch is incomplete")
+            yield source.batch_for_global_rows(chunk)
+
+    def evaluate_scope(
+        scope: str,
+        rows: Sequence[int],
+        decoder: nn.Module,
+        hook: FixedPublicReadoutHook,
+    ) -> dict[str, Any]:
+        started = time.perf_counter()
+        metrics = evaluate_batches(
+            decoder,
+            hook,
+            batches(rows),
+            embedding=embedding,
+            expected_sequence_tokens=expected_sequence_tokens,
+            expected_hidden_size=expected_hidden_size,
+            expected_batch_records=record_batch_size,
+            position_budget=position_budget,
+            activation_dtype=activation_dtype,
+            compute_base_logits=compute_base_logits,
+        )
+        elapsed = time.perf_counter() - started
+        if not math.isfinite(elapsed) or elapsed < 0.0:
+            raise FixedControlCallerError("fitting diagnostic elapsed time is invalid")
+        return {
+            "scope": scope,
+            "row_count": len(rows),
+            "batch_count": int(metrics.get("batch_count", 0)),
+            "position_chunk_count": int(metrics.get("position_chunk_count", 0)),
+            "full_vocab_logits_rows": int(metrics.get("full_vocab_logits_rows", metrics["token_rows"])),
+            "metrics": dict(metrics),
+            "elapsed_seconds": float(elapsed),
+            "timing_boundary": "includes random-access batch load, full-vocabulary projection, synchronization, and metric reduction",
+        }
+
+    def callback(
+        point: Mapping[str, Any],
+        decoder: nn.Module,
+        hook: FixedPublicReadoutHook,
+    ) -> Mapping[str, Any]:
+        try:
+            step = int(point["step"])
+        except (KeyError, TypeError, ValueError) as exc:
+            raise FixedControlCallerError("fitting diagnostic checkpoint lacks step") from exc
+        scopes = [evaluate_scope("frozen64", fixed, decoder, hook)]
+        if step in (0, final_step):
+            scopes.append(evaluate_scope("full_bank", full, decoder, hook))
+        return {
+            "fitting_diagnostics": {
+                "schema": "token-reconstruction.trr-p09-fitting-diagnostics.v1",
+                "step": step,
+                "selection_metric_untouched": True,
+                "scopes": scopes,
+            }
+        }
+
+    return callback
+
 def fixed_control_cost_summary(training_result: Mapping[str, Any]) -> dict[str, Any]:
     """Derive explicit fit/validation/exposure cost fields from runner output."""
 
@@ -706,6 +858,7 @@ def fixed_control_cost_summary(training_result: Mapping[str, Any]) -> dict[str, 
             raise FixedControlCallerError(f"training timing field {key!r} is invalid")
         finite_timing[key] = float(value)
     validation_rows = 0
+    diagnostic_runs: list[dict[str, Any]] = []
     for point in curve:
         if not isinstance(point, Mapping):
             raise FixedControlCallerError("learning curve point is not a mapping")
@@ -714,6 +867,43 @@ def fixed_control_cost_summary(training_result: Mapping[str, Any]) -> dict[str, 
             rows = metrics.get("token_rows")
             if isinstance(rows, int) and not isinstance(rows, bool):
                 validation_rows += rows
+        binding = point.get("state_binding")
+        diagnostics = binding.get("fitting_diagnostics") if isinstance(binding, Mapping) else None
+        if diagnostics is None:
+            continue
+        if not isinstance(diagnostics, Mapping) or diagnostics.get("selection_metric_untouched") is not True:
+            raise FixedControlCallerError("fitting diagnostics are not selection-isolated")
+        scopes = diagnostics.get("scopes")
+        if not isinstance(scopes, Sequence):
+            raise FixedControlCallerError("fitting diagnostic scopes are missing")
+        for scope in scopes:
+            if not isinstance(scope, Mapping):
+                raise FixedControlCallerError("fitting diagnostic scope is not a mapping")
+            elapsed = scope.get("elapsed_seconds")
+            if isinstance(elapsed, bool) or not isinstance(elapsed, (int, float)) or not math.isfinite(float(elapsed)) or float(elapsed) < 0.0:
+                raise FixedControlCallerError("fitting diagnostic elapsed time is invalid")
+            row_count = scope.get("row_count")
+            batch_count = scope.get("batch_count")
+            chunk_count = scope.get("position_chunk_count")
+            logits_rows = scope.get("full_vocab_logits_rows")
+            if any(isinstance(value, bool) or not isinstance(value, int) or value <= 0 for value in (row_count, batch_count, chunk_count, logits_rows)):
+                raise FixedControlCallerError("fitting diagnostic denominator/cost fields are invalid")
+            diagnostic_runs.append({
+                "step": int(diagnostics.get("step", point.get("step", -1))),
+                "scope": str(scope.get("scope", "")),
+                "row_count": int(row_count),
+                "batch_count": int(batch_count),
+                "position_chunk_count": int(chunk_count),
+                "full_vocab_logits_rows": int(logits_rows),
+                "elapsed_seconds": float(elapsed),
+            })
+    diagnostic_cost = {
+        "scope_run_count": len(diagnostic_runs),
+        "total_elapsed_seconds": sum(item["elapsed_seconds"] for item in diagnostic_runs),
+        "full_bank_steps": [item["step"] for item in diagnostic_runs if item["scope"] == "full_bank"],
+        "runs": diagnostic_runs,
+        "selection_metric_untouched": True,
+    }
     return {
         "scope": "fixed_control_runner_process",
         "updates": steps,
@@ -721,6 +911,7 @@ def fixed_control_cost_summary(training_result: Mapping[str, Any]) -> dict[str, 
         "total_position_draws": total_draws,
         "validation_checkpoint_count": len(curve),
         "validation_token_rows_across_checkpoints": validation_rows,
+        "fitting_diagnostics": diagnostic_cost,
         "timing": finite_timing,
         "timing_boundary": timing.get("timing_boundary"),
         "optimizer_steps": steps,
@@ -800,6 +991,8 @@ __all__ = [
     "PublicValidationLabelJoin",
     "build_fixed_control_receipt",
     "fixed_control_cost_summary",
+    "compose_checkpoint_callbacks",
+    "make_fitting_metric_callback",
     "inherited_schedule_steps",
     "join_public_validation_labels",
     "make_domain_validation_callback",
