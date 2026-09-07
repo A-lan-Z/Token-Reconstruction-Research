@@ -622,8 +622,29 @@ def _load_prepared_input_manifest(
     _, counter_binding = _validate_plan_countersignature(path, value, require_stage1=True)
     correction_binding = _validate_correction_countersignature(path, value, require_stage1=True)
     replacement_audit = value.get("controlled_replacement_audit")
-    if not isinstance(replacement_audit, Mapping) or replacement_audit.get("b0_identity_cycle_matches_signed_recipe") is not True:
-        raise CaptureError("STAGE1 input manifest does not prove the corrected B0 identity cycle")
+    # The immutable published B0 prefix predates the corrected signed recipe;
+    # its observed ordered replacement cycle is therefore allowed to differ.
+    # The r2 correction binds the semantically relevant joint template audit
+    # instead: every immutable B0 template is assigned exactly nine times to
+    # controlled additions, while the B0 bytes remain preserved.
+    if not isinstance(replacement_audit, Mapping):
+        raise CaptureError("STAGE1 input manifest lacks the controlled replacement audit")
+    template_audit = replacement_audit.get("r2_template_assignment")
+    if not isinstance(template_audit, Mapping):
+        raise CaptureError("STAGE1 input manifest lacks the corrected template assignment audit")
+    required_template_audit = {
+        "status": "EXACT_B0_TEMPLATES_NINE_TIMES_PER_STRATUM_LENGTH",
+        "template_repeat_factor": 9,
+        "b0_template_count": 120,
+        "controlled_addition_rows": 1080,
+        "controlled_addition_replacement_occurrences": 32400,
+        "exact_nine_use_check": True,
+        "b0_rows_preserved": True,
+        "source_token_values_persisted_in_audit": False,
+    }
+    for key, expected in required_template_audit.items():
+        if template_audit.get(key) != expected:
+            raise CaptureError(f"STAGE1 corrected template assignment audit differs: {key}")
     boundary = value.get("truth_boundary")
     if not isinstance(boundary, Mapping) or any(bool(boundary.get(key)) for key in ("evaluation_truth_opened", "source_text_persisted", "activations_created")):
         raise CaptureError("prepared input manifest violates the truth-free boundary")
@@ -698,7 +719,19 @@ def _load_prepared_input_manifest(
             )
         )
     longest = max(range(ADDITION_ROWS), key=lambda index: int(rows[index]["active_token_count"]))
-    qual_pairs = [(0, 0), (longest // SHARD_RECORDS, (longest % SHARD_RECORDS) // FORWARD_BATCH_RECORDS)]
+    # Do not assume the first shard contains padding.  The prepared compiler
+    # is free to order full-length rows first, so choose the first actual
+    # future-padding batch and the longest batch independently.
+    padded = next(
+        (index for index, row in enumerate(rows) if int(row["active_token_count"]) < SEQUENCE_TOKENS),
+        None,
+    )
+    if padded is None:
+        raise CaptureError("prepared input lacks a future-padding representative")
+    qual_pairs = [
+        (padded // SHARD_RECORDS, (padded % SHARD_RECORDS) // FORWARD_BATCH_RECORDS),
+        (longest // SHARD_RECORDS, (longest % SHARD_RECORDS) // FORWARD_BATCH_RECORDS),
+    ]
     qualification = [{"shard_id": int(shard), "batch_index": int(batch)} for shard, batch in dict.fromkeys(qual_pairs)]
     _validate_qualification_selection(shards, qualification, require_stage1=True)
     synthetic = json.loads(json.dumps(value))

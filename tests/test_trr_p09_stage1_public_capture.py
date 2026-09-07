@@ -317,7 +317,19 @@ def test_prepared_compiler_output_capture_combined_loader_smoke(tmp_path: Path, 
                 },
                 "countersignature": {"path": str(counter_path)},
                 "correction_countersignature": correction_binding,
-                "controlled_replacement_audit": {"b0_identity_cycle_matches_signed_recipe": True},
+                "controlled_replacement_audit": {
+                    "b0_identity_cycle_matches_signed_recipe": False,
+                    "r2_template_assignment": {
+                        "status": "EXACT_B0_TEMPLATES_NINE_TIMES_PER_STRATUM_LENGTH",
+                        "template_repeat_factor": 9,
+                        "b0_template_count": 120,
+                        "controlled_addition_rows": 1080,
+                        "controlled_addition_replacement_occurrences": 32400,
+                        "exact_nine_use_check": True,
+                        "b0_rows_preserved": True,
+                        "source_token_values_persisted_in_audit": False,
+                    },
+                },
                 "geometry": {"records": rows, "sequence_tokens": 192, "b0_prefix_records": capture.B0_ROWS},
                 "artifacts": {"inputs": _descriptor(payload, root=root), "records": _descriptor(records_path, root=root)},
                 "truth_boundary": {
@@ -416,11 +428,12 @@ def test_prepared_full_payload_adapts_to_expanded_b1_rows(tmp_path: Path) -> Non
     tokens[:capture.B0_ROWS, 128:] = capture.PAD_TOKEN_ID
     masks[:capture.B0_ROWS, 128:] = 0
     positions[:capture.B0_ROWS, 128:] = 0
-    # Leave the first B1 row padded so the generated qualification includes a
-    # future-padding case while the remainder supplies the longest row.
-    tokens[capture.B0_ROWS, 128:] = capture.PAD_TOKEN_ID
-    masks[capture.B0_ROWS, 128:] = 0
-    positions[capture.B0_ROWS, 128:] = 0
+    # Put a full-length B1 batch first and a later padded batch second.  The
+    # parser must discover the actual padding representative rather than
+    # assuming the first batch is padded.
+    tokens[capture.B0_ROWS + 8, 128:] = capture.PAD_TOKEN_ID
+    masks[capture.B0_ROWS + 8, 128:] = 0
+    positions[capture.B0_ROWS + 8, 128:] = 0
     payload = root / "inputs.safetensors"
     save_file({"token_ids": tokens, "attention_mask": masks, "position_ids": positions}, str(payload))
     records = []
@@ -433,8 +446,8 @@ def test_prepared_full_payload_adapts_to_expanded_b1_rows(tmp_path: Path) -> Non
             "source_row_index": index,
             "rendered_sha256": f"{index + 1:064x}",
             "source_full_token_count": 193,
-            "target_post_bos_token_count": 127 if index == capture.B0_ROWS else 191,
-            "target_full_token_count": 129 if index < capture.B0_ROWS else 193,
+            "target_post_bos_token_count": 127 if index == capture.B0_ROWS + 8 else 191,
+            "target_full_token_count": 129 if index < capture.B0_ROWS or index == capture.B0_ROWS + 8 else 193,
             "sequence_h128_sha256": None,
             "global_row": index,
         })
@@ -447,7 +460,19 @@ def test_prepared_full_payload_adapts_to_expanded_b1_rows(tmp_path: Path) -> Non
         "plan": {"path": "experiments/TRR-P09/planning/stage1-public-bank-plan.json", "bytes": capture.SIGNED_STAGE1_PLAN_BYTES, "sha256": capture.SIGNED_STAGE1_PLAN_SHA256, "commit": "5bfed9ec6a7bb29a988ec0a4b1343b7745d8b81b"},
         "countersignature": {"path": "experiments/TRR-P09/setup/stage1-plan-countersignature-r1.json", "attested": True},
         "correction_countersignature": _accepted_correction_binding(),
-        "controlled_replacement_audit": {"b0_identity_cycle_matches_signed_recipe": True},
+        "controlled_replacement_audit": {
+                    "b0_identity_cycle_matches_signed_recipe": False,
+                    "r2_template_assignment": {
+                        "status": "EXACT_B0_TEMPLATES_NINE_TIMES_PER_STRATUM_LENGTH",
+                        "template_repeat_factor": 9,
+                        "b0_template_count": 120,
+                        "controlled_addition_rows": 1080,
+                        "controlled_addition_replacement_occurrences": 32400,
+                        "exact_nine_use_check": True,
+                        "b0_rows_preserved": True,
+                        "source_token_values_persisted_in_audit": False,
+                    },
+                },
         "geometry": {"records": rows, "sequence_tokens": 192, "b0_prefix_records": capture.B0_ROWS, "input_dtype": "int32", "mask_dtype": "uint8", "position_dtype": "int64"},
         "artifacts": {
             "inputs": _descriptor(payload, root=root),
