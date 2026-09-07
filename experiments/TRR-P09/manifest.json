@@ -4,7 +4,10 @@
     "result": "coordination/results/TRR-P09.md",
     "stage1_capture_binding": "experiments/TRR-P09/setup/stage1-capture-binding-r1.json",
     "public_support_binding": "experiments/TRR-P09/setup/public-support-binding-r1.json",
-    "qualified_bank_manifest": "experiments/TRR-P09/setup/qualified-bank-manifest-r1.json"
+    "qualified_bank_manifest": "experiments/TRR-P09/setup/qualified-bank-manifest-r1.json",
+    "public_validation_audit": "experiments/TRR-P09/setup/public-validation-r1-audit.json",
+    "fixed_diagnostic_binding": "experiments/TRR-P09/setup/fixed-diagnostic-binding-r1.json",
+    "fixed_diagnostic_binder": "scripts/trr_p09/bind_fixed_diagnostic.py"
   },
   "bank_planning": {
     "access_boundary": {
@@ -389,8 +392,11 @@
     "runner_base": "b71feb433815f12e3274aa7525c8bbb23971e552"
   },
   "remaining_bindings_before_real_run": [
-    "complete shared common fit-contract and loader integration before any optimizer step",
-    "keep fitting, target observation, and evaluation truth access unopened until that contract is reviewed"
+    "complete the shared common fit-contract and loader integration before any optimizer step",
+    "complete the reviewed fixed-control fit qualification before production fits",
+    "implement fixed 64-row diagnostic metrics at step zero and every fixed-control checkpoint",
+    "implement full-bank start/end metrics and bind them in the fixed-control receipts",
+    "keep fitting, target observation, and evaluation truth access unopened until those gates are reviewed"
   ],
   "schema": "token-reconstruction.trr-p09-implementation-manifest.v1",
   "scientific_execution": {
@@ -423,10 +429,15 @@
       "forward_batch_qualification": "QUALIFICATION_PASS"
     },
     "capture_status": "CAPTURE_COMPLETE_NO_TRUTH_WATCHDOG_PASS",
-    "gpu_released": true
+    "gpu_released": true,
+    "public_validation_completed": true,
+    "fixed_diagnostic_bound": true,
+    "fixed_control_fit_qualification": "PENDING",
+    "shared_fit_contract": "PENDING_REVIEW",
+    "fixed_metrics_implementation": "PENDING"
   },
   "source_commit": "0c7279e30a41a5016ff97c9bcaa5e282db2dabe0",
-  "status": "STAGE1_PUBLIC_BASE_CAPTURE_COMPLETE_NO_TRUTH",
+  "status": "STAGE1_PUBLIC_VALIDATION_DIAGNOSTIC_BOUND_NO_FIT_NO_TRUTH",
   "task_id": "TRR-P09",
   "validation": {
     "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p09_fixed_control_runner.py tests/test_trr_p09_fixed_control_adapter.py tests/test_trr_p09_bank_artifact.py",
@@ -443,7 +454,114 @@
       }
     ],
     "passed": 25,
-    "syntax_command": "python3 -m py_compile scripts/trr_p09/fixed_control_runner.py src/token_reconstruction/trr_p09_fixed_control_adapter.py"
+    "syntax_command": "python3 -m py_compile scripts/trr_p09/fixed_control_runner.py src/token_reconstruction/trr_p09_fixed_control_adapter.py",
+    "public_validation": {
+      "status": "PASS_PUBLIC_VALIDATION_384_AUDITED_NO_TRUTH",
+      "receipt": {
+        "path": "experiments/TRR-P09/setup/public-validation-r1-audit.json",
+        "sha256": "25d30f3cfb7e3c00c0d8ecde96db550c772f663ffa81a3a5a211fe1be166a022",
+        "bytes": 7418
+      },
+      "source_commit": "0fec16d8c150772b5c540f09315f6e589e010c4f",
+      "records": 384,
+      "records_by_domain": {
+        "Finance": 256,
+        "Pile": 128
+      },
+      "sequence_tokens_including_bos": 128,
+      "source_selection": {
+        "path": "experiments/TRR-0009/selection_v2/source_selection.json",
+        "sha256": "c2e996514f7f45e55d7bfadc27fc8048bdb07a2c979b208de8716972d8d1def2"
+      },
+      "observation_manifest": {
+        "path": "experiments/TRR-0009/evaluation/public_observations_v2/observations.json",
+        "sha256": "8ad89e2598e7b1e774c43b3fd1d0f1a990615069cd1f488e8aa139463087d430"
+      },
+      "successful_preparation_watchdog": {
+        "path": "/tmp/trr-p09-runtime/public-validation-watchdog-r1",
+        "status": "PASS",
+        "finish_sha256": "ec1c241ef021a44132fb301ef8a4669bab1d92202b195352a5fe8653da9a31e3",
+        "child_return_code": 0,
+        "wrapper_exit_code": 0,
+        "peak_group_rss_bytes": 1160151040,
+        "minimum_sampled_host_mem_available_bytes": 19226554368
+      },
+      "successful_audit_watchdog": {
+        "path": "/tmp/trr-p09-runtime/public-validation-audit-watchdog-r1",
+        "status": "PASS",
+        "finish_sha256": "159055736ff5c75e49ee02a6c5c5fda85586f6609a1b303d3ec577adc389eeeb",
+        "child_return_code": 0,
+        "wrapper_exit_code": 0,
+        "peak_group_rss_bytes": 1159303168,
+        "minimum_sampled_host_mem_available_bytes": 19213017088
+      },
+      "validation_manifest": {
+        "path": "/tmp/trr-p09-runtime/public-validation-r1/validation_manifest.json",
+        "sha256": "2ae3c36d62a3219f0df24ef6d87a9c76418b408d946ba52bcedd020b6b403d38",
+        "bytes": 468369
+      },
+      "validation_rows": {
+        "path": "/tmp/trr-p09-runtime/public-validation-r1/validation_rows.json",
+        "sha256": "3877baf2a8ad894cb7c971aadd1591854852f77091bdbdb218b3617a6971919f",
+        "bytes": 72111
+      },
+      "label_join_sha256": "35b8341d95e08d4375fbb122251309f258d5fced134675bae495f92721bcc23f",
+      "truth_opened": false,
+      "model_loaded": false,
+      "raw_public_validation_payloads_local_only": true,
+      "excluded_duplicate_launch": {
+        "status": "EXCLUDED_DUPLICATE_LAUNCH",
+        "reason": "Create-only public-validation preparation refused because the requested output directory already existed; no payloads were changed.",
+        "watchdog_root": "/tmp/trr-p09-runtime/watchdog-public-validation-r1",
+        "command_path": "/tmp/trr-p09-runtime/watchdog-public-validation-r1/command.json",
+        "command_sha256": "3231c2a362c548f119a92f3d5719a5586f5eb8c4124471cb60a88a66ace058c3",
+        "finish_path": "/tmp/trr-p09-runtime/watchdog-public-validation-r1/finish.json",
+        "finish_sha256": "a957bdc81d4754efa6a4b56c74e17ed20b8d1620b77289fb45d1050141e93a",
+        "stderr_path": "/tmp/trr-p09-runtime/watchdog-public-validation-r1/stderr.txt",
+        "stderr_sha256": "087e320b2cdb3e3ca80ee632b3d70b22cacaa00c022b6cd1f89b07f96b9a7c39",
+        "requested_output_root": "/tmp/trr-p09-runtime/public-validation-r1",
+        "child_return_code": 125,
+        "wrapper_exit_code": 125,
+        "successful_preparation_watchdog_root": "/tmp/trr-p09-runtime/public-validation-watchdog-r1",
+        "successful_audit_watchdog_root": "/tmp/trr-p09-runtime/public-validation-audit-watchdog-r1"
+      }
+    },
+    "fixed_diagnostic": {
+      "status": "PASS_FIXED_DIAGNOSTIC64_BOUND_PUBLIC_INPUTS_ONLY",
+      "binding": {
+        "path": "experiments/TRR-P09/setup/fixed-diagnostic-binding-r1.json",
+        "sha256": "8b899bc168b55570e4cfd526ff4e8656b70050e840386cba9390ad6adb1f54c3",
+        "bytes": 130098
+      },
+      "binder": {
+        "path": "scripts/trr_p09/bind_fixed_diagnostic.py",
+        "sha256": "d1459f01e1942dd8796e124ae31abdef218ee1a7c8273f830a6246ece20fc8fd"
+      },
+      "source_commit": "31963b67394082ac8d67b3878920aa2789eb1921",
+      "seed": 4010,
+      "record_count_per_bank": 64,
+      "stratum_quotas": {
+        "alpaca_natural": 32,
+        "pile_natural": 16,
+        "finance_natural": 10,
+        "pile_controlled": 3,
+        "finance_controlled": 3
+      },
+      "current_indices_sha256": "2dba4fdb243f742496cc010985820205a6d36f8c29b7ed3058369322d181f907",
+      "expanded_indices_sha256": "670624a8ef439fe11b250f1ba432d87922d6ff53da38ff8514203880237b6933",
+      "capture_exposure": {
+        "qualified_forward_batches": 1350,
+        "captured_new_records": 10800,
+        "complete_records_per_batch": 8,
+        "sequence_tokens": 192
+      },
+      "public_fitting_token_ids_masks_positions_only": true,
+      "model_loaded": false,
+      "activations_read": false,
+      "truth_opened": false,
+      "published_bank_manifests_modified": false
+    },
+    "evidence_commit": "31963b67394082ac8d67b3878920aa2789eb1921"
   },
   "publication": {
     "status": "COMPLETE_OPEN_UNMERGED",
@@ -462,7 +580,7 @@
     "base_branch": "task/TRR-0009",
     "base_sha": "4602f98eeb03ac121d8bbc230d7e2b219551b914",
     "head_branch": "task/TRR-P09",
-    "evidence_commit": "140ed70df03aca32814cbd4b48aa395745d57ad6",
+    "evidence_commit": "31963b67394082ac8d67b3878920aa2789eb1921",
     "approval_block_resolved_by_explicit_user_approval": true,
     "historical_approval_block": {
       "bytes": 1353,
@@ -553,7 +671,7 @@
     "gpu_launch_authorized": false,
     "fresh_bank_generation_authorized": true
   },
-  "updated_utc": "2026-09-07T12:28:01Z",
+  "updated_utc": "2026-09-07T13:09:51Z",
   "r2_cpu_audit": {
     "receipt": "experiments/TRR-P09/setup/stage1-input-preparation-r2-receipt.json",
     "receipt_sha256": "e8e0e2bad1bba8ba71482dd28babfff4bcdf391cf224a95551705d2643171c5d",
@@ -922,5 +1040,122 @@
     "source_revision_sha256": "657d73a2d9787bdb321260d1757c4a6e8c27c23dc1e07a30273bf7e2ff41c7d2",
     "payloads_unchanged": true,
     "forward_batch_qualification": "QUALIFICATION_PASS"
+  },
+  "validation_diagnostic_completion": {
+    "status": "COMPLETE_PUBLIC_VALIDATION_AND_FIXED_DIAGNOSTIC_NO_FIT_NO_TRUTH",
+    "evidence_commit": "31963b67394082ac8d67b3878920aa2789eb1921",
+    "public_validation_audit": {
+      "status": "PASS_PUBLIC_VALIDATION_384_AUDITED_NO_TRUTH",
+      "receipt": {
+        "path": "experiments/TRR-P09/setup/public-validation-r1-audit.json",
+        "sha256": "25d30f3cfb7e3c00c0d8ecde96db550c772f663ffa81a3a5a211fe1be166a022",
+        "bytes": 7418
+      },
+      "source_commit": "0fec16d8c150772b5c540f09315f6e589e010c4f",
+      "records": 384,
+      "records_by_domain": {
+        "Finance": 256,
+        "Pile": 128
+      },
+      "sequence_tokens_including_bos": 128,
+      "source_selection": {
+        "path": "experiments/TRR-0009/selection_v2/source_selection.json",
+        "sha256": "c2e996514f7f45e55d7bfadc27fc8048bdb07a2c979b208de8716972d8d1def2"
+      },
+      "observation_manifest": {
+        "path": "experiments/TRR-0009/evaluation/public_observations_v2/observations.json",
+        "sha256": "8ad89e2598e7b1e774c43b3fd1d0f1a990615069cd1f488e8aa139463087d430"
+      },
+      "successful_preparation_watchdog": {
+        "path": "/tmp/trr-p09-runtime/public-validation-watchdog-r1",
+        "status": "PASS",
+        "finish_sha256": "ec1c241ef021a44132fb301ef8a4669bab1d92202b195352a5fe8653da9a31e3",
+        "child_return_code": 0,
+        "wrapper_exit_code": 0,
+        "peak_group_rss_bytes": 1160151040,
+        "minimum_sampled_host_mem_available_bytes": 19226554368
+      },
+      "successful_audit_watchdog": {
+        "path": "/tmp/trr-p09-runtime/public-validation-audit-watchdog-r1",
+        "status": "PASS",
+        "finish_sha256": "159055736ff5c75e49ee02a6c5c5fda85586f6609a1b303d3ec577adc389eeeb",
+        "child_return_code": 0,
+        "wrapper_exit_code": 0,
+        "peak_group_rss_bytes": 1159303168,
+        "minimum_sampled_host_mem_available_bytes": 19213017088
+      },
+      "validation_manifest": {
+        "path": "/tmp/trr-p09-runtime/public-validation-r1/validation_manifest.json",
+        "sha256": "2ae3c36d62a3219f0df24ef6d87a9c76418b408d946ba52bcedd020b6b403d38",
+        "bytes": 468369
+      },
+      "validation_rows": {
+        "path": "/tmp/trr-p09-runtime/public-validation-r1/validation_rows.json",
+        "sha256": "3877baf2a8ad894cb7c971aadd1591854852f77091bdbdb218b3617a6971919f",
+        "bytes": 72111
+      },
+      "label_join_sha256": "35b8341d95e08d4375fbb122251309f258d5fced134675bae495f92721bcc23f",
+      "truth_opened": false,
+      "model_loaded": false,
+      "raw_public_validation_payloads_local_only": true,
+      "excluded_duplicate_launch": {
+        "status": "EXCLUDED_DUPLICATE_LAUNCH",
+        "reason": "Create-only public-validation preparation refused because the requested output directory already existed; no payloads were changed.",
+        "watchdog_root": "/tmp/trr-p09-runtime/watchdog-public-validation-r1",
+        "command_path": "/tmp/trr-p09-runtime/watchdog-public-validation-r1/command.json",
+        "command_sha256": "3231c2a362c548f119a92f3d5719a5586f5eb8c4124471cb60a88a66ace058c3",
+        "finish_path": "/tmp/trr-p09-runtime/watchdog-public-validation-r1/finish.json",
+        "finish_sha256": "a957bdc81d4754efa6a4b56c74e17ed20b8d1620b77289fb45d1050141e93a",
+        "stderr_path": "/tmp/trr-p09-runtime/watchdog-public-validation-r1/stderr.txt",
+        "stderr_sha256": "087e320b2cdb3e3ca80ee632b3d70b22cacaa00c022b6cd1f89b07f96b9a7c39",
+        "requested_output_root": "/tmp/trr-p09-runtime/public-validation-r1",
+        "child_return_code": 125,
+        "wrapper_exit_code": 125,
+        "successful_preparation_watchdog_root": "/tmp/trr-p09-runtime/public-validation-watchdog-r1",
+        "successful_audit_watchdog_root": "/tmp/trr-p09-runtime/public-validation-audit-watchdog-r1"
+      }
+    },
+    "fixed_diagnostic": {
+      "status": "PASS_FIXED_DIAGNOSTIC64_BOUND_PUBLIC_INPUTS_ONLY",
+      "binding": {
+        "path": "experiments/TRR-P09/setup/fixed-diagnostic-binding-r1.json",
+        "sha256": "8b899bc168b55570e4cfd526ff4e8656b70050e840386cba9390ad6adb1f54c3",
+        "bytes": 130098
+      },
+      "binder": {
+        "path": "scripts/trr_p09/bind_fixed_diagnostic.py",
+        "sha256": "d1459f01e1942dd8796e124ae31abdef218ee1a7c8273f830a6246ece20fc8fd"
+      },
+      "source_commit": "31963b67394082ac8d67b3878920aa2789eb1921",
+      "seed": 4010,
+      "record_count_per_bank": 64,
+      "stratum_quotas": {
+        "alpaca_natural": 32,
+        "pile_natural": 16,
+        "finance_natural": 10,
+        "pile_controlled": 3,
+        "finance_controlled": 3
+      },
+      "current_indices_sha256": "2dba4fdb243f742496cc010985820205a6d36f8c29b7ed3058369322d181f907",
+      "expanded_indices_sha256": "670624a8ef439fe11b250f1ba432d87922d6ff53da38ff8514203880237b6933",
+      "capture_exposure": {
+        "qualified_forward_batches": 1350,
+        "captured_new_records": 10800,
+        "complete_records_per_batch": 8,
+        "sequence_tokens": 192
+      },
+      "public_fitting_token_ids_masks_positions_only": true,
+      "model_loaded": false,
+      "activations_read": false,
+      "truth_opened": false,
+      "published_bank_manifests_modified": false
+    },
+    "remaining": [
+      "complete the shared common fit-contract and loader integration before any optimizer step",
+      "complete the reviewed fixed-control fit qualification before production fits",
+      "implement fixed 64-row diagnostic metrics at step zero and every fixed-control checkpoint",
+      "implement full-bank start/end metrics and bind them in the fixed-control receipts",
+      "keep fitting, target observation, and evaluation truth access unopened until those gates are reviewed"
+    ]
   }
 }

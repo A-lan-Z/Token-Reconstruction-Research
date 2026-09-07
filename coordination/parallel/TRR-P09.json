@@ -26,12 +26,15 @@
     "integrity_gate": "verify-once manifest/input/shard hashes, COMPLETE markers, contiguous ranges, payload headers and global_row metadata; stat-only checks thereafter",
     "model_loaded": false,
     "natural_validation_geometry": "T=128 already-opened TRR-0009 public_base view; no new panel",
-    "production_capture_started": false,
-    "public_forward_batch": "PENDING_CAPTURE_QUALIFICATION; preparation diagnostics use B=8 metadata only",
+    "production_capture_started": true,
+    "public_forward_batch": "QUALIFICATION_PASS; 169-shard capture complete; fixed-control fit hooks remain pending",
     "shard_records": 64,
     "source_rows_selected": true,
     "status": "STAGE1_R2_CPU_COMPILED_METADATA_REVISED_READY_FOR_CAPTURE",
-    "training_geometry": "loader_minibatch_proposed_B=8; complete_sequence_T=192; H=2048; BF16"
+    "training_geometry": "loader_minibatch_proposed_B=8; complete_sequence_T=192; H=2048; BF16",
+    "production_capture_complete": true,
+    "public_validation_status": "PASS_PUBLIC_VALIDATION_384_AUDITED_NO_TRUTH",
+    "fixed_diagnostic_status": "PASS_FIXED_DIAGNOSTIC64_BOUND_PUBLIC_INPUTS_ONLY"
   },
   "branch": "task/TRR-P09",
   "checkpoint_artifacts": {
@@ -57,7 +60,30 @@
     "qualified_bank_manifest": "experiments/TRR-P09/setup/qualified-bank-manifest-r1.json",
     "qualified_bank_manifest_sha256": "657d73a2d9787bdb321260d1757c4a6e8c27c23dc1e07a30273bf7e2ff41c7d2",
     "qualified_bank_manifest_payload_sha256": "0e14dbf74c947cfc6c586e7a5dbf76a27d8f0522fb8e54d2f98c6067bb36d196",
-    "qualified_bank_manifest_bytes": 145390
+    "qualified_bank_manifest_bytes": 145390,
+    "public_validation_audit": "experiments/TRR-P09/setup/public-validation-r1-audit.json",
+    "public_validation_audit_sha256": "25d30f3cfb7e3c00c0d8ecde96db550c772f663ffa81a3a5a211fe1be166a022",
+    "fixed_diagnostic_binding": "experiments/TRR-P09/setup/fixed-diagnostic-binding-r1.json",
+    "fixed_diagnostic_binding_sha256": "8b899bc168b55570e4cfd526ff4e8656b70050e840386cba9390ad6adb1f54c3",
+    "fixed_diagnostic_binder": "scripts/trr_p09/bind_fixed_diagnostic.py",
+    "fixed_diagnostic_binder_sha256": "d1459f01e1942dd8796e124ae31abdef218ee1a7c8273f830a6246ece20fc8fd",
+    "validation_diagnostic_evidence_commit": "31963b67394082ac8d67b3878920aa2789eb1921",
+    "public_validation_duplicate_launch_excluded": {
+      "status": "EXCLUDED_DUPLICATE_LAUNCH",
+      "reason": "Create-only public-validation preparation refused because the requested output directory already existed; no payloads were changed.",
+      "watchdog_root": "/tmp/trr-p09-runtime/watchdog-public-validation-r1",
+      "command_path": "/tmp/trr-p09-runtime/watchdog-public-validation-r1/command.json",
+      "command_sha256": "3231c2a362c548f119a92f3d5719a5586f5eb8c4124471cb60a88a66ace058c3",
+      "finish_path": "/tmp/trr-p09-runtime/watchdog-public-validation-r1/finish.json",
+      "finish_sha256": "a957bdc81d4754efa6a4b56c74e17ed20b8d1620b77289fb45d1050141e93a",
+      "stderr_path": "/tmp/trr-p09-runtime/watchdog-public-validation-r1/stderr.txt",
+      "stderr_sha256": "087e320b2cdb3e3ca80ee632b3d70b22cacaa00c022b6cd1f89b07f96b9a7c39",
+      "requested_output_root": "/tmp/trr-p09-runtime/public-validation-r1",
+      "child_return_code": 125,
+      "wrapper_exit_code": 125,
+      "successful_preparation_watchdog_root": "/tmp/trr-p09-runtime/public-validation-watchdog-r1",
+      "successful_audit_watchdog_root": "/tmp/trr-p09-runtime/public-validation-audit-watchdog-r1"
+    }
   },
   "communication": {
     "agent1_contract_detail": {
@@ -107,8 +133,11 @@
     "merge_allowed": false
   },
   "pending": [
-    "complete shared common fit-contract and loader integration before any optimizer step",
-    "keep fitting, target observation, and evaluation truth access unopened until that contract is reviewed"
+    "complete the shared common fit-contract and loader integration before any optimizer step",
+    "complete the reviewed fixed-control fit qualification before production fits",
+    "implement fixed 64-row diagnostic metrics at step zero and every fixed-control checkpoint",
+    "implement full-bank start/end metrics and bind them in the fixed-control receipts",
+    "keep fitting, target observation, and evaluation truth access unopened until those gates are reviewed"
   ],
   "preparation_audit": {
     "activation_bank_opened": true,
@@ -135,7 +164,10 @@
       "payloads_unchanged": true,
       "forward_batch_qualification": "QUALIFICATION_PASS"
     },
-    "gpu_released": true
+    "gpu_released": true,
+    "public_validation_complete": true,
+    "fixed_diagnostic_bound": true,
+    "fit_run": false
   },
   "publication": {
     "status": "COMPLETE_OPEN_UNMERGED",
@@ -154,7 +186,7 @@
     "base_branch": "task/TRR-0009",
     "base_sha": "4602f98eeb03ac121d8bbc230d7e2b219551b914",
     "head_branch": "task/TRR-P09",
-    "evidence_commit": "140ed70df03aca32814cbd4b48aa395745d57ad6",
+    "evidence_commit": "31963b67394082ac8d67b3878920aa2789eb1921",
     "approval_block_resolved_by_explicit_user_approval": true,
     "historical_approval_block": {
       "bytes": 1353,
@@ -198,12 +230,15 @@
     "stage1_r2_metadata_revision": "/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/preparation_manifest-r2-corrected.json",
     "stage1_r2_metadata_revision_sha256": "79bbd55c3e66555501e0abc886e69b5a4ff85bca5301a129f6e5d398524e844f",
     "stage1_capture_binding": "experiments/TRR-P09/setup/stage1-capture-binding-r1.json",
-    "public_support_binding": "experiments/TRR-P09/setup/public-support-binding-r1.json"
+    "public_support_binding": "experiments/TRR-P09/setup/public-support-binding-r1.json",
+    "public_validation_audit": "experiments/TRR-P09/setup/public-validation-r1-audit.json",
+    "fixed_diagnostic_binding": "experiments/TRR-P09/setup/fixed-diagnostic-binding-r1.json",
+    "fixed_diagnostic_binder": "scripts/trr_p09/bind_fixed_diagnostic.py"
   },
   "source_head_commit": "24a5fa69dfbbd621708a666ed561c56c1472f5aa",
-  "status": "STAGE1_PUBLIC_BASE_CAPTURE_COMPLETE_NO_TRUTH",
+  "status": "STAGE1_VALIDATION_DIAGNOSTIC_BOUND_NO_FIT_NO_TRUTH",
   "task_id": "TRR-P09",
-  "updated_utc": "2026-09-07T12:28:01Z",
+  "updated_utc": "2026-09-07T13:09:51Z",
   "worktree": "/tmp/trr-p09",
   "cost_lineage": {
     "path": "experiments/TRR-P09/planning/starting-state-cost-lineage.md",
@@ -560,5 +595,41 @@
     "source_revision_sha256": "657d73a2d9787bdb321260d1757c4a6e8c27c23dc1e07a30273bf7e2ff41c7d2",
     "payloads_unchanged": true,
     "forward_batch_qualification": "QUALIFICATION_PASS"
+  },
+  "validation_diagnostic_completion": {
+    "status": "COMPLETE_PUBLIC_VALIDATION_AND_FIXED_DIAGNOSTIC_NO_FIT_NO_TRUTH",
+    "evidence_commit": "31963b67394082ac8d67b3878920aa2789eb1921",
+    "public_validation_audit": "experiments/TRR-P09/setup/public-validation-r1-audit.json",
+    "public_validation_audit_sha256": "25d30f3cfb7e3c00c0d8ecde96db550c772f663ffa81a3a5a211fe1be166a022",
+    "fixed_diagnostic_binding": "experiments/TRR-P09/setup/fixed-diagnostic-binding-r1.json",
+    "fixed_diagnostic_binding_sha256": "8b899bc168b55570e4cfd526ff4e8656b70050e840386cba9390ad6adb1f54c3",
+    "successful_watchdogs": [
+      "/tmp/trr-p09-runtime/public-validation-watchdog-r1",
+      "/tmp/trr-p09-runtime/public-validation-audit-watchdog-r1"
+    ],
+    "excluded_duplicate_launch": {
+      "status": "EXCLUDED_DUPLICATE_LAUNCH",
+      "reason": "Create-only public-validation preparation refused because the requested output directory already existed; no payloads were changed.",
+      "watchdog_root": "/tmp/trr-p09-runtime/watchdog-public-validation-r1",
+      "command_path": "/tmp/trr-p09-runtime/watchdog-public-validation-r1/command.json",
+      "command_sha256": "3231c2a362c548f119a92f3d5719a5586f5eb8c4124471cb60a88a66ace058c3",
+      "finish_path": "/tmp/trr-p09-runtime/watchdog-public-validation-r1/finish.json",
+      "finish_sha256": "a957bdc81d4754efa6a4b56c74e17ed20b8d1620b77289fb45d1050141e93a",
+      "stderr_path": "/tmp/trr-p09-runtime/watchdog-public-validation-r1/stderr.txt",
+      "stderr_sha256": "087e320b2cdb3e3ca80ee632b3d70b22cacaa00c022b6cd1f89b07f96b9a7c39",
+      "requested_output_root": "/tmp/trr-p09-runtime/public-validation-r1",
+      "child_return_code": 125,
+      "wrapper_exit_code": 125,
+      "successful_preparation_watchdog_root": "/tmp/trr-p09-runtime/public-validation-watchdog-r1",
+      "successful_audit_watchdog_root": "/tmp/trr-p09-runtime/public-validation-audit-watchdog-r1"
+    },
+    "zero_fit_or_optimizer_steps": true,
+    "remaining": [
+      "complete the shared common fit-contract and loader integration before any optimizer step",
+      "complete the reviewed fixed-control fit qualification before production fits",
+      "implement fixed 64-row diagnostic metrics at step zero and every fixed-control checkpoint",
+      "implement full-bank start/end metrics and bind them in the fixed-control receipts",
+      "keep fitting, target observation, and evaluation truth access unopened until those gates are reviewed"
+    ]
   }
 }
