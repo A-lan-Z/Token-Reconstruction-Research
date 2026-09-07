@@ -245,13 +245,14 @@ def _require_design(path: Path, *, root: Path) -> tuple[dict[str, Any], dict[str
             "registration requires the owner-frozen TRR-0010 final evaluation design; "
             f"current status is {design.get('status')!r}"
         )
-    methods = design.get("methods")
-    if (
-        not isinstance(methods, Mapping)
-        or set(methods) != set(gate.METHOD_ORDER)
-        or any(methods.get(method_id) != gate.METHOD_ROLES[method_id] for method_id in gate.METHOD_ORDER)
-    ):
-        raise RegisterError("final evaluation design does not freeze all six contender roles")
+    # Selection and registration share one pre-source freeze contract.  The
+    # selector validates explicit contender/state markers and hashes every
+    # state/readout resource; accepting the legacy role-only map here would
+    # let capture/registration bypass that stronger boundary.
+    try:
+        trr10_selection._validate_design(path, root=root)
+    except trr10_selection.SelectionError as exc:
+        raise RegisterError(str(exc)) from exc
     if list(design.get("method_order", ())) != list(gate.METHOD_ORDER):
         raise RegisterError("final evaluation design method order changed")
     decision_rules = design.get("decision_rules")
