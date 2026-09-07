@@ -14,6 +14,8 @@ from trr0009_train import (
     TrainingConfig,
     _challenge_from_wrong_mask,
     _resource_paths,
+    _resource_snapshot,
+    _host_available_bytes,
     build_parser,
     main,
     _frequency_counts,
@@ -80,6 +82,23 @@ def test_resource_estimate_declares_b1_full_output_separately() -> None:
     assert estimate["largest_draw_shape"] == [EXPECTED_POSITION_BUDGET]
     assert estimate["b1_two_full_logits_peak_bytes_if_compared_simultaneously"] > 0
     assert estimate["qualification_full_output_fixture"].startswith("B=1")
+
+
+def test_resource_snapshot_uses_memavailable_and_labels_free_pages() -> None:
+    available = _host_available_bytes()
+    assert available is not None
+    expected = None
+    for line in Path("/proc/meminfo").read_text(encoding="ascii").splitlines():
+        fields = line.split()
+        if len(fields) >= 2 and fields[0] == "MemAvailable:" and fields[1].isdigit():
+            expected = int(fields[1]) * 1024
+            break
+    assert available == expected
+    snapshot = _resource_snapshot(torch.device("cpu"))
+    assert snapshot["host_available_bytes"] == expected
+    assert snapshot["host_available_source"] == "/proc/meminfo:MemAvailable"
+    assert "host_peak_rss_bytes" in snapshot
+    assert "host_free_bytes" in snapshot
 
 
 def test_best_checkpoint_state_is_restored_when_final_is_worse() -> None:

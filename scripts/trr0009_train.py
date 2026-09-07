@@ -307,11 +307,44 @@ def _validate_config(config: TrainingConfig, *, qualification: bool = False) -> 
         raise TRR0009TrainError("max_seconds must be positive")
 
 
+def _host_available_bytes() -> int | None:
+    """Return Linux MemAvailable, including reclaimable cache.
+
+    SC_AVPHYS_PAGES reports immediately free pages and can understate the
+    memory that the OS can reclaim safely for this bounded guard.
+    """
+    try:
+        for line in Path("/proc/meminfo").read_text(encoding="ascii").splitlines():
+            fields = line.split()
+            if len(fields) >= 2 and fields[0] == "MemAvailable:" and fields[1].isdigit():
+                return int(fields[1]) * 1024
+    except (OSError, UnicodeError, ValueError):
+        return None
+    return None
+
+
+def _host_free_bytes() -> int | None:
+    """Return immediately free pages for diagnostic context only."""
+    try:
+        page_size = int(os.sysconf("SC_PAGE_SIZE"))
+        free_pages = int(os.sysconf("SC_AVPHYS_PAGES"))
+    except (AttributeError, OSError, ValueError):
+        return None
+    return page_size * free_pages
+
+
 def _resource_snapshot(device: torch.device) -> dict[str, Any]:
-    rss = int(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss) * 1024
+    peak_rss = int(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss) * 1024
+    host_available = _host_available_bytes()
+    host_free = _host_free_bytes()
     snapshot: dict[str, Any] = {
-        "host_rss_bytes": rss,
-        "host_rss_gib": rss / float(1024**3),
+        "host_peak_rss_bytes": peak_rss,
+        "host_peak_rss_gib": peak_rss / float(1024**3),
+        "host_available_bytes": host_available,
+        "host_available_gib": None if host_available is None else host_available / float(1024**3),
+        "host_free_bytes": host_free,
+        "host_free_gib": None if host_free is None else host_free / float(1024**3),
+        "host_available_source": "/proc/meminfo:MemAvailable",
         "platform": platform.platform(),
         "torch_version": torch.__version__,
         "device": str(device),
@@ -328,14 +361,6 @@ def _resource_snapshot(device: torch.device) -> dict[str, Any]:
         })
     else:
         snapshot.update({"cuda_free_bytes": None, "cuda_total_bytes": None, "cuda_reserved_bytes": 0, "cuda_allocated_bytes": 0})
-    try:
-        page_size = int(os.sysconf("SC_PAGE_SIZE"))
-        available_pages = int(os.sysconf("SC_AVPHYS_PAGES"))
-        snapshot["host_available_bytes"] = page_size * available_pages
-        snapshot["host_available_gib"] = snapshot["host_available_bytes"] / float(1024**3)
-    except (AttributeError, OSError, ValueError):
-        snapshot["host_available_bytes"] = None
-        snapshot["host_available_gib"] = None
     return snapshot
 
 
@@ -346,11 +371,13 @@ def _enforce_resource_guard(snapshot: Mapping[str, Any], guard: ResourceGuard, *
     free = snapshot.get("cuda_free_bytes")
     if device.type == "cuda" and free is not None and int(free) < guard.minimum_gpu_free_bytes:
         raise TRR0009TrainError(f"resource guard exceeded at {stage}: CUDA free bytes {free}")
-    rss = int(snapshot.get("host_rss_bytes") or 0)
-    if rss > guard.maximum_host_rss_bytes:
-        raise TRR0009TrainError(f"resource guard exceeded at {stage}: RSS bytes {rss}")
+    peak_rss = int(snapshot.get("host_peak_rss_bytes") or 0)
+    if peak_rss > guard.maximum_host_rss_bytes:
+        raise TRR0009TrainError(f"resource guard exceeded at {stage}: peak RSS bytes {peak_rss}")
     host_available = snapshot.get("host_available_bytes")
-    if host_available is not None and int(host_available) < guard.minimum_host_available_bytes:
+    if host_available is None:
+        raise TRR0009TrainError(f"resource guard telemetry unavailable at {stage}: host available bytes missing")
+    if int(host_available) < guard.minimum_host_available_bytes:
         raise TRR0009TrainError(f"resource guard exceeded at {stage}: host available bytes {host_available}")
 
 
@@ -1052,8 +1079,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         device = _parse_device(args.device)
         if args.preflight_only:
             _validate_config(config)
+            guard = ResourceGuard.from_config(config)
+            resource_before = _resource_snapshot(device)
+            _enforce_resource_guard(resource_before, guard, stage="preflight_start", device=device)
             data, counts, support_ids, support_counts, common, embedding_record, schedule = _prepare_common(paths, config, device=device)
-            payload = {"schema": PREFLIGHT_SCHEMA, "task_id": TASK_ID, "created_utc": _utc_now(), "config": asdict(config), "runtime": _runtime_binding(paths.repository_root, numerical_settings), "paths": common, "resource_estimate": resource_estimate(), "resource_guard": asdict(ResourceGuard.from_config(config)), "resource_snapshot": _resource_snapshot(device), "status": "METADATA_PREFLIGHT_PASS"}
+            resource_after = _resource_snapshot(device)
+            _enforce_resource_guard(resource_after, guard, stage="preflight_after_asset_load", device=device)
+            payload = {"schema": PREFLIGHT_SCHEMA, "task_id": TASK_ID, "created_utc": _utc_now(), "config": asdict(config), "runtime": _runtime_binding(paths.repository_root, numerical_settings), "paths": common, "resource_estimate": resource_estimate(), "resource_guard": asdict(guard), "resource_before": resource_before, "resource_after": resource_after, "status": "METADATA_PREFLIGHT_PASS"}
             _write_create_only(paths.output_root / "preflight.json", payload, description="training preflight")
         elif args.qualification_only:
             _check_create_only_output(paths.output_root, args.arms)
