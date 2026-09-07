@@ -72,18 +72,18 @@ For replacement token identities, reuse the exact published ordered 3,600-ID sup
 
 ### Fixed diagnostic before fit
 
-Freeze one score-independent 64-record diagnostic for each bank before fitting, shared by that bank's four crossed arms and reused through the nested B0 prefix:
+Freeze one score-independent 64-record diagnostic for each bank before fitting, selected from that bank's complete bound rows and shared only by that bank's two fixed/directional readout arms:
 
 - Alpaca natural 32, Pile natural 16, Finance natural 10, Pile controlled 3, Finance controlled 3;
 - use frozen seed `4010` and, within each stratum, rank the bound record identities by `SHA256("TRR-0010|fixed-diagnostic|4010|{record_id}")` ascending;
 - bind the ordered record IDs, source labels, exact sequence/position masks, and digest before the first schedule read or optimizer step;
 - use it only for fixed diagnostic curves/health checks, never checkpoint selection, source selection, or final evaluation.
 
-The diagnostic has identical identities and predeclared positions across current/expanded banks and fixed/directional readouts. Any missing B0 stratum or changed prefix is a binding failure, not a reason to substitute rows after training begins.
+The current-bank and expanded-bank diagnostics are independent subsets, although they use the same quotas, seed, and hash recipe. An expanded-bank diagnostic may therefore include additions. Any missing stratum or changed bank binding is a failure, not a reason to substitute rows after training begins.
 
 ### Cross-stage identity and geometry bindings
 
-The receipt must distinguish the complete width-192 fit objects from the width-128 evaluation objects. In particular, the B8 complete-192 sequence set must be distinct from the 512 non-BOS valid-loss draws; capture size is a separately qualified resource quantity rather than an inference from fit memory. Bind the exact mapping from each width-192 fit record/hash to its width-128 reservation and parent ID. Sequence hashes computed at mismatched geometries are not comparable and must never satisfy an identity check. The B0 prefix and the 64-record diagnostic binding must be written and verified before any schedule is read.
+The receipt must distinguish the complete width-192 fit objects from the width-128 evaluation objects. In particular, the B8 complete-192 sequence set must be distinct from the 512 non-BOS valid-loss draws; capture size is a separately qualified resource quantity rather than an inference from fit memory. Bind the exact mapping from each width-192 fit record/hash to its width-128 reservation and parent ID. Sequence hashes computed at mismatched geometries are not comparable and must never satisfy an identity check. The B0 prefix and each per-bank 64-record diagnostic binding must be written and verified before any schedule is read.
 
 ## Alignment findings
 
@@ -102,7 +102,7 @@ The following contract choices are approved in principle:
 3. After actual B1 valid positions are bound, evaluate the contract's existing formula for the exact common `N` and report per-arm draws and repeated exposures; the current-bank control will have a different repeat rate by design. The expected roughly 1.24M positions make 12,000 a lower-bound grid point, but the receipt must determine the actual value.
 4. Keep the resource caps explicitly pending setup qualification. The 12,000-row BF16 H payload alone is `12,000 × 192 × 2,048 × 2 = 9,437,184,000` bytes (8.79 GiB), before token/mask/position sidecars and staging overhead; the full directional merged-readout estimate of 11.477 GiB against a 12.2 GiB live-free snapshot is not a qualification margin. Measure and bind capture caps before capture. After the B1 support and capture objects are prepared, qualify the largest expanded-directional merged-W cell and bind measured disk, host-RSS, isolated GPU peak, wall-time, and output-equivalence caps before releasing the full matrix.
 5. Bind A1+A2 state/input/timing identities before using the 0.25 candidate/A1+A2 runtime gate; until then that comparison remains UNKNOWN. Do not use the 262–267 second planning timing as a scientific result or as a substitute for a receipt.
-6. Clarify in the frozen contract that the TRR-0009 `5cada...` checkpoint is the only TRR-0010 starting state and that P09's older `2a44...` state is not mixed into any arm, baseline, cost, or gap-closure calculation.
+6. Clarify in the frozen contract that the TRR-0009 `5cada...` checkpoint is the only TRR-0010 starting state. Keep P09's older `2a44...` identifier as historical ancestor metadata; if shared-pretraining cost accounting includes that ancestor, report it as ancestor cost rather than treating it as a TRR-0010 arm or baseline.
 
 ## Disposition
 
