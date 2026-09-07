@@ -12,7 +12,7 @@ import pytest
 import torch
 from torch import nn
 
-from token_reconstruction.trr0009_fixed_control_adapter import (
+from token_reconstruction.trr_p09_fixed_control_adapter import (
     AssetBinding,
     BankContract,
     FixedControlContractError,
@@ -83,7 +83,11 @@ def test_fixed_hook_is_identity_and_has_no_readout_parameters() -> None:
     decoder = nn.Linear(4, 7)
     hook = FixedPublicReadoutHook(method_id="synthetic_fixed", embedding_sha256=_DIGEST)
     base_logits = torch.randn(5, 7, requires_grad=True)
-    transformed = hook.transform_logits(base_logits)
+    query_rows = torch.randn(5, 4)
+    embedding = torch.randn(7, 4)
+    transformed = hook.score_rows(
+        query_rows, torch.tensor(2.0), embedding, base_logits=base_logits
+    )
     assert transformed is base_logits
     targets = torch.tensor([0, 1, 2, 3, 4])
     losses = hook.loss_terms(transformed, targets)
@@ -98,6 +102,10 @@ def test_fixed_hook_is_identity_and_has_no_readout_parameters() -> None:
 
 
 class _SyntheticDecoder(nn.Module):
+    def __init__(self) -> None:
+        super().__init__()
+        self.logit_scale = torch.tensor(1.0)
+
     def projected_hidden(self, activation: torch.Tensor, valid_mask: torch.Tensor) -> torch.Tensor:
         assert activation.shape[:2] == valid_mask.shape
         return activation
@@ -133,5 +141,73 @@ def test_shared_decoder_rows_keeps_target_access_in_loss_only() -> None:
         targets,
     )
     assert torch.equal(base, logits)
+    direct = hook.score_rows(
+        base.new_empty((3, 3)).copy_(activation[record_slots, position_slots]),
+        decoder.logit_scale,
+        embedding,
+    )
+    assert torch.allclose(direct, base)
     assert losses["total"].ndim == 0
     assert base.shape == (3, 7)
+
+
+def test_directional_fixture_depends_on_query_orientation_and_gets_gradients() -> None:
+    class DirectionalFixture(nn.Module):
+        method_id = "synthetic_directional"
+        readout_mode = "token_direction"
+
+        def __init__(self) -> None:
+            super().__init__()
+            self.delta = nn.Parameter(torch.zeros(2, 3))
+
+        def score_rows(
+            self,
+            query_rows: torch.Tensor,
+            logit_scale: torch.Tensor,
+            embedding: torch.Tensor,
+            *,
+            base_logits: torch.Tensor | None = None,
+        ) -> torch.Tensor:
+            del base_logits
+            effective = embedding + self.delta
+            return (query_rows @ effective.transpose(0, 1)) * logit_scale
+
+        def loss_terms(
+            self, logits: torch.Tensor, target_ids: torch.Tensor
+        ) -> dict[str, torch.Tensor]:
+            total = torch.nn.functional.cross_entropy(logits, target_ids)
+            return {"total": total}
+
+        def optimizer_param_groups(self, decoder: nn.Module, *, base_learning_rate: float):
+            del decoder
+            return ({"params": [self.delta], "lr": base_learning_rate},)
+
+        def metadata(self):
+            return {"method_id": self.method_id}
+
+    decoder = _SyntheticDecoder()
+    hook = DirectionalFixture()
+    with torch.no_grad():
+        hook.delta[0, 0] = 0.5
+    activation = torch.zeros(2, 2, 3)
+    activation[0, 1, :2] = torch.tensor([1.0, 0.0])
+    activation[1, 1, :2] = torch.tensor([0.0, 1.0])
+    valid_mask = torch.ones(2, 2, dtype=torch.bool)
+    embedding = torch.zeros(2, 3)
+    base, logits, losses = shared_decoder_rows(
+        decoder,
+        hook,
+        activation,
+        valid_mask,
+        torch.tensor([0, 1]),
+        torch.tensor([1, 1]),
+        embedding,
+        torch.tensor([1, 1]),
+        compute_base_logits=False,
+    )
+    assert base is None
+    assert float(logits[0, 0].detach()) == pytest.approx(0.5)
+    assert float(logits[1, 0].detach()) == pytest.approx(0.0)
+    losses["total"].backward()
+    assert hook.delta.grad is not None
+    assert float(hook.delta.grad.abs().sum()) > 0.0

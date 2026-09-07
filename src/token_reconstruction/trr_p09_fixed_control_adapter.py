@@ -2,10 +2,10 @@
 
 This module contains contract plumbing only.  The common runner owns the
 public decoder, sampler, validation, checkpoint grid, and resource guards.  A
-readout hook may transform the decoder's full-vocabulary logits and add a
-method-specific loss or optimizer group.  The fixed hook is an identity hook:
-it keeps the public embedding/readout unchanged and exposes only the decoder
-parameters to the optimizer.
+readout hook receives the decoder's normalized query rows, public embedding,
+and inherited logit scale. It may score a method-specific full-vocabulary
+readout and add a method-specific loss or optimizer group. The fixed hook
+reuses the decoder's base logits exactly and exposes only decoder parameters.
 
 No dataset, model checkpoint, target observation, or truth asset is loaded by
 this module.
@@ -15,6 +15,7 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 import hashlib
+import json
 import re
 from typing import Any, Protocol
 
@@ -130,12 +131,19 @@ class TrainingContract:
 
 
 class ReadoutHook(Protocol):
-    """Method-specific logit/loss surface consumed by a shared decoder runner."""
+    """Readout surface consumed by a shared decoder/sampler runner."""
 
     method_id: str
     readout_mode: str
 
-    def transform_logits(self, base_logits: torch.Tensor) -> torch.Tensor:
+    def score_rows(
+        self,
+        query_rows: torch.Tensor,
+        logit_scale: torch.Tensor,
+        embedding: torch.Tensor,
+        *,
+        base_logits: torch.Tensor | None = None,
+    ) -> torch.Tensor:
         """Return full-vocabulary logits without access to target labels."""
 
     def loss_terms(
@@ -166,12 +174,22 @@ class FixedPublicReadoutHook:
         if _SHA256_RE.fullmatch(self.embedding_sha256) is None:
             raise FixedControlContractError("embedding SHA-256 is malformed")
 
-    def transform_logits(self, base_logits: torch.Tensor) -> torch.Tensor:
-        if base_logits.ndim != 2 or base_logits.shape[0] <= 0 or base_logits.shape[1] <= 0:
-            raise FixedControlContractError("base logits must be a non-empty [rows,vocab] tensor")
-        # Returning the same tensor preserves the common decoder's exact
-        # numerical path and prevents an accidental fixed-readout copy.
-        return base_logits
+    def score_rows(
+        self,
+        query_rows: torch.Tensor,
+        logit_scale: torch.Tensor,
+        embedding: torch.Tensor,
+        *,
+        base_logits: torch.Tensor | None = None,
+    ) -> torch.Tensor:
+        _validate_query_geometry(query_rows, embedding, logit_scale)
+        if base_logits is not None:
+            if tuple(base_logits.shape) != (query_rows.shape[0], embedding.shape[0]):
+                raise FixedControlContractError("base logits geometry differs")
+            # Reusing the inherited decoder result preserves its exact
+            # normalization, dtype conversion, and exp(s) scale path.
+            return base_logits
+        return _public_logits(query_rows, embedding, logit_scale)
 
     def loss_terms(
         self, logits: torch.Tensor, target_ids: torch.Tensor
@@ -202,7 +220,38 @@ class FixedPublicReadoutHook:
             "full_vocabulary": True,
             "a2": False,
             "trainable_readout_parameters": 0,
+            "query_interface": "normalized_query_rows_plus_inherited_logit_scale",
         }
+
+
+def _validate_query_geometry(
+    query_rows: torch.Tensor,
+    embedding: torch.Tensor,
+    logit_scale: torch.Tensor,
+) -> None:
+    if query_rows.ndim != 2 or query_rows.shape[0] <= 0 or query_rows.shape[1] <= 0:
+        raise FixedControlContractError("query rows must be a non-empty [rows,hidden] tensor")
+    if embedding.ndim != 2 or embedding.shape[1] != query_rows.shape[1]:
+        raise FixedControlContractError("public embedding geometry differs from query rows")
+    if not query_rows.is_floating_point() or not embedding.is_floating_point():
+        raise FixedControlContractError("query rows and embedding must be floating point")
+    if logit_scale.ndim != 0 or not logit_scale.is_floating_point():
+        raise FixedControlContractError("inherited logit scale must be a floating scalar")
+    if not torch.isfinite(logit_scale).item():
+        raise FixedControlContractError("inherited logit scale is non-finite")
+
+
+def _public_logits(
+    query_rows: torch.Tensor,
+    embedding: torch.Tensor,
+    logit_scale: torch.Tensor,
+) -> torch.Tensor:
+    _validate_query_geometry(query_rows, embedding, logit_scale)
+    logits = query_rows.to(embedding.dtype) @ embedding.transpose(0, 1)
+    result = logits.float() * logit_scale
+    if not torch.isfinite(result).all().item():
+        raise FixedControlContractError("readout logits are non-finite")
+    return result
 
 
 def shared_decoder_rows(
@@ -214,20 +263,38 @@ def shared_decoder_rows(
     position_slots: torch.Tensor,
     embedding: torch.Tensor,
     target_ids: torch.Tensor,
-) -> tuple[torch.Tensor, torch.Tensor, Mapping[str, torch.Tensor]]:
+    *,
+    compute_base_logits: bool = True,
+) -> tuple[torch.Tensor | None, torch.Tensor, Mapping[str, torch.Tensor]]:
     """Run the common decoder path and then the method-specific hook.
 
-    Target IDs are passed only to ``loss_terms``.  The hook never receives
-    targets while transforming logits, which prevents target-dependent routing
-    or readout behavior.
+    The decoder owns query normalization and the inherited logit scale. Target
+    IDs are passed only to ``loss_terms``; the hook never receives targets
+    while scoring rows, which prevents target-dependent routing or readout
+    behavior. ``compute_base_logits=False`` lets a directional hook avoid a
+    duplicate public-E projection when the baseline tensor is not needed.
     """
 
     projected = decoder.projected_hidden(activation, valid_mask)
-    base_logits = decoder.logits_from_rows(
-        projected, record_slots, position_slots, embedding
+    base_logits = None
+    if compute_base_logits:
+        base_logits = decoder.logits_from_rows(
+            projected, record_slots, position_slots, embedding
+        )
+    query_rows = projected[
+        record_slots.to(projected.device), position_slots.to(projected.device)
+    ]
+    logit_scale = getattr(decoder, "logit_scale", None)
+    if not isinstance(logit_scale, torch.Tensor):
+        raise FixedControlContractError("common decoder must expose a tensor logit_scale")
+    logits = hook.score_rows(
+        query_rows,
+        logit_scale,
+        embedding,
+        base_logits=base_logits,
     )
-    logits = hook.transform_logits(base_logits)
-    if tuple(logits.shape) != tuple(base_logits.shape):
+    expected_shape = (query_rows.shape[0], embedding.shape[0])
+    if tuple(logits.shape) != expected_shape:
         raise FixedControlContractError("readout hook changed full-vocabulary logit geometry")
     losses = hook.loss_terms(logits, target_ids)
     if "total" not in losses:
@@ -252,5 +319,7 @@ def contract_digest(contract: BankContract) -> str:
         "fit_supported_token_count": contract.fit_supported_token_count,
         "schedule_semantic_sha256": contract.schedule_semantic_sha256,
     }
-    encoded = repr(payload).encode("utf-8")
+    encoded = json.dumps(
+        payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True
+    ).encode("utf-8")
     return hashlib.sha256(encoded).hexdigest()
