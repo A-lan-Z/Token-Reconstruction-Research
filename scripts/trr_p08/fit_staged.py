@@ -24,7 +24,7 @@ import subprocess
 import sys
 import time
 import traceback
-from typing import Any, Mapping, Sequence
+from typing import Any, Callable, Mapping, Sequence
 
 import torch
 import torch.nn.functional as F
@@ -423,7 +423,17 @@ def _cohort_artifact_payload(
     return payload
 
 
-def _row_predictions(model: VisibilityAffineAttentionDecoder, data: PublicJointData, embedding: torch.Tensor, rows: Sequence[Mapping[str, Any]], *, split: str, device: torch.device, direct_only: bool) -> list[dict[str, Any]]:
+def _row_predictions(
+    model: VisibilityAffineAttentionDecoder,
+    data: PublicJointData,
+    embedding: torch.Tensor,
+    rows: Sequence[Mapping[str, Any]],
+    *,
+    split: str,
+    device: torch.device,
+    direct_only: bool,
+    guard_callback: Callable[[str], None] | None = None,
+) -> list[dict[str, Any]]:
     if split not in ("fit", "validation"):
         raise P08FitError("cohort split must be fit or validation")
     observations = data.fit_observations if split == "fit" else data.validation_observations
@@ -431,15 +441,23 @@ def _row_predictions(model: VisibilityAffineAttentionDecoder, data: PublicJointD
     truth = data.fit_truth if split == "fit" else data.validation_truth
     model = model.to(device)
     model.eval()
+    if guard_callback is not None:
+        guard_callback(f"row_predictions:{split}:before_embedding_validation")
     model.validate_embedding_table(embedding)
+    if guard_callback is not None:
+        guard_callback(f"row_predictions:{split}:after_embedding_validation")
     grouped: dict[int, list[Mapping[str, Any]]] = {}
     for row in rows:
         grouped.setdefault(int(row["record_index"]), []).append(row)
     result: list[dict[str, Any]] = []
+    path_kind = "direct" if direct_only else "full"
     with torch.inference_mode():
         records = sorted(grouped)
         for start in range(0, len(records), RECORD_BATCH_SIZE):
-            selected = records[start : start + RECORD_BATCH_SIZE]
+            stop = min(start + RECORD_BATCH_SIZE, len(records))
+            if guard_callback is not None:
+                guard_callback(f"row_predictions:{split}:{path_kind}:before_batch:{start}:{stop}")
+            selected = records[start:stop]
             local = {record: index for index, record in enumerate(selected)}
             record_indices = torch.tensor(selected, dtype=torch.long)
             activation = observations.index_select(0, record_indices).to(device=device, dtype=torch.float32)
@@ -454,6 +472,8 @@ def _row_predictions(model: VisibilityAffineAttentionDecoder, data: PublicJointD
                 for row in grouped[record]
             ]
             for row_start in range(0, len(row_entries), POSITION_BUDGET):
+                if guard_callback is not None:
+                    guard_callback(f"row_predictions:{split}:{path_kind}:before_chunk:{start}:{row_start}")
                 row_chunk = row_entries[row_start : row_start + POSITION_BUDGET]
                 local_slots = torch.tensor([entry[1] for entry in row_chunk], device=device, dtype=torch.long)
                 original_slots = torch.tensor([entry[2] for entry in row_chunk], device=device, dtype=torch.long)
@@ -464,10 +484,23 @@ def _row_predictions(model: VisibilityAffineAttentionDecoder, data: PublicJointD
                 for entry, prediction, target in zip(row_chunk, predictions, targets):
                     row = entry[0]
                     result.append({**dict(row), "prediction": int(prediction), "correct": int(prediction) == int(target)})
+                if guard_callback is not None:
+                    guard_callback(f"row_predictions:{split}:{path_kind}:after_chunk:{start}:{row_start}")
+            if guard_callback is not None:
+                guard_callback(f"row_predictions:{split}:{path_kind}:after_batch:{start}:{stop}")
     return result
 
 
-def select_transition_error_cohort(model: VisibilityAffineAttentionDecoder, data: PublicJointData, embedding: torch.Tensor, *, split: str, device: torch.device, per_bin: int = COHORT_PER_BIN) -> dict[str, Any]:
+def select_transition_error_cohort(
+    model: VisibilityAffineAttentionDecoder,
+    data: PublicJointData,
+    embedding: torch.Tensor,
+    *,
+    split: str,
+    device: torch.device,
+    per_bin: int = COHORT_PER_BIN,
+    guard_callback: Callable[[str], None] | None = None,
+) -> dict[str, Any]:
     """Freeze transition errors and report the full direct-path denominator.
 
     Validation is the public development cohort and therefore retains every
@@ -488,17 +521,25 @@ def select_transition_error_cohort(model: VisibilityAffineAttentionDecoder, data
     with torch.inference_mode():
         model.eval()
         model = model.to(device)
+        if guard_callback is not None:
+            guard_callback(f"transition_cohort:{split}:before_embedding_validation")
         model.validate_embedding_table(embedding)
+        if guard_callback is not None:
+            guard_callback(f"transition_cohort:{split}:after_embedding_validation")
         runtime_embedding = embedding.to(device=device, dtype=torch.float32)
         for start in range(0, int(observations.shape[0]), RECORD_BATCH_SIZE):
             stop = min(start + RECORD_BATCH_SIZE, int(observations.shape[0]))
+            if guard_callback is not None:
+                guard_callback(f"transition_cohort:{split}:before_batch:{start}:{stop}")
             activation = observations[start:stop].to(device=device, dtype=torch.float32)
             mask = valid_mask[start:stop].to(device=device, dtype=torch.bool)
             hidden = F.normalize(model.direct_pre_normalized_hidden(activation, mask), dim=-1)
             indices = torch.nonzero(mask, as_tuple=False)
             indices = indices[indices[:, 1] > 0]
             valid_post_bos_count += int(indices.shape[0])
-            for chunk in indices.split(POSITION_BUDGET):
+            for chunk_index, chunk in enumerate(indices.split(POSITION_BUDGET)):
+                if guard_callback is not None:
+                    guard_callback(f"transition_cohort:{split}:before_chunk:{start}:{chunk_index}")
                 logits = model.logits_from_rows(hidden, chunk[:, 0], chunk[:, 1], runtime_embedding)
                 prediction = logits.argmax(dim=-1).detach().cpu()
                 target = truth[start + chunk[:, 0].cpu(), chunk[:, 1].cpu()]
@@ -507,6 +548,10 @@ def select_transition_error_cohort(model: VisibilityAffineAttentionDecoder, data
                         record_index = start + int(chunk[index, 0])
                         position = int(chunk[index, 1])
                         candidates.append({"record_index": record_index, "record_id": ids[record_index], "position": position, "bin": _bin(position)})
+                if guard_callback is not None:
+                    guard_callback(f"transition_cohort:{split}:after_chunk:{start}:{chunk_index}")
+            if guard_callback is not None:
+                guard_callback(f"transition_cohort:{split}:after_batch:{start}:{stop}")
     candidates.sort(key=lambda row: (int(row["record_index"]), int(row["position"])))
     error_count = len(candidates)
     if split == "validation":
@@ -651,6 +696,12 @@ def _train_arm(spec: ArmSpec, seed: int, data: PublicJointData, embedding: torch
     transition_state_sha: str | None = None
     transition_cohort_artifact: dict[str, Any] | None = None
     transition_state_record: dict[str, Any] | None = None
+
+    def diagnostic_guard(stage: str) -> None:
+        """Apply the same fail-closed limits inside long diagnostic loops."""
+
+        guards.append(_guard(args, device, stage=f"{spec.arm_id}:{seed}:diagnostic:{stage}", deadline=deadline))
+
     for step_index in range(TOTAL_STEPS + 1):
         guards.append(_guard(args, device, stage=f"{spec.arm_id}:{seed}:before_{step_index}", deadline=deadline))
         phase = _phase_for_update(spec, step_index)
@@ -658,8 +709,8 @@ def _train_arm(spec: ArmSpec, seed: int, data: PublicJointData, embedding: torch
         if step_index == STAGED_AFFINE_STEPS and spec.staged:
             transition_state_sha = state_sha256({name: value.detach().cpu() for name, value in model.state_dict().items()})
             if not shared_cohorts:
-                shared_cohorts["validation"] = select_transition_error_cohort(model, data, runtime_embedding, split="validation", device=device)
-                shared_cohorts["fit"] = select_transition_error_cohort(model, data, runtime_embedding, split="fit", device=device)
+                shared_cohorts["validation"] = select_transition_error_cohort(model, data, runtime_embedding, split="validation", device=device, guard_callback=diagnostic_guard)
+                shared_cohorts["fit"] = select_transition_error_cohort(model, data, runtime_embedding, split="fit", device=device, guard_callback=diagnostic_guard)
                 shared_cohorts["source_seed"] = int(seed)
                 shared_cohorts["source_arm"] = spec.arm_id
                 shared_cohorts["transition_direct_state_sha"] = state_sha256({name: getattr(model, name).detach().cpu() for name in ("W", "b", "s")})
@@ -749,10 +800,10 @@ def _train_arm(spec: ArmSpec, seed: int, data: PublicJointData, embedding: torch
         if cohort is None:
             continue
         rows = cohort["rows"]
-        selected_affine_rows = _row_predictions(selected_model, data, runtime_embedding, rows, split=split, device=device, direct_only=True)
-        selected_full_rows = _row_predictions(selected_model, data, runtime_embedding, rows, split=split, device=device, direct_only=False)
-        final_affine_rows = _row_predictions(model, data, runtime_embedding, rows, split=split, device=device, direct_only=True)
-        final_full_rows = _row_predictions(model, data, runtime_embedding, rows, split=split, device=device, direct_only=False)
+        selected_affine_rows = _row_predictions(selected_model, data, runtime_embedding, rows, split=split, device=device, direct_only=True, guard_callback=diagnostic_guard)
+        selected_full_rows = _row_predictions(selected_model, data, runtime_embedding, rows, split=split, device=device, direct_only=False, guard_callback=diagnostic_guard)
+        final_affine_rows = _row_predictions(model, data, runtime_embedding, rows, split=split, device=device, direct_only=True, guard_callback=diagnostic_guard)
+        final_full_rows = _row_predictions(model, data, runtime_embedding, rows, split=split, device=device, direct_only=False, guard_callback=diagnostic_guard)
         cohort_metrics[split] = {
             "cohort": {key: value for key, value in cohort.items() if key != "rows"},
             "selected_checkpoint": {"step": int(best_step), "comparison": correction_summary(selected_affine_rows, selected_full_rows)},

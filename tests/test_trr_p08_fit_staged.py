@@ -190,6 +190,50 @@ def test_row_prediction_chunks_cohorts_larger_than_readout_budget():
     assert len(result) == runner.POSITION_BUDGET + 17
 
 
+def test_diagnostic_guard_callback_covers_batches_and_chunks():
+    observations, truth, valid, table = _small_batch(records=4)
+    model, _ = _small_models()
+    data = PublicJointData(
+        fit_observations=observations,
+        fit_truth=truth,
+        fit_valid_mask=valid,
+        fit_record_ids=("r0", "r1", "r2", "r3"),
+        validation_observations=observations,
+        validation_truth=truth,
+        validation_valid_mask=valid,
+        validation_record_ids=("v0", "v1", "v2", "v3"),
+        validation_groups=("g",) * 4,
+        embedding_table=table,
+        metadata={},
+    )
+    events: list[str] = []
+    runner._row_predictions(
+        model,
+        data,
+        table,
+        [{"record_index": 1, "record_id": "r1", "position": 2, "bin": "1-15"}],
+        split="fit",
+        device=torch.device("cpu"),
+        direct_only=True,
+        guard_callback=events.append,
+    )
+    assert any(":before_batch:" in event for event in events)
+    assert any(":before_chunk:" in event for event in events)
+    assert any(":after_chunk:" in event for event in events)
+    cohort_events: list[str] = []
+    runner.select_transition_error_cohort(
+        model,
+        data,
+        table,
+        split="validation",
+        device=torch.device("cpu"),
+        per_bin=1,
+        guard_callback=cohort_events.append,
+    )
+    assert any(event.startswith("transition_cohort:validation:before_batch:") for event in cohort_events)
+    assert any(event.startswith("transition_cohort:validation:after_chunk:") for event in cohort_events)
+
+
 def test_validation_transition_cohort_keeps_all_errors_and_denominator():
     observations, truth, valid, table = _small_batch(records=4)
     model, _ = _small_models()
