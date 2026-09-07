@@ -1,0 +1,58 @@
+{
+  "environment": {
+    "child_max_rss_kib": 845692,
+    "cpu_count": 32,
+    "cwd": "/tmp/trr-p09",
+    "gpu_run": false,
+    "pytest": "pytest 8.4.2",
+    "python": "3.12.3 (main, Jun 19 2026, 12:46:00) [GCC 13.3.0]",
+    "python_executable": "/usr/bin/python3",
+    "torch": "2.10.0+cu128"
+  },
+  "receipt_created_utc": "2026-09-07T07:22:19.356Z",
+  "review_scope": {
+    "integrity_semantics": [
+      "manifest, declared input snapshots, every payload, sidecar, and COMPLETE marker are hash-bound before reads",
+      "COMPLETE marker is required and exactly newline-valued",
+      "shard ranges are contiguous, non-overlapping, batch aligned, and cover record_count",
+      "sidecar global_row equals row_range.start plus local offset; record identities are present and unique",
+      "safetensors keys, shapes, and dtypes are checked before payload iteration",
+      "input descriptors are verified before non-fixture loader use",
+      "post-gate accesses use inode/size/mtime stat checks without rehashing payloads"
+    ],
+    "limitations": [
+      "This was a fixture/integrity review only; no public bank, model, forward, fit, GPU run, or truth was opened.",
+      "The shared scientific contract and production capture remain pending root/design authorization."
+    ],
+    "module": "scripts/trr_p09/prepare_streamed_bank.py",
+    "result": "No concrete blocker found; no source edit was made."
+  },
+  "schema": "token-reconstruction.trr-p09-integrated-checkpoint-tests.v1",
+  "source_commit": "eaa1f1e5aa0be1e6d0dcb896834f4d6ac4e43861",
+  "source_files": {
+    "scripts/trr_p09/prepare_streamed_bank.py": "186e62434d974612c0632a9d5198b5125e0f59a86d4ae95240213c222ce5787e",
+    "tests/test_trr_p09_bank_artifact.py": "20bb9aab149c8cb35e4d1164febaea5dd98a2b048e744e5ed86a2993265e370b",
+    "tests/test_trr_p09_fixed_control_adapter.py": "4b0700436355e359df092f0b72d4f3768ab496c96f7cdebe1b020cec608ecef7",
+    "tests/test_trr_p09_fixed_control_runner.py": "29d4406e1226fa38e5648dd5aa9fa5dcbd07716c2664b8ac88d9ed191b4a5719"
+  },
+  "status": "PASS_NO_INTEGRITY_BLOCKER",
+  "task_id": "TRR-P09",
+  "test": {
+    "argv": [
+      "pytest",
+      "-q",
+      "tests/test_trr_p09_fixed_control_runner.py",
+      "tests/test_trr_p09_fixed_control_adapter.py",
+      "tests/test_trr_p09_bank_artifact.py"
+    ],
+    "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p09_fixed_control_runner.py tests/test_trr_p09_fixed_control_adapter.py tests/test_trr_p09_bank_artifact.py",
+    "elapsed_seconds": 3.0050024919910356,
+    "failed": 0,
+    "finished_utc": "2026-09-07T07:21:43.641Z",
+    "passed": 28,
+    "returncode": 0,
+    "started_utc": "2026-09-07T07:21:40.671Z",
+    "stderr": "",
+    "stdout": "............................                                             [100%]\n28 passed in 2.06s\n"
+  }
+}
