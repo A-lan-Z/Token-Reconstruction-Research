@@ -454,52 +454,106 @@ def _load_generic_opaque_reservation(
 ) -> tuple[dict[str, Any], frozenset[str], frozenset[str]]:
     """Load an approved hash-only reservation without opening provenance.
 
-    P08 may either provide the same producer schema as P06 or report that it
-    created no new identities.  This loader accepts only the opaque
-    source/128-token-sequence reservation shape and retains no source labels,
-    row indices, source text, or token IDs.
+    P08 may provide the original P06-shaped reservation or the producer's
+    sanitized hash-exchange schema.  Both branches accept only source/H128
+    hash values and retain no labels, row indices, source text, or token IDs.
     """
 
     descriptor = _file_descriptor(path)
     payload = _load_json(path, description=f"{label} opaque reservation")
     schema = payload.get("schema")
-    if not isinstance(schema, str) or not schema.endswith(
-        "opaque-source-sequence-reservation.v1"
-    ):
-        raise PlanError(f"{label} opaque reservation schema is not hash-only")
-    if payload.get("status") != "OPAQUE_HASH_RESERVATION_FOR_FUTURE_EXCLUSION":
-        raise PlanError(f"{label} opaque reservation status is not exclusion-only")
-    expected_privacy = {
-        "labels_or_answers_present": False,
-        "record_ids_present": False,
-        "row_indices_present": False,
-        "source_text_present": False,
-        "suitable_for_identity_exclusion_only": True,
-        "token_ids_present": False,
-    }
-    if payload.get("privacy") != expected_privacy:
-        raise PlanError(f"{label} opaque reservation privacy boundary changed")
-    conventions = payload.get("hash_conventions")
-    if not isinstance(conventions, Mapping):
-        raise PlanError(f"{label} opaque reservation hash conventions are absent")
-    sequence_convention = conventions.get("final_sequence_sha256")
-    if not isinstance(sequence_convention, str):
-        raise PlanError(f"{label} opaque reservation sequence convention is absent")
-    normalized_convention = sequence_convention.lower().replace(" ", "")
-    if "128-token" not in normalized_convention or "including-bos" not in normalized_convention:
-        raise PlanError(f"{label} opaque reservation is not an H128 including-BOS export")
-    counts = payload.get("counts")
+    sanitized_p08 = schema == "token-reconstruction.trr-p08-sanitized-opaque-hashes.v1"
+    if sanitized_p08:
+        if label != "p08" or payload.get("task_id") != "TRR-P08":
+            raise PlanError(f"{label} sanitized opaque reservation task identity changed")
+        if payload.get("status") != "READY_FOR_HASH_ONLY_EXCHANGE":
+            raise PlanError(f"{label} sanitized opaque reservation status is not exclusion-only")
+        expected_top_keys = {
+            "created_utc", "hash_conventions", "hashes", "privacy_boundary",
+            "purpose", "recipe", "schema", "status", "task_id",
+        }
+        if set(payload) != expected_top_keys:
+            raise PlanError(f"{label} sanitized opaque reservation schema changed")
+        expected_recipe = {
+            "canonical_order": "lexicographic order within each hash field; no domain, row, record, source, selection, or target metadata is exported",
+            "hash_fields": ["public_record_sha256", "final_sequence_sha256"],
+            "name": "H128 hash-only source reservation",
+            "sequence_rule": "canonical 128-token including-BOS final-sequence SHA-256 fingerprint",
+        }
+        if payload.get("purpose") != "hash-only identity and sequence exclusion exchange" or payload.get("recipe") != expected_recipe:
+            raise PlanError(f"{label} sanitized opaque reservation recipe changed")
+        privacy = {
+            "contains_domain_or_style_labels": False,
+            "contains_model_weights": False,
+            "contains_record_ids": False,
+            "contains_source_indices": False,
+            "contains_source_text": False,
+            "contains_target_labels": False,
+            "contains_token_ids": False,
+            "contains_truth": False,
+            "hash_only": True,
+        }
+        if payload.get("privacy_boundary") != privacy:
+            raise PlanError(f"{label} sanitized opaque reservation privacy boundary changed")
+        expected_conventions = {
+            "canonical_order": "lexicographic order within each hash field; no domain, row, record, source, selection, or target metadata is exported",
+            "final_sequence_sha256": "SHA-256 fingerprint of the canonical H128 final sequence including BOS",
+            "public_record_sha256": "SHA-256 fingerprint of the rendered public record",
+        }
+        conventions = payload.get("hash_conventions")
+        if conventions != expected_conventions:
+            raise PlanError(f"{label} sanitized opaque reservation hash convention changed")
+    else:
+        if not isinstance(schema, str) or not schema.endswith(
+            "opaque-source-sequence-reservation.v1"
+        ):
+            raise PlanError(f"{label} opaque reservation schema is not hash-only")
+        if payload.get("status") != "OPAQUE_HASH_RESERVATION_FOR_FUTURE_EXCLUSION":
+            raise PlanError(f"{label} opaque reservation status is not exclusion-only")
+        expected_privacy = {
+            "labels_or_answers_present": False,
+            "record_ids_present": False,
+            "row_indices_present": False,
+            "source_text_present": False,
+            "suitable_for_identity_exclusion_only": True,
+            "token_ids_present": False,
+        }
+        if payload.get("privacy") != expected_privacy:
+            raise PlanError(f"{label} opaque reservation privacy boundary changed")
+        privacy = expected_privacy
+        conventions = payload.get("hash_conventions")
+        if not isinstance(conventions, Mapping):
+            raise PlanError(f"{label} opaque reservation hash conventions are absent")
+        sequence_convention = conventions.get("final_sequence_sha256")
+        if not isinstance(sequence_convention, str):
+            raise PlanError(f"{label} opaque reservation sequence convention is absent")
+        normalized_convention = sequence_convention.lower().replace(" ", "")
+        if "128-token" not in normalized_convention or "including-bos" not in normalized_convention:
+            raise PlanError(f"{label} opaque reservation is not an H128 including-BOS export")
+
     hashes = payload.get("hashes")
-    if not isinstance(counts, Mapping) or not isinstance(hashes, Mapping):
-        raise PlanError(f"{label} opaque reservation counts or hashes are absent")
+    if not isinstance(hashes, Mapping):
+        raise PlanError(f"{label} opaque reservation hashes are absent")
     source = hashes.get("public_record_sha256")
     sequence = hashes.get("final_sequence_sha256")
     if not isinstance(source, Mapping) or not isinstance(sequence, Mapping):
         raise PlanError(f"{label} opaque reservation hash summaries are malformed")
     source_values = source.get("values")
     sequence_values = sequence.get("values")
-    expected_source_count = counts.get("public_record_sha256")
-    expected_sequence_count = counts.get("final_sequence_sha256")
+    if sanitized_p08:
+        expected_source_count = source.get("ordered_count")
+        expected_sequence_count = sequence.get("ordered_count")
+        if (
+            source.get("distinct_count") != expected_source_count
+            or sequence.get("distinct_count") != expected_sequence_count
+        ):
+            raise PlanError(f"{label} sanitized opaque reservation counts are not distinct")
+    else:
+        counts = payload.get("counts")
+        if not isinstance(counts, Mapping):
+            raise PlanError(f"{label} opaque reservation counts are absent")
+        expected_source_count = counts.get("public_record_sha256")
+        expected_sequence_count = counts.get("final_sequence_sha256")
     if (
         not isinstance(source_values, list)
         or not isinstance(sequence_values, list)
@@ -531,13 +585,15 @@ def _load_generic_opaque_reservation(
         "sequence_hash_count": len(sequence_values),
         "hash_conventions": {
             "public_record_sha256": conventions.get("public_record_sha256"),
-            "final_sequence_sha256": sequence_convention,
+            "final_sequence_sha256": conventions.get("final_sequence_sha256"),
         },
-        "privacy": dict(payload["privacy"]),
+        "privacy": dict(privacy),
         "underlying_provenance_opened": False,
         "underlying_results_opened": False,
         "underlying_holdout_opened": False,
     }
+    if sanitized_p08:
+        summary["recipe"] = dict(payload["recipe"])
     return summary, frozenset(source_values), frozenset(sequence_values)
 
 

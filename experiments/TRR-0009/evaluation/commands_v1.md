@@ -73,18 +73,15 @@ Every `state_bindings` row must contain an actual path/bytes/SHA-256 record, loa
 
 ## 1. Public capture (after selection and explicit compute release)
 
-The selection file must already contain the frozen Finance/Pile rows and public source descriptors. The command writes only public activations and receipts:
+The selection file must already contain the frozen Finance/Pile rows and public source descriptors. The adapter reads the tokenizer and Arrow paths from that frozen descriptor and validates their recorded hashes; the model snapshot and public LoRA assets are the exact published paths below. The command writes only public activations and receipts:
 
 ```bash
 python3 scripts/trr0009_eval_capture.py capture --execute \
   --repository-root "$TRR9_ROOT" \
   --selection experiments/TRR-0009/selection/source_selection.json \
-  --tokenizer "$TOKENIZER_SNAPSHOT" \
-  --pile-arrow "$PILE_ARROW" \
-  --finance-arrow "$FINANCE_ARROW_0" "$FINANCE_ARROW_1" \
-  --model-snapshot "$MODEL_SNAPSHOT" \
-  --lora-config "$LORA_CONFIG" \
-  --lora-update "$LORA_UPDATE" \
+  --model-snapshot /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6 \
+  --lora-config /home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/public-calibration/generation.json \
+  --lora-update /home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors \
   --output-root experiments/TRR-0009/evaluation/public_observations \
   --device cuda
 ```
