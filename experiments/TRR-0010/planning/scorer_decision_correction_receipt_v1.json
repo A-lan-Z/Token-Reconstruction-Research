@@ -1,0 +1,48 @@
+{
+  "corrections": {
+    "anchor_visibility": "Gap visibility is evaluated from A1+A2 minus unchanged_shared_start; a sub-floor or nonpositive bootstrap denominator makes the closure fraction UNKNOWN.",
+    "cost_gate": "A scientifically passing metric route is downgraded to UNKNOWN while the planner-owned cost gate is UNKNOWN; no useful PASS is emitted.",
+    "directional_robustness": "expanded_directional versus current_fixed is a dedicated contrast; current_directional versus current_fixed remains descriptive.",
+    "metric_route_separation": "Token and exact routes have independent predicates and are alternatives; neither route requires the other metric to pass.",
+    "ratio_lower_bound": "The remaining-error 0.20 criterion is point-only; its own lower percentile is reported but not silently required.",
+    "token_useful_predicate": "Requires point remaining-error reduction >= 0.20, absolute point floor >= 0.005 unless registered ceiling-limited, positive benefit lower bound, and harm safeguard."
+  },
+  "generated_utc": "2026-09-07T10:55:06Z",
+  "prior_receipt_preserved": {
+    "path": "experiments/TRR-0010/planning/scorer_adapter_receipt_v1.json",
+    "role": "historical pre-correction receipt; not superseded in place",
+    "sha256": "7d18d5fdac7082cbf04793a3493eebae8469d7f0127bdc3c03a9054e31605e8a"
+  },
+  "schema": "token-reconstruction.trr0010-scorer-decision-correction-receipt.v1",
+  "source_bindings": {
+    "scorer": {
+      "bytes": 62731,
+      "path": "scripts/trr0010_score.py",
+      "sha256": "40304a768fa2f38e0abeb1e9698fd17de43251274b4da5349eac3a01c1e72c1c"
+    },
+    "tests": {
+      "bytes": 16363,
+      "path": "tests/test_trr0010_score.py",
+      "sha256": "495c5463c0554323dc339c2c0951a586e8451307a46a92bdb99a1c7e1a441a2e"
+    }
+  },
+  "source_commit": "bfa220f",
+  "status": "SYNTHETIC_DECISION_PREDICATES_CORRECTED",
+  "task_id": "TRR-0010",
+  "truth_boundary": {
+    "prediction_and_registration_bytes_unchanged": true,
+    "source_selection_or_model_access": false,
+    "synthetic_only": true,
+    "truth_opened": false
+  },
+  "verification": {
+    "adversarial_tests": [
+      "test_absolute_metric_routes_are_separate_and_ceiling_limited",
+      "test_decision_readout_uses_anchor_visibility_and_expanded_robustness",
+      "test_token_relative_reduction_uses_point_only_and_unknown_cost_blocks_pass"
+    ],
+    "command": "PYTHONPATH=.:src:scripts pytest -q tests/test_trr0010_analysis.py tests/test_trr0010_eval_gate.py tests/test_trr0010_eval_register.py tests/test_trr0010_score.py",
+    "result": "51 passed in 5.73s"
+  },
+  "worktree_head_when_written": "ad7d9c01d08c6b287e9c38a16455a4fed74b1c48"
+}
