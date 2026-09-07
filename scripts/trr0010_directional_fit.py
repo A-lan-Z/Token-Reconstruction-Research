@@ -409,6 +409,21 @@ def fit_one_arm(inputs: Mapping[str, Any], *, arm_name: str, output_root: Path, 
         raw_runner_result = json.loads(json.dumps(dict(result), allow_nan=False))
     except (TypeError, ValueError) as exc:
         raise DirectionalFitError(f"{arm_name} runner result is not JSON serializable") from exc
+    # Persist this receipt before any selected-checkpoint restore/export. If a
+    # later serialization phase fails, the costly runner curve and resource
+    # evidence remain available and the create-only output cannot be retried
+    # under a different source state.
+    arm_root.mkdir(parents=True, exist_ok=True)
+    raw_runner_path = arm_root / "raw_runner_result.json"
+    if raw_runner_path.exists():
+        raise DirectionalFitError(f"{arm_name} raw runner receipt is create-only: {raw_runner_path}")
+    raw_runner_path.write_text(json.dumps(raw_runner_result, sort_keys=True, indent=2, allow_nan=False) + "\n", encoding="utf-8")
+    raw_runner_sha256 = hashlib.sha256(raw_runner_path.read_bytes()).hexdigest()
+    raw_runner_artifact = {
+        "path": str(raw_runner_path),
+        "bytes": raw_runner_path.stat().st_size,
+        "sha256": raw_runner_sha256,
+    }
     selected = _selected_checkpoint(result, arm_name=arm_name)
     selected_step = _int(result["selected_step"], label=f"{arm_name}.selected_step")
     restore_started = time.perf_counter()
@@ -454,6 +469,7 @@ def fit_one_arm(inputs: Mapping[str, Any], *, arm_name: str, output_root: Path, 
         "diagnostic_binding": validation["diagnostics"],
         "diagnostic_events": diagnostic_events,
         "runner_result": raw_runner_result,
+        "runner_result_artifact": raw_runner_artifact,
         "timing": {
             **dict(result.get("timing", {})),
             "wrapper_seconds": time.perf_counter() - started,
@@ -560,8 +576,11 @@ def run_directional_arm(
             kwargs = {key: value for key, value in kwargs.items() if key in signature.parameters}
         if "arm_name" not in kwargs or "bank_role" not in kwargs:
             raise DirectionalFitError("provider must expose arm_name/bank_role for a single-arm run")
+        provider_started = time.perf_counter()
         inputs = build_inputs(**kwargs)
+        provider_preparation_seconds = time.perf_counter() - provider_started
         completed[arm_name] = fit_one_arm(inputs, arm_name=arm_name, output_root=output_root, deadline_seconds=deadline_seconds)
+        completed[arm_name].setdefault("timing", {})["provider_preparation_seconds"] = provider_preparation_seconds
         del inputs
         gc.collect()
         if torch.cuda.is_available():
@@ -628,8 +647,11 @@ def run_directional_arms(build_inputs: Callable[..., Mapping[str, Any]], *, outp
                 kwargs = {key: value for key, value in kwargs.items() if key in signature.parameters}
             if "arm_name" not in kwargs and "bank_role" not in kwargs:
                 raise DirectionalFitError("provider must expose arm_name/bank_role for current and expanded banks")
+            provider_started = time.perf_counter()
             inputs = build_inputs(**kwargs)
+            provider_preparation_seconds = time.perf_counter() - provider_started
             completed[arm_name] = fit_one_arm(inputs, arm_name=arm_name, output_root=output_root, deadline_seconds=deadline_seconds)
+            completed[arm_name].setdefault("timing", {})["provider_preparation_seconds"] = provider_preparation_seconds
             del inputs
             gc.collect()
             if torch.cuda.is_available():
