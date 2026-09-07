@@ -373,6 +373,43 @@ def test_capture_repackages_trr9_metadata_under_trr10_schema(tmp_path: Path) -> 
     assert payload["truth_opened"] is False
 
 
+def test_capture_accepts_native_source_pairing_digest_schema(tmp_path: Path) -> None:
+    selection_path, producer, bridge = _producer_fixture(tmp_path)
+    observations_path = producer / "observations.json"
+    observations = json.loads(observations_path.read_text(encoding="utf-8"))
+    digests = observations.pop("record_ids_sha256")
+    observations["source_pairing"] = {
+        "same_record_ids_across_targets": True,
+        "record_ids_sha256": digests,
+    }
+    observations_path.write_text(json.dumps(observations, sort_keys=True) + "\n", encoding="utf-8")
+    observation_record = _record(observations_path, tmp_path)
+
+    panel_path = producer / "panel.json"
+    panel = json.loads(panel_path.read_text(encoding="utf-8"))
+    panel["observation_manifest"] = observation_record
+    panel_path.write_text(json.dumps(panel, sort_keys=True) + "\n", encoding="utf-8")
+    panel_record = _record(panel_path, tmp_path)
+
+    capture_path = producer / "capture.json"
+    capture_payload = json.loads(capture_path.read_text(encoding="utf-8"))
+    capture_payload["observations"] = observation_record
+    capture_payload["panel"] = panel_record
+    capture_path.write_text(json.dumps(capture_payload, sort_keys=True) + "\n", encoding="utf-8")
+
+    result = capture.repackage_trr0009_capture(
+        selection_path=selection_path,
+        producer_root=producer,
+        output_root=tmp_path / "experiments" / "TRR-0010" / "evaluation" / "native-shape",
+        repository_root=tmp_path,
+        producer_selection_path=bridge,
+    )
+    assert result["status"] == capture.CAPTURE_STATUS
+    repacked = json.loads(Path(result["observation_manifest"]["path"]).read_text(encoding="utf-8"))
+    assert repacked["record_ids_sha256"] == digests
+    assert repacked["source_pairing"]["record_ids_sha256"] == digests
+
+
 def test_capture_rejects_changed_producer_observation_payload(tmp_path: Path) -> None:
     selection_path, producer, bridge = _producer_fixture(tmp_path)
     changed = producer / "finance__public_base.safetensors"

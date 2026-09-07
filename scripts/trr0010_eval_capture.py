@@ -200,11 +200,32 @@ def _validate_producer_receipts(*, producer_root: Path, producer_selection_recor
     if list(observation.get("cell_order", ())) != list(gate.CELL_ORDER) or list(panel.get("cell_order", ())) != list(gate.CELL_ORDER):
         raise CaptureAdapterError("TRR9 producer cell order changed")
     record_digests = observation.get("record_ids_sha256")
-    if not isinstance(record_digests, Mapping) or set(record_digests) != set(gate.DOMAIN_ORDER):
-        raise CaptureAdapterError("TRR9 producer source-order digests are absent")
+    if not isinstance(record_digests, Mapping):
+        # Native TRR9 receipts place this immutable source-order binding under
+        # source_pairing and repeat it on every cell.  Accept that native
+        # schema only when the producer explicitly attests paired ordering;
+        # the cell-level checks below still bind every observation to the
+        # frozen TRR10 selection.
+        source_pairing = observation.get("source_pairing")
+        paired = source_pairing.get("same_record_ids_across_targets") if isinstance(source_pairing, Mapping) else None
+        paired_digests = source_pairing.get("record_ids_sha256") if isinstance(source_pairing, Mapping) else None
+        if paired is not True or not isinstance(paired_digests, Mapping):
+            raise CaptureAdapterError("TRR9 producer source-order digests are absent")
+        record_digests = paired_digests
+    if set(record_digests) != set(gate.DOMAIN_ORDER) or any(
+        not isinstance(value, str) or len(value) != 64 for value in record_digests.values()
+    ):
+        raise CaptureAdapterError("TRR9 producer source-order digests are malformed")
+    record_digests = {str(key): str(value) for key, value in record_digests.items()}
+    # Downstream TRR10 repackaging consumes the normalized map; this updates
+    # only the in-memory receipt and never rewrites the native producer file.
+    observation["record_ids_sha256"] = dict(record_digests)
     selection_digests = selection.get("selection_rule", {}).get("record_ids_sha256")
     if dict(record_digests) != dict(selection_digests):
         raise CaptureAdapterError("producer source-order digest differs from TRR10 selection")
+    panel_digests = panel.get("record_ids_sha256")
+    if not isinstance(panel_digests, Mapping) or dict(panel_digests) != dict(record_digests):
+        raise CaptureAdapterError("TRR9 panel source-order digest differs from observation manifest")
     cells = observation.get("cells")
     if isinstance(cells, Sequence) and not isinstance(cells, (str, bytes, bytearray)):
         rows = {str(row.get("cell_id")): row for row in cells if isinstance(row, Mapping)}
