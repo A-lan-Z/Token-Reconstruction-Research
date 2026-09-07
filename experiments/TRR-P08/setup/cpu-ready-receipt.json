@@ -46,10 +46,33 @@
       "public_base",
       "public_lora_2601"
     ],
-    "selection_seed": "root approval required",
-    "ranges": "root approval required",
-    "approved_opaque_ledgers": "root approval required",
-    "global_disjointness_claim": false
+    "selection_seed": 8108,
+    "ranges_half_open": {
+      "pile": [
+        0,
+        7000
+      ],
+      "finance": [
+        20000,
+        26000
+      ]
+    },
+    "candidate_row_count_before_eligibility": 13000,
+    "approved_catalog": {
+      "path": "experiments/TRR-P06/setup/source_universe.json",
+      "sha256": "b9393d42c64f289235f1c2dc2d73b854eefda9c5ccbbfb1e9ce60b38b0a9cd7d",
+      "catalog_sha256": "03bb3e10f88c047ef15e0b1949960fde8ceb9d09f007e9cd2350b52d8edb1dae",
+      "descriptor_count": 69,
+      "universal_coverage_complete": false
+    },
+    "approved_opaque_ledger": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0008/experiments/TRR-0008/selection/opaque_source_sequence_reservation.json",
+      "bytes": 216396,
+      "sha256": "0487b9dda91d7eb791c93e1ba704afcea22abfc21f003cad8b99984f523357a4",
+      "hash_only": true
+    },
+    "global_disjointness_claim": false,
+    "proposal_status": "ROOT_REVIEW_PENDING"
   },
   "resource_snapshot_read_only": {
     "gpu": {
@@ -60,17 +83,47 @@
       "temperature_c": 28
     },
     "host_mem_available_kib": 20183272,
-    "job_started": false
+    "job_started": false,
+    "captured_utc": "2026-09-07T00:50:16.535533+00:00",
+    "status": "HISTORICAL_WAITING_FOR_AGENT1_RELEASE",
+    "refresh_required_before_qualification": true
   },
   "next_qualifier": {
     "preflight": "PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode preflight --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --output-root experiments/TRR-P08/runtime/preflight-r2 --device cpu --max-seconds 120",
     "qualify_inner_command": "PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode qualify --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --preflight-receipt experiments/TRR-P08/runtime/preflight-r2/preflight.json --output-root experiments/TRR-P08/runtime/qualification-r1 --device cuda --torch-threads 4 --torch-interop-threads 1 --minimum-free-gib 8 --maximum-gpu-reserved-gib 6 --maximum-host-rss-gib 16 --minimum-host-available-gib 10 --max-seconds 1800",
-    "outer_guard": "scripts/trr_p06/resource_watchdog.py with create-only output, 1800-second timeout, max RSS 16 GiB, minimum host available 10 GiB; root must authorize the GPU window."
+    "outer_guard": "scripts/trr_p06/resource_watchdog.py with create-only output, 1800-second timeout, max RSS 16 GiB, minimum host available 10 GiB; root must authorize the GPU window.",
+    "preflight_source_head_requirement": "Rerun source-only preflight after current committed code head 3c6e93c; prior fit-staged-preflight-final receipt is historical and remains payload-free.",
+    "qualify_outer_guard_command": "PYTHONPATH=.:src python3 scripts/trr_p06/resource_watchdog.py --output-root experiments/TRR-P08/runtime/qualification-watchdog-r1 --timeout-seconds 1800 --poll-seconds 0.5 --max-rss-bytes 17179869184 --min-available-bytes 10737418240 --label TRR-P08-qualification-r1 --cwd /tmp/trr-p08 -- PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode qualify --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --preflight-receipt experiments/TRR-P08/runtime/preflight-r2/preflight.json --output-root experiments/TRR-P08/runtime/qualification-r1 --device cuda --torch-threads 4 --torch-interop-threads 1 --minimum-free-gib 8 --maximum-gpu-reserved-gib 6 --maximum-host-rss-gib 16 --minimum-host-available-gib 10 --max-seconds 1800",
+    "main_outer_guard_command": "PYTHONPATH=.:src python3 scripts/trr_p06/resource_watchdog.py --output-root experiments/TRR-P08/runtime/main-watchdog-r1 --timeout-seconds 1800 --poll-seconds 0.5 --max-rss-bytes 17179869184 --min-available-bytes 10737418240 --label TRR-P08-main-r1 --cwd /tmp/trr-p08 -- PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode main --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --preflight-receipt experiments/TRR-P08/runtime/preflight-r2/preflight.json --qualification-receipt experiments/TRR-P08/runtime/qualification-r1/qualification.json --output-root experiments/TRR-P08/runtime/main-r1 --device cuda --torch-threads 4 --torch-interop-threads 1 --minimum-free-gib 8 --maximum-gpu-reserved-gib 6 --maximum-host-rss-gib 16 --minimum-host-available-gib 10 --max-seconds 1800",
+    "execution_status": "NOT_RUN_WAITING_RESOURCE_RELEASE_AND_ROOT_GRANT"
   },
   "coordination_boundary": {
     "auto_review_message_rejected": true,
     "rejection_summary": "A detailed user-visible coordination send containing internal project provenance, filesystem paths, hashes, and live resource metadata was rejected by automatic review.",
     "retry_attempted": false,
-    "pending_root_question": "Approve the frozen source-universe ranges/seed and exclusive qualification/capture resource window; no selection, capture, or truth access is authorized yet."
+    "pending_root_question": "Review proposed seed 8108 and inherited Pile[0,7000)/Finance[20000,26000) windows; after Agent1 release, grant the exclusive qualification window. No source enumeration, capture, or truth access is authorized yet."
+  },
+  "updated_utc": "2026-09-07T01:02:43Z",
+  "current_code_head_at_handoff": "3c6e93c",
+  "source_universe_command": {
+    "path": "experiments/TRR-P08/setup/source-universe-command.json",
+    "status": "COMMAND_PREPARED_NOT_RUN",
+    "selection_seed": 8108,
+    "candidate_ranges_half_open": {
+      "pile": [
+        0,
+        7000
+      ],
+      "finance": [
+        20000,
+        26000
+      ]
+    },
+    "candidate_row_count_before_eligibility": 13000,
+    "published_catalog_sha256": "03bb3e10f88c047ef15e0b1949960fde8ceb9d09f007e9cd2350b52d8edb1dae",
+    "approved_opaque_sha256": "0487b9dda91d7eb791c93e1ba704afcea22abfc21f003cad8b99984f523357a4",
+    "exact_command": "PYTHONPATH=.:src python3 scripts/trr_p08/prepare_public_panel.py universe --repository-root /tmp/trr-p08 --plan experiments/TRR-P08/plan.json --selection-seed 8108 --pile-range 0 7000 --finance-range 20000 26000 --approved-opaque /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0008/experiments/TRR-0008/selection/opaque_source_sequence_reservation.json --output experiments/TRR-P08/runtime/source-universe-r1/proposed.json",
+    "enumeration_started": false,
+    "selection_started": false
   }
 }

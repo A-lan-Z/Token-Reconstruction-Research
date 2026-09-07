@@ -37,9 +37,9 @@
     "fresh_capture_started": false,
     "fit_or_optimizer_steps_started": false
   },
-  "next_step": "Await root coordination approval for the frozen source-universe seed/ranges and exclusive qualification window; then rerun committed preflight before qualification. No source selection, capture, GPU, fit, or truth access has started.",
+  "next_step": "Root review of the proposed seed 8108 and inherited Pile[0,7000)/Finance[20000,26000) source windows; after Agent1 release, refresh live resources and rerun committed source-only preflight before any guarded qualification. No enumeration, capture, GPU, fit, or truth access has started.",
   "created_utc": "2026-09-07T00:12:47.039245+00:00",
-  "updated_utc": "2026-09-07T00:50:16.535533+00:00",
+  "updated_utc": "2026-09-07T01:02:43Z",
   "plan": {
     "path": "experiments/TRR-P08/plan.json",
     "status": "FROZEN_DESIGN_PRE_FIT",
@@ -62,7 +62,8 @@
     "panel_preparation_runner": "scripts/trr_p08/prepare_public_panel.py",
     "capture_runner": "scripts/trr_p08/capture_public.py",
     "panel_adapter_tests": "tests/test_trr_p08_panel_adapter.py",
-    "cpu_ready_receipt": "experiments/TRR-P08/setup/cpu-ready-receipt.json"
+    "cpu_ready_receipt": "experiments/TRR-P08/setup/cpu-ready-receipt.json",
+    "source_universe_command": "experiments/TRR-P08/setup/source-universe-command.json"
   },
   "verification": {
     "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p08_panel_adapter.py tests/test_trr_p08_source_binding.py tests/test_trr_p08_fit_staged.py",
@@ -121,5 +122,34 @@
     "rerun committed source-only preflight, then guarded largest-cell qualification",
     "source enumeration and fresh paired capture after source freeze and GPU authorization",
     "implementation eight-fit matrix and prediction freeze"
-  ]
+  ],
+  "source_universe_proposal": {
+    "status": "PROPOSED_ROOT_REVIEW_PENDING",
+    "command_receipt": "experiments/TRR-P08/setup/source-universe-command.json",
+    "selection_seed": 8108,
+    "candidate_ranges_half_open": {
+      "pile": [
+        0,
+        7000
+      ],
+      "finance": [
+        20000,
+        26000
+      ]
+    },
+    "candidate_row_count_before_eligibility": 13000,
+    "records_per_domain": 256,
+    "approved_catalog_sha256": "03bb3e10f88c047ef15e0b1949960fde8ceb9d09f007e9cd2350b52d8edb1dae",
+    "approved_opaque_sha256": "0487b9dda91d7eb791c93e1ba704afcea22abfc21f003cad8b99984f523357a4",
+    "enumeration_started": false,
+    "selection_started": false,
+    "universal_disjointness_claim": false
+  },
+  "resource_boundary": {
+    "status": "WAITING_AGENT1_RELEASE",
+    "resource_snapshot_is_historical": true,
+    "live_refresh_required_before_qualification": true,
+    "gpu_or_heavy_compute_started": false,
+    "qualification_window_requires_root_grant": true
+  }
 }
