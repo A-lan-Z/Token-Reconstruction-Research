@@ -74,14 +74,18 @@ binary-byte limits, pending parent confirmation at launch:
   GPU free >=11 GiB before load and >=2 GiB at runtime; host available >=12
   GiB before load and >=8 GiB at runtime; process RSS <=12 GiB; disk free
   >=20 GiB; output <=5 GiB;
-- prediction: 900 seconds per method, with fixed CUDA reserved <=8 GiB and
-  directional <=10 GiB, and the same host/GPU/disk floors.
+- prediction: 900 seconds per standalone method, with fixed CUDA reserved <=8 GiB
+  and directional <=10 GiB, and the same host/GPU/disk floors; the full A1+A2
+  method receives a 2400-second whole-method cap because its historical four-cell
+  runtime is approximately 1050 seconds plus loading.
 
 The measured zero-delta fixture used 2.871 GB peak CUDA reserved and 3.68 GB
 host RSS. The P09 directional qualification measured 7,600,078,848 bytes
-reserved and 2,165,067,776 bytes host RSS for its discarded probe. These are
-planning evidence, not permission to run the final matrix. A guard must charge
-preparation, loader, forward, serialization, and I/O and preserve failures.
+reserved. Its discarded probe ended with 2,165,067,776 bytes process RSS; the
+external watchdog recorded a 4,276,609,024-byte peak group RSS. These are
+separate telemetry scopes and planning evidence, not permission to run the
+final matrix. A guard must charge preparation, loader, forward, serialization,
+and I/O and preserve failures.
 
 ## Execution order and commands
 
@@ -225,10 +229,13 @@ python3 "$ROOT/scripts/trr0010_score_cli.py" \
   --require-current-head --execute
 ```
 
-The only permitted truth-opening point is the final command's authorized
-scorer call. Any failure in selection, capture, registration, public gate,
-cost binding, curator descriptor validation, or resource guard stops the
-sequence and preserves the failed receipt.
+The trusted curator is the authorized truth-preparation boundary after the
+public freeze: it may open and render the sealed source to create the sidecar
+and descriptor. The scorer is the only component that consumes that prepared
+truth for reconstruction metrics. No component may access truth before the
+public freeze and curator step. Any failure in selection, capture, registration,
+public gate, cost binding, curator preparation/descriptor validation, or
+resource guard stops the sequence and preserves the failed receipt.
 
 ## Baseline source bindings
 
