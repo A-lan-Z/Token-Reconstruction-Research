@@ -308,8 +308,11 @@ def _selected_checkpoint(result: Mapping[str, Any], *, arm_name: str) -> Mapping
         if not isinstance(value, Mapping) or not isinstance(value.get("checkpoint"), Mapping):
             continue
         checkpoint = value["checkpoint"]
+        metadata = checkpoint.get("metadata")
+        if not isinstance(metadata, Mapping):
+            continue
         try:
-            checkpoint_step = int(checkpoint.get("selected_step", checkpoint.get("step", -1)))
+            checkpoint_step = int(metadata.get("selected_step", -1))
         except (TypeError, ValueError):
             continue
         if checkpoint_step == selected:
@@ -319,6 +322,11 @@ def _selected_checkpoint(result: Mapping[str, Any], *, arm_name: str) -> Mapping
     _sha(matches[0].get("sha256"), label=f"{arm_name}.selected_checkpoint.sha256")
     if _int(matches[0].get("bytes"), label=f"{arm_name}.selected_checkpoint.bytes", positive=True) <= 0:
         raise DirectionalFitError(f"{arm_name} selected checkpoint byte binding is invalid")
+    metadata = matches[0]["metadata"]
+    point_state = _sha(metadata.get("runner_point_state_sha256"), label=f"{arm_name}.selected_checkpoint.runner_point_state_sha256")
+    selected_state = _sha(result.get("selected_state_sha256"), label=f"{arm_name}.selected_state_sha256")
+    if point_state != selected_state:
+        raise DirectionalFitError(f"{arm_name} selected checkpoint state does not match runner selected state")
     return matches[0]
 
 
@@ -370,6 +378,7 @@ def fit_one_arm(
     )
     diagnostic_callback = inputs["diagnostic_callback"]
     diagnostic_events: list[dict[str, Any]] = []
+    diagnostic_artifacts: list[dict[str, Any]] = []
 
     def checkpoint_callback(point: Mapping[str, Any], decoder: Any, hook: Any) -> Mapping[str, Any]:
         step = _int(point.get("step"), label=f"{arm_name}.checkpoint.step")
@@ -377,9 +386,36 @@ def fit_one_arm(
         raw = diagnostic_callback(point, decoder, hook)
         if not isinstance(raw, Mapping):
             raise DirectionalFitError(f"{arm_name} diagnostic callback must return a mapping")
+        # Persist the complete callback payload before the runner sees the
+        # serialization callback.  The summaries below remain metadata only
+        # and never enter the runner point or selection metric.
+        try:
+            raw_payload = json.loads(json.dumps(dict(raw), sort_keys=True, allow_nan=False))
+        except (TypeError, ValueError) as exc:
+            raise DirectionalFitError(f"{arm_name} raw diagnostic at step {step} is not JSON serializable") from exc
+        diagnostic_path = arm_root / "diagnostics" / f"checkpoint_step_{step:06d}.json"
+        if diagnostic_path.exists() or diagnostic_path.is_symlink():
+            raise DirectionalFitError(f"{arm_name} raw diagnostic receipt is create-only: {diagnostic_path}")
+        diagnostic_path.parent.mkdir(parents=True, exist_ok=True)
+        diagnostic_payload = {
+            "schema": "token-reconstruction.trr0010-raw-fitting-diagnostic.v1",
+            "task_id": TASK_ID,
+            "arm_name": arm_name,
+            "step": step,
+            "selection_isolated": True,
+            "diagnostic": raw_payload,
+        }
+        diagnostic_path.write_text(json.dumps(diagnostic_payload, sort_keys=True, indent=2, allow_nan=False) + "\n", encoding="utf-8")
+        diagnostic_artifacts.append({
+            "step": step,
+            "path": str(diagnostic_path),
+            "bytes": diagnostic_path.stat().st_size,
+            "sha256": hashlib.sha256(diagnostic_path.read_bytes()).hexdigest(),
+        })
         diagnostic_events.append(_diagnostic_summary(raw, step=step, started=started, arm_name=arm_name))
         # The callback returns only the serialization binding.  Diagnostic
-        # summaries never enter the runner point and cannot influence selection.
+        # summaries and raw sidecar paths never enter the runner point or
+        # selection.
         return serial_callback(point, decoder, hook)
 
     started = time.perf_counter()
@@ -478,6 +514,7 @@ def fit_one_arm(
         "schedule": validation["schedule"],
         "diagnostic_binding": validation["diagnostics"],
         "diagnostic_events": diagnostic_events,
+        "diagnostic_raw_artifacts": diagnostic_artifacts,
         "runner_result": raw_runner_result,
         "runner_result_artifact": raw_runner_artifact,
         "timing": {

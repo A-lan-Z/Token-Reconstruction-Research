@@ -144,7 +144,10 @@ def test_run_forwards_exact_grid_scheduler_and_runs_arms_sequentially(monkeypatc
             step = int(point["step"])
             return {
                 "checkpoint": {
-                    "selected_step": step,
+                    "metadata": {
+                        "selected_step": step,
+                        "runner_point_state_sha256": "d" * 64,
+                    },
                     "path": f"/tmp/{step}.safetensors",
                     "bytes": 10,
                     "sha256": "a" * 64,
@@ -223,6 +226,13 @@ def test_run_forwards_exact_grid_scheduler_and_runs_arms_sequentially(monkeypatc
         assert [event["step"] for event in arm["diagnostic_events"]] == list(fit.CHECKPOINT_STEPS)
         assert {event["full_bank"]["endpoint"] for event in arm["diagnostic_events"] if event["full_bank"]} == {"start", "end"}
         assert all("records" not in event for event in arm["diagnostic_events"])
+        raw_artifacts = arm["diagnostic_raw_artifacts"]
+        assert [item["step"] for item in raw_artifacts] == list(fit.CHECKPOINT_STEPS)
+        for item in raw_artifacts:
+            raw_path = Path(item["path"])
+            assert raw_path.is_file()
+            assert item["bytes"] == raw_path.stat().st_size
+            assert item["sha256"] == __import__("hashlib").sha256(raw_path.read_bytes()).hexdigest()
 
 
 def test_selected_binding_rejects_incomplete_runner_grid() -> None:
@@ -300,3 +310,30 @@ def test_run_single_arm_writes_arm_scoped_receipt(monkeypatch, tmp_path: Path) -
     assert calls[0]["deadline_seconds"] == 7200.0
     assert calls[0]["arm_output_root"] == output
     assert json.loads((output / "run_receipt.json").read_text())["arm"] == "current_directional"
+
+
+def test_selected_binding_accepts_actual_runner_receipt() -> None:
+    receipt_path = Path("experiments/TRR-0010/training/directional_fit/current_directional_watchdog_r2/fit/raw_runner_result.json")
+    if not receipt_path.is_file():
+        pytest.skip("authorized current-arm raw runner receipt is not present")
+    result = json.loads(receipt_path.read_text(encoding="utf-8"))
+    selected = fit._selected_checkpoint(result, arm_name="current_directional")
+    assert selected["metadata"]["selected_step"] == result["selected_step"]
+    assert selected["metadata"]["runner_point_state_sha256"] == result["selected_state_sha256"]
+
+
+def test_selected_binding_rejects_mismatched_runner_point_state() -> None:
+    result = {
+        "status": "COMPLETED",
+        "selected_step": 0,
+        "selected_state_sha256": "a" * 64,
+        "checkpoints": list(fit.CHECKPOINT_STEPS),
+        "checkpoint_state_bindings": [{
+            "checkpoint": {
+                "metadata": {"selected_step": 0, "runner_point_state_sha256": "b" * 64},
+                "path": "/tmp/0.safetensors", "bytes": 10, "sha256": "c" * 64,
+            }
+        }],
+    }
+    with pytest.raises(fit.DirectionalFitError, match="does not match runner selected state"):
+        fit._selected_checkpoint(result, arm_name="current_directional")
