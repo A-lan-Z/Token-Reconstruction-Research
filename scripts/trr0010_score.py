@@ -38,6 +38,10 @@ DOMAIN_BY_CELL = {cell: cell.split("__", 1)[0] for cell in gate.CELL_ORDER}
 CONTRASTS = {
     "directional_current": (gate.CURRENT_DIRECTIONAL_METHOD_ID, gate.CURRENT_FIXED_METHOD_ID),
     "directional_expanded": (gate.EXPANDED_DIRECTIONAL_METHOD_ID, gate.EXPANDED_FIXED_METHOD_ID),
+    # Current-directional versus current-fixed remains the descriptive factor
+    # contrast above. This separate route is the required expanded-directional
+    # robustness comparison against current-fixed.
+    "directional_robustness": (gate.EXPANDED_DIRECTIONAL_METHOD_ID, gate.CURRENT_FIXED_METHOD_ID),
     "data_fixed": (gate.EXPANDED_FIXED_METHOD_ID, gate.CURRENT_FIXED_METHOD_ID),
     "data_directional": (gate.EXPANDED_DIRECTIONAL_METHOD_ID, gate.CURRENT_DIRECTIONAL_METHOD_ID),
     "data_expanded_fixed_vs_unchanged": (gate.EXPANDED_FIXED_METHOD_ID, gate.UNCHANGED_METHOD_ID),
@@ -831,42 +835,222 @@ def _combine_statuses(rows: Sequence[Mapping[str, Any]]) -> str:
     return "PASS"
 
 
-def _absolute_route_check(contrast: Mapping[str, Any]) -> dict[str, Any]:
-    token = contrast["token"]
-    exact = contrast["exact"]
-    checks = {
-        "token_point_floor": {
-            "status": "PASS" if float(token["benefit"]["point"]) >= PRACTICAL_THRESHOLDS["token_accuracy_floor"] else "FAIL",
-            "point": float(token["benefit"]["point"]),
-            "threshold": PRACTICAL_THRESHOLDS["token_accuracy_floor"],
-        },
-        "token_positive_lower": _check_interval(token["benefit"], lambda value: value > 0.0),
-        "token_harm_safeguard": _check_interval(token["harm"], lambda value: value >= PRACTICAL_THRESHOLDS["harm_token_lower"]),
-        "exact_point_floor": {
-            "status": "PASS" if float(exact["benefit"]["point"]) >= PRACTICAL_THRESHOLDS["exact_point_floor"] else "FAIL",
-            "point": float(exact["benefit"]["point"]),
-            "threshold": PRACTICAL_THRESHOLDS["exact_point_floor"],
-        },
-        "exact_positive_lower": _check_interval(exact["benefit"], lambda value: value > 0.0),
-        "exact_harm_safeguard": _check_interval(exact["harm"], lambda value: value >= PRACTICAL_THRESHOLDS["harm_exact_lower"]),
-    }
-    checks["status"] = _combine_statuses(list(checks.values()))
-    return checks
+def _combine_alternative_statuses(rows: Sequence[Mapping[str, Any]]) -> str:
+    """Combine separate token/exact alternatives without requiring both."""
+    statuses = {str(row.get("status")) for row in rows}
+    if "PASS" in statuses:
+        return "PASS"
+    if "UNKNOWN" in statuses:
+        return "UNKNOWN"
+    return "FAIL"
+
+
+def _metric_route_status(rows: Sequence[Mapping[str, Any]]) -> str:
+    """Combine checks within one metric route.
+
+    ``CEILING_LIMITED`` is an allowed token absolute-floor outcome. It is
+    resolved by the relative-error and positive-bound checks in the same
+    token route, so it behaves as a non-failing component here.
+    """
+    statuses = {str(row.get("status")) for row in rows}
+    if "FAIL" in statuses:
+        return "FAIL"
+    if "UNKNOWN" in statuses:
+        return "UNKNOWN"
+    return "PASS"
+
+
+def _finite_number(value: Any) -> bool:
+    return isinstance(value, (int, float)) and math.isfinite(float(value))
+
+
+def _token_point_floor_check(token: Mapping[str, Any]) -> dict[str, Any]:
+    benefit = token.get("benefit")
+    if not isinstance(benefit, Mapping):
+        return {"status": "UNKNOWN", "reason": "token_benefit_missing"}
+    point = benefit.get("point")
+    if not _finite_number(point):
+        return {"status": "UNKNOWN", "reason": "token_point_missing", "threshold": PRACTICAL_THRESHOLDS["token_accuracy_floor"]}
+    point = float(point)
+    threshold = PRACTICAL_THRESHOLDS["token_accuracy_floor"]
+    result: dict[str, Any] = {"point": point, "threshold": threshold}
+    exposed = benefit.get("exposed_tokens")
+    control_correct = benefit.get("control_correct")
+    if not _finite_number(exposed) or not _finite_number(control_correct) or float(exposed) <= 0.0:
+        result.update({"status": "UNKNOWN", "reason": "token_control_accuracy_missing"})
+        return result
+    exposed = float(exposed)
+    control_correct = float(control_correct)
+    if control_correct < 0.0 or control_correct > exposed:
+        result.update({"status": "UNKNOWN", "reason": "token_control_accuracy_invalid"})
+        return result
+    control_accuracy = control_correct / exposed
+    headroom = 1.0 - control_accuracy
+    result.update({"control_accuracy": control_accuracy, "attainable_headroom": headroom})
+    if point >= threshold:
+        result["status"] = "PASS"
+    elif headroom < threshold:
+        # The v4 contract allows a ceiling-limited absolute floor, but still
+        # requires the relative-error and positive-LCB checks for usefulness.
+        result.update({"status": "CEILING_LIMITED", "reason": "fixed_control_leaves_less_than_floor_headroom"})
+    else:
+        result["status"] = "FAIL"
+    return result
+
+
+def _point_floor_check(metric: Mapping[str, Any], *, threshold: float, field: str) -> dict[str, Any]:
+    benefit = metric.get("benefit")
+    if not isinstance(benefit, Mapping):
+        return {"status": "UNKNOWN", "reason": f"{field}_benefit_missing", "threshold": threshold}
+    point = benefit.get("point")
+    if not _finite_number(point):
+        return {"status": "UNKNOWN", "reason": f"{field}_point_missing", "threshold": threshold}
+    point = float(point)
+    return {"status": "PASS" if point >= threshold else "FAIL", "point": point, "threshold": threshold}
 
 
 def _ratio_check(interval: Mapping[str, Any], threshold: float) -> dict[str, Any]:
+    """Check both point and lower bound for a closure-fraction ratio."""
     if interval.get("status") != "COMPUTED":
-        return {"status": "UNKNOWN", "reason": interval.get("reason", "interval_not_computed"), "threshold": threshold}
+        return {"status": "UNKNOWN", "reason": interval.get("reason", "ratio_not_computed"), "threshold": threshold}
     point = interval.get("point")
     lower = interval.get("lower")
-    if not all(isinstance(value, (int, float)) and math.isfinite(float(value)) for value in (point, lower)):
+    if not all(_finite_number(value) for value in (point, lower)):
         return {"status": "UNKNOWN", "reason": "ratio_bounds_missing", "threshold": threshold}
     return {
         "status": "PASS" if float(point) >= threshold and float(lower) >= threshold else "FAIL",
         "point": float(point),
         "lower": float(lower),
         "threshold": threshold,
+        "criterion": "point_and_lower",
     }
+
+
+def _ratio_point_check(interval: Mapping[str, Any], threshold: float) -> dict[str, Any]:
+    """Check the registered remaining-error point criterion only.
+
+    v4 requires a positive paired LCB for the absolute benefit and a point
+    estimate of at least 20% remaining-error reduction. It does not require
+    the ratio's own lower percentile bound to exceed 20%.
+    """
+    if interval.get("status") != "COMPUTED":
+        return {"status": "UNKNOWN", "reason": interval.get("reason", "ratio_not_computed"), "threshold": threshold}
+    point = interval.get("point")
+    if not _finite_number(point):
+        return {"status": "UNKNOWN", "reason": "ratio_point_missing", "threshold": threshold}
+    result: dict[str, Any] = {
+        "status": "PASS" if float(point) >= threshold else "FAIL",
+        "point": float(point),
+        "threshold": threshold,
+        "criterion": "point_only",
+        "lower_not_required_for_20_percent": True,
+    }
+    lower = interval.get("lower")
+    if _finite_number(lower):
+        result["lower"] = float(lower)
+    return result
+
+
+def _ratio_report(interval: Mapping[str, Any]) -> dict[str, Any]:
+    """Expose a non-decision ratio without inventing an exact-route criterion."""
+    result = dict(interval)
+    result["criterion"] = "descriptive_only"
+    return result
+
+
+def _visibility_check(anchor_metric: Mapping[str, Any], threshold: float) -> dict[str, Any]:
+    """Check visibility from the A1+A2-minus-unchanged anchor gap."""
+    benefit = anchor_metric.get("benefit")
+    if not isinstance(benefit, Mapping) or not _finite_number(benefit.get("point")):
+        return {"status": "UNKNOWN", "reason": "anchor_gap_point_missing", "threshold": threshold}
+    point = float(benefit["point"])
+    if point < threshold:
+        return {
+            "status": "UNKNOWN",
+            "reason": "a1_a2_gap_below_visibility_floor",
+            "point": point,
+            "threshold": threshold,
+        }
+    return {"status": "PASS", "point": point, "threshold": threshold}
+
+
+def _gated_ratio_check(
+    interval: Mapping[str, Any],
+    visibility: Mapping[str, Any],
+    threshold: float,
+) -> dict[str, Any]:
+    ratio = _ratio_check(interval, threshold)
+    if visibility.get("status") == "PASS":
+        return ratio
+    result = dict(ratio)
+    result["status"] = "UNKNOWN"
+    result["reason"] = visibility.get("reason", "anchor_gap_not_visible")
+    result["visibility"] = dict(visibility)
+    return result
+
+
+def _absolute_route_check(contrast: Mapping[str, Any]) -> dict[str, Any]:
+    """Compute independent token and exact absolute-route predicates."""
+    token = contrast["token"]
+    exact = contrast["exact"]
+    token_components = {
+        "point_floor": _token_point_floor_check(token),
+        "positive_lower": _check_interval(token["benefit"], lambda value: value > 0.0),
+        "harm_safeguard": _check_interval(token["harm"], lambda value: value >= PRACTICAL_THRESHOLDS["harm_token_lower"]),
+    }
+    exact_components = {
+        "point_floor": _point_floor_check(exact, threshold=PRACTICAL_THRESHOLDS["exact_point_floor"], field="exact"),
+        "positive_lower": _check_interval(exact["benefit"], lambda value: value > 0.0),
+        "harm_safeguard": _check_interval(exact["harm"], lambda value: value >= PRACTICAL_THRESHOLDS["harm_exact_lower"]),
+    }
+    token_route = {
+        "status": _metric_route_status(list(token_components.values())),
+        "checks": token_components,
+    }
+    exact_route = {
+        "status": _metric_route_status(list(exact_components.values())),
+        "checks": exact_components,
+    }
+    return {
+        "token": token_route,
+        "exact": exact_route,
+        # Token and exact are alternatives; a route must never require both.
+        "status": _combine_alternative_statuses([token_route, exact_route]),
+        "metric_routes_separate": True,
+    }
+
+
+def _gap_metric_check(
+    interval: Mapping[str, Any],
+    anchor_metric: Mapping[str, Any],
+    *,
+    visibility_threshold: float,
+) -> dict[str, Any]:
+    visibility = _visibility_check(anchor_metric, visibility_threshold)
+    fraction = _gated_ratio_check(interval, visibility, PRACTICAL_THRESHOLDS["gap_minimum_fraction"])
+    return {
+        "visibility": visibility,
+        "fraction": fraction,
+        "status": _metric_route_status([visibility, fraction]),
+    }
+
+
+def _effective_metric_route(
+    components: Sequence[Mapping[str, Any]],
+    *,
+    cost_gate: Mapping[str, Any],
+) -> dict[str, Any]:
+    scientific_status = _metric_route_status(components)
+    result: dict[str, Any] = {
+        "scientific_status": scientific_status,
+        "status": scientific_status,
+        "components": list(components),
+        "cost_gate": dict(cost_gate),
+    }
+    if scientific_status == "PASS" and cost_gate.get("status") != "PASS":
+        result["status"] = "UNKNOWN"
+        result["reason"] = "cost_gate_unknown"
+    return result
 
 
 def _decision_readout(
@@ -876,63 +1060,131 @@ def _decision_readout(
 ) -> dict[str, Any]:
     """Serialize per-cell v4 checks without pooling or choosing a winner."""
 
+    cost_gate = {"status": "UNKNOWN", "reason": "timing and deployment cost evidence is consumed by the planner"}
     directional_cells: dict[str, Any] = {}
     data_cells: dict[str, Any] = {}
     for cell in gate.CELL_ORDER:
-        directional_expanded = _absolute_route_check(contrasts["directional_expanded"][cell])
-        directional_current = _absolute_route_check(contrasts["directional_current"][cell])
-        data_fixed = _absolute_route_check(contrasts["data_fixed"][cell])
-        data_expanded_unchanged = _absolute_route_check(contrasts["data_expanded_fixed_vs_unchanged"][cell])
+        primary_abs = _absolute_route_check(contrasts["directional_expanded"][cell])
+        robustness_abs = _absolute_route_check(contrasts["directional_robustness"][cell])
+        data_fixed_abs = _absolute_route_check(contrasts["data_fixed"][cell])
+        data_unchanged_abs = _absolute_route_check(contrasts["data_expanded_fixed_vs_unchanged"][cell])
+
+        directional_anchor = contrasts["a1_a2_vs_unchanged"][cell]
         directional_gap = gap_closure["directional_candidate"][cell]
         data_gap = gap_closure["data_expanded_fixed"][cell]
         directional_gap_checks = {
-            "token_visibility": {
-                "status": "PASS" if float(contrasts["combined_candidate"][cell]["token"]["benefit"]["point"]) >= PRACTICAL_THRESHOLDS["gap_visibility_token"] else "FAIL",
-                "point": float(contrasts["combined_candidate"][cell]["token"]["benefit"]["point"]),
-                "threshold": PRACTICAL_THRESHOLDS["gap_visibility_token"],
-            },
-            "exact_visibility": {
-                "status": "PASS" if float(contrasts["combined_candidate"][cell]["exact"]["benefit"]["point"]) >= PRACTICAL_THRESHOLDS["gap_visibility_exact"] else "FAIL",
-                "point": float(contrasts["combined_candidate"][cell]["exact"]["benefit"]["point"]),
-                "threshold": PRACTICAL_THRESHOLDS["gap_visibility_exact"],
-            },
-            "token_fraction": _ratio_check(directional_gap["token"], PRACTICAL_THRESHOLDS["gap_minimum_fraction"]),
-            "exact_fraction": _ratio_check(directional_gap["exact"], PRACTICAL_THRESHOLDS["gap_minimum_fraction"]),
+            "token": _gap_metric_check(
+                directional_gap["token"], directional_anchor["token"], visibility_threshold=PRACTICAL_THRESHOLDS["gap_visibility_token"]
+            ),
+            "exact": _gap_metric_check(
+                directional_gap["exact"], directional_anchor["exact"], visibility_threshold=PRACTICAL_THRESHOLDS["gap_visibility_exact"]
+            ),
         }
-        directional_gap_checks["status"] = _combine_statuses(list(directional_gap_checks.values()))
+        directional_gap_checks["status"] = _combine_alternative_statuses(
+            [directional_gap_checks["token"], directional_gap_checks["exact"]]
+        )
         data_gap_checks = {
-            "token_visibility": {
-                "status": "PASS" if float(contrasts["data_expanded_fixed_vs_unchanged"][cell]["token"]["benefit"]["point"]) >= PRACTICAL_THRESHOLDS["gap_visibility_token"] else "FAIL",
-                "point": float(contrasts["data_expanded_fixed_vs_unchanged"][cell]["token"]["benefit"]["point"]),
-                "threshold": PRACTICAL_THRESHOLDS["gap_visibility_token"],
-            },
-            "exact_visibility": {
-                "status": "PASS" if float(contrasts["data_expanded_fixed_vs_unchanged"][cell]["exact"]["benefit"]["point"]) >= PRACTICAL_THRESHOLDS["gap_visibility_exact"] else "FAIL",
-                "point": float(contrasts["data_expanded_fixed_vs_unchanged"][cell]["exact"]["benefit"]["point"]),
-                "threshold": PRACTICAL_THRESHOLDS["gap_visibility_exact"],
-            },
-            "token_fraction": _ratio_check(data_gap["token"], PRACTICAL_THRESHOLDS["gap_minimum_fraction"]),
-            "exact_fraction": _ratio_check(data_gap["exact"], PRACTICAL_THRESHOLDS["gap_minimum_fraction"]),
+            "token": _gap_metric_check(
+                data_gap["token"], directional_anchor["token"], visibility_threshold=PRACTICAL_THRESHOLDS["gap_visibility_token"]
+            ),
+            "exact": _gap_metric_check(
+                data_gap["exact"], directional_anchor["exact"], visibility_threshold=PRACTICAL_THRESHOLDS["gap_visibility_exact"]
+            ),
         }
-        data_gap_checks["status"] = _combine_statuses(list(data_gap_checks.values()))
+        data_gap_checks["status"] = _combine_alternative_statuses(
+            [data_gap_checks["token"], data_gap_checks["exact"]]
+        )
+
+        d_exp_token_relative = _ratio_point_check(
+            remaining_error_reduction["directional_expanded"][cell]["token"],
+            PRACTICAL_THRESHOLDS["remaining_error_reduction_fraction"],
+        )
+        d_cur_token_relative = _ratio_point_check(
+            remaining_error_reduction["directional_current"][cell]["token"],
+            PRACTICAL_THRESHOLDS["remaining_error_reduction_fraction"],
+        )
+        data_fixed_token_relative = _ratio_point_check(
+            remaining_error_reduction["data_fixed"][cell]["token"],
+            PRACTICAL_THRESHOLDS["remaining_error_reduction_fraction"],
+        )
+        data_unchanged_token_relative = _ratio_point_check(
+            remaining_error_reduction["data_expanded_fixed_vs_unchanged"][cell]["token"],
+            PRACTICAL_THRESHOLDS["remaining_error_reduction_fraction"],
+        )
+
+        directional_metric_routes = {
+            "token": _effective_metric_route(
+                [
+                    primary_abs["token"],
+                    robustness_abs["token"],
+                    d_exp_token_relative,
+                    d_cur_token_relative,
+                    directional_gap_checks["token"],
+                ],
+                cost_gate=cost_gate,
+            ),
+            "exact": _effective_metric_route(
+                [
+                    primary_abs["exact"],
+                    robustness_abs["exact"],
+                    directional_gap_checks["exact"],
+                ],
+                cost_gate=cost_gate,
+            ),
+        }
+        data_metric_routes = {
+            "token": _effective_metric_route(
+                [
+                    data_fixed_abs["token"],
+                    data_unchanged_abs["token"],
+                    data_fixed_token_relative,
+                    data_unchanged_token_relative,
+                    data_gap_checks["token"],
+                ],
+                cost_gate=cost_gate,
+            ),
+            "exact": _effective_metric_route(
+                [
+                    data_fixed_abs["exact"],
+                    data_unchanged_abs["exact"],
+                    data_gap_checks["exact"],
+                ],
+                cost_gate=cost_gate,
+            ),
+        }
         directional_cells[cell] = {
-            "expanded_directional_vs_expanded_fixed": directional_expanded,
-            "expanded_directional_vs_current_fixed": directional_current,
+            "expanded_directional_vs_expanded_fixed": primary_abs,
+            "expanded_directional_vs_current_fixed": robustness_abs,
+            "remaining_error_reduction": {
+                "expanded_directional_vs_expanded_fixed": d_exp_token_relative,
+                "expanded_directional_vs_current_fixed": d_cur_token_relative,
+            },
             "gap_closure": directional_gap_checks,
-            "status": _combine_statuses([directional_expanded, directional_current, directional_gap_checks]),
+            "metric_routes": directional_metric_routes,
+            "status": _combine_alternative_statuses(list(directional_metric_routes.values())),
+            "cost_gate": cost_gate,
         }
         data_cells[cell] = {
-            "expanded_fixed_vs_current_fixed": data_fixed,
-            "expanded_fixed_vs_unchanged": data_expanded_unchanged,
+            "expanded_fixed_vs_current_fixed": data_fixed_abs,
+            "expanded_fixed_vs_unchanged": data_unchanged_abs,
+            "remaining_error_reduction": {
+                "expanded_fixed_vs_current_fixed": data_fixed_token_relative,
+                "expanded_fixed_vs_unchanged": data_unchanged_token_relative,
+            },
             "gap_closure": data_gap_checks,
-            "status": _combine_statuses([data_fixed, data_expanded_unchanged, data_gap_checks]),
+            "metric_routes": data_metric_routes,
+            "status": _combine_alternative_statuses(list(data_metric_routes.values())),
+            "cost_gate": cost_gate,
         }
 
     def by_domain(rows: Mapping[str, Mapping[str, Any]]) -> dict[str, Any]:
         result: dict[str, Any] = {}
         for domain in DOMAIN_ORDER:
             selected = [row for cell, row in rows.items() if DOMAIN_BY_CELL[cell] == domain]
-            result[domain] = {"status": _combine_statuses(selected), "target_cells": [cell for cell in rows if DOMAIN_BY_CELL[cell] == domain]}
+            result[domain] = {
+                "status": _combine_statuses(selected),
+                "target_cells": [cell for cell in rows if DOMAIN_BY_CELL[cell] == domain],
+            }
         return result
 
     return {
@@ -944,17 +1196,22 @@ def _decision_readout(
         "remaining_error_reduction": {
             route: {
                 cell: {
-                    "token": _ratio_check(row["token"], PRACTICAL_THRESHOLDS["remaining_error_reduction_fraction"]),
-                    "exact": _ratio_check(row["exact"], PRACTICAL_THRESHOLDS["remaining_error_reduction_fraction"]),
+                    # Only the token point is a useful-route criterion. Exact
+                    # ratios remain descriptive because v4 has no exact 20%
+                    # reduction requirement.
+                    "token": _ratio_point_check(
+                        row["token"], PRACTICAL_THRESHOLDS["remaining_error_reduction_fraction"]
+                    ),
+                    "exact": _ratio_report(row["exact"]),
                 }
                 for cell, row in rows.items()
             }
             for route, rows in remaining_error_reduction.items()
         },
-        "cost_gate": {"status": "UNKNOWN", "reason": "timing and deployment cost evidence is consumed by the planner"},
+        "cost_gate": cost_gate,
+        "useful_route_status_is_cost_gated": True,
         "rare_absent_strata": "DIAGNOSTIC_ONLY",
     }
-
 
 def _score_loaded(
     predictions: Mapping[str, Mapping[str, torch.Tensor]],
