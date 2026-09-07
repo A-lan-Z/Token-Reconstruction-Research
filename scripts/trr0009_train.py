@@ -266,7 +266,15 @@ def _resource_paths(args: argparse.Namespace) -> Paths:
         values[name] = Path(supplied).expanduser() if supplied else getattr(defaults, name)
     values["repository_root"] = Path(args.repository_root).expanduser()
     paths = Paths(**values)
-    paths = Paths(*(path.resolve() for path in paths))
+    paths = Paths(
+        repository_root=paths.repository_root.resolve(),
+        fit_manifest=paths.fit_manifest.resolve(),
+        validation_manifest=paths.validation_manifest.resolve(),
+        embedding_path=paths.embedding_path.resolve(),
+        starting_state=paths.starting_state.resolve(),
+        schedule_path=paths.schedule_path.resolve(),
+        output_root=paths.output_root.resolve(),
+    )
     task_root = (paths.repository_root / "experiments/TRR-0009/training").resolve()
     try:
         paths.output_root.relative_to(task_root)
@@ -1024,6 +1032,16 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def _failure_output_root(args: argparse.Namespace) -> Path:
+    supplied = getattr(args, "output_root", None)
+    if supplied:
+        path = Path(supplied).expanduser()
+        if not path.is_absolute():
+            path = Path(args.repository_root).expanduser() / path
+        return path.resolve()
+    return (Path(args.repository_root).expanduser().resolve() / "experiments/TRR-0009/training/run_v1").resolve()
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
@@ -1044,12 +1062,13 @@ def main(argv: Sequence[str] | None = None) -> int:
             run_training(paths, config, device=device, arms=args.arms, numerical_settings=numerical_settings)
     except Exception as exc:
         try:
-            failure_root = _resource_paths(args).output_root
+            failure_root = _failure_output_root(args)
             if not failure_root.is_symlink():
                 failure_root.mkdir(parents=True, exist_ok=True)
                 failure_path = failure_root / "failure.json"
                 if not failure_path.exists():
-                    _write_create_only(failure_path, {"schema": "token-reconstruction.trr0009-failure.v1", "task_id": TASK_ID, "created_utc": _utc_now(), "error_type": type(exc).__name__, "error": str(exc), "runtime": _runtime_binding(paths.repository_root if "paths" in locals() else _REPOSITORY_ROOT, locals().get("numerical_settings"))}, description="training failure")
+                    runtime_root = paths.repository_root if "paths" in locals() else Path(args.repository_root).expanduser().resolve()
+                    _write_create_only(failure_path, {"schema": "token-reconstruction.trr0009-failure.v1", "task_id": TASK_ID, "created_utc": _utc_now(), "error_type": type(exc).__name__, "error": str(exc), "runtime": _runtime_binding(runtime_root, locals().get("numerical_settings"))}, description="training failure")
         except Exception:
             pass
         print(f"TRR-0009 training failed: {type(exc).__name__}: {exc}", file=sys.stderr)

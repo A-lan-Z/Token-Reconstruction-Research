@@ -13,6 +13,9 @@ from trr0009_train import (
     EXPECTED_SCHEDULE_DIGEST,
     TrainingConfig,
     _challenge_from_wrong_mask,
+    _resource_paths,
+    build_parser,
+    main,
     _frequency_counts,
     _support_receipt,
     _validation_steps,
@@ -99,3 +102,37 @@ def test_best_checkpoint_state_is_restored_when_final_is_worse() -> None:
     model.load_state_dict(best_state, strict=True)
     assert best_step == 100
     assert torch.equal(model.weight, torch.full_like(model.weight, 2.0))
+
+
+def test_resource_paths_and_preflight_failure_receipt_are_bounded(tmp_path: Path) -> None:
+    repository_root = tmp_path / "repo"
+    repository_root.mkdir()
+    output_root = repository_root / "experiments" / "TRR-0009" / "training" / "preflight_failure"
+    parser = build_parser()
+    args = parser.parse_args([
+        "--repository-root", str(repository_root),
+        "--output-root", str(output_root),
+        "--device", "cpu",
+        "--preflight-only",
+    ])
+    paths = _resource_paths(args)
+    assert paths.repository_root == repository_root.resolve()
+    assert paths.output_root == output_root.resolve()
+    assert all(value.is_absolute() for value in (
+        paths.fit_manifest, paths.validation_manifest, paths.embedding_path,
+        paths.starting_state, paths.schedule_path, paths.output_root,
+    ))
+
+    status = main([
+        "--repository-root", str(repository_root),
+        "--output-root", str(output_root),
+        "--device", "cpu",
+        "--preflight-only",
+    ])
+    assert status == 2
+    failure_path = output_root / "failure.json"
+    assert failure_path.is_file()
+    failure = json.loads(failure_path.read_text(encoding="utf-8"))
+    assert failure["schema"] == "token-reconstruction.trr0009-failure.v1"
+    assert failure["task_id"] == "TRR-0009"
+    assert failure["error_type"] in {"TRR0009TrainError", "RuntimeError"}
