@@ -14,6 +14,7 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping, Sequence
 import importlib
 import importlib.util
+import hashlib
 import json
 from pathlib import Path
 import sys
@@ -62,6 +63,16 @@ from trr0010_p09_provider import (
 
 TASK_ID = "TRR-0010"
 PRODUCTION_SCHEMA = "token-reconstruction.trr0010-directional-production-binding.v1"
+SIGNED_STAGE3_CONTRACT_SCHEMA = "token-reconstruction.trr0010-shared-stage3-contract.v1"
+SIGNED_STAGE3_CONTRACT_SHA256 = "23e4bde4475082cc004e7ef787c22fed6301275ce2ff23a0396d975b439faf9d"
+SIGNED_STAGE3_COUNTERSIGNATURE_SHA256 = "a99d31991880be095a21cf7bef119adbceb14c51e82c35f2df108c4164467ab9"
+SIGNED_STAGE3_COUNTERSIGNATURE_STATUS = "AGENT2_COUNTERSIGNED_ROOT_REVIEW_PASS_AGENT1_GO_PENDING"
+MEASURED_QUALIFICATION_RECEIPT_SHA256 = "58594a477733c2f1ce21d356ec9acead92de6001b2c31bd41f635213700bca66"
+MEASURED_RESOURCE_GUARD_SHA256 = "c14d22414ae4feac0f7c021d3278bb5fbfe5baa90c6d5eeb9e47b3f172042893"
+MEASURED_GPU_PEAK_RESERVED_BYTES = 7600078848
+MEASURED_HOST_PEAK_RSS_BYTES = 4276609024
+MEASURED_MIN_HOST_AVAILABLE_BYTES = 18282762240
+MEASURED_QUALIFICATION_WALL_SECONDS = 26.84726572499494
 EXPECTED_START_STATE_SHA256 = "5cada4a3d04bb5477eaf0be25ed8d8ac25a89283223e9ba14b18fa10416bee14"
 EXPECTED_START_SELECTED_STEP = 400
 REQUIRED_A2_SOURCE_PATHS = (
@@ -231,7 +242,194 @@ def _validate_fixed_settings(receipt: Mapping[str, Any], *, arm_name: str, bank_
     }
 
 
-def _validate_schedule_metadata(receipt: Mapping[str, Any], *, arm_name: str) -> dict[str, Any]:
+def _validate_signed_stage3_contract(
+    receipt: Mapping[str, Any],
+    *,
+    expected_contract_sha256: str = SIGNED_STAGE3_CONTRACT_SHA256,
+    expected_countersignature_sha256: str = SIGNED_STAGE3_COUNTERSIGNATURE_SHA256,
+) -> Mapping[str, Any]:
+    """Validate the immutable stage-3 contract and its exact countersignature.
+
+    The production path never treats a filename suffix or a self-declared
+    status as evidence of signing.  It hashes both approved JSON artifacts,
+    checks the contract schema/task/status, and verifies that the external
+    countersignature names this exact contract hash.  Tests may inject their
+    own expected hashes into this pure metadata validator; ``build_inputs``
+    always uses the frozen defaults above.
+    """
+    contract_descriptor = _descriptor(receipt, "contract")
+    contract_path = Path(str(contract_descriptor["path"])).expanduser()
+    try:
+        contract_bytes = contract_path.read_bytes()
+    except OSError as exc:
+        raise ProductionProviderError("signed stage-3 contract cannot be read") from exc
+    if len(contract_bytes) != _int(contract_descriptor.get("bytes"), label="contract.bytes"):
+        raise ProductionProviderError("signed stage-3 contract byte count differs from its binding")
+    contract_sha = hashlib.sha256(contract_bytes).hexdigest()
+    if contract_sha != _sha(contract_descriptor.get("sha256"), label="contract.sha256"):
+        raise ProductionProviderError("signed stage-3 contract bytes differ from its binding")
+    if contract_sha != expected_contract_sha256:
+        raise ProductionProviderError("signed stage-3 contract SHA differs from approved exact hash")
+    try:
+        contract = json.loads(contract_bytes.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ProductionProviderError("signed stage-3 contract is not valid JSON") from exc
+    if not isinstance(contract, Mapping):
+        raise ProductionProviderError("signed stage-3 contract must be a JSON object")
+    if contract.get("schema") != SIGNED_STAGE3_CONTRACT_SCHEMA or contract.get("task_id") != TASK_ID:
+        raise ProductionProviderError("signed stage-3 contract schema/task identity differs")
+    if contract.get("status") != "FROZEN_STAGE3_AGREED_PENDING_EXACT_HASH_COUNTERSIGNATURE":
+        raise ProductionProviderError("signed stage-3 contract status is not the approved frozen status")
+    counter_descriptor = receipt.get("contract_countersignature")
+    if not isinstance(counter_descriptor, Mapping):
+        raise ProductionProviderError("stage-3 contract countersignature binding is missing")
+    counter_path_value = counter_descriptor.get("path")
+    if not isinstance(counter_path_value, str) or not counter_path_value:
+        raise ProductionProviderError("stage-3 contract countersignature path is missing")
+    counter_path = Path(counter_path_value).expanduser()
+    try:
+        counter_bytes = counter_path.read_bytes()
+    except OSError as exc:
+        raise ProductionProviderError("stage-3 contract countersignature cannot be read") from exc
+    if len(counter_bytes) != _int(counter_descriptor.get("bytes"), label="contract_countersignature.bytes"):
+        raise ProductionProviderError("stage-3 contract countersignature byte count differs from its binding")
+    counter_sha = hashlib.sha256(counter_bytes).hexdigest()
+    if counter_sha != _sha(counter_descriptor.get("sha256"), label="contract_countersignature.sha256"):
+        raise ProductionProviderError("stage-3 contract countersignature bytes differ from its binding")
+    if counter_sha != expected_countersignature_sha256:
+        raise ProductionProviderError("stage-3 contract countersignature SHA differs from approved exact hash")
+    try:
+        countersignature = json.loads(counter_bytes.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ProductionProviderError("stage-3 contract countersignature is not valid JSON") from exc
+    if not isinstance(countersignature, Mapping):
+        raise ProductionProviderError("stage-3 contract countersignature must be a JSON object")
+    if countersignature.get("status") != SIGNED_STAGE3_COUNTERSIGNATURE_STATUS:
+        raise ProductionProviderError("stage-3 contract countersignature status differs")
+    copy = _mapping(countersignature.get("contract_copy"), label="contract_copy")
+    if copy.get("sha256") != contract_sha or copy.get("source_sha256") != contract_sha:
+        raise ProductionProviderError("stage-3 countersignature does not name this exact contract hash")
+    signature = _mapping(countersignature.get("counter_signature"), label="counter_signature")
+    if signature.get("exact_contract_hash_agreed") is not True:
+        raise ProductionProviderError("stage-3 countersignature lacks exact-contract-hash agreement")
+    return contract
+
+
+def _bound_file_descriptor(
+    descriptor: Mapping[str, Any],
+    *,
+    label: str,
+    expected_sha256: str,
+) -> None:
+    """Verify a create-only evidence file without opening model/input payloads."""
+    path_value = descriptor.get("path")
+    if not isinstance(path_value, str) or not path_value:
+        raise ProductionProviderError(f"{label}.path is missing")
+    path = Path(path_value).expanduser()
+    try:
+        payload = path.read_bytes()
+    except OSError as exc:
+        raise ProductionProviderError(f"{label} cannot be read") from exc
+    if len(payload) != _int(descriptor.get("bytes"), label=f"{label}.bytes"):
+        raise ProductionProviderError(f"{label} byte count differs from its binding")
+    digest = hashlib.sha256(payload).hexdigest()
+    if digest != _sha(descriptor.get("sha256"), label=f"{label}.sha256"):
+        raise ProductionProviderError(f"{label} bytes differ from its binding")
+    if digest != expected_sha256:
+        raise ProductionProviderError(f"{label} SHA differs from approved measured receipt")
+
+
+def _validate_resource_qualification(
+    receipt: Mapping[str, Any],
+    *,
+    signed_contract: Mapping[str, Any],
+    expected_qualification_sha256: str = MEASURED_QUALIFICATION_RECEIPT_SHA256,
+    expected_resource_guard_sha256: str = MEASURED_RESOURCE_GUARD_SHA256,
+) -> dict[str, Any]:
+    """Validate measured qualification separately from signed production caps."""
+    value = _mapping(receipt.get("resource_qualification"), label="resource_qualification")
+    if value.get("status") != "PASS":
+        raise ProductionProviderError("resource qualification is not PASS")
+    qualification_receipt = _mapping(value.get("qualification_receipt"), label="qualification_receipt")
+    guard_receipt = _mapping(value.get("resource_guard_receipt"), label="resource_guard_receipt")
+    _bound_file_descriptor(
+        qualification_receipt,
+        label="qualification_receipt",
+        expected_sha256=expected_qualification_sha256,
+    )
+    _bound_file_descriptor(
+        guard_receipt,
+        label="resource_guard_receipt",
+        expected_sha256=expected_resource_guard_sha256,
+    )
+    measured = {
+        "gpu_peak_reserved_bytes": _int(value.get("gpu_peak_reserved_bytes"), label="resource_qualification.gpu_peak_reserved_bytes", positive=True),
+        "host_peak_rss_bytes": _int(value.get("host_peak_rss_bytes"), label="resource_qualification.host_peak_rss_bytes", positive=True),
+        "host_available_bytes": _int(value.get("host_available_bytes"), label="resource_qualification.host_available_bytes", positive=True),
+    }
+    if expected_qualification_sha256 == MEASURED_QUALIFICATION_RECEIPT_SHA256:
+        if measured["gpu_peak_reserved_bytes"] != MEASURED_GPU_PEAK_RESERVED_BYTES:
+            raise ProductionProviderError("measured GPU qualification peak differs from receipt")
+        if measured["host_peak_rss_bytes"] <= 0 or measured["host_available_bytes"] != MEASURED_MIN_HOST_AVAILABLE_BYTES:
+            raise ProductionProviderError("measured host qualification values differ from receipt")
+        if _float(value.get("wall_seconds"), label="resource_qualification.wall_seconds", nonnegative=True) != MEASURED_QUALIFICATION_WALL_SECONDS:
+            raise ProductionProviderError("measured qualification wall time differs from receipt")
+    caps = _mapping(value.get("production_caps"), label="resource_qualification.production_caps")
+    contract_caps = _mapping(signed_contract.get("resource_caps"), label="resource_caps")
+    per_arm = _mapping(contract_caps.get("per_arm"), label="resource_caps.per_arm")
+    expected_caps = {
+        "gpu_reserved_limit_bytes": per_arm.get("cuda_reserved_bytes_directional"),
+        "host_rss_limit_bytes": per_arm.get("host_rss_bytes"),
+        "host_available_floor_bytes": per_arm.get("host_available_floor_bytes"),
+        "wall_limit_seconds": per_arm.get("max_seconds_including_preparation_diagnostics_checkpoint_export"),
+        "gpu_free_floor_bytes": per_arm.get("gpu_free_floor_bytes"),
+        "disk_free_floor_bytes": per_arm.get("disk_free_floor_bytes"),
+        "output_bytes_limit": per_arm.get("output_bytes_limit"),
+    }
+    for field, expected in expected_caps.items():
+        if field not in caps:
+            raise ProductionProviderError(f"resource_qualification.production_caps is missing {field}")
+        if field.endswith("_seconds"):
+            actual_value = _float(caps.get(field), label=f"resource_qualification.production_caps.{field}", nonnegative=True)
+            if actual_value != float(expected):
+                raise ProductionProviderError(f"resource cap {field} differs from signed contract")
+        else:
+            if _int(caps.get(field), label=f"resource_qualification.production_caps.{field}") != _int(expected, label=f"signed resource cap {field}"):
+                raise ProductionProviderError(f"resource cap {field} differs from signed contract")
+    flat_cap_fields = {
+        "gpu_reserved_limit_bytes": "gpu_reserved_limit_bytes",
+        "host_rss_limit_bytes": "host_rss_limit_bytes",
+        "host_available_floor_bytes": "host_available_floor_bytes",
+        "wall_limit_seconds": "wall_limit_seconds",
+    }
+    for flat_field, cap_field in flat_cap_fields.items():
+        if flat_field not in value:
+            raise ProductionProviderError(f"resource_qualification is missing {flat_field}")
+        if flat_field.endswith("_seconds"):
+            flat_value = _float(value.get(flat_field), label=f"resource_qualification.{flat_field}", nonnegative=True)
+            cap_value = _float(caps.get(cap_field), label=f"resource_qualification.production_caps.{cap_field}", nonnegative=True)
+        else:
+            flat_value = _int(value.get(flat_field), label=f"resource_qualification.{flat_field}")
+            cap_value = _int(caps.get(cap_field), label=f"resource_qualification.production_caps.{cap_field}")
+        if flat_value != cap_value:
+            raise ProductionProviderError(f"resource qualification {flat_field} differs from production cap")
+    # The measured qualifier had its own 900-second lease; production's 7,200
+    # second cap is intentionally sourced from the signed contract above.
+    return {
+        "status": "PASS",
+        "qualification_receipt": dict(qualification_receipt),
+        "resource_guard_receipt": dict(guard_receipt),
+        "measured": measured,
+        "production_caps": dict(caps),
+    }
+
+
+def _validate_schedule_metadata(
+    receipt: Mapping[str, Any],
+    *,
+    arm_name: str,
+    signed_contract: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
     schedule = _mapping(receipt.get("schedule"), label=f"{arm_name}.schedule")
     if _int(schedule.get("steps"), label=f"{arm_name}.schedule.steps") != TRAINING_STEPS:
         raise ProductionProviderError(f"{arm_name} schedule must declare 13000 steps")
@@ -244,6 +442,38 @@ def _validate_schedule_metadata(receipt: Mapping[str, Any], *, arm_name: str) ->
         raise ProductionProviderError(f"{arm_name} schedule exposure must contain 512 draws per step")
     schedule_artifact = _descriptor(receipt, "schedule")
     schedule_sha = _sha(schedule_artifact.get("sha256"), label=f"{arm_name}.schedule artifact SHA")
+    bank_role = str(receipt.get("bank_role", ""))
+    contract = signed_contract if signed_contract is not None else _validate_signed_stage3_contract(receipt)
+    fixed = _mapping(contract.get("fixed_control_configuration"), label="fixed_control_configuration")
+    contract_schedule_value = fixed.get(f"{bank_role}_schedule")
+    if not isinstance(contract_schedule_value, Mapping):
+        raise ProductionProviderError(
+            f"{arm_name} signed contract lacks fixed_control_configuration.{bank_role}_schedule"
+        )
+    contract_schedule: Mapping[str, Any] = contract_schedule_value
+    expected_path = contract_schedule.get("path")
+    schedule_path = Path(str(schedule_artifact["path"])).expanduser().resolve()
+    if not isinstance(expected_path, str) or Path(expected_path).expanduser().resolve() != schedule_path:
+        raise ProductionProviderError(f"{arm_name} schedule path differs from signed {bank_role} schedule")
+    for field, actual in (
+        ("bytes", schedule_artifact.get("bytes")),
+        ("sha256", schedule_sha),
+        ("semantic_sha256", semantic),
+        ("seed", seed),
+        ("steps", int(schedule.get("steps"))),
+    ):
+        expected = contract_schedule.get(field)
+        if field in {"bytes", "seed", "steps"}:
+            try:
+                matches = int(actual) == int(expected)
+            except (TypeError, ValueError):
+                matches = False
+        else:
+            matches = actual == expected
+        if not matches:
+            raise ProductionProviderError(
+                f"{arm_name} {field} differs from signed {bank_role} schedule"
+            )
     control = receipt.get("control_schedule")
     if control is None:
         artifacts = _mapping(receipt.get("artifacts"), label="artifacts")
@@ -260,6 +490,7 @@ def _validate_schedule_metadata(receipt: Mapping[str, Any], *, arm_name: str) ->
         "exposure": dict(exposure),
         "schedule_binding": dict(schedule_artifact),
         "control_schedule_binding": dict(control),
+        "contract_schedule_binding": dict(contract_schedule) if contract_schedule is not None else None,
     }
 
 
@@ -378,9 +609,24 @@ def _source_bindings(receipt: Mapping[str, Any]) -> tuple[dict[str, Mapping[str,
     return required, helpers
 
 
-def _configuration(binding: Mapping[str, Any], *, arm_name: str, bank_role: str, diagnostic_binding: Mapping[str, Any]) -> dict[str, Any]:
+def _configuration(
+    binding: Mapping[str, Any],
+    *,
+    arm_name: str,
+    bank_role: str,
+    diagnostic_binding: Mapping[str, Any],
+    expected_contract_sha256: str = SIGNED_STAGE3_CONTRACT_SHA256,
+    expected_countersignature_sha256: str = SIGNED_STAGE3_COUNTERSIGNATURE_SHA256,
+    expected_qualification_sha256: str = MEASURED_QUALIFICATION_RECEIPT_SHA256,
+    expected_resource_guard_sha256: str = MEASURED_RESOURCE_GUARD_SHA256,
+) -> dict[str, Any]:
+    signed_contract = _validate_signed_stage3_contract(
+        binding,
+        expected_contract_sha256=expected_contract_sha256,
+        expected_countersignature_sha256=expected_countersignature_sha256,
+    )
     settings = _validate_fixed_settings(binding, arm_name=arm_name, bank_role=bank_role)
-    schedule = _validate_schedule_metadata(binding, arm_name=arm_name)
+    schedule = _validate_schedule_metadata(binding, arm_name=arm_name, signed_contract=signed_contract)
     diagnostic = _validate_diagnostic(diagnostic_binding, bank_role=bank_role)
     artifacts = _validate_artifact_declarations(binding, arm_name=arm_name)
     support = _declared_support(binding, bank_role=bank_role)
@@ -390,9 +636,12 @@ def _configuration(binding: Mapping[str, Any], *, arm_name: str, bank_role: str,
         raise ProductionProviderError(f"{arm_name} validation geometry must contain 384 rows")
     if _int(validation_geometry.get("sequence_tokens"), label=f"{arm_name}.validation_geometry.sequence_tokens") != EXPECTED_VALIDATION_TOKENS:
         raise ProductionProviderError(f"{arm_name} validation width differs from 128")
-    resource = binding.get("resource_qualification")
-    if not isinstance(resource, Mapping):
-        raise ProductionProviderError(f"{arm_name} measured resource qualification is missing")
+    resource = _validate_resource_qualification(
+        binding,
+        signed_contract=signed_contract,
+        expected_qualification_sha256=expected_qualification_sha256,
+        expected_resource_guard_sha256=expected_resource_guard_sha256,
+    )
     return {
         "arm_name": arm_name,
         "bank_role": bank_role,
@@ -404,7 +653,7 @@ def _configuration(binding: Mapping[str, Any], *, arm_name: str, bank_role: str,
         "a2_sources": {key: {"path": value.get("path"), "bytes": value.get("bytes"), "sha256": value.get("sha256"), "commit": value.get("commit")} for key, value in sources.items()},
         "a2_helpers": {key: {"path": value.get("path"), "bytes": value.get("bytes"), "sha256": value.get("sha256"), "commit": value.get("commit")} for key, value in helpers.items()},
         "validation": {"record_count": 384, "sequence_tokens": EXPECTED_VALIDATION_TOKENS},
-        "resource_qualification": {"status": resource.get("status")},
+        "resource_qualification": resource,
         "model_allocated": False,
         "updates": False,
         "truth_opened": False,
@@ -419,6 +668,10 @@ def configuration_dry_run(
     device: torch.device | None = None,
     output_root: Path | None = None,
     arm_name: str | None = None,
+    expected_contract_sha256: str = SIGNED_STAGE3_CONTRACT_SHA256,
+    expected_countersignature_sha256: str = SIGNED_STAGE3_COUNTERSIGNATURE_SHA256,
+    expected_qualification_sha256: str = MEASURED_QUALIFICATION_RECEIPT_SHA256,
+    expected_resource_guard_sha256: str = MEASURED_RESOURCE_GUARD_SHA256,
 ) -> dict[str, Any]:
     """Validate both explicit arm bindings without model/payload allocation."""
 
@@ -431,7 +684,16 @@ def configuration_dry_run(
         receipt = binding_receipts.get(selected_arm)
         if not isinstance(receipt, Mapping):
             raise ProductionProviderError(f"binding receipt is missing: {selected_arm}")
-        arms[selected_arm] = _configuration(receipt, arm_name=selected_arm, bank_role=str(bank_role), diagnostic_binding=diagnostic_binding)
+        arms[selected_arm] = _configuration(
+            receipt,
+            arm_name=selected_arm,
+            bank_role=str(bank_role),
+            diagnostic_binding=diagnostic_binding,
+            expected_contract_sha256=expected_contract_sha256,
+            expected_countersignature_sha256=expected_countersignature_sha256,
+            expected_qualification_sha256=expected_qualification_sha256,
+            expected_resource_guard_sha256=expected_resource_guard_sha256,
+        )
     return {
         "schema": PRODUCTION_SCHEMA,
         "task_id": TASK_ID,
