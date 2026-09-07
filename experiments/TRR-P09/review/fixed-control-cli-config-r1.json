@@ -1,0 +1,116 @@
+{
+  "command": [
+    "env",
+    "PYTHONPATH=.:src",
+    "OMP_NUM_THREADS=1",
+    "MKL_NUM_THREADS=1",
+    "OPENBLAS_NUM_THREADS=1",
+    "TOKENIZERS_PARALLELISM=false",
+    "python3",
+    "scripts/trr_p09/fixed_control_cli.py",
+    "--configuration-dry-run",
+    "--device",
+    "cpu",
+    "--output-root",
+    "/tmp/trr-p09-runtime/fixed-control-config-dryrun-r3",
+    "--repository-root",
+    "/tmp/trr-p09",
+    "--fit-prefix-manifest",
+    "/tmp/trr-p09/experiments/TRR-P09/setup/b0-immutable-loader-binding-r1.json",
+    "--fit-addition-manifest",
+    "/tmp/trr-p09-runtime/stage1-capture-r2/bank_manifest-qualified-r1.json",
+    "--common-schedule",
+    "/tmp/trr-p09-runtime/common-schedules-r1/schedule-b1-seed4010.safetensors",
+    "--expected-schedule-sha256",
+    "be0745ebb56e0ed39c2cf7e9c05a657209126f4c1c552242d3893c52d6718801",
+    "--schedule-bank",
+    "B1",
+    "--seed",
+    "4010",
+    "--steps",
+    "13000"
+  ],
+  "implementation": {
+    "fixed_control_caller": "scripts/trr_p09/fixed_control_caller.py",
+    "fixed_control_cli": "scripts/trr_p09/fixed_control_cli.py",
+    "loader_interface": "trr-p09.combined-b0-streamed-bank-loader.v1",
+    "schedule_schema": "token-reconstruction.trr-p09-common-schedules.v1"
+  },
+  "inputs": {
+    "b0_binding": {
+      "bytes": 5070,
+      "path": "/tmp/trr-p09/experiments/TRR-P09/setup/b0-immutable-loader-binding-r1.json",
+      "sha256": "7e6d7d3ac0ceec77f8b1e961a1a74b0675fd43e6ef3e4e77dcdd368d0c27445d"
+    },
+    "b1_final_manifest": {
+      "bytes": 145390,
+      "path": "/tmp/trr-p09-runtime/stage1-capture-r2/bank_manifest-qualified-r1.json",
+      "sha256": "0e14dbf74c947cfc6c586e7a5dbf76a27d8f0522fb8e54d2f98c6067bb36d196"
+    },
+    "common_schedule_b1": {
+      "bytes": 27053864,
+      "path": "/tmp/trr-p09-runtime/common-schedules-r1/schedule-b1-seed4010.safetensors",
+      "sha256": "be0745ebb56e0ed39c2cf7e9c05a657209126f4c1c552242d3893c52d6718801"
+    }
+  },
+  "receipts": {
+    "configuration_dry_run": {
+      "bytes": 3193,
+      "path": "/tmp/trr-p09-runtime/fixed-control-config-dryrun-r3/configuration_receipt.json",
+      "sha256": "979a8fbc8d28a0b53ffab410b19c72b59b9af9478246610e975ff208043fa227"
+    },
+    "loader_verification": {
+      "bytes": 4355,
+      "path": "/tmp/trr-p09-runtime/loader-verification-r2.json",
+      "sha256": "f024073b266148ffa36a3df70a6cccd1e09c833a20a4ba90532cf0a04e5a8f08"
+    }
+  },
+  "schema": "token-reconstruction.trr-p09-fixed-control-cli-review.v1",
+  "scope": "CPU-only wiring validation; no model, E, public validation labels, optimizer, fit, or evaluation truth",
+  "settings": {
+    "activation_dtype": "torch.bfloat16",
+    "activation_geometry": [
+      9,
+      192,
+      2048
+    ],
+    "device": "cpu",
+    "embedding_loaded": false,
+    "evaluation_truth_opened": false,
+    "fit_global_rows": [
+      0,
+      12000
+    ],
+    "fit_started": false,
+    "model_loaded": false,
+    "optimizer_created": false,
+    "position_budget": 512,
+    "record_batch_size": 8,
+    "sample_rows": [
+      0,
+      7,
+      8,
+      1199,
+      1200,
+      1207,
+      1264,
+      1265,
+      11999
+    ],
+    "schedule_bank": "B1",
+    "schedule_file_sha256": "be0745ebb56e0ed39c2cf7e9c05a657209126f4c1c552242d3893c52d6718801",
+    "schedule_semantic_sha256": "8acdb2c4f8e5afba546ad01cbe0adae340eb841c8e3322c919e976434d29ede5",
+    "seed": 4010,
+    "sequence_tokens": 192,
+    "steps": 13000,
+    "validation_labels_loaded": false
+  },
+  "source_commit": "fdb6eb83e7a9a197d8480441454a40b57b076569",
+  "source_commit_verified_at_head": "fdb6eb83e7a9a197d8480441454a40b57b076569",
+  "status": "PASS_CPU_CONFIGURATION_DRY_RUN",
+  "task_id": "TRR-P09",
+  "validation": {
+    "focused_command": "PYTHONPATH=.:src pytest -q tests/test_trr_p09_fixed_control_caller.py tests/test_trr_p09_fixed_control_cli.py tests/test_trr_p09_fixed_control_runner.py tests/test_trr_p09_fixed_control_adapter.py",
+    "focused_result": "32 passed in 1.73s"
+  }
+}
