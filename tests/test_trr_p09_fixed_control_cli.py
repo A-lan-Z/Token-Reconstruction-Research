@@ -9,11 +9,25 @@ import pytest
 import torch
 
 from scripts.trr_p09.fixed_control_cli import (
+    EXPECTED_SELECTION_SUPPLEMENT_SHA256,
     FixedControlCLIError,
     _ValidationCropLoader,
     main,
 )
-from scripts.trr_p09.prepare_streamed_bank import StreamBatch
+from scripts.trr_p09.prepare_streamed_bank import sha256_file, StreamBatch
+
+ROOT = Path(__file__).resolve().parents[1]
+FIXED_CONTROL_PLAN = ROOT / "experiments" / "TRR-P09" / "review" / "fixed-control-launch-plans-r2.json"
+
+
+def test_signed_selection_supplement_constant_matches_actual_file() -> None:
+    plan = json.loads(FIXED_CONTROL_PLAN.read_text(encoding="utf-8"))
+    binding = plan["assets"]["signed_selection_supplement"]
+    signed_path = Path(binding["path"])
+    expected_sha256 = str(binding["sha256"])
+    assert signed_path.is_file()
+    assert EXPECTED_SELECTION_SUPPLEMENT_SHA256 == expected_sha256
+    assert sha256_file(signed_path) == expected_sha256
 
 
 def test_synthetic_cli_serializes_schedule_states_and_domain_selection(tmp_path: Path) -> None:
