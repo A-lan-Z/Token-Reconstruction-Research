@@ -1,0 +1,382 @@
+{
+  "candidate_arrays_persisted": false,
+  "code_commit": null,
+  "contract_bindings": {
+    "stage3_shared_contract": {
+      "bytes": 25643,
+      "path": "experiments/TRR-0010/planning/shared_stage3_contract_v1.json",
+      "sha256": "23e4bde4475082cc004e7ef787c22fed6301275ce2ff23a0396d975b439faf9d",
+      "status": "FROZEN_STAGE3_AGREED"
+    },
+    "v4_cost_contract": {
+      "bytes": 38409,
+      "path": "experiments/TRR-0010/planning/shared_contract.proposal.json",
+      "sha256": "3b0a68a4a05304e285c1fedcf8a2982bf4bef831e2e5bc0cebb20b8b2dba08b3",
+      "status": "V4_THRESHOLD_SOURCE; FINAL_COUNTERSIGNATURE_RECHECK_REQUIRED"
+    }
+  },
+  "decision_rules": {
+    "checkpoint_selection": "earliest maximum domain-balanced public-base token accuracy on the explicit shared checkpoint grid; LoRA is not used for selection",
+    "frequency_scoring": "bind B0 and B1 references separately; never pool their counts",
+    "prediction_matrix": "exactly six methods by four paired cells; no truth access before all 24 predictions and timing receipts pass the public gate",
+    "status": "FROZEN_CONTRACT_RULES; FINAL_DESIGN CODE/STATE BINDING PENDING",
+    "truth_boundary": "public freeze, then curator descriptor validation, then one authorized sealed truth open and score"
+  },
+  "final_evaluation": {
+    "capture_geometry": {
+      "batch_records": 8,
+      "hidden_size": 2048,
+      "retain_first_128": true,
+      "scored_post_bos_tokens": 127,
+      "sequence_tokens": 192,
+      "stored_sequence_tokens": 128,
+      "vocabulary_size": 128256
+    },
+    "exclusion_bindings": {
+      "approved_opaque_ledgers": [
+        {
+          "bytes": null,
+          "path": null,
+          "sha256": null,
+          "status": "PENDING_FINAL_DESIGN_BINDING"
+        }
+      ],
+      "final_b1": {
+        "bytes": null,
+        "path": null,
+        "sha256": null,
+        "status": "PENDING_FINAL_DESIGN_BINDING"
+      }
+    },
+    "opened_fixture_equivalence": {
+      "path": "experiments/TRR-0010/evaluation/a1_a2_opened_fixture_equivalence_v3/result.json",
+      "rows_per_domain": 1,
+      "rows_total": 2,
+      "sha256": "f3842b816a8894fa836be4d32d02955e02ef66884000cb58809421970d8babeb",
+      "status": "PASS_PUBLIC_OPENED_FIXTURE_NO_TRUTH"
+    },
+    "paired_sources_across_targets": true,
+    "records_by_domain": {
+      "finance": 128,
+      "pile": 128
+    },
+    "source_inventory": {
+      "path": "experiments/TRR-0010/planning/count_scan/inventory_7000_trr9_p08_union.json",
+      "sha256": "d64eae6b5e0137f1fb76e89ba7b618455853977330f13058877c6a7c3ab9038b",
+      "status": "SIGNED_PUBLIC_INVENTORY_BINDING"
+    },
+    "source_ranges_half_open": {
+      "finance": [
+        12000,
+        20000
+      ],
+      "pile": [
+        7000,
+        10000
+      ]
+    },
+    "target_conditions": [
+      "public_base",
+      "public_lora_2601"
+    ]
+  },
+  "method_order": [
+    "unchanged_shared_start",
+    "current_fixed",
+    "current_directional",
+    "expanded_fixed",
+    "expanded_directional",
+    "frozen_a1_a2_k256"
+  ],
+  "methods": {
+    "current_directional": {
+      "freeze_status": "UNRESOLVED_AFTER_FIT; NO_STATE_OR_W_HASH",
+      "id": "current_directional",
+      "loader": {
+        "a2_enabled": false,
+        "current_h_only": true,
+        "deployment_contract": "base-only decoder state plus one materialized effective_readout_w",
+        "full_vocabulary": true,
+        "function": null,
+        "history_enabled": false,
+        "interface": "trr0010.current_h.full_vocabulary.v1",
+        "module": null
+      },
+      "resources": {
+        "base_decoder_state": null,
+        "effective_readout_w": null
+      },
+      "role": "current_directional",
+      "state": null
+    },
+    "current_fixed": {
+      "freeze_status": "BOUND_KNOWN_B0_RECEIPT; FINAL_DESIGN_NOT_FROZEN",
+      "id": "current_fixed",
+      "loader": {
+        "a2_enabled": false,
+        "current_h_only": true,
+        "full_vocabulary": true,
+        "function": "load_p09_fixed_state",
+        "history_enabled": false,
+        "interface": "trr0010.current_h.full_vocabulary.v1",
+        "kwargs": {
+          "bottleneck_size": 512,
+          "context_width": 128,
+          "expected_bank_manifest_sha256": "aefaa5f47aa1042dffa7210767ed4a0be1fd848c373f8cd6de1ad4c739035a31",
+          "expected_base_state_sha256": "5cada4a3d04bb5477eaf0be25ed8d8ac25a89283223e9ba14b18fa10416bee14",
+          "expected_embedding_sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+          "expected_fit_manifest_sha256": "aefaa5f47aa1042dffa7210767ed4a0be1fd848c373f8cd6de1ad4c739035a31",
+          "expected_runner_state_sha256": "58aeaf1b3e16c760cc3bbaccd8413a5f2674fd07f59e4f527a53b8bf3ca0243a",
+          "expected_schedule_semantic_sha256": "9aaad9c030f2f9b801f91f956c97f858966580edd21229cebb350dcde358f2c3",
+          "expected_selected_step": 8000,
+          "expected_state_sha256": "d2477cdf11422cb2d028196d72775825246f65f7e07394952375b3929627475a",
+          "hidden_size": 2048,
+          "vocabulary_size": 128256
+        },
+        "module": "scripts.trr0010_p09_fixed_loader",
+        "path_args": {},
+        "tensor_args": {}
+      },
+      "resources": {
+        "base_decoder_state": {
+          "bytes": 29390260,
+          "path": "/tmp/trr-p09-runtime/fixed-control-b0-r3/states/checkpoint_step_008000.safetensors",
+          "sha256": "d2477cdf11422cb2d028196d72775825246f65f7e07394952375b3929627475a"
+        },
+        "public_embedding_table": {
+          "bytes": 1050673488,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+          "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+        }
+      },
+      "role": "current_fixed",
+      "state": {
+        "bytes": 29390260,
+        "method_id": "continued_fixed_readout",
+        "path": "/tmp/trr-p09-runtime/fixed-control-b0-r3/states/checkpoint_step_008000.safetensors",
+        "schema": "token-reconstruction.trr-p09-fixed-state.v1",
+        "selected_step": 8000,
+        "sha256": "d2477cdf11422cb2d028196d72775825246f65f7e07394952375b3929627475a"
+      }
+    },
+    "expanded_directional": {
+      "freeze_status": "UNRESOLVED_AFTER_FIT; NO_STATE_OR_W_HASH",
+      "id": "expanded_directional",
+      "loader": {
+        "a2_enabled": false,
+        "current_h_only": true,
+        "deployment_contract": "base-only decoder state plus one materialized effective_readout_w",
+        "full_vocabulary": true,
+        "function": null,
+        "history_enabled": false,
+        "interface": "trr0010.current_h.full_vocabulary.v1",
+        "module": null
+      },
+      "resources": {
+        "base_decoder_state": null,
+        "effective_readout_w": null
+      },
+      "role": "expanded_directional",
+      "state": null
+    },
+    "expanded_fixed": {
+      "freeze_status": "UNRESOLVED_IN_INITIAL_TEMPLATE; RECEIPT AVAILABLE BUT NOT PROMOTED",
+      "id": "expanded_fixed",
+      "loader": {
+        "a2_enabled": false,
+        "current_h_only": true,
+        "full_vocabulary": true,
+        "function": "load_p09_fixed_state",
+        "history_enabled": false,
+        "interface": "trr0010.current_h.full_vocabulary.v1",
+        "kwargs": "bind exact B1 checkpoint metadata only in the final design",
+        "module": "scripts.trr0010_p09_fixed_loader"
+      },
+      "resources": {
+        "base_decoder_state": null,
+        "public_embedding_table": {
+          "bytes": 1050673488,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+          "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+        }
+      },
+      "role": "expanded_fixed",
+      "state": null
+    },
+    "frozen_a1_a2_k256": {
+      "freeze_status": "BOUND_PUBLIC_READONLY_DESCRIPTOR; FINAL_DESIGN_NOT_FROZEN",
+      "id": "frozen_a1_a2_k256",
+      "loader": {
+        "a2_enabled": true,
+        "candidate_k": 256,
+        "current_h_only": false,
+        "full_vocabulary": true,
+        "history_enabled": false,
+        "interface": "trr0010.a1_a2.reconstructed_prefix_k256.v1",
+        "path_args": {
+          "reference_path": {
+            "bytes": 31291,
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/configuration-search/fresh-blind-code/reference/strict_bos/round001_teacher.py",
+            "sha256": "10532a746cb8c30eb2caf338e206e1fa9d85e708d4db43a0d8fd4a2ff1a6f8bd"
+          },
+          "snapshot": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6"
+        },
+        "reconstructed_prefix": true
+      },
+      "resources": {
+        "public_embedding_table": {
+          "bytes": 1050673488,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+          "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+        },
+        "public_p0_prefix": {
+          "bytes": 7816,
+          "path": "experiments/TRR-0010/setup/a1_a2_public_runtime_descriptor_v1.json",
+          "sha256": "5a299574d9b69b8365c6a67c39d8669949c8037103e2f178ed97085ba3b34928"
+        },
+        "retained_a1_lens": {
+          "bytes": 16787653,
+          "path": "experiments/TRR-0004/evidence/comparators/public_a1_lens.pt",
+          "sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742"
+        }
+      },
+      "role": "historical_a1_a2_comparator",
+      "state": {
+        "bytes": 7816,
+        "path": "experiments/TRR-0010/setup/a1_a2_public_runtime_descriptor_v1.json",
+        "sha256": "5a299574d9b69b8365c6a67c39d8669949c8037103e2f178ed97085ba3b34928",
+        "state_kind": "public_runtime_descriptor"
+      }
+    },
+    "unchanged_shared_start": {
+      "freeze_status": "BOUND_KNOWN_START; FINAL_DESIGN_NOT_FROZEN",
+      "id": "unchanged_shared_start",
+      "loader": {
+        "a2_enabled": false,
+        "current_h_only": true,
+        "full_vocabulary": true,
+        "function": "load_positionwise_model_state",
+        "history_enabled": false,
+        "interface": "trr0010.current_h.full_vocabulary.v1",
+        "kwargs": {
+          "bottleneck_size": 512,
+          "context_width": 128,
+          "hidden_size": 2048,
+          "method_id": "trr0007_residual_mlp512",
+          "vocabulary_size": 128256
+        },
+        "module": "token_reconstruction.trr0007_positionwise",
+        "path_args": {},
+        "tensor_args": {}
+      },
+      "resources": {
+        "base_decoder_state": {
+          "bytes": 29390492,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/training/run_v1/continued_fixed_readout/selected.safetensors",
+          "sha256": "5cada4a3d04bb5477eaf0be25ed8d8ac25a89283223e9ba14b18fa10416bee14"
+        },
+        "public_embedding_table": {
+          "bytes": 1050673488,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+          "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+        }
+      },
+      "role": "unchanged_shared_starting_reference",
+      "state": {
+        "bytes": 29390492,
+        "method_id": "trr0007_residual_mlp512",
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/training/run_v1/continued_fixed_readout/selected.safetensors",
+        "selected_step": 400,
+        "sha256": "5cada4a3d04bb5477eaf0be25ed8d8ac25a89283223e9ba14b18fa10416bee14"
+      }
+    }
+  },
+  "numerical_settings": {
+    "batch_records": 8,
+    "checkpoint_steps": [
+      0,
+      1000,
+      2000,
+      4000,
+      8000,
+      12000,
+      13000
+    ],
+    "directional_learning_rate": 0.0001,
+    "gradient_clip_norm": 1.0,
+    "learning_rate": 0.0002,
+    "optimizer": "AdamW",
+    "optimizer_foreach": false,
+    "position_budget": 512,
+    "scheduler": "CosineAnnealingLR(T_max=13000, eta_min=0.0)",
+    "seed": 4010,
+    "selection_metric": "domain_balanced_token_accuracy",
+    "sequence_tokens": 192,
+    "steps": 13000,
+    "stored_sequence_tokens": 128,
+    "weight_decay": 0.0
+  },
+  "pending_bindings": {
+    "b1_fixed": {
+      "bytes": 29390268,
+      "checkpoint_path": "/tmp/trr-p09-runtime/fixed-control-b1-r3/states/checkpoint_step_013000.safetensors",
+      "promotion_rule": "revalidate the B1 P09 metadata and source receipt, then copy the complete descriptor into expanded_fixed before final design freeze",
+      "selected_step": 13000,
+      "sha256": "5757506003f0a4b82cb1cd6de2a82f11345f2dbcbce13c8cf18c4f515de3ec3a",
+      "status": "RECEIPT_AVAILABLE_AFTER_INITIAL_TEMPLATE; NOT PROMOTED HERE"
+    },
+    "current_directional": "fit-selected base-only decoder and materialized effective W descriptor",
+    "expanded_directional": "fit-selected base-only decoder and materialized effective W descriptor",
+    "final_code_commit": "must be a full 40-character hash after design, loader and state freeze",
+    "observations": "new paired 128-per-domain capture after source selection; no current TRR-0009 observation payload is silently reused",
+    "source_selection": "identity-only selection and exclusion outputs after all six method resources are frozen"
+  },
+  "resource_guard": {
+    "capture": {
+      "cuda_reserved_limit_bytes": 10737418240,
+      "disk_free_floor_bytes": 21474836480,
+      "gpu_free_floor_bytes_preflight": 11811160064,
+      "gpu_free_floor_bytes_runtime": 2147483648,
+      "host_available_floor_bytes_preflight": 12884901888,
+      "host_available_floor_bytes_runtime": 8589934592,
+      "host_rss_limit_bytes": 12884901888,
+      "max_seconds": 900,
+      "output_bytes_limit": 5368709120
+    },
+    "failure_policy": "include preparation, loader, inference, serialization and I/O; stop on any guard anomaly; preserve a failure receipt; no adaptive extension or batching substitution",
+    "inference": {
+      "a1_a2_cap_basis": "Published same-geometry historical A1+A2 cost is approximately 262-267 seconds per cell; cap includes four cells and preparation.",
+      "a1_a2_max_seconds_per_method": 2400,
+      "directional_cuda_reserved_limit_bytes": 10737418240,
+      "disk_free_floor_bytes": 21474836480,
+      "fixed_cuda_reserved_limit_bytes": 8589934592,
+      "gpu_free_floor_bytes_preflight": 11811160064,
+      "gpu_free_floor_bytes_runtime": 2147483648,
+      "host_available_floor_bytes_preflight": 12884901888,
+      "host_available_floor_bytes_runtime": 8589934592,
+      "host_rss_limit_bytes": 12884901888,
+      "max_seconds_per_method": 900,
+      "output_bytes_limit": 5368709120
+    },
+    "status": "PROPOSED_ONLY; LIVE PREFLIGHT AND EXCLUSIVE LEASE REQUIRED"
+  },
+  "schema": "token-reconstruction.trr0010-final-evaluation-design.v1",
+  "source_code_baseline": {
+    "scripts/trr0010_eval_capture.py": "81d0277af0d16b2f28bd7a7d44a7447827f0f97dc5e680facd54c0ae1ab142c7",
+    "scripts/trr0010_eval_gate.py": "ac2ce64375690f6f2a743e79f07f5d2941ee4865dcd8d500a8a209540794157d",
+    "scripts/trr0010_eval_register.py": "f176ea6548f3938b674cc9dfc87c7298103e5578460a462e5d7b461233b3ed8d",
+    "scripts/trr0010_eval_runner.py": "90f3fe55ef9f714decfa12110d88b8d4f33c39e968e3a2153c566cebe01ef696",
+    "scripts/trr0010_p09_fixed_loader.py": "1225ebc9871aadae4a287a8a5c5a80c5d9903fc86ec5f83ae0bfdae8c9e94a94",
+    "scripts/trr0010_prepare_truth.py": "42937177435a09ad84e59b892d3826c2be3c99fb6f8203766f1a8e66978a4ea8",
+    "scripts/trr0010_score_cli.py": "af5d314e5b933c5714e1f36aa3498f75305a9d0b2021076e0ff9fc9fd7da406a",
+    "scripts/trr0010_select_public.py": "d2e50f32f8a5eb296f74ce65894bb6ae821141b96ac4e78d32a64f56a9e9c99a",
+    "src/token_reconstruction/trr0007_positionwise.py": "89fcd036a57407c8c49294aa5fd15ccef46f02b6fabcc35435d097f1213de485"
+  },
+  "source_text_loaded": false,
+  "source_text_written": false,
+  "status": "INERT_TEMPLATE_PENDING_ALL6_STATE_FREEZE",
+  "target_labels_loaded": false,
+  "task_id": "TRR-0010",
+  "token_ids_written": false,
+  "truth_opened": false
+}
