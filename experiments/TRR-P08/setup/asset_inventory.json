@@ -344,8 +344,8 @@
       "finance",
       "pile"
     ],
-    "proposed_unique_records_per_domain": 64,
-    "proposed_total_unique_records": 128,
+    "proposed_unique_records_per_domain": 256,
+    "proposed_total_unique_records": 512,
     "target_conditions": [
       "public_base",
       "public_lora_2601"
@@ -355,19 +355,42 @@
     "capture_sequence_tokens": 192,
     "scored_post_bos_positions": 127,
     "eligibility": "natural public records with at least 128 valid positions, distinct from fit/validation/P06/P07 and every root-approved opaque identity ledger",
-    "selection_rule": "after the source universe and ledgers are frozen, take the first N eligible records per domain in stable published source order under a single predeclared seed; never consult answers, scores, or predictions",
+    "selection_rule": "after the source universe and ledgers are frozen, take 256 eligible records per domain in stable published source order under the frozen plan; never consult answers, scores, or predictions",
     "selection_seed": "PENDING_ROOT_PLAN_FREEZE",
     "source_ranges": "PENDING_ROOT_PLAN_FREEZE",
     "selected": false,
-    "capture_started": false
+    "capture_started": false,
+    "plan_binding": {
+      "path": "experiments/TRR-P08/plan.json",
+      "status": "PROPOSED_PRE_FREEZE",
+      "fit_arms": 8,
+      "visibility_arms": [
+        "positionwise",
+        "past_only"
+      ],
+      "fit_schedules": [
+        "joint_3000",
+        "staged_affine1000_complete2000"
+      ],
+      "replicates": [
+        6106,
+        6107
+      ],
+      "records_per_domain": 256,
+      "target_conditions": [
+        "public_base",
+        "public_lora_2601"
+      ],
+      "sha256": "PLAN_HASH_RECORDED_AFTER_FINAL_DESIGN_FREEZE"
+    }
   },
   "staged_comparison_proposal_only": {
-    "status": "PENDING_DESIGN_AND_IMPLEMENTATION_FREEZE",
+    "status": "APPROVED_IN_PRINCIPLE_PENDING_PLAN_FREEZE",
     "arms": [
       "positionwise_joint",
+      "positionwise_staged_affine1000_complete2000",
       "past_only_joint",
-      "positionwise_staged_affine_then_complete",
-      "past_only_staged_affine_then_complete"
+      "past_only_staged_affine1000_complete2000"
     ],
     "common_readout_and_vocabulary": true,
     "common_h128_geometry": true,
@@ -375,14 +398,44 @@
     "selection_data_role": "same disjoint public validation metadata/data for all arms",
     "evaluation_data_role": "fresh paired panel only; no answer access before prediction freeze",
     "equal_exposure_requirement": "staged affine updates count toward the same total exposure and cost budget as the joint arm",
-    "phase_lengths": "PENDING_DESIGN_FREEZE",
+    "phase_lengths": {
+      "affine_only_updates": 1000,
+      "complete_updates": 2000,
+      "total_updates": 3000
+    },
     "p06_full_record_or_teacher_arm": false,
-    "a1_a2_anchor": "optional only if root/design freeze a concrete quality question; not required by setup"
+    "a1_a2_anchor": "optional only if root/design freeze a concrete quality question; not required by setup",
+    "replicates": [
+      6106,
+      6107
+    ],
+    "standard_initialization": "W=I,b=0,s=3.0; deterministic Q/K/V per seed; output weight/bias zero",
+    "public_affine_descriptor_role": "published P06/TRR-0004 context only; not loaded into P08"
   },
   "limitations": [
     "Published P06 and P07 ledgers provide hash-only exclusion identities and do not justify a universal global-disjointness claim.",
     "P03 holdout remains sealed; any approved root-owned ledger must be bound before source-universe freeze.",
     "The public changed target public_lora_2601 is an existing published condition, not an unseen target claim.",
-    "Existing P06/P07 states are provenance context; P08 staged arms require a newly frozen equal-exposure fitting recipe and cannot select from fresh evaluation answers."
-  ]
+    "Existing P06/P07 states are provenance context; P08 staged arms require a newly frozen equal-exposure fitting recipe and cannot select from fresh evaluation answers.",
+    "The design plan now proposes 256 records per domain and eight equal-budget fits; this inventory awaits the final plan hash before source enumeration."
+  ],
+  "source_selection_plan": {
+    "status": "PROPOSED_NO_ENUMERATION",
+    "domains": [
+      "finance",
+      "pile"
+    ],
+    "records_per_domain": 256,
+    "total_unique_records": 512,
+    "targets": [
+      "public_base",
+      "public_lora_2601"
+    ],
+    "deterministic_rule": "freeze source ranges, dataset revisions, exclusion descriptor hashes, and seed first; then select first 256 eligible records per domain in stable source order; pair target conditions by source",
+    "eligibility": "at least 128 valid positions, disjoint from fit/validation/P06/P07 and all root-approved opaque identity ledgers",
+    "answer_independent": true,
+    "selection_seed": "PENDING_ROOT_PLAN_FREEZE",
+    "universe_path": "PENDING_ROOT_PLAN_FREEZE",
+    "selected": false
+  }
 }
