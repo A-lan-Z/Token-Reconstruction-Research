@@ -17,6 +17,7 @@ import platform
 import subprocess
 import sys
 import time
+import traceback
 from typing import Any
 
 import torch
@@ -345,6 +346,24 @@ def _git_commit(root: Path) -> str | None:
         return None
 
 
+def _failure_diagnostics(exc: BaseException, *, root: Path, stage: str | None) -> dict[str, Any]:
+    """Preserve enough context to reproduce a fail-closed producer attempt."""
+    chain: list[dict[str, str]] = []
+    current: BaseException | None = exc
+    seen: set[int] = set()
+    while current is not None and id(current) not in seen:
+        seen.add(id(current))
+        chain.append({"type": type(current).__name__, "message": str(current)})
+        current = current.__cause__ or current.__context__
+    return {
+        "stage": stage,
+        "command": list(sys.argv),
+        "code_commit": _git_commit(root),
+        "exception_chain": chain,
+        "traceback": "".join(traceback.format_exception(exc)),
+    }
+
+
 def _source_code_records(root: Path) -> dict[str, dict[str, Any]]:
     paths = {
         "adapter": Path(__file__).resolve(),
@@ -494,6 +513,7 @@ def capture_public(args: argparse.Namespace) -> dict[str, Any]:
     failure_path = output_root / "failure.json"
     started_utc = _utc_now()
     started_clock = time.perf_counter()
+    active_condition: str | None = None
     try:
         pile_paths = tuple(_resolve_path(path, root=root) for path in (args.pile_arrow or _source_paths(selection, style="pile", root=root)))
         finance_paths = tuple(_resolve_path(path, root=root) for path in (args.finance_arrow or _source_paths(selection, style="finance", root=root)))
@@ -513,6 +533,7 @@ def capture_public(args: argparse.Namespace) -> dict[str, Any]:
         observations: dict[str, Mapping[str, Any]] = {}
         conditions: dict[str, Any] = {}
         for condition in contract.TARGET_ORDER:
+            active_condition = condition
             if condition == "public_lora_2601" and (lora_config_path is None or lora_update_path is None):
                 raise CaptureError("public_lora_2601 requires --lora-config and --lora-update")
             current, receipt = _capture_condition_with_producer(
@@ -564,7 +585,22 @@ def capture_public(args: argparse.Namespace) -> dict[str, Any]:
     except Exception as exc:
         if not failure_path.exists() and not failure_path.is_symlink():
             try:
-                _write_create_only(failure_path, {"schema": CAPTURE_SCHEMA, "task_id": contract.TASK_ID, "status": "PUBLIC_OBSERVATIONS_CAPTURE_FAILED_NO_TRUTH", "started_utc": started_utc, "ended_utc": _utc_now(), "error_type": type(exc).__name__, "error": str(exc), "selection_plan": dict(selection_record), "records_by_domain": dict(counts), "truth_opened": False, "source_text_written": False, "token_ids_written": False}, root=root, description="capture failure receipt")
+                failure_payload = {
+                    "schema": CAPTURE_SCHEMA,
+                    "task_id": contract.TASK_ID,
+                    "status": "PUBLIC_OBSERVATIONS_CAPTURE_FAILED_NO_TRUTH",
+                    "started_utc": started_utc,
+                    "ended_utc": _utc_now(),
+                    "error_type": type(exc).__name__,
+                    "error": str(exc),
+                    "selection_plan": dict(selection_record),
+                    "records_by_domain": dict(counts),
+                    "truth_opened": False,
+                    "source_text_written": False,
+                    "token_ids_written": False,
+                    "failure_diagnostics": _failure_diagnostics(exc, root=root, stage=active_condition),
+                }
+                _write_create_only(failure_path, failure_payload, root=root, description="capture failure receipt")
             except Exception:
                 pass
         if isinstance(exc, CaptureError):

@@ -55,3 +55,22 @@ def test_capture_cli_entrypoint_requires_explicit_execution(tmp_path: Path, caps
     code = capture.main(["capture", "--selection", str(selection), "--model-snapshot", str(tmp_path / "model")])
     assert code == 2
     assert "requires explicit --execute" in capsys.readouterr().err
+
+
+def test_failure_diagnostics_preserves_exception_chain_and_execution_context(tmp_path: Path) -> None:
+    try:
+        try:
+            raise RuntimeError("underlying CUDA loader detail")
+        except RuntimeError as cause:
+            raise capture.CaptureError("public-prefix load failed") from cause
+    except capture.CaptureError as exc:
+        diagnostics = capture._failure_diagnostics(exc, root=tmp_path, stage="public_base")
+
+    assert diagnostics["stage"] == "public_base"
+    assert diagnostics["command"]
+    assert diagnostics["exception_chain"] == [
+        {"type": "CaptureError", "message": "public-prefix load failed"},
+        {"type": "RuntimeError", "message": "underlying CUDA loader detail"},
+    ]
+    assert "underlying CUDA loader detail" in diagnostics["traceback"]
+    assert diagnostics["code_commit"] is None
