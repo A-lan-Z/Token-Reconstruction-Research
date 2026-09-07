@@ -1,21 +1,23 @@
 {
   "artifacts": {
     "manifest": "experiments/TRR-P09/manifest.json",
-    "result": "coordination/results/TRR-P09.md"
+    "result": "coordination/results/TRR-P09.md",
+    "stage1_capture_binding": "experiments/TRR-P09/setup/stage1-capture-binding-r1.json",
+    "public_support_binding": "experiments/TRR-P09/setup/public-support-binding-r1.json"
   },
   "bank_planning": {
     "access_boundary": {
-      "activation_bank_opened": false,
+      "activation_bank_opened": true,
       "agent1_public_base_validation_binding_reused_if_approved": true,
       "final_panel_or_truth_opened": false,
       "fitting_started": false,
       "model_loaded": true,
       "new_validation_pool_created": false,
-      "public_forward_count": 0,
+      "public_forward_count": 1372,
       "public_source_and_tokenizer_read": true,
       "source_selection_executed": true,
       "qualification_public_model_only": true,
-      "qualification_forward_count": 2
+      "qualification_forward_count": 22
     },
     "alpaca_capacity_audit": "experiments/TRR-P09/planning/alpaca-capacity-audit.json",
     "alpaca_capacity_audit_sha256": "d1f11364cabe6db876bb83f09ce1d8d7db1cdc3f76ac2e8bafaed149ba33a5c9",
@@ -68,7 +70,7 @@
       "pending_joint_identity_and_capacity_contract": true,
       "target_records": 12000
     },
-    "status": "STAGE1_R2_CPU_INPUTS_COMPILED_NO_ACTIVATIONS_READY_FOR_CAPTURE",
+    "status": "STAGE1_PUBLIC_BASE_CAPTURE_COMPLETE_PENDING_FORWARD_BATCH_QUALIFICATION",
     "stage1_plan": {
       "path": "experiments/TRR-P09/planning/stage1-public-bank-plan.json",
       "sha256": "bca93d6099760791c5ecbf3be8177d250cc672c62b2177a3d72d79b934c3826c",
@@ -386,29 +388,32 @@
     "runner_base": "b71feb433815f12e3274aa7525c8bbb23971e552"
   },
   "remaining_bindings_before_real_run": [
-    "repair qualification/watchdog teardown handling and rerun the bounded public_base qualification under root-owned guards",
-    "bind a passing qualification receipt with a clean watchdog before any public activation-bank capture",
-    "keep fitting and evaluation truth access unopened until capture gates pass"
+    "complete shared forward-batch geometry qualification and loader review",
+    "keep fitting, target observation, and evaluation truth access unopened until that gate"
   ],
   "schema": "token-reconstruction.trr-p09-implementation-manifest.v1",
   "scientific_execution": {
     "fit_run": false,
     "gpu_run": true,
     "model_checkpoint_opened": true,
-    "p09_activation_bank_captured": false,
+    "p09_activation_bank_captured": true,
     "p09_source_selection_executed": true,
-    "public_bank_opened": false,
-    "public_model_forward_count": 17,
+    "public_bank_opened": true,
+    "public_model_forward_count": 1372,
     "public_source_rows_read": true,
     "public_source_tokenizer_capacity_audit": true,
     "public_tokenizer_read": true,
     "target_observation_opened": false,
     "truth_opened": false,
-    "public_forward_count": 17,
-    "qualification_scope": "five bounded public_base qualification attempts; all excluded before activation capture"
+    "public_forward_count": 1372,
+    "qualification_scope": "five historical public_base qualification attempts excluded; clean retry5 passed with watchdog; 169-shard public_base capture completed",
+    "qualification_attempts_excluded_historical": 5,
+    "qualification_attempts_accepted_current": 1,
+    "capture_forward_count": 1350,
+    "forward_batch_qualification": "PENDING_SHARED_GEOMETRY_QUALIFICATION"
   },
   "source_commit": "0c7279e30a41a5016ff97c9bcaa5e282db2dabe0",
-  "status": "STAGE1_QUALIFICATION_ATTEMPTS_EXCLUDED_PENDING_WATCHDOG_FIX",
+  "status": "STAGE1_PUBLIC_BASE_CAPTURE_COMPLETE_PENDING_FORWARD_BATCH_QUALIFICATION",
   "task_id": "TRR-P09",
   "validation": {
     "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p09_fixed_control_runner.py tests/test_trr_p09_fixed_control_adapter.py tests/test_trr_p09_bank_artifact.py",
@@ -453,7 +458,7 @@
       "status": "HISTORICAL_AUTO_REVIEW_BLOCK_RESOLVED"
     }
   },
-  "source_head_commit": "86e66aa3df4f421875e98aec95b0efab56c4ea33",
+  "source_head_commit": "24a5fa69dfbbd621708a666ed561c56c1472f5aa",
   "cost_lineage": {
     "path": "experiments/TRR-P09/planning/starting-state-cost-lineage.md",
     "sha256": "8f81b372d51d58d61f88f6c778825240ad67e95ece8d6804bcf8542307e36c9e",
@@ -528,10 +533,14 @@
     "cpu_input_compilation_status": "R2_COMPLETED_METADATA_REVISED",
     "cpu_fit_authorized": false,
     "public_forward_authorized": true,
-    "status": "STAGE1_QUALIFICATION_ATTEMPTS_EXCLUDED_PENDING_WATCHDOG_FIX",
-    "synthetic_io_status": "PASS_SYNTHETIC_IO_ONLY_2X_BOUND_UNDER_20GIB"
+    "status": "STAGE1_PUBLIC_BASE_CAPTURE_COMPLETE_PENDING_FORWARD_BATCH_QUALIFICATION",
+    "synthetic_io_status": "PASS_SYNTHETIC_IO_ONLY_2X_BOUND_UNDER_20GIB",
+    "capture_status": "PASS_169_SHARDS_WATCHDOG_PASS",
+    "forward_batch_qualification": "PENDING_SHARED_GEOMETRY_QUALIFICATION",
+    "gpu_launch_authorized": false,
+    "fresh_bank_generation_authorized": true
   },
-  "updated_utc": "2026-09-07T11:45:00Z",
+  "updated_utc": "2026-09-07T12:11:19Z",
   "r2_cpu_audit": {
     "receipt": "experiments/TRR-P09/setup/stage1-input-preparation-r2-receipt.json",
     "receipt_sha256": "e8e0e2bad1bba8ba71482dd28babfff4bcdf391cf224a95551705d2643171c5d",
@@ -639,7 +648,7 @@
   "qualification_attempts": {
     "path": "experiments/TRR-P09/setup/stage1-qualification-attempts-r2.json",
     "sha256": "21187abe870792af65b8aacc9f691ab81558b7483b0ef5e720af6a8dce621592",
-    "status": "ALL_ATTEMPTS_EXCLUDED_PENDING_WATCHDOG_FIX",
+    "status": "HISTORICAL_FIVE_EXCLUDED_CLEAN_RETRY5_ACCEPTED_SEPARATELY",
     "attempt_count": 5,
     "public_model_loaded": true,
     "public_model_forward_count": 17,
@@ -721,7 +730,21 @@
         "qualification_status": "QUALIFICATION_PASS",
         "qualification_elapsed_seconds": 0.5327323320088908
       }
-    ]
+    ],
+    "current_clean_qualification": {
+      "path": "experiments/TRR-P09/setup/stage1-capture-binding-r1.json",
+      "receipt_sha256": "3b5c99cfc5a125b25339df558d3ffb6ea37249e3d49122178cf574e9f079df8c",
+      "watchdog_finish_sha256": "6ef585c784b6898884c9fb44243c3afe1833ea211618cc957f116bbd99479b38",
+      "status": "QUALIFICATION_PASS",
+      "forward_call_count": 5,
+      "not_in_historical_attempt_count": true
+    },
+    "current_capture": {
+      "path": "experiments/TRR-P09/setup/stage1-capture-binding-r1.json",
+      "receipt_sha256": "c314cf36fd207ae95203c3c6adda0dc7773ac2765f85b5c7fd4ed5b4f0de1618",
+      "bank_manifest_sha256": "f1ad02c2836c53992299e3459d886bf87c2f0d2d437c86224ea4db689c1b2216",
+      "status": "CAPTURE_COMPLETE_NO_TRUTH"
+    }
   },
   "common_schedules": {
     "path": "experiments/TRR-P09/setup/common-schedules-r1.json",
@@ -824,5 +847,35 @@
       "fit_started": false,
       "evaluation_truth_opened": false
     }
+  },
+  "stage1_capture_current": {
+    "binding": "experiments/TRR-P09/setup/stage1-capture-binding-r1.json",
+    "binding_sha256": "caabf6d8e4983bf453cfe64b3548cc3cedaa245f7dad08bf438d81d72a65837a",
+    "status": "CAPTURE_COMPLETE_NO_TRUTH_PENDING_FORWARD_BATCH_QUALIFICATION",
+    "qualification_status": "QUALIFICATION_PASS",
+    "qualification_receipt_sha256": "3b5c99cfc5a125b25339df558d3ffb6ea37249e3d49122178cf574e9f079df8c",
+    "capture_receipt_sha256": "c314cf36fd207ae95203c3c6adda0dc7773ac2765f85b5c7fd4ed5b4f0de1618",
+    "bank_manifest_sha256": "f1ad02c2836c53992299e3459d886bf87c2f0d2d437c86224ea4db689c1b2216",
+    "shards": 169,
+    "new_records": 10800,
+    "forward_batch_qualification": "PENDING_SHARED_GEOMETRY_QUALIFICATION",
+    "fit_started": false,
+    "truth_opened": false
+  },
+  "public_support_current": {
+    "binding": "experiments/TRR-P09/setup/public-support-binding-r1.json",
+    "binding_sha256": "1c202ab7518404c12726b75147e1246d72fc40bbaf7c4c043edf0792a5e65351",
+    "input_sha256": "8150184a349bebd31e24b128d23f096702898024a87a405322ee3ba95fa6682e",
+    "B0": {
+      "support_count": 17126,
+      "post_bos_positions": 124371,
+      "support_digest_trr0010": "f554d25681904530bf0f52752b50f92ae5da10b99998d06eb0cc30ed25fccd4d"
+    },
+    "B1": {
+      "support_count": 45631,
+      "post_bos_positions": 1243710,
+      "support_digest_trr0010": "f91eaf39433496ba6fd36c5c5233e1d8abbaa2527ff7d75e7b304ec4df4fbd0e"
+    },
+    "payloads_local_only": true
   }
 }

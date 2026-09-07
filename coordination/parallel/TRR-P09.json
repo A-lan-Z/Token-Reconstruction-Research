@@ -7,13 +7,14 @@
     "model_or_tensor_payload_loaded": true,
     "other_worktree_modified": false,
     "p03_holdout_accessed": false,
-    "public_metadata_only_setup": true,
-    "source_generation_started": false,
+    "public_metadata_only_setup": false,
+    "source_generation_started": true,
     "trr0010_unpublished_science_accessed": false,
     "truth_opened": false,
     "public_model_qualification_loaded": true,
-    "public_model_forward_count": 17,
-    "activation_bank_opened": false
+    "public_model_forward_count": 1372,
+    "activation_bank_opened": true,
+    "public_capture_completed": true
   },
   "bank_contract": {
     "arbitrary_schedule_rows_verified": true,
@@ -40,7 +41,18 @@
     "manifest": "experiments/TRR-P09/manifest.json",
     "result": "coordination/results/TRR-P09.md",
     "stage1_r2_receipt": "experiments/TRR-P09/setup/stage1-input-preparation-r2-receipt.json",
-    "stage1_r2_receipt_sha256": "e8e0e2bad1bba8ba71482dd28babfff4bcdf391cf224a95551705d2643171c5d"
+    "stage1_r2_receipt_sha256": "e8e0e2bad1bba8ba71482dd28babfff4bcdf391cf224a95551705d2643171c5d",
+    "stage1_capture_binding": "experiments/TRR-P09/setup/stage1-capture-binding-r1.json",
+    "stage1_capture_binding_sha256": "caabf6d8e4983bf453cfe64b3548cc3cedaa245f7dad08bf438d81d72a65837a",
+    "public_support_binding": "experiments/TRR-P09/setup/public-support-binding-r1.json",
+    "public_support_binding_sha256": "1c202ab7518404c12726b75147e1246d72fc40bbaf7c4c043edf0792a5e65351",
+    "capture_receipt_path": "/tmp/trr-p09-runtime/stage1-capture-r2/capture-receipt.json",
+    "capture_receipt_sha256": "c314cf36fd207ae95203c3c6adda0dc7773ac2765f85b5c7fd4ed5b4f0de1618",
+    "bank_manifest_path": "/tmp/trr-p09-runtime/stage1-capture-r2/bank_manifest.json",
+    "bank_manifest_sha256": "f1ad02c2836c53992299e3459d886bf87c2f0d2d437c86224ea4db689c1b2216",
+    "qualification_receipt_path": "/tmp/trr-p09-runtime/stage1-qualification-r2-retry5/qualification-receipt.json",
+    "qualification_receipt_sha256": "3b5c99cfc5a125b25339df558d3ffb6ea37249e3d49122178cf574e9f079df8c",
+    "qualification_watchdog_finish_sha256": "6ef585c784b6898884c9fb44243c3afe1833ea211618cc957f116bbd99479b38"
   },
   "communication": {
     "agent1_contract_detail": {
@@ -90,21 +102,23 @@
     "merge_allowed": false
   },
   "pending": [
-    "repair qualification/watchdog teardown handling and rerun the bounded public_base qualification under root-owned guards",
-    "bind a passing qualification receipt with a clean watchdog before any public activation-bank capture",
-    "keep activation-bank fitting and evaluation truth access unopened until capture gates pass"
+    "complete shared forward-batch geometry qualification and implementation loader review",
+    "keep fitting, target observation, and evaluation truth access unopened until the forward-batch gate passes"
   ],
   "preparation_audit": {
-    "activation_bank_opened": false,
+    "activation_bank_opened": true,
     "fit_or_optimizer_steps_started": false,
     "model_loaded": true,
-    "public_forward_count": 17,
+    "public_forward_count": 1372,
     "public_source_rows_audited": true,
     "public_source_tokenizer_capacity_audit": true,
     "public_tokenizer_audited": true,
     "source_selection_executed": true,
     "truth_opened": false,
-    "public_model_forward_count": 17
+    "public_model_forward_count": 1372,
+    "capture_complete": true,
+    "clean_qualification_pass": true,
+    "historical_excluded_qualification_attempts": 5
   },
   "publication": {
     "status": "COMPLETE_OPEN_UNMERGED",
@@ -136,15 +150,17 @@
     "bank_fixture_only_tests_authorized": true,
     "bank_schema_written": true,
     "cpu_fit_authorized": false,
-    "fresh_bank_generation_authorized": false,
+    "fresh_bank_generation_authorized": true,
     "gpu_launch_authorized": false,
     "live_snapshot_path": "experiments/TRR-P09/setup/resource-snapshot-r0.json",
     "preflight_required_before_compute": true,
     "public_forward_authorized": true,
-    "status": "STAGE1_QUALIFICATION_ATTEMPTS_EXCLUDED_PENDING_WATCHDOG_FIX",
+    "status": "STAGE1_PUBLIC_BASE_CAPTURE_COMPLETE_PENDING_FORWARD_BATCH_QUALIFICATION",
     "cpu_input_compilation_authorized": true,
     "cpu_input_compilation_status": "R2_COMPLETED_METADATA_REVISED",
-    "synthetic_io_status": "PASS_SYNTHETIC_IO_ONLY_2X_BOUND_UNDER_20GIB"
+    "synthetic_io_status": "PASS_SYNTHETIC_IO_ONLY_2X_BOUND_UNDER_20GIB",
+    "capture_status": "PASS_169_SHARDS_WATCHDOG_PASS",
+    "forward_batch_qualification": "PENDING_SHARED_GEOMETRY_QUALIFICATION"
   },
   "role_path": "experiments/TRR-P09/setup/agent2-role.md",
   "schema": "token-reconstruction.task-local-state.v1",
@@ -163,12 +179,14 @@
     "publication_receipt": "experiments/TRR-P09/setup/publication-receipt-r1.json",
     "stage1_r2_receipt": "experiments/TRR-P09/setup/stage1-input-preparation-r2-receipt.json",
     "stage1_r2_metadata_revision": "/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/preparation_manifest-r2-corrected.json",
-    "stage1_r2_metadata_revision_sha256": "79bbd55c3e66555501e0abc886e69b5a4ff85bca5301a129f6e5d398524e844f"
+    "stage1_r2_metadata_revision_sha256": "79bbd55c3e66555501e0abc886e69b5a4ff85bca5301a129f6e5d398524e844f",
+    "stage1_capture_binding": "experiments/TRR-P09/setup/stage1-capture-binding-r1.json",
+    "public_support_binding": "experiments/TRR-P09/setup/public-support-binding-r1.json"
   },
-  "source_head_commit": "86e66aa3df4f421875e98aec95b0efab56c4ea33",
-  "status": "STAGE1_QUALIFICATION_ATTEMPTS_EXCLUDED_PENDING_WATCHDOG_FIX",
+  "source_head_commit": "24a5fa69dfbbd621708a666ed561c56c1472f5aa",
+  "status": "STAGE1_PUBLIC_BASE_CAPTURE_COMPLETE_PENDING_FORWARD_BATCH_QUALIFICATION",
   "task_id": "TRR-P09",
-  "updated_utc": "2026-09-07T11:45:00Z",
+  "updated_utc": "2026-09-07T12:11:19Z",
   "worktree": "/tmp/trr-p09",
   "cost_lineage": {
     "path": "experiments/TRR-P09/planning/starting-state-cost-lineage.md",
@@ -304,7 +322,7 @@
   "qualification_attempts": {
     "path": "experiments/TRR-P09/setup/stage1-qualification-attempts-r2.json",
     "sha256": "21187abe870792af65b8aacc9f691ab81558b7483b0ef5e720af6a8dce621592",
-    "status": "ALL_ATTEMPTS_EXCLUDED_PENDING_WATCHDOG_FIX",
+    "status": "HISTORICAL_FIVE_EXCLUDED_CLEAN_RETRY5_ACCEPTED_SEPARATELY",
     "attempt_count": 5,
     "public_model_loaded": true,
     "public_model_forward_count": 17,
@@ -386,7 +404,22 @@
         "qualification_status": "QUALIFICATION_PASS",
         "qualification_elapsed_seconds": 0.5327323320088908
       }
-    ]
+    ],
+    "current_clean_qualification": {
+      "binding": "experiments/TRR-P09/setup/stage1-capture-binding-r1.json",
+      "receipt_sha256": "3b5c99cfc5a125b25339df558d3ffb6ea37249e3d49122178cf574e9f079df8c",
+      "watchdog_finish_sha256": "6ef585c784b6898884c9fb44243c3afe1833ea211618cc957f116bbd99479b38",
+      "status": "QUALIFICATION_PASS",
+      "forward_call_count": 5
+    },
+    "current_capture": {
+      "binding": "experiments/TRR-P09/setup/stage1-capture-binding-r1.json",
+      "capture_receipt_sha256": "c314cf36fd207ae95203c3c6adda0dc7773ac2765f85b5c7fd4ed5b4f0de1618",
+      "bank_manifest_sha256": "f1ad02c2836c53992299e3459d886bf87c2f0d2d437c86224ea4db689c1b2216",
+      "status": "CAPTURE_COMPLETE_NO_TRUTH",
+      "shards": 169,
+      "new_records": 10800
+    }
   },
   "common_schedules": {
     "path": "experiments/TRR-P09/setup/common-schedules-r1.json",
