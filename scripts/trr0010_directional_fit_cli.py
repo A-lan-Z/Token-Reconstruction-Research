@@ -19,7 +19,7 @@ from typing import Any
 
 import torch
 
-from trr0010_directional_fit import bind_concrete_provider, run_directional_arms
+from trr0010_directional_fit import bind_concrete_provider, run_directional_arm, run_directional_arms
 from trr0010_p09_qualifier import enforce_resource_guard, resource_snapshot, validate_exclusive_lease
 
 
@@ -154,17 +154,58 @@ def _load_callable(spec: str) -> Any:
 def run_cli(args: argparse.Namespace) -> dict[str, Any]:
     output_root = Path(args.output_root).expanduser().resolve()
     lease_receipt = _load_json(Path(args.lease), label="lease receipt")
-    lease_caps = validate_exclusive_lease(lease_receipt)
+    dry_cpu = bool(getattr(args, "configuration_dry_run", False)) and str(getattr(args, "device", "")) == "cpu"
+    if dry_cpu:
+        # This branch validates only serialized metadata and intentionally does
+        # not claim a compute lease; no model, bank payload, or update is
+        # touched by configuration_dry_run.
+        lease_caps = {"device": "cpu", "mode": "configuration_dry_run"}
+    else:
+        lease_caps = validate_exclusive_lease(lease_receipt)
     device = torch.device(str(lease_caps["device"]))
     if args.device is not None and str(device) != str(args.device):
         raise ProductionCLIError("--device differs from the device in the exclusive lease")
-    binding_receipts = {
-        "current_directional": _load_json(Path(args.binding_current), label="current binding receipt"),
-        "expanded_directional": _load_json(Path(args.binding_expanded), label="expanded binding receipt"),
+    requested_arm = str(getattr(args, "arm", "both"))
+    if requested_arm not in {"both", "current_directional", "expanded_directional"}:
+        raise ProductionCLIError("--arm must be both, current_directional, or expanded_directional")
+    binding_receipts: dict[str, dict[str, Any]] = {}
+    binding_paths = {
+        "current_directional": getattr(args, "binding_current", None),
+        "expanded_directional": getattr(args, "binding_expanded", None),
     }
+    selected_arms = ("current_directional", "expanded_directional") if requested_arm == "both" else (requested_arm,)
+    for arm_name in selected_arms:
+        binding_path = binding_paths[arm_name]
+        if binding_path is None:
+            flag = "--binding-current" if arm_name == "current_directional" else "--binding-expanded"
+            raise ProductionCLIError(f"{flag} is required for --arm {arm_name}")
+        binding_receipts[arm_name] = _load_json(Path(binding_path), label=f"{arm_name} binding receipt")
     diagnostic_binding = _load_diagnostic_binding(Path(args.diagnostic_binding))
     provider = _load_callable(args.provider)
     output_root.parent.mkdir(parents=True, exist_ok=True)
+    if bool(getattr(args, "configuration_dry_run", False)):
+        module_name = getattr(provider, "__module__", "")
+        module = sys.modules.get(module_name)
+        if module is None and module_name:
+            module = importlib.import_module(module_name)
+        dry_run = getattr(module, "configuration_dry_run", None) if module is not None else None
+        if not callable(dry_run):
+            raise ProductionCLIError("provider does not expose configuration_dry_run")
+        result = dry_run(
+            binding_receipts=binding_receipts,
+            diagnostic_binding=diagnostic_binding,
+            lease_caps=lease_caps,
+            device=device,
+            output_root=output_root,
+            arm_name=None if requested_arm == "both" else requested_arm,
+        )
+        receipt_path = output_root / "configuration_dry_run.json"
+        if receipt_path.exists():
+            raise ProductionCLIError(f"configuration dry-run is create-only: {receipt_path}")
+        output_root.mkdir(parents=True, exist_ok=True)
+        receipt = {**result, "command": list(sys.argv), "truth_opened": False, "model_allocated": False, "updates": False}
+        receipt_path.write_text(json.dumps(receipt, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+        return receipt
     started = time.perf_counter()
     guard_checks: list[dict[str, Any]] = []
 
@@ -199,12 +240,21 @@ def run_cli(args: argparse.Namespace) -> dict[str, Any]:
         value["resource_guard_callback"] = runtime_guard
         return value
 
-    result = run_directional_arms(
-        guarded_builder,
-        output_root=output_root,
-        deadline_seconds=float(args.deadline_seconds),
-        command=list(sys.argv),
-    )
+    if requested_arm == "both":
+        result = run_directional_arms(
+            guarded_builder,
+            output_root=output_root,
+            deadline_seconds=float(args.deadline_seconds),
+            command=list(sys.argv),
+        )
+    else:
+        result = run_directional_arm(
+            guarded_builder,
+            arm_name=requested_arm,
+            output_root=output_root,
+            deadline_seconds=float(args.deadline_seconds),
+            command=list(sys.argv),
+        )
     guard("after_fit")
     guard_receipt = {
         "schema": "token-reconstruction.trr0010-production-resource-guard.v1",
@@ -233,14 +283,16 @@ def run_cli(args: argparse.Namespace) -> dict[str, Any]:
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--provider", default="trr0010_p09_provider:build_inputs")
-    parser.add_argument("--binding-current", required=True, type=Path)
-    parser.add_argument("--binding-expanded", required=True, type=Path)
+    parser.add_argument("--provider", default="trr0010_production_provider:build_inputs")
+    parser.add_argument("--arm", choices=("both", "current_directional", "expanded_directional"), default="both")
+    parser.add_argument("--binding-current", type=Path)
+    parser.add_argument("--binding-expanded", type=Path)
     parser.add_argument("--diagnostic-binding", required=True, type=Path)
     parser.add_argument("--lease", required=True, type=Path)
     parser.add_argument("--output-root", required=True, type=Path)
     parser.add_argument("--device")
     parser.add_argument("--deadline-seconds", type=float, default=7200.0)
+    parser.add_argument("--configuration-dry-run", action="store_true")
     return parser
 
 

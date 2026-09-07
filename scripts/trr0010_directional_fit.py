@@ -396,9 +396,22 @@ def fit_one_arm(inputs: Mapping[str, Any], *, arm_name: str, output_root: Path, 
         kwargs["deadline_seconds"] = float(deadline_seconds)
     if callable(inputs.get("resource_guard_callback")):
         kwargs["resource_guard_callback"] = inputs["resource_guard_callback"]
+    runner_started = time.perf_counter()
     result = inputs["runner"].run_training(runtime.decoder, runtime.hook, inputs["source"], inputs["schedule_steps"], **kwargs)
+    runner_call_seconds = time.perf_counter() - runner_started
+    if not isinstance(result, Mapping):
+        raise DirectionalFitError(f"{arm_name} runner result must be a mapping")
+    # The A2 runner returns the validation learning curve, exposure, checkpoint
+    # bindings, and resource/timing decomposition. Preserve that exact
+    # JSON-serializable object in the arm receipt before selecting/exporting,
+    # rather than reducing it to the selected checkpoint alone.
+    try:
+        raw_runner_result = json.loads(json.dumps(dict(result), allow_nan=False))
+    except (TypeError, ValueError) as exc:
+        raise DirectionalFitError(f"{arm_name} runner result is not JSON serializable") from exc
     selected = _selected_checkpoint(result, arm_name=arm_name)
     selected_step = _int(result["selected_step"], label=f"{arm_name}.selected_step")
+    restore_started = time.perf_counter()
     restore = restore_selected_and_export(
         checkpoint_path=Path(str(selected["path"])),
         expected_checkpoint=selected,
@@ -407,6 +420,8 @@ def fit_one_arm(inputs: Mapping[str, Any], *, arm_name: str, output_root: Path, 
         public_embedding=public_embedding,
         selected_step=selected_step,
     )
+    restore_export_seconds = time.perf_counter() - restore_started
+    base_started = time.perf_counter()
     base = export_selected_base_decoder_state(
         path=arm_root / "base_decoder_state.safetensors",
         runtime=runtime,
@@ -414,6 +429,7 @@ def fit_one_arm(inputs: Mapping[str, Any], *, arm_name: str, output_root: Path, 
         selected_step=selected_step,
         metadata={"arm_name": arm_name, "bank_role": ARM_TO_BANK[arm_name]},
     )
+    base_export_seconds = time.perf_counter() - base_started
     if tuple(event["step"] for event in diagnostic_events) != CHECKPOINT_STEPS:
         raise DirectionalFitError(f"{arm_name} diagnostics did not run at every checkpoint")
     if {event["full_bank"]["endpoint"] for event in diagnostic_events if event["full_bank"]} != {"start", "end"}:
@@ -437,7 +453,16 @@ def fit_one_arm(inputs: Mapping[str, Any], *, arm_name: str, output_root: Path, 
         "schedule": validation["schedule"],
         "diagnostic_binding": validation["diagnostics"],
         "diagnostic_events": diagnostic_events,
-        "timing": {**dict(result.get("timing", {})), "wrapper_seconds": time.perf_counter() - started},
+        "runner_result": raw_runner_result,
+        "timing": {
+            **dict(result.get("timing", {})),
+            "wrapper_seconds": time.perf_counter() - started,
+            "runner_call_seconds": runner_call_seconds,
+            "restore_export_seconds": restore_export_seconds,
+            "base_decoder_export_seconds": base_export_seconds,
+            "provider_preparation_included": False,
+            "timing_boundary_note": "wrapper starts after provider build_inputs; runner_call_seconds is the raw runner call; restore_export_seconds and base_decoder_export_seconds are separate post-fit phases",
+        },
         "runtime_binding": runtime_binding,
         "provider_receipt": provider_summary,
         "selected_checkpoint": {"path": str(selected["path"]), "bytes": int(selected.get("bytes", 0)), "sha256": selected["sha256"]},
@@ -496,6 +521,93 @@ def bind_concrete_provider(
     return build_inputs
 
 
+def run_directional_arm(
+    build_inputs: Callable[..., Mapping[str, Any]],
+    *,
+    arm_name: str,
+    output_root: Path,
+    factory_config: Mapping[str, Any] | None = None,
+    deadline_seconds: float | None = None,
+    command: Sequence[str] | None = None,
+) -> dict[str, Any]:
+    """Fit exactly one frozen arm in its own create-only output directory.
+
+    Production leases are per arm.  This entrypoint keeps preparation, fit,
+    checkpoint/export, and the deadline in one receipt instead of implicitly
+    sharing a two-arm wall-clock budget.
+    """
+
+    if arm_name not in REQUIRED_ARMS:
+        raise DirectionalFitError(f"unknown arm {arm_name!r}")
+    output_root = Path(output_root).expanduser().resolve()
+    receipt_path = output_root / "run_receipt.json"
+    if receipt_path.exists():
+        raise DirectionalFitError(f"production fit is create-only: {receipt_path}")
+    completed: dict[str, Any] = {}
+    started = time.perf_counter()
+    try:
+        signature = inspect.signature(build_inputs)
+        accepts_kwargs = any(p.kind == inspect.Parameter.VAR_KEYWORD for p in signature.parameters.values())
+        kwargs: dict[str, Any] = {
+            "arm_name": arm_name,
+            "bank_role": ARM_TO_BANK[arm_name],
+            "checkpoint_steps": CHECKPOINT_STEPS,
+            "output_root": output_root,
+        }
+        if factory_config is not None:
+            kwargs["factory_config"] = factory_config
+        if not accepts_kwargs:
+            kwargs = {key: value for key, value in kwargs.items() if key in signature.parameters}
+        if "arm_name" not in kwargs or "bank_role" not in kwargs:
+            raise DirectionalFitError("provider must expose arm_name/bank_role for a single-arm run")
+        inputs = build_inputs(**kwargs)
+        completed[arm_name] = fit_one_arm(inputs, arm_name=arm_name, output_root=output_root, deadline_seconds=deadline_seconds)
+        del inputs
+        gc.collect()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+    except Exception as exc:
+        output_root.mkdir(parents=True, exist_ok=True)
+        failure = output_root / "failure.json"
+        if not failure.exists():
+            failure.write_text(
+                json.dumps(
+                    {
+                        "schema": FIT_FAILURE_SCHEMA,
+                        "task_id": TASK_ID,
+                        "status": "FAILED",
+                        "error_type": type(exc).__name__,
+                        "error": str(exc),
+                        "completed_arms": sorted(completed),
+                        "command": list(command or sys.argv),
+                        "truth_opened": False,
+                    },
+                    sort_keys=True,
+                    indent=2,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+        raise
+    receipt = {
+        "schema": FIT_SCHEMA,
+        "task_id": TASK_ID,
+        "status": "FIT_COMPLETE",
+        "arm": arm_name,
+        "checkpoint_steps": list(CHECKPOINT_STEPS),
+        "training_steps": TRAINING_STEPS,
+        "arms": completed,
+        "command": list(command or sys.argv),
+        "elapsed_seconds": time.perf_counter() - started,
+        "truth_opened": False,
+    }
+    output_root.mkdir(parents=True, exist_ok=True)
+    with receipt_path.open("x", encoding="utf-8") as handle:
+        json.dump(receipt, handle, sort_keys=True, indent=2, allow_nan=False)
+        handle.write("\n")
+    return receipt
+
+
 def run_directional_arms(build_inputs: Callable[..., Mapping[str, Any]], *, output_root: Path, factory_config: Mapping[str, Any] | None = None, deadline_seconds: float | None = None, command: Sequence[str] | None = None) -> dict[str, Any]:
     """Call the concrete capacity provider and fit both arms sequentially."""
 
@@ -545,6 +657,7 @@ __all__ = [
     "TRAINING_STEPS",
     "bind_concrete_provider",
     "fit_one_arm",
+    "run_directional_arm",
     "run_directional_arms",
     "validate_fit_inputs",
 ]
