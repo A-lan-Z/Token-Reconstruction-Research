@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 import trr0010_production_provider as provider
+import trr0010_directional_fit as fit
 
 
 
@@ -280,6 +281,7 @@ def test_actual_stage3_bindings_use_canonical_b0_b1_roles_without_model() -> Non
         ("expanded_directional", "B1", root / "experiments/TRR-0010/setup/production_arm_binding_expanded_stage3_v2.json"),
     )
     for arm_name, bank_role, path in cases:
+        assert fit.ARM_TO_BANK[arm_name] == bank_role
         receipt = json.loads(path.read_text(encoding="utf-8"))
         result = provider.configuration_dry_run(
             binding_receipts={arm_name: receipt},
