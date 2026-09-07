@@ -74,6 +74,6 @@ The real-path dry-run argv evidence (no child launch) is preserved in:
 - `experiments/TRR-P09/review/stage1-capture-dry-run.json`, SHA-256 `ea37324624a1e8a5ff6bfa4d608219d09076864060f157501027255d059592db`.
 
 The helper source SHA-256 is
-`1b9f29e04b75e7147d448927f99fc60c8042b9374b16e8a37a59fe97efef2adc`, and
+`f8e1401fb1f2523971748601c23c31c95dd70f686ddf27d0634a09d3a7745e13`, and
 its focused test source SHA-256 is
-`5e40a0aef0bbce093ba3482b260cf9475346ee5162b2b95441701aae29c5b3c5`.
+`6669c474756e7c07d363e272bb752ac5ff9d180cc022d2bf1e4af7b797c7840a`.
