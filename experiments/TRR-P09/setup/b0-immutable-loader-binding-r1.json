@@ -1,0 +1,140 @@
+{
+  "artifacts": {
+    "corpus_plan": {
+      "bytes": 2528630,
+      "label": "published B0 construction provenance",
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_bank_v5/corpus_plan.json",
+      "sha256": "35d74424df60a1d62f7962850eaa3132fa57dd7001024f915cc4fc470a6d0e76"
+    },
+    "payload": {
+      "bytes": 947176760,
+      "dtypes": {
+        "activations": "BF16",
+        "attention_mask": "U8",
+        "position_ids": "I64",
+        "token_ids": "I32"
+      },
+      "keys": [
+        "activations",
+        "attention_mask",
+        "position_ids",
+        "token_ids",
+        "post_bos_selector_large",
+        "post_bos_selector_small"
+      ],
+      "label": "published B0 BF16 activations and public sequence sidecars",
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_fit_cut4.safetensors",
+      "sha256": "a55814759dfa9d2567587935063fc49e44d8bff949c50014793deb982ebdf35d",
+      "shapes": {
+        "activations": [
+          1200,
+          192,
+          2048
+        ],
+        "attention_mask": [
+          1200,
+          192
+        ],
+        "position_ids": [
+          1200,
+          192
+        ],
+        "token_ids": [
+          1200,
+          192
+        ]
+      }
+    },
+    "position_contract": {
+      "bytes": 868,
+      "label": "P09 B0 mask/position header audit",
+      "path": "/tmp/trr-p09/experiments/TRR-P09/setup/b0-position-contract-r1.json",
+      "sha256": "78ea12ecb88ce8eaf9a98d7b5c97a573a4fd89efcce3f48523f823621e4386e2"
+    },
+    "published_manifest": {
+      "bytes": 8156,
+      "label": "published B0 enriched manifest",
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_manifest.json",
+      "sha256": "c7a857e545a2f252ce8b3ab71bb2336e552fd212c7c434e39cef66f233b77a08"
+    },
+    "records": {
+      "bytes": 918427,
+      "label": "published B0 record metadata",
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_fit_records.json",
+      "sha256": "808cfd0f95ea3ee66c1d4094f3c10f1e346ba986a6d77138a61b8f8f13c4a738"
+    }
+  },
+  "bank": {
+    "allowed_extra_tensor_keys": [
+      "post_bos_selector_large",
+      "post_bos_selector_small"
+    ],
+    "expanded_row_origin": 0,
+    "geometry": {
+      "hidden_dtype": "torch.bfloat16",
+      "hidden_size": 2048,
+      "loader_batch_records": 8,
+      "sequence_tokens": 192,
+      "shard_records": 64
+    },
+    "global_row_range": {
+      "count": 1200,
+      "start": 0,
+      "stop": 1200
+    },
+    "payload_keys": [
+      "activations",
+      "attention_mask",
+      "position_ids",
+      "token_ids"
+    ],
+    "record_count": 1200,
+    "record_order": "published enriched_fit_records.records list; global row equals list index"
+  },
+  "composition": {
+    "adapter": "scripts/trr_p09/b0_immutable_loader.py:B0ImmutableLoader",
+    "addition_global_row_origin": 1200,
+    "b0_rows_are_read_from_existing_published_payload": true,
+    "combined_adapter": "scripts/trr_p09/b0_immutable_loader.py:CombinedB0StreamedBankLoader",
+    "requested_rows_preserve_order_and_repeats": true
+  },
+  "integrity": {
+    "after_gate": "stat-only path/size/mtime/inode checks before each requested window; no rehash",
+    "create_only_binding": true,
+    "hash_payload_and_all_sidecars_before_first_read": true,
+    "payload_residency": "requested safetensors slices only; no copied/repacked B0 file"
+  },
+  "mask_position_contract": {
+    "active_positions": "arange(T) where mask is active",
+    "attention_mask_dtype": "uint8, normalized to bool by loader",
+    "first_position_active_required": true,
+    "inactive_positions": [
+      0
+    ],
+    "position_ids_dtype": "int64, normalized to int64 by loader"
+  },
+  "purpose": "Bind the published TRR-0007 B0 public prefix as rows [0,1200) for composition with captured P09 B1 shards.",
+  "record_ids": {
+    "count": 1200,
+    "serialization": "UTF-8 record_id values joined by LF with one final LF",
+    "sha256": "46143e900409695cc2eb76cd3951fcc5e271e910f89cbaee0fa929919f919f4b",
+    "source": "artifacts.published_manifest.record_ids_sha256"
+  },
+  "schema": "token-reconstruction.trr-p09-b0-immutable-loader-binding.v1",
+  "sidecar_identity": {
+    "record_id_field": "record_id",
+    "sequence_id_field": "sequence_id when present; otherwise record_id (published B0 rows have no sequence_id)",
+    "slot_required": "slot equals zero-based global row",
+    "source_record_ids_are_metadata_only": true
+  },
+  "status": "BOUND_METADATA_ONLY_NO_COPY",
+  "task_id": "TRR-P09",
+  "truth_boundary": {
+    "evaluation_truth_opened": false,
+    "fitting_started": false,
+    "header_only_validation_before_get_records": true,
+    "model_loaded": false,
+    "public_forward_started": false,
+    "source_text_loaded": false
+  }
+}

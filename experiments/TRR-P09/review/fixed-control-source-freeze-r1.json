@@ -1,0 +1,146 @@
+{
+  "configuration_evidence": {
+    "corrected_grid_receipt": {
+      "correction_of": "experiments/TRR-P09/review/fixed-control-cli-config-r4.json",
+      "grid": [
+        0,
+        1000,
+        2000,
+        4000,
+        8000,
+        12000,
+        13000
+      ],
+      "path": "experiments/TRR-P09/review/fixed-control-cli-config-r5.json",
+      "sha256": "3c8681f2f723729822aad0c132e92146a758ada2770b14c0cbbf7fdaa99a85b7"
+    },
+    "dry_runs": [
+      {
+        "bank": "B0",
+        "path": "/tmp/trr-p09-runtime/fixed-control-config-dryrun-b0-validation-diagnostic-r3/configuration_receipt.json",
+        "sha256": "08b8dfed223422acef96bfb5c0b84f9d5b1c52e470d3d1f1d4afcc7160e865"
+      },
+      {
+        "bank": "B1",
+        "path": "/tmp/trr-p09-runtime/fixed-control-config-dryrun-b1-validation-diagnostic-r3/configuration_receipt.json",
+        "sha256": "df1ce4ff193efbccd985b4496e87470a987273462879a7f0fe2bd5fd7a4e39ad"
+      }
+    ],
+    "focused_tests": {
+      "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p09_fixed_control_caller.py tests/test_trr_p09_fixed_control_cli.py tests/test_trr_p09_fixed_control_runner.py tests/test_trr_p09_fixed_control_adapter.py",
+      "result": "34 passed"
+    },
+    "scope_correction": {
+      "actual_boundary": "public validation labels/metadata loaded is allowed; final evaluation truth, source plaintext, model, embedding, optimizer, public forward, and fit remain unopened.",
+      "applies_to": "experiments/TRR-P09/review/fixed-control-cli-config-r4.json and r5.json compact scope text",
+      "correction": "The CPU dry-run reads authorized public validation metadata/labels for the H128 binding; the old phrase \"no validation labels\" is imprecise.",
+      "r5_immutable": true
+    }
+  },
+  "preload_gates": [
+    "stage3 agreement receipt accepted by _verify_gate",
+    "largest-cell qualification receipt accepted and truth_opened is false",
+    "external watchdog receipt status armed/pass with process_group_fail_closed=true and executable command",
+    "selection supplement SHA equals signed 760adf507438111b03c7308740e6666b0961088e6fc8868f999240d58d2814f7",
+    "B0/B1 manifest binding and serialized schedule SHA match the selected bank",
+    "public validation manifest/rows bind Finance=256 and Pile=128 H128 public-base inputs",
+    "fixed diagnostic binding SHA equals 8b899bc168b55570e4cfd526ff4e8656b70050e840386cba9390ad6adb1f54c3",
+    "state SHA equals 5cada4a3d04bb5477eaf0be25ed8d8ac25a89283223e9ba14b18fa10416bee14 and embedding SHA equals ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+    "output root is create-only; no truth payload is read by this CLI"
+  ],
+  "production_argv_templates": {
+    "B0": "<create-only-output-root-B0> PYTHONPATH=.:src OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false python3 scripts/trr_p09/fixed_control_cli.py --repository-root /tmp/trr-p09 --fit-prefix-manifest /tmp/trr-p09/experiments/TRR-P09/setup/b0-immutable-loader-binding-r1.json --fit-addition-manifest /tmp/trr-p09-runtime/stage1-capture-r2/bank_manifest-qualified-r1.json --validation-manifest /tmp/trr-p09-runtime/public-validation-r1/validation_manifest.json --validation-rows /tmp/trr-p09-runtime/public-validation-r1/validation_rows.json --fixed-diagnostic-binding /tmp/trr-p09/experiments/TRR-P09/setup/fixed-diagnostic-binding-r1.json --expected-fixed-diagnostic-sha256 8b899bc168b55570e4cfd526ff4e8656b70050e840386cba9390ad6adb1f54c3 --embedding /home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors --state /tmp/trr-p09/experiments/TRR-0009/training/run_v1/continued_fixed_readout/selected.safetensors --selection-supplement <signed-selection-supplement-760adf507438111b03c7308740e6666b0961088e6fc8868f999240d58d2814f7.json> --stage3-agreement <accepted-stage3-agreement.json> --qualification-receipt <accepted-largest-cell-qualification.json> --watchdog-receipt <matching-external-watchdog.json> --device cuda --steps 13000 --seed 4010 --learning-rate 0.0002 --weight-decay 0.0 --gradient-clip-norm 1.0 --validation-every 1000 --validation-sequence-tokens 128 --deadline-seconds 7200 --maximum-host-rss-gib 16 --minimum-host-available-gib 10 --minimum-gpu-free-gib 2 --maximum-gpu-reserved-gib 8 --expected-fit-binding-sha256 aefaa5f47aa1042dffa7210767ed4a0be1fd848c373f8cd6de1ad4c739035a31 --common-schedule /tmp/trr-p09-runtime/common-schedules-r1/schedule-b0-seed4010.safetensors --expected-schedule-sha256 ba53cd4bad54bc88670f346a7f959eb0ce5278ec28eac8bdf6463cd44936ec6f --schedule-bank B0",
+    "B1": "<create-only-output-root-B1> PYTHONPATH=.:src OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false python3 scripts/trr_p09/fixed_control_cli.py --repository-root /tmp/trr-p09 --fit-prefix-manifest /tmp/trr-p09/experiments/TRR-P09/setup/b0-immutable-loader-binding-r1.json --fit-addition-manifest /tmp/trr-p09-runtime/stage1-capture-r2/bank_manifest-qualified-r1.json --validation-manifest /tmp/trr-p09-runtime/public-validation-r1/validation_manifest.json --validation-rows /tmp/trr-p09-runtime/public-validation-r1/validation_rows.json --fixed-diagnostic-binding /tmp/trr-p09/experiments/TRR-P09/setup/fixed-diagnostic-binding-r1.json --expected-fixed-diagnostic-sha256 8b899bc168b55570e4cfd526ff4e8656b70050e840386cba9390ad6adb1f54c3 --embedding /home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors --state /tmp/trr-p09/experiments/TRR-0009/training/run_v1/continued_fixed_readout/selected.safetensors --selection-supplement <signed-selection-supplement-760adf507438111b03c7308740e6666b0961088e6fc8868f999240d58d2814f7.json> --stage3-agreement <accepted-stage3-agreement.json> --qualification-receipt <accepted-largest-cell-qualification.json> --watchdog-receipt <matching-external-watchdog.json> --device cuda --steps 13000 --seed 4010 --learning-rate 0.0002 --weight-decay 0.0 --gradient-clip-norm 1.0 --validation-every 1000 --validation-sequence-tokens 128 --deadline-seconds 7200 --maximum-host-rss-gib 16 --minimum-host-available-gib 10 --minimum-gpu-free-gib 2 --maximum-gpu-reserved-gib 8 --expected-fit-binding-sha256 aefaa5f47aa1042dffa7210767ed4a0be1fd848c373f8cd6de1ad4c739035a31 --common-schedule /tmp/trr-p09-runtime/common-schedules-r1/schedule-b1-seed4010.safetensors --expected-schedule-sha256 be0745ebb56e0ed39c2cf7e9c05a657209126f4c1c552242d3893c52d6718801 --schedule-bank B1"
+  },
+  "repository": {
+    "note": "The receipt commit itself is metadata-only; the listed source bytes are unchanged by that commit.",
+    "source_commit_before_receipt": "dd11f649c5f7376cc49928159ae9eda8e562dd57",
+    "worktree": "/tmp/trr-p09"
+  },
+  "runtime_contract": {
+    "checkpoint_grid_b0_b1": [
+      0,
+      1000,
+      2000,
+      4000,
+      8000,
+      12000,
+      13000
+    ],
+    "checkpoint_grid_derivation": "sorted(set(signed_p09_checkpoint_grid(valid_positions) + (steps,)))",
+    "fit_sequence_tokens": 192,
+    "fitting_diagnostics": "frozen64 at every checkpoint; full bank only at step 0 and final step; selection metric remains runner-owned",
+    "gradient_clip_norm": 1.0,
+    "learning_rate": 0.0002,
+    "optimizer": "AdamW foreach=False",
+    "position_budget": 512,
+    "record_batch_size": 8,
+    "seed": 4010,
+    "selection_metric": "domain_balanced_token_accuracy",
+    "steps": 13000,
+    "validation_sequence_tokens": 128,
+    "weight_decay": 0.0
+  },
+  "schema": "token-reconstruction.trr-p09-fixed-control-source-freeze.v1",
+  "scope": "Freeze the reviewed fixed-control adapter/runner/loaders and the exact prelaunch production gate template; no model, embedding, optimizer, public forward, fit, or evaluation truth was opened.",
+  "source_files": [
+    {
+      "bytes": 60492,
+      "path": "scripts/trr_p09/fixed_control_cli.py",
+      "role": "production CLI and pre-load gate",
+      "sha256": "8012564dd9ce9c7c3ba378dfb6b970546ab5dfeb636fafb8bf372884130e626c"
+    },
+    {
+      "bytes": 43629,
+      "path": "scripts/trr_p09/fixed_control_caller.py",
+      "role": "schedule, checkpoint, validation, and fitting-diagnostic callbacks",
+      "sha256": "13410a03b825467479001fa97112ed05c9784b9ad64dd46880bcd8076de53f6b"
+    },
+    {
+      "bytes": 41553,
+      "path": "scripts/trr_p09/fixed_control_runner.py",
+      "role": "shared training loop and resource/checkpoint interfaces",
+      "sha256": "fde3db3c9655afca1678f3d2d0641fba5d4130a73fdb77cc2287a38b1741a98e"
+    },
+    {
+      "bytes": 14230,
+      "path": "scripts/trr_p09/public_validation_loader.py",
+      "role": "public H128 validation loader and label binding",
+      "sha256": "3705ff2a58d34512c7f30d9eb2657206fca3621eb9f6fb685b82c12ee008cd0f"
+    },
+    {
+      "bytes": 19974,
+      "path": "scripts/trr_p09/b0_immutable_loader.py",
+      "role": "immutable B0 plus combined B0/B1 random-access loader",
+      "sha256": "915c53781c24d997eccc7311553c2d80ff0d7e14688d22bb64c41db2f5e43f70"
+    },
+    {
+      "bytes": 67303,
+      "path": "scripts/trr_p09/prepare_streamed_bank.py",
+      "role": "streamed-bank schema, hashes, and row loader primitives",
+      "sha256": "e76a27f94328648f8fe3da6c6fae48fffd27006b213f9b70b976bcb5f4077c4b"
+    },
+    {
+      "bytes": 13376,
+      "path": "src/token_reconstruction/trr_p09_fixed_control_adapter.py",
+      "role": "query-aware fixed readout adapter",
+      "sha256": "aa6a8b21fcc03d55583e69940b722bc9a1e4f4caa05e888f7dab8bf02d3e1a41"
+    },
+    {
+      "bytes": 18152,
+      "path": "src/token_reconstruction/trr0007_positionwise.py",
+      "role": "approved decoder state loader",
+      "sha256": "89fcd036a57407c8c49294aa5fd15ccef46f02b6fabcc35435d097f1213de485"
+    }
+  ],
+  "status": "PASS_SOURCE_BYTES_FROZEN_NO_FIT_NO_TRUTH",
+  "task_id": "TRR-P09",
+  "truth_boundary": {
+    "embedding_loaded": false,
+    "evaluation_truth_opened": false,
+    "fit_started": false,
+    "model_loaded": false,
+    "optimizer_created": false,
+    "public_forward_started": false
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "bindings": {
+    "b0_binding": {
+      "bytes": 5070,
+      "label": "B0 immutable binding",
+      "path": "/tmp/trr-p09/experiments/TRR-P09/setup/b0-immutable-loader-binding-r1.json",
+      "sha256": "7e6d7d3ac0ceec77f8b1e961a1a74b0675fd43e6ef3e4e77dcdd368d0c27445d"
+    },
+    "b1_manifest": {
+      "bytes": 145390,
+      "label": "qualified B1 activation bank manifest",
+      "path": "/tmp/trr-p09-runtime/stage1-capture-r2/bank_manifest-qualified-r1.json",
+      "sha256": "0e14dbf74c947cfc6c586e7a5dbf76a27d8f0522fb8e54d2f98c6067bb36d196"
+    },
+    "fixed_diagnostic_binding": {
+      "bytes": 130098,
+      "label": "fixed diagnostic64 binding",
+      "path": "/tmp/trr-p09/experiments/TRR-P09/setup/fixed-diagnostic-binding-r1.json",
+      "sha256": "8b899bc168b55570e4cfd526ff4e8656b70050e840386cba9390ad6adb1f54c3"
+    },
+    "schedule_b0": {
+      "bytes": 27053864,
+      "label": "B0 common schedule",
+      "path": "/tmp/trr-p09-runtime/common-schedules-r1/schedule-b0-seed4010.safetensors",
+      "sha256": "ba53cd4bad54bc88670f346a7f959eb0ce5278ec28eac8bdf6463cd44936ec6f"
+    },
+    "schedule_b1": {
+      "bytes": 27053864,
+      "label": "B1 common schedule",
+      "path": "/tmp/trr-p09-runtime/common-schedules-r1/schedule-b1-seed4010.safetensors",
+      "sha256": "be0745ebb56e0ed39c2cf7e9c05a657209126f4c1c552242d3893c52d6718801"
+    },
+    "validation_manifest": {
+      "bytes": 468369,
+      "label": "public validation preparation manifest",
+      "path": "/tmp/trr-p09-runtime/public-validation-r1/validation_manifest.json",
+      "sha256": "2ae3c36d62a3219f0df24ef6d87a9c76418b408d946ba52bcedd020b6b403d38"
+    },
+    "validation_rows": {
+      "bytes": 72111,
+      "label": "public validation rows",
+      "path": "/tmp/trr-p09-runtime/public-validation-r1/validation_rows.json",
+      "sha256": "3877baf2a8ad894cb7c971aadd1591854852f77091bdbdb218b3617a6971919f"
+    }
+  },
+  "diagnostic_contract": {
+    "rows_per_bank": 64,
+    "scope": "frozen64 at every checkpoint; full bank at step 0 and final step only",
+    "selection": "setup-owned immutable binding; no selection metric or fit state",
+    "source_callback_commit": "d3ee6aa20a3c6c02e2a6b062caa457bf52955e49"
+  },
+  "dry_runs": {
+    "B0": {
+      "bytes": 105298,
+      "label": "B0 fully bound CPU configuration receipt",
+      "path": "/tmp/trr-p09-runtime/fixed-control-config-dryrun-b0-validation-diagnostic-r3/configuration_receipt.json",
+      "sha256": "08b8dfed223422acef96bfb5c0b84f9d5b1c52e47093d3d1f1d4afcc7160e865"
+    },
+    "B1": {
+      "bytes": 108418,
+      "label": "B1 fully bound CPU configuration receipt",
+      "path": "/tmp/trr-p09-runtime/fixed-control-config-dryrun-b1-validation-diagnostic-r3/configuration_receipt.json",
+      "sha256": "df1ce4ff193efbccd985b4496e87470a987273462879a7f0fe2bd5fd7a4e39ad"
+    }
+  },
+  "focused_tests": {
+    "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p09_fixed_control_caller.py tests/test_trr_p09_fixed_control_cli.py tests/test_trr_p09_fixed_control_runner.py tests/test_trr_p09_fixed_control_adapter.py",
+    "result": "34 passed"
+  },
+  "schedule_contract": {
+    "checkpoint_grid": [
+      0,
+      1000,
+      2000,
+      4000,
+      8000,
+      12000
+    ],
+    "position_budget": 512,
+    "record_batch_size": 8,
+    "seed": 4010,
+    "sequence_tokens": 192,
+    "steps": 13000,
+    "validation_sequence_tokens": 128
+  },
+  "schema": "token-reconstruction.trr-p09-fixed-control-cli-config-review.v4",
+  "scope": "CPU-only configuration validation; no model, embedding, optimizer, fit, public forward, or evaluation truth",
+  "source_commit": "d3ee6aa20a3c6c02e2a6b062caa457bf52955e49",
+  "status": "PASS_CPU_FULLY_BOUND_CONFIGURATION_NO_FIT",
+  "task_id": "TRR-P09",
+  "truth_boundary": {
+    "embedding_loaded": false,
+    "evaluation_truth_opened": false,
+    "fit_started": false,
+    "model_loaded": false,
+    "optimizer_created": false,
+    "public_forward_started": false
+  }
+}

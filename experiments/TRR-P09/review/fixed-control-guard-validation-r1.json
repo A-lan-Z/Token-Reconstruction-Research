@@ -1,0 +1,54 @@
+{
+  "commands": [
+    {
+      "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p09_fixed_control_guarded_launch.py",
+      "result": "2 passed",
+      "scope": "synthetic normal exit and output-cap breach; no model, public bank, truth, or GPU access"
+    },
+    {
+      "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p09_fixed_control_guarded_launch.py tests/test_trr_p09_resource_watchdog.py tests/test_trr_p09_fixed_control_cli.py tests/test_trr_p09_fixed_control_runner.py tests/test_trr_p09_fixed_control_caller.py tests/test_trr_p09_fixed_control_adapter.py",
+      "result": "40 passed in 4.71s",
+      "scope": "guard plus existing P09 watchdog/fixed-control interface regression suite"
+    },
+    {
+      "command": "python3 -m py_compile scripts/trr_p09/fixed_control_guarded_launch.py tests/test_trr_p09_fixed_control_guarded_launch.py",
+      "result": "PASS"
+    }
+  ],
+  "environment": {
+    "pytest": "8.4.2",
+    "python": "3.12.3"
+  },
+  "guarded_runtime_scope": {
+    "disk_free_floor_bytes": 21474836480,
+    "gpu_or_model_execution": false,
+    "max_gpu_reserved_bytes": 8589934592,
+    "max_host_rss_bytes": 12884901888,
+    "min_gpu_free_bytes": 2147483648,
+    "min_host_available_bytes": 8589934592,
+    "output_cap_bytes": 5368709120,
+    "process_group_fail_closed": true,
+    "total_wall_includes_preparation": true
+  },
+  "launch_status": "READY_FOR_ROOT_ARMING_PENDING_EXCLUSIVE_ARM_LEASE",
+  "schema": "token-reconstruction.trr-p09-fixed-control-guard-validation.v1",
+  "source_commit": "ff10952044db3daf46dfbb43be899d6cdb725243",
+  "source_files": {
+    "experiments/TRR-P09/review/fixed-control-launch-plans-r2.json": {
+      "bytes": 33472,
+      "sha256": "7530b279fe8e8ee2c9de734cb6b09cf83d12ab50b2fdd58495da89ce1bd4b419"
+    },
+    "scripts/trr_p09/fixed_control_guarded_launch.py": {
+      "bytes": 24970,
+      "sha256": "80779d154a6735c84451f5a978b22820bd76dc1d157a1422b114f0a2b1acd311"
+    },
+    "tests/test_trr_p09_fixed_control_guarded_launch.py": {
+      "bytes": 3200,
+      "sha256": "05128d7fd4a649817688530c879a026249b415bde4f40912aff22741cf80d6a9"
+    }
+  },
+  "stage3_contract_sha256": "23e4bde4475082cc004e7ef787c22fed6301275ce2ff23a0396d975b439faf9",
+  "stage3_countersignature_sha256": "a99d31991880be095a21cf7bef119adbceb14c51e82c35f2df108c4164467ab9",
+  "status": "PASS",
+  "task_id": "TRR-P09"
+}
