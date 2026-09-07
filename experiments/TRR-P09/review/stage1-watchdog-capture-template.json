@@ -1,0 +1,35 @@
+{
+  "template_schema": "token-reconstruction.trr-p09-stage1-watchdog-receipt-template.v1",
+  "runnable": false,
+  "receipt_schema": "token-reconstruction.trr-p09-stage1-capture-watchdog.v1",
+  "task_id": "TRR-P09",
+  "status": "ARMED",
+  "condition": "public_base",
+  "mode": "capture",
+  "bindings": {
+    "plan_sha256": "bca93d6099760791c5ecbf3be8177d250cc672c62b2177a3d72d79b934c3826c",
+    "input_manifest_sha256": "<ROOT_FILL_FROM_PREPARATION_MANIFEST>"
+  },
+  "command": ["<ROOT_FILL_EXACT_WATCHDOG_COMMAND_FROM_stage1_guarded_launch.py>"],
+  "executable": {
+    "path": "/tmp/trr-p06/scripts/trr_p06/resource_watchdog.py",
+    "bytes": 27292,
+    "sha256": "2384b51e3220d6bbd0c6b723d414e2f3350fceacb974ec88fa0757ffbcc7d652"
+  },
+  "lease": {
+    "expires_utc": "<ROOT_FILL_SIGNED_LEASE_EXPIRY>"
+  },
+  "limits": {
+    "wall_seconds_cap": 7200,
+    "gpu_reserved_bytes_max": 8589934592,
+    "gpu_free_bytes_min": 8589934592,
+    "host_rss_bytes_max": 12884901888,
+    "host_available_bytes_min_runtime": 6442450944,
+    "retained_capture_bytes_max_inner_guard": 21474836480
+  },
+  "enforcement": {
+    "external_wrapper": ["wall_timeout", "process_group_rss", "host_mem_available", "post_child_race_safe"],
+    "child_inner_guard": ["gpu_reserved", "gpu_free", "host_prelaunch_floor", "retained_output_bytes", "disk_free"]
+  },
+  "post_child_race_safe": true
+}
