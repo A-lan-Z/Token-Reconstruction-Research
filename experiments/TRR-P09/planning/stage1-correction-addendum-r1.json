@@ -1,0 +1,123 @@
+{
+  "schema": "token-reconstruction.trr-p09-stage1-correction-addendum.v1",
+  "task_id": "TRR-P09",
+  "status": "PROPOSED_PENDING_JOINT_COUNTERSIGN",
+  "purpose": "Correct the controlled-template assignment ambiguity discovered by the immutable B0 audit before any revised preparation; this file does not authorize or perform a rerun.",
+  "scope": {
+    "original_plan_unchanged": true,
+    "r1_artifacts_unchanged": true,
+    "selection_or_capture_executed": false,
+    "model_or_activation_loaded": false,
+    "truth_opened": false,
+    "implementation_change_authorized": false,
+    "new_exclusion_binding_required_before_r2": true
+  },
+  "original_bindings": {
+    "plan": {
+      "path": "experiments/TRR-P09/planning/stage1-public-bank-plan.json",
+      "bytes": 26127,
+      "sha256": "bca93d6099760791c5ecbf3be8177d250cc672c62b2177a3d72d79b934c3826c"
+    },
+    "plan_countersignature": {
+      "path": "experiments/TRR-P09/setup/stage1-plan-countersignature-r1.json",
+      "commit": "5bfed9ec6a7bb29a988ec0a4b1343b7745d8b81b",
+      "status": "COUNTERSIGNED"
+    },
+    "r1_receipt": {
+      "path": "experiments/TRR-P09/setup/stage1-input-preparation-r1-receipt.json",
+      "sha256": "4314ee55f64f15e88e25319d0a80860a152a83b7d41b02f9539858aef23d0153"
+    },
+    "r1_output_manifest": {
+      "path": "/tmp/trr-p09-runtime/stage1-input-preparation-r1/preparation_manifest.json",
+      "sha256": "c6d6915bb0e539336928725e9c32288157f15dbb96fe08544925e84cc40474e1"
+    },
+    "r1_records": {
+      "path": "/tmp/trr-p09-runtime/stage1-input-preparation-r1/records.json",
+      "sha256": "30fe421fd3fb6b76e4aec79324fafd73a398ed901e07b4681b815cce2dc98a4"
+    },
+    "audit": {
+      "path": "experiments/TRR-P09/review/b0-order-exclusion-audit-r1.json",
+      "sha256": "04a662e76c09737a67e57acc09167078c2f36b1295ed21e3a7ff61a11b077afe"
+    }
+  },
+  "immutable_b0_bindings": {
+    "records": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_fit_records.json",
+      "sha256": "808cfd0f95ea3ee66c1d4094f3c10f1e346ba986a6d77138a61b8f8f13c4a738"
+    },
+    "tensor_payload": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_fit_cut4.safetensors",
+      "sha256": "a55814759dfa9d2567587935063fc49e44d8bff949c50014793deb982ebdf35d"
+    },
+    "observed_replacement_order_digest": "8499eb0e0706b6a8c74a258d09857336e135eb345bbc3603c6940a23a991d56e",
+    "signed_replacement_order_digest": "a87ac1c5bcbcaf0cea04568d6b4090a8f3fd90fcbc2bc71704165d928c3630be",
+    "observed_set_digest": "252b3cfee27b98f5fc72abc0c50c8f5ac1bd0157cc8723506311f8a0592197c1",
+    "signed_set_digest": "252b3cfee27b98f5fc72abc0c50c8f5ac1bd0157cc8723506311f8a0592197c1",
+    "observed_occurrences": 3600,
+    "observed_distinct_ids": 3600,
+    "observed_multiplicity": 1,
+    "ordered_equal_positions": 0,
+    "manifest": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_manifest.json",
+      "sha256": "c7a857e545a2f252ce8b3ab71bb2336e552fd212c7c434e39cef66f233b77a08"
+    },
+    "parent_metadata": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_bank_v5/selected_parent_rows.json",
+      "sha256": "7de2ce7fca1d9489f652e0229b7cbfeacd625ca6ebd37c56d4405962da79f547"
+    }
+  },
+  "parent_exclusion_binding_required": {
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_bank_v5/public_parent_exclusion_manifest.json",
+    "bytes": 1179665,
+    "sha256": "bd1359f1184091570023e22a7682d1f97c08f8f05e47f69f6b3e6be089cd0181",
+    "source_row_keys_by_dataset": {
+      "alpaca": 1224,
+      "pile": 384,
+      "finance": 240
+    },
+    "required_alpaca_development_keys": 624,
+    "namespace": "dataset_key plus source row identity/index; opaque sequence/reservation digests are not interchangeable",
+    "r2_rule": "Fail closed unless all required row-key namespaces are verified before reselecting parents."
+  },
+  "correction_terms": {
+    "preserve_b0_prefix": true,
+    "supersedes_only": "The ambiguous B1 ordered-cycle assignment in the original signed recipe; all other plan terms remain unchanged.",
+    "bucket_key": [
+      "stratum",
+      "target_post_bos_length"
+    ],
+    "template_order": "Within each bucket, use immutable B0 templates in ascending original B0 index order.",
+    "new_row_order": "Use the existing deterministic new-row allocation order within each bucket; do not globally reorder parent selection or alter signed length/domain quotas.",
+    "assignment": "Assign templates round-robin over the existing new-row allocation order within each bucket.",
+    "repetition": "Each immutable B0 template is used exactly 9 times across the new controlled rows in its bucket.",
+    "copied_fields": [
+      "replacement_positions",
+      "replacement_token_ids",
+      "stratum",
+      "target_post_bos_length",
+      "domain"
+    ],
+    "identity_terms": "The B0 identity set and multiplicities remain unchanged; additions are the observed B0 multiset repeated exactly 9 times.",
+    "r1_disposition": "Preserve r1 for audit only; do not overwrite, recapture, or relabel it as corrected."
+  },
+  "unchanged_terms": {
+    "target_rows": 12000,
+    "b0_rows": 1200,
+    "new_rows": 10800,
+    "controlled_rows_in_additions": 3600,
+    "controlled_occurrences_in_additions": 32400,
+    "occurrences_per_controlled_record": 30,
+    "signed_strata_and_exact_length_quotas": true,
+    "source_selection_ranking": true,
+    "capture_geometry": [
+      192
+    ],
+    "diagnostic_and_schedule_terms": "unchanged from the original signed plan",
+    "no_new_panel_or_truth_access": true
+  },
+  "required_reviewers": [
+    "root",
+    "Agent1"
+  ],
+  "next_action": "Obtain joint countersignature before implementing or executing any r2 preparation."
+}
