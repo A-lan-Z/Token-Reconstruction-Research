@@ -1146,9 +1146,10 @@ def _validate_output_payload_header(path: Path, *, rows: int, geometry: BankGeom
 
 
 def _input_snapshot_bindings(input_manifest: InputManifest, plan_record: Mapping[str, Any]) -> dict[str, Any]:
+    input_schema = str(input_manifest.manifest.get("input_source_schema", input_manifest.manifest.get("schema", INPUT_MANIFEST_SCHEMA)))
     bindings: dict[str, Any] = {
         "stage1_input_manifest": {
-            "schema": INPUT_MANIFEST_SCHEMA,
+            "schema": input_schema,
             "file": dict(input_manifest.verified_file_record or _source_record(input_manifest.path, label="STAGE1 input manifest")),
         },
         "stage1_plan": {
