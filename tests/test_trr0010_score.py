@@ -399,3 +399,35 @@ def test_token_relative_reduction_uses_point_only_and_unknown_cost_blocks_pass()
     low_result = score._decision_readout(contrasts, low_remaining, gap)
     low_row = low_result["directional"]["by_cell"][gate.CELL_ORDER[0]]
     assert low_row["metric_routes"]["token"]["scientific_status"] == "FAIL"
+
+
+def test_every_metric_route_requires_both_harm_safeguards() -> None:
+    exact_harm_failure = _decision_contrast(exact_harm_lower=-0.04)
+    result = score._absolute_route_check(exact_harm_failure)
+    assert result["safeguards"]["exact_harm_safeguard"]["status"] == "FAIL"
+    assert result["token"]["status"] == "FAIL"
+    assert result["exact"]["status"] == "FAIL"
+
+    token_harm_failure = _decision_contrast(token_harm_lower=-0.01)
+    result = score._absolute_route_check(token_harm_failure)
+    assert result["safeguards"]["token_harm_safeguard"]["status"] == "FAIL"
+    assert result["token"]["status"] == "FAIL"
+    assert result["exact"]["status"] == "FAIL"
+
+
+def test_by_domain_keeps_token_and_exact_statuses_separate() -> None:
+    contrasts, remaining, gap = _decision_inputs()
+    pile_cells = list(gate.CELL_ORDER[:2])
+    for contrast_name in ("directional_expanded", "directional_robustness"):
+        # First target has a token win but exact floor failure.
+        contrasts[contrast_name][pile_cells[0]] = _decision_contrast(exact_point=0.01, exact_lower=-0.01)
+        # Second target has an exact win but token floor/LCB failure.
+        contrasts[contrast_name][pile_cells[1]] = _decision_contrast(token_point=-0.01, token_lower=-0.02)
+
+    result = score._decision_readout(contrasts, remaining, gap)
+    domain = result["directional"]["by_domain"]["pile"]
+    assert domain["status"] == "SEPARATE_METRIC_ROUTES"
+    assert domain["metric_routes"]["token"]["scientific_status"] == "FAIL"
+    assert domain["metric_routes"]["exact"]["scientific_status"] == "FAIL"
+    # Planner-owned cost is still UNKNOWN; no domain-level useful PASS exists.
+    assert domain["effective_status"] == "UNKNOWN"

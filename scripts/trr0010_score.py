@@ -993,15 +993,25 @@ def _absolute_route_check(contrast: Mapping[str, Any]) -> dict[str, Any]:
     """Compute independent token and exact absolute-route predicates."""
     token = contrast["token"]
     exact = contrast["exact"]
+    safeguards = {
+        "token_harm_safeguard": _check_interval(
+            token["harm"], lambda value: value >= PRACTICAL_THRESHOLDS["harm_token_lower"]
+        ),
+        "exact_harm_safeguard": _check_interval(
+            exact["harm"], lambda value: value >= PRACTICAL_THRESHOLDS["harm_exact_lower"]
+        ),
+    }
+    # Both non-harm safeguards apply to every useful metric route. A token
+    # route cannot win while exact harm is unbounded, and vice versa.
     token_components = {
         "point_floor": _token_point_floor_check(token),
         "positive_lower": _check_interval(token["benefit"], lambda value: value > 0.0),
-        "harm_safeguard": _check_interval(token["harm"], lambda value: value >= PRACTICAL_THRESHOLDS["harm_token_lower"]),
+        **safeguards,
     }
     exact_components = {
         "point_floor": _point_floor_check(exact, threshold=PRACTICAL_THRESHOLDS["exact_point_floor"], field="exact"),
         "positive_lower": _check_interval(exact["benefit"], lambda value: value > 0.0),
-        "harm_safeguard": _check_interval(exact["harm"], lambda value: value >= PRACTICAL_THRESHOLDS["harm_exact_lower"]),
+        **safeguards,
     }
     token_route = {
         "status": _metric_route_status(list(token_components.values())),
@@ -1014,7 +1024,9 @@ def _absolute_route_check(contrast: Mapping[str, Any]) -> dict[str, Any]:
     return {
         "token": token_route,
         "exact": exact_route,
-        # Token and exact are alternatives; a route must never require both.
+        "safeguards": safeguards,
+        # Token and exact are alternatives; a route must never require both,
+        # while both non-harm safeguards remain mandatory for either route.
         "status": _combine_alternative_statuses([token_route, exact_route]),
         "metric_routes_separate": True,
     }
@@ -1181,8 +1193,21 @@ def _decision_readout(
         result: dict[str, Any] = {}
         for domain in DOMAIN_ORDER:
             selected = [row for cell, row in rows.items() if DOMAIN_BY_CELL[cell] == domain]
+            metric_routes: dict[str, Any] = {}
+            for metric in ("token", "exact"):
+                metric_rows = [row["metric_routes"][metric] for row in selected]
+                metric_routes[metric] = {
+                    "scientific_status": _combine_statuses(
+                        [{"status": row.get("scientific_status", row.get("status"))} for row in metric_rows]
+                    ),
+                    "status": _combine_statuses(metric_rows),
+                }
             result[domain] = {
-                "status": _combine_statuses(selected),
+                # Deliberately do not OR token and exact outcomes across target
+                # cells into a single useful metric claim.
+                "status": "SEPARATE_METRIC_ROUTES",
+                "effective_status": "UNKNOWN" if cost_gate.get("status") != "PASS" else "SEPARATE_METRIC_ROUTES",
+                "metric_routes": metric_routes,
                 "target_cells": [cell for cell in rows if DOMAIN_BY_CELL[cell] == domain],
             }
         return result
