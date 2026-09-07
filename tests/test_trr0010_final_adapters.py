@@ -8,6 +8,9 @@ from collections.abc import Mapping
 from pathlib import Path
 
 import pytest
+import torch
+from safetensors import safe_open
+from safetensors.torch import save_file
 
 from scripts import trr0010_eval_capture as capture
 from scripts import trr0010_eval_gate as gate
@@ -220,7 +223,7 @@ def test_register_rejects_native_union_without_exact_frozen_b1_source(tmp_path: 
         register._load_selection(selection_path, root=tmp_path, final_b1=final_record)
 
 
-def _producer_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
+def _producer_fixture(tmp_path: Path, *, hidden_size: int = 2) -> tuple[Path, Path, Path]:
     selection_path = _selection(tmp_path, count=128)
     bridge = tmp_path / "producer" / "selection.json"
     bridge_record = capture.write_producer_selection_bridge(selection_path=selection_path, output_path=bridge, repository_root=tmp_path)
@@ -231,9 +234,34 @@ def _producer_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
     cells = []
     for cell_id in gate.CELL_ORDER:
         path = producer / f"{cell_id}.safetensors"
-        path.write_bytes(cell_id.encode())
+        domain = cell_id.split("__", 1)[0]
+        digest = digests[domain]
+        shape = [128, 128, hidden_size]
+        tensors = {
+            "activations": torch.arange(128 * 128 * hidden_size, dtype=torch.float32).reshape(shape).to(torch.bfloat16),
+            "attention_mask": torch.ones((128, 128), dtype=torch.uint8),
+            "position_ids": torch.arange(128, dtype=torch.int64).repeat(128, 1),
+        }
+        save_file(
+            tensors,
+            str(path),
+            metadata={
+                "schema": "token-reconstruction.trr0009-public-observation.v1",
+                "task_id": "TRR-0009",
+                "cell_id": cell_id,
+                "records": "128",
+                "shape": json.dumps(shape),
+                "record_ids_sha256": digest,
+                "truth_opened": "false",
+                "source_text_written": "false",
+                "token_ids_written": "false",
+                "target_labels_loaded": "false",
+                "capture_batch_records": "8",
+                "capture_sequence_tokens": "192",
+            },
+        )
         observation_descriptor = _record(path, tmp_path)
-        observation_descriptor.update({"shape": [128, 128, 2048], "stored_sequence_tokens": 128, "capture_sequence_tokens": 192, "capture_batch_records": 8})
+        observation_descriptor.update({"shape": shape, "stored_sequence_tokens": 128, "capture_sequence_tokens": 192, "capture_batch_records": 8})
         cells.append({
             "cell_id": cell_id,
             "records": 128,
@@ -357,8 +385,9 @@ def test_capture_bridge_passes_reviewed_scope_and_preserves_producer_chain(
     assert failure["exception_chain"][-1]["message"] == "underlying producer path failure"
 
 
-def test_capture_repackages_trr9_metadata_under_trr10_schema(tmp_path: Path) -> None:
-    selection_path, producer, bridge = _producer_fixture(tmp_path)
+def test_capture_repackages_trr9_metadata_under_trr10_schema(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(gate, "OBSERVATION_HIDDEN_SIZE", 2)
+    selection_path, producer, bridge = _producer_fixture(tmp_path, hidden_size=2)
     result = capture.repackage_trr0009_capture(
         selection_path=selection_path,
         producer_root=producer,
@@ -370,11 +399,21 @@ def test_capture_repackages_trr9_metadata_under_trr10_schema(tmp_path: Path) -> 
     payload = json.loads(Path(result["capture"]["path"]).read_text())
     assert payload["task_id"] == "TRR-0010"
     assert payload["geometry"]["capture_batch_records"] == 8
+    assert payload["geometry"]["batch_records"] == 8
+    assert payload["geometry"]["sequence_tokens"] == 192
+    assert payload["geometry"]["vocabulary_size"] == gate.VOCABULARY_SIZE
     assert payload["truth_opened"] is False
+    assert result["tensor_port"]["status"] == "PASS_EXACT_VALUES_KEYS_SHAPES_DTYPES"
+    port_path = Path(result["observation_manifest"]["path"]).parent / "observations" / "pile__public_base.safetensors"
+    with safe_open(str(port_path), framework="pt", device="cpu") as handle:
+        assert handle.metadata()["schema"] == gate.OBSERVATION_SCHEMA
+        assert handle.metadata()["task_id"] == gate.TASK_ID
+        assert set(handle.keys()) == gate.OBSERVATION_KEYS
 
 
-def test_capture_accepts_native_source_pairing_digest_schema(tmp_path: Path) -> None:
-    selection_path, producer, bridge = _producer_fixture(tmp_path)
+def test_capture_accepts_native_source_pairing_digest_schema(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(gate, "OBSERVATION_HIDDEN_SIZE", 2)
+    selection_path, producer, bridge = _producer_fixture(tmp_path, hidden_size=2)
     observations_path = producer / "observations.json"
     observations = json.loads(observations_path.read_text(encoding="utf-8"))
     digests = observations.pop("record_ids_sha256")
@@ -411,8 +450,9 @@ def test_capture_accepts_native_source_pairing_digest_schema(tmp_path: Path) -> 
     assert repacked["source_pairing"]["record_ids_sha256"] == digests
 
 
-def test_capture_rejects_changed_producer_observation_payload(tmp_path: Path) -> None:
-    selection_path, producer, bridge = _producer_fixture(tmp_path)
+def test_capture_rejects_changed_producer_observation_payload(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(gate, "OBSERVATION_HIDDEN_SIZE", 2)
+    selection_path, producer, bridge = _producer_fixture(tmp_path, hidden_size=2)
     changed = producer / "finance__public_base.safetensors"
     changed.write_bytes(changed.read_bytes() + b"changed")
     with pytest.raises(capture.CaptureAdapterError, match="descriptor changed"):

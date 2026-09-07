@@ -19,6 +19,10 @@ import subprocess
 import sys
 from typing import Any
 
+from safetensors import safe_open
+from safetensors.torch import save_file
+import torch
+
 _ROOT = Path(__file__).resolve().parents[1]
 for _path in (_ROOT, _ROOT / "src"):
     if str(_path) not in sys.path:
@@ -114,6 +118,82 @@ def _write_create_only(path: Path, payload: Mapping[str, Any], *, root: Path, de
     except (OSError, TypeError, ValueError) as exc:
         raise CaptureAdapterError(f"could not write {description}") from exc
     return _record(path, root=root, description=description)
+
+
+def _port_observation_tensor(
+    *,
+    source_path: Path,
+    output_path: Path,
+    metadata: Mapping[str, str],
+    expected_shape: Sequence[int],
+    root: Path,
+    description: str,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Copy a producer observation while replacing only its file metadata.
+
+    The trusted TRR-0009 producer writes valid public tensors with TRR-0009
+    headers. TRR-0010's unchanged gate intentionally requires its own task
+    schema/task identity in every tensor header, so the bridge must create a
+    new file. Tensor keys, shapes, dtypes, and every tensor value are checked
+    before the port is accepted; the native source descriptor remains bound
+    in the output manifest for provenance.
+    """
+    source_path = Path(source_path).expanduser().resolve()
+    output_path = Path(output_path).expanduser().resolve()
+    if output_path.exists() or output_path.is_symlink():
+        raise CaptureAdapterError(f"{description} output is create-only: {output_path}")
+    try:
+        with safe_open(str(source_path), framework="pt", device="cpu") as handle:
+            keys = set(handle.keys())
+            if keys != gate.OBSERVATION_KEYS:
+                raise CaptureAdapterError(f"{description} tensor keys changed: {sorted(keys)}")
+            source_tensors = {key: handle.get_tensor(key) for key in sorted(keys)}
+            expected_headers = {
+                "activations": (list(expected_shape), torch.bfloat16),
+                "attention_mask": ([int(expected_shape[0]), int(expected_shape[1])], torch.uint8),
+                "position_ids": ([int(expected_shape[0]), int(expected_shape[1])], torch.int64),
+            }
+            for key, (shape, dtype) in expected_headers.items():
+                tensor = source_tensors[key]
+                if list(tensor.shape) != shape or tensor.dtype != dtype:
+                    raise CaptureAdapterError(
+                        f"{description} tensor header changed: {key} "
+                        f"shape={list(tensor.shape)!r} dtype={tensor.dtype!s}"
+                    )
+            source_metadata = dict(handle.metadata() or {})
+    except CaptureAdapterError:
+        raise
+    except Exception as exc:
+        raise CaptureAdapterError(f"{description} source tensor is unreadable") from exc
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        save_file(source_tensors, str(output_path), metadata=dict(metadata))
+    except Exception as exc:
+        raise CaptureAdapterError(f"{description} could not write TRR-0010 tensor port") from exc
+
+    try:
+        with safe_open(str(output_path), framework="pt", device="cpu") as handle:
+            if set(handle.keys()) != set(source_tensors):
+                raise CaptureAdapterError(f"{description} output tensor keys changed")
+            for key, source_tensor in source_tensors.items():
+                output_tensor = handle.get_tensor(key)
+                if list(output_tensor.shape) != list(source_tensor.shape) or output_tensor.dtype != source_tensor.dtype:
+                    raise CaptureAdapterError(f"{description} output tensor header changed: {key}")
+                if not torch.equal(output_tensor, source_tensor):
+                    raise CaptureAdapterError(f"{description} output tensor values changed: {key}")
+            output_metadata = dict(handle.metadata() or {})
+    except CaptureAdapterError:
+        raise
+    except Exception as exc:
+        raise CaptureAdapterError(f"{description} output tensor is unreadable") from exc
+
+    expected_metadata = {str(key): str(value) for key, value in metadata.items()}
+    if output_metadata != expected_metadata:
+        raise CaptureAdapterError(f"{description} output metadata changed")
+    native_record = _record(source_path, root=root, description=f"{description} native source")
+    port_record = _record(output_path, root=root, description=f"{description} TRR-0010 port")
+    return native_record, port_record
 
 
 def _truth_free(payload: Mapping[str, Any], *, description: str) -> None:
@@ -301,26 +381,111 @@ def _validate_producer_receipts(*, producer_root: Path, producer_selection_recor
 
 
 def repackage_trr0009_capture(*, selection_path: Path, producer_root: Path, output_root: Path, repository_root: Path, producer_selection_path: Path, selection_binding_path: Path | None = None, design_path: Path | None = None) -> dict[str, Any]:
-    """Repackage completed TRR9 producer metadata into TRR10 schemas."""
+    """Port completed TRR9 producer outputs into immutable TRR10 artifacts.
+
+    The producer's four safetensors files are copied under ``output_root``
+    with TRR10 metadata headers.  The tensor keys, shapes, dtypes, and values
+    are checked exactly during each copy; native descriptors remain in the
+    manifest so the port cannot silently rebind captured inputs.
+    """
     root = _root(repository_root)
-    selection, selection_record, _rows, _counts = selector.load_selection(selection_path, repository_root=root, expected_counts=gate.RECORDS_BY_DOMAIN)
+    selection, selection_record, _rows, _counts = selector.load_selection(
+        selection_path, repository_root=root, expected_counts=gate.RECORDS_BY_DOMAIN
+    )
     bridge_record = _record(producer_selection_path, root=root, description="TRR9 producer selection bridge")
     if selection_binding_path is not None:
         if design_path is None:
             raise CaptureAdapterError("design_path is required when preparing a selection binding")
-        selection_binding_record = register.prepare_selection_binding(repository_root=root, design_path=design_path, selection_path=selection_path, selection_binding_path=selection_binding_path)
+        selection_binding_record = register.prepare_selection_binding(
+            repository_root=root,
+            design_path=design_path,
+            selection_path=selection_path,
+            selection_binding_path=selection_binding_path,
+        )
     else:
         selection_binding_record = selection_record
-    observation_record, observation, panel_record, panel, capture_record, capture = _validate_producer_receipts(producer_root=Path(producer_root).expanduser().resolve(), producer_selection_record=bridge_record, selection=selection, selection_record=selection_record, root=root)
+    observation_record, observation, panel_record, panel, capture_record, capture = _validate_producer_receipts(
+        producer_root=Path(producer_root).expanduser().resolve(),
+        producer_selection_record=bridge_record,
+        selection=selection,
+        selection_record=selection_record,
+        root=root,
+    )
     cells_raw = observation.get("cells")
-    cells = {str(row.get("cell_id")): row for row in cells_raw if isinstance(row, Mapping)} if isinstance(cells_raw, Sequence) and not isinstance(cells_raw, (str, bytes, bytearray)) else {str(key): value for key, value in cells_raw.items()}
-    repack_cells = []
+    cells = (
+        {str(row.get("cell_id")): row for row in cells_raw if isinstance(row, Mapping)}
+        if isinstance(cells_raw, Sequence) and not isinstance(cells_raw, (str, bytes, bytearray))
+        else {str(key): value for key, value in cells_raw.items()}
+    )
+    output = Path(output_root).expanduser()
+    if not output.is_absolute():
+        output = root / output
+    output = output.resolve()
+    output.mkdir(parents=True, exist_ok=True)
+    port_observation_root = output / "observations"
+    repack_cells: list[dict[str, Any]] = []
+    port_equivalence: list[dict[str, Any]] = []
     for cell_id in gate.CELL_ORDER:
         row = cells[cell_id]
         observation_descriptor = row.get("observation")
         if not isinstance(observation_descriptor, Mapping):
             raise CaptureAdapterError(f"TRR9 observation descriptor is absent: {cell_id}")
-        repack_cells.append({"cell_id": cell_id, "records": gate.RECORDS_PER_CELL, "shape": list(observation_descriptor["shape"]), "record_ids_sha256": str(row["record_ids_sha256"]), "observation": _record(Path(str(observation_descriptor["path"])), root=root, description=f"TRR10 observation {cell_id}")})
+        shape = list(observation_descriptor.get("shape", ()))
+        if shape != [gate.RECORDS_PER_CELL, gate.STORED_SEQUENCE_TOKENS, gate.OBSERVATION_HIDDEN_SIZE]:
+            raise CaptureAdapterError(f"TRR9 observation geometry changed: {cell_id}")
+        domain = cell_id.split("__", 1)[0]
+        record_digest = str(row["record_ids_sha256"])
+        native_path = Path(str(observation_descriptor["path"])).expanduser().resolve()
+        port_path = port_observation_root / f"{cell_id}.safetensors"
+        metadata = {
+            "schema": gate.OBSERVATION_SCHEMA,
+            "task_id": TASK_ID,
+            "cell_id": cell_id,
+            "records": str(gate.RECORDS_PER_CELL),
+            "shape": json.dumps(shape),
+            "record_ids_sha256": record_digest,
+            "truth_opened": "false",
+            "source_text_written": "false",
+            "source_text_loaded": "false",
+            "token_ids_written": "false",
+            "target_labels_loaded": "false",
+            "capture_batch_records": "8",
+            "capture_sequence_tokens": "192",
+            "selection_plan_sha256": str(selection_binding_record["sha256"]),
+        }
+        native_tensor_record, port_tensor_record = _port_observation_tensor(
+            source_path=native_path,
+            output_path=port_path,
+            metadata=metadata,
+            expected_shape=shape,
+            root=root,
+            description=f"TRR9 observation tensor {cell_id}",
+        )
+        if native_tensor_record != {
+            key: observation_descriptor[key] for key in ("path", "bytes", "sha256")
+        }:
+            raise CaptureAdapterError(f"TRR9 observation descriptor changed during port: {cell_id}")
+        repack_cells.append({
+            "cell_id": cell_id,
+            "records": gate.RECORDS_PER_CELL,
+            "shape": shape,
+            "record_ids_sha256": record_digest,
+            "observation": port_tensor_record,
+            "native_observation": native_tensor_record,
+            "tensor_port": {
+                "status": "PASS_EXACT_VALUES_KEYS_SHAPES_DTYPES",
+                "native": native_tensor_record,
+                "ported": port_tensor_record,
+            },
+        })
+        port_equivalence.append({
+            "cell_id": cell_id,
+            "native": native_tensor_record,
+            "ported": port_tensor_record,
+            "keys": sorted(gate.OBSERVATION_KEYS),
+            "shape": shape,
+            "values_exact": True,
+        })
     observation_payload = {
         "schema": OBSERVATION_SCHEMA,
         "task_id": TASK_ID,
@@ -330,7 +495,21 @@ def repackage_trr0009_capture(*, selection_path: Path, producer_root: Path, outp
         "record_ids_sha256": dict(observation["record_ids_sha256"]),
         "cells": repack_cells,
         "selection_plan": dict(selection_binding_record),
-        "producer": {"task_id": TRR9_TASK_ID, "observation_manifest": observation_record, "selection_bridge": bridge_record},
+        "producer": {
+            "task_id": TRR9_TASK_ID,
+            "observation_manifest": observation_record,
+            "selection_bridge": bridge_record,
+            "native_tensor_payloads_preserved": True,
+            "port_schema": gate.OBSERVATION_SCHEMA,
+        },
+        "native_observation_port": {
+            "status": "PASS_EXACT_TENSOR_PAYLOAD_NO_TRUTH",
+            "source_schema": trr9_capture.contract.OBSERVATION_SCHEMA,
+            "source_task_id": TRR9_TASK_ID,
+            "ported_schema": gate.OBSERVATION_SCHEMA,
+            "ported_task_id": TASK_ID,
+            "cells": port_equivalence,
+        },
         "sequence_tokens_including_bos": gate.STORED_SEQUENCE_TOKENS,
         "scored_post_bos_tokens": gate.SCORED_POST_BOS_TOKENS,
         "capture_batch_records": 8,
@@ -338,14 +517,13 @@ def repackage_trr0009_capture(*, selection_path: Path, producer_root: Path, outp
         "hidden_size": gate.OBSERVATION_HIDDEN_SIZE,
         "source_pairing": {"same_record_ids_across_targets": True, "record_ids_sha256": dict(observation["record_ids_sha256"])},
         "public_material_only": True,
-        "source_text_loaded": False, "source_text_written": False, "token_ids_written": False,
-        "target_labels_loaded": False, "candidate_arrays_persisted": False, "truth_opened": False,
+        "source_text_loaded": False,
+        "source_text_written": False,
+        "token_ids_written": False,
+        "target_labels_loaded": False,
+        "candidate_arrays_persisted": False,
+        "truth_opened": False,
     }
-    output = Path(output_root).expanduser()
-    if not output.is_absolute():
-        output = root / output
-    output = output.resolve()
-    output.mkdir(parents=True, exist_ok=True)
     observation_out = _write_create_only(output / "observations.json", observation_payload, root=root, description="TRR10 observation manifest")
     panel_payload = {
         "schema": PANEL_SCHEMA,
@@ -360,6 +538,7 @@ def repackage_trr0009_capture(*, selection_path: Path, producer_root: Path, outp
         "producer": {"task_id": TRR9_TASK_ID, "panel": panel_record},
         "same_sources_across_targets": True,
         "public_material_only": True,
+        "native_observation_port": {"status": "PASS_EXACT_TENSOR_PAYLOAD_NO_TRUTH", "manifest": dict(observation_out)},
         "truth_opened": False,
     }
     panel_out = _write_create_only(output / "panel.json", panel_payload, root=root, description="TRR10 source panel")
@@ -371,14 +550,46 @@ def repackage_trr0009_capture(*, selection_path: Path, producer_root: Path, outp
         "selection_plan": dict(selection_binding_record),
         "observations": dict(observation_out),
         "panel": dict(panel_out),
-        "geometry": {"capture_batch_records": 8, "capture_sequence_tokens": 192, "stored_sequence_tokens": 128, "scored_post_bos_tokens": 127, "hidden_size": gate.OBSERVATION_HIDDEN_SIZE, "cells": len(gate.CELL_ORDER), "retain_first_128": True},
+        "geometry": {
+            "batch_records": 8,
+            "sequence_tokens": 192,
+            "stored_sequence_tokens": 128,
+            "vocabulary_size": gate.VOCABULARY_SIZE,
+            "capture_batch_records": 8,
+            "capture_sequence_tokens": 192,
+            "scored_post_bos_tokens": 127,
+            "hidden_size": gate.OBSERVATION_HIDDEN_SIZE,
+            "cells": len(gate.CELL_ORDER),
+            "retain_first_128": True,
+        },
         "producer": {"task_id": TRR9_TASK_ID, "capture": capture_record, "selection_bridge": bridge_record},
-        "execution": {"adapter": "TRR10 producer-to-schema repackager", "producer_semantics": "public full forward B8x192; retain first 128 positions", "source_text_written": False, "token_ids_written": False, "target_labels_loaded": False, "truth_opened": False},
-        "source_text_loaded": False, "source_text_written": False, "token_ids_written": False,
-        "target_labels_loaded": False, "candidate_arrays_persisted": False, "truth_opened": False,
+        "execution": {
+            "adapter": "TRR10 producer-to-schema tensor port",
+            "producer_semantics": "public full forward B8x192; retain first 128 positions",
+            "tensor_port": "exact tensor keys/shapes/dtypes/values; TRR10 metadata headers",
+            "source_text_written": False,
+            "token_ids_written": False,
+            "target_labels_loaded": False,
+            "truth_opened": False,
+        },
+        "source_text_loaded": False,
+        "source_text_written": False,
+        "token_ids_written": False,
+        "target_labels_loaded": False,
+        "candidate_arrays_persisted": False,
+        "truth_opened": False,
     }
     capture_out = _write_create_only(output / "capture.json", capture_payload, root=root, description="TRR10 capture receipt")
-    return {"task_id": TASK_ID, "status": CAPTURE_STATUS, "observation_manifest": observation_out, "panel": panel_out, "capture": capture_out, "producer": {"observation": observation_record, "panel": panel_record, "capture": capture_record, "selection_bridge": bridge_record}, "truth_opened": False}
+    return {
+        "task_id": TASK_ID,
+        "status": CAPTURE_STATUS,
+        "observation_manifest": observation_out,
+        "panel": panel_out,
+        "capture": capture_out,
+        "producer": {"observation": observation_record, "panel": panel_record, "capture": capture_record, "selection_bridge": bridge_record},
+        "tensor_port": {"status": "PASS_EXACT_VALUES_KEYS_SHAPES_DTYPES", "cells": port_equivalence},
+        "truth_opened": False,
+    }
 
 
 def capture_public(args: argparse.Namespace) -> dict[str, Any]:
