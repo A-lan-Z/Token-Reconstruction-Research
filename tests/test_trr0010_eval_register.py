@@ -99,3 +99,94 @@ def test_frequency_reference_binding_rejects_missing_bank(tmp_path: Path) -> Non
             frequency_reference_path=frequency_path,
             frequency_reference_paths=None,
         )
+
+
+def _truth_descriptor_fixture(tmp_path: Path) -> tuple[Path, dict]:
+    def record(name: str) -> dict:
+        path = tmp_path / name
+        path.write_bytes(name.encode('utf-8'))
+        return gate.file_record(path, root=tmp_path)
+
+    registration = record('registration.json')
+    run_manifest = record('run_manifest.json')
+    contract = record('contract.json')
+    inputs = {
+        name: record(f'{name}.json')
+        for name in (
+            'source_selection',
+            'panel',
+            'public_observations',
+            'capture',
+            'frequency_reference_B0',
+            'frequency_reference_B1',
+        )
+    }
+    digests = {'pile': 'a' * 64, 'finance': 'b' * 64}
+    observations = {
+        cell: {'records': gate.RECORDS_PER_CELL, 'record_ids_sha256': digests[cell.split('__', 1)[0]]}
+        for cell in gate.CELL_ORDER
+    }
+    freeze = {
+        'truth_opened': False,
+        'registration': registration,
+        'run_manifest': run_manifest,
+        'contract_binding': contract,
+        'input_bindings': inputs,
+        'observation_bindings': observations,
+    }
+    descriptor = {
+        'schema': register.TRUTH_BINDING_SCHEMA,
+        'task_id': gate.TASK_ID,
+        'status': register.TRUTH_BINDING_STATUS,
+        'truth_opened': False,
+        'prepared_after_public_freeze': True,
+        'registration': registration,
+        'run_manifest': run_manifest,
+        'contract_binding': contract,
+        'input_bindings': inputs,
+        'records_by_domain': dict(gate.RECORDS_BY_DOMAIN),
+        'cell_order': list(gate.CELL_ORDER),
+        'target_conditions': list(gate.TARGET_ORDER),
+        'labels_shared_across_target_conditions': True,
+        'truth_shape': [gate.RECORDS_PER_CELL, gate.STORED_SEQUENCE_TOKENS],
+        'truth_tensor_keys': [f'{cell}__token_ids' for cell in gate.CELL_ORDER],
+        'cells': [
+            {
+                'cell_id': cell,
+                'records': gate.RECORDS_PER_CELL,
+                'record_ids_sha256': digests[cell.split('__', 1)[0]],
+            }
+            for cell in gate.CELL_ORDER
+        ],
+        'truth_payload': {
+            'path': str(tmp_path / 'sealed-truth.safetensors'),
+            'bytes': 123,
+            'sha256': 'c' * 64,
+        },
+    }
+    descriptor_path = _write(tmp_path / 'truth_descriptor.json', descriptor)
+    return descriptor_path, freeze
+
+
+def test_truth_descriptor_validates_public_order_without_opening_payload(tmp_path: Path) -> None:
+    descriptor_path, freeze = _truth_descriptor_fixture(tmp_path)
+    checked = register.validate_truth_descriptor(
+        descriptor_path,
+        repository_root=tmp_path,
+        freeze=freeze,
+    )
+    assert checked['truth_payload']['sha256'] == 'c' * 64
+    assert checked['cells'][0]['cell_id'] == gate.CELL_ORDER[0]
+
+
+def test_truth_descriptor_rejects_swapped_source_order_before_payload(tmp_path: Path) -> None:
+    descriptor_path, freeze = _truth_descriptor_fixture(tmp_path)
+    descriptor = json.loads(descriptor_path.read_text(encoding='utf-8'))
+    descriptor['cells'][0]['record_ids_sha256'] = 'd' * 64
+    descriptor_path.write_text(json.dumps(descriptor, sort_keys=True) + '\n', encoding='utf-8')
+    with pytest.raises(register.RegisterError, match='source order'):
+        register.validate_truth_descriptor(
+            descriptor_path,
+            repository_root=tmp_path,
+            freeze=freeze,
+        )

@@ -36,6 +36,8 @@ OBSERVATION_MANIFEST_SCHEMA = "token-reconstruction.trr0010-public-observation-m
 OBSERVATION_MANIFEST_STATUS = "FROZEN_TRR0010_PUBLIC_OBSERVATIONS_NO_TRUTH"
 CAPTURE_SCHEMA = "token-reconstruction.trr0010-public-capture.v1"
 CAPTURE_STATUS = "PUBLIC_OBSERVATIONS_CAPTURE_COMPLETE_NO_TRUTH"
+TRUTH_BINDING_SCHEMA = "token-reconstruction.trr0010-truth-binding.v1"
+TRUTH_BINDING_STATUS = "TRR0010_TRUTH_PREPARED_AFTER_PUBLIC_FREEZE"
 REGISTRATION_OUTPUT_ROOT = Path("experiments/TRR-0010/evaluation")
 SELECTION_BINDING_DEFAULT = Path("experiments/TRR-0010/evaluation/source_selection_binding.json")
 REGISTRATION_DEFAULT = Path("experiments/TRR-0010/evaluation/registration.json")
@@ -459,6 +461,121 @@ def _panel(
     if dict(record_ids) != dict(panel.get("observation_record_ids_sha256", record_ids)):
         raise RegisterError("source panel record-order metadata is inconsistent")
     return panel_record, panel
+
+
+def _truth_payload_record(value: Any, *, description: str) -> dict[str, Any]:
+    """Validate a sealed truth-payload record without touching its path."""
+    if not isinstance(value, Mapping):
+        raise RegisterError(f"{description} binding is absent")
+    path = value.get("path")
+    size = value.get("bytes")
+    digest = value.get("sha256")
+    if not isinstance(path, str) or not path or not isinstance(size, int) or size < 0:
+        raise RegisterError(f"{description} binding is malformed")
+    if not isinstance(digest, str) or len(digest) != 64 or any(char not in "0123456789abcdef" for char in digest):
+        raise RegisterError(f"{description} hash is malformed")
+    return {"path": path, "bytes": size, "sha256": digest}
+
+
+def validate_truth_descriptor(
+    descriptor_path: Path,
+    *,
+    repository_root: Path,
+    freeze: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Validate the TRR-0010 truth header before a truth loader is called.
+
+    This mirrors TRR-0009's metadata-only truth-header boundary. It checks the
+    frozen registration and public input records, the four-cell order and
+    source-record digests, both frequency-bank records, and the curator's
+    sealed payload hash/geometry. The private payload path is intentionally
+    not opened or rehashed here; the caller may pass the returned descriptor
+    to the sole truth-opening step after this function returns.
+    """
+    root = _root(repository_root)
+    descriptor_record, descriptor = _json(
+        Path(descriptor_path), root=root, description="TRR-0010 truth descriptor"
+    )
+    _truth_free(descriptor, description="TRR-0010 truth descriptor")
+    if descriptor.get("schema") != TRUTH_BINDING_SCHEMA or descriptor.get("task_id") != gate.TASK_ID:
+        raise RegisterError("truth descriptor schema or task identity changed")
+    if descriptor.get("status") != TRUTH_BINDING_STATUS or descriptor.get("truth_opened") is not False:
+        raise RegisterError("truth descriptor is not closed before truth")
+    if descriptor.get("prepared_after_public_freeze") is not True:
+        raise RegisterError("truth descriptor was not prepared after the public freeze")
+    if not isinstance(freeze, Mapping) or freeze.get("truth_opened") is not False:
+        raise RegisterError("public freeze is absent or already opened truth")
+
+    for key in ("registration", "run_manifest", "contract_binding"):
+        actual = descriptor.get(key)
+        expected = freeze.get(key)
+        if not isinstance(actual, Mapping) or not isinstance(expected, Mapping):
+            raise RegisterError(f"truth descriptor {key} binding is absent")
+        _same_record(actual, expected, description=f"truth descriptor {key}")
+
+    descriptor_inputs = descriptor.get("input_bindings")
+    frozen_inputs = freeze.get("input_bindings")
+    if not isinstance(descriptor_inputs, Mapping) or not isinstance(frozen_inputs, Mapping):
+        raise RegisterError("truth descriptor public input bindings are absent")
+    required_inputs = (
+        "source_selection",
+        "panel",
+        "public_observations",
+        "capture",
+        "frequency_reference_B0",
+        "frequency_reference_B1",
+    )
+    checked_inputs: dict[str, Any] = {}
+    for name in required_inputs:
+        actual = descriptor_inputs.get(name)
+        expected = frozen_inputs.get(name)
+        if not isinstance(actual, Mapping) or not isinstance(expected, Mapping):
+            raise RegisterError(f"truth descriptor input binding is absent: {name}")
+        _same_record(actual, expected, description=f"truth descriptor input {name}")
+        checked_inputs[name] = dict(actual)
+
+    if descriptor.get("records_by_domain") != gate.RECORDS_BY_DOMAIN:
+        raise RegisterError("truth descriptor domain counts changed")
+    if list(descriptor.get("cell_order", ())) != list(gate.CELL_ORDER):
+        raise RegisterError("truth descriptor cell order changed")
+    if list(descriptor.get("target_conditions", ())) != list(gate.TARGET_ORDER):
+        raise RegisterError("truth descriptor target order changed")
+    if descriptor.get("labels_shared_across_target_conditions") is not True:
+        raise RegisterError("truth descriptor target pairing changed")
+    if descriptor.get("truth_shape") != [gate.RECORDS_PER_CELL, gate.STORED_SEQUENCE_TOKENS]:
+        raise RegisterError("truth descriptor tensor geometry changed")
+    expected_keys = [f"{cell}__token_ids" for cell in gate.CELL_ORDER]
+    if list(descriptor.get("truth_tensor_keys", ())) != expected_keys:
+        raise RegisterError("truth descriptor tensor key order changed")
+
+    frozen_observations = freeze.get("observation_bindings")
+    cells = descriptor.get("cells")
+    if not isinstance(frozen_observations, Mapping) or not isinstance(cells, Sequence) or isinstance(cells, (str, bytes, bytearray)):
+        raise RegisterError("truth descriptor cell/order metadata is absent")
+    if [row.get("cell_id") for row in cells if isinstance(row, Mapping)] != list(gate.CELL_ORDER):
+        raise RegisterError("truth descriptor cell metadata order changed")
+    checked_cells: list[dict[str, Any]] = []
+    for row, cell_id in zip(cells, gate.CELL_ORDER):
+        if not isinstance(row, Mapping) or row.get("cell_id") != cell_id:
+            raise RegisterError(f"truth descriptor cell metadata is malformed: {cell_id}")
+        expected_row = frozen_observations.get(cell_id)
+        expected_digest = expected_row.get("record_ids_sha256") if isinstance(expected_row, Mapping) else None
+        if row.get("records") != gate.RECORDS_PER_CELL or row.get("record_ids_sha256") != expected_digest:
+            raise RegisterError(f"truth descriptor source order differs from public observations: {cell_id}")
+        checked_cells.append({
+            "cell_id": cell_id,
+            "records": gate.RECORDS_PER_CELL,
+            "record_ids_sha256": str(row["record_ids_sha256"]),
+        })
+
+    payload = _truth_payload_record(descriptor.get("truth_payload"), description="truth payload")
+    return {
+        "truth_descriptor": descriptor_record,
+        "descriptor": descriptor,
+        "input_bindings": checked_inputs,
+        "cells": checked_cells,
+        "truth_payload": payload,
+    }
 
 
 def _capture(
