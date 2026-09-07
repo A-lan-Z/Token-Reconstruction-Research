@@ -567,6 +567,31 @@ def _interaction_rows(
     return rows
 
 
+def _comparison_rows(comparison: Mapping[str, Any]) -> list[dict[str, Any]]:
+    """Adapt a paired comparison to the common bootstrap-row schema."""
+
+    rows: list[dict[str, Any]] = []
+    for row in comparison.get("per_record", []):
+        if not isinstance(row, Mapping):
+            raise P08MetricsError("comparison contains a malformed source row")
+        rows.append(
+            {
+                "record_id": row["record_id"],
+                "scored_tokens": int(row["scored_tokens"]),
+                "exact_eligible": bool(row["exact_eligible"]),
+                "interaction_token_delta": float(row["token_delta"]),
+                "interaction_exact_delta": (
+                    float(row["left_exact_record"] - row["right_exact_record"])
+                    if row["exact_eligible"]
+                    else None
+                ),
+            }
+        )
+    if not rows:
+        raise P08MetricsError("comparison has no source rows")
+    return rows
+
+
 def _interaction_summary(rows: Sequence[Mapping[str, Any]], *, schedule: np.ndarray | None = None) -> dict[str, Any]:
     if not rows:
         raise P08MetricsError("interaction has no source rows")
@@ -654,6 +679,18 @@ def interaction_from_replicates(
         right_method=INTERACTION_METHODS["positionwise_joint"],
         contrast_id="past_joint_minus_positionwise_joint",
     )
+    past_staging = _replicate_comparison(
+        method_scores,
+        left_method=INTERACTION_METHODS["past_staged"],
+        right_method=INTERACTION_METHODS["past_joint"],
+        contrast_id="past_staged_minus_past_joint",
+    )
+    positionwise_staging = _replicate_comparison(
+        method_scores,
+        left_method=INTERACTION_METHODS["positionwise_staged"],
+        right_method=INTERACTION_METHODS["positionwise_joint"],
+        contrast_id="positionwise_staged_minus_positionwise_joint",
+    )
     rows = _interaction_rows(staged, joint)
     return {
         "task_id": TASK_ID,
@@ -666,6 +703,8 @@ def interaction_from_replicates(
         "pairwise": {
             "past_staged_minus_positionwise_staged": staged,
             "past_joint_minus_positionwise_joint": joint,
+            "past_staged_minus_past_joint": past_staging,
+            "positionwise_staged_minus_positionwise_joint": positionwise_staging,
         },
         "per_record": rows,
     }
@@ -765,6 +804,15 @@ def paired_cluster_bootstrap(
         schedules[domain] = schedule
         digest = _schedule_digest(schedule)
         for cell_id, interaction in interactions:
+            general_bootstrap = {}
+            for contrast_id in (
+                "past_staged_minus_past_joint",
+                "positionwise_staged_minus_positionwise_joint",
+            ):
+                general_rows = _comparison_rows(interaction["pairwise"][contrast_id])
+                general_summary = _interaction_summary(general_rows, schedule=schedule)
+                general_summary.update({"draws": int(draws), "seed": int(seed), "unit": "source-record cluster"})
+                general_bootstrap[contrast_id] = general_summary
             result_cells[cell_id] = {
                 "domain": domain,
                 "target": normalized[cell_id]["target"],
@@ -773,6 +821,7 @@ def paired_cluster_bootstrap(
                 "schedule_sha256": digest,
                 "interaction": interaction,
                 "bootstrap": bootstrap_interaction(interaction, schedule=schedule, seed=seed, draws=draws),
+                "general_staging": general_bootstrap,
             }
     return {
         "schema": "token-reconstruction.trr-p08-paired-bootstrap.v1",
@@ -806,27 +855,59 @@ def _harm_metric(summary: Mapping[str, Any], *, metric: str, margin: float) -> b
     return point is not None and point <= -margin and high is not None and high < 0
 
 
+def _seed_metric_values(
+    seed_interactions: Mapping[str, Sequence[Mapping[str, float | None]]] | None,
+    domain: str,
+) -> tuple[list[float], list[float], bool]:
+    """Validate exactly two finite token/exact seed estimates for one domain."""
+
+    raw = None if seed_interactions is None else seed_interactions.get(domain)
+    if not isinstance(raw, (list, tuple)) or len(raw) != len(REPLICATE_SEEDS):
+        return [], [], False
+    token_values: list[float] = []
+    exact_values: list[float] = []
+    for item in raw:
+        if not isinstance(item, Mapping):
+            return [], [], False
+        token = item.get("token_delta_pp")
+        exact = item.get("exact_delta_pp")
+        if isinstance(token, bool) or isinstance(exact, bool):
+            return [], [], False
+        if not isinstance(token, (int, float, np.integer, np.floating)) or not isinstance(exact, (int, float, np.integer, np.floating)):
+            return [], [], False
+        token_value = float(token)
+        exact_value = float(exact)
+        if not np.isfinite(token_value) or not np.isfinite(exact_value):
+            return [], [], False
+        token_values.append(token_value)
+        exact_values.append(exact_value)
+    return token_values, exact_values, True
+
+
 def classify_interaction_gate(
     domain_summaries: Mapping[str, Mapping[str, Any]],
     *,
-    seed_interactions: Mapping[str, Sequence[float | Mapping[str, float | None] | None]] | None = None,
+    seed_interactions: Mapping[str, Sequence[Mapping[str, float | None]]] | None = None,
     token_margin: float = 0.5,
     exact_margin: float = 5.0,
 ) -> dict[str, Any]:
     """Apply P08 support, ruled-out, then inconclusive gates.
 
-    A seed-direction check is verdict-specific: support rejects a materially
-    negative seed, while ruling out benefit rejects a seed at or above the
-    positive practical margin.  Tiny mixed signs alone do not force the
-    inconclusive label when the practical ruled-out gate is met.
+    The gate fails closed unless both registered seeds provide finite token and
+    exact interaction estimates in every primary domain.  Support requires
+    nonnegative per-seed directions; useful-benefit ruling-out rejects a seed
+    at or above the positive practical margin.  Tiny mixed signs do not force
+    an inconclusive label once a practical gate is actually met.
     """
 
     if set(domain_summaries) != set(DOMAINS):
         raise P08MetricsError(f"gate requires summaries for {DOMAINS}")
-    seed_interactions = seed_interactions or {}
     support_cells: dict[str, bool] = {}
     harm_cells: dict[str, bool] = {}
     ruled_out_cells: dict[str, bool] = {}
+    support_seed_ok: dict[str, bool] = {}
+    ruled_out_seed_ok: dict[str, bool] = {}
+    seed_validation: dict[str, bool] = {}
     for domain, summary in domain_summaries.items():
         token_support = _support_metric(summary, metric="token_delta_pp", margin=token_margin)
         exact_support = _support_metric(summary, metric="exact_delta_pp", margin=exact_margin)
@@ -840,32 +921,10 @@ def classify_interaction_gate(
             and token_ci[1] < token_margin
             and exact_ci[1] < exact_margin
         )
-    support_seed_ok: dict[str, bool] = {}
-    ruled_out_seed_ok: dict[str, bool] = {}
-    for domain in DOMAINS:
-        token_values: list[float] = []
-        exact_values: list[float] = []
-        for raw_value in seed_interactions.get(domain, ()):
-            if raw_value is None:
-                continue
-            if isinstance(raw_value, Mapping):
-                token_value = raw_value.get("token_delta_pp")
-                exact_value = raw_value.get("exact_delta_pp")
-                if token_value is not None:
-                    token_values.append(float(token_value))
-                if exact_value is not None:
-                    exact_values.append(float(exact_value))
-            else:
-                token_values.append(float(raw_value))
-        # Support rejects a materially negative seed in either reported
-        # metric.  Ruling out useful benefit rejects a seed at or above the
-        # positive practical margin in either metric.
-        support_seed_ok[domain] = all(value > -token_margin for value in token_values) and all(
-            value > -exact_margin for value in exact_values
-        )
-        ruled_out_seed_ok[domain] = all(value < token_margin for value in token_values) and all(
-            value < exact_margin for value in exact_values
-        )
+        token_values, exact_values, valid = _seed_metric_values(seed_interactions, domain)
+        seed_validation[domain] = valid
+        support_seed_ok[domain] = valid and all(value >= 0.0 for value in token_values) and all(value >= 0.0 for value in exact_values)
+        ruled_out_seed_ok[domain] = valid and all(value < token_margin for value in token_values) and all(value < exact_margin for value in exact_values)
     support = all(support_cells.values()) and not any(harm_cells.values()) and all(support_seed_ok.values())
     ruled_out = all(ruled_out_cells.values()) and all(ruled_out_seed_ok.values())
     if support:
@@ -882,6 +941,69 @@ def classify_interaction_gate(
         "ruled_out_cells": ruled_out_cells,
         "support_seed_ok": support_seed_ok,
         "ruled_out_seed_ok": ruled_out_seed_ok,
+        "seed_validation": seed_validation,
+        "token_margin_pp": float(token_margin),
+        "exact_margin_pp": float(exact_margin),
+    }
+
+
+def classify_general_staging_gate(
+    domain_summaries: Mapping[str, Mapping[str, Mapping[str, Any]]],
+    *,
+    seed_contrasts: Mapping[str, Mapping[str, Sequence[Mapping[str, float | None]]]] | None = None,
+    token_margin: float = 0.5,
+    exact_margin: float = 5.0,
+) -> dict[str, Any]:
+    """Gate the two visibility-specific staged-minus-joint contrasts."""
+
+    visibility_keys = (
+        "past_staged_minus_past_joint",
+        "positionwise_staged_minus_positionwise_joint",
+    )
+    if set(domain_summaries) != set(DOMAINS):
+        raise P08MetricsError(f"general gate requires summaries for {DOMAINS}")
+    support: dict[str, dict[str, bool]] = {visibility: {} for visibility in visibility_keys}
+    seed_ok: dict[str, dict[str, bool]] = {visibility: {} for visibility in visibility_keys}
+    complete = True
+    for visibility in visibility_keys:
+        for domain in DOMAINS:
+            summary = domain_summaries[domain].get(visibility)
+            if not isinstance(summary, Mapping):
+                support[visibility][domain] = False
+                seed_ok[visibility][domain] = False
+                complete = False
+                continue
+            support[visibility][domain] = _support_metric(summary, metric="token_delta_pp", margin=token_margin) or _support_metric(summary, metric="exact_delta_pp", margin=exact_margin)
+            _, _, valid = _seed_metric_values(None if seed_contrasts is None else seed_contrasts.get(domain), visibility)  # type: ignore[arg-type]
+            seed_ok[visibility][domain] = valid
+            if valid:
+                raw = seed_contrasts[domain][visibility]  # type: ignore[index]
+                seed_ok[visibility][domain] = all(float(item["token_delta_pp"]) >= 0.0 and float(item["exact_delta_pp"]) >= 0.0 for item in raw)
+            else:
+                complete = False
+    benefit = complete and all(all(values.values()) for values in support.values()) and all(all(values.values()) for values in seed_ok.values())
+    any_crossing = False
+    for visibility in visibility_keys:
+        for domain in DOMAINS:
+            summary = domain_summaries[domain].get(visibility, {})
+            token_ci = _ci_pair(summary, "token_delta_pp")
+            exact_ci = _ci_pair(summary, "exact_delta_pp")
+            if token_ci[0] is None or token_ci[1] is None or exact_ci[0] is None or exact_ci[1] is None:
+                any_crossing = True
+            elif token_ci[0] <= 0 < token_margin or exact_ci[0] <= 0 < exact_margin:
+                any_crossing = True
+    if benefit:
+        disposition = "GENERAL_STAGING_BENEFIT_SUPPORT"
+    elif not complete or any_crossing:
+        disposition = "GENERAL_STAGING_INCONCLUSIVE"
+    else:
+        disposition = "NO_REGISTERED_GENERAL_STAGING_BENEFIT"
+    return {
+        "disposition": disposition,
+        "visibility_contrasts": list(visibility_keys),
+        "support_cells": support,
+        "seed_ok": seed_ok,
+        "complete": complete,
         "token_margin_pp": float(token_margin),
         "exact_margin_pp": float(exact_margin),
     }
@@ -899,6 +1021,7 @@ __all__ = [
     "TARGETS",
     "aggregate_replicate_comparisons",
     "bootstrap_interaction",
+    "classify_general_staging_gate",
     "classify_interaction_gate",
     "interaction_from_replicates",
     "make_bootstrap_schedule",

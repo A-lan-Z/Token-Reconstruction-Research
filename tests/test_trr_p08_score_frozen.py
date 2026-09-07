@@ -67,6 +67,11 @@ def test_score_arrays_scores_all_cells_and_keeps_targets_separate() -> None:
     assert result["bootstrap"]["draws"] == 32
     assert result["bootstrap"]["cells"]["pile/public_base"]["schedule_sha256"] == result["bootstrap"]["cells"]["pile/public_lora_2601"]["schedule_sha256"]
     assert result["truth_payload_persisted"] is False
+    assert "general_staging_gate" in result
+    assert set(result["cells"]["pile/public_base"]["general_staging"]) == {
+        "past_staged_minus_past_joint",
+        "positionwise_staged_minus_positionwise_joint",
+    }
 
 
 def test_score_arrays_rejects_missing_arm_before_scoring() -> None:

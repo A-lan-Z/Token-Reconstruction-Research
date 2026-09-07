@@ -9,6 +9,7 @@ from token_reconstruction.trr_p08_metrics import (
     P08MetricsError,
     aggregate_replicate_comparisons,
     bootstrap_interaction,
+    classify_general_staging_gate,
     classify_interaction_gate,
     interaction_from_replicates,
     paired_cluster_bootstrap,
@@ -162,7 +163,10 @@ def test_gate_applies_practical_ruled_out_before_mixed_sign_label() -> None:
     }
     result = classify_interaction_gate(
         summaries,
-        seed_interactions={"pile": (-0.1, 0.1), "finance": (-0.1, 0.1)},
+        seed_interactions={
+            "pile": ({"token_delta_pp": -0.1, "exact_delta_pp": -1.0}, {"token_delta_pp": 0.1, "exact_delta_pp": 1.0}),
+            "finance": ({"token_delta_pp": -0.1, "exact_delta_pp": -1.0}, {"token_delta_pp": 0.1, "exact_delta_pp": 1.0}),
+        },
     )
     assert result["disposition"] == "USEFUL_CONTEXTUAL_BENEFIT_RULED_OUT"
 
@@ -174,7 +178,10 @@ def test_gate_rejects_ruled_out_when_one_seed_reaches_positive_margin() -> None:
     }
     result = classify_interaction_gate(
         summaries,
-        seed_interactions={"pile": (0.5, -0.1), "finance": (0.1, -0.1)},
+        seed_interactions={
+            "pile": ({"token_delta_pp": 0.5, "exact_delta_pp": 1.0}, {"token_delta_pp": -0.1, "exact_delta_pp": -1.0}),
+            "finance": ({"token_delta_pp": 0.1, "exact_delta_pp": 1.0}, {"token_delta_pp": -0.1, "exact_delta_pp": -1.0}),
+        },
     )
     assert result["disposition"] == "INCONCLUSIVE"
     assert result["ruled_out_seed_ok"]["pile"] is False
@@ -187,7 +194,10 @@ def test_gate_rejects_support_when_one_seed_is_materially_negative() -> None:
     }
     result = classify_interaction_gate(
         summaries,
-        seed_interactions={"pile": (-0.5, 1.0), "finance": (1.0, 1.1)},
+        seed_interactions={
+            "pile": ({"token_delta_pp": -0.5, "exact_delta_pp": -1.0}, {"token_delta_pp": 1.0, "exact_delta_pp": 1.0}),
+            "finance": ({"token_delta_pp": 1.0, "exact_delta_pp": 1.0}, {"token_delta_pp": 1.1, "exact_delta_pp": 1.1}),
+        },
     )
     assert result["disposition"] == "INCONCLUSIVE"
     assert result["support_seed_ok"]["pile"] is False
@@ -207,3 +217,47 @@ def test_gate_checks_exact_seed_direction_for_ruled_out_call() -> None:
     )
     assert result["disposition"] == "INCONCLUSIVE"
     assert result["ruled_out_seed_ok"]["pile"] is False
+
+
+def test_interaction_gate_fails_closed_for_missing_or_nonfinite_seed_rows() -> None:
+    summaries = {
+        "pile": _summary((-0.2, 0.2), (-1.0, 4.0)),
+        "finance": _summary((-0.15, 0.25), (-2.0, 4.5)),
+    }
+    missing = classify_interaction_gate(
+        summaries,
+        seed_interactions={"pile": [{"token_delta_pp": 0.0, "exact_delta_pp": 0.0}]},
+    )
+    assert missing["disposition"] == "INCONCLUSIVE"
+    assert missing["seed_validation"] == {"pile": False, "finance": False}
+
+
+def test_general_staging_gate_requires_both_visibility_contrasts() -> None:
+    support = _summary((0.6, 1.2), (6.0, 9.0), token_point=0.9, exact_point=7.0)
+    summaries = {
+        "pile": {
+            "past_staged_minus_past_joint": support,
+            "positionwise_staged_minus_positionwise_joint": support,
+        },
+        "finance": {
+            "past_staged_minus_past_joint": support,
+            "positionwise_staged_minus_positionwise_joint": support,
+        },
+    }
+    seeds = {
+        "pile": {
+            "past_staged_minus_past_joint": [{"token_delta_pp": 0.4, "exact_delta_pp": 5.0}, {"token_delta_pp": 0.5, "exact_delta_pp": 6.0}],
+            "positionwise_staged_minus_positionwise_joint": [{"token_delta_pp": 0.6, "exact_delta_pp": 6.0}, {"token_delta_pp": 0.7, "exact_delta_pp": 7.0}],
+        },
+        "finance": {
+            "past_staged_minus_past_joint": [{"token_delta_pp": 0.4, "exact_delta_pp": 5.0}, {"token_delta_pp": 0.5, "exact_delta_pp": 6.0}],
+            "positionwise_staged_minus_positionwise_joint": [{"token_delta_pp": 0.6, "exact_delta_pp": 6.0}, {"token_delta_pp": 0.7, "exact_delta_pp": 7.0}],
+        },
+    }
+    result = classify_general_staging_gate(summaries, seed_contrasts=seeds)
+    assert result["disposition"] == "GENERAL_STAGING_BENEFIT_SUPPORT"
+    assert result["complete"] is True
+
+    del summaries["finance"]["positionwise_staged_minus_positionwise_joint"]
+    incomplete = classify_general_staging_gate(summaries, seed_contrasts=seeds)
+    assert incomplete["disposition"] == "GENERAL_STAGING_INCONCLUSIVE"

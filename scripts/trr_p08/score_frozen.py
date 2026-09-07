@@ -16,7 +16,7 @@ from typing import Any
 import numpy as np
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-REPO_ROOT = SCRIPT_DIR.parents[2]
+REPO_ROOT = SCRIPT_DIR.parents[1]
 if str(REPO_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "src"))
 
@@ -28,6 +28,7 @@ from token_reconstruction.trr_p08_metrics import (  # noqa: E402
     P08MetricsError,
     REPLICATE_SEEDS,
     TARGETS,
+    classify_general_staging_gate,
     classify_interaction_gate,
     paired_cluster_bootstrap,
     paired_metrics_from_scores,
@@ -82,6 +83,24 @@ def _seed_interaction_points(method_scores: Mapping[str, Mapping[str | int, Mapp
             }
         )
     return values
+
+
+def _seed_general_points(method_scores: Mapping[str, Mapping[str | int, Mapping[str, Any]]]) -> dict[str, list[dict[str, float | None]]]:
+    result: dict[str, list[dict[str, float | None]]] = {}
+    for visibility, staged_method, joint_method in (
+        ("past_staged_minus_past_joint", "p08_past_only_staged", "p08_past_only_joint"),
+        ("positionwise_staged_minus_positionwise_joint", "p08_positionwise_staged", "p08_positionwise_joint"),
+    ):
+        points: list[dict[str, float | None]] = []
+        for seed in REPLICATE_SEEDS:
+            scores = _seed_scores(method_scores, seed)
+            contrast = paired_metrics_from_scores(scores[staged_method], scores[joint_method], contrast_id=visibility)["metrics"]
+            points.append({
+                "token_delta_pp": contrast.get("token_delta_pp"),
+                "exact_delta_pp": contrast.get("exact_delta_pp"),
+            })
+        result[visibility] = points
+    return result
 
 
 def _validate_matrix_cell(cell_id: str, cell: Mapping[str, Any]) -> tuple[str, str, tuple[str, ...], np.ndarray, np.ndarray | None, np.ndarray | None, Mapping[str, Any]]:
@@ -165,6 +184,7 @@ def score_arrays(
             "record_ids": list(ids),
             "scores": score_maps,
             "seed_interaction": _seed_interaction_points(score_maps),
+            "seed_general_staging": _seed_general_points(score_maps),
         }
 
     bootstrap_input = {
@@ -188,6 +208,17 @@ def score_arrays(
         for domain in DOMAINS
     }
     gate = classify_interaction_gate(primary_summaries, seed_interactions=seed_interactions)
+    for cell_id, cell in score_cells.items():
+        cell["general_staging"] = bootstrap["cells"][cell_id]["general_staging"]
+    general_summaries = {
+        domain: bootstrap["cells"][_cell_key(domain, "public_base")]["general_staging"]
+        for domain in DOMAINS
+    }
+    general_seed_contrasts = {
+        domain: score_cells[_cell_key(domain, "public_base")]["seed_general_staging"]
+        for domain in DOMAINS
+    }
+    general_gate = classify_general_staging_gate(general_summaries, seed_contrasts=general_seed_contrasts)
     return {
         "schema": SCORE_SCHEMA,
         "task_id": TASK_ID,
@@ -195,6 +226,7 @@ def score_arrays(
         "cells": score_cells,
         "bootstrap": bootstrap,
         "gate": gate,
+        "general_staging_gate": general_gate,
         "truth_opened": True,
         "truth_payload_persisted": False,
         "claim_scope": "exploratory task-local P08 staged-versus-joint interaction; not a canonical replacement or universal mechanism claim",
