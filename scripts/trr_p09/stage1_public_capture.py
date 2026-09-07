@@ -88,6 +88,13 @@ SIGNED_STAGE1_PLAN_SHA256 = "bca93d6099760791c5ecbf3be8177d250cc672c62b2177a3d72
 SIGNED_STAGE1_PLAN_BYTES = 26127
 COUNTERSIGNATURE_SCHEMA = "token-reconstruction.trr-p09-stage1-plan-countersignature.v1"
 PREPARED_INPUT_SCHEMA = "token-reconstruction.trr-p09-stage1-public-inputs.v1"
+CORRECTION_ADDENDUM_SCHEMA = "token-reconstruction.trr-p09-stage1-correction-addendum.v1"
+CORRECTION_COUNTERSIGNATURE_SCHEMA = "token-reconstruction.trr-p09-stage1-correction-countersignature.v1"
+CORRECTION_ADDENDUM_SHA256 = "0bad461d93041fdb21d284b0ae1684d2268adfb0f9a304f9b97ab4cd39900564"
+CORRECTION_ADDENDUM_BYTES = 6364
+CORRECTION_ADDENDUM_COMMIT = "537ba5c423ed480f6a3046fdff32a4e3b49deef3"
+CORRECTION_COUNTERSIGNATURE_SHA256 = "1b7e8578f9c7786d3be46b210be03ecf84e4a745782cfa05ad73a8128f16e610"
+CORRECTION_COUNTERSIGNATURE_BYTES = 793
 
 _INPUT_KEYS = ("attention_mask", "position_ids", "token_ids")
 _SENSITIVE_KEYS = {
@@ -498,6 +505,102 @@ def _validate_plan_countersignature(
     return dict(raw_plan), {"file": counter_record, "record": counter}
 
 
+def _validate_correction_countersignature(
+    manifest_path: Path,
+    value: Mapping[str, Any],
+    *,
+    require_stage1: bool,
+) -> dict[str, Any] | None:
+    """Bind prepared inputs to the accepted r2 correction metadata.
+
+    The compiler stores the joint correction countersignature in the input
+    manifest. The original plan countersignature alone is insufficient for
+    capture: r1 was explicitly excluded after its B0 identity audit failed.
+    This check is metadata-only and runs before any public model forward.
+    """
+
+    raw_binding = value.get("correction_countersignature")
+    if raw_binding is None:
+        if require_stage1:
+            raise CaptureError("STAGE1 input manifest lacks the accepted correction addendum binding")
+        return None
+    if not isinstance(raw_binding, Mapping) or not isinstance(raw_binding.get("path"), str):
+        raise CaptureError("STAGE1 correction addendum binding is malformed")
+
+    signature_path = _resolve_repo_bound_path(str(raw_binding["path"]), input_path=manifest_path)
+    signature_record = _source_record(signature_path, label="STAGE1 correction countersignature")
+    if signature_record.get("sha256") != CORRECTION_COUNTERSIGNATURE_SHA256 or int(signature_record.get("bytes", -1)) != CORRECTION_COUNTERSIGNATURE_BYTES:
+        raise CaptureError("STAGE1 correction countersignature bytes or hash changed")
+    signature = _load_json(signature_path, label="STAGE1 correction countersignature")
+    if signature.get("schema") != CORRECTION_COUNTERSIGNATURE_SCHEMA or signature.get("task_id") != TASK_ID:
+        raise CaptureError("STAGE1 correction countersignature schema/task identity changed")
+    if signature.get("status") != "JOINT_COUNTERSIGNED_IMPLEMENTATION_AUTHORIZED":
+        raise CaptureError("STAGE1 correction countersignature is not jointly authorized")
+
+    expected_attestation = {
+        "root": "COUNTERSIGNED",
+        "agent1": "COUNTERSIGNED",
+        "original_plan_unchanged": True,
+        "r1_preserved_and_excluded": True,
+        "no_gpu_capture_fit_or_truth_access": True,
+    }
+    attestation = signature.get("attestation")
+    if not isinstance(attestation, Mapping):
+        raise CaptureError("STAGE1 correction countersignature attestation is absent")
+    for key, expected in expected_attestation.items():
+        if attestation.get(key) != expected:
+            raise CaptureError(f"STAGE1 correction attestation differs: {key}")
+
+    addendum = signature.get("addendum")
+    if not isinstance(addendum, Mapping) or not isinstance(addendum.get("path"), str):
+        raise CaptureError("STAGE1 correction countersignature lacks its addendum binding")
+    if addendum.get("sha256") != CORRECTION_ADDENDUM_SHA256 or int(addendum.get("bytes", -1)) != CORRECTION_ADDENDUM_BYTES or addendum.get("commit") != CORRECTION_ADDENDUM_COMMIT:
+        raise CaptureError("STAGE1 correction addendum binding differs")
+    addendum_path = _resolve_repo_bound_path(str(addendum["path"]), input_path=manifest_path)
+    addendum_record = _source_record(addendum_path, label="STAGE1 correction addendum")
+    if addendum_record.get("sha256") != CORRECTION_ADDENDUM_SHA256 or int(addendum_record.get("bytes", -1)) != CORRECTION_ADDENDUM_BYTES:
+        raise CaptureError("STAGE1 correction addendum bytes or hash changed")
+    addendum_value = _load_json(addendum_path, label="STAGE1 correction addendum")
+    if addendum_value.get("schema") != CORRECTION_ADDENDUM_SCHEMA or addendum_value.get("task_id") != TASK_ID:
+        raise CaptureError("STAGE1 correction addendum schema/task identity changed")
+    scope = addendum_value.get("scope")
+    required_scope = {
+        "original_plan_unchanged": True,
+        "r1_artifacts_unchanged": True,
+        "selection_or_capture_executed": False,
+        "model_or_activation_loaded": False,
+        "truth_opened": False,
+        "new_exclusion_binding_required_before_r2": True,
+    }
+    if not isinstance(scope, Mapping) or any(scope.get(key) != expected for key, expected in required_scope.items()):
+        raise CaptureError("STAGE1 correction addendum scope is not the accepted CPU-only correction")
+
+    # The compiler's output binding is checked against the same immutable
+    # records, so a manifest cannot point at a different signature or silently
+    # drop the addendum metadata.
+    for key, expected in {
+        "bytes": CORRECTION_COUNTERSIGNATURE_BYTES,
+        "sha256": CORRECTION_COUNTERSIGNATURE_SHA256,
+        "addendum_bytes": CORRECTION_ADDENDUM_BYTES,
+        "addendum_sha256": CORRECTION_ADDENDUM_SHA256,
+    }.items():
+        if raw_binding.get(key) != expected:
+            raise CaptureError(f"STAGE1 correction manifest binding differs: {key}")
+    raw_addendum_path = raw_binding.get("addendum_path")
+    if not isinstance(raw_addendum_path, str):
+        raise CaptureError("STAGE1 correction manifest lacks the addendum path")
+    bound_raw_addendum = _resolve_repo_bound_path(raw_addendum_path, input_path=manifest_path)
+    if bound_raw_addendum != addendum_path:
+        raise CaptureError("STAGE1 correction manifest points at a different addendum")
+
+    return {
+        "file": signature_record,
+        "record": signature,
+        "addendum_file": addendum_record,
+        "addendum_record": addendum_value,
+    }
+
+
 def _load_prepared_input_manifest(
     path: Path,
     value: Mapping[str, Any],
@@ -517,6 +620,10 @@ def _load_prepared_input_manifest(
     if value.get("status") != "CPU_INPUTS_COMPILED_NO_ACTIVATIONS":
         raise CaptureError("prepared input manifest is not a complete CPU-only input compile")
     _, counter_binding = _validate_plan_countersignature(path, value, require_stage1=True)
+    correction_binding = _validate_correction_countersignature(path, value, require_stage1=True)
+    replacement_audit = value.get("controlled_replacement_audit")
+    if not isinstance(replacement_audit, Mapping) or replacement_audit.get("b0_identity_cycle_matches_signed_recipe") is not True:
+        raise CaptureError("STAGE1 input manifest does not prove the corrected B0 identity cycle")
     boundary = value.get("truth_boundary")
     if not isinstance(boundary, Mapping) or any(bool(boundary.get(key)) for key in ("evaluation_truth_opened", "source_text_persisted", "activations_created")):
         raise CaptureError("prepared input manifest violates the truth-free boundary")
@@ -564,6 +671,15 @@ def _load_prepared_input_manifest(
         counter_file = counter_binding.get("file")
         if isinstance(counter_file, Mapping) and isinstance(counter_file.get("path"), str):
             static_files.append(_stat_bound_record(counter_file, Path(str(counter_file["path"]))))
+    if isinstance(correction_binding, Mapping):
+        correction_file = correction_binding.get("file")
+        correction_path = correction_file.get("path") if isinstance(correction_file, Mapping) else None
+        if isinstance(correction_file, Mapping) and isinstance(correction_path, str):
+            static_files.append(_stat_bound_record(correction_file, Path(correction_path)))
+        addendum_file = correction_binding.get("addendum_file")
+        addendum_path = addendum_file.get("path") if isinstance(addendum_file, Mapping) else None
+        if isinstance(addendum_file, Mapping) and isinstance(addendum_path, str):
+            static_files.append(_stat_bound_record(addendum_file, Path(addendum_path)))
     for shard_id, local_start in enumerate(range(0, ADDITION_ROWS, SHARD_RECORDS)):
         count = min(SHARD_RECORDS, ADDITION_ROWS - local_start)
         local_rows = rows[local_start : local_start + count]
@@ -599,6 +715,8 @@ def _load_prepared_input_manifest(
     )
     if counter_binding is not None:
         synthetic["countersignature_binding"] = counter_binding
+    if correction_binding is not None:
+        synthetic["correction_countersignature_binding"] = correction_binding
     return InputManifest(
         path=path,
         root=root,
@@ -673,9 +791,13 @@ def load_input_manifest(
     if value.get("condition") != STAGE1_CONDITION:
         raise CaptureError("input manifest condition is not public_base")
     _, counter_binding = _validate_plan_countersignature(path, value, require_stage1=require_stage1)
+    correction_binding = _validate_correction_countersignature(path, value, require_stage1=require_stage1)
     if counter_binding is not None:
         value = dict(value)
         value["countersignature_binding"] = counter_binding
+    if correction_binding is not None:
+        value = dict(value)
+        value["correction_countersignature_binding"] = correction_binding
     boundary = value.get("truth_boundary")
     if not isinstance(boundary, Mapping) or any(bool(boundary.get(key)) for key in ("evaluation_truth_opened", "private_truth_opened", "source_text_persisted", "target_labels_persisted")):
         raise CaptureError("input manifest violates the truth-free capture boundary")
@@ -714,6 +836,15 @@ def load_input_manifest(
         counter_file = counter_binding.get("file")
         if isinstance(counter_file, Mapping) and isinstance(counter_file.get("path"), str):
             static_files.append(_stat_bound_record(counter_file, Path(str(counter_file["path"]))))
+    if isinstance(correction_binding, Mapping):
+        correction_file = correction_binding.get("file")
+        correction_path = correction_file.get("path") if isinstance(correction_file, Mapping) else None
+        if isinstance(correction_file, Mapping) and isinstance(correction_path, str):
+            static_files.append(_stat_bound_record(correction_file, Path(correction_path)))
+        addendum_file = correction_binding.get("addendum_file")
+        addendum_path = addendum_file.get("path") if isinstance(addendum_file, Mapping) else None
+        if isinstance(addendum_file, Mapping) and isinstance(addendum_path, str):
+            static_files.append(_stat_bound_record(addendum_file, Path(addendum_path)))
     cursor = 0
     seen_ids: set[str] = set()
     for index, raw in enumerate(raw_shards):
@@ -1163,6 +1294,13 @@ def _input_snapshot_bindings(input_manifest: InputManifest, plan_record: Mapping
         bindings["stage1_plan_countersignature"] = {
             "schema": COUNTERSIGNATURE_SCHEMA,
             "file": dict(counter.get("file", {})),
+        }
+    correction = input_manifest.manifest.get("correction_countersignature_binding")
+    if isinstance(correction, Mapping):
+        bindings["stage1_correction_addendum_countersignature"] = {
+            "schema": CORRECTION_COUNTERSIGNATURE_SCHEMA,
+            "file": dict(correction.get("file", {})),
+            "addendum_file": dict(correction.get("addendum_file", {})),
         }
     return bindings
 

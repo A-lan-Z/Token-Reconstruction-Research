@@ -33,6 +33,19 @@ def _descriptor(path: Path, *, root: Path) -> dict[str, Any]:
     return {"path": str(path.relative_to(root)), "bytes": path.stat().st_size, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
 
 
+def _accepted_correction_binding() -> dict[str, Any]:
+    signature = REPOSITORY_ROOT / "experiments/TRR-P09/setup/stage1-correction-addendum-countersignature-r1.json"
+    addendum = REPOSITORY_ROOT / "experiments/TRR-P09/planning/stage1-correction-addendum-r1.json"
+    return {
+        "path": str(signature),
+        "bytes": signature.stat().st_size,
+        "sha256": hashlib.sha256(signature.read_bytes()).hexdigest(),
+        "addendum_path": str(addendum),
+        "addendum_bytes": addendum.stat().st_size,
+        "addendum_sha256": hashlib.sha256(addendum.read_bytes()).hexdigest(),
+    }
+
+
 def _input_fixture(tmp_path: Path, *, rows: int = 16, expanded_origin: int = 0) -> capture.InputManifest:
     assert rows % 8 == 0
     root = tmp_path / "inputs"
@@ -289,6 +302,7 @@ def test_prepared_compiler_output_capture_combined_loader_smoke(tmp_path: Path, 
         ),
         encoding="utf-8",
     )
+    correction_binding = _accepted_correction_binding()
     prepared = root / "preparation_manifest.json"
     prepared.write_text(
         json.dumps(
@@ -302,6 +316,8 @@ def test_prepared_compiler_output_capture_combined_loader_smoke(tmp_path: Path, 
                     "commit": "5bfed9ec6a7bb29a988ec0a4b1343b7745d8b81b",
                 },
                 "countersignature": {"path": str(counter_path)},
+                "correction_countersignature": correction_binding,
+                "controlled_replacement_audit": {"b0_identity_cycle_matches_signed_recipe": True},
                 "geometry": {"records": rows, "sequence_tokens": 192, "b0_prefix_records": capture.B0_ROWS},
                 "artifacts": {"inputs": _descriptor(payload, root=root), "records": _descriptor(records_path, root=root)},
                 "truth_boundary": {
@@ -316,9 +332,19 @@ def test_prepared_compiler_output_capture_combined_loader_smoke(tmp_path: Path, 
         ),
         encoding="utf-8",
     )
+    # A stage-1 prepared manifest that keeps only the original plan binding
+    # must fail before payload inspection or any model-forward path.
+    original_manifest = prepared.read_text(encoding="utf-8")
+    incomplete = json.loads(original_manifest)
+    incomplete.pop("correction_countersignature", None)
+    prepared.write_text(json.dumps(incomplete, sort_keys=True), encoding="utf-8")
+    with pytest.raises(capture.CaptureError, match="correction addendum binding"):
+        capture.load_input_manifest(prepared, expected_record_count=8, require_stage1=True)
+    prepared.write_text(original_manifest, encoding="utf-8")
     parsed = capture.load_input_manifest(prepared, expected_record_count=8, require_stage1=True)
     assert parsed.manifest["input_source_schema"] == capture.PREPARED_INPUT_SCHEMA
     assert parsed.expanded_row_origin == 8
+    assert "correction_countersignature_binding" in parsed.manifest
     prefix_root = tmp_path / "b0"
     write_fixture_bank(prefix_root, record_count=8, current_record_count=8, geometry=BankGeometry(shard_records=8))
     output = tmp_path / "b1"
@@ -420,6 +446,8 @@ def test_prepared_full_payload_adapts_to_expanded_b1_rows(tmp_path: Path) -> Non
         "status": "CPU_INPUTS_COMPILED_NO_ACTIVATIONS",
         "plan": {"path": "experiments/TRR-P09/planning/stage1-public-bank-plan.json", "bytes": capture.SIGNED_STAGE1_PLAN_BYTES, "sha256": capture.SIGNED_STAGE1_PLAN_SHA256, "commit": "5bfed9ec6a7bb29a988ec0a4b1343b7745d8b81b"},
         "countersignature": {"path": "experiments/TRR-P09/setup/stage1-plan-countersignature-r1.json", "attested": True},
+        "correction_countersignature": _accepted_correction_binding(),
+        "controlled_replacement_audit": {"b0_identity_cycle_matches_signed_recipe": True},
         "geometry": {"records": rows, "sequence_tokens": 192, "b0_prefix_records": capture.B0_ROWS, "input_dtype": "int32", "mask_dtype": "uint8", "position_dtype": "int64"},
         "artifacts": {
             "inputs": _descriptor(payload, root=root),
