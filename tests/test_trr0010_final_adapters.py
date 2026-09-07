@@ -394,7 +394,8 @@ def test_capture_accepts_native_source_pairing_digest_schema(tmp_path: Path) -> 
     capture_path = producer / "capture.json"
     capture_payload = json.loads(capture_path.read_text(encoding="utf-8"))
     capture_payload["observations"] = observation_record
-    capture_payload["panel"] = panel_record
+    # Native TRR9 capture.json does not duplicate the separately bound panel.
+    capture_payload.pop("panel", None)
     capture_path.write_text(json.dumps(capture_payload, sort_keys=True) + "\n", encoding="utf-8")
 
     result = capture.repackage_trr0009_capture(

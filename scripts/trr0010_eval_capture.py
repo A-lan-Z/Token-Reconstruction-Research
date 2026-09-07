@@ -287,8 +287,16 @@ def _validate_producer_receipts(*, producer_root: Path, producer_selection_recor
     geometry = capture.get("geometry")
     if not isinstance(geometry, Mapping) or geometry.get("capture_batch_records") != 8 or geometry.get("capture_sequence_tokens") != 192 or geometry.get("stored_sequence_tokens") != 128:
         raise CaptureAdapterError("TRR9 capture geometry is not B8x192 retaining first 128")
-    if capture.get("observations") != observation_record or capture.get("panel") != panel_record:
-        raise CaptureAdapterError("TRR9 capture receipt child bindings changed")
+    if panel.get("observation_manifest") != observation_record:
+        raise CaptureAdapterError("TRR9 panel observation binding changed")
+    if capture.get("observations") != observation_record:
+        raise CaptureAdapterError("TRR9 capture observation binding changed")
+    # Native TRR9 capture receipts bind observations directly and omit a
+    # redundant panel child; if a panel child is present, it must still match
+    # the independently validated panel receipt.
+    capture_panel = capture.get("panel")
+    if capture_panel is not None and capture_panel != panel_record:
+        raise CaptureAdapterError("TRR9 capture panel binding changed")
     return observation_record, observation, panel_record, panel, capture_record, capture
 
 
