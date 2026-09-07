@@ -1,0 +1,60 @@
+{
+  "schema": "token-reconstruction.trr-p08-fit-review.v1",
+  "task_id": "TRR-P08",
+  "status": "PASS_PUBLIC_FIT_ONLY_PENDING_FREEZE",
+  "review_scope": "eight public development fits; no fresh source selection or evaluator truth",
+  "receipt": {
+    "path": "experiments/TRR-P08/runtime/main-r2/main_fit_receipt.json",
+    "sha256": "44b2a965c92d64938e5ff322222678c8cfaf4ba84ff93b62d6f49cfce39d7a86",
+    "status": "PASS",
+    "arms": 4,
+    "methods": 8,
+    "updates_per_arm": 3000,
+    "validation_schedule": "step 0 and every 100 updates through step 3000",
+    "fit_records": 1200,
+    "validation_records": 48,
+    "record_batch_size": 8,
+    "position_budget": 512,
+    "sequence_tokens": 128
+  },
+  "matrix_checks": {
+    "all_methods_pass": true,
+    "all_updates_complete": true,
+    "shared_schedule_within_seed": true,
+    "shared_standard_initialization_within_seed": true,
+    "staged_steps": 1000,
+    "joint_steps": 3000,
+    "selection_metric": "full-vocabulary validation token accuracy",
+    "selection_rule": "earliest maximum"
+  },
+  "transition_diagnostic": {
+    "validation_cohorts_complete": true,
+    "fit_quota_shortfall_nonfatal": true,
+    "fit_counts_by_seed": {"6106": 139, "6107": 116},
+    "validation_error_counts_by_seed": {"6106": 125, "6107": 122},
+    "joint_arm_comparisons_are_collateral": true
+  },
+  "resources": {
+    "watchdog_status": "PASS",
+    "watchdog_finish_sha256": "5905f30bf3e29922082312679d3496714bcafd04a2eac66eac0284728f7a6695",
+    "child_exit_code": 0,
+    "wrapper_exit_code": 0,
+    "peak_group_rss_bytes": 7569088512,
+    "minimum_sampled_host_available_bytes": 17729118208,
+    "maximum_arm_cuda_peak_reserved_bytes": 3202351104,
+    "minimum_arm_cuda_free_bytes": 12388925440,
+    "maximum_arm_process_rss_bytes": 5621690368
+  },
+  "provenance": {
+    "run_start_source_commit": "00504aac40f2b3758c65c14c6dcc8f1b4c6064e5",
+    "receipt_source_commit": "ef925c550e39ea557f9fea516d9d21473a9eb163",
+    "fit_source_blobs_unchanged": true,
+    "intervening_files": [
+      "scripts/trr_p08/freeze_selected_states.py",
+      "tests/test_trr_p08_selected_state_freeze.py"
+    ]
+  },
+  "fresh_truth_opened": false,
+  "fresh_selection_started": false,
+  "quality_gate_decision": "NOT_APPLIED_PUBLIC_DEVELOPMENT_ONLY"
+}
