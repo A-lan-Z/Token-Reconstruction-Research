@@ -57,15 +57,21 @@
     "capture_binding": "experiments/TRR-P08/setup/capture_binding.json",
     "source_binding_module": "scripts/trr_p08/source_binding.py",
     "source_binding_tests": "tests/test_trr_p08_source_binding.py",
-    "fit_staged_preflight_smoke": "experiments/TRR-P08/setup/fit-staged-preflight-smoke.json"
+    "fit_staged_preflight_smoke": "experiments/TRR-P08/setup/fit-staged-preflight-smoke.json",
+    "fit_staged_preflight_final": "experiments/TRR-P08/setup/fit-staged-preflight-final.json"
   },
   "verification": {
     "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p08_source_binding.py",
     "result": "4 passed",
     "payload_loaded": false,
     "metadata_preflight": {
-      "command": "PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode preflight --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --output-root /tmp/trr-p08-preflight-smoke-20260907 --device cpu --max-seconds 120",
+      "command": "PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode preflight --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --output-root /tmp/trr-p08-preflight-smoke-final-20260907 --device cpu --max-seconds 120",
       "result": "SOURCE_ONLY_PREFLIGHT_PASS",
+      "receipt_path": "experiments/TRR-P08/setup/fit-staged-preflight-final.json",
+      "receipt_bytes": 2428,
+      "receipt_sha256": "a84d4c6785147b8019d165985a07d1ca7b94f40ab6d5807b551feb50249cfb9f",
+      "source_commit_in_receipt": "cc22371a0106706f6c05a4b8403a1f1883fbb863",
+      "source_runner_commit": "55792fd",
       "source_manifest_sha256": "d7b0133024ed6c3f20cbcea0558c182f6131e3bff898ab04a0afbd549e0d1df3",
       "source_manifest_shapes": {
         "embedding_table": [
@@ -101,7 +107,7 @@
       },
       "payload_loaded": false,
       "gpu_started": false,
-      "source_code_certification": "provisional metadata smoke: receipt source_commit is current HEAD 2177e7e, while the implementation runner file was untracked at smoke time; rerun and bind the preflight after implementation commit before qualification."
+      "resource_scope": "metadata-only shape and initialization binding; qualification remains separately gated"
     }
   },
   "pending": [
