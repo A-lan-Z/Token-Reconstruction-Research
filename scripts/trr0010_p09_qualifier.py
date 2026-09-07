@@ -54,6 +54,10 @@ REQUIRED_A2_SOURCES = (
     "scripts/trr_p09/fixed_control_runner.py",
     "scripts/trr_p09/prepare_streamed_bank.py",
 )
+ValidationCallback = Callable[[int, Callable[[Iterable[Any]], Mapping[str, Any]]], Mapping[str, Any]]
+DOMAIN_BALANCED_SELECTION_METRIC = "domain_balanced_token_accuracy"
+
+
 REQUIRED_SETTINGS = (
     "hidden_size",
     "vocabulary_size",
@@ -462,13 +466,17 @@ def qualify_discarded_updates(
     schedule_steps: Iterable[Any],
     embedding: torch.Tensor,
     config: Any,
-    validation_batches: Callable[[int], Iterable[Any]],
+    validation_batches: Callable[[int], Iterable[Any]] | None,
     validation_sequence_tokens: int,
     validation_batch_records: int,
     validation_activation_dtype: torch.dtype | None,
     training_activation_dtype: torch.dtype | None,
     output_root: Path,
     checkpoint_export: Callable[[QualificationRuntime, Path], Mapping[str, Any]] | None = None,
+    validation_callback: ValidationCallback | None = None,
+    started: float | None = None,
+    started_utc: str | None = None,
+    initial_guard_checks: Sequence[Mapping[str, Any]] = (),
 ) -> dict[str, Any]:
     """Run a fixed validation-aware warmup probe and retain only evidence.
 
@@ -482,14 +490,16 @@ def qualify_discarded_updates(
         raise QualificationError(f"runtime device {device} differs from lease {lease_caps['device']}")
     if not callable(getattr(runner, "run_training", None)):
         raise QualificationError("A2 runner does not expose run_training")
-    if not callable(validation_batches):
-        raise QualificationError("qualifier requires the shared validation-batch factory")
+    if validation_callback is None and not callable(validation_batches):
+        raise QualificationError("qualifier requires the shared validation-batch factory without a domain callback")
+    if validation_callback is not None and not callable(validation_callback):
+        raise QualificationError("qualifier domain validation callback is not callable")
     output_root = Path(output_root).expanduser().resolve()
     output_path = output_root / "qualification.json"
     failure_path = output_root / "failure.json"
-    started = time.perf_counter()
-    started_utc = _utc_now()
-    guard_checks: list[dict[str, Any]] = []
+    started = time.perf_counter() if started is None else float(started)
+    started_utc = _utc_now() if started_utc is None else str(started_utc)
+    guard_checks: list[dict[str, Any]] = [dict(check) for check in initial_guard_checks]
     try:
         before = resource_snapshot(device=device, output_root=output_root)
         enforce_resource_guard(before, lease_caps, started=started)
@@ -522,8 +532,6 @@ def qualify_discarded_updates(
             embedding=embedding,
             config=config,
         )
-        if device.type == "cuda":
-            torch.cuda.reset_peak_memory_stats(device)
         guard_checks.append({"stage": "after_zero_equivalence", "snapshot": resource_snapshot(device=device, output_root=output_root)})
 
         def checkpoint_guard(point: Mapping[str, Any], decoder: nn.Module, hook: DirectionalTokenReadout) -> None:
@@ -533,6 +541,9 @@ def qualify_discarded_updates(
             guard_checks.append({"stage": f"after_validation_step_{int(point['step'])}", "snapshot": snapshot})
             return None
 
+        remaining_seconds = float(lease_caps["max_seconds"]) - (time.perf_counter() - started)
+        if remaining_seconds <= 0.0:
+            raise QualificationError("qualifier wall-time cap exhausted before A2 run")
         run_receipt = runner.run_training(
             runtime.decoder,
             runtime.hook,
@@ -546,6 +557,7 @@ def qualify_discarded_updates(
             embedding=embedding,
             config=config,
             validation_batches=validation_batches,
+            validation_callback=validation_callback,
             validation_sequence_tokens=int(validation_sequence_tokens),
             validation_batch_records=int(validation_batch_records),
             validation_activation_dtype=validation_activation_dtype,
@@ -554,7 +566,7 @@ def qualify_discarded_updates(
             scheduler=None,
             compute_base_logits=False,
             checkpoint_callback=checkpoint_guard,
-            deadline_seconds=float(lease_caps["max_seconds"]),
+            deadline_seconds=remaining_seconds,
         )
         optimizer_bytes = _optimizer_state_bytes(runtime.optimizer)
         if optimizer_bytes <= 0:
@@ -575,7 +587,13 @@ def qualify_discarded_updates(
         result = {
             "schema": QUALIFIER_SCHEMA,
             "task_id": TASK_ID,
-            "status": "QUALIFICATION_PASS",
+            "status": (
+                "QUALIFICATION_PASS"
+                if checkpoint_export is not None
+                else "QUALIFICATION_PARTIAL_NO_CHECKPOINT_EXPORT"
+            ),
+            "qualification_complete": checkpoint_export is not None,
+            "preparation_guarded": True,
             "discarded_updates": True,
             "contender_selection": False,
             "retained_fitted_arm": False,
@@ -586,6 +604,8 @@ def qualify_discarded_updates(
             "wall_seconds": time.perf_counter() - started,
             "zero_delta_equivalence": zero,
             "run_timing": dict(run_receipt.get("timing", {})),
+            "runner_deadline_seconds": remaining_seconds,
+            "selection_metric": _validate_validation_contract(config, validation_callback),
             "learning_curve_discarded": list(run_receipt.get("learning_curve", [])),
             "selected_step_discarded": run_receipt.get("selected_step"),
             "optimizer_state_bytes": optimizer_bytes,
@@ -629,6 +649,21 @@ def _verify_provider_modules(inputs: Mapping[str, Any], binding_receipt: Mapping
             raise QualificationError(f"provider {key} is not the hash-bound imported module")
 
 
+def _validate_validation_contract(config: Any, validation_callback: Any) -> str | None:
+    """Require the current A2 domain-balanced callback when that metric is bound."""
+
+    selection_metric = getattr(config, "selection_metric", None)
+    if selection_metric is None and isinstance(config, Mapping):
+        selection_metric = config.get("selection_metric")
+    if selection_metric == DOMAIN_BALANCED_SELECTION_METRIC and not callable(validation_callback):
+        raise QualificationError(
+            "domain-balanced selection requires the provider's explicit validation_callback"
+        )
+    if selection_metric != DOMAIN_BALANCED_SELECTION_METRIC and validation_callback is not None:
+        raise QualificationError("validation_callback is only valid for domain-balanced selection")
+    return None if selection_metric is None else str(selection_metric)
+
+
 def _load_json(path: Path, *, label: str) -> Mapping[str, Any]:
     path = Path(path).expanduser().resolve()
     if path.is_symlink() or not path.is_file():
@@ -651,21 +686,55 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
     output_root = Path(args.output_root).expanduser().resolve()
     failure_path = output_root / "failure.json"
+    started = time.perf_counter()
+    started_utc = _utc_now()
+    preparation_checks: list[dict[str, Any]] = []
+    binding_receipt: Mapping[str, Any] | None = None
+    lease_caps: Mapping[str, Any] | None = None
     try:
         manifest = _load_json(args.bindings, label="qualifier bindings")
         lease = _load_json(args.lease, label="qualifier lease")
         binding_receipt = validate_qualification_bindings(manifest)
         lease_caps = validate_exclusive_lease(lease)
+        device = torch.device(lease_caps["device"])
+
+        # The lease and wall deadline cover preparation as well as updates.
+        # Reset CUDA peaks only after recording the pre-provider baseline; all
+        # provider/model/equivalence/export peaks are then retained together.
+        before_provider = resource_snapshot(device=device, output_root=output_root)
+        enforce_resource_guard(before_provider, lease_caps, started=started)
+        preparation_checks.append({"stage": "before_provider_load", "snapshot": before_provider})
+        if device.type == "cuda":
+            torch.cuda.reset_peak_memory_stats(device)
+
+        provider_guard_calls = 0
+
+        def preparation_guard(stage: str) -> None:
+            nonlocal provider_guard_calls
+            provider_guard_calls += 1
+            snapshot = resource_snapshot(device=device, output_root=output_root)
+            enforce_resource_guard(snapshot, lease_caps, started=started)
+            preparation_checks.append({"stage": f"provider_{stage}", "snapshot": snapshot})
+
         provider = load_provider(args.provider)
-        inputs = provider(binding_receipt, lease_caps, torch.device(lease_caps["device"]))
+        # Providers must call preparation_guard around their own E/model and
+        # loader phases.  A three-argument provider is rejected deliberately:
+        # it cannot expose a fail-closed preparation deadline.
+        inputs = provider(binding_receipt, lease_caps, device, preparation_guard)
         if not isinstance(inputs, Mapping):
             raise QualificationError("A2 provider must return a mapping")
+        if provider_guard_calls == 0:
+            raise QualificationError("A2 provider did not call preparation_guard during its load phases")
         _verify_provider_modules(inputs, binding_receipt)
+        preparation_guard("after_import_and_provider_load")
         validation_geometry = binding_receipt["validation_geometry"]
         if int(inputs["validation_sequence_tokens"]) != int(validation_geometry["sequence_tokens"]):
             raise QualificationError("provider validation sequence geometry differs from binding")
         if int(inputs["validation_batch_records"]) != int(validation_geometry["batch_records"]):
             raise QualificationError("provider validation batch geometry differs from binding")
+        config = inputs["config"]
+        validation_callback = inputs.get("validation_callback")
+        _validate_validation_contract(config, validation_callback)
         runtime = build_qualification_runtime(
             base_decoder=inputs["base_decoder"],
             support_ids=inputs["support_ids"],
@@ -673,6 +742,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             public_embedding=inputs["public_embedding"],
             settings=binding_receipt["settings"],
         )
+        preparation_guard("after_runtime_build")
         result = qualify_discarded_updates(
             binding_receipt=binding_receipt,
             lease_caps=lease_caps,
@@ -681,14 +751,18 @@ def main(argv: Sequence[str] | None = None) -> int:
             source=inputs["source"],
             schedule_steps=inputs["schedule_steps"],
             embedding=inputs["public_embedding"],
-            config=inputs["config"],
-            validation_batches=inputs["validation_batches"],
+            config=config,
+            validation_batches=inputs.get("validation_batches"),
+            validation_callback=validation_callback,
             validation_sequence_tokens=int(inputs["validation_sequence_tokens"]),
             validation_batch_records=int(inputs["validation_batch_records"]),
             validation_activation_dtype=inputs.get("validation_activation_dtype"),
             training_activation_dtype=inputs.get("training_activation_dtype"),
             output_root=output_root,
             checkpoint_export=inputs.get("checkpoint_export"),
+            started=started,
+            started_utc=started_utc,
+            initial_guard_checks=preparation_checks,
         )
         print(json.dumps({"status": result["status"], "receipt": result["receipt"]}, sort_keys=True))
         return 0
@@ -705,6 +779,12 @@ def main(argv: Sequence[str] | None = None) -> int:
                         "error": str(exc),
                         "binding_path": str(Path(args.bindings).expanduser().resolve()),
                         "lease_path": str(Path(args.lease).expanduser().resolve()),
+                        "started_utc": started_utc,
+                        "finished_utc": _utc_now(),
+                        "wall_seconds": time.perf_counter() - started,
+                        "binding": None if binding_receipt is None else dict(binding_receipt),
+                        "lease_caps": None if lease_caps is None else dict(lease_caps),
+                        "resource_guard_checks": preparation_checks,
                         "discarded_updates": True,
                         "contender_selection": False,
                         "retained_fitted_arm": False,

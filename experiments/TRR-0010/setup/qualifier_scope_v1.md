@@ -24,10 +24,15 @@ The binding manifest must be finalized with:
 
 The lease file must state `GRANTED`, `exclusive=true`, the CUDA device, wall
 limit, GPU reserved/free caps, host RSS/available caps, and disk-free floor.
-There are no implicit resource defaults. The guard samples host `MemAvailable`,
-current RSS, disk, GPU free/allocated/reserved/max-reserved bytes before and
-after the model probe, at each A2 validation checkpoint, and after optional
-checkpoint/export I/O.
+There are no implicit resource defaults. The lease timer starts before provider
+loading, and the guard samples host `MemAvailable`, current RSS, disk, GPU
+free/allocated/reserved/max-reserved bytes before provider loading, around each
+provider E/model/loader phase, after runtime construction, at each A2 validation
+checkpoint, and after checkpoint/export I/O. CUDA peak counters are reset only
+after the pre-provider baseline and are never reset after zero-equivalence, so
+preparation and probe peaks remain in one receipt. The provider must accept
+`(binding_receipt, lease_caps, device, preparation_guard)` and call the guard
+during its loading phases; a three-argument provider is rejected.
 
 The probe sequence is fixed by the binding manifest:
 
@@ -36,23 +41,32 @@ The probe sequence is fixed by the binding manifest:
 2. on the first scheduled public fitting batch, compare the unchanged base
    decoder's full logits with A2's directional merged-E logits and require
    bit-exact logits and argmax IDs;
-3. call A2 `run_training` for exactly `probe_steps` discarded updates with
-   `compute_base_logits=false`, the exact schedule prefix, and the shared
-   validation-batch factory. Validation and checkpoint callbacks remain active,
+3. call the current A2 `run_training` for exactly `probe_steps` discarded
+   updates with `compute_base_logits=false`, the exact schedule prefix, and the
+   shared validation path. If the bound selection metric is
+   `domain_balanced_token_accuracy`, the provider must return A2's explicit
+   `validation_callback(step, evaluate_view)`; pooled validation is not an
+   interchangeable fallback. Validation and checkpoint callbacks remain active,
    so the measured largest cell includes the common B8x192 geometry where the
    provider declares it, not only the 512-row sampled loss path;
 4. require Adam state allocation, record update/load/validation timing and
    peaks, and discard the internal selected point; and
-5. optionally invoke a caller-bound create-only checkpoint/export probe while
-   gradients and optimizer state remain allocated. Its artifacts are qualifier
-   evidence only and cannot become a fitted contender.
+5. invoke a caller-bound create-only checkpoint/export probe while gradients
+   and optimizer state remain allocated. Its artifacts are qualifier evidence
+   only and cannot become a fitted contender. A receipt is `QUALIFICATION_PASS`
+   only when this export probe is bound and completes; a provider without it
+   receives explicit `QUALIFICATION_PARTIAL_NO_CHECKPOINT_EXPORT` and is not a
+   complete preparation/export qualification.
 
 A2 still needs to provide the concrete provider/factory for the final bank and
-schedule. The existing snapshot exposes `run_training`, `train_one_step`, and
-`RandomAccessLoaderSource`, but does not provide a production schedule reader
-or validation factory. The qualifier therefore fails closed until that provider
-is handed off; it does not reconstruct those pieces. The planned command after
-that handoff is:
+schedule. The bound runner must be the current domain-aware A2 implementation
+with `validation_callback` support; the provider must return the decoder, E,
+support vectors, source, schedule stream, config, validation geometry, the
+explicit domain callback when required, and a create-only checkpoint/export
+callable. It must also bind the imported adapter/runner/loader modules and call
+the preparation guard during loading. The qualifier fails closed until that
+provider is handed off; it does not reconstruct those pieces. The planned
+command after that handoff is:
 
 ```bash
 env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \

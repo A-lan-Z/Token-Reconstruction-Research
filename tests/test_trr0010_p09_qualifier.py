@@ -15,6 +15,7 @@ from trr0010_p09_qualifier import (
     enforce_resource_guard,
     validate_exclusive_lease,
     validate_qualification_bindings,
+    _validate_validation_contract,
     verify_zero_delta_equivalence,
 )
 
@@ -174,3 +175,17 @@ def test_resource_guard_fails_closed_when_gpu_cap_is_missing() -> None:
     }
     with pytest.raises(QualificationError, match="GPU telemetry"):
         enforce_resource_guard(snapshot, caps, started=time.perf_counter())
+
+
+def test_domain_balanced_selection_requires_explicit_a2_callback() -> None:
+    config = SimpleNamespace(selection_metric="domain_balanced_token_accuracy")
+    with pytest.raises(QualificationError, match="explicit validation_callback"):
+        _validate_validation_contract(config, None)
+    callback = lambda step, evaluate_view: {"step": step, "domain_balanced_token_accuracy": 1.0}
+    assert _validate_validation_contract(config, callback) == "domain_balanced_token_accuracy"
+
+
+def test_pooled_selection_rejects_domain_callback() -> None:
+    config = SimpleNamespace(selection_metric="token_accuracy")
+    with pytest.raises(QualificationError, match="only valid"):
+        _validate_validation_contract(config, lambda step, evaluate_view: {})
