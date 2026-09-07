@@ -137,6 +137,10 @@ def test_capture_adapter_rebinds_only_p08_metadata_contract() -> None:
     assert p06_capture.SELECTION_SCHEMA == panel.SELECTION_SCHEMA
     assert p06_capture.SEQUENCE_TOKENS == 128
     assert p06_capture.CAPTURE_SEQUENCE_TOKENS == 192
+    assert capture_public.panel.CANDIDATE_RANGES == {
+        "pile": [0, 7000],
+        "finance": [20000, 26000],
+    }
     assert p06_capture.CELL_ORDER == (
         "pile__public_base",
         "pile__public_lora_2601",

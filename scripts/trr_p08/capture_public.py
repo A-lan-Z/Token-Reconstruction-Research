@@ -91,6 +91,10 @@ def _configure_capture(universe: Mapping[str, Any]) -> None:
         for style in STYLE_ORDER
     }
     panel._configure_p06(seed=int(provenance["selection_seed"]), ranges=ranges)
+    # The inherited validator reads the adapter module's range binding through
+    # its injected ``panel`` module. Keep that binding in sync with the P06
+    # helper configuration before validating the frozen selection.
+    panel.CANDIDATE_RANGES = {style: list(values) for style, values in ranges.items()}
 
     # The P06 helpers are pure implementation primitives here; their task and
     # schema constants are rebound to P08 for the isolated create-only output.
