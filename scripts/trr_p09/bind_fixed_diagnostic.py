@@ -250,6 +250,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--inputs", type=Path, required=True)
     parser.add_argument("--preparation-manifest", type=Path, required=True)
     parser.add_argument("--bank-manifest", type=Path, required=True)
+    parser.add_argument("--capture-receipt", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     return parser.parse_args(argv)
 
@@ -260,6 +261,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     inputs_path = require_file(args.inputs, label="public input tensor file")
     preparation_path = require_file(args.preparation_manifest, label="preparation manifest")
     bank_manifest_path = require_file(args.bank_manifest, label="qualified bank manifest")
+    capture_receipt_path = require_file(args.capture_receipt, label="capture receipt")
     output_path = args.output.expanduser().resolve()
     if output_path.exists() or output_path.is_symlink():
         raise DiagnosticBindingError(f"output is create-only and already exists: {output_path}")
@@ -277,9 +279,21 @@ def main(argv: Sequence[str] | None = None) -> int:
     bank_manifest = load_json(bank_manifest_path, label="qualified bank manifest")
     if bank_manifest.get("status") != "STAGE1_PUBLIC_BASE_CAPTURE_COMPLETE_NO_TRUTH":
         raise DiagnosticBindingError("qualified bank manifest status changed")
+    capture_file = file_record(capture_receipt_path, label="capture receipt")
+    capture_receipt = load_json(capture_receipt_path, label="capture receipt")
+    if capture_receipt.get("status") != "CAPTURE_COMPLETE_NO_TRUTH":
+        raise DiagnosticBindingError("capture receipt status changed")
+    capture_geometry = capture_receipt.get("geometry")
+    if not isinstance(capture_geometry, Mapping) or int(capture_geometry.get("records", -1)) != 10800 or int(capture_geometry.get("sequence_tokens", -1)) != SEQUENCE_TOKENS:
+        raise DiagnosticBindingError("capture receipt geometry is not the signed 10,800-row T=192 capture")
     geometry = bank_manifest.get("geometry")
     if not isinstance(geometry, Mapping) or int(geometry.get("sequence_tokens", -1)) != SEQUENCE_TOKENS:
         raise DiagnosticBindingError("qualified bank geometry is not T=192")
+    exposure = bank_manifest.get("exposure_manifest")
+    if not isinstance(exposure, Mapping) or int(exposure.get("loader_batch_count", -1)) != 1350:
+        raise DiagnosticBindingError("qualified bank capture exposure is not the expected 1,350 batches")
+    if int(exposure.get("loader_batch_count")) * 8 != 10800:
+        raise DiagnosticBindingError("capture batch count does not cover the 10,800 new rows")
 
     records = load_json(records_path, label="records sidecar")
     if not isinstance(records, list) or len(records) != TOTAL_ROWS:
@@ -333,12 +347,21 @@ def main(argv: Sequence[str] | None = None) -> int:
             "records": records_file,
             "inputs": inputs_file,
             "qualified_bank_manifest": {**bank_file, "status": bank_manifest.get("status"), "geometry": geometry},
+            "capture_receipt": {**capture_file, "status": capture_receipt.get("status"), "geometry": capture_geometry, "shard_counts": capture_receipt.get("shard_counts")},
             "preparation_declared_diagnostic": {
                 "current_indices_sha256": preparation["diagnostic"]["current_bank"]["indices_sha256"],
                 "expanded_indices_sha256": preparation["diagnostic"]["expanded_bank"]["indices_sha256"],
             },
         },
         "banks": {"B0": current_binding, "B1": expanded_binding},
+        "capture_exposure": {
+            "qualified_capture_forward_batch_count": int(exposure["loader_batch_count"]),
+            "complete_records_per_forward_batch": 8,
+            "captured_new_records": int(capture_geometry["records"]),
+            "sequence_tokens": int(capture_geometry["sequence_tokens"]),
+            "basis": "qualified bank exposure_manifest.loader_batch_count; 10,800 new rows / 8 complete B8x192 rows per forward",
+            "bank_manifest_public_forward_count_field": exposure.get("public_forward_count"),
+        },
         "verification": {
             "record_count": len(records),
             "b0_prefix_records": B0_ROWS,
@@ -365,6 +388,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                 str(preparation_path),
                 "--bank-manifest",
                 str(bank_manifest_path),
+                "--capture-receipt",
+                str(capture_receipt_path),
                 "--output",
                 str(output_path),
             ],

@@ -2079,6 +2079,14 @@
       "source_h128_namespace": "preparation sidecar source-sequence H128 identity; may remain non-null when the emitted fitting row is clipped below 128"
     }
   },
+  "capture_exposure": {
+    "bank_manifest_public_forward_count_field": null,
+    "basis": "qualified bank exposure_manifest.loader_batch_count; 10,800 new rows / 8 complete B8x192 rows per forward",
+    "captured_new_records": 10800,
+    "complete_records_per_forward_batch": 8,
+    "qualified_capture_forward_batch_count": 1350,
+    "sequence_tokens": 192
+  },
   "reproduction": {
     "code_scope": "CPU metadata and public fitting token/mask/position inputs only",
     "command": [
@@ -2093,6 +2101,8 @@
       "/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/preparation_manifest-r2-corrected.json",
       "--bank-manifest",
       "/tmp/trr-p09-runtime/stage1-capture-r2/bank_manifest-qualified-r1.json",
+      "--capture-receipt",
+      "/tmp/trr-p09-runtime/stage1-capture-r2/capture-receipt.json",
       "--output",
       "/tmp/trr-p09/experiments/TRR-P09/setup/fixed-diagnostic-binding-r1.json"
     ]
@@ -2119,6 +2129,22 @@
   },
   "schema": "token-reconstruction.trr-p09-fixed-diagnostic-binding.v1",
   "source_bindings": {
+    "capture_receipt": {
+      "bytes": 9912,
+      "geometry": {
+        "dtype": "torch.bfloat16",
+        "hidden_size": 2048,
+        "records": 10800,
+        "sequence_tokens": 192
+      },
+      "path": "/tmp/trr-p09-runtime/stage1-capture-r2/capture-receipt.json",
+      "sha256": "c314cf36fd207ae95203c3c6adda0dc7773ac2765f85b5c7fd4ed5b4f0de1618",
+      "shard_counts": {
+        "created": 169,
+        "skipped_existing_verified": 0
+      },
+      "status": "CAPTURE_COMPLETE_NO_TRUTH"
+    },
     "inputs": {
       "bytes": 29952264,
       "path": "/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/inputs.safetensors",
