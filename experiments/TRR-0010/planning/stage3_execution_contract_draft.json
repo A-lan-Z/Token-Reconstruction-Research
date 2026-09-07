@@ -1,7 +1,7 @@
 {
   "schema": "token-reconstruction.trr0010-stage3-execution-contract-draft.v1",
   "task_id": "TRR-0010",
-  "status": "DRAFT_PROVIDER_COMPATIBLE_BOUND_INPUTS_PENDING_FINAL_QUALIFICATION_AND_RUNTIME_BINDINGS",
+  "status": "DRAFT_PROVIDER_COMPATIBLE_BOUND_INPUTS_AND_FIXED_CONFIG_PENDING_FINAL_QUALIFICATION_AND_RUNTIME_BINDINGS",
   "purpose": "Stage-3 execution handoff derived from immutable v4 and signed stage-1 terms. It binds completed public bank/support/schedule/validation metadata and leaves measured final-evaluation qualification, imported runtime code bindings, fits, final panel, and truth explicitly pending.",
   "basis": {
     "v4_proposal": {
@@ -180,6 +180,61 @@
       "global_indices_sorted": true,
       "diagnostic_rows_map_by": "global_row (descriptive rows are a different rank order)",
       "selection_or_truth_role": "diagnostic only; not checkpoint selection or final truth"
+    },
+    "fixed_control_configuration": {
+      "status": "PASS_FIXED_CONTROL_CPU_CONFIGURATION",
+      "source_commit": "8398666cb8d0222e613c362eae33d77d972ab385",
+      "receipts": {
+        "B0": {
+          "path": "/tmp/trr-p09-runtime/fixed-control-config-dryrun-b0-validation-diagnostic-r2/configuration_receipt.json",
+          "bytes": 105298,
+          "sha256": "bbfe2bf4259aa63c69ac6b45d5ebfc0e7642b5d7ac65c194efa54820270ffc78",
+          "status": "PASS_FIXED_CONTROL_CPU_CONFIGURATION",
+          "source_commit": "8398666cb8d0222e613c362eae33d77d972ab385"
+        },
+        "B1": {
+          "path": "/tmp/trr-p09-runtime/fixed-control-config-dryrun-b1-validation-diagnostic-r2/configuration_receipt.json",
+          "bytes": 108418,
+          "sha256": "6998adb73d4bfd66e2a9958ec1e3bb80b32566113f33065ae27e31d2337505f9",
+          "status": "PASS_FIXED_CONTROL_CPU_CONFIGURATION",
+          "source_commit": "8398666cb8d0222e613c362eae33d77d972ab385"
+        }
+      },
+      "scope": "CPU-only configuration validation; no model, embedding, optimizer, substantive fit, or final truth",
+      "validation_labels_loaded": true,
+      "evaluation_truth_opened": false,
+      "shared_validation": {
+        "records": 384,
+        "domains": [
+          "Finance",
+          "Pile"
+        ],
+        "label_join_sha256": "35b8341d95e08d4375fbb122251309f258d5fced134675bae495f92721bcc23f"
+      },
+      "fixed_diagnostic_binding": {
+        "path": "experiments/TRR-0010/setup/fixed_diagnostic_binding_r1.json",
+        "bytes": 130098,
+        "sha256": "8b899bc168b55570e4cfd526ff4e8656b70050e840386cba9390ad6adb1f54c3"
+      },
+      "B0_schedule": {
+        "path": "/tmp/trr-p09-runtime/common-schedules-r1/schedule-b0-seed4010.safetensors",
+        "bytes": 27053864,
+        "sha256": "ba53cd4bad54bc88670f346a7f959eb0ce5278ec28eac8bdf6463cd44936ec6f",
+        "semantic_sha256": "9aaad9c030f2f9b801f91f956c97f858966580edd21229cebb350dcde358f2c3",
+        "steps": 13000,
+        "seed": 4010
+      },
+      "B1_schedule": {
+        "path": "/tmp/trr-p09-runtime/common-schedules-r1/schedule-b1-seed4010.safetensors",
+        "bytes": 27053864,
+        "sha256": "be0745ebb56e0ed39c2cf7e9c05a657209126f4c1c552242d3893c52d6718801",
+        "semantic_sha256": "8acdb2c4f8e5afba546ad01cbe0adae340eb841c8e3322c919e976434d29ede5",
+        "steps": 13000,
+        "seed": 4010
+      },
+      "loader_interface": "trr-p09.combined-b0-streamed-bank-loader.v1",
+      "B0_diagnostic_indices_sha256": "2dba4fdb243f742496cc010985820205a6d36f8c29b7ed3058369322d181f907",
+      "B1_diagnostic_indices_sha256": "670624a8ef439fe11b250f1ba432d87922d6ff53da38ff8514203880237b6933"
     }
   },
   "execution_terms_from_v4": {
@@ -268,7 +323,8 @@
       12000,
       13000
     ],
-    "same_schedule_all_arms": true,
+    "same_update_budget_all_arms": true,
+    "same_schedule_bytes_within_bank_fixed_vs_directional": true,
     "validation_cadence_note": "Provider compatibility field; the explicit checkpoint_steps list is authoritative for selection and diagnostics, with no additional selection checkpoints."
   },
   "directional_readout": {
@@ -314,5 +370,60 @@
     "selection_metric": "domain_balanced_token_accuracy",
     "selection_rule": "earliest maximum on the explicit checkpoint_steps grid; public_base only; no LoRA selection condition",
     "truth_opened": false
+  },
+  "fixed_control_configuration": {
+    "status": "PASS_FIXED_CONTROL_CPU_CONFIGURATION",
+    "source_commit": "8398666cb8d0222e613c362eae33d77d972ab385",
+    "receipts": {
+      "B0": {
+        "path": "/tmp/trr-p09-runtime/fixed-control-config-dryrun-b0-validation-diagnostic-r2/configuration_receipt.json",
+        "bytes": 105298,
+        "sha256": "bbfe2bf4259aa63c69ac6b45d5ebfc0e7642b5d7ac65c194efa54820270ffc78",
+        "status": "PASS_FIXED_CONTROL_CPU_CONFIGURATION",
+        "source_commit": "8398666cb8d0222e613c362eae33d77d972ab385"
+      },
+      "B1": {
+        "path": "/tmp/trr-p09-runtime/fixed-control-config-dryrun-b1-validation-diagnostic-r2/configuration_receipt.json",
+        "bytes": 108418,
+        "sha256": "6998adb73d4bfd66e2a9958ec1e3bb80b32566113f33065ae27e31d2337505f9",
+        "status": "PASS_FIXED_CONTROL_CPU_CONFIGURATION",
+        "source_commit": "8398666cb8d0222e613c362eae33d77d972ab385"
+      }
+    },
+    "scope": "CPU-only configuration validation; no model, embedding, optimizer, substantive fit, or final truth",
+    "validation_labels_loaded": true,
+    "evaluation_truth_opened": false,
+    "shared_validation": {
+      "records": 384,
+      "domains": [
+        "Finance",
+        "Pile"
+      ],
+      "label_join_sha256": "35b8341d95e08d4375fbb122251309f258d5fced134675bae495f92721bcc23f"
+    },
+    "fixed_diagnostic_binding": {
+      "path": "experiments/TRR-0010/setup/fixed_diagnostic_binding_r1.json",
+      "bytes": 130098,
+      "sha256": "8b899bc168b55570e4cfd526ff4e8656b70050e840386cba9390ad6adb1f54c3"
+    },
+    "B0_schedule": {
+      "path": "/tmp/trr-p09-runtime/common-schedules-r1/schedule-b0-seed4010.safetensors",
+      "bytes": 27053864,
+      "sha256": "ba53cd4bad54bc88670f346a7f959eb0ce5278ec28eac8bdf6463cd44936ec6f",
+      "semantic_sha256": "9aaad9c030f2f9b801f91f956c97f858966580edd21229cebb350dcde358f2c3",
+      "steps": 13000,
+      "seed": 4010
+    },
+    "B1_schedule": {
+      "path": "/tmp/trr-p09-runtime/common-schedules-r1/schedule-b1-seed4010.safetensors",
+      "bytes": 27053864,
+      "sha256": "be0745ebb56e0ed39c2cf7e9c05a657209126f4c1c552242d3893c52d6718801",
+      "semantic_sha256": "8acdb2c4f8e5afba546ad01cbe0adae340eb841c8e3322c919e976434d29ede5",
+      "steps": 13000,
+      "seed": 4010
+    },
+    "loader_interface": "trr-p09.combined-b0-streamed-bank-loader.v1",
+    "B0_diagnostic_indices_sha256": "2dba4fdb243f742496cc010985820205a6d36f8c29b7ed3058369322d181f907",
+    "B1_diagnostic_indices_sha256": "670624a8ef439fe11b250f1ba432d87922d6ff53da38ff8514203880237b6933"
   }
 }

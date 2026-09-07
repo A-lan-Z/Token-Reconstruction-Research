@@ -252,9 +252,9 @@
     {
       "id": "stage3_execution_contract_draft",
       "path": "experiments/TRR-0010/planning/stage3_execution_contract_draft.json",
-      "bytes": 13106,
-      "sha256": "e580793d222a6a90af5cf4b9a3e9a579347ecfe59f0ad28c70b0991d1e71ab56",
-      "status": "DRAFT_PROVIDER_COMPATIBLE_BOUND_INPUTS_PENDING_FINAL_QUALIFICATION_AND_RUNTIME_BINDINGS"
+      "bytes": 18460,
+      "sha256": "c2e8e6e770cd7c94986601d9564c8d93871b4d0cfe5ca73501b88bf9a6941d09",
+      "status": "DRAFT_PROVIDER_COMPATIBLE_BOUND_INPUTS_AND_FIXED_CONFIG_PENDING_FINAL_QUALIFICATION_AND_RUNTIME_BINDINGS"
     },
     {
       "id": "fixed_diagnostic_binding_r1",
@@ -283,6 +283,22 @@
       "fit_width": 192,
       "sequence_tokens": 192,
       "evaluation_truth_opened": false
+    },
+    {
+      "id": "fixed_control_configuration_b0",
+      "path": "/tmp/trr-p09-runtime/fixed-control-config-dryrun-b0-validation-diagnostic-r2/configuration_receipt.json",
+      "bytes": 105298,
+      "sha256": "bbfe2bf4259aa63c69ac6b45d5ebfc0e7642b5d7ac65c194efa54820270ffc78",
+      "source_commit": "8398666cb8d0222e613c362eae33d77d972ab385",
+      "status": "PASS_FIXED_CONTROL_CPU_CONFIGURATION"
+    },
+    {
+      "id": "fixed_control_configuration_b1",
+      "path": "/tmp/trr-p09-runtime/fixed-control-config-dryrun-b1-validation-diagnostic-r2/configuration_receipt.json",
+      "bytes": 108418,
+      "sha256": "6998adb73d4bfd66e2a9958ec1e3bb80b32566113f33065ae27e31d2337505f9",
+      "source_commit": "8398666cb8d0222e613c362eae33d77d972ab385",
+      "status": "PASS_FIXED_CONTROL_CPU_CONFIGURATION"
     }
   ],
   "branch": "task/TRR-0010",
@@ -878,7 +894,7 @@
   "scientific_results_available": false,
   "status": "STAGE1_QUALIFIED_BANK_AND_VALIDATION_AUDIT_BOUND_NO_TRUTH_FITS_PENDING",
   "task_id": "TRR-0010",
-  "updated_utc": "2026-09-07T13:09:56.699554+00:00",
+  "updated_utc": "2026-09-07T13:13:27.472329+00:00",
   "publication": {
     "status": "OPEN_DRAFT_PR_PUBLISHED",
     "url": "https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/20",
@@ -1227,13 +1243,68 @@
       "fit_width": 192,
       "sequence_tokens": 192,
       "evaluation_truth_opened": false
+    },
+    "fixed_control_configuration": {
+      "status": "PASS_FIXED_CONTROL_CPU_CONFIGURATION",
+      "source_commit": "8398666cb8d0222e613c362eae33d77d972ab385",
+      "receipts": {
+        "B0": {
+          "path": "/tmp/trr-p09-runtime/fixed-control-config-dryrun-b0-validation-diagnostic-r2/configuration_receipt.json",
+          "bytes": 105298,
+          "sha256": "bbfe2bf4259aa63c69ac6b45d5ebfc0e7642b5d7ac65c194efa54820270ffc78",
+          "status": "PASS_FIXED_CONTROL_CPU_CONFIGURATION",
+          "source_commit": "8398666cb8d0222e613c362eae33d77d972ab385"
+        },
+        "B1": {
+          "path": "/tmp/trr-p09-runtime/fixed-control-config-dryrun-b1-validation-diagnostic-r2/configuration_receipt.json",
+          "bytes": 108418,
+          "sha256": "6998adb73d4bfd66e2a9958ec1e3bb80b32566113f33065ae27e31d2337505f9",
+          "status": "PASS_FIXED_CONTROL_CPU_CONFIGURATION",
+          "source_commit": "8398666cb8d0222e613c362eae33d77d972ab385"
+        }
+      },
+      "scope": "CPU-only configuration validation; no model, embedding, optimizer, substantive fit, or final truth",
+      "validation_labels_loaded": true,
+      "evaluation_truth_opened": false,
+      "shared_validation": {
+        "records": 384,
+        "domains": [
+          "Finance",
+          "Pile"
+        ],
+        "label_join_sha256": "35b8341d95e08d4375fbb122251309f258d5fced134675bae495f92721bcc23f"
+      },
+      "fixed_diagnostic_binding": {
+        "path": "experiments/TRR-0010/setup/fixed_diagnostic_binding_r1.json",
+        "bytes": 130098,
+        "sha256": "8b899bc168b55570e4cfd526ff4e8656b70050e840386cba9390ad6adb1f54c3"
+      },
+      "B0_schedule": {
+        "path": "/tmp/trr-p09-runtime/common-schedules-r1/schedule-b0-seed4010.safetensors",
+        "bytes": 27053864,
+        "sha256": "ba53cd4bad54bc88670f346a7f959eb0ce5278ec28eac8bdf6463cd44936ec6f",
+        "semantic_sha256": "9aaad9c030f2f9b801f91f956c97f858966580edd21229cebb350dcde358f2c3",
+        "steps": 13000,
+        "seed": 4010
+      },
+      "B1_schedule": {
+        "path": "/tmp/trr-p09-runtime/common-schedules-r1/schedule-b1-seed4010.safetensors",
+        "bytes": 27053864,
+        "sha256": "be0745ebb56e0ed39c2cf7e9c05a657209126f4c1c552242d3893c52d6718801",
+        "semantic_sha256": "8acdb2c4f8e5afba546ad01cbe0adae340eb841c8e3322c919e976434d29ede5",
+        "steps": 13000,
+        "seed": 4010
+      },
+      "loader_interface": "trr-p09.combined-b0-streamed-bank-loader.v1",
+      "B0_diagnostic_indices_sha256": "2dba4fdb243f742496cc010985820205a6d36f8c29b7ed3058369322d181f907",
+      "B1_diagnostic_indices_sha256": "670624a8ef439fe11b250f1ba432d87922d6ff53da38ff8514203880237b6933"
     }
   },
   "stage3_execution_contract_draft": {
     "path": "experiments/TRR-0010/planning/stage3_execution_contract_draft.json",
-    "bytes": 13106,
-    "sha256": "e580793d222a6a90af5cf4b9a3e9a579347ecfe59f0ad28c70b0991d1e71ab56",
-    "status": "DRAFT_PROVIDER_COMPATIBLE_BOUND_INPUTS_PENDING_FINAL_QUALIFICATION_AND_RUNTIME_BINDINGS",
+    "bytes": 18460,
+    "sha256": "c2e8e6e770cd7c94986601d9564c8d93871b4d0cfe5ca73501b88bf9a6941d09",
+    "status": "DRAFT_PROVIDER_COMPATIBLE_BOUND_INPUTS_AND_FIXED_CONFIG_PENDING_FINAL_QUALIFICATION_AND_RUNTIME_BINDINGS",
     "basis_v4_sha256": "3b0a68a4a05304e285c1fedcf8a2982bf4bef831e2e5bc0cebb20b8b2dba08b3",
     "truth_opened": false
   }
