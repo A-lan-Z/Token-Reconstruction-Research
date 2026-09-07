@@ -173,6 +173,10 @@ def test_explicit_prior_bindings_include_all_required_opaque_ledgers():
         "public_record_sha256": 384,
         "final_sequence_sha256": 384,
     }
+    assert bindings["approved_trr0009_replacement_opaque"][0]["counts"] == {
+        "public_record_sha256": 384,
+        "final_sequence_sha256": 384,
+    }
 
 
 def test_explicit_prior_bindings_fail_closed_when_any_required_ledger_is_missing():

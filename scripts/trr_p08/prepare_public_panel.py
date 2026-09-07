@@ -93,11 +93,26 @@ APPROVED_TRR0009_OPAQUE_COUNTS = {
     "public_record_sha256": 384,
     "final_sequence_sha256": 384,
 }
+APPROVED_TRR0009_REPLACEMENT_OPAQUE_PATH = Path(
+    "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/"
+    "TRR-0009/experiments/TRR-0009/selection_v2/opaque_source_sequence_reservation.json"
+)
+APPROVED_TRR0009_REPLACEMENT_OPAQUE_SHA256 = (
+    "73e07e1fd2c964eface6af387229bac738b96ecc5b7e1ee3059f57f9a8c2b4f8"
+)
+APPROVED_TRR0009_REPLACEMENT_OPAQUE_SCHEMA = (
+    "token-reconstruction.trr0009-opaque-source-sequence-reservation.v1"
+)
+APPROVED_TRR0009_REPLACEMENT_OPAQUE_COUNTS = {
+    "public_record_sha256": 384,
+    "final_sequence_sha256": 384,
+}
 
 REQUIRED_OPAQUE_LEDGER_KEYS = (
     "approved_trr0007_opaque",
     "approved_trr0008_opaque",
     "approved_trr0009_opaque",
+    "approved_trr0009_replacement_opaque",
 )
 
 
@@ -122,6 +137,13 @@ APPROVED_OPAQUE_SPECS = {
         "schema": APPROVED_TRR0009_OPAQUE_SCHEMA,
         "counts": APPROVED_TRR0009_OPAQUE_COUNTS,
         "label": "approved TRR-0009 opaque reservation",
+    },
+    APPROVED_TRR0009_REPLACEMENT_OPAQUE_PATH.resolve(): {
+        "key": "approved_trr0009_replacement_opaque",
+        "sha256": APPROVED_TRR0009_REPLACEMENT_OPAQUE_SHA256,
+        "schema": APPROVED_TRR0009_REPLACEMENT_OPAQUE_SCHEMA,
+        "counts": APPROVED_TRR0009_REPLACEMENT_OPAQUE_COUNTS,
+        "label": "approved TRR-0009 replacement opaque reservation",
     },
 }
 
