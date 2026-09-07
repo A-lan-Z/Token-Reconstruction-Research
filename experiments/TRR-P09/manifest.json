@@ -11,7 +11,16 @@
     "fixed_control_source_freeze": "experiments/TRR-P09/review/fixed-control-source-freeze-r1.json",
     "fixed_control_b0_r3_run_binding": "/tmp/trr-p09-runtime/fixed-control-b0-r3-run-binding.json",
     "fixed_control_b0_r3_lease": "/tmp/trr-p09-runtime/fixed-control-b0-r3-lease.json",
-    "fixed_control_b0_r3_preload": "/tmp/trr-p09-runtime/preload-r3-b0-gates.json"
+    "fixed_control_b0_r3_preload": "/tmp/trr-p09-runtime/preload-r3-b0-gates.json",
+    "fixed_control_b0_receipt": "/tmp/trr-p09-runtime/fixed-control-b0-r3/receipt.json",
+    "fixed_control_b1_receipt": "/tmp/trr-p09-runtime/fixed-control-b1-r3/receipt.json",
+    "fixed_control_b0_audit": "experiments/TRR-P09/results/current-fixed-r3/audit.json",
+    "fixed_control_validation_curves": "experiments/TRR-P09/review/fixed-control-validation-curves-r1.json",
+    "fixed_control_validation_figure": "experiments/TRR-P09/review/fixed-control-validation-curves-r1.png",
+    "fixed_control_validation_plotter": "scripts/trr_p09/plot_fixed_control_validation.py",
+    "fixed_control_b1_audit": "experiments/TRR-P09/results/expanded-fixed-r3/audit.json",
+    "fixed_control_b1_audit_summary": "experiments/TRR-P09/results/expanded-fixed-r3/SUMMARY.md",
+    "fixed_control_audit_helper": "scripts/trr_p09/audit_fixed_control_run.py"
   },
   "bank_planning": {
     "access_boundary": {
@@ -78,7 +87,7 @@
       "pending_joint_identity_and_capacity_contract": true,
       "target_records": 12000
     },
-    "status": "STAGE3_B0_FIT_IN_PROGRESS_NO_RESULT",
+    "status": "STAGE3_B0_B1_FITS_COMPLETE",
     "stage1_plan": {
       "path": "experiments/TRR-P09/planning/stage1-public-bank-plan.json",
       "sha256": "bca93d6099760791c5ecbf3be8177d250cc672c62b2177a3d72d79b934c3826c",
@@ -396,11 +405,7 @@
     "bank_contract_proposal": "7abfa5d",
     "runner_base": "b71feb433815f12e3274aa7525c8bbb23971e552"
   },
-  "remaining_bindings_before_real_run": [
-    "complete the active B0 fixed-control fit r3; no completed steps, metrics, or result have been reported",
-    "run exactly the B1 fixed-control fit after the B0 handoff under the frozen r5 configuration",
-    "freeze and hand off both fit outputs and metrics; keep target observation and evaluation truth unopened until the approved final handoff"
-  ],
+  "remaining_bindings_before_real_run": [],
   "schema": "token-reconstruction.trr-p09-implementation-manifest.v1",
   "scientific_execution": {
     "fit_run": true,
@@ -432,27 +437,65 @@
       "forward_batch_qualification": "QUALIFICATION_PASS"
     },
     "capture_status": "CAPTURE_COMPLETE_NO_TRUTH_WATCHDOG_PASS",
-    "gpu_released": false,
+    "gpu_released": true,
     "public_validation_completed": true,
     "fixed_diagnostic_bound": true,
-    "fixed_control_fit_qualification": "STATIC_PRELOAD_PASS_R3_ACTIVE",
-    "shared_fit_contract": "FROZEN_ACTIVE_R3_BINDING",
+    "fixed_control_fit_qualification": "B0_B1_AUDITED_COMPLETE",
+    "shared_fit_contract": "FROZEN_B0_B1_AUDITED",
     "fixed_metrics_implementation": "COMPLETE_SOURCE_FROZEN",
     "fixed_control_source_frozen": true,
     "fixed_control_source_freeze_status": "PASS_SOURCE_BYTES_FROZEN_NO_FIT_NO_TRUTH",
-    "fit_count": 0,
-    "optimizer_steps_executed": null,
-    "fit_run_status": "IN_PROGRESS",
-    "active_fit_arm": "current_fixed",
-    "active_fit_bank": "B0",
-    "active_fit_attempt": "r3",
+    "fit_count": 2,
+    "optimizer_steps_executed": 26000,
+    "fit_run_status": "COMPLETED_B0_B1_AUDITED",
+    "active_fit_arm": null,
+    "active_fit_bank": null,
+    "active_fit_attempt": null,
     "active_fit_source_commit": "c5b7c58ae6c358996fcdde8677996c44fc3a2809",
     "corrected_fit_source_commit": "e811207308518a2364785888ff39eb04d35e8c2f",
-    "optimizer_steps_status": "NOT_YET_REPORTED_ACTIVE_RUN",
-    "b1_started": false
+    "optimizer_steps_status": "B0_13000_B1_13000_COMPLETE",
+    "b1_started": true,
+    "fixed_control_receipts": {
+      "B0": {
+        "path": "/tmp/trr-p09-runtime/fixed-control-b0-r3/receipt.json",
+        "bytes": 7108670,
+        "sha256": "e0b52b43a6da7146a2eefa777cb59f02a29f0c5231528200dd5edd2c015e5ced"
+      },
+      "B1": {
+        "path": "/tmp/trr-p09-runtime/fixed-control-b1-r3/receipt.json",
+        "bytes": 7111987,
+        "sha256": "bc75d1c6837cd27bc2980cb448d4c309cecb279ab729b70db13367bac3eed47a"
+      }
+    },
+    "selected_steps": {
+      "B0": 8000,
+      "B1": 13000
+    },
+    "b1_audit": {
+      "status": "PASS_93_OF_93",
+      "path": "experiments/TRR-P09/results/expanded-fixed-r3/audit.json",
+      "bytes": 339623,
+      "sha256": "09cfefba2082a7f290891e4aabbb839f6585d8c38eb49892e26518613feb6fed",
+      "summary_path": "experiments/TRR-P09/results/expanded-fixed-r3/SUMMARY.md",
+      "summary_sha256": "34845ce76468bab6aa3ee433839fcd181b5111d745fbd594794da6c3bd244094",
+      "handoff_manifest_path": "experiments/TRR-P09/results/expanded-fixed-r3/repository_handoff_manifest.json",
+      "handoff_manifest_sha256": "ee9dda59aed21104e2cfa78562843fffaec063b3f21ab4b8216d330e22cadc6c",
+      "helper": {
+        "path": "scripts/trr_p09/audit_fixed_control_run.py",
+        "sha256": "33ab14b31a737c57f5dfb2b537fb871c43374a2a6b2ed1ba4a73dacfad5d3c64"
+      },
+      "unique_record_position_pairs": 1237403,
+      "repeated_record_position_draws": 5418597,
+      "sampled_records": 11996,
+      "records_in_batches": 11996,
+      "record_batch_exposures": 104000,
+      "full_bank_available_post_bos_positions": 1243710,
+      "truth_opened": false,
+      "model_forward_performed_by_audit": false
+    }
   },
   "source_commit": "0c7279e30a41a5016ff97c9bcaa5e282db2dabe0",
-  "status": "STAGE3_B0_FIT_IN_PROGRESS_NO_RESULT",
+  "status": "COMPLETE_AGENT2_FROZEN_CONTROLS_HANDOFF",
   "task_id": "TRR-P09",
   "validation": {
     "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p09_fixed_control_runner.py tests/test_trr_p09_fixed_control_adapter.py tests/test_trr_p09_bank_artifact.py",
@@ -579,7 +622,7 @@
     "evidence_commit": "31963b67394082ac8d67b3878920aa2789eb1921"
   },
   "publication": {
-    "status": "COMPLETE_OPEN_UNMERGED",
+    "status": "FINAL_HANDOFF_READY_FOR_APPROVED_PUBLICATION",
     "receipt": {
       "bytes": 913,
       "path": "experiments/TRR-P09/setup/publication-receipt-r1.json",
@@ -595,16 +638,17 @@
     "base_branch": "task/TRR-0009",
     "base_sha": "4602f98eeb03ac121d8bbc230d7e2b219551b914",
     "head_branch": "task/TRR-P09",
-    "evidence_commit": "c5b7c58ae6c358996fcdde8677996c44fc3a2809",
+    "evidence_commit": "a4da69f1f506ee852602f1094fcef7c2d9ad6f61",
     "approval_block_resolved_by_explicit_user_approval": true,
     "historical_approval_block": {
       "bytes": 1353,
       "path": "experiments/TRR-P09/setup/publication-attempt-r0.json",
       "sha256": "b401c25bab7deb396c34591eaf8d1f3f3731ad242acc650b2f29e1caec72a9cf",
       "status": "HISTORICAL_AUTO_REVIEW_BLOCK_RESOLVED"
-    }
+    },
+    "evidence_commit_scope": "Latest independently audited evidence commit; final publication commit is recorded by the remote PR and publication receipt."
   },
-  "source_head_commit": "c5b7c58ae6c358996fcdde8677996c44fc3a2809",
+  "source_head_commit": "a4da69f1f506ee852602f1094fcef7c2d9ad6f61",
   "cost_lineage": {
     "path": "experiments/TRR-P09/planning/starting-state-cost-lineage.md",
     "sha256": "8f81b372d51d58d61f88f6c778825240ad67e95ece8d6804bcf8542307e36c9e",
@@ -686,7 +730,7 @@
     "gpu_launch_authorized": false,
     "fresh_bank_generation_authorized": true
   },
-  "updated_utc": "2026-09-07T14:23:04Z",
+  "updated_utc": "2026-09-07T15:36:45Z",
   "r2_cpu_audit": {
     "receipt": "experiments/TRR-P09/setup/stage1-input-preparation-r2-receipt.json",
     "receipt_sha256": "e8e0e2bad1bba8ba71482dd28babfff4bcdf391cf224a95551705d2643171c5d",
@@ -1284,7 +1328,7 @@
   },
   "b0_fit_in_progress": {
     "task_id": "TRR-P09",
-    "status": "IN_PROGRESS_INITIAL_CHECKPOINT_ONLY",
+    "status": "COMPLETED_B0_HANDOFF",
     "arm": "current_fixed",
     "bank": "B0",
     "attempt": "r3",
@@ -1339,12 +1383,298 @@
     "initial_checkpoint_verified": true,
     "fit_started": true,
     "errors_reported": false,
-    "fit_runs_completed": 0,
-    "completed_steps": null,
-    "optimizer_steps_completed": null,
-    "metrics": null,
-    "result": null,
+    "fit_runs_completed": 1,
+    "completed_steps": 13000,
+    "optimizer_steps_completed": 13000,
+    "metrics": {
+      "Finance": 0.9837906003937008,
+      "Pile": 0.9585999015748031,
+      "equal_domain_mean": 0.971195250984252,
+      "token_rows": 48768
+    },
+    "result": {
+      "selected_step": 8000,
+      "selected_validation_mean": 0.971195250984252
+    },
     "b1_started": false,
+    "target_observation_opened": false,
+    "truth_opened": false,
+    "gpu_released": true,
+    "b1_audit_status": "PASS_93_OF_93"
+  },
+  "fixed_control_completion": {
+    "status": "COMPLETE",
+    "task_id": "TRR-P09",
+    "fit_count": 2,
+    "banks": [
+      {
+        "bank": "B0",
+        "attempt": "r3",
+        "status": "COMPLETED",
+        "receipt": {
+          "path": "/tmp/trr-p09-runtime/fixed-control-b0-r3/receipt.json",
+          "bytes": 7108670,
+          "sha256": "e0b52b43a6da7146a2eefa777cb59f02a29f0c5231528200dd5edd2c015e5ced"
+        },
+        "source_commit": "c5b7c58ae6c358996fcdde8677996c44fc3a2809",
+        "watchdog": {
+          "path": "/tmp/trr-p09-runtime/watchdog-fixed-control-b0-r3/finish.json",
+          "bytes": 1094,
+          "sha256": "87bb9f7e29a99482f9677096fc30f95a71b0b504eed05d6f3c353886e7c713fb",
+          "status": "PASS",
+          "elapsed_seconds": 588.368602
+        },
+        "lease_release": {
+          "path": "/tmp/trr-p09-runtime/fixed-control-b0-r3-lease-release.json",
+          "bytes": 486,
+          "sha256": "361db2a472abc13ca9069963a58167c65ef620201747f4e45408cecddae3dd39",
+          "status": "RELEASED"
+        },
+        "bank_manifest": {
+          "path": "/tmp/trr-p09/experiments/TRR-P09/setup/b0-immutable-loader-binding-r1.json",
+          "bytes": 5070,
+          "sha256": "7e6d7d3ac0ceec77f8b1e961a1a74b0675fd43e6ef3e4e77dcdd368d0c27445d"
+        },
+        "schedule": {
+          "path": "/tmp/trr-p09-runtime/common-schedules-r1/schedule-b0-seed4010.safetensors",
+          "sha256": "ba53cd4bad54bc88670f346a7f959eb0ce5278ec28eac8bdf6463cd44936ec6f",
+          "semantic_sha256": "9aaad9c030f2f9b801f91f956c97f858966580edd21229cebb350dcde358f2c3"
+        },
+        "updates": 13000,
+        "position_draws": 6656000,
+        "records": 1200,
+        "post_bos_positions": 124371,
+        "selected_step": 8000,
+        "selected_checkpoint": {
+          "path": "/tmp/trr-p09-runtime/fixed-control-b0-r3/states/checkpoint_step_008000.safetensors",
+          "sha256": "d2477cdf11422cb2d028196d72775825246f65f7e07394952375b3929627475a",
+          "logical_state_sha256": "58aeaf1b3e16c760cc3bbaccd8413a5f2674fd07f59e4f527a53b8bf3ca0243a"
+        },
+        "validation": {
+          "Finance": 0.9837906003937008,
+          "Pile": 0.9585999015748031,
+          "equal_domain_mean": 0.971195250984252,
+          "token_rows": 48768
+        },
+        "timing_seconds": {
+          "optimizer_update": 487.291513516946,
+          "stream_load": 47.97053069571848,
+          "validation": 12.811654516001,
+          "inner_wall": 574.7391980069806,
+          "outer_watchdog": 588.368602
+        },
+        "resource_peak": {
+          "gpu_reserved_bytes": 2959081472,
+          "gpu_allocated_bytes": 2533930496,
+          "gpu_free_low_water_bytes": 12632195072,
+          "host_available_low_water_bytes": 18178609152
+        },
+        "full_bank_metric_denominator": {
+          "records": 1200,
+          "post_bos_positions": 124371,
+          "full_vocab_logits_rows": 124371
+        },
+        "audit": {
+          "path": "experiments/TRR-P09/results/current-fixed-r3/audit.json",
+          "bytes": 177488,
+          "sha256": "1f09e48753ecf5ef3561391465e33eca2ead713c48122633db4e0b08bc6bd6c",
+          "status": "PASS_5_OF_5"
+        }
+      },
+      {
+        "bank": "B1",
+        "attempt": "r3",
+        "status": "COMPLETED",
+        "receipt": {
+          "path": "/tmp/trr-p09-runtime/fixed-control-b1-r3/receipt.json",
+          "bytes": 7111987,
+          "sha256": "bc75d1c6837cd27bc2980cb448d4c309cecb279ab729b70db13367bac3eed47a"
+        },
+        "source_commit": "319f9a44d5739064197e6b53a22a4671b4a451a1",
+        "watchdog": {
+          "path": "/tmp/trr-p09-runtime/watchdog-fixed-control-b1-r3/finish.json",
+          "bytes": 1096,
+          "sha256": "a60628215e6f300f1a2f769144831891677c6680bd40e5ba66dcd01b98fbcf46",
+          "status": "PASS",
+          "elapsed_seconds": 1782.489374
+        },
+        "lease_release": {
+          "path": "/tmp/trr-p09-runtime/fixed-control-b1-r3-lease-release.json",
+          "bytes": 513,
+          "sha256": "c306d34f44bfdacddcb4b8486ea0d51c17606d974bb88d09a217aafbd3193f8e",
+          "status": "RELEASED"
+        },
+        "bank_manifest": {
+          "path": "/tmp/trr-p09-runtime/stage1-capture-r2/bank_manifest-qualified-r1.json",
+          "bytes": 145390,
+          "sha256": "0e14dbf74c947cfc6c586e7a5dbf76a27d8f0522fb8e54d2f98c6067bb36d196"
+        },
+        "schedule": {
+          "path": "/tmp/trr-p09-runtime/common-schedules-r1/schedule-b1-seed4010.safetensors",
+          "sha256": "be0745ebb56e0ed39c2cf7e9c05a657209126f4c1c552242d3893c52d6718801",
+          "semantic_sha256": "8acdb2c4f8e5afba546ad01cbe0adae340eb841c8e3322c919e976434d29ede5"
+        },
+        "updates": 13000,
+        "position_draws": 6656000,
+        "records": 12000,
+        "post_bos_positions": 1243710,
+        "selected_step": 13000,
+        "selected_checkpoint": {
+          "path": "/tmp/trr-p09-runtime/fixed-control-b1-r3/states/checkpoint_step_013000.safetensors",
+          "sha256": "5757506003f0a4b82cb1cd6de2a82f11345f2dbcbce13c8cf18c4f515de3ec3a",
+          "logical_state_sha256": "209155048df936359870a1419803800d7bad4ab72a46e09bf3287648079964da"
+        },
+        "validation": {
+          "Finance": 0.9938484251968503,
+          "Pile": 0.9950172244094488,
+          "equal_domain_mean": 0.9944328248031495,
+          "token_rows": 48768
+        },
+        "timing_seconds": {
+          "optimizer_update": 488.3537717303261,
+          "stream_load": 1091.4970333801466,
+          "validation": 13.162625486031175,
+          "inner_wall": 1762.8824152240122,
+          "outer_watchdog": 1782.489374
+        },
+        "resource_peak": {
+          "gpu_reserved_bytes": 2959081472,
+          "gpu_allocated_bytes": 2533930496,
+          "gpu_free_low_water_bytes": 12632195072,
+          "host_available_low_water_bytes": 16795742208
+        },
+        "full_bank_metric_denominator": {
+          "records": 12000,
+          "post_bos_positions": 1243710,
+          "full_vocab_logits_rows": 1243710
+        },
+        "audit": {
+          "status": "PASS_93_OF_93",
+          "path": "experiments/TRR-P09/results/expanded-fixed-r3/audit.json",
+          "bytes": 339623,
+          "sha256": "09cfefba2082a7f290891e4aabbb839f6585d8c38eb49892e26518613feb6fed",
+          "summary_path": "experiments/TRR-P09/results/expanded-fixed-r3/SUMMARY.md",
+          "summary_sha256": "34845ce76468bab6aa3ee433839fcd181b5111d745fbd594794da6c3bd244094",
+          "handoff_manifest_path": "experiments/TRR-P09/results/expanded-fixed-r3/repository_handoff_manifest.json",
+          "handoff_manifest_sha256": "ee9dda59aed21104e2cfa78562843fffaec063b3f21ab4b8216d330e22cadc6c",
+          "helper": {
+            "path": "scripts/trr_p09/audit_fixed_control_run.py",
+            "sha256": "33ab14b31a737c57f5dfb2b537fb871c43374a2a6b2ed1ba4a73dacfad5d3c64"
+          },
+          "unique_record_position_pairs": 1237403,
+          "repeated_record_position_draws": 5418597,
+          "sampled_records": 11996,
+          "records_in_batches": 11996,
+          "record_batch_exposures": 104000,
+          "full_bank_available_post_bos_positions": 1243710,
+          "truth_opened": false,
+          "model_forward_performed_by_audit": false
+        }
+      }
+    ],
+    "optimizer_steps_total": 26000,
+    "position_draws_total": 13312000,
+    "validation_selection_metric": "domain_balanced_token_accuracy",
+    "selection_rule": "earliest strict maximum; step zero eligible",
+    "step_zero_equal_domain_mean": 0.9681809793307087,
+    "selected_mean_gain_B1_minus_B0": 0.0232375738188975,
+    "selected_mean_gain_percentage_points": 2.32375738188975,
+    "full_bank_denominators_audited": true,
+    "validation_only": true,
+    "target_observation_opened": false,
+    "truth_opened": false,
+    "gpu_released": true,
+    "b1_audit_gate": "PASS_93_OF_93",
+    "phase_cost_scope": "Per-arm process and watchdog timings are reported separately; component and wall times are not summed.",
+    "ancestor_lineage": {
+      "path": "experiments/TRR-P09/planning/starting-state-cost-lineage.md",
+      "sha256": "8f81b372d51d58d61f88f6c778825240ad67e95ece8d6804bcf8542307e36c9e",
+      "starting_state_sha256": "5cada4a3d04bb5477eaf0be25ed8d8ac25a89283223e9ba14b18fa10416bee14",
+      "pretraining_or_ancestor_cost": "NOT_INCLUDED_OR_REPORTED_IN_FIT_RECEIPTS"
+    },
+    "historical_failures_preserved": [
+      {
+        "status": "EXCLUDED_PRE_MODEL_SUPPLEMENT_HASH_REJECTED",
+        "path": "/tmp/trr-p09-runtime/fixed-control-b0-r2-lease-release.json",
+        "sha256": "24202224fac140ae812335c577cd221703a8ed48523989f6e8081f097b7a9c8f"
+      },
+      {
+        "status": "EXCLUDED_PRE_CAPTURE_QUALIFICATION_ATTEMPTS",
+        "path": "experiments/TRR-P09/setup/stage1-qualification-attempts-r2.json",
+        "sha256": "21187abe870792af65b8aacc9f691ab81558b7483b0ef5e720af6a8dce621592"
+      },
+      {
+        "status": "EXCLUDED_R1_SOURCE_COMPILATION",
+        "path": "experiments/TRR-P09/setup/stage1-input-preparation-r1-receipt.json",
+        "sha256": "4314ee55f64f15e88e25319d0a80860a152a83b7d41b02f9539858aef23d0153"
+      }
+    ],
+    "plot": {
+      "script": "scripts/trr_p09/plot_fixed_control_validation.py",
+      "script_sha256": "91557a7fd4ce2825ece1d86b5869263a2ab752cb2947f6e79513e4aaf44fb247",
+      "data": "experiments/TRR-P09/review/fixed-control-validation-curves-r1.json",
+      "data_sha256": "510d8983159ef4fda6039982914367f4161229d3b211c3dc62212d220c4b858a",
+      "figure": "experiments/TRR-P09/review/fixed-control-validation-curves-r1.png",
+      "figure_sha256": "863f02be97af61084a734ae7024bdd09eedb85d5f8ed7110000ee541f18f37d2",
+      "scope": "Three-panel Finance/Pile/equal-domain-mean public validation only; not final-panel performance."
+    },
+    "audit_provenance": {
+      "shared_helper": {
+        "path": "scripts/trr_p09/audit_fixed_control_run.py",
+        "sha256": "33ab14b31a737c57f5dfb2b537fb871c43374a2a6b2ed1ba4a73dacfad5d3c64"
+      },
+      "b1_audit": {
+        "status": "PASS_93_OF_93",
+        "path": "experiments/TRR-P09/results/expanded-fixed-r3/audit.json",
+        "bytes": 339623,
+        "sha256": "09cfefba2082a7f290891e4aabbb839f6585d8c38eb49892e26518613feb6fed",
+        "summary_path": "experiments/TRR-P09/results/expanded-fixed-r3/SUMMARY.md",
+        "summary_sha256": "34845ce76468bab6aa3ee433839fcd181b5111d745fbd594794da6c3bd244094",
+        "handoff_manifest_path": "experiments/TRR-P09/results/expanded-fixed-r3/repository_handoff_manifest.json",
+        "handoff_manifest_sha256": "ee9dda59aed21104e2cfa78562843fffaec063b3f21ab4b8216d330e22cadc6c",
+        "helper": {
+          "path": "scripts/trr_p09/audit_fixed_control_run.py",
+          "sha256": "33ab14b31a737c57f5dfb2b537fb871c43374a2a6b2ed1ba4a73dacfad5d3c64"
+        },
+        "unique_record_position_pairs": 1237403,
+        "repeated_record_position_draws": 5418597,
+        "sampled_records": 11996,
+        "records_in_batches": 11996,
+        "record_batch_exposures": 104000,
+        "full_bank_available_post_bos_positions": 1243710,
+        "truth_opened": false,
+        "model_forward_performed_by_audit": false
+      },
+      "b0_audit": {
+        "path": "experiments/TRR-P09/results/current-fixed-r3/audit.json",
+        "bytes": 177488,
+        "sha256": "1f09e48753ecf5ef3561391465e33eca2ead713c48122633db4e0b08bc6bd6c",
+        "status": "PASS_5_OF_5"
+      },
+      "scope": "CPU-only immutable receipt/schedule/state audit; no new fit, scoring, model forward, H activation deserialization, private truth, or final panel access."
+    },
+    "scope_status": "COMPLETE_AGENT2_FROZEN_CONTROLS_HANDOFF",
+    "publication_ready": true,
+    "audit_clarification_sidecars": [
+      {
+        "path": "experiments/TRR-P09/results/current-fixed-r3/audit_provenance_sidecar.json",
+        "bytes": 9753,
+        "sha256": "a632aacac9e8f27ba7d110a00859005841f3febf015622d3e35e6af3f00d0cfa"
+      },
+      {
+        "path": "experiments/TRR-P09/results/expanded-fixed-r3/audit_exposure_label_clarification.json",
+        "bytes": 1817,
+        "sha256": "0997eb87761952d7cd668a8b0254dbc54881aa9d3672fff8eba787030121410f"
+      }
+    ],
+    "b0_audit_helper_provenance": "NOT_RETAINED; original audit preserved; B1 helper did not generate B0 audit"
+  },
+  "scope_completion": {
+    "status": "COMPLETE_AGENT2_FROZEN_CONTROLS_HANDOFF",
+    "completed_utc": "2026-09-07T15:36:45Z",
+    "remaining_outside_scope": [
+      "final-panel/evaluation-truth access remains unopened and belongs to the approved downstream evaluation scope"
+    ],
     "target_observation_opened": false,
     "truth_opened": false
   }
