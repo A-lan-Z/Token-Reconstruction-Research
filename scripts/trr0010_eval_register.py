@@ -470,7 +470,7 @@ def _truth_payload_record(value: Any, *, description: str) -> dict[str, Any]:
     path = value.get("path")
     size = value.get("bytes")
     digest = value.get("sha256")
-    if not isinstance(path, str) or not path or not isinstance(size, int) or size < 0:
+    if not isinstance(path, str) or not path or isinstance(size, bool) or not isinstance(size, int) or size < 0:
         raise RegisterError(f"{description} binding is malformed")
     if not isinstance(digest, str) or len(digest) != 64 or any(char not in "0123456789abcdef" for char in digest):
         raise RegisterError(f"{description} hash is malformed")
@@ -552,7 +552,7 @@ def validate_truth_descriptor(
     cells = descriptor.get("cells")
     if not isinstance(frozen_observations, Mapping) or not isinstance(cells, Sequence) or isinstance(cells, (str, bytes, bytearray)):
         raise RegisterError("truth descriptor cell/order metadata is absent")
-    if [row.get("cell_id") for row in cells if isinstance(row, Mapping)] != list(gate.CELL_ORDER):
+    if len(cells) != len(gate.CELL_ORDER) or [row.get("cell_id") for row in cells if isinstance(row, Mapping)] != list(gate.CELL_ORDER):
         raise RegisterError("truth descriptor cell metadata order changed")
     checked_cells: list[dict[str, Any]] = []
     for row, cell_id in zip(cells, gate.CELL_ORDER):
@@ -568,7 +568,8 @@ def validate_truth_descriptor(
             "record_ids_sha256": str(row["record_ids_sha256"]),
         })
 
-    payload = _truth_payload_record(descriptor.get("truth_payload"), description="truth payload")
+    payload_value = descriptor.get("truth_payload", descriptor.get("sidecar"))
+    payload = _truth_payload_record(payload_value, description="truth payload")
     return {
         "truth_descriptor": descriptor_record,
         "descriptor": descriptor,
