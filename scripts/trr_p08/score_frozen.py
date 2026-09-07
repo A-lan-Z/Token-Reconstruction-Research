@@ -417,7 +417,16 @@ def _artifact_selection_identity(
     selection_path = _artifact_resolve_record(selection_binding, root=root, description="P08 source selection")
     selection_record = _artifact_verify_record(selection_binding, root=root, description="P08 source selection")
     selection = _artifact_load_json(selection_path, description="P08 source selection")
-    if selection.get("task_id") != TASK_ID or selection.get("truth_opened") is not False:
+    # The published P08 selector records access state under the shared
+    # ``access_boundary`` object. Keep accepting the small synthetic/legacy
+    # fixture form with a top-level flag, but resolve to one explicit value and
+    # fail closed when neither representation says truth was unopened.
+    truth_opened = selection.get("truth_opened")
+    if truth_opened is None:
+        boundary = selection.get("access_boundary")
+        if isinstance(boundary, Mapping):
+            truth_opened = boundary.get("truth_opened")
+    if selection.get("task_id") != TASK_ID or truth_opened is not False:
         raise P08ScoreError("P08 source selection is not a frozen no-truth artifact")
     records = selection.get("selection_rule", {}).get("records")
     if not isinstance(records, Mapping) or set(records) != set(DOMAINS):

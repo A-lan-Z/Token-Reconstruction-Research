@@ -68,7 +68,7 @@ def _artifact_fixture(tmp_path: Path) -> dict[str, Path | str]:
             domain: [{"record_id": record_ids[domain][i], "final_sequence_sha256": sequence_hashes[domain][i]} for i in range(256)]
             for domain in DOMAINS
         }},
-        "truth_opened": False,
+        "access_boundary": {"truth_opened": False, "source_text_written": False, "token_ids_written": False},
     }, sort_keys=True), encoding="utf-8")
     selection_record = _record(selection_path)
 
