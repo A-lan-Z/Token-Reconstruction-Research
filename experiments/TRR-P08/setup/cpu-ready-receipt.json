@@ -1,0 +1,76 @@
+{
+  "schema": "token-reconstruction.trr-p08-cpu-ready-receipt.v1",
+  "task_id": "TRR-P08",
+  "status": "CPU_READY_AWAITING_COORDINATION_APPROVAL",
+  "created_utc": "2026-09-07T00:50:16.535533+00:00",
+  "worktree": "/tmp/trr-p08",
+  "branch": "task/TRR-P08",
+  "parent": {
+    "branch": "task/TRR-P07",
+    "commit": "cffb10c14d3b74f4bd0227804e3ac380aa475686"
+  },
+  "plan": {
+    "path": "experiments/TRR-P08/plan.json",
+    "status": "FROZEN_DESIGN_PRE_FIT",
+    "sha256": "9d1eb8dca89c76f4064c0c380636cb9d585672f7fae796d5295d6507b788caa3",
+    "fit_arms": 8,
+    "records_per_domain": 256,
+    "staged_updates": "1000 affine-only + 2000 complete"
+  },
+  "cpu_preparation": {
+    "source_universe_runner": "scripts/trr_p08/prepare_public_panel.py",
+    "capture_runner": "scripts/trr_p08/capture_public.py",
+    "prediction_schema_validator": "scripts/trr_p08/run_predictions.py::_validate_observation_manifest",
+    "selection_started": false,
+    "capture_started": false,
+    "source_rows_enumerated": false,
+    "truth_opened": false,
+    "model_loaded": false,
+    "gpu_started": false
+  },
+  "verification": {
+    "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p08_panel_adapter.py tests/test_trr_p08_source_binding.py tests/test_trr_p08_fit_staged.py",
+    "result": "17 passed",
+    "payload_loaded": false,
+    "gpu_started": false,
+    "manifest_to_prediction_validator": "synthetic metadata fixture passed"
+  },
+  "source_selection_contract": {
+    "domains": [
+      "pile",
+      "finance"
+    ],
+    "records_per_domain": 256,
+    "total_unique_records": 512,
+    "targets": [
+      "public_base",
+      "public_lora_2601"
+    ],
+    "selection_seed": "root approval required",
+    "ranges": "root approval required",
+    "approved_opaque_ledgers": "root approval required",
+    "global_disjointness_claim": false
+  },
+  "resource_snapshot_read_only": {
+    "gpu": {
+      "name": "NVIDIA GeForce RTX 5080",
+      "total_mib": 16303,
+      "used_mib": 2982,
+      "free_mib": 12996,
+      "temperature_c": 28
+    },
+    "host_mem_available_kib": 20183272,
+    "job_started": false
+  },
+  "next_qualifier": {
+    "preflight": "PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode preflight --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --output-root experiments/TRR-P08/runtime/preflight-r2 --device cpu --max-seconds 120",
+    "qualify_inner_command": "PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode qualify --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --preflight-receipt experiments/TRR-P08/runtime/preflight-r2/preflight.json --output-root experiments/TRR-P08/runtime/qualification-r1 --device cuda --torch-threads 4 --torch-interop-threads 1 --minimum-free-gib 8 --maximum-gpu-reserved-gib 6 --maximum-host-rss-gib 16 --minimum-host-available-gib 10 --max-seconds 1800",
+    "outer_guard": "scripts/trr_p06/resource_watchdog.py with create-only output, 1800-second timeout, max RSS 16 GiB, minimum host available 10 GiB; root must authorize the GPU window."
+  },
+  "coordination_boundary": {
+    "auto_review_message_rejected": true,
+    "rejection_summary": "A detailed user-visible coordination send containing internal project provenance, filesystem paths, hashes, and live resource metadata was rejected by automatic review.",
+    "retry_attempted": false,
+    "pending_root_question": "Approve the frozen source-universe ranges/seed and exclusive qualification/capture resource window; no selection, capture, or truth access is authorized yet."
+  }
+}

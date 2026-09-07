@@ -1,7 +1,7 @@
 {
   "schema": "token-reconstruction.task-local-state.v1",
   "task_id": "TRR-P08",
-  "status": "DESIGN_FROZEN_NO_SELECTION_NO_CAPTURE",
+  "status": "CPU_READY_AWAITING_COORDINATION_APPROVAL",
   "branch": "task/TRR-P08",
   "worktree": "/tmp/trr-p08",
   "parent": {
@@ -37,9 +37,9 @@
     "fresh_capture_started": false,
     "fit_or_optimizer_steps_started": false
   },
-  "next_step": "Bind the root-approved source universe and exclusion descriptors, then enumerate the fresh panel; no source selection or capture has started.",
+  "next_step": "Await root coordination approval for the frozen source-universe seed/ranges and exclusive qualification window; then rerun committed preflight before qualification. No source selection, capture, GPU, fit, or truth access has started.",
   "created_utc": "2026-09-07T00:12:47.039245+00:00",
-  "updated_utc": "2026-09-07T00:32:29.543462+00:00",
+  "updated_utc": "2026-09-07T00:50:16.535533+00:00",
   "plan": {
     "path": "experiments/TRR-P08/plan.json",
     "status": "FROZEN_DESIGN_PRE_FIT",
@@ -58,11 +58,15 @@
     "source_binding_module": "scripts/trr_p08/source_binding.py",
     "source_binding_tests": "tests/test_trr_p08_source_binding.py",
     "fit_staged_preflight_smoke": "experiments/TRR-P08/setup/fit-staged-preflight-smoke.json",
-    "fit_staged_preflight_final": "experiments/TRR-P08/setup/fit-staged-preflight-final.json"
+    "fit_staged_preflight_final": "experiments/TRR-P08/setup/fit-staged-preflight-final.json",
+    "panel_preparation_runner": "scripts/trr_p08/prepare_public_panel.py",
+    "capture_runner": "scripts/trr_p08/capture_public.py",
+    "panel_adapter_tests": "tests/test_trr_p08_panel_adapter.py",
+    "cpu_ready_receipt": "experiments/TRR-P08/setup/cpu-ready-receipt.json"
   },
   "verification": {
-    "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p08_source_binding.py",
-    "result": "4 passed",
+    "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p08_panel_adapter.py tests/test_trr_p08_source_binding.py tests/test_trr_p08_fit_staged.py",
+    "result": "17 passed",
     "payload_loaded": false,
     "metadata_preflight": {
       "command": "PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode preflight --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --output-root /tmp/trr-p08-preflight-smoke-final-20260907 --device cpu --max-seconds 120",
@@ -108,12 +112,14 @@
       "payload_loaded": false,
       "gpu_started": false,
       "resource_scope": "metadata-only shape and initialization binding; qualification remains separately gated"
-    }
+    },
+    "panel_adapter_payload_loaded": false,
+    "capture_consumer_schema": "token-reconstruction.trr-p08-public-observation-manifest.v1 accepted by scripts/trr_p08/run_predictions.py"
   },
   "pending": [
-    "root-approved source-universe and exclusion descriptor bindings",
-    "source enumeration and fresh capture after source freeze",
-    "resource qualification and GPU reservation",
+    "root coordination approval of source-universe seed, ranges, and approved opaque ledgers",
+    "rerun committed source-only preflight, then guarded largest-cell qualification",
+    "source enumeration and fresh paired capture after source freeze and GPU authorization",
     "implementation eight-fit matrix and prediction freeze"
   ]
 }
