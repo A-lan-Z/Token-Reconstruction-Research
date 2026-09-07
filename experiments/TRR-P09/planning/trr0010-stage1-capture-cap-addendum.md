@@ -11,8 +11,8 @@ open truth.
 STAGE1 has one target condition, `public_base`, and 10,800 new records. The
 forward remains the inherited padded batch of 8 records by 192 tokens. Each
 storage shard contains 64 records, which is only an I/O boundary: each shard
-must be computed as eight native B8 forwards, and a final 32-record shard as
-four B8 forwards. The storage shard must never become a B64 forward or a
+must be computed as eight native B8 forwards, and a final 48-record shard as
+six B8 forwards. The storage shard must never become a B64 forward or a
 microbatching substitution.
 
 STAGE1 stores full H192 BF16 activations only. It does not create a duplicate
