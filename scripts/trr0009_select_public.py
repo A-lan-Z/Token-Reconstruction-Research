@@ -157,11 +157,13 @@ def _write_create_only(path: Path, value: Mapping[str, Any], *, description: str
 def _task_path(value: Path | str, *, root: Path, description: str) -> Path:
     raw = Path(value).expanduser()
     path = (raw if raw.is_absolute() else root / raw).resolve()
-    task_root = (root / "experiments" / "TRR-0009" / "selection").resolve()
-    try:
-        path.relative_to(task_root)
-    except ValueError as exc:
-        raise SelectionError(f"{description} must be below {task_root}: {path}") from exc
+    task_roots = tuple(
+        (root / "experiments" / "TRR-0009" / name).resolve()
+        for name in ("selection", "selection_v2")
+    )
+    if not any(path == task_root or task_root in path.parents for task_root in task_roots):
+        allowed = " or ".join(str(task_root) for task_root in task_roots)
+        raise SelectionError(f"{description} must be below {allowed}: {path}")
     if path.is_symlink():
         raise SelectionError(f"{description} is a symlink: {path}")
     return path
