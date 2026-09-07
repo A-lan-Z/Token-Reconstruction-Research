@@ -1387,6 +1387,28 @@ def compile_inputs(args: argparse.Namespace) -> dict[str, Any]:
         scan_stats[key] = report
     b0_parent_rows, b0_parent_meta = load_b0_control_parents(published_root)
     rows, b0_control_audit = bind_b0_controlled_rows(rows, b0_records, b0_token, b0_parent_rows, datasets, tokenizer, identity_ids, deadline)
+    # The helper's signed-cycle comparison is historical r1 provenance.  The
+    # corrected r2 bank uses immutable B0 templates for its additions, so keep
+    # the comparison nested and bind the actual r2 occurrence digest below.
+    historical_cycle_audit = {
+        key: b0_control_audit.pop(key)
+        for key in (
+            "b0_replacement_occurrences",
+            "b0_replacement_token_digest",
+            "b0_actual_replacement_token_digest",
+            "b0_actual_replacement_token_count",
+            "b0_identity_cycle_matches_signed_recipe",
+            "b0_provenance_status",
+            "signed_b1_cycle_count",
+            "signed_b1_replacement_token_digest",
+            "full_ten_cycle_identity_digest",
+            "full_ten_cycle_composition",
+            "full_replacement_occurrence_count",
+        )
+        if key in b0_control_audit
+    }
+    historical_cycle_audit["basis"] = "legacy r1 signed-cycle comparison; not the corrected r2 controlled-occurrence sequence"
+    b0_control_audit["historical_r1_signed_recipe_comparison"] = historical_cycle_audit
     b0_template_buckets = build_b0_template_buckets(rows[:B0_ROWS])
     template_assignments: dict[tuple[str, int, str], tuple[int, InputRow]] = {}
     template_selection_audit: dict[tuple[str, int], dict[str, Any]] = {}
@@ -1422,6 +1444,30 @@ def compile_inputs(args: argparse.Namespace) -> dict[str, Any]:
         for key, value in sorted(template_selection_audit.items())
     }
     b0_control_audit["r2_template_assignment"] = controlled_template_assignment_audit(rows[:B0_ROWS], rows[B0_ROWS:])
+    b0_actual_values = tuple(
+        int(value)
+        for row in rows[:B0_ROWS]
+        if row.synthetic
+        for value in row.replacement_token_ids
+    )
+    r2_controlled_values = tuple(
+        int(value)
+        for row in rows[B0_ROWS:]
+        if row.synthetic
+        for value in row.replacement_token_ids
+    )
+    if len(b0_actual_values) != CONTROLLED_IDS or len(r2_controlled_values) != ADDITION_ROWS // 10 * REPLACEMENTS_PER_ROW:
+        raise PreparationErrorLocal("r2 controlled replacement occurrence counts changed")
+    b0_control_audit["r2_actual_occurrence_audit"] = {
+        "b0_occurrences": len(b0_actual_values),
+        "controlled_addition_occurrences": len(r2_controlled_values),
+        "full_replacement_occurrence_count": len(b0_actual_values) + len(r2_controlled_values),
+        "b0_actual_replacement_token_digest": digest_bytes(canonical_bytes(b0_actual_values)),
+        "controlled_addition_replacement_token_digest": digest_bytes(canonical_bytes(r2_controlled_values)),
+        "full_replacement_occurrence_digest": digest_bytes(canonical_bytes(b0_actual_values + r2_controlled_values)),
+        "composition": "immutable_published_b0_actual_3600_plus_r2_template_assignments_32400",
+        "legacy_signed_recipe_comparison": "nested_under_historical_r1_signed_recipe_comparison",
+    }
     diagnostic = per_bank_diagnostic_indices(rows)
     exposure = exposure_summary(rows)
     # Semantic B0 input prefix digest binds the actual copied token/mask/position bytes.
