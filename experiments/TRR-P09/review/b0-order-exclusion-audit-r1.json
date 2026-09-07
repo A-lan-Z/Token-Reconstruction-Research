@@ -1,0 +1,102 @@
+{
+  "schema": "token-reconstruction.trr-p09-b0-order-exclusion-audit.v1",
+  "task_id": "TRR-P09",
+  "status": "R1_AUDIT_ONLY_NO_RECOMPILE",
+  "scope": {
+    "read_only_inputs": true,
+    "raw_source_text_read": false,
+    "token_values_published": false,
+    "model_or_activation_loaded": false,
+    "truth_opened": false,
+    "r1_output_mutated": false
+  },
+  "r1_bindings": {
+    "preparation_receipt": {
+      "path": "experiments/TRR-P09/setup/stage1-input-preparation-r1-receipt.json",
+      "sha256": "4314ee55f64f15e88e25319d0a80860a152a83b7d41b02f9539858aef23d0153"
+    },
+    "output_manifest": {
+      "path": "/tmp/trr-p09-runtime/stage1-input-preparation-r1/preparation_manifest.json",
+      "sha256": "c6d6915bb0e539336928725e9c32288157f15dbb96fe08544925e84cc40474e1"
+    },
+    "records": {
+      "path": "/tmp/trr-p09-runtime/stage1-input-preparation-r1/records.json",
+      "sha256": "30fe421fd3fb6b76e4aec79324fafd73a398ed901e07b4681b815cce2dc98a4"
+    },
+    "signed_plan": {
+      "path": "experiments/TRR-P09/planning/stage1-public-bank-plan.json",
+      "sha256": "bca93d6099760791c5ecbf3be8177d250cc672c62b2177a3d72d79b934c3826c"
+    }
+  },
+  "b0_order_identity_audit": {
+    "observed_occurrences": 3600,
+    "observed_distinct_ids": 3600,
+    "observed_multiplicity_min": 1,
+    "observed_multiplicity_max": 1,
+    "signed_occurrences": 3600,
+    "signed_distinct_ids": 3600,
+    "signed_multiplicity_min": 1,
+    "signed_multiplicity_max": 1,
+    "ordered_equal_positions": 0,
+    "set_intersection": 3600,
+    "observed_only": 0,
+    "signed_only": 0,
+    "observed_order_digest": "8499eb0e0706b6a8c74a258d09857336e135eb345bbc3603c6940a23a991d56e",
+    "signed_order_digest": "a87ac1c5bcbcaf0cea04568d6b4090a8f3fd90fcbc2bc71704165d928c3630be",
+    "observed_set_digest": "252b3cfee27b98f5fc72abc0c50c8f5ac1bd0157cc8723506311f8a0592197c1",
+    "signed_set_digest": "252b3cfee27b98f5fc72abc0c50c8f5ac1bd0157cc8723506311f8a0592197c1",
+    "interpretation": "The immutable B0 identity set and multiplicities exactly match the signed 3600-ID recipe; only the order differs."
+  },
+  "r1_composed_controlled_audit": {
+    "b1_sidecar_occurrences": 32400,
+    "b1_sidecar_distinct_ids": 3600,
+    "b1_sidecar_multiplicity_min": 9,
+    "b1_sidecar_multiplicity_max": 9,
+    "b1_sidecar_matches_signed_order_x9": true,
+    "b1_sidecar_multiset_matches_observed_b0_x9": true,
+    "signed_b1_order_digest": "18d60ccf247ec95dd1f5922b57cf6cfdde7e8b84089e7335ba9e69e81cfa3b0b",
+    "signed_b1_occurrences": 36000,
+    "composed_digest_observed_b0_plus_signed_b1": "dcc8448a44621002ab78f9aa21e27b93ae750a6177d4c74b35ffd646a73879e5",
+    "composed_digest_observed_b0_plus_observed_b0_x9": "02fad7d719cc486ea0b47b557dd3b23858238f538896613ff53e0f94a56eddaa",
+    "interpretation": "The additions have the exact B0 identity multiset nine times (32400 occurrences); the discrepancy is only ordered/template assignment, including joint domain/length/offset/token placement.",
+    "r1_disposition": "PRESERVE_IMMUTABLE_AND_EXCLUDE_FROM_ANY_REVISED_CAPTURE"
+  },
+  "exclusion_audit": {
+    "published_parent_manifest": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_bank_v5/public_parent_exclusion_manifest.json",
+      "bytes": 1179665,
+      "sha256": "bd1359f1184091570023e22a7682d1f97c08f8f05e47f69f6b3e6be089cd0181",
+      "source_row_keys_by_dataset": {
+        "alpaca": 1224,
+        "pile": 384,
+        "finance": 240
+      },
+      "current_fit_records_by_dataset": {
+        "alpaca": 600,
+        "pile": 360,
+        "finance": 240
+      }
+    },
+    "r1_compiler_scan": {
+      "alpaca_metadata_excluded": 600,
+      "alpaca_rendered_hash_excluded": 0,
+      "alpaca_public_record_hash_excluded": 0,
+      "loaded_selection_and_source_ledgers": "Finance/Pile source identities; no Alpaca development source-row binding",
+      "conclusion": "624 Alpaca development source-row keys in the published parent manifest were not evidenced as bound by r1."
+    },
+    "capacity_audit": {
+      "path": "experiments/TRR-P09/planning/alpaca-capacity-audit.json",
+      "sha256": "d1f11364cabe6db876bb83f09ce1d8d7db1cdc3f76ac2e8bafaed149ba33a5c9",
+      "keyed_row_hits": 1224,
+      "interpretation": "The 1224 count is consistent with 600 current-fit plus 624 development rows, but its opaque sequence/reservation hashes are a different namespace and cannot substitute for an Alpaca row-key binding."
+    },
+    "required_pre_capture_correction": "Bind the 624 Alpaca development keys from the exact published parent manifest, or fail closed if their source-row namespace cannot be validated. Do not claim they were excluded from r1."
+  },
+  "narrow_future_addendum": {
+    "r1_unchanged": true,
+    "b0_policy": "Keep immutable B0 tensors and ordered 3600-occurrence templates exactly as observed.",
+    "b1_policy": "If a new r2 is authorized, use the observed B0 ordered occurrence sequence for each of nine additions, preserving signed strata, lengths, positions, and domain multiplicities; do not overwrite r1.",
+    "freshness_policy": "Repair and verify Alpaca development exclusions before any new compilation/capture; this is a pre-capture binding correction, not a panel expansion."
+  },
+  "deviation": "The pre-run local signed-order assertion was not exercised by focused synthetic tests and the runtime was changed to preserve/audit the immutable B0 rather than fail on an order-only mismatch. The discrepancy should have been escalated before r1; r1 is retained with the exact audit above."
+}
