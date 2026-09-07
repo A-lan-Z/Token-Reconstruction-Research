@@ -1,0 +1,60 @@
+{
+  "code_commit_at_validation": "d8b3b1724738147996f76e803bbf8abd141a1768",
+  "created_utc": "2026-09-07T00:39:24Z",
+  "full_fit_status": "NOT_RUN",
+  "path_binding_smoke": {
+    "schedule_file_sha256": "dcf439e2221bf34cd526a2b3fa0e5ebba0e6393e6ee2d4525d3b7edf6e9eea94",
+    "schedule_semantic_digest": "5a2daa0087b1877bb5f9be4bd59ef201a4fa6478fcd5b16a1b88808963eab472",
+    "starting_state_sha256": "2a44a91b01ca1fdc9615eab804872c50c606199704eaf51fa114cc0d7959ddc8",
+    "status": "PASS"
+  },
+  "qualification_status": "NOT_RUN_ROOT_GPU_LEASE_REQUIRED",
+  "schema": "token-reconstruction.trr0009-validation.v1",
+  "source_files": {
+    "experiments/TRR-0009/training/design_v1.md": {
+      "bytes": 7811,
+      "sha256": "37f957687813d2bdc88fffada5ea35cb1a67e905a7c300702378f67f60da3afe"
+    },
+    "experiments/TRR-0009/training/design_v1_prefit_improved_state_superseded.md": {
+      "bytes": 7503,
+      "sha256": "9b9de06571a8ec5c08712b0d1e132dc2565dcffdd7261c8da59cfdbbd24a662d"
+    },
+    "experiments/TRR-0009/training/model_interface.md": {
+      "bytes": 2094,
+      "sha256": "16d4d6a70db60314f10237f059c49283c8f4f97989ffe06e5d7ce5c42c1c9b0f"
+    },
+    "experiments/TRR-0009/training/qualification_request.md": {
+      "bytes": 1722,
+      "sha256": "6d2bb835ea66ee0388606a11abab1b2c5e741da6d88dcf2739ed4ce1fd64548b"
+    },
+    "scripts/trr0009_model.py": {
+      "bytes": 21642,
+      "sha256": "7869c53abd83308ff7bb3844c8c845f388f3ffe9e1b5a526549be38e0e3f667e"
+    },
+    "scripts/trr0009_train.py": {
+      "bytes": 63690,
+      "sha256": "d2a5f4187005d19164cf3cdb142279e917c35f0786c2a982d5a24d0b986358ec"
+    },
+    "tests/test_trr0009_model.py": {
+      "bytes": 5718,
+      "sha256": "9738ec43894c7dedc30a5684503e29ab86458895d8c27c1e3dc9d840d07b51d5"
+    },
+    "tests/test_trr0009_training.py": {
+      "bytes": 3798,
+      "sha256": "4c7e9def9c34c150fef516dc90700f31e8417f5870ab9c4c05db2b2017efc5a2"
+    }
+  },
+  "syntax_check": {
+    "command": "PYTHONPATH=.:src:scripts python3 -m py_compile scripts/trr0009_model.py scripts/trr0009_train.py tests/test_trr0009_model.py tests/test_trr0009_training.py",
+    "status": "PASS"
+  },
+  "task_id": "TRR-0009",
+  "test_command": "env OMP_NUM_THREADS=8 MKL_NUM_THREADS=8 OPENBLAS_NUM_THREADS=8 PYTHONPATH=.:src:scripts python3 -m pytest -q tests/test_trr0009_model.py tests/test_trr0009_training.py",
+  "test_result": {
+    "elapsed_seconds": 0.77,
+    "fit_or_public_data_matmul": false,
+    "gpu_used": false,
+    "status": "PASS",
+    "tests": 13
+  }
+}

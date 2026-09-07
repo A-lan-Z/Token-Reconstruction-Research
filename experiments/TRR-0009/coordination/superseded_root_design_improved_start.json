@@ -1,0 +1,77 @@
+{
+  "task_id": "TRR-0009",
+  "status": "DESIGN_REVIEW_NOT_YET_FROZEN",
+  "updated_utc": "2026-09-07T00:20:26.122215+00:00",
+  "starting_state_sha256": "08056c5981343a5d3271a90cb564cf2f5cd143d5a117b11abfb5a38ea806c076",
+  "starting_state_bytes": 29390636,
+  "starting_state": "published TRR-0007 improved_public_bank residual_mlp512 selected step 2100",
+  "research_arms": [
+    "unchanged_anchor",
+    "continued_fixed_readout",
+    "continued_adaptable_readout"
+  ],
+  "additional_context": "retained TRR-0006 trained-diagonal reference, no fitting",
+  "readout_design": "Supported-token bounded post-logit gain and bias; absent readout entries fixed. Decoder parameters continue fitting in both continued arms. No change of embedding directions claimed.",
+  "authoritative_inference": "Direct post-logit correction; no materialized alternative for this experiment.",
+  "proposed_panel": {
+    "finance": 256,
+    "pile": 128,
+    "targets": [
+      "public_base",
+      "public_lora_2601"
+    ],
+    "unique_source_count": 384,
+    "target_observations": 768,
+    "pending": "actual eligible inventory and overlap coordination"
+  },
+  "primary": "Finance public-base adaptable versus continued-fixed",
+  "useful_pilot_rule": {
+    "token": "point difference >= 0.0025 AND one-sided 97.5% source-record bootstrap lower bound > 0",
+    "exact": "point difference >= 0.02 AND conservative exact difference lower bound > 0 using CP component tails 0.0125",
+    "logic": "either primary route, with cost and harm safeguards; this is mechanism screening, not replacement promotion"
+  },
+  "safeguards": {
+    "all_four_cells": true,
+    "exact_minimum": -0.05,
+    "token_minimum": -0.01,
+    "rare_absent_token_minimum": -0.01,
+    "rare_absent_minimum_exposed_sources": 32,
+    "insufficient_support": "UNKNOWN; no automatic pass",
+    "runtime_ratio_maximum": 1.25
+  },
+  "fit_frequency_bins": [
+    "0",
+    "1-4",
+    "5-9",
+    "10-49",
+    "50+"
+  ],
+  "training_review_pending": [
+    "finished code and synthetic tests",
+    "recompute initially-wrong challenge from selected starting checkpoint during qualified public preparation",
+    "actual largest-cell qualifier after code freeze and compute reservation"
+  ],
+  "new_a2": false,
+  "new_truth_opened": false,
+  "gpu_runs_started": false,
+  "continuation_config": {
+    "base_learning_rate_both_arms": 0.0002,
+    "new_readout_learning_rate": 0.001,
+    "steps": 3000,
+    "seed": 4005,
+    "batch_records": 8,
+    "position_draws": 512,
+    "optimizer": "AdamW",
+    "weight_decay": 0,
+    "gradient_clip": 1,
+    "schedule": "cosine to zero",
+    "validation_interval": 100,
+    "step_zero_selection_eligible": true,
+    "selection": "earliest maximum of same style-balanced validation token accuracy",
+    "gain_limit": 0.25,
+    "bias_limit_logit_units": 0.25,
+    "anchor_penalty": "1e-4 * mean[(1 + 4/sqrt(fit_count)) * (raw_gain^2 + raw_bias^2)]",
+    "learning_rate_rationale": "Pretrained decoder resumes near original cosine LR at selected step2100; newly zero-initialized bounded scalars use a separate1e-3 group. Base optimizer opportunities remain identical.",
+    "extension": "none"
+  }
+}

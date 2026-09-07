@@ -1,0 +1,253 @@
+{
+  "bootstrap": {
+    "draws": 10000,
+    "seed": 9009,
+    "token_positions_nested": true,
+    "unit": "source_record"
+  },
+  "cost_gate": {
+    "all_cells_required": true,
+    "cells": [
+      "finance__public_base",
+      "finance__public_lora_2601",
+      "pile__public_base",
+      "pile__public_lora_2601"
+    ],
+    "measurement_boundary": "Same synchronized warmed inference boundary; startup, fit wall, adapter state, optimizer state, and peak memory reported separately.",
+    "runtime_ratio": "continued_adaptable_readout warmed runtime / continued_fixed_readout warmed runtime",
+    "threshold": 1.25,
+    "training_cost": "Both continued arms use the same fixed 3000-step/base schedule; report extra adapter preparation, optimizer state, training wall, and peak memory. A resource-guard failure stops the run and leaves the pilot unresolved; no additional unstated cost threshold is introduced."
+  },
+  "created_utc": "2026-09-07T00:19:09Z",
+  "decision_logic": {
+    "adaptation_signal": "Adaptable beats fixed on useful rule: report as mechanism-screening signal only; no automatic replacement, retraining, or sample expansion.",
+    "adaptation_useful_pilot": "Primary Finance P0 useful rule passes either route, all four cell harm gates pass, rare/absent gate is PASS rather than UNKNOWN, and all-cell cost gate passes.",
+    "fit_only": "Adaptable beats unchanged but not continued-fixed: attribute gain to continued fitting and retain no adaptation claim.",
+    "inconclusive": "Optimization, cost, harm, rare support, or useful route unresolved: retain TRR8 reference and label adaptation question unresolved."
+  },
+  "freeze_approval": {
+    "approved_by": "root",
+    "approved_utc": "2026-09-07T01:13:17Z",
+    "criteria_unchanged": true,
+    "record_path": "experiments/TRR-0009/coordination/decision_contract_freeze.json",
+    "scope": "Decision criteria and proposed panel only; no method state, inventory, source selection, prediction, timing, or truth authorization.",
+    "selected_method_freeze_path": "experiments/TRR-0009/training/method_freeze.json",
+    "selected_method_state_freeze": "PENDING_ACTUAL_FIT_AND_QUALIFICATION",
+    "source_selection_started": false
+  },
+  "frequency_analysis": {
+    "bins": [
+      "0",
+      "1-4",
+      "5-9",
+      "10-49",
+      "50+"
+    ],
+    "distinct_ids": {
+      "0": 111130,
+      "1-4": 14257,
+      "10-49": 1061,
+      "5-9": 1587,
+      "50+": 221
+    },
+    "natural_token_accuracy": "Within each cell and frequency bin, natural token accuracy is sum(correct token positions) / sum(exposed token positions); paired source-record bootstrap resamples the numerator and denominator together. Do not replace this ratio with an unweighted mean of per-record stratum accuracies when exposure counts differ.",
+    "supported_ids": 17126,
+    "token_occurrences": {
+      "0": 0,
+      "1-4": 22783,
+      "10-49": 19463,
+      "5-9": 10165,
+      "50+": 71960
+    },
+    "unseen_ids": 111130,
+    "vocab_size": 128256
+  },
+  "methods": {
+    "context_role": "The retained TRR-0006 reference is contextual and is not refit or used as a new primary pair.",
+    "continued_adaptable_readout": "trr0009_continued_supported_token_gain_bias_readout",
+    "continued_fixed_readout": "trr0009_continued_fixed_readout",
+    "retained_reference": "trr6__enriched_trained_diagonal_attention128",
+    "unchanged_anchor": "trr0009_unchanged_current_enriched__residual_mlp512"
+  },
+  "multiplicity": {
+    "primary_family": "Finance public_base adaptable-versus-fixed with two predeclared routes, exact and token, each route alpha 0.025.",
+    "secondary": "Pile public_base and both LoRA cells are safeguards/secondary diagnostics; unchanged-anchor versus fixed quantifies continuation effect.",
+    "separation": "Domains, target conditions, frequency bins, and unchanged-anchor/context comparisons remain separate; no pooled score or 64-direction family."
+  },
+  "panel": {
+    "capture_batch_records": 8,
+    "capture_sequence_tokens": 192,
+    "clip_tokens_including_bos": 128,
+    "finance_records_per_domain": 256,
+    "natural_format_preserved": true,
+    "natural_ranges_half_open": {
+      "finance": [
+        12000,
+        20000
+      ],
+      "pile": [
+        7000,
+        10000
+      ]
+    },
+    "pairing": "Each source is paired across public_base and public_lora_2601; target observations are not independent sources.",
+    "pile_records_per_domain": 128,
+    "scored_post_bos_tokens": 127,
+    "selection_seed": 5005,
+    "target_conditions": [
+      "public_base",
+      "public_lora_2601"
+    ],
+    "target_observations": 768,
+    "unique_source_records": 384
+  },
+  "primary": {
+    "cell": "finance__public_base",
+    "component_alpha": 0.0125,
+    "contrast": "continued_adaptable_readout minus continued_fixed_readout",
+    "exact_interval": "Lower CP gain component minus upper CP loss component, each component tail alpha 0.0125.",
+    "exact_point_floor": 0.02,
+    "exact_point_floor_pp": 2.0,
+    "exact_rule": "Useful pilot signal requires point difference >= +2 percentage points AND conservative paired CP gain-minus-loss lower bound > 0.",
+    "positive_rule": "A lower bound > 0 is positive evidence; positive below the point floor is reported separately and is not a useful-pilot signal.",
+    "record_unit": "One natural source record; target conditions remain paired within source.",
+    "route_alpha": 0.025,
+    "routes": [
+      "exact_record_recovery",
+      "post_bos_token_accuracy"
+    ],
+    "token_interval": "Paired source-record bootstrap, token positions nested within records, seed 9009 and 10000 draws.",
+    "token_point_floor": 0.0025,
+    "token_point_floor_pp": 0.25,
+    "token_rule": "Useful pilot signal requires point difference >= +0.25 percentage points AND one-sided 97.5% paired source-record bootstrap lower bound > 0."
+  },
+  "provenance": {
+    "p03_holdout_opened": false,
+    "p06_underlying_provenance_opened": false,
+    "p07_workspace_or_results_opened": false,
+    "power_analysis": {
+      "bytes": 22054,
+      "path": "experiments/TRR-0009/planning/power_analysis.json",
+      "sha256": "f8bae476662886180b85b2344f3453f1dd9e35231a463a7705e3645dba6bc8e3"
+    },
+    "source_inventory": {
+      "bytes": 18355,
+      "path": "experiments/TRR-0009/planning/source_inventory.json",
+      "sha256": "72d980e43eda477a5eb0c58a85cd37a7b8a8c797cb03f919374bd9b8723064e3"
+    },
+    "trr0007_method_freeze": "experiments/TRR-0007/method_freeze.json",
+    "trr0007_published_fit_metadata": "experiments/TRR-0007/improved_fit_v1/improved_fit_handoff_v2.json",
+    "trr0008_retained_reference_context": "experiments/TRR-0008/planning/decision_contract.json"
+  },
+  "rare_token_safeguard": {
+    "accuracy_definition": "Natural token accuracy is sum(correct token positions) / sum(exposed token positions) within the cell and frequency bin; source-record bootstrap resamples recompute both sums.",
+    "all_eight_gates_required": true,
+    "all_four_cells_required": true,
+    "bootstrap_unit": "Resample source records; recompute numerator and denominator on every draw. Do not average per-record stratum accuracies when exposure counts differ.",
+    "cells": [
+      "finance__public_base",
+      "finance__public_lora_2601",
+      "pile__public_base",
+      "pile__public_lora_2601"
+    ],
+    "fit_frequency_reference": "TRR-0007 improved_public_bank exact post-BOS frequency bins in experiments/TRR-0009/planning/source_inventory.json.",
+    "frequency_bins": [
+      "0",
+      "1-4",
+      "5-9",
+      "10-49",
+      "50+"
+    ],
+    "harm_margin": 0.01,
+    "harm_margin_pp": 1.0,
+    "insufficient_support": "UNKNOWN/underpowered; no automatic pass and no pooling across domains, targets, or bins.",
+    "interval": "For each of the eight cell-by-target-bin gates, one-sided 95% paired source-record bootstrap lower bound for natural token accuracy difference.",
+    "minimum_exposed_sources": 32,
+    "support_floor_unit": "exposed_source_records",
+    "target_bins": [
+      "0",
+      "1-4"
+    ]
+  },
+  "readout_adaptation": {
+    "count_zero_branch": "Not evaluated: absent vocabulary IDs have no correction parameter; no count_v=0 division or branch is evaluated, and absent IDs are not included in the supported-token mean.",
+    "design": "Direct post-logit supported-token gain and bias: logit_v = base_logit_v * gain_v + bias_v for supported v; absent readout entries stay fixed.",
+    "directions_changed": false,
+    "global_linear_reparameterization": false,
+    "initial_bias": 0.0,
+    "initial_gain": 1.0,
+    "limit": 0.25,
+    "materialized_embedding_alternative": false,
+    "memory_accounting": "Report adapter weights, optimizer state, and peak memory separately; do not charge the unchanged frozen embedding as trainable adapter state.",
+    "regularization": "The initialization gain=1 and bias=0 is separate from this penalty. The penalty is exactly 1e-4 * mean((1 + 4/sqrt(count_v)) * (raw_gain_v**2 + raw_bias_v**2)) over supported tokens; count_v is positive for every included fitting-bank token.",
+    "supported_token_count": 17126,
+    "trainable_parameters": 34252,
+    "unseen_token_count": 111130
+  },
+  "safeguards": {
+    "all_four_cells_required": true,
+    "cells": [
+      "finance__public_base",
+      "finance__public_lora_2601",
+      "pile__public_base",
+      "pile__public_lora_2601"
+    ],
+    "exact_harm_margin": 0.05,
+    "exact_rule": "Every cell one-sided 95% paired exact lower bound must be >= -5 percentage points.",
+    "interpretation": "Point estimates cannot clear a harm gate; an unresolved cell keeps the useful-pilot decision unresolved.",
+    "route_alpha": 0.05,
+    "token_harm_margin": 0.01,
+    "token_rule": "Every cell one-sided 95% paired source-record bootstrap lower bound must be >= -1 percentage point."
+  },
+  "schema": "token-reconstruction.trr0009-decision-contract.v1",
+  "starting_state": {
+    "bytes": 29390628,
+    "fit_bank": "current_enriched",
+    "initialization_equivalence": "unchanged_anchor reproduces this state exactly; adaptable readout gain=1 and bias=0 before fitting.",
+    "method_id": "trr0007_current_enriched__residual_mlp512",
+    "path": "experiments/TRR-0007/enriched_fit_v1/current_enriched/trr0007_residual_mlp512/selected.safetensors",
+    "rationale": "Use the published competent current-bank residual checkpoint because the improved-bank residual already reached 100% on its own 124371-position fitting bank; this is a single prefitting choice, not a sweep. The improved_public_bank remains the fitting/validation bank for both continued arms.",
+    "selected_step": 2100,
+    "sha256": "2a44a91b01ca1fdc9615eab804872c50c606199704eaf51fa114cc0d7959ddc8",
+    "superseded_prefit_proposal": {
+      "bytes": 7503,
+      "path": "experiments/TRR-0009/training/design_v1_prefit_improved_state_superseded.md",
+      "sha256": "9b9de06571a8ec5c08712b0d1e132dc2565dcffdd7261c8da59cfdbbd24a662d"
+    }
+  },
+  "status": "FROZEN_DECISION_CONTRACT_BEFORE_SOURCE_SELECTION",
+  "task_id": "TRR-0009",
+  "training": {
+    "base_learning_rate": 0.0002,
+    "fit_bank": "TRR-0007 improved_public_bank; same records, labels, sampler, validation opportunities, and decoder continuation schedule in both continued arms",
+    "fit_bank_post_bos_positions": 124371,
+    "full_vocab_supervision": true,
+    "gain_bias_limit": 0.25,
+    "gradient_clip_norm": 1.0,
+    "optimizer": "same continuation optimizer, weight_decay=0, gradient_clip_norm=1.0",
+    "readout_group": "supported gain/bias scalar group uses LR 1e-3 because it starts at zero change; decoder parameters resume at base LR 2e-4",
+    "readout_group_learning_rate": 0.001,
+    "same_decoder_parameters_updated_in_both_continued_arms": true,
+    "same_validation_and_step_zero_selection": true,
+    "schedule": "same 3000-step cosine schedule with seed 4005 and batch size 8; step zero eligible under earliest-max validation selection every 100 steps",
+    "schedule_batch_records": 8,
+    "schedule_seed": 4005,
+    "schedule_sha256": "5a2daa0087b1877bb5f9be4bd59ef201a4fa6478fcd5b16a1b88808963eab472",
+    "schedule_steps": 3000,
+    "teacher_ranking_or_a2_fallback": false,
+    "weight_decay": 0.0
+  },
+  "training_review_pending": [
+    "test exact frequency-weighted raw_gain/raw_bias zero-anchor penalty and bounded gain/bias implementation",
+    "recompute initially-wrong challenge from the selected starting checkpoint rather than the historical neutral model",
+    "verify step-zero eligibility and earliest-max validation selection every 100 steps",
+    "qualify the largest representative cell after code freeze and compute reservation"
+  ],
+  "truth_and_freeze": {
+    "after_truth": "Truth is used only to score frozen outputs; no refit, routing, sample expansion, or threshold changes.",
+    "before_truth": "Freeze source identities, paired observations, all arm outputs, validation receipts, timing, and resource receipts before any truth opening.",
+    "new_a2": false,
+    "source_selection": "starts only after this contract is owner-frozen and actual exclusion compatibility is reviewed"
+  },
+  "updated_utc": "2026-09-07T01:13:17Z"
+}

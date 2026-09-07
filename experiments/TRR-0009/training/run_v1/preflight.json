@@ -1,0 +1,512 @@
+{
+  "challenge_seconds": 3.878089745005127,
+  "config": {
+    "challenge_cap": 2048,
+    "challenge_seed": 11012,
+    "gradient_clip_norm": 1.0,
+    "learning_rate": 0.0002,
+    "max_seconds": 1800.0,
+    "maximum_gpu_reserved_gib": 6.0,
+    "maximum_host_rss_gib": 16.0,
+    "minimum_free_gib": 8.0,
+    "minimum_host_available_gib": 10.0,
+    "position_budget": 512,
+    "readout_learning_rate": 0.001,
+    "record_batch_size": 8,
+    "seed": 4005,
+    "steps": 3000,
+    "validation_every": 100,
+    "weight_decay": 0.0
+  },
+  "created_utc": "2026-09-07T01:17:57Z",
+  "paths": {
+    "asset_finiteness_validation": "embedding table scanned once before model calls",
+    "challenge": {
+      "all_initially_wrong_rows": 621,
+      "cap": 2048,
+      "definition": "positions initially wrong under the actual selected step-2100 residual MLP state on the public fitting bank",
+      "empty_challenge": false,
+      "fit_rows": 124371,
+      "initial_selected_accuracy": 0.0,
+      "mask_tensor_sha256": "8f17ec7a99d7c4ed704e7ee5bb17100ba289f4568e6d5d7503905a4fe10554ac",
+      "schema": "token-reconstruction.trr0009-selected-start-challenge.v1",
+      "selected_rows": 621,
+      "selection_rule": "all_initially_wrong_rows",
+      "selection_seed": 11012,
+      "starting_state_sha256": "2a44a91b01ca1fdc9615eab804872c50c606199704eaf51fa114cc0d7959ddc8",
+      "task_id": "TRR-0009",
+      "wrong_mask_tensor_sha256": "8f17ec7a99d7c4ed704e7ee5bb17100ba289f4568e6d5d7503905a4fe10554ac"
+    },
+    "device": "cuda",
+    "embedding": {
+      "file": {
+        "bytes": 1050673488,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+        "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+      },
+      "finite_checked_once": true,
+      "tensor_dtype": "torch.float32",
+      "tensor_sha256": "656fa55881813ff6768011943cdd1d5bc0abfe43ad58e3cba5eb0b19af578c64",
+      "tensor_shape": [
+        128256,
+        2048
+      ]
+    },
+    "fit_manifest": {
+      "bytes": 8156,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_manifest.json",
+      "sha256": "c7a857e545a2f252ce8b3ab71bb2336e552fd212c7c434e39cef66f233b77a08"
+    },
+    "geometry": {
+      "fit_observations": [
+        1200,
+        192,
+        2048
+      ],
+      "fit_post_bos_rows": 124371,
+      "fit_record_ids": 1200,
+      "validation_observations": [
+        48,
+        192,
+        2048
+      ],
+      "validation_post_bos_rows": 3133,
+      "validation_record_ids": 48
+    },
+    "input_resource_bindings": {
+      "fit_manifest_resources": {
+        "manifest": {
+          "bytes": 8156,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_manifest.json",
+          "sha256": "c7a857e545a2f252ce8b3ab71bb2336e552fd212c7c434e39cef66f233b77a08"
+        },
+        "resources": [
+          {
+            "actual": {
+              "bytes": 1050673488,
+              "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+              "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+            },
+            "declared": {
+              "bytes": 1050673488,
+              "dtype": "F32",
+              "path": "../../../../../../outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+              "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+              "shape": [
+                128256,
+                2048
+              ],
+              "tensor_key": "embeddings"
+            },
+            "name": "embedding_table"
+          },
+          {
+            "actual": {
+              "bytes": 947176760,
+              "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_fit_cut4.safetensors",
+              "sha256": "a55814759dfa9d2567587935063fc49e44d8bff949c50014793deb982ebdf35d"
+            },
+            "aliases": [
+              "fit_truth",
+              "fit_valid_mask"
+            ],
+            "declared": {
+              "bytes": 947176760,
+              "dtype": "BF16",
+              "path": "enriched_fit_cut4.safetensors",
+              "sha256": "a55814759dfa9d2567587935063fc49e44d8bff949c50014793deb982ebdf35d",
+              "shape": [
+                1200,
+                192,
+                2048
+              ],
+              "tensor_key": "activations"
+            },
+            "name": "fit_observations"
+          },
+          {
+            "actual": {
+              "bytes": 918427,
+              "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_fit_records.json",
+              "sha256": "808cfd0f95ea3ee66c1d4094f3c10f1e346ba986a6d77138a61b8f8f13c4a738"
+            },
+            "declared": {
+              "bytes": 918427,
+              "path": "enriched_fit_records.json",
+              "sha256": "808cfd0f95ea3ee66c1d4094f3c10f1e346ba986a6d77138a61b8f8f13c4a738"
+            },
+            "name": "fit_records"
+          },
+          {
+            "actual": {
+              "bytes": 37795064,
+              "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fit/adapter_v2/validation_mixed_cut4.safetensors",
+              "sha256": "a8e7633ffb369864af33754c5ebb2d9a4ca9d6e7d4550731e8ff26e20c8200cf"
+            },
+            "aliases": [
+              "validation_truth",
+              "validation_valid_mask"
+            ],
+            "declared": {
+              "bytes": 37795064,
+              "dtype": "BF16",
+              "path": "../../../../../TRR-0004/experiments/TRR-0004/fit/adapter_v2/validation_mixed_cut4.safetensors",
+              "sha256": "a8e7633ffb369864af33754c5ebb2d9a4ca9d6e7d4550731e8ff26e20c8200cf",
+              "shape": [
+                48,
+                192,
+                2048
+              ],
+              "tensor_key": "activations"
+            },
+            "name": "validation_observations"
+          },
+          {
+            "actual": {
+              "bytes": 16456,
+              "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fit/adapter_v2/affine_validation_records.json",
+              "sha256": "30b422b681bef5e7af4c26d339e57dfb3571ecef8077bdc4be5d960ef05c9777"
+            },
+            "declared": {
+              "bytes": 16456,
+              "path": "../../../../../TRR-0004/experiments/TRR-0004/fit/adapter_v2/affine_validation_records.json",
+              "sha256": "30b422b681bef5e7af4c26d339e57dfb3571ecef8077bdc4be5d960ef05c9777"
+            },
+            "name": "validation_records"
+          }
+        ],
+        "unique_resource_files": 5
+      },
+      "validation_manifest_resources": {
+        "manifest": {
+          "bytes": 8355,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_capture_v2/original_manifest.json",
+          "sha256": "e0b3182c10dad06dae6c54be7bc1bba05f867020d6ffc419f6964563a0e64109"
+        },
+        "resources": [
+          {
+            "actual": {
+              "bytes": 1050673488,
+              "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+              "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+            },
+            "declared": {
+              "bytes": 1050673488,
+              "dtype": "F32",
+              "path": "../../../../../../outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+              "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+              "shape": [
+                128256,
+                2048
+              ],
+              "tensor_key": "embeddings"
+            },
+            "name": "embedding_table"
+          },
+          {
+            "actual": {
+              "bytes": 947176648,
+              "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_cut4.safetensors",
+              "sha256": "d1c78fcf1acc91b57d51355ee11f267bf4c12f1bc7d5160164b3b6ea11b45344"
+            },
+            "aliases": [
+              "fit_truth",
+              "fit_valid_mask"
+            ],
+            "declared": {
+              "bytes": 947176648,
+              "dtype": "BF16",
+              "path": "../../../../../TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_cut4.safetensors",
+              "sha256": "d1c78fcf1acc91b57d51355ee11f267bf4c12f1bc7d5160164b3b6ea11b45344",
+              "shape": [
+                1200,
+                192,
+                2048
+              ],
+              "tensor_key": "activations"
+            },
+            "name": "fit_observations"
+          },
+          {
+            "actual": {
+              "bytes": 754638,
+              "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_capture_v2/original_fit_records.json",
+              "sha256": "9c577f4ecb54ccb61e114aa741859e1bc045a4fd9d302479b2a49d17050dcf81"
+            },
+            "declared": {
+              "bytes": 754638,
+              "path": "original_fit_records.json",
+              "sha256": "9c577f4ecb54ccb61e114aa741859e1bc045a4fd9d302479b2a49d17050dcf81"
+            },
+            "name": "fit_records"
+          },
+          {
+            "actual": {
+              "bytes": 37795064,
+              "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fit/adapter_v2/validation_mixed_cut4.safetensors",
+              "sha256": "a8e7633ffb369864af33754c5ebb2d9a4ca9d6e7d4550731e8ff26e20c8200cf"
+            },
+            "aliases": [
+              "validation_truth",
+              "validation_valid_mask"
+            ],
+            "declared": {
+              "bytes": 37795064,
+              "dtype": "BF16",
+              "path": "../../../../../TRR-0004/experiments/TRR-0004/fit/adapter_v2/validation_mixed_cut4.safetensors",
+              "sha256": "a8e7633ffb369864af33754c5ebb2d9a4ca9d6e7d4550731e8ff26e20c8200cf",
+              "shape": [
+                48,
+                192,
+                2048
+              ],
+              "tensor_key": "activations"
+            },
+            "name": "validation_observations"
+          },
+          {
+            "actual": {
+              "bytes": 16456,
+              "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fit/adapter_v2/affine_validation_records.json",
+              "sha256": "30b422b681bef5e7af4c26d339e57dfb3571ecef8077bdc4be5d960ef05c9777"
+            },
+            "declared": {
+              "bytes": 16456,
+              "path": "../../../../../TRR-0004/experiments/TRR-0004/fit/adapter_v2/affine_validation_records.json",
+              "sha256": "30b422b681bef5e7af4c26d339e57dfb3571ecef8077bdc4be5d960ef05c9777"
+            },
+            "name": "validation_records"
+          }
+        ],
+        "unique_resource_files": 5
+      }
+    },
+    "input_resource_recheck": {
+      "fit_manifest_resources": {
+        "checked_after_loader": true,
+        "resources": [
+          {
+            "bytes": 1050673488,
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+            "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+          },
+          {
+            "bytes": 947176760,
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_fit_cut4.safetensors",
+            "sha256": "a55814759dfa9d2567587935063fc49e44d8bff949c50014793deb982ebdf35d"
+          },
+          {
+            "bytes": 918427,
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_fit_records.json",
+            "sha256": "808cfd0f95ea3ee66c1d4094f3c10f1e346ba986a6d77138a61b8f8f13c4a738"
+          },
+          {
+            "bytes": 37795064,
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fit/adapter_v2/validation_mixed_cut4.safetensors",
+            "sha256": "a8e7633ffb369864af33754c5ebb2d9a4ca9d6e7d4550731e8ff26e20c8200cf"
+          },
+          {
+            "bytes": 16456,
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fit/adapter_v2/affine_validation_records.json",
+            "sha256": "30b422b681bef5e7af4c26d339e57dfb3571ecef8077bdc4be5d960ef05c9777"
+          }
+        ]
+      },
+      "validation_manifest_resources": {
+        "checked_after_loader": true,
+        "resources": [
+          {
+            "bytes": 1050673488,
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+            "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+          },
+          {
+            "bytes": 947176648,
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_cut4.safetensors",
+            "sha256": "d1c78fcf1acc91b57d51355ee11f267bf4c12f1bc7d5160164b3b6ea11b45344"
+          },
+          {
+            "bytes": 754638,
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_capture_v2/original_fit_records.json",
+            "sha256": "9c577f4ecb54ccb61e114aa741859e1bc045a4fd9d302479b2a49d17050dcf81"
+          },
+          {
+            "bytes": 37795064,
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fit/adapter_v2/validation_mixed_cut4.safetensors",
+            "sha256": "a8e7633ffb369864af33754c5ebb2d9a4ca9d6e7d4550731e8ff26e20c8200cf"
+          },
+          {
+            "bytes": 16456,
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/fit/adapter_v2/affine_validation_records.json",
+            "sha256": "30b422b681bef5e7af4c26d339e57dfb3571ecef8077bdc4be5d960ef05c9777"
+          }
+        ]
+      }
+    },
+    "schedule": {
+      "eligible_max": 1264,
+      "eligible_min": 502,
+      "expected_total_draws": 1536000,
+      "file": {
+        "bytes": 6255904,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/improved_fit_v1/improved_public_bank/schedule.safetensors",
+        "sha256": "dcf439e2221bf34cd526a2b3fa0e5ebba0e6393e6ee2d4525d3b7edf6e9eea94"
+      },
+      "position_budget": 512,
+      "record_batch_size": 8,
+      "repeated_draws_within_step": 200,
+      "replacement_repeated_draws": 200,
+      "replacement_required": true,
+      "replacement_steps": 1,
+      "replacement_unique_draws": 312,
+      "schedule_sha256": "5a2daa0087b1877bb5f9be4bd59ef201a4fa6478fcd5b16a1b88808963eab472",
+      "seed": 4005,
+      "semantic_digest": "5a2daa0087b1877bb5f9be4bd59ef201a4fa6478fcd5b16a1b88808963eab472",
+      "steps": 3000,
+      "total_draws": 1536000,
+      "unique_draws_within_step": 1535800
+    },
+    "starting_state": {
+      "bytes": 29390628,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/enriched_fit_v1/current_enriched/trr0007_residual_mlp512/selected.safetensors",
+      "sha256": "2a44a91b01ca1fdc9615eab804872c50c606199704eaf51fa114cc0d7959ddc8"
+    },
+    "support": {
+      "derived_from": "fit_truth valid post-BOS positions only",
+      "frequency_bins": {
+        "seen_10_49": {
+          "rows": 19463,
+          "token_ids": 1061
+        },
+        "seen_1_4": {
+          "rows": 22783,
+          "token_ids": 14257
+        },
+        "seen_50_plus": {
+          "rows": 71960,
+          "token_ids": 221
+        },
+        "seen_5_9": {
+          "rows": 10165,
+          "token_ids": 1587
+        },
+        "unseen_0": {
+          "rows": 0,
+          "token_ids": 111130
+        }
+      },
+      "frequency_vector_tensor_sha256": "a284e1ee8e408e05dd5a0c7663553edc226de8474702889165aa54b3b71a52a0",
+      "support_counts_tensor_sha256": "99b212354ed2d3a11efcfc78085f3218edb05ea503d19f50ce9b29bf5c190fb0",
+      "support_digest": "8090b9231042d6c9f9c52f3a0a9d8733b8ec1b739a4f28b12ab1057a7126969d",
+      "support_ids_tensor_sha256": "59ba55bd1e8a9da209b120875a3cf90696dcb2fd38e4e3763e27114b6ad5c4d4",
+      "supported_token_count": 17126,
+      "vocabulary_size": 128256
+    },
+    "validation_manifest": {
+      "bytes": 8355,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_capture_v2/original_manifest.json",
+      "sha256": "e0b3182c10dad06dae6c54be7bc1bba05f867020d6ffc419f6964563a0e64109"
+    }
+  },
+  "preparation_seconds": 9.148822391987778,
+  "resource_before": {
+    "cuda_allocated_bytes": 0,
+    "cuda_free_bytes": 15679356928,
+    "cuda_peak_allocated_bytes": 0,
+    "cuda_peak_reserved_bytes": 0,
+    "cuda_reserved_bytes": 0,
+    "cuda_total_bytes": 17066033152,
+    "device": "cuda",
+    "host_available_bytes": 20342108160,
+    "host_available_gib": 18.945064544677734,
+    "host_available_source": "/proc/meminfo:MemAvailable",
+    "host_free_bytes": 10841731072,
+    "host_free_gib": 10.097148895263672,
+    "host_peak_rss_bytes": 1114927104,
+    "host_peak_rss_gib": 1.0383567810058594,
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "torch_version": "2.10.0+cu128"
+  },
+  "resource_estimate": {
+    "adaptable_parameter_count": 34252,
+    "adaptable_parameter_fp32_bytes": 137008,
+    "adaptable_parameter_with_grad_and_adam_bytes": 548032,
+    "b1_full_logits_bytes_for_zero_equivalence": 98500608,
+    "b1_two_full_logits_peak_bytes_if_compared_simultaneously": 197001216,
+    "embedding_bytes": 1050673152,
+    "embedding_gib": 0.978515625,
+    "full_logits_bytes_per_draw": 262668288,
+    "full_logits_mib_per_draw": 250.5,
+    "hidden_materialized_bytes": 12582912,
+    "historical_trr0007_peak_reserved_bytes": 3599152128,
+    "historical_trr0007_peak_reserved_gib": 3.3519716262817383,
+    "largest_activation_shape": [
+      8,
+      192,
+      2048
+    ],
+    "largest_draw_shape": [
+      512
+    ],
+    "qualification_full_output_fixture": "B=1 only; largest B=8 qualification uses selected-row path"
+  },
+  "resource_guard": {
+    "maximum_gpu_reserved_bytes": 6442450944,
+    "maximum_host_rss_bytes": 17179869184,
+    "minimum_gpu_free_bytes": 8589934592,
+    "minimum_host_available_bytes": 10737418240
+  },
+  "runtime": {
+    "code_commit": "0b88b9a83e026bd6a561b48dc7f920e7cbebd962",
+    "command": {
+      "argv": [
+        "scripts/trr0009_train.py",
+        "--device",
+        "cuda",
+        "--max-seconds",
+        "1800",
+        "--output-root",
+        "experiments/TRR-0009/training/run_v1"
+      ],
+      "cwd": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009",
+      "environment": {
+        "MKL_NUM_THREADS": "8",
+        "OMP_NUM_THREADS": "8",
+        "OPENBLAS_NUM_THREADS": "8",
+        "PYTHONPATH": ".:src:scripts"
+      },
+      "python": "/usr/bin/python3"
+    },
+    "numerical_settings": {
+      "activation_dtype": "torch.float32",
+      "cpu_interop_threads": 32,
+      "cpu_intraop_threads": 8,
+      "cuda_cudnn_allow_tf32": true,
+      "cuda_matmul_allow_tf32": false,
+      "environment": {
+        "MKL_NUM_THREADS": "8",
+        "OMP_NUM_THREADS": "8",
+        "OPENBLAS_NUM_THREADS": "8"
+      },
+      "logit_accumulation_dtype": "torch.float32",
+      "torch_float32_matmul_precision": "highest",
+      "torch_num_interop_threads": 32,
+      "torch_num_threads": 8
+    },
+    "source_files": {
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/scripts/trr0009_model.py": {
+        "bytes": 21642,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/scripts/trr0009_model.py",
+        "sha256": "7869c53abd83308ff7bb3844c8c845f388f3ffe9e1b5a526549be38e0e3f667e"
+      },
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/scripts/trr0009_train.py": {
+        "bytes": 66015,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/scripts/trr0009_train.py",
+        "sha256": "e637aa4be9b34348a11bc0756fe96708313cc79d1b7f684ddd6307af9b1a0954"
+      }
+    },
+    "task_id": "TRR-0009"
+  },
+  "schema": "token-reconstruction.trr0009-training-preflight.v1",
+  "task_id": "TRR-0009"
+}

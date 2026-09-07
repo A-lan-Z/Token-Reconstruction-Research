@@ -1,0 +1,39 @@
+{
+  "captured_stderr_record": {
+    "bytes": 204,
+    "path": "/tmp/trr0009_truth_prepare_compat_v2.retry.stderr.log",
+    "sha256": "6d8f6089cb94fbbe5a4616543d5487f677e9337a21846dcadffb1e358b4c7e99"
+  },
+  "captured_stdout_record": {
+    "bytes": 0,
+    "path": "/tmp/trr0009_truth_prepare_compat_v2.retry.stdout.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "code_commit": "d8b538821edb5cded7c948449a32a9c79dbbf269",
+  "command": "env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=.:src:scripts python3 -m scripts.trr0009_eval_gate_compat --repository-root . prepare-truth --freeze experiments/TRR-0009/evaluation/public_freeze_compat_v2.json --selection experiments/TRR-0009/selection_v2/source_selection.json --truth-output /tmp/trr0009_truth_sidecar_compat_v2.safetensors --truth-binding experiments/TRR-0009/evaluation/truth_binding_compat_v2.json --execute",
+  "failure": "asset is not a regular file: /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+  "notes": "The trusted preparation path materialized selected labels in RAM after the public gate, then failed while serializing source evidence for the frozen tokenizer directory. No sidecar or binding was written and no score was opened.",
+  "outputs": {
+    "truth_binding_created": false,
+    "truth_binding_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/evaluation/truth_binding_compat_v2.json",
+    "truth_sidecar_created": false,
+    "truth_sidecar_path": "/tmp/trr0009_truth_sidecar_compat_v2.safetensors"
+  },
+  "phase_flags": {
+    "labels_materialized_in_memory_before_failure": true,
+    "public_gate_verified": true,
+    "score_started": false,
+    "source_text_loaded_for_label_materialization": true,
+    "target_labels_persisted": false,
+    "truth_sidecar_persisted": false
+  },
+  "recorded_utc": "2026-09-07T04:07:36.844212Z",
+  "resource_timing_record": {
+    "bytes": 1215,
+    "path": "/tmp/trr0009_truth_prepare_compat_v2.time.log",
+    "sha256": "18b878b9fb2a53e4ba15430ea594372d642708f8882d9aa6dbb2c306c0631445"
+  },
+  "schema": "token-reconstruction.trr0009-truth-preparation-failure.v1",
+  "status": "TRUTH_PREPARATION_FAILED_BEFORE_SIDECAR",
+  "task_id": "TRR-0009"
+}

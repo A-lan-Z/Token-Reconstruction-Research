@@ -1,0 +1,347 @@
+{
+  "artifacts": {
+    "private_truth_sidecar": {
+      "bytes": 787736,
+      "path": "/tmp/trr0009_truth_sidecar_compat_v2.safetensors",
+      "sha256": "57b1fbd5f378a9bfc72c36804a8de0a437be7b9327da7a9c4a709f603d74f989"
+    },
+    "public_freeze": {
+      "bytes": 210986,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/evaluation/public_freeze_compat_v2.json",
+      "sha256": "acbb51fb8872dba1658cec708af10043e66b710b714dbaa53b1cf7545f0dd0c1"
+    },
+    "score": {
+      "bytes": 133163,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/evaluation/score_v2.json",
+      "sha256": "62b15bbf2f41b58010f25a74f765b7a13f0e3e05dc77762309de07306006e53d"
+    },
+    "truth_binding": {
+      "bytes": 6207,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/evaluation/truth_binding_compat_v2.json",
+      "sha256": "1a90e98092116ddcd0fae6876e8609f987cdb72f1d0a386c6b3375879cb423aa"
+    }
+  },
+  "command_environment": {
+    "MKL_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONPATH": ".:src:scripts",
+    "python": "python3",
+    "repository_root": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009"
+  },
+  "commands": {
+    "prepare_truth": "env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=.:src:scripts python3 -m scripts.trr0009_eval_truth_source_compat --repository-root . prepare-truth --freeze experiments/TRR-0009/evaluation/public_freeze_compat_v2.json --selection experiments/TRR-0009/selection_v2/source_selection.json --truth-output /tmp/trr0009_truth_sidecar_compat_v2.safetensors --truth-binding experiments/TRR-0009/evaluation/truth_binding_compat_v2.json --execute",
+    "score": "env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=.:src:scripts python3 -m scripts.trr0009_eval_truth_source_compat --repository-root . score --freeze experiments/TRR-0009/evaluation/public_freeze_compat_v2.json --truth-binding experiments/TRR-0009/evaluation/truth_binding_compat_v2.json --truth-sidecar /tmp/trr0009_truth_sidecar_compat_v2.safetensors --frequency-reference experiments/TRR-0009/evaluation/frequency_reference_v1.json --output experiments/TRR-0009/evaluation/score_v2.json --bootstrap-seed 9009 --bootstrap-draws 10000"
+  },
+  "full_code_commit": "16e86a5fab3c693c6942620aabfdbdb865b5108d",
+  "historical_inference_commit": "55ef2d46413de28be70b4014f596b277c0e1582c",
+  "inputs": {
+    "bootstrap_draws": 10000,
+    "bootstrap_seed": 9009,
+    "exact_alpha": 0.025,
+    "frequency_reference": {
+      "bytes": 305300,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/evaluation/frequency_reference_v1.json",
+      "sha256": "2186b765877ccbd2f3eaef323a777bdd13e3376a205d7a8d6789624a60174afb"
+    },
+    "public_freeze": {
+      "bytes": 210986,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/evaluation/public_freeze_compat_v2.json",
+      "sha256": "acbb51fb8872dba1658cec708af10043e66b710b714dbaa53b1cf7545f0dd0c1"
+    },
+    "records_by_domain": {
+      "finance": 256,
+      "pile": 128
+    },
+    "source_selection": {
+      "bytes": 287719,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/selection_v2/source_selection.json",
+      "sha256": "c2e996514f7f45e55d7bfadc27fc8048bdb07a2c979b208de8716972d8d1def2"
+    },
+    "token_one_sided_alpha": 0.025
+  },
+  "phases": {
+    "prepare_truth": {
+      "binding": {
+        "bytes": 6207,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/evaluation/truth_binding_compat_v2.json",
+        "sha256": "1a90e98092116ddcd0fae6876e8609f987cdb72f1d0a386c6b3375879cb423aa"
+      },
+      "elapsed_seconds": 13.97,
+      "exit_status": 0,
+      "maximum_resident_set_kbytes": 1208924,
+      "private_sidecar": {
+        "bytes": 787736,
+        "path": "/tmp/trr0009_truth_sidecar_compat_v2.safetensors",
+        "sha256": "57b1fbd5f378a9bfc72c36804a8de0a437be7b9327da7a9c4a709f603d74f989"
+      },
+      "stderr_log": {
+        "bytes": 0,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/evaluation/truth_prepare_compat_v2_retry.stderr.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout_log": {
+        "bytes": 361,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/evaluation/truth_prepare_compat_v2_retry.stdout.log",
+        "sha256": "22c30aef5130b908280d996fd36e636f0064fe67dc579cfe9598870c1569506d"
+      },
+      "system_seconds": 3.49,
+      "time_log": {
+        "bytes": 1199,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/evaluation/truth_prepare_compat_v2_retry.time.log",
+        "sha256": "85729d8c690b7a920723c38adb13ada19ee9f46d787497f4c8671a4cd777e64b"
+      },
+      "truth_opened": false,
+      "user_seconds": 7.97
+    },
+    "score": {
+      "elapsed_seconds": 288.79,
+      "exit_status": 0,
+      "maximum_resident_set_kbytes": 729060,
+      "output": {
+        "bytes": 133163,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/evaluation/score_v2.json",
+        "sha256": "62b15bbf2f41b58010f25a74f765b7a13f0e3e05dc77762309de07306006e53d"
+      },
+      "stderr_log": {
+        "bytes": 0,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/evaluation/score_v2.stderr.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout_log": {
+        "bytes": 354,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/evaluation/score_v2.stdout.log",
+        "sha256": "fc6a1ac0616aa05f38ec667da980cbc8e7c3cd13fb01aac4a0815a82b0e7c9b4"
+      },
+      "system_seconds": 0.43,
+      "time_log": {
+        "bytes": 1288,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/evaluation/score_v2.time.log",
+        "sha256": "b8dfe5785380d0d70216c1665e39d95668f93575c2b4d7f9a5088f183efce309"
+      },
+      "truth_opened": true,
+      "user_seconds": 288.31
+    }
+  },
+  "prior_failed_attempt": {
+    "binding_written": false,
+    "description": "The pre-adapter prepare attempt failed closed before writing a sidecar or binding because the legacy source-evidence serializer passed the frozen tokenizer snapshot directory to a regular-file validator. The failure occurred after selected labels were materialized in RAM; no score was started.",
+    "receipt": {
+      "bytes": 2369,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/evaluation/truth_prepare_compat_v2_failure.json",
+      "sha256": "5c7b0ba2b40bf09e413e8932ac180d136b74dcc4391ce4e94fb22878080ff811"
+    },
+    "score_started": false,
+    "sidecar_written": false
+  },
+  "schema": "token-reconstruction.trr0009-truth-preparation-score-execution-receipt.v1",
+  "score_summary": {
+    "bootstrap": {
+      "draws": 10000,
+      "seed": 9009,
+      "unit": "source_record"
+    },
+    "candidate_arrays_persisted": false,
+    "candidate_vs_fixed": {
+      "finance__public_base": {
+        "exact_gains": 3,
+        "exact_losses": 1,
+        "exact_net_cp_lower_bound": -0.02280764333728385,
+        "exact_net_rate": 0.0078125,
+        "exact_ties": 252,
+        "token_net_bootstrap_harm_lower": -4.656612873077393e-10,
+        "token_net_bootstrap_lower": -3.075879067182541e-05,
+        "token_net_rate": 0.0002460626419633627
+      },
+      "finance__public_lora_2601": {
+        "exact_gains": 2,
+        "exact_losses": 1,
+        "exact_net_cp_lower_bound": -0.02401131599100842,
+        "exact_net_rate": 0.00390625,
+        "exact_ties": 253,
+        "token_net_bootstrap_harm_lower": -0.00018454715609550476,
+        "token_net_bootstrap_lower": -0.00024606287479400635,
+        "token_net_rate": 0.0
+      },
+      "pile__public_base": {
+        "exact_gains": 0,
+        "exact_losses": 0,
+        "exact_net_cp_lower_bound": -0.03365521009360786,
+        "exact_net_rate": 0.0,
+        "exact_ties": 128,
+        "token_net_bootstrap_harm_lower": -0.0004306104965507984,
+        "token_net_bootstrap_lower": -0.000553641002625227,
+        "token_net_rate": 0.00012303143739700317
+      },
+      "pile__public_lora_2601": {
+        "exact_gains": 1,
+        "exact_losses": 0,
+        "exact_net_cp_lower_bound": -0.03355694318612565,
+        "exact_net_rate": 0.0078125,
+        "exact_ties": 127,
+        "token_net_bootstrap_harm_lower": -0.0003690933808684349,
+        "token_net_bootstrap_lower": -0.0004306095652282238,
+        "token_net_rate": 6.15166500210762e-05
+      }
+    },
+    "cell_scores": {
+      "continued_adaptable_readout": {
+        "finance__public_base": {
+          "exact_correct": 79,
+          "exact_rate": 0.30859375,
+          "records": 256,
+          "scored_post_bos_tokens": 32512,
+          "token_accuracy": 0.9829294085502625,
+          "token_correct": 31957
+        },
+        "finance__public_lora_2601": {
+          "exact_correct": 84,
+          "exact_rate": 0.328125,
+          "records": 256,
+          "scored_post_bos_tokens": 32512,
+          "token_accuracy": 0.9839751720428467,
+          "token_correct": 31991
+        },
+        "pile__public_base": {
+          "exact_correct": 3,
+          "exact_rate": 0.0234375,
+          "records": 128,
+          "scored_post_bos_tokens": 16256,
+          "token_accuracy": 0.953801691532135,
+          "token_correct": 15505
+        },
+        "pile__public_lora_2601": {
+          "exact_correct": 4,
+          "exact_rate": 0.03125,
+          "records": 128,
+          "scored_post_bos_tokens": 16256,
+          "token_accuracy": 0.954785943031311,
+          "token_correct": 15521
+        }
+      },
+      "continued_fixed_readout": {
+        "finance__public_base": {
+          "exact_correct": 77,
+          "exact_rate": 0.30078125,
+          "records": 256,
+          "scored_post_bos_tokens": 32512,
+          "token_accuracy": 0.9826833009719849,
+          "token_correct": 31949
+        },
+        "finance__public_lora_2601": {
+          "exact_correct": 83,
+          "exact_rate": 0.32421875,
+          "records": 256,
+          "scored_post_bos_tokens": 32512,
+          "token_accuracy": 0.9839751720428467,
+          "token_correct": 31991
+        },
+        "pile__public_base": {
+          "exact_correct": 3,
+          "exact_rate": 0.0234375,
+          "records": 128,
+          "scored_post_bos_tokens": 16256,
+          "token_accuracy": 0.9536786675453186,
+          "token_correct": 15503
+        },
+        "pile__public_lora_2601": {
+          "exact_correct": 3,
+          "exact_rate": 0.0234375,
+          "records": 128,
+          "scored_post_bos_tokens": 16256,
+          "token_accuracy": 0.9547244310379028,
+          "token_correct": 15520
+        }
+      },
+      "published_reference": {
+        "finance__public_base": {
+          "exact_correct": 60,
+          "exact_rate": 0.234375,
+          "records": 256,
+          "scored_post_bos_tokens": 32512,
+          "token_accuracy": 0.9786847829818726,
+          "token_correct": 31819
+        },
+        "finance__public_lora_2601": {
+          "exact_correct": 65,
+          "exact_rate": 0.25390625,
+          "records": 256,
+          "scored_post_bos_tokens": 32512,
+          "token_accuracy": 0.9793614745140076,
+          "token_correct": 31841
+        },
+        "pile__public_base": {
+          "exact_correct": 3,
+          "exact_rate": 0.0234375,
+          "records": 128,
+          "scored_post_bos_tokens": 16256,
+          "token_accuracy": 0.9427288174629211,
+          "token_correct": 15325
+        },
+        "pile__public_lora_2601": {
+          "exact_correct": 2,
+          "exact_rate": 0.015625,
+          "records": 128,
+          "scored_post_bos_tokens": 16256,
+          "token_accuracy": 0.9417445659637451,
+          "token_correct": 15309
+        }
+      },
+      "unchanged_anchor": {
+        "finance__public_base": {
+          "exact_correct": 70,
+          "exact_rate": 0.2734375,
+          "records": 256,
+          "scored_post_bos_tokens": 32512,
+          "token_accuracy": 0.9803764820098877,
+          "token_correct": 31874
+        },
+        "finance__public_lora_2601": {
+          "exact_correct": 77,
+          "exact_rate": 0.30078125,
+          "records": 256,
+          "scored_post_bos_tokens": 32512,
+          "token_accuracy": 0.9813914895057678,
+          "token_correct": 31907
+        },
+        "pile__public_base": {
+          "exact_correct": 1,
+          "exact_rate": 0.0078125,
+          "records": 128,
+          "scored_post_bos_tokens": 16256,
+          "token_accuracy": 0.944635808467865,
+          "token_correct": 15356
+        },
+        "pile__public_lora_2601": {
+          "exact_correct": 3,
+          "exact_rate": 0.0234375,
+          "records": 128,
+          "scored_post_bos_tokens": 16256,
+          "token_accuracy": 0.9454355239868164,
+          "token_correct": 15369
+        }
+      }
+    },
+    "confidence": {
+      "exact_component_alpha": 0.0125,
+      "exact_composite_alpha": 0.025,
+      "safeguard_token_one_sided_alpha": 0.05,
+      "token_one_sided_alpha": 0.025
+    },
+    "primary": {
+      "candidate": "continued_adaptable_readout",
+      "control": "continued_fixed_readout"
+    },
+    "rare_token_safeguard": {
+      "failures": [],
+      "minimum_exposed_source_records": 32,
+      "status": "PASS",
+      "unknown": []
+    },
+    "source_text_or_target_labels": false,
+    "status": "SCORE_COMPLETE_AFTER_PUBLIC_FREEZE",
+    "truth_opened": true
+  },
+  "status": "SCORE_COMPLETE_AFTER_PUBLIC_FREEZE",
+  "task_id": "TRR-0009"
+}

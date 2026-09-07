@@ -1,0 +1,159 @@
+{
+  "capture_receipt_path": "experiments/TRR-0009/evaluation/public_observations/capture.json",
+  "code_bindings": [
+    "scripts/trr0009_eval_contract.py",
+    "scripts/trr0009_eval_capture.py",
+    "scripts/trr0009_eval_register.py",
+    "scripts/trr0009_eval_runner.py",
+    "scripts/trr0009_eval_gate.py",
+    "scripts/trr0009_eval_truth.py",
+    "scripts/trr0009_score.py",
+    "scripts/trr0009_timing.py",
+    "scripts/trr0009_model.py",
+    "<OWNER_SUPPLIED_TRAINING_MODEL_OR_LOADER_BINDING>"
+  ],
+  "embedding_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+  "frequency_reference_path": "experiments/TRR-0009/evaluation/frequency_reference_v1.json",
+  "initialization_equivalence": {
+    "receipt": "<OWNER_SUPPLIED_EQUIVALENCE_RECEIPT_PATH>",
+    "scope": "All declared TRR-0009 methods; unchanged anchor and adaptable zero correction versus the selected current-H base; exact IDs and full-vocabulary logits on the qualified fixture.",
+    "status": "<REPLACE_WITH_PASS_ONLY_AFTER_ACTUAL_INITIALIZATION_AND_FORWARD_EQUIVALENCE>"
+  },
+  "method_rows": {
+    "continued_adaptable_readout": {
+      "deployment_cost": "<OWNER_SUPPLIED_DEPLOYMENT_COST_RECEIPT>",
+      "fit_cost": "<TRAINING_RECEIPT_METHOD_FIT_COST>",
+      "id": "continued_adaptable_readout",
+      "kind": "decoder",
+      "loader": {
+        "a2_enabled": false,
+        "current_h_only": true,
+        "full_vocabulary": true,
+        "function": "load_supported_readout_state",
+        "history_enabled": false,
+        "interface": "trr0009.current_h.full_vocabulary.v1",
+        "kwargs": {
+          "bottleneck_size": 512,
+          "context_width": 128,
+          "hidden_size": 2048,
+          "vocabulary_size": 128256
+        },
+        "module": "scripts.trr0009_model",
+        "path_args": {
+          "base_state_path": {
+            "bytes": 29390628,
+            "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/enriched_fit_v1/current_enriched/trr0007_residual_mlp512/selected.safetensors",
+            "sha256": "2a44a91b01ca1fdc9615eab804872c50c606199704eaf51fa114cc0d7959ddc8"
+          }
+        },
+        "tensor_args": {
+          "support_counts": {
+            "bytes": 137624,
+            "path": "experiments/TRR-0009/evaluation/support_counts.safetensors",
+            "sha256": "3ae3412ccf0061adcc0a24e3ef40ec0fbe87cd44e935bfc9e24462ae87f18825"
+          },
+          "support_ids": {
+            "bytes": 137616,
+            "path": "experiments/TRR-0009/evaluation/support_ids.safetensors",
+            "sha256": "b3bef773294cbc79755852512d79c21c910dca30f000387e8c73a69c19c8f104"
+          }
+        }
+      },
+      "role": "continued_adaptable_readout",
+      "state_path": "experiments/TRR-0009/training/run_v1/continued_adaptable_readout/selected.safetensors",
+      "state_sha256": "93661674c5e92144b84779737dee46a604afeb1ce1553966e464f0c84b2133c3"
+    },
+    "continued_fixed_readout": {
+      "deployment_cost": "<OWNER_SUPPLIED_DEPLOYMENT_COST_RECEIPT>",
+      "fit_cost": "<TRAINING_RECEIPT_METHOD_FIT_COST>",
+      "id": "continued_fixed_readout",
+      "kind": "decoder",
+      "loader": {
+        "a2_enabled": false,
+        "current_h_only": true,
+        "full_vocabulary": true,
+        "function": "load_positionwise_model_state",
+        "history_enabled": false,
+        "interface": "trr0009.current_h.full_vocabulary.v1",
+        "kwargs": {
+          "context_width": 128,
+          "hidden_size": 2048,
+          "method_id": "trr0007_residual_mlp512",
+          "vocabulary_size": 128256
+        },
+        "module": "token_reconstruction.trr0007_positionwise",
+        "path_args": {},
+        "tensor_args": {}
+      },
+      "role": "continued_fixed_readout",
+      "state_path": "experiments/TRR-0009/training/run_v1/continued_fixed_readout/selected.safetensors",
+      "state_sha256": "5cada4a3d04bb5477eaf0be25ed8d8ac25a89283223e9ba14b18fa10416bee14"
+    },
+    "published_reference": {
+      "deployment_cost": "<OWNER_SUPPLIED_DEPLOYMENT_COST_RECEIPT>",
+      "fit_cost": {
+        "status": "RETAINED_PUBLISHED_CONTEXT_NO_REFIT"
+      },
+      "id": "published_reference",
+      "kind": "decoder",
+      "loader": {
+        "a2_enabled": false,
+        "current_h_only": true,
+        "full_vocabulary": true,
+        "function": "load_decoder_state",
+        "history_enabled": false,
+        "interface": "trr0009.current_h.full_vocabulary.v1",
+        "kwargs": {
+          "context_width": 128,
+          "hidden_size": 2048,
+          "method_id": "affine_trained_diagonal_attention128",
+          "vocabulary_size": 128256
+        },
+        "module": "token_reconstruction.trr0005_joint_decoder",
+        "path_args": {},
+        "tensor_args": {}
+      },
+      "role": "published_reference",
+      "state_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0005/joint_fit_v1/enriched/affine_trained_diagonal_attention128/selected.safetensors",
+      "state_sha256": "696eb9fc951e85356a06575faf18a2011616692a086bdac3b2fa368e69d599a2"
+    },
+    "unchanged_anchor": {
+      "deployment_cost": "<OWNER_SUPPLIED_DEPLOYMENT_COST_RECEIPT>",
+      "fit_cost": {
+        "status": "NOT_FIT_PUBLISHED_ANCHOR"
+      },
+      "id": "unchanged_anchor",
+      "kind": "decoder",
+      "loader": {
+        "a2_enabled": false,
+        "current_h_only": true,
+        "full_vocabulary": true,
+        "function": "load_positionwise_model_state",
+        "history_enabled": false,
+        "interface": "trr0009.current_h.full_vocabulary.v1",
+        "kwargs": {
+          "context_width": 128,
+          "hidden_size": 2048,
+          "method_id": "trr0007_residual_mlp512",
+          "vocabulary_size": 128256
+        },
+        "module": "token_reconstruction.trr0007_positionwise",
+        "path_args": {},
+        "tensor_args": {}
+      },
+      "role": "unchanged_anchor",
+      "state_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/enriched_fit_v1/current_enriched/trr0007_residual_mlp512/selected.safetensors",
+      "state_sha256": "2a44a91b01ca1fdc9615eab804872c50c606199704eaf51fa114cc0d7959ddc8"
+    }
+  },
+  "observation_manifest_path": "experiments/TRR-0009/evaluation/public_observations/observations.json",
+  "output_root": "experiments/TRR-0009/evaluation/predictions_v1",
+  "plan_path": "<OWNER_SUPPLIED_TRR9_EVALUATION_PLAN_JSON>",
+  "records_by_domain": {
+    "finance": 256,
+    "pile": 128
+  },
+  "repository_root": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009",
+  "source_selection_path": "experiments/TRR-0009/selection/source_selection.json",
+  "timing_plan_path": "experiments/TRR-0009/evaluation/timing/plan.json"
+}
