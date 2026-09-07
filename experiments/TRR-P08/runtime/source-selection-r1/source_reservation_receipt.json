@@ -1,0 +1,119 @@
+{
+  "access_boundary": {
+    "capture_started": false,
+    "gpu_started": false,
+    "model_loaded": false,
+    "source_rows_read_transiently_for_selection": true,
+    "source_text_written": false,
+    "target_labels_loaded": false,
+    "token_ids_written": false,
+    "truth_opened": false
+  },
+  "artifacts": {
+    "approved_p06_selection_sha256": "d53ed8c972ec9ec00c6490dca22a99af833ea839fa68d9c4164ce061ee893a1a",
+    "approved_trr0008_opaque_sha256": "0487b9dda91d7eb791c93e1ba704afcea22abfc21f003cad8b99984f523357a4",
+    "frozen_universe": {
+      "bytes": 66135,
+      "path": "/tmp/trr-p08/experiments/TRR-P08/runtime/source-universe-r1/frozen.json",
+      "sha256": "d9f818bd2d99388bd5d3b746134188c272fcf35502e425cedcff95dfc1b5b304",
+      "status": "FROZEN_SOURCE_UNIVERSE"
+    },
+    "opaque_h128_export": {
+      "bytes": 124654,
+      "path": "/tmp/trr-p08/experiments/TRR-P08/runtime/source-selection-r1/opaque_h128_export.json",
+      "sha256": "a6ffc864d6f30b291e7b059a31bcf42be3fb27bf56eefa1873d902bc0d75252b",
+      "status": "FROZEN_OPAQUE_512_SOURCE_NO_TRUTH"
+    },
+    "proposed_universe": {
+      "bytes": 65887,
+      "path": "/tmp/trr-p08/experiments/TRR-P08/runtime/source-universe-r1/proposed.json",
+      "sha256": "08e2cbb7c4754c6f61e3d6fa85d09d442c0095e2114725adbf7dc3a4ff020602",
+      "status": "PROPOSED_BEFORE_ENUMERATION"
+    },
+    "selected_state_freeze": {
+      "bytes": 6315,
+      "path": "/tmp/trr-p08/experiments/TRR-P08/runtime/selected-state-freeze-r2/selected_state_freeze.json",
+      "sha256": "a44f33a1700b1af1393e124f9b37a175c1e876cb221c1a226b9ea1be206e4ced",
+      "status": "SELECTED_STATES_FROZEN_NO_TRUTH"
+    },
+    "selection": {
+      "bytes": 372627,
+      "path": "/tmp/trr-p08/experiments/TRR-P08/runtime/source-selection-r1/selection.json",
+      "records_per_domain": 256,
+      "sha256": "75f8d66007d6ae5558ded8b0fc428fc88db8aa5a04f4d372bd187f5934079274",
+      "status": "FROZEN_TRR-P08_SOURCE_SELECTION_NO_TRUTH"
+    }
+  },
+  "code": {
+    "plan_path": "experiments/TRR-P08/plan.json",
+    "plan_sha256": "9d1eb8dca89c76f4064c0c380636cb9d585672f7fae796d5295d6507b788caa3",
+    "source_commit": "ef925c550e39ea557f9fea516d9d21473a9eb163"
+  },
+  "counts": {
+    "domains": {
+      "finance": 256,
+      "pile": 256
+    },
+    "selection_audit": {
+      "duplicates": 3,
+      "excluded": 85,
+      "invalid": 46,
+      "scanned": 646
+    },
+    "total_records": 512
+  },
+  "created_utc": "2026-09-07T02:04:01Z",
+  "focused_tests": {
+    "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p08*.py",
+    "failed": 0,
+    "passed": 50,
+    "result": "PASS"
+  },
+  "notes": [
+    "Create-only source reservation artifacts were present and validated before this receipt was written; no overwrite or rescan was attempted.",
+    "The opaque export contains only per-record public-record and final-sequence SHA-256 values plus stable ordinals; it contains no source text, token values, answers, or observations.",
+    "No capture, model load, inference, truth access, or GPU work occurred in this reservation step."
+  ],
+  "recipes": {
+    "candidate_sources": {
+      "finance": {
+        "dataset_id": "Josephgflowers/Finance-Instruct-500k",
+        "revision": "583a98fb0ec14d904e9423b671d9d0fea88891b6",
+        "split": "train"
+      },
+      "pile": {
+        "dataset_id": "NeelNanda/pile-10k",
+        "revision": "127bfedcd5047750df5ccf3a12979a47bfa0bafa",
+        "split": "train"
+      }
+    },
+    "commands": {
+      "freeze": "PYTHONPATH=.:src python3 scripts/trr_p08/prepare_public_panel.py freeze --execute --universe experiments/TRR-P08/runtime/source-universe-r1/proposed.json --output experiments/TRR-P08/runtime/source-universe-r1/frozen.json",
+      "select": "PYTHONPATH=.:src python3 scripts/trr_p08/prepare_public_panel.py select --execute --repository-root /tmp/trr-p08 --universe experiments/TRR-P08/runtime/source-universe-r1/frozen.json --tokenizer /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6 --pile-arrow /home/alanz/.cache/huggingface/datasets/NeelNanda___pile-10k/default/0.0.0/127bfedcd5047750df5ccf3a12979a47bfa0bafa/pile-10k-train.arrow --finance-arrow /home/alanz/.cache/huggingface/datasets/Josephgflowers___finance-instruct-500k/default/0.0.0/583a98fb0ec14d904e9423b671d9d0fea88891b6/finance-instruct-500k-train-00000-of-00002.arrow /home/alanz/.cache/huggingface/datasets/Josephgflowers___finance-instruct-500k/default/0.0.0/583a98fb0ec14d904e9423b671d9d0fea88891b6/finance-instruct-500k-train-00001-of-00002.arrow --output experiments/TRR-P08/runtime/source-selection-r1/selection.json",
+      "universe": "PYTHONPATH=.:src python3 scripts/trr_p08/prepare_public_panel.py universe --repository-root /tmp/trr-p08 --plan experiments/TRR-P08/plan.json --selection-seed 8108 --pile-range 0 7000 --finance-range 20000 26000 --p06-selection experiments/TRR-P06/runtime/source-selection-r1/selection.json --approved-opaque /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0008/experiments/TRR-0008/selection/opaque_source_sequence_reservation.json --output experiments/TRR-P08/runtime/source-universe-r1/proposed.json"
+    },
+    "h128_rule": "minimum valid tokens including BOS >= 128; score positions 1..127",
+    "selection_rule": "stable published source order after frozen exclusions and H128 validity checks; paired target conditions",
+    "source_universe_command_receipt": {
+      "path": "/tmp/trr-p08/experiments/TRR-P08/setup/source-universe-command.json",
+      "sha256": "ddc7d0eddc66717c17c8a0d409d0745e9073471722ac221f585efe5cfc2c4a74"
+    },
+    "tokenizer_snapshot": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6"
+  },
+  "root_authorization": {
+    "finance_range_half_open": [
+      20000,
+      26000
+    ],
+    "no_capture_or_inference": true,
+    "pile_range_half_open": [
+      0,
+      7000
+    ],
+    "scope": "bounded metadata/hash-only source reservation execution",
+    "selection_seed": 8108
+  },
+  "schema": "token-reconstruction.trr-p08-source-reservation-receipt.v1",
+  "status": "SOURCE_RESERVATION_COMPLETE_NO_TRUTH",
+  "task_id": "TRR-P08"
+}

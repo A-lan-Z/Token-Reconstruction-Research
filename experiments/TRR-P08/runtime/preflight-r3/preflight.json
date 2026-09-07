@@ -1,0 +1,105 @@
+{
+  "command": [
+    "scripts/trr_p08/fit_staged.py",
+    "--mode",
+    "preflight",
+    "--repository-root",
+    "/tmp/trr-p08",
+    "--fit-manifest",
+    "experiments/TRR-P06/setup/public_fit_manifest_resolved.json",
+    "--output-root",
+    "experiments/TRR-P08/runtime/preflight-r3",
+    "--device",
+    "cpu",
+    "--max-seconds",
+    "120"
+  ],
+  "created_utc": "2026-09-07T01:36:03.931466+00:00",
+  "environment": {
+    "PYTHONPATH": ".:src"
+  },
+  "execution_hold": "no public tensors, GPU, truth, or fit updates opened by preflight",
+  "fit_manifest": {
+    "bytes": 16820,
+    "path": "/tmp/trr-p08/experiments/TRR-P06/setup/public_fit_manifest_resolved.json",
+    "sha256": "d7b0133024ed6c3f20cbcea0558c182f6131e3bff898ab04a0afbd549e0d1df3"
+  },
+  "geometry": {
+    "bytes": {
+      "conservative_envelope": 2553652248,
+      "embedding_tensor_fp32": 1050673152,
+      "training_peak_envelope": 1702434832
+    },
+    "geometry": {
+      "context_width": 128,
+      "hidden_size": 2048,
+      "position_budget": 512,
+      "record_batch_size": 8,
+      "sequence_length": 128,
+      "vocabulary_size": 128256
+    },
+    "gib": {
+      "conservative_envelope": 2.3782739862799644,
+      "training_peak_envelope": 1.5855159908533096
+    }
+  },
+  "manifest_shapes": {
+    "embedding_table": [
+      128256,
+      2048
+    ],
+    "fit_observations": [
+      1200,
+      192,
+      2048
+    ],
+    "fit_truth": [
+      1200,
+      192
+    ],
+    "fit_valid_mask": [
+      1200,
+      192
+    ],
+    "validation_observations": [
+      48,
+      192,
+      2048
+    ],
+    "validation_truth": [
+      48,
+      192
+    ],
+    "validation_valid_mask": [
+      48,
+      192
+    ]
+  },
+  "resource_policy": {
+    "max_seconds": 120.0,
+    "maximum_gpu_reserved_gib": 6.0,
+    "maximum_host_rss_gib": 16.0,
+    "minimum_free_gpu_gib": 8.0,
+    "minimum_host_available_gib": 10.0
+  },
+  "schedule": {
+    "position_budget": 512,
+    "record_batch_size": 8,
+    "seeds": [
+      6106,
+      6107
+    ],
+    "staged_affine_steps": 1000,
+    "steps": 3000
+  },
+  "schema": "token-reconstruction.trr-p08-staged-fit-preflight.v1",
+  "source_commit": "00504aac40f2b3758c65c14c6dcc8f1b4c6064e5",
+  "standard_initialization": {
+    "W": "identity",
+    "b": "zeros",
+    "s": 3.0,
+    "sha256": "0ca643ec0c66524bb665430733a3f8c5dbf452d45dd3166576daa7e5109eda87"
+  },
+  "status": "SOURCE_ONLY_PREFLIGHT_PASS",
+  "task_id": "TRR-P08"
+}

@@ -1,0 +1,62 @@
+{
+  "command": [
+    "env",
+    "PYTHONPATH=.:src",
+    "python3",
+    "scripts/trr_p08/fit_staged.py",
+    "--mode",
+    "qualify",
+    "--repository-root",
+    "/tmp/trr-p08",
+    "--fit-manifest",
+    "experiments/TRR-P06/setup/public_fit_manifest_resolved.json",
+    "--preflight-receipt",
+    "experiments/TRR-P08/runtime/preflight-r3/preflight.json",
+    "--output-root",
+    "experiments/TRR-P08/runtime/qualification-r2",
+    "--device",
+    "cuda",
+    "--torch-threads",
+    "4",
+    "--torch-interop-threads",
+    "1",
+    "--minimum-free-gib",
+    "8",
+    "--maximum-gpu-reserved-gib",
+    "6",
+    "--maximum-host-rss-gib",
+    "16",
+    "--minimum-host-available-gib",
+    "10",
+    "--max-seconds",
+    "1800"
+  ],
+  "created_utc": "2026-09-07T01:37:11.096244Z",
+  "cwd": "/tmp/trr-p08",
+  "environment": {
+    "PYTHONPATH": ".:src"
+  },
+  "environment_allowlist": [
+    "CUDA_VISIBLE_DEVICES",
+    "OMP_NUM_THREADS",
+    "MKL_NUM_THREADS",
+    "TOKENIZERS_PARALLELISM",
+    "PYTHONPATH",
+    "HF_HUB_OFFLINE",
+    "HF_DATASETS_OFFLINE",
+    "TRANSFORMERS_OFFLINE"
+  ],
+  "environment_redacted": true,
+  "label": "TRR-P08-qualification-r2",
+  "process_group": "new_session_start_new_session_true",
+  "schema": "token-reconstruction.trr-p06-resource-watchdog-command.v1",
+  "shell_command": "env PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode qualify --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --preflight-receipt experiments/TRR-P08/runtime/preflight-r3/preflight.json --output-root experiments/TRR-P08/runtime/qualification-r2 --device cuda --torch-threads 4 --torch-interop-threads 1 --minimum-free-gib 8 --maximum-gpu-reserved-gib 6 --maximum-host-rss-gib 16 --minimum-host-available-gib 10 --max-seconds 1800",
+  "task_id": "TRR-P06",
+  "thresholds": {
+    "kill_grace_seconds": 2.0,
+    "max_rss_bytes": 17179869184,
+    "min_available_bytes": 10737418240,
+    "poll_seconds": 0.5,
+    "timeout_seconds": 1800.0
+  }
+}
