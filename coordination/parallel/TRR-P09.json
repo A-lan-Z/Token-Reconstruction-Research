@@ -17,7 +17,7 @@
     "current_prefix_post_bos_positions": 124371,
     "current_prefix_records": 1200,
     "expanded_target_records": 12000,
-    "fixed_training_diagnostic_indices": "R1 receipt: current=2dba4fdb243f742496cc010985820205a6d36f8c29b7ed3058369322d181f907; expanded=1186141e1887b2c03f0c7dbc925d5b9c43f6cfd62b0ebde8e43a7345dccefbd2; r1 excluded pending signed B0-order addendum",
+    "fixed_training_diagnostic_indices": "r2 receipt: current=2dba4fdb243f742496cc010985820205a6d36f8c29b7ed3058369322d181f907; expanded=670624a8ef439fe11b250f1ba432d87922d6ff53da38ff8514203880237b6933; seed=4010; 64 records per bank; r1 indices retained only as historical excluded metadata",
     "integrity_gate": "verify-once manifest/input/shard hashes, COMPLETE markers, contiguous ranges, payload headers and global_row metadata; stat-only checks thereafter",
     "model_loaded": false,
     "natural_validation_geometry": "T=128 already-opened TRR-0009 public_base view; no new panel",
@@ -25,7 +25,7 @@
     "public_forward_batch": "PENDING_CAPTURE_QUALIFICATION; preparation diagnostics use B=8 metadata only",
     "shard_records": 64,
     "source_rows_selected": true,
-    "status": "STAGE1_R2_CPU_COMPILED_METADATA_AUDITED_PENDING_CAPTURE_METADATA_REPAIR",
+    "status": "STAGE1_R2_CPU_COMPILED_METADATA_REVISED_READY_FOR_CAPTURE",
     "training_geometry": "loader_minibatch_proposed_B=8; complete_sequence_T=192; H=2048; BF16"
   },
   "branch": "task/TRR-P09",
@@ -35,7 +35,9 @@
     "integrated_test_receipt_sha256": "44658a8098ad2406b98ea17111d4ce163b00e95fd03548021da24a2c4bf4ece0",
     "integrated_test_status": "PASS_NO_INTEGRITY_BLOCKER",
     "manifest": "experiments/TRR-P09/manifest.json",
-    "result": "coordination/results/TRR-P09.md"
+    "result": "coordination/results/TRR-P09.md",
+    "stage1_r2_receipt": "experiments/TRR-P09/setup/stage1-input-preparation-r2-receipt.json",
+    "stage1_r2_receipt_sha256": "e8e0e2bad1bba8ba71482dd28babfff4bcdf391cf224a95551705d2643171c5d"
   },
   "communication": {
     "agent1_contract_detail": {
@@ -85,7 +87,6 @@
     "merge_allowed": false
   },
   "pending": [
-    "repair setup-owned r2 preparation metadata legacy full_ten_cycle composition/digest fields to agree with exact nine-use joint-template output",
     "bind corrected r2 input artifacts and complete public model capture qualification under fail-closed resource guards",
     "keep activation-bank capture, fitting, and truth access unopened until capture gates pass"
   ],
@@ -135,9 +136,9 @@
     "live_snapshot_path": "experiments/TRR-P09/setup/resource-snapshot-r0.json",
     "preflight_required_before_compute": true,
     "public_forward_authorized": false,
-    "status": "STAGE1_R2_CPU_COMPILED_NO_CAPTURE_NO_FIT_PENDING_CAPTURE_METADATA_REPAIR",
+    "status": "STAGE1_R2_CPU_COMPILED_NO_CAPTURE_NO_FIT",
     "cpu_input_compilation_authorized": true,
-    "cpu_input_compilation_status": "R2_COMPLETED_METADATA_AUDITED_SETUP_METADATA_REPAIR_PENDING"
+    "cpu_input_compilation_status": "R2_COMPLETED_METADATA_REVISED"
   },
   "role_path": "experiments/TRR-P09/setup/agent2-role.md",
   "schema": "token-reconstruction.task-local-state.v1",
@@ -153,12 +154,15 @@
     "published_input_inventory": "experiments/TRR-P09/setup/published-input-inventory-r0.json",
     "resource_snapshot": "experiments/TRR-P09/setup/resource-snapshot-r0.json",
     "publication_attempt": "experiments/TRR-P09/setup/publication-attempt-r0.json",
-    "publication_receipt": "experiments/TRR-P09/setup/publication-receipt-r1.json"
+    "publication_receipt": "experiments/TRR-P09/setup/publication-receipt-r1.json",
+    "stage1_r2_receipt": "experiments/TRR-P09/setup/stage1-input-preparation-r2-receipt.json",
+    "stage1_r2_metadata_revision": "/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/preparation_manifest-r2-corrected.json",
+    "stage1_r2_metadata_revision_sha256": "79bbd55c3e66555501e0abc886e69b5a4ff85bca5301a129f6e5d398524e844f"
   },
   "source_head_commit": "86e66aa3df4f421875e98aec95b0efab56c4ea33",
-  "status": "STAGE1_R2_CPU_COMPILED_NO_ACTIVATIONS_PENDING_CAPTURE_METADATA_REPAIR",
+  "status": "STAGE1_R2_CPU_COMPILED_NO_ACTIVATIONS_READY_FOR_CAPTURE",
   "task_id": "TRR-P09",
-  "updated_utc": "2026-09-07T11:02:18Z",
+  "updated_utc": "2026-09-07T11:06:30Z",
   "worktree": "/tmp/trr-p09",
   "cost_lineage": {
     "path": "experiments/TRR-P09/planning/starting-state-cost-lineage.md",
@@ -222,5 +226,37 @@
     "module": "scripts/trr_p09/b0_immutable_loader.py",
     "module_commit": "86e66aa3df4f421875e98aec95b0efab56c4ea33",
     "real_header_validation": "PASS_NO_H_SLICES"
+  },
+  "stage1_r2_compilation": {
+    "status": "PASS_CPU_INPUTS_COMPILED_NO_ACTIVATIONS",
+    "receipt": "experiments/TRR-P09/setup/stage1-input-preparation-r2-receipt.json",
+    "receipt_sha256": "e8e0e2bad1bba8ba71482dd28babfff4bcdf391cf224a95551705d2643171c5d",
+    "metadata_revision": {
+      "path": "/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/preparation_manifest-r2-corrected.json",
+      "sha256": "79bbd55c3e66555501e0abc886e69b5a4ff85bca5301a129f6e5d398524e844f",
+      "bytes": 43560,
+      "source_commit": "5896f62ac8b40ab1054b9081d69a34415aa1a158",
+      "payload_files_unchanged": true,
+      "supersedes": {
+        "bytes": 41974,
+        "path": "/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/preparation_manifest.json",
+        "sha256": "262d13d7cf86c72e97ef8d1ad9656a2f34603fd3c0d147f1648769c2e8c21123"
+      }
+    },
+    "payload_source_commit": "15be77368dae5129a216c9354975b6347cf28720",
+    "source_commit": "15be77368dae5129a216c9354975b6347cf28720",
+    "rows": 12000,
+    "common_N": 13000,
+    "template_exact_nine_each": true,
+    "structural_skip_total": 328,
+    "parent_manifest_overlap": {
+      "record_or_source_ids": 0,
+      "rendered_sha256": 0,
+      "source_row_keys": 0
+    },
+    "watchdog_status": "PASS",
+    "model_or_activation_opened": false,
+    "truth_opened": false,
+    "r1_preserved_and_excluded": true
   }
 }

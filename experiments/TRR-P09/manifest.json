@@ -13,7 +13,7 @@
       "new_validation_pool_created": false,
       "public_forward_count": 0,
       "public_source_and_tokenizer_read": true,
-      "source_selection_executed": false
+      "source_selection_executed": true
     },
     "alpaca_capacity_audit": "experiments/TRR-P09/planning/alpaca-capacity-audit.json",
     "alpaca_capacity_audit_sha256": "d1f11364cabe6db876bb83f09ce1d8d7db1cdc3f76ac2e8bafaed149ba33a5c9",
@@ -66,7 +66,7 @@
       "pending_joint_identity_and_capacity_contract": true,
       "target_records": 12000
     },
-    "status": "STAGE1_R2_CPU_INPUTS_COMPILED_NO_ACTIVATIONS_PENDING_CAPTURE_METADATA_REPAIR",
+    "status": "STAGE1_R2_CPU_INPUTS_COMPILED_NO_ACTIVATIONS_READY_FOR_CAPTURE",
     "stage1_plan": {
       "path": "experiments/TRR-P09/planning/stage1-public-bank-plan.json",
       "sha256": "bca93d6099760791c5ecbf3be8177d250cc672c62b2177a3d72d79b934c3826c",
@@ -75,12 +75,12 @@
     },
     "stage1_input_preparation": {
       "receipt": "experiments/TRR-P09/setup/stage1-input-preparation-r2-receipt.json",
-      "receipt_sha256": "9b5b575fcd0454ca43c46f68e99cf9444cdde65c234a46aa571ef48051955798",
+      "receipt_sha256": "e8e0e2bad1bba8ba71482dd28babfff4bcdf391cf224a95551705d2643171c5d",
       "source_commit": "15be77368dae5129a216c9354975b6347cf28720",
-      "status": "PASS_CPU_INPUTS_COMPILED_NO_ACTIVATIONS_R2_METADATA_AUDITED",
+      "status": "PASS_CPU_INPUTS_COMPILED_NO_ACTIVATIONS_R2_METADATA_REVISED",
       "output_root": "/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final",
-      "preparation_manifest": "/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/preparation_manifest.json",
-      "preparation_manifest_sha256": "262d13d7cf86c72e97ef8d1ad9656a2f34603fd3c0d147f1648769c2e8c21123",
+      "preparation_manifest": "/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/preparation_manifest-r2-corrected.json",
+      "preparation_manifest_sha256": "79bbd55c3e66555501e0abc886e69b5a4ff85bca5301a129f6e5d398524e844f",
       "inputs_sha256": "8150184a349bebd31e24b128d23f096702898024a87a405322ee3ba95fa6682e",
       "records_sha256": "367cfba0ffe78f59454861a76f23830f480a8745cc6b35e6b4a0d05eca53638b",
       "rows": 12000,
@@ -95,11 +95,35 @@
       "elapsed_seconds": 32.880936,
       "peak_group_rss_bytes": 1609445376,
       "metadata_audit": "PASS_PREFIX_QUOTAS_TEMPLATES_EXCLUSIONS_DIAGNOSTICS",
-      "metadata_revision_pending": "setup receipt retains stale full_ten_cycle_composition/full_ten_cycle_identity_digest legacy fields; corrected r2 template assignment is independently audited but setup metadata must be revised before capture",
-      "r1_preserved_and_excluded": true
+      "metadata_revision_pending": false,
+      "r1_preserved_and_excluded": true,
+      "metadata_revision_status": "PASS_METADATA_ONLY_PAYLOAD_UNCHANGED",
+      "metadata_revision": {
+        "path": "/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/preparation_manifest-r2-corrected.json",
+        "sha256": "79bbd55c3e66555501e0abc886e69b5a4ff85bca5301a129f6e5d398524e844f",
+        "bytes": 43560,
+        "source_commit": "5896f62ac8b40ab1054b9081d69a34415aa1a158",
+        "payload_files_unchanged": true,
+        "supersedes": {
+          "bytes": 41974,
+          "path": "/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/preparation_manifest.json",
+          "sha256": "262d13d7cf86c72e97ef8d1ad9656a2f34603fd3c0d147f1648769c2e8c21123"
+        }
+      },
+      "r2_actual_occurrence_audit": {
+        "b0_actual_replacement_token_digest": "213be23034989a3e26271193cd37f5b2f44df5725d77a9435d74f072b3d02c87",
+        "b0_occurrences": 3600,
+        "composition": "immutable_published_b0_actual_3600_plus_r2_template_assignments_32400",
+        "controlled_addition_occurrences": 32400,
+        "controlled_addition_replacement_token_digest": "c66fefedd544f0c5d584317e2ee8a67b5f7d0b3f7fec2032f25869297c1b31ec",
+        "full_replacement_occurrence_count": 36000,
+        "full_replacement_occurrence_digest": "0e1b7726cc1e394dba8ccaf528d22216205e1d595f3b8bb853c879c3a77df53b",
+        "legacy_signed_recipe_comparison": "nested_under_historical_r1_signed_recipe_comparison"
+      },
+      "historical_r1_receipt": "experiments/TRR-P09/setup/stage1-input-preparation-r1-receipt.json"
     },
     "r2_metadata_audit": {
-      "status": "PASS_WITH_SETUP_METADATA_REPAIR_PENDING",
+      "status": "PASS_METADATA_ONLY_PAYLOAD_UNCHANGED",
       "b0_prefix_metadata_equal": true,
       "controlled_rows": 1080,
       "controlled_templates": 120,
@@ -138,7 +162,43 @@
       "alpaca_prior_development_b1_overlap": 0,
       "all_b1_overlap_checks_zero": true,
       "r2_records_sha256": "367cfba0ffe78f59454861a76f23830f480a8745cc6b35e6b4a0d05eca53638b",
-      "r2_inputs_sha256": "8150184a349bebd31e24b128d23f096702898024a87a405322ee3ba95fa6682e"
+      "r2_inputs_sha256": "8150184a349bebd31e24b128d23f096702898024a87a405322ee3ba95fa6682e",
+      "metadata_revision": {
+        "path": "/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/preparation_manifest-r2-corrected.json",
+        "sha256": "79bbd55c3e66555501e0abc886e69b5a4ff85bca5301a129f6e5d398524e844f",
+        "bytes": 43560,
+        "source_commit": "5896f62ac8b40ab1054b9081d69a34415aa1a158",
+        "payload_files_unchanged": true,
+        "supersedes": {
+          "bytes": 41974,
+          "path": "/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/preparation_manifest.json",
+          "sha256": "262d13d7cf86c72e97ef8d1ad9656a2f34603fd3c0d147f1648769c2e8c21123"
+        }
+      },
+      "r2_actual_occurrence_audit": {
+        "b0_actual_replacement_token_digest": "213be23034989a3e26271193cd37f5b2f44df5725d77a9435d74f072b3d02c87",
+        "b0_occurrences": 3600,
+        "composition": "immutable_published_b0_actual_3600_plus_r2_template_assignments_32400",
+        "controlled_addition_occurrences": 32400,
+        "controlled_addition_replacement_token_digest": "c66fefedd544f0c5d584317e2ee8a67b5f7d0b3f7fec2032f25869297c1b31ec",
+        "full_replacement_occurrence_count": 36000,
+        "full_replacement_occurrence_digest": "0e1b7726cc1e394dba8ccaf528d22216205e1d595f3b8bb853c879c3a77df53b",
+        "legacy_signed_recipe_comparison": "nested_under_historical_r1_signed_recipe_comparison"
+      },
+      "historical_r1_signed_recipe_comparison": {
+        "b0_actual_replacement_token_count": 3600,
+        "b0_actual_replacement_token_digest": "8499eb0e0706b6a8c74a258d09857336e135eb345bbc3603c6940a23a991d56e",
+        "b0_identity_cycle_matches_signed_recipe": false,
+        "b0_provenance_status": "PUBLISHED_B0_ACTUAL_IDS_RETAINED_SIGNED_B1_SEPARATE",
+        "b0_replacement_occurrences": 3600,
+        "b0_replacement_token_digest": "8499eb0e0706b6a8c74a258d09857336e135eb345bbc3603c6940a23a991d56e",
+        "basis": "legacy r1 signed-cycle comparison; not the corrected r2 controlled-occurrence sequence",
+        "full_replacement_occurrence_count": 36000,
+        "full_ten_cycle_composition": "published_b0_actual_3600_plus_signed_recipe_3600_x9",
+        "full_ten_cycle_identity_digest": "dcc8448a44621002ab78f9aa21e27b93ae750a6177d4c74b35ffd646a73879e5",
+        "signed_b1_cycle_count": 9,
+        "signed_b1_replacement_token_digest": "18d60ccf247ec95dd1f5922b57cf6cfdde7e8b84089e7335ba9e69e81cfa3b0b"
+      }
     },
     "correction_contract": {
       "addendum": "experiments/TRR-P09/planning/stage1-correction-addendum-r1.json",
@@ -147,7 +207,7 @@
       "joint_countersignature_sha256": "1b7e8578f9c7786d3be46b210be03ecf84e4a745782cfa05ad73a8128f16e610",
       "supplement": "experiments/TRR-P09/planning/stage1-template-compatible-selection-supplement-r1.json",
       "supplement_sha256": "7150c2e08cdf4a2551bd0dd90b0ff391dc381a65fe23bf5594f36e730166b1a4",
-      "status": "JOINT_AGREED_R2_COMPLETED_METADATA_REPAIR_PENDING",
+      "status": "JOINT_AGREED_R2_COMPLETED_METADATA_REVISED",
       "r1_preserved_and_excluded": true,
       "failed_cpu_attempts": [
         {
@@ -168,7 +228,21 @@
           "error": "r2 template application failed on a structural token",
           "watchdog_root": "/tmp/trr-p09-runtime/watchdog-stage1-input-preparation-r2-slot-compat"
         }
-      ]
+      ],
+      "r2_receipt": "experiments/TRR-P09/setup/stage1-input-preparation-r2-receipt.json",
+      "r2_receipt_sha256": "e8e0e2bad1bba8ba71482dd28babfff4bcdf391cf224a95551705d2643171c5d",
+      "r2_metadata_revision": {
+        "path": "/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/preparation_manifest-r2-corrected.json",
+        "sha256": "79bbd55c3e66555501e0abc886e69b5a4ff85bca5301a129f6e5d398524e844f",
+        "bytes": 43560,
+        "source_commit": "5896f62ac8b40ab1054b9081d69a34415aa1a158",
+        "payload_files_unchanged": true,
+        "supersedes": {
+          "bytes": 41974,
+          "path": "/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/preparation_manifest.json",
+          "sha256": "262d13d7cf86c72e97ef8d1ad9656a2f34603fd3c0d147f1648769c2e8c21123"
+        }
+      }
     },
     "b0_immutable_loader": {
       "binding": "experiments/TRR-P09/setup/b0-immutable-loader-binding-r1.json",
@@ -223,7 +297,6 @@
     "runner_base": "b71feb433815f12e3274aa7525c8bbb23971e552"
   },
   "remaining_bindings_before_real_run": [
-    "repair setup-owned r2 preparation metadata so legacy full_ten_cycle composition/digest fields agree with exact nine-use joint-template output",
     "complete capture qualification and bind public model/tokenizer snapshots plus resource/watchdog receipts",
     "bind the corrected r2 input manifest/records to the capture run and preserve create-only outputs",
     "do not begin public model capture, fitting, or evaluation truth access until all capture gates pass"
@@ -245,7 +318,7 @@
     "public_forward_count": 0
   },
   "source_commit": "0c7279e30a41a5016ff97c9bcaa5e282db2dabe0",
-  "status": "STAGE1_R2_CPU_INPUTS_COMPILED_NO_ACTIVATIONS_PENDING_CAPTURE_METADATA_REPAIR",
+  "status": "STAGE1_R2_CPU_INPUTS_COMPILED_NO_ACTIVATIONS_READY_FOR_CAPTURE",
   "task_id": "TRR-P09",
   "validation": {
     "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p09_fixed_control_runner.py tests/test_trr_p09_fixed_control_adapter.py tests/test_trr_p09_bank_artifact.py",
@@ -336,16 +409,38 @@
       "the prior public Alpaca development ledger covers 624 non-B0 rows and 63 overlap r1 B1 additions; r1 did not bind it fully",
       "signed addendum must bind observed B0 order/templates and the full prior-development exclusion ledger before capture"
     ],
-    "sha256": "2c8e74e826cd2ddf2e922929b3cc26a281012c66ce330e68d1c9f40790e609c5"
+    "sha256": "2c8e74e826cd2ddf2e922929b3cc26a281012c66ce330e68d1c9f40790e609c5",
+    "current_r2": {
+      "status": "PASS_CPU_INPUTS_COMPILED_NO_ACTIVATIONS_METADATA_REVISED",
+      "receipt": "experiments/TRR-P09/setup/stage1-input-preparation-r2-receipt.json",
+      "receipt_sha256": "e8e0e2bad1bba8ba71482dd28babfff4bcdf391cf224a95551705d2643171c5d",
+      "metadata_revision": {
+        "path": "/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/preparation_manifest-r2-corrected.json",
+        "sha256": "79bbd55c3e66555501e0abc886e69b5a4ff85bca5301a129f6e5d398524e844f",
+        "bytes": 43560,
+        "source_commit": "5896f62ac8b40ab1054b9081d69a34415aa1a158",
+        "payload_files_unchanged": true,
+        "supersedes": {
+          "bytes": 41974,
+          "path": "/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/preparation_manifest.json",
+          "sha256": "262d13d7cf86c72e97ef8d1ad9656a2f34603fd3c0d147f1648769c2e8c21123"
+        }
+      },
+      "source_commit": "15be77368dae5129a216c9354975b6347cf28720",
+      "payload_files_unchanged": true,
+      "model_or_activation_opened": false,
+      "truth_opened": false,
+      "r1_preserved_and_excluded": true
+    }
   },
   "resource_boundary": {
     "cpu_input_compilation_authorized": true,
-    "cpu_input_compilation_status": "R2_COMPLETED_METADATA_AUDITED_SETUP_METADATA_REPAIR_PENDING",
+    "cpu_input_compilation_status": "R2_COMPLETED_METADATA_REVISED",
     "cpu_fit_authorized": false,
     "public_forward_authorized": false,
-    "status": "STAGE1_R2_CPU_COMPILED_NO_CAPTURE_NO_FIT_PENDING_CAPTURE_METADATA_REPAIR"
+    "status": "STAGE1_R2_CPU_COMPILED_NO_CAPTURE_NO_FIT"
   },
-  "updated_utc": "2026-09-07T11:02:18Z",
+  "updated_utc": "2026-09-07T11:06:30Z",
   "r2_cpu_audit": {
     "receipt": "experiments/TRR-P09/setup/stage1-input-preparation-r2-receipt.json",
     "receipt_sha256": "9b5b575fcd0454ca43c46f68e99cf9444cdde65c234a46aa571ef48051955798",
@@ -358,5 +453,60 @@
     "gpu_run": false,
     "fit_run": false,
     "truth_opened": false
+  },
+  "stage1_r2_compilation": {
+    "status": "PASS_CPU_INPUTS_COMPILED_NO_ACTIVATIONS",
+    "receipt": "experiments/TRR-P09/setup/stage1-input-preparation-r2-receipt.json",
+    "receipt_sha256": "e8e0e2bad1bba8ba71482dd28babfff4bcdf391cf224a95551705d2643171c5d",
+    "source_commit": "15be77368dae5129a216c9354975b6347cf28720",
+    "payload_source_commit": "15be77368dae5129a216c9354975b6347cf28720",
+    "metadata_revision": {
+      "path": "/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/preparation_manifest-r2-corrected.json",
+      "sha256": "79bbd55c3e66555501e0abc886e69b5a4ff85bca5301a129f6e5d398524e844f",
+      "bytes": 43560,
+      "source_commit": "5896f62ac8b40ab1054b9081d69a34415aa1a158",
+      "payload_files_unchanged": true,
+      "supersedes": {
+        "bytes": 41974,
+        "path": "/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/preparation_manifest.json",
+        "sha256": "262d13d7cf86c72e97ef8d1ad9656a2f34603fd3c0d147f1648769c2e8c21123"
+      }
+    },
+    "output_root": "/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final",
+    "output_root_scope": "local_only_payloads_outside_git",
+    "rows": 12000,
+    "b0_prefix_records": 1200,
+    "new_records": 10800,
+    "controlled_addition_rows": 1080,
+    "controlled_replacement_occurrences": 32400,
+    "post_bos_positions": 1243710,
+    "distinct_post_bos_token_ids": 45631,
+    "common_N": 13000,
+    "inputs_sha256": "8150184a349bebd31e24b128d23f096702898024a87a405322ee3ba95fa6682e",
+    "records_sha256": "367cfba0ffe78f59454861a76f23830f480a8745cc6b35e6b4a0d05eca53638b",
+    "template_digest_count": 120,
+    "template_exact_nine_each": true,
+    "structural_skip_total": 328,
+    "parent_manifest_overlap": {
+      "record_or_source_ids": 0,
+      "rendered_sha256": 0,
+      "source_row_keys": 0
+    },
+    "r2_actual_occurrence_audit": {
+      "b0_actual_replacement_token_digest": "213be23034989a3e26271193cd37f5b2f44df5725d77a9435d74f072b3d02c87",
+      "b0_occurrences": 3600,
+      "composition": "immutable_published_b0_actual_3600_plus_r2_template_assignments_32400",
+      "controlled_addition_occurrences": 32400,
+      "controlled_addition_replacement_token_digest": "c66fefedd544f0c5d584317e2ee8a67b5f7d0b3f7fec2032f25869297c1b31ec",
+      "full_replacement_occurrence_count": 36000,
+      "full_replacement_occurrence_digest": "0e1b7726cc1e394dba8ccaf528d22216205e1d595f3b8bb853c879c3a77df53b",
+      "legacy_signed_recipe_comparison": "nested_under_historical_r1_signed_recipe_comparison"
+    },
+    "watchdog_status": "PASS",
+    "peak_group_rss_bytes": 1609445376,
+    "elapsed_seconds": 32.880936,
+    "model_or_activations_opened": false,
+    "truth_opened": false,
+    "historical_r1_preserved_and_excluded": true
   }
 }
