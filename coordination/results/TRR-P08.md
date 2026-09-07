@@ -1,8 +1,28 @@
 # TRR-P08 staged affine-first versus joint fitting
 
-Status: **PENDING_EXECUTION**. This is the reviewable report template for the
-approved P08 study. No evaluator truth, fresh natural-panel rows, prediction
-arrays, score output, or experimental result is included here yet.
+Status: **PENDING_CAPTURE_BINDING_REPAIR**. This is the reviewable report
+template for the approved P08 study. No evaluator truth, fresh natural-panel
+rows, prediction arrays, score output, or experimental result is included here
+yet.
+
+## Pre-capture source-binding deviation
+
+A metadata-only audit found that the effective r1 exclusion collector omitted
+two approved bindings. The original candidate universe had 0 source-level and
+1 H128-sequence overlap with the approved TRR-0007 opaque ledger (256/256
+identities), and a distinct 0 source-level and 1 H128-sequence overlap with the
+approved TRR-0009 reservation (384 new identities), for 2 unique H128 overlaps
+total. No source or token payload, observation capture, model/target load,
+prediction, or truth was opened for this task.
+
+The r1 selection metadata is preserved but excluded before capture:
+`experiments/TRR-P08/runtime/source-selection-r1/selection.json` (SHA-256
+`75f8d66007d6ae5558ded8b0fc428fc88db8aa5a04f4d372bd187f5934079274`). Setup
+must bind both approved hash-only ledgers, regenerate the same 512-record panel
+(256 per domain) with seed 8108, the same eight fit states and declared source
+ranges, and no sample expansion or schedule change. Capture remains blocked
+until the repaired universe and selection receipt proves zero source/H128
+overlap; the original r1 metadata will not be reused.
 
 ## Frozen scope and question
 
@@ -66,11 +86,13 @@ limits that diagnostic only.
 
 ## Execution and truth boundary
 
-The approved execution sequence is:
+The approved execution sequence is currently blocked at the pre-capture
+source-binding repair:
 
-1. Complete the fixed eight-arm fit and public validation selection, then freeze
-   all selected/final states, observations, masks, positions, prediction files,
-   and timing metadata in a create-only no-truth joint receipt.
+1. Bind the omitted approved exclusion ledgers and regenerate the fixed-size
+   source selection, then complete observation capture and freeze all
+   selected/final states, observations, masks, positions, prediction files, and
+   timing metadata in a create-only no-truth joint receipt.
 2. Revalidate that receipt and materialize the private truth arrays only after
    the joint-freeze gate is accepted. Truth arrays remain outside the
    reconstruction repository; the truth manifest binds the freeze, selection,
@@ -94,6 +116,8 @@ been run for this template.
 - Root approval: `experiments/TRR-P08/review/root-design-approval.json`
 - Freeze/scoring implementation: `3c6e93c`, `c801e88`
 - Truth materialization adapter: `c125afe`
+- Excluded r1 source selection: `experiments/TRR-P08/runtime/source-selection-r1/selection.json` (SHA-256 `75f8d66007d6ae5558ded8b0fc428fc88db8aa5a04f4d372bd187f5934079274`)
+- Repaired source universe/selection: **PENDING; capture blocked**
 - No-truth joint receipt: **PENDING**
 - Truth manifest: **PENDING; private and outside the repository**
 - Score artifact and hash: **PENDING**

@@ -2,9 +2,11 @@
   "access_and_integrity": {
     "active_method_registry_modified": false,
     "candidate_arrays_persisted": false,
+    "capture_blocked_before_model_or_target_load": true,
     "fresh_capture_started": false,
     "fresh_records_selected": true,
     "global_state_modified": false,
+    "original_selection_r1_excluded_before_capture": true,
     "other_agent_mutable_workspace_accessed": false,
     "p03_holdout_accessed": false,
     "prediction_arrays_frozen": false,
@@ -848,10 +850,23 @@
       "capture": "PENDING: experiments/TRR-P08/runtime/capture-r1/",
       "joint_freeze": "PENDING: experiments/TRR-P08/runtime/root-joint-freeze.json",
       "prediction": "PENDING: experiments/TRR-P08/runtime/predictions-r1/",
+      "repair": {
+        "capture_blocked_until_repaired_selection": true,
+        "source_selection_r2": "PENDING: experiments/TRR-P08/runtime/source-selection-r2/selection.json",
+        "source_universe_r2": "PENDING: experiments/TRR-P08/runtime/source-universe-r2/frozen.json",
+        "status": "PENDING_SETUP_REPAIR"
+      },
       "selection": {
         "bytes": 372627,
         "path": "experiments/TRR-P08/runtime/source-selection-r1/selection.json",
-        "sha256": "75f8d66007d6ae5558ded8b0fc428fc88db8aa5a04f4d372bd187f5934079274"
+        "sha256": "75f8d66007d6ae5558ded8b0fc428fc88db8aa5a04f4d372bd187f5934079274",
+        "status": "EXCLUDED_PRE_CAPTURE_BINDING_DEFECT"
+      },
+      "selection_r1_excluded": {
+        "bytes": 372627,
+        "path": "experiments/TRR-P08/runtime/source-selection-r1/selection.json",
+        "sha256": "75f8d66007d6ae5558ded8b0fc428fc88db8aa5a04f4d372bd187f5934079274",
+        "status": "EXCLUDED_PRE_CAPTURE_BINDING_DEFECT"
       },
       "universe_frozen": {
         "bytes": 66135,
@@ -898,10 +913,79 @@
     "scoring": "PENDING"
   },
   "current_manifest_commit": "d646d88c9ab2c673b622929c535e92e6e962ef54",
+  "exclusion_binding_repair": {
+    "discovery": "The effective P08 r1 exclusion collector omitted approved TRR-0007 and TRR-0009 bindings. The post-selection audit found 0 source-level and 1 H128-sequence overlap with TRR-0007, plus a distinct 0 source-level and 1 H128-sequence overlap with TRR-0009; these are 2 unique H128 overlaps total.",
+    "overlap_audit": {
+      "trr0007_approved_opaque": {
+        "source_level_intersections": 0,
+        "h128_sequence_intersections": 1,
+        "sha256_prefix": "09e845..."
+      },
+      "trr0009_approved_reservation": {
+        "source_level_intersections": 0,
+        "h128_sequence_intersections": 1,
+        "sha256_prefix": "c0a1310..."
+      },
+      "distinct_h128_overlaps_total": 2
+    },
+    "omitted_ledgers": {
+      "trr0007_approved_opaque": {
+        "coverage": "256/256 approved identities",
+        "path": "PENDING_SETUP_APPROVED_TRR0007_LEDGER_PATH",
+        "read_scope": "hash-only metadata; no source or token payload",
+        "sha256": "PENDING_SETUP_REPAIR_RECEIPT",
+        "sha256_prefix": "09e845..."
+      },
+      "trr0009_approved_reservation": {
+        "new_identity_count": 384,
+        "path": "PENDING_SETUP_APPROVED_TRR0009_RESERVATION_PATH",
+        "read_scope": "approved hash-only reservation metadata only",
+        "sha256": "PENDING_SETUP_REPAIR_RECEIPT",
+        "sha256_prefix": "c0a1310..."
+      }
+    },
+    "original_selection": {
+      "capture_started": false,
+      "path": "experiments/TRR-P08/runtime/source-selection-r1/selection.json",
+      "prediction_started": false,
+      "sha256": "75f8d66007d6ae5558ded8b0fc428fc88db8aa5a04f4d372bd187f5934079274",
+      "status": "EXCLUDED_PRE_CAPTURE_BINDING_DEFECT",
+      "truth_opened": false
+    },
+    "repair_contract": {
+      "expected_selection_path": "experiments/TRR-P08/runtime/source-selection-r2/selection.json",
+      "expected_universe_path": "experiments/TRR-P08/runtime/source-universe-r2/frozen.json",
+      "required_before_capture": true,
+      "same_declared_source_ranges": true,
+      "same_fit_states_and_seeds": true,
+      "same_records_per_domain": 256,
+      "same_selection_seed": 8108,
+      "sample_expansion": false,
+      "schedule_change": false
+    },
+    "status": "REPAIR_REQUIRED_BEFORE_CAPTURE"
+  },
   "failures": {
-    "excluded_attempts": [],
+    "excluded_attempts": [
+      "experiments/TRR-P08/runtime/source-selection-r1/selection.json"
+    ],
     "note": "No failed P08 fit, qualification, source-universe, or selection attempt is present in the task runtime inventory; future failures must be preserved rather than overwritten.",
-    "preserved_attempts": []
+    "preserved_attempts": [
+      {
+        "artifact": {
+          "bytes": 372627,
+          "path": "experiments/TRR-P08/runtime/source-selection-r1/selection.json",
+          "sha256": "75f8d66007d6ae5558ded8b0fc428fc88db8aa5a04f4d372bd187f5934079274",
+          "status": "EXCLUDED_PRE_CAPTURE_BINDING_DEFECT"
+        },
+        "capture_started": false,
+        "disposition": "Preserve r1 metadata; repair exclusion universe and regenerate selection before capture.",
+        "error": "Approved TRR-0007 and TRR-0009 exclusion bindings were omitted from the effective r1 collector; audit found 0 source-level and 1 H128-sequence overlap with each ledger, 2 unique H128 overlaps total.",
+        "prediction_arrays_created": false,
+        "status": "EXCLUDED_PRE_CAPTURE_BINDING_DEFECT",
+        "truth_opened": false
+      }
+    ]
   },
   "final_evidence_refs": {
     "canonical_plan": {
@@ -913,6 +997,12 @@
       "bytes": 5710,
       "path": "coordination/requests/TRR-P08.md",
       "sha256": "8edf99fcb311eadc1f17b5694dd82001ba6053aefcf8c828a3d0e19a53bb0059"
+    },
+    "excluded_source_selection_r1": {
+      "bytes": 372627,
+      "path": "experiments/TRR-P08/runtime/source-selection-r1/selection.json",
+      "sha256": "75f8d66007d6ae5558ded8b0fc428fc88db8aa5a04f4d372bd187f5934079274",
+      "status": "EXCLUDED_PRE_CAPTURE_BINDING_DEFECT"
     },
     "fit_receipt": {
       "bytes": 19958391,
@@ -930,6 +1020,7 @@
       "sha256": "f46b824de74ce31fd97880f16da4e4dd3b7f2a157ff9d778f4ac3db7b78520cb"
     },
     "prediction_freeze": "PENDING",
+    "repaired_source_selection": "PENDING_SETUP_REPAIR",
     "report": {
       "bytes": 6580,
       "path": "coordination/results/TRR-P08.md",
@@ -962,11 +1053,14 @@
     "Public fit and validation curves are development evidence; no fresh-panel quality conclusion is made here.",
     "Fit-side transition error cohorts are quota-limited as recorded in fit-review.json; this is nonfatal and does not authorize reselection.",
     "Raw observation payloads and private truth must remain outside the repository; metadata and hashes are retained.",
-    "The changed public target is a paired transfer diagnostic, not an unseen-target claim."
+    "The changed public target is a paired transfer diagnostic, not an unseen-target claim.",
+    "The original r1 source selection is excluded before capture because the effective exclusion collector omitted approved TRR-0007 and TRR-0009 bindings; metadata audit found 0 source-level and 1 H128-sequence overlap with each, 2 unique H128 overlaps total. No r1 rows were captured or scored."
   ],
   "manifest_hash_excluded_to_avoid_cycle": true,
   "pending": [
-    "root review of frozen source panel and selected-state bindings",
+    "setup must bind the approved TRR-0007 256/256 opaque ledger and approved TRR-0009 384-identity reservation",
+    "setup must regenerate the same-seed 256/domain source selection and verify zero source/H128 overlap before capture",
+    "root review of repaired source universe and selection; original r1 selection remains excluded",
     "public observation capture under an approved guarded window",
     "prediction matrix and tie artifacts frozen before truth",
     "metadata-only joint-freeze receipt",
@@ -984,7 +1078,9 @@
     "report_complete": false,
     "scoring_complete": false,
     "selected_states_frozen_no_truth": true,
-    "source_selection_frozen_no_truth": true,
+    "source_selection_frozen_no_truth": false,
+    "source_selection_r1_frozen_no_truth_but_excluded": true,
+    "source_selection_repair_complete": false,
     "source_universe_frozen": true,
     "truth_materialization_complete": false
   },
@@ -1037,10 +1133,10 @@
     "evidence_review_commit": "d646d88c9ab2c673b622929c535e92e6e962ef54",
     "fit_receipt": "ef925c550e39ea557f9fea516d9d21473a9eb163",
     "fit_run_start": "00504aac40f2b3758c65c14c6dcc8f1b4c6064e5",
-    "manifest_generation_commit": "d646d88c9ab2c673b622929c535e92e6e962ef54",
+    "manifest_generation_commit": "cb6ff623d9c04b0a7539bf5654416fef9d422f89",
     "selected_state_freeze": "ef925c550e39ea557f9fea516d9d21473a9eb163"
   },
-  "status": "FIT_COMPLETE_PENDING_PREDICTION_FREEZE_AND_SCORE",
+  "status": "CAPTURE_BLOCKED_PRE_CAPTURE_BINDING_DEFECT",
   "task_id": "TRR-P08",
-  "updated_utc": "2026-09-07T02:04:17Z"
+  "updated_utc": "2026-09-07T02:34:23Z"
 }
