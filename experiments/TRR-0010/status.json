@@ -299,6 +299,29 @@
       "sha256": "6998adb73d4bfd66e2a9958ec1e3bb80b32566113f33065ae27e31d2337505f9",
       "source_commit": "8398666cb8d0222e613c362eae33d77d972ab385",
       "status": "PASS_FIXED_CONTROL_CPU_CONFIGURATION"
+    },
+    {
+      "bytes": 28147,
+      "id": "trr0010_directional_qualification_v2",
+      "path": "experiments/TRR-0010/training/qualification_v2/qualification.json",
+      "sha256": "58594a477733c2f1ce21d356ec9acead92de6001b2c31bd41f635213700bca66",
+      "source_commit": "2712d8ac8551ee601d5248e8ebb0160c972e0ec1",
+      "status": "QUALIFICATION_PASS_NO_FIT_NO_TRUTH"
+    },
+    {
+      "bytes": 1091,
+      "id": "trr0010_directional_qualification_v2_finish",
+      "path": "experiments/TRR-0010/training/qualification_v2/finish.json",
+      "sha256": "e3538f16e6ea334aed74a6e7249457e742e5afe743721e03b564462f1d116db6",
+      "status": "PASS"
+    },
+    {
+      "bytes": 10113,
+      "id": "fixed_control_source_freeze_r1_external",
+      "path": "/tmp/trr-p09/experiments/TRR-P09/review/fixed-control-source-freeze-r1.json",
+      "sha256": "8412076b428ab1dbd14fa2cb83c6ecf5111c13bae04572f2d4139d1760d0a681",
+      "source_commit": "dd11f649c5f7376cc49928159ae9eda8e562dd57",
+      "status": "PASS_SOURCE_BYTES_FROZEN_NO_FIT_NO_TRUTH"
     }
   ],
   "branch": "task/TRR-0010",
@@ -348,7 +371,7 @@
     "source_or_signed_plan_modified": false,
     "substantive_fit_or_fresh_evaluation": false,
     "stage1_public_capture_only": true,
-    "directional_qualification_run": false,
+    "directional_qualification_run": true,
     "fresh_quality_result": false
   },
   "execution": {
@@ -360,7 +383,7 @@
     ],
     "fresh_evaluation_started": false,
     "fresh_evaluation_truth_opened": false,
-    "gpu_qualification_performed": false,
+    "gpu_qualification_performed": true,
     "opened_fixture_equivalence_attempt": {
       "command": [
         "env",
@@ -517,9 +540,9 @@
     "compatibility_fix_in_progress": false,
     "stage1_public_capture_qualification_performed": true,
     "stage1_public_capture_complete_no_truth": true,
-    "directional_qualification_started": false,
+    "directional_qualification_started": true,
     "capture_complete_no_truth": true,
-    "directional_qualification_status": "PENDING_LARGEST_CELL_MERGED_W_QUALIFICATION",
+    "directional_qualification_status": "PASS_LARGEST_CELL_QUALIFICATION_NO_FIT_NO_TRUTH",
     "substantive_fit_status": "PENDING",
     "final_evaluation_status": "PENDING_TRUTH_CLOSED",
     "qualified_B1_manifest_bound": true,
@@ -529,14 +552,31 @@
     "support_binding_status": "PASS_PUBLIC_SUPPORT_VECTORS_CPU_ONLY",
     "public_validation_384_status": "PASS_PUBLIC_VALIDATION_AUDIT_NO_TRUTH",
     "public_validation_384_labels_bound": true,
-    "final_evaluation_forward_batch_qualification_status": "PENDING_FINAL_EVALUATION_GEOMETRY_AND_CAPACITY"
+    "final_evaluation_forward_batch_qualification_status": "PENDING_PRODUCTION_RUNNER_IMPORT_BINDING",
+    "agreed_resource_caps": {
+      "directional_cuda_reserved_bytes": 10737418240,
+      "disk_free_floor_bytes": 21474836480,
+      "extension_allowed": false,
+      "fixed_cuda_reserved_bytes": 8589934592,
+      "gpu_free_floor_bytes": 2147483648,
+      "host_available_floor_bytes": 8589934592,
+      "host_rss_bytes": 12884901888,
+      "output_bytes_per_arm": 5368709120,
+      "per_arm_wall_seconds": 7200,
+      "prelaunch_fail_closed": true,
+      "scope": "All preparation, fit, validation, checkpoint, export, and registration costs for that arm.",
+      "units_note": "Binary GiB byte limits: fixed CUDA 8 GiB, directional CUDA 10 GiB, RSS 12 GiB, host floor 8 GiB, GPU floor 2 GiB, disk floor 20 GiB, output 5 GiB."
+    },
+    "qualification_capacity_handoff_commit": "2712d8ac8551ee601d5248e8ebb0160c972e0ec1",
+    "qualification_finish_receipt_sha256": "e3538f16e6ea334aed74a6e7249457e742e5afe743721e03b564462f1d116db6",
+    "qualification_receipt_path": "experiments/TRR-0010/training/qualification_v2/qualification.json",
+    "qualification_receipt_sha256": "58594a477733c2f1ce21d356ec9acead92de6001b2c31bd41f635213700bca66"
   },
   "implementation_commit": "a4985c0cd373c26d4361ce1c861fa35bdb25b10e",
   "pending": [
-    "Complete future final-evaluation forward-batch geometry qualification and capacity settings; stage-1 public capture qualification already passed.",
-    "Complete directional merged-W largest-cell qualification and bind measured wall, disk, host-RSS, and isolated-GPU caps.",
-    "Before substantive fits, bind the frozen four-arm contract and directional loader/state interfaces using the qualified B1 metadata and common N=13000 schedule.",
-    "After fits, bind selected contenders, paired final-panel/order digests, and the TRR-0010 truth descriptor before final evaluation truth.",
+    "Bind exact imported final prediction-runner/gate/base-only decoder/effective-W/registration/A1+A2 source files and qualify the final forward path under the agreed fail-closed caps.",
+    "Run and bind the frozen four-arm execution receipt and produced state/readout/support hashes before any final evaluation.",
+    "Bind the final 128 Finance + 128 Pile natural panel/order/H128 digests and exclusion intersection, then the curator-owned paired observation/truth descriptor.",
     "No reconstruction-quality result or promotion claim exists; quality remains unavailable."
   ],
   "provenance": {
@@ -904,7 +944,7 @@
   "scientific_results_available": false,
   "status": "STAGE1_QUALIFIED_BANK_AND_VALIDATION_AUDIT_BOUND_NO_TRUTH_FITS_PENDING",
   "task_id": "TRR-0010",
-  "updated_utc": "2026-09-07T13:26:24.008918+00:00",
+  "updated_utc": "2026-09-07T14:02:32.512151+00:00",
   "publication": {
     "status": "OPEN_DRAFT_PR_PUBLISHED",
     "url": "https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/20",
@@ -1126,7 +1166,7 @@
       "prefix_layers": 4,
       "capture_geometry": "complete B8x192; no unpadded substitution",
       "payloads_copied": false,
-      "future_final_evaluation_forward_batch_qualification": "PENDING_FINAL_EVALUATION_GEOMETRY_AND_CAPACITY"
+      "future_final_evaluation_forward_batch_qualification": "PENDING_PRODUCTION_RUNNER_IMPORT_BINDING"
     },
     "support": {
       "status": "PASS_PUBLIC_SUPPORT_VECTORS_CPU_ONLY",
@@ -1214,9 +1254,51 @@
       "label_binding_scope": "public_base_checkpoint_selection_only; not final evaluation truth"
     },
     "directional_qualification": {
-      "status": "PENDING_LARGEST_CELL_MERGED_W_QUALIFICATION",
-      "stage1_capture_qualification_does_not_substitute": true,
-      "quality_results": false
+      "status": "PASS_LARGEST_CELL_DIRECTIONAL_PROBE_NO_FIT_NO_TRUTH",
+      "quality_results": false,
+      "agreed_resource_caps": {
+        "directional_cuda_reserved_bytes": 10737418240,
+        "disk_free_floor_bytes": 21474836480,
+        "extension_allowed": false,
+        "fixed_cuda_reserved_bytes": 8589934592,
+        "gpu_free_floor_bytes": 2147483648,
+        "host_available_floor_bytes": 8589934592,
+        "host_rss_bytes": 12884901888,
+        "output_bytes_per_arm": 5368709120,
+        "per_arm_wall_seconds": 7200,
+        "prelaunch_fail_closed": true,
+        "scope": "All preparation, fit, validation, checkpoint, export, and registration costs for that arm.",
+        "units_note": "Binary GiB byte limits: fixed CUDA 8 GiB, directional CUDA 10 GiB, RSS 12 GiB, host floor 8 GiB, GPU floor 2 GiB, disk floor 20 GiB, output 5 GiB."
+      },
+      "capacity_handoff_commit": "2712d8ac8551ee601d5248e8ebb0160c972e0ec1",
+      "finish_receipt": {
+        "bytes": 1091,
+        "path": "experiments/TRR-0010/training/qualification_v2/finish.json",
+        "sha256": "e3538f16e6ea334aed74a6e7249457e742e5afe743721e03b564462f1d116db6",
+        "status": "PASS"
+      },
+      "measured": {
+        "disk_free_bytes_at_finish": 276192010240,
+        "gpu_peak_allocated_bytes": 5725022208,
+        "gpu_peak_reserved_bytes": 7600078848,
+        "host_peak_rss_bytes": 2165067776,
+        "optimizer_state_bytes": 806394952,
+        "probe_updates": 5,
+        "scope": "Qualification-only provider probe with public 384-record validation passes; no substantive four-arm fit, final evaluation, or truth payload access.",
+        "validation_passes": 2,
+        "wall_seconds": 26.84726572499494,
+        "zero_delta_exact_argmax": true,
+        "zero_delta_exact_logits": true
+      },
+      "result_receipt": {
+        "bytes": 28147,
+        "path": "experiments/TRR-0010/training/qualification_v2/qualification.json",
+        "sha256": "58594a477733c2f1ce21d356ec9acead92de6001b2c31bd41f635213700bca66",
+        "source_commit": "2712d8ac8551ee601d5248e8ebb0160c972e0ec1",
+        "status": "QUALIFICATION_PASS"
+      },
+      "substantive_fit_started": false,
+      "truth_opened": false
     },
     "substantive_fits": {
       "status": "PENDING",
@@ -1312,10 +1394,50 @@
   },
   "stage3_execution_contract_draft": {
     "path": "experiments/TRR-0010/planning/stage3_execution_contract_draft.json",
-    "bytes": 18960,
-    "sha256": "b27dc964da71a017d13b4e83018d4bc4ded17636e3d123b02e599abd7f5d6385",
-    "status": "DRAFT_PROVIDER_COMPATIBLE_BOUND_INPUTS_AND_FIXED_CONFIG_PENDING_FINAL_QUALIFICATION_AND_RUNTIME_BINDINGS",
+    "bytes": 26123,
+    "sha256": "0b9094b773252095f435a28d2253793f55b101acdbc6d3412b7d583ffb73684a",
+    "status": "DRAFT_CAPS_SOURCE_FREEZE_AND_QUALIFICATION_BOUND_RUNTIME_PANEL_PENDING",
     "basis_v4_sha256": "3b0a68a4a05304e285c1fedcf8a2982bf4bef831e2e5bc0cebb20b8b2dba08b3",
+    "truth_opened": false
+  },
+  "score_cli_synthetic": {
+    "command": "PYTHONPATH=. pytest -q tests/test_trr0010_score_cli.py tests/test_trr0010_score.py",
+    "result": "13 passed",
+    "scope": "Synthetic descriptor/gate ordering only; no production truth payload opened.",
+    "tests": {
+      "bytes": 8624,
+      "path": "tests/test_trr0010_score_cli.py",
+      "sha256": "491df612dbde5b56205dab4b68fa72a1081d213d47ee475e418e1a630cee04c1"
+    },
+    "wrapper": {
+      "bytes": 11995,
+      "path": "scripts/trr0010_score_cli.py",
+      "sha256": "ff942b5d841ea6f5c5890991f24ba98999838e1a5ed89bb497977fe3c79f1b33"
+    },
+    "persisted_provenance_regression": "PASS",
+    "boundary_receipt_schema": "token-reconstruction.trr0010-score-boundary-receipt.v1",
+    "production_receipt_status": "PENDING_PRODUCTION_SCORE_ARTIFACT"
+  },
+  "stage3_contract_counterreceipt": {
+    "bytes": 2793,
+    "contract_sha256": "23e4bde4475082cc004e7ef787c22fed6301275ce2ff23a0396d975b439faf9",
+    "counterreceipt_bytes": 6772,
+    "counterreceipt_path": "/tmp/trr-p09/experiments/TRR-P09/planning/shared-stage3-contract-countersignature-r1.json",
+    "counterreceipt_sha256": "a99d31991880be095a21cf7bef119adbceb14c51e82c35f2df108c4164467ab9",
+    "fit_authorized": false,
+    "lease_required": true,
+    "path": "experiments/TRR-0010/planning/stage3_execution_contract_clarification_r1.json",
+    "sha256": "c0a0c02b9694587f4cb6b2a458e5f0035b4f7b281dc618f6b99df53f858484b7",
+    "status": "FROZEN_STAGE3_JOINT_COUNTERSIGNED_PENDING_EXCLUSIVE_ARM_LEASE"
+  },
+  "timing_worker_blocker": {
+    "blocked_edits_taken_over": false,
+    "prior_cpu_assembly_scope": "PASS_BEFORE_THIS_CHANGE",
+    "retry_or_workaround_attempted": false,
+    "scope": "Automatic approval-review usage limit prevented the provider fixture/receipt/commit updates.",
+    "status": "BLOCKED_AUTOMATIC_REVIEW_USAGE_LIMIT",
+    "substantive_fits_started": false,
+    "support_by_bank_edit_saved_uncommitted": true,
     "truth_opened": false
   }
 }
