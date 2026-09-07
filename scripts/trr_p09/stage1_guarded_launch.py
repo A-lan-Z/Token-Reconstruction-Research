@@ -105,16 +105,37 @@ def estimate_production_wall(
     batches = receipt.get("batches")
     if not isinstance(batches, list) or not batches or len(batches) > 3:
         raise LaunchError("qualification receipt lacks a bounded batch list")
+    observed_forward_calls = 0
+    future_padding_tested_batches = 0
     for index, batch in enumerate(batches):
         if not isinstance(batch, Mapping):
             raise LaunchError(f"qualification batch {index} is malformed")
-        if batch.get("repeat_torch_equal") is not True or batch.get("future_padding_active_torch_equal") is not True:
-            raise LaunchError(f"qualification batch {index} lacks exact repeat/padding equivalence")
+        if batch.get("repeat_torch_equal") is not True:
+            raise LaunchError(f"qualification batch {index} lacks exact repeat equivalence")
+        padding_tested = batch.get("future_padding_tested")
+        if not isinstance(padding_tested, bool):
+            raise LaunchError(f"qualification batch {index} lacks future-padding test metadata")
+        expected_calls = 3 if padding_tested else 2
+        if padding_tested:
+            if batch.get("future_padding_active_torch_equal") is not True:
+                raise LaunchError(f"qualification batch {index} lacks exact future-padding equivalence")
+            future_padding_tested_batches += 1
+        elif batch.get("future_padding_active_torch_equal") is not None:
+            raise LaunchError(f"qualification batch {index} has inconsistent future-padding metadata")
+        if int(batch.get("forward_call_count", -1)) != expected_calls:
+            raise LaunchError(f"qualification batch {index} has an incorrect forward call count")
+        observed_forward_calls += expected_calls
+    if future_padding_tested_batches < 1:
+        raise LaunchError("qualification receipt lacks a future-padding representative")
+    if int(receipt.get("future_padding_tested_batches", -1)) != future_padding_tested_batches:
+        raise LaunchError("qualification receipt future-padding count is inconsistent")
+    if int(receipt.get("forward_call_count", -1)) != observed_forward_calls:
+        raise LaunchError("qualification receipt forward call count is inconsistent")
     elapsed = _require_finite(receipt.get("elapsed_seconds"), label="qualification elapsed_seconds", minimum=0.0)
     if elapsed <= 0.0:
         raise LaunchError("qualification elapsed_seconds must be positive")
     overhead = _require_finite(fixed_overhead_seconds, label="fixed overhead seconds", minimum=0.0)
-    qualification_forward_calls = len(batches) * 3  # original, repeat, future-padding variant
+    qualification_forward_calls = observed_forward_calls
     scaled_forward_seconds = elapsed * (float(production_forward_calls) / float(qualification_forward_calls))
     estimated = scaled_forward_seconds + overhead
     if not math.isfinite(estimated):

@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 from dataclasses import replace
 import sys
+from types import SimpleNamespace
 from typing import Any
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
@@ -181,7 +182,51 @@ def test_qualify_repeats_b8_and_future_padding(tmp_path: Path) -> None:
     assert result["status"] == "QUALIFICATION_PASS"
     assert result["batches"][0]["repeat_torch_equal"] is True
     assert result["batches"][0]["future_padding_active_torch_equal"] is True
+    assert result["batches"][0]["future_padding_tested"] is True
+    assert result["forward_call_count"] == 3
     assert prefix.calls == 3  # original, repeat, future-padding variant
+
+
+def test_qualify_repeats_full_batch_without_padding_variant_and_requires_padded_batch(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    token_ids = torch.arange(8 * 192, dtype=torch.int32).reshape(8, 192)
+    token_ids[:, 0] = 128000
+    full = {
+        "token_ids": token_ids,
+        "attention_mask": torch.ones((8, 192), dtype=torch.bool),
+        "position_ids": torch.arange(192, dtype=torch.int64).expand(8, -1).clone(),
+    }
+    padded = {key: value.clone() for key, value in full.items()}
+    padded["attention_mask"][:, 128:] = False
+    padded["token_ids"][:, 128:] = capture.PAD_TOKEN_ID
+    padded["position_ids"][:, 128:] = 0
+    records = tuple({"record_id": f"synthetic-{index}"} for index in range(8))
+    batches = [
+        (full, records, {"shard_id": 0, "batch_index": 0}),
+        (padded, records, {"shard_id": 0, "batch_index": 1}),
+    ]
+    monkeypatch.setattr(capture, "_read_batches", lambda *_args, **_kwargs: iter(batches))
+    manifest = SimpleNamespace(
+        manifest={
+            "qualification_batches": [
+                {"shard_id": 0, "batch_index": 0},
+                {"shard_id": 0, "batch_index": 1},
+            ]
+        }
+    )
+    prefix = _FakePrefix()
+    result = capture.qualify_capture(
+        prefix=prefix,
+        input_manifest=manifest,
+        device=torch.device("cpu"),
+        guard=_guard(tmp_path),
+    )
+    assert result["future_padding_tested_batches"] == 1
+    assert result["forward_call_count"] == 5  # full repeat (2) + padded repeat/variant (3)
+    assert result["batches"][0]["future_padding_tested"] is False
+    assert result["batches"][0]["future_padding_active_torch_equal"] is None
+    assert result["batches"][0]["forward_call_count"] == 2
+    assert result["batches"][1]["future_padding_tested"] is True
+    assert prefix.calls == 5
 
 
 def test_compiler_capture_combined_b0_b1_loader_smoke(tmp_path: Path) -> None:

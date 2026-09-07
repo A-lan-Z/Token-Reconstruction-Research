@@ -1445,35 +1445,54 @@ def qualify_capture(
     guard: ResourceGuard,
     max_batches: int = 3,
 ) -> dict[str, Any]:
-    """Run the bounded three-B8 qualification without writing activations."""
+    """Run the bounded qualification without writing activations.
+
+    Every selected representative is repeated exactly.  The future-padding
+    perturbation is meaningful only for a batch that actually contains an
+    inactive suffix, so full-length representatives are not sent through a
+    fabricated padding variant.  At least one selected batch must still test
+    that perturbation.
+    """
 
     selectors = input_manifest.manifest.get("qualification_batches")
     if not isinstance(selectors, list) or not selectors or len(selectors) > max_batches:
         raise CaptureError("qualification batches are not predeclared and bounded")
     started = time.perf_counter()
     rows: list[dict[str, Any]] = []
+    future_padding_tested_batches = 0
+    forward_call_count = 0
     for tensors, records, location in _read_batches(input_manifest, selectors=selectors):
         if len(rows) >= max_batches:
             raise CaptureError("qualification selected more than three B8 batches")
         guard.check(phase=f"qualification_before_{len(rows)}", prelaunch=False)
         first = _capture_batch(prefix, tensors, device=device, resource_check=lambda: guard.check(phase="qualification_forward", prelaunch=False))
+        forward_call_count += 1
         repeat = _capture_batch(prefix, tensors, device=device, resource_check=lambda: guard.check(phase="qualification_repeat", prelaunch=False))
+        forward_call_count += 1
         if not torch.equal(first, repeat):
             raise CaptureError(f"qualification repeated output differs at {location}")
-        variant = _future_padding_variant(tensors)
-        padded = _capture_batch(prefix, variant, device=device, resource_check=lambda: guard.check(phase="qualification_padding", prelaunch=False))
         active = tensors["attention_mask"].to(torch.bool).unsqueeze(-1).expand_as(first)
-        if bool(active.any().item()) and not torch.equal(first.masked_select(active), padded.masked_select(active)):
-            raise CaptureError(f"qualification future-padding output differs at {location}")
+        has_future_padding = bool((~tensors["attention_mask"].to(torch.bool)).any().item())
+        if has_future_padding:
+            variant = _future_padding_variant(tensors)
+            padded = _capture_batch(prefix, variant, device=device, resource_check=lambda: guard.check(phase="qualification_padding", prelaunch=False))
+            forward_call_count += 1
+            future_padding_tested_batches += 1
+            if bool(active.any().item()) and not torch.equal(first.masked_select(active), padded.masked_select(active)):
+                raise CaptureError(f"qualification future-padding output differs at {location}")
         rows.append({
             **location,
             "record_ids_sha256": _canonical_digest([row["record_id"] for row in records]),
             "active_token_count": [int(value) for value in tensors["attention_mask"].to(torch.bool).sum(dim=1)],
             "repeat_torch_equal": True,
-            "future_padding_active_torch_equal": True,
+            "future_padding_tested": has_future_padding,
+            "future_padding_active_torch_equal": True if has_future_padding else None,
+            "forward_call_count": 3 if has_future_padding else 2,
         })
     if not rows:
         raise CaptureError("qualification selected no batches")
+    if future_padding_tested_batches == 0:
+        raise CaptureError("qualification selected no future-padding representative")
     elapsed = time.perf_counter() - started
     if elapsed > guard.caps.qualification_wall_seconds:
         raise CaptureError("qualification wall cap exceeded")
@@ -1485,6 +1504,8 @@ def qualify_capture(
         "geometry": {"records": FORWARD_BATCH_RECORDS, "sequence_tokens": SEQUENCE_TOKENS, "hidden_size": HIDDEN_SIZE, "dtype": str(HIDDEN_DTYPE)},
         "max_representative_batches": max_batches,
         "batches": rows,
+        "future_padding_tested_batches": future_padding_tested_batches,
+        "forward_call_count": forward_call_count,
         "elapsed_seconds": elapsed,
         "max_resource_snapshot": guard.max_snapshot,
         "resource_highwater": dict(guard.highwater),

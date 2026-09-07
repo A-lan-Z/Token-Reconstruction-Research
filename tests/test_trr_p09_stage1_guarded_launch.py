@@ -61,8 +61,12 @@ def test_estimate_scales_only_measured_qualification_and_explicit_overhead(tmp_p
                     {
                         "repeat_torch_equal": True,
                         "future_padding_active_torch_equal": True,
+                        "future_padding_tested": True,
+                        "forward_call_count": 3,
                     }
                 ],
+                "future_padding_tested_batches": 1,
+                "forward_call_count": 3,
             }
         ),
         encoding="utf-8",
@@ -85,7 +89,9 @@ def test_estimate_rejects_nonfinite_overhead(tmp_path: Path) -> None:
                 "condition": "public_base",
                 "truth_opened": False,
                 "elapsed_seconds": 1.0,
-                "batches": [{"repeat_torch_equal": True, "future_padding_active_torch_equal": True}],
+                "batches": [{"repeat_torch_equal": True, "future_padding_active_torch_equal": True, "future_padding_tested": True, "forward_call_count": 3}],
+                "future_padding_tested_batches": 1,
+                "forward_call_count": 3,
             }
         ),
         encoding="utf-8",
