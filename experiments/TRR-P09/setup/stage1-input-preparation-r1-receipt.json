@@ -1,0 +1,284 @@
+{
+  "capture_contract": {
+    "capture_consumes_only_new_rows": true,
+    "expanded_row_origin": 1200,
+    "input_payload_is_one_hash_bound_cpu_file": true,
+    "new_row_slice": [
+      1200,
+      12000
+    ]
+  },
+  "command": {
+    "argv": [
+      "env",
+      "PYTHONPATH=src:.",
+      "HF_HUB_OFFLINE=1",
+      "HF_DATASETS_OFFLINE=1",
+      "TRANSFORMERS_OFFLINE=1",
+      "TOKENIZERS_PARALLELISM=false",
+      "OMP_NUM_THREADS=4",
+      "MKL_NUM_THREADS=4",
+      "python3",
+      "scripts/trr_p09/prepare_stage1_inputs.py",
+      "--plan",
+      "experiments/TRR-P09/planning/stage1-public-bank-plan.json",
+      "--plan-countersignature",
+      "experiments/TRR-P09/setup/stage1-plan-countersignature-r1.json",
+      "--published-trr0007-root",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007",
+      "--output-root",
+      "/tmp/trr-p09-runtime/stage1-input-preparation-r1",
+      "--repository-root",
+      "/tmp/trr-p09"
+    ],
+    "cwd": "/tmp/trr-p09",
+    "environment_allowlist": [
+      "CUDA_VISIBLE_DEVICES",
+      "OMP_NUM_THREADS",
+      "MKL_NUM_THREADS",
+      "TOKENIZERS_PARALLELISM",
+      "PYTHONPATH",
+      "HF_HUB_OFFLINE",
+      "HF_DATASETS_OFFLINE",
+      "TRANSFORMERS_OFFLINE"
+    ],
+    "environment_redacted": true,
+    "thresholds": {
+      "kill_grace_seconds": 2.0,
+      "max_rss_bytes": 8589934592,
+      "min_available_bytes": 10737418240,
+      "poll_seconds": 0.5,
+      "timeout_seconds": 900.0
+    },
+    "watchdog": {
+      "bytes": 2023,
+      "path": "/tmp/trr-p09-runtime/watchdog-stage1-input-preparation-r1/command.json",
+      "sha256": "1e8eb54c17dcab2fcb7770e34047c0f5ed1ab07850b01c07f808b562c6361b1b"
+    }
+  },
+  "controlled_replacement_audit": {
+    "b0_actual_replacement_token_count": 3600,
+    "b0_actual_replacement_token_digest": "8499eb0e0706b6a8c74a258d09857336e135eb345bbc3603c6940a23a991d56e",
+    "b0_controlled_rows": 120,
+    "b0_identity_cycle_matches_signed_recipe": false,
+    "b0_provenance_status": "PUBLISHED_B0_ACTUAL_IDS_RETAINED_SIGNED_B1_SEPARATE",
+    "b0_replacement_offset_digest": "3503f7d8c66660a9e3746b28c49e7400e6dc72bfb25b33cb29896bf1a5b0fbd6",
+    "full_replacement_occurrence_count": 36000,
+    "full_ten_cycle_composition": "published_b0_actual_3600_plus_signed_recipe_3600_x9",
+    "full_ten_cycle_identity_digest": "dcc8448a44621002ab78f9aa21e27b93ae750a6177d4c74b35ffd646a73879e5",
+    "legacy_b0_control_plan": {
+      "bytes": 2528630,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_bank_v5/corpus_plan.json",
+      "role": "published_B0_provenance_reference_only",
+      "selected_token_id_count": 2000,
+      "selected_token_ids_observed": true,
+      "sha256": "35d74424df60a1d62f7962850eaa3132fa57dd7001024f915cc4fc470a6d0e76"
+    },
+    "signed_b1_cycle_count": 9,
+    "signed_b1_replacement_token_digest": "18d60ccf247ec95dd1f5922b57cf6cfdde7e8b84089e7335ba9e69e81cfa3b0b",
+    "signed_recipe_reference": {
+      "role": "B1_additions_and_signed_future_recipe",
+      "selected_token_id_count": 3600,
+      "selected_token_ids_sha256": "0e84f625e24fb4a2038972cf417923dc20a8cc2fd85e55ac6e9b7a846f5ca576"
+    },
+    "verified_against_public_b0_tensor": true
+  },
+  "diagnostic": {
+    "current_bank_indices_sha256": "2dba4fdb243f742496cc010985820205a6d36f8c29b7ed3058369322d181f907",
+    "expanded_bank_indices_sha256": "1186141e1887b2c03f0c7dbc925d5b9c43f6cfd62b0ebde8e43a7345dccefbd2",
+    "per_bank_record_count": 64,
+    "seed": 4010
+  },
+  "exclusion_summary": {
+    "canonical_digest": "32d8bedda114af4b7f7d79b1751121d6caa74bbcbd33756fe14d871bd2e2fac9",
+    "h128_count": 1928,
+    "public_record_hash_count": 1928,
+    "record_id_count": 1704,
+    "rendered_hash_count": 1200,
+    "source_file_count": 10,
+    "source_index_count": 384
+  },
+  "geometry": {
+    "b0_prefix_records": 1200,
+    "input_dtype": "int32",
+    "logical_capture_shard_records": 64,
+    "logical_capture_shards": 169,
+    "mask_dtype": "uint8",
+    "new_records": 10800,
+    "position_dtype": "int64",
+    "records": 12000,
+    "sequence_tokens": 192
+  },
+  "output": {
+    "complete_marker": "CPU_INPUTS_COMPILED_NO_ACTIVATIONS",
+    "inputs": {
+      "bytes": 29952264,
+      "path": "/tmp/trr-p09-runtime/stage1-input-preparation-r1/inputs.safetensors",
+      "sha256": "981406fd65109bdaacd935d4eab979a4520d0a5a589f4f6da1f18a119d7de168"
+    },
+    "manifest": {
+      "bytes": 13360,
+      "path": "/tmp/trr-p09-runtime/stage1-input-preparation-r1/preparation_manifest.json",
+      "sha256": "c6d6915bb0e539336928725e9c32288157f15dbb96fe08544925e84cc40474e1"
+    },
+    "record_count": 12000,
+    "records": {
+      "bytes": 10767025,
+      "path": "/tmp/trr-p09-runtime/stage1-input-preparation-r1/records.json",
+      "sha256": "30fe4216fd3fb6b76e4aec79324fafd73a398ed901e07b4681b815cce2dc98a4"
+    },
+    "root": "/tmp/trr-p09-runtime/stage1-input-preparation-r1"
+  },
+  "receipt_notes": {
+    "manifest_scan_stats": "Persisted preparation_manifest.json is immutable r1 output; scan_stats are carried here from the exact child summary because the compiler attaches them after publication.",
+    "raw_input_payload": "retained locally at output root; not staged in Git by this metadata commit",
+    "stderr_classification": "nonfatal tokenizer maximum-length warning during public-row tokenization; no model load",
+    "stderr_sha256": "9e265eb1c2f5493d53a2f45598378a6b3687c3be5db536a04df077551662c1b9"
+  },
+  "resources": {
+    "errors": [],
+    "initial_host_mem_available_bytes": 20027723776,
+    "minimum_sampled_host_mem_available_bytes": 18889404416,
+    "peak_group_rss_bytes": 1647108096,
+    "sample_count": 65,
+    "status": "PASS",
+    "termination_reason": null,
+    "watchdog_finish": {
+      "bytes": 1094,
+      "path": "/tmp/trr-p09-runtime/watchdog-stage1-input-preparation-r1/finish.json",
+      "sha256": "49feb204ac012ae5aa391d2727e343fcc7c3ed46845212cb5d8f4647ac875d3f"
+    },
+    "watchdog_guard": {
+      "bytes": 20113,
+      "path": "/tmp/trr-p09-runtime/watchdog-stage1-input-preparation-r1/resource_guard.json",
+      "sha256": "783a481ca8d8a581dceedb76502bb7b6b6b75e6c2c5724640eb80ae5ac4657d2"
+    }
+  },
+  "run_id": "stage1-input-preparation-r1",
+  "scan_stats": {
+    "alpaca": {
+      "dataset_key": "alpaca",
+      "rows_dataset_accessed": 51402,
+      "rows_eligible": 51402,
+      "rows_excluded_by_hash": 0,
+      "rows_excluded_by_metadata": 600,
+      "rows_partition_checked": 52002,
+      "rows_rejected_short": 0
+    },
+    "finance": {
+      "dataset_key": "finance",
+      "rows_dataset_accessed": 9760,
+      "rows_eligible": 9760,
+      "rows_excluded_by_hash": 0,
+      "rows_excluded_by_metadata": 240,
+      "rows_partition_checked": 10000,
+      "rows_rejected_short": 0
+    },
+    "pile": {
+      "dataset_key": "pile",
+      "rows_dataset_accessed": 4640,
+      "rows_eligible": 4407,
+      "rows_excluded_by_hash": 0,
+      "rows_excluded_by_metadata": 360,
+      "rows_excluded_by_public_record_hash": 177,
+      "rows_partition_checked": 5000,
+      "rows_rejected_short": 56
+    }
+  },
+  "schema": "token-reconstruction.trr-p09-stage1-input-preparation-receipt.v1",
+  "source": {
+    "commit": "c3cf2956bd2fe0c1254561d8dfb17ae8405bb8fd",
+    "compiler": {
+      "bytes": 59596,
+      "path": "/tmp/trr-p09/scripts/trr_p09/prepare_stage1_inputs.py",
+      "sha256": "9a5b83eee57475764d6871929c67a612f172fea4393b89b5c4fc7f7e7d833d14"
+    },
+    "countersignature": {
+      "bytes": 921,
+      "path": "/tmp/trr-p09/experiments/TRR-P09/setup/stage1-plan-countersignature-r1.json",
+      "sha256": "5a08ea2699ce038d7895239932312326852df5ff8514b878e150b7da622853a1"
+    },
+    "plan": {
+      "bytes": 26127,
+      "path": "/tmp/trr-p09/experiments/TRR-P09/planning/stage1-public-bank-plan.json",
+      "sha256": "bca93d6099760791c5ecbf3be8177d250cc672c62b2177a3d72d79b934c3826c"
+    },
+    "repository_root": "/tmp/trr-p09",
+    "worktree_note": "The worktree had an unrelated prepare_streamed_bank.py modification from another agent; it was not staged/imported by this compiler."
+  },
+  "source_files": {
+    "alpaca": [
+      {
+        "bytes": 46230248,
+        "hash_status": "VERIFIED_ON_READ",
+        "path": "/home/alanz/.cache/huggingface/datasets/tatsu-lab___alpaca/default/0.0.0/dce01c9b08f87459cf36a430d809084718273017/alpaca-train.arrow",
+        "sha256": "f45103036ed651f4c06d0a3c3e0fb7d53acb3074ed5c8e804a69c1efc1cea794"
+      }
+    ],
+    "finance": [
+      {
+        "bytes": 503571864,
+        "hash_status": "VERIFIED_ON_READ",
+        "path": "/home/alanz/.cache/huggingface/datasets/Josephgflowers___finance-instruct-500k/default/0.0.0/583a98fb0ec14d904e9423b671d9d0fea88891b6/finance-instruct-500k-train-00000-of-00002.arrow",
+        "sha256": "b49ca0980a0b02fecbef2220eee0ef5d3c3c893ae42b4e1910edec993c3d164e"
+      },
+      {
+        "bytes": 53756664,
+        "hash_status": "VERIFIED_ON_READ",
+        "path": "/home/alanz/.cache/huggingface/datasets/Josephgflowers___finance-instruct-500k/default/0.0.0/583a98fb0ec14d904e9423b671d9d0fea88891b6/finance-instruct-500k-train-00001-of-00002.arrow",
+        "sha256": "ce4b0786646cd68561da736f145fd5df7ba2f4e754e0caa3ae646d6be9900bd3"
+      }
+    ],
+    "pile": [
+      {
+        "bytes": 61270696,
+        "hash_status": "VERIFIED_ON_READ",
+        "path": "/home/alanz/.cache/huggingface/datasets/NeelNanda___pile-10k/default/0.0.0/127bfedcd5047750df5ccf3a12979a47bfa0bafa/pile-10k-train.arrow",
+        "sha256": "77ddf02e2a69373a944bc8bc8ac8f7b9926f5c62203d727341a24d709bf81113"
+      }
+    ]
+  },
+  "status": "CPU_INPUTS_COMPILED_NO_ACTIVATIONS",
+  "strata": {
+    "alpaca_natural": {
+      "post_bos_positions": 552060,
+      "records": 6000
+    },
+    "finance_controlled": {
+      "post_bos_positions": 99560,
+      "records": 600
+    },
+    "finance_natural": {
+      "post_bos_positions": 187190,
+      "records": 1800
+    },
+    "pile_controlled": {
+      "post_bos_positions": 94430,
+      "records": 600
+    },
+    "pile_natural": {
+      "post_bos_positions": 310470,
+      "records": 3000
+    }
+  },
+  "task_id": "TRR-P09",
+  "timing": {
+    "child_return_code": 0,
+    "elapsed_seconds": 32.387874,
+    "end_utc": "2026-09-07T09:51:59.962514Z",
+    "start_utc": "2026-09-07T09:51:27.644595Z",
+    "watchdog_time": {
+      "bytes": 1293,
+      "path": "/tmp/trr-p09-runtime/watchdog-stage1-input-preparation-r1/time.json",
+      "sha256": "8940305b76ca7ec3b77d15224493c9eccd3a44e902ecba72da076a9ac6212ac6"
+    },
+    "wrapper_exit_code": 0
+  },
+  "truth_boundary": {
+    "activations_created": false,
+    "evaluation_truth_opened": false,
+    "model_loaded": false,
+    "public_fitting_labels_loaded": true,
+    "source_text_persisted": false
+  }
+}
