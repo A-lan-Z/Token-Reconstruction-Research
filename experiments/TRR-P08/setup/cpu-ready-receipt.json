@@ -102,22 +102,22 @@
     "refresh_required_before_qualification": true
   },
   "next_qualifier": {
-    "preflight": "PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode preflight --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --output-root experiments/TRR-P08/runtime/preflight-r2 --device cpu --max-seconds 120",
-    "qualify_inner_command": "PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode qualify --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --preflight-receipt experiments/TRR-P08/runtime/preflight-r2/preflight.json --output-root experiments/TRR-P08/runtime/qualification-r1 --device cuda --torch-threads 4 --torch-interop-threads 1 --minimum-free-gib 8 --maximum-gpu-reserved-gib 6 --maximum-host-rss-gib 16 --minimum-host-available-gib 10 --max-seconds 1800",
+    "preflight": "PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode preflight --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --output-root experiments/TRR-P08/runtime/preflight-r3 --device cpu --max-seconds 120",
+    "qualify_inner_command": "PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode qualify --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --preflight-receipt experiments/TRR-P08/runtime/preflight-r3/preflight.json --output-root experiments/TRR-P08/runtime/qualification-r2 --device cuda --torch-threads 4 --torch-interop-threads 1 --minimum-free-gib 8 --maximum-gpu-reserved-gib 6 --maximum-host-rss-gib 16 --minimum-host-available-gib 10 --max-seconds 1800",
     "outer_guard": "scripts/trr_p06/resource_watchdog.py with create-only output, 1800-second timeout, max RSS 16 GiB, minimum host available 10 GiB; root must authorize the GPU window.",
-    "preflight_source_head_requirement": "Rerun source-only preflight after current committed code head 3c6e93c; prior fit-staged-preflight-final receipt is historical and remains payload-free.",
-    "qualify_outer_guard_command": "PYTHONPATH=.:src python3 scripts/trr_p06/resource_watchdog.py --output-root experiments/TRR-P08/runtime/qualification-watchdog-r1 --timeout-seconds 1800 --poll-seconds 0.5 --max-rss-bytes 17179869184 --min-available-bytes 10737418240 --label TRR-P08-qualification-r1 --cwd /tmp/trr-p08 -- PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode qualify --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --preflight-receipt experiments/TRR-P08/runtime/preflight-r2/preflight.json --output-root experiments/TRR-P08/runtime/qualification-r1 --device cuda --torch-threads 4 --torch-interop-threads 1 --minimum-free-gib 8 --maximum-gpu-reserved-gib 6 --maximum-host-rss-gib 16 --minimum-host-available-gib 10 --max-seconds 1800",
-    "main_outer_guard_command": "PYTHONPATH=.:src python3 scripts/trr_p06/resource_watchdog.py --output-root experiments/TRR-P08/runtime/main-watchdog-r1 --timeout-seconds 1800 --poll-seconds 0.5 --max-rss-bytes 17179869184 --min-available-bytes 10737418240 --label TRR-P08-main-r1 --cwd /tmp/trr-p08 -- PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode main --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --preflight-receipt experiments/TRR-P08/runtime/preflight-r2/preflight.json --qualification-receipt experiments/TRR-P08/runtime/qualification-r1/qualification.json --output-root experiments/TRR-P08/runtime/main-r1 --device cuda --torch-threads 4 --torch-interop-threads 1 --minimum-free-gib 8 --maximum-gpu-reserved-gib 6 --maximum-host-rss-gib 16 --minimum-host-available-gib 10 --max-seconds 1800",
-    "execution_status": "NOT_RUN_WAITING_RESOURCE_RELEASE_AND_ROOT_GRANT"
+    "preflight_source_head_requirement": "Run only after Agent1 release and live resource refresh; bind committed P08 source head 3e4764b. Prior fit-staged-preflight-final receipt is historical.",
+    "qualify_outer_guard_command": "PYTHONPATH=.:src python3 scripts/trr_p06/resource_watchdog.py --output-root experiments/TRR-P08/runtime/qualification-watchdog-r2 --timeout-seconds 1800 --poll-seconds 0.5 --max-rss-bytes 17179869184 --min-available-bytes 10737418240 --label TRR-P08-qualification-r2 --cwd /tmp/trr-p08 -- PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode qualify --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --preflight-receipt experiments/TRR-P08/runtime/preflight-r3/preflight.json --output-root experiments/TRR-P08/runtime/qualification-r2 --device cuda --torch-threads 4 --torch-interop-threads 1 --minimum-free-gib 8 --maximum-gpu-reserved-gib 6 --maximum-host-rss-gib 16 --minimum-host-available-gib 10 --max-seconds 1800",
+    "main_outer_guard_command": "PYTHONPATH=.:src python3 scripts/trr_p06/resource_watchdog.py --output-root experiments/TRR-P08/runtime/main-watchdog-r2 --timeout-seconds 1800 --poll-seconds 0.5 --max-rss-bytes 17179869184 --min-available-bytes 10737418240 --label TRR-P08-main-r2 --cwd /tmp/trr-p08 -- PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode main --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --preflight-receipt experiments/TRR-P08/runtime/preflight-r3/preflight.json --qualification-receipt experiments/TRR-P08/runtime/qualification-r2/qualification.json --output-root experiments/TRR-P08/runtime/main-r2 --device cuda --torch-threads 4 --torch-interop-threads 1 --minimum-free-gib 8 --maximum-gpu-reserved-gib 6 --maximum-host-rss-gib 16 --minimum-host-available-gib 10 --max-seconds 1800",
+    "execution_status": "NOT_RUN_WAITING_AGENT1_RELEASE_AND_ROOT_GRANT"
   },
   "coordination_boundary": {
     "auto_review_message_rejected": true,
     "rejection_summary": "A detailed user-visible coordination send containing internal project provenance, filesystem paths, hashes, and live resource metadata was rejected by automatic review.",
     "retry_attempted": false,
-    "pending_root_question": "Review proposed seed 8108 and inherited Pile[0,7000)/Finance[20000,26000) windows; after Agent1 release, grant the exclusive qualification window. No source enumeration, capture, or truth access is authorized yet."
+    "pending_root_question": "Agent1 release plus root grant for live resource refresh, CPU preflight, and guarded qualification; P08 requests no new reservation. TRR-0009 approved opaque export remains root-owned and unread."
   },
-  "updated_utc": "2026-09-07T01:12:28Z",
-  "current_code_head_at_handoff": "48b75f1",
+  "updated_utc": "2026-09-07T01:30:30Z",
+  "current_code_head_at_handoff": "3e4764b",
   "source_universe_command": {
     "path": "experiments/TRR-P08/setup/source-universe-command.json",
     "status": "COMMAND_PREPARED_NOT_RUN",
@@ -154,5 +154,11 @@
     "approved_opaque_schema": "token-reconstruction.trr0008-opaque-source-sequence-reservation.v1",
     "counts_source": "hashes.<field>.values length",
     "nested_values_bound": true
+  },
+  "launch_plan": "experiments/TRR-P08/setup/qualifier-launch-plan.json",
+  "trr0009_opaque_export": {
+    "status": "PENDING_ROOT_OWNED_APPROVED_HASH_ONLY_EXPORT",
+    "received": false,
+    "read": false
   }
 }

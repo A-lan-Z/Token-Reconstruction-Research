@@ -37,9 +37,9 @@
     "fresh_capture_started": false,
     "fit_or_optimizer_steps_started": false
   },
-  "next_step": "Root review of the proposed seed 8108 and inherited Pile[0,7000)/Finance[20000,26000) source windows; after Agent1 release, refresh live resources and rerun committed source-only preflight before any guarded qualification. No enumeration, capture, GPU, fit, or truth access has started.",
+  "next_step": "No new P08 reservation is requested. Await Agent1 release; then refresh live resources, run source-only preflight-r3 against committed P08 head 3e4764b, and wait for root grant before guarded qualification. No source enumeration, capture, GPU, fit, or truth access has started.",
   "created_utc": "2026-09-07T00:12:47.039245+00:00",
-  "updated_utc": "2026-09-07T01:12:28Z",
+  "updated_utc": "2026-09-07T01:30:50Z",
   "plan": {
     "path": "experiments/TRR-P08/plan.json",
     "status": "FROZEN_DESIGN_PRE_FIT",
@@ -63,7 +63,8 @@
     "capture_runner": "scripts/trr_p08/capture_public.py",
     "panel_adapter_tests": "tests/test_trr_p08_panel_adapter.py",
     "cpu_ready_receipt": "experiments/TRR-P08/setup/cpu-ready-receipt.json",
-    "source_universe_command": "experiments/TRR-P08/setup/source-universe-command.json"
+    "source_universe_command": "experiments/TRR-P08/setup/source-universe-command.json",
+    "qualifier_launch_plan": "experiments/TRR-P08/setup/qualifier-launch-plan.json"
   },
   "verification": {
     "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p08_panel_adapter.py tests/test_trr_p08_source_binding.py tests/test_trr_p08_fit_staged.py",
@@ -163,5 +164,26 @@
     "live_refresh_required_before_qualification": true,
     "gpu_or_heavy_compute_started": false,
     "qualification_window_requires_root_grant": true
+  },
+  "coordination_request": {
+    "no_new_reservation_required": true,
+    "approved_trr0009_opaque_export": {
+      "status": "PENDING_ROOT_OWNED_APPROVED_HASH_ONLY_EXPORT",
+      "received": false,
+      "read": false
+    },
+    "compute_release": "WAITING_AGENT1_RELEASE",
+    "gpu_launch_authorized": false
+  },
+  "communication_authorization": {
+    "status": "AUTHORIZED_SCOPED",
+    "agent1_thread_id": "01a07029-b0e2-71d2-af08-ecd9aacc645f",
+    "scope": [
+      "scheduling",
+      "exclusion-status exchange"
+    ],
+    "p08_new_reservation_requested": false,
+    "trr0009_unpublished_science_read": false,
+    "compute_release_received": false
   }
 }

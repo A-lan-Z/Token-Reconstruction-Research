@@ -1,0 +1,66 @@
+{
+  "coordination": {
+    "agent1_window": "ACTIVE",
+    "gpu_launch_authorized": false,
+    "overlap_allowed": false,
+    "resource_refresh_required_after_release": true,
+    "root_grant_required_before_qualification": true
+  },
+  "created_utc": "2026-09-07T01:30:30Z",
+  "gate_order": [
+    "Agent1 release",
+    "live GPU/host refresh",
+    "source-only CPU preflight",
+    "root review of preflight",
+    "guarded largest-cell qualification",
+    "root review of qualification",
+    "main fit matrix"
+  ],
+  "main": {
+    "inner_command": "PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode main --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --preflight-receipt experiments/TRR-P08/runtime/preflight-r3/preflight.json --qualification-receipt experiments/TRR-P08/runtime/qualification-r2/qualification.json --output-root experiments/TRR-P08/runtime/main-r2 --device cuda --torch-threads 4 --torch-interop-threads 1 --minimum-free-gib 8 --maximum-gpu-reserved-gib 6 --maximum-host-rss-gib 16 --minimum-host-available-gib 10 --max-seconds 1800",
+    "outer_guard_command": "PYTHONPATH=.:src python3 scripts/trr_p06/resource_watchdog.py --output-root experiments/TRR-P08/runtime/main-watchdog-r2 --timeout-seconds 1800 --poll-seconds 0.5 --max-rss-bytes 17179869184 --min-available-bytes 10737418240 --label TRR-P08-main-r2 --cwd /tmp/trr-p08 -- PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode main --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --preflight-receipt experiments/TRR-P08/runtime/preflight-r3/preflight.json --qualification-receipt experiments/TRR-P08/runtime/qualification-r2/qualification.json --output-root experiments/TRR-P08/runtime/main-r2 --device cuda --torch-threads 4 --torch-interop-threads 1 --minimum-free-gib 8 --maximum-gpu-reserved-gib 6 --maximum-host-rss-gib 16 --minimum-host-available-gib 10 --max-seconds 1800",
+    "status": "PENDING_QUALIFICATION_PASS"
+  },
+  "no_new_reservation_required": true,
+  "preflight": {
+    "device": "cpu",
+    "exact_command": "PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode preflight --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --output-root experiments/TRR-P08/runtime/preflight-r3 --device cpu --max-seconds 120",
+    "gpu_started": false,
+    "max_seconds": 120,
+    "model_loaded": false,
+    "output_root": "experiments/TRR-P08/runtime/preflight-r3",
+    "prior_receipt": "experiments/TRR-P08/setup/fit-staged-preflight-final.json",
+    "prior_receipt_source_commit": "cc22371a0106706f6c05a4b8403a1f1883fbb863",
+    "rerun_reason": "code and guard handoff now bind committed P08 exclusion/freeze implementation; prior preflight is historical",
+    "source_only": true,
+    "status": "PREPARED_NOT_RUN",
+    "truth_opened": false
+  },
+  "qualification": {
+    "guard_limits": {
+      "max_rss_bytes": 17179869184,
+      "maximum_reserved_gpu_gib": 6,
+      "min_host_available_bytes": 10737418240,
+      "minimum_free_gpu_gib": 8,
+      "timeout_seconds": 1800
+    },
+    "inner_command": "PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode qualify --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --preflight-receipt experiments/TRR-P08/runtime/preflight-r3/preflight.json --output-root experiments/TRR-P08/runtime/qualification-r2 --device cuda --torch-threads 4 --torch-interop-threads 1 --minimum-free-gib 8 --maximum-gpu-reserved-gib 6 --maximum-host-rss-gib 16 --minimum-host-available-gib 10 --max-seconds 1800",
+    "outer_guard_command": "PYTHONPATH=.:src python3 scripts/trr_p06/resource_watchdog.py --output-root experiments/TRR-P08/runtime/qualification-watchdog-r2 --timeout-seconds 1800 --poll-seconds 0.5 --max-rss-bytes 17179869184 --min-available-bytes 10737418240 --label TRR-P08-qualification-r2 --cwd /tmp/trr-p08 -- PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode qualify --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --preflight-receipt experiments/TRR-P08/runtime/preflight-r3/preflight.json --output-root experiments/TRR-P08/runtime/qualification-r2 --device cuda --torch-threads 4 --torch-interop-threads 1 --minimum-free-gib 8 --maximum-gpu-reserved-gib 6 --maximum-host-rss-gib 16 --minimum-host-available-gib 10 --max-seconds 1800",
+    "status": "PENDING_PREFLIGHT_PASS_AND_ROOT_GRANT"
+  },
+  "schema": "token-reconstruction.trr-p08-qualifier-launch-plan.v1",
+  "source_and_truth_boundary": {
+    "fresh_selection_started": false,
+    "fresh_source_enumeration_started": false,
+    "trr0009_opaque_export": {
+      "read": false,
+      "received": false,
+      "status": "PENDING_ROOT_OWNED_APPROVED_HASH_ONLY_EXPORT"
+    },
+    "trr0009_unpublished_science_read": false,
+    "truth_opened": false
+  },
+  "source_code_commit": "3e4764b",
+  "status": "PREPARED_NOT_RUN_WAITING_AGENT1_RELEASE",
+  "task_id": "TRR-P08"
+}
