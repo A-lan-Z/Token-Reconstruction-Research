@@ -58,3 +58,44 @@ def test_producer_wiring_constants_are_inherited_geometry() -> None:
     )
     assert register.gate.STORED_SEQUENCE_TOKENS == 128
     assert register.gate.OBSERVATION_HIDDEN_SIZE == 2048
+
+
+def test_frequency_reference_binding_freezes_both_named_banks(tmp_path: Path) -> None:
+    frequency_path = _write(
+        tmp_path / "frequency.json",
+        {
+            "schema": "token-reconstruction.trr0010-frequency-reference.v1",
+            "task_id": gate.TASK_ID,
+            "frequency_references": {
+                "B0": {"0": 3, "7": 2},
+                "B1": {"0": 30, "7": 20, "9": 1},
+            },
+            "truth_opened": False,
+        },
+    )
+    bindings, metadata = register._frequency_reference_bindings(
+        root=tmp_path,
+        frequency_reference_path=frequency_path,
+        frequency_reference_paths=None,
+    )
+    assert set(bindings) == {"frequency_reference_B0", "frequency_reference_B1"}
+    assert metadata["bank_order"] == ["B0", "B1"]
+    assert metadata["all_methods_each_bank"] is True
+    assert metadata["banks"]["B0"]["support_token_count"] == 2
+    assert metadata["banks"]["B1"]["support_token_count"] == 3
+
+
+def test_frequency_reference_binding_rejects_missing_bank(tmp_path: Path) -> None:
+    frequency_path = _write(
+        tmp_path / "frequency.json",
+        {
+            "frequency_references": {"B0": {"0": 1}},
+            "truth_opened": False,
+        },
+    )
+    with pytest.raises(register.RegisterError, match="named B1"):
+        register._frequency_reference_bindings(
+            root=tmp_path,
+            frequency_reference_path=frequency_path,
+            frequency_reference_paths=None,
+        )

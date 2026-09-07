@@ -9,6 +9,7 @@ lower-level TRR-0009/TRR-0005 producer output under the TRR-0010 schema.
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
+import hashlib
 import argparse
 import json
 from pathlib import Path
@@ -38,6 +39,7 @@ CAPTURE_STATUS = "PUBLIC_OBSERVATIONS_CAPTURE_COMPLETE_NO_TRUTH"
 REGISTRATION_OUTPUT_ROOT = Path("experiments/TRR-0010/evaluation")
 SELECTION_BINDING_DEFAULT = Path("experiments/TRR-0010/evaluation/source_selection_binding.json")
 REGISTRATION_DEFAULT = Path("experiments/TRR-0010/evaluation/registration.json")
+FREQUENCY_BANK_ORDER = ("B0", "B1")
 
 
 class RegisterError(ValueError):
@@ -83,6 +85,91 @@ def _json(path: Path, *, root: Path, description: str) -> tuple[dict[str, Any], 
     if not isinstance(payload, Mapping):
         raise RegisterError(f"{description} must be a JSON object")
     return record, dict(payload)
+
+
+def _normalize_frequency_bank(raw: Any, *, bank_id: str) -> dict[int, int]:
+    """Validate one public fitting-support map without opening source data."""
+    if not isinstance(raw, Mapping):
+        raise RegisterError(f"frequency reference bank {bank_id!r} is not a map")
+    normalized: dict[int, int] = {}
+    for token, count in raw.items():
+        if isinstance(token, bool) or isinstance(count, bool):
+            raise RegisterError(f"frequency reference bank {bank_id!r} contains a boolean entry")
+        try:
+            token_id = int(token)
+            value = int(count)
+        except (TypeError, ValueError) as exc:
+            raise RegisterError(f"frequency reference bank {bank_id!r} contains a non-integer entry") from exc
+        if isinstance(token, float) and token != token_id:
+            raise RegisterError(f"frequency reference bank {bank_id!r} contains a non-integral token")
+        if isinstance(count, float) and count != value:
+            raise RegisterError(f"frequency reference bank {bank_id!r} contains a non-integral count")
+        if not 0 <= token_id < gate.VOCABULARY_SIZE or value <= 0:
+            raise RegisterError(f"frequency reference bank {bank_id!r} contains an invalid token/count")
+        if token_id in normalized:
+            raise RegisterError(f"frequency reference bank {bank_id!r} contains duplicate token IDs")
+        normalized[token_id] = value
+    if not normalized:
+        raise RegisterError(f"frequency reference bank {bank_id!r} is empty")
+    return normalized
+
+
+def _frequency_reference_bindings(
+    *,
+    root: Path,
+    frequency_reference_path: Path | None,
+    frequency_reference_paths: Mapping[str, Path] | None,
+) -> tuple[dict[str, dict[str, Any]], dict[str, Any]]:
+    """Bind both named B0/B1 maps before the public freeze.
+
+    The scorer consumes independent registration keys for both support maps.
+    A single JSON file may contain both named maps, or callers may provide one
+    file per bank. In either case the map contents are checked now and only
+    file records plus canonical support-map digests are emitted.
+    """
+    if frequency_reference_path is not None and frequency_reference_paths is not None:
+        raise RegisterError("use frequency_reference_path or frequency_reference_paths, not both")
+    if frequency_reference_paths is None:
+        if frequency_reference_path is None:
+            raise RegisterError("both B0 and B1 frequency references are required")
+        paths = {bank: Path(frequency_reference_path) for bank in FREQUENCY_BANK_ORDER}
+    else:
+        if set(frequency_reference_paths) != set(FREQUENCY_BANK_ORDER):
+            raise RegisterError("frequency_reference_paths must bind exactly B0 and B1")
+        paths = {bank: Path(frequency_reference_paths[bank]) for bank in FREQUENCY_BANK_ORDER}
+
+    bindings: dict[str, dict[str, Any]] = {}
+    metadata: dict[str, Any] = {
+        "bank_order": list(FREQUENCY_BANK_ORDER),
+        "binding_names": {bank: f"frequency_reference_{bank}" for bank in FREQUENCY_BANK_ORDER},
+        "all_methods_each_bank": True,
+        "method_order": list(gate.METHOD_ORDER),
+        "banks": {},
+    }
+    for bank in FREQUENCY_BANK_ORDER:
+        record, payload = _json(paths[bank], root=root, description=f"frequency reference {bank}")
+        _truth_free(payload, description=f"frequency reference {bank}")
+        raw_references = payload.get("frequency_references")
+        if not isinstance(raw_references, Mapping) or bank not in raw_references:
+            raise RegisterError(f"frequency reference does not contain named {bank} support map")
+        selected = raw_references[bank]
+        if isinstance(selected, Mapping) and isinstance(selected.get("enriched"), Mapping):
+            selected = selected["enriched"]
+        elif isinstance(selected, Mapping) and isinstance(selected.get("counts"), Mapping):
+            selected = selected["counts"]
+        normalized = _normalize_frequency_bank(selected, bank_id=bank)
+        canonical = json.dumps(
+            [[int(token), int(count)] for token, count in sorted(normalized.items())],
+            separators=(",", ":"),
+        ).encode("utf-8")
+        bindings[f"frequency_reference_{bank}"] = record
+        metadata["banks"][bank] = {
+            "binding_name": f"frequency_reference_{bank}",
+            "file": dict(record),
+            "support_token_count": len(normalized),
+            "support_map_sha256": hashlib.sha256(canonical).hexdigest(),
+        }
+    return bindings, metadata
 
 
 def _truth_free(payload: Mapping[str, Any], *, description: str) -> None:
@@ -474,8 +561,9 @@ def build_registration(
     observation_manifest_path: Path,
     capture_path: Path,
     timing_plan_path: Path,
-    frequency_reference_path: Path,
     method_rows: Mapping[str, Any],
+    frequency_reference_path: Path | None = None,
+    frequency_reference_paths: Mapping[str, Path] | None = None,
     output_root: str | Path = REGISTRATION_OUTPUT_ROOT,
     output_path: Path = REGISTRATION_DEFAULT,
     selection_binding_path: Path = SELECTION_BINDING_DEFAULT,
@@ -520,7 +608,11 @@ def build_registration(
         geometry=design_meta["capture_geometry"],
     )
     timing_record = _record(Path(timing_plan_path), root=root, description="TRR-0010 timing plan")
-    frequency_record = _record(Path(frequency_reference_path), root=root, description="TRR-0010 frequency reference")
+    frequency_bindings, frequency_metadata = _frequency_reference_bindings(
+        root=root,
+        frequency_reference_path=Path(frequency_reference_path) if frequency_reference_path is not None else None,
+        frequency_reference_paths=frequency_reference_paths,
+    )
     methods = _method_rows(method_rows, root=root)
     current_head = _git_head(root)
     code_records = design_meta["code_bindings"]
@@ -549,7 +641,7 @@ def build_registration(
             "panel": panel_record,
             "public_observations": observation_record,
             "capture": capture_record,
-            "frequency_reference": frequency_record,
+            **frequency_bindings,
             "final_b1_exclusions": design_meta["final_b1"],
             **{
                 f"approved_opaque_exclusion_{index}": value
@@ -558,6 +650,7 @@ def build_registration(
         },
         "observation_bindings": observations,
         "timing_plan": timing_record,
+        "frequency_scoring": frequency_metadata,
         "method_order": list(gate.METHOD_ORDER),
         "cell_order": list(gate.CELL_ORDER),
         "records_by_domain": dict(gate.RECORDS_BY_DOMAIN),
