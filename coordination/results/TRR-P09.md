@@ -218,3 +218,10 @@ exclude model-forward and capture scheduling. Two setup-only synthetic failures
 are preserved in `synthetic-io-qualification-failure-r1.json` (missing shard
 directory) and `synthetic-io-qualification-failure-r2.json` (existing scratch
 directory); neither touched real P09 artifacts.
+
+
+## Common CPU schedule preparation (2026-09-07)
+
+The shared CPU schedule factory produced immutable B0 and expanded B1 artifacts from the corrected public input mask, with no model, H, activation-bank, fit, or evaluation-truth access. The compact receipt is `experiments/TRR-P09/setup/common-schedules-r1.json` (SHA-256 `3275af36352e4dd15ba639bdd86af439841ed0b19379aba292ad00f07115b86d`). It binds `scripts/trr_p09/fixed_control_caller.materialize_schedule_plan` and `inherited_schedule_steps`, seed `4010`, `N=13,000`, batch size `8`, position budget `512`, and the exact `SchedulePlan.semantic_sha256` contract.
+
+The local runtime payloads are `/tmp/trr-p09-runtime/common-schedules-r1/schedule-b0-seed4010.safetensors` (27,053,864 bytes, SHA-256 `ba53cd4bad54bc88670f346a7f959eb0ce5278ec28eac8bdf6463cd44936ec6f`, semantic digest `9aaad9c030f2f9b801f91f956c97f858966580edd21229cebb350dcde358f2c3`) and `schedule-b1-seed4010.safetensors` (27,053,864 bytes, SHA-256 `be0745ebb56e0ed39c2cf7e9c05a657209126f4c1c552242d3893c52d6718801`, semantic digest `8acdb2c4f8e5afba546ad01cbe0adae340eb841c8e3322c919e976434d29ede5`). Each file contains exactly `batch_record_indices[N,8]` (`int32`), `draw_record_slots[N,512]` (`int16`), `draw_position_slots[N,512]` (`int16`), and `used_replacement[N]` (`uint8`). B0 covers rows `0:1200` with `124,371` post-BOS valid positions; B1 covers rows `0:12000` with `1,243,710`. The runtime receipt is local-only; the compact receipt preserves the hashes and schema.
