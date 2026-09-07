@@ -17,11 +17,13 @@ from torch import nn
 
 from scripts.trr_p09.fixed_control_runner import (
     FixedControlRunnerError,
+    RandomAccessLoaderSource,
     RunnerConfig,
     SchedulePlan,
     ScheduleStep,
     build_run_receipt,
     evaluate_batches,
+    method_state_digest,
     select_earliest_maximum,
     train_one_step,
     write_create_only_json,
@@ -146,6 +148,7 @@ def test_same_batch_streaming_matches_inherited_one_step_update() -> None:
         embedding=embedding,
         config=config,
         activation_dtype=torch.bfloat16,
+        record_state_digest=True,
     )
     result_b = train_one_step(
         decoder_b,
@@ -156,14 +159,151 @@ def test_same_batch_streaming_matches_inherited_one_step_update() -> None:
         embedding=embedding,
         config=config,
         activation_dtype=torch.bfloat16,
+        record_state_digest=True,
     )
-    assert result_a.state_sha256 == result_b.state_sha256
+    assert result_a.state_sha256 == result_b.state_sha256 == method_state_digest(decoder_a, hook_a)
     assert result_a.token_rows == result_b.token_rows == 3
     assert result_a.correct_tokens == result_b.correct_tokens
     assert result_a.loss == pytest.approx(result_b.loss, abs=1e-7)
     assert result_a.gradient_norm == pytest.approx(result_b.gradient_norm, abs=1e-7)
     for left, right in zip(decoder_a.parameters(), decoder_b.parameters(), strict=True):
         assert torch.equal(left, right)
+
+
+def test_random_access_source_preserves_cross_shard_order_and_duplicates() -> None:
+    class RandomLoader:
+        def __init__(self) -> None:
+            self.rows = {
+                row: _batch(rows=(row,)).activations[0].clone()
+                for row in range(6)
+            }
+
+        def get_records(self, global_indices):
+            requested = tuple(int(row) for row in global_indices)
+            return Batch(
+                activations=torch.stack([self.rows[row] for row in requested]),
+                token_ids=torch.zeros(len(requested), 4, dtype=torch.long),
+                attention_mask=torch.ones(len(requested), 4, dtype=torch.bool),
+                position_ids=torch.arange(4, dtype=torch.long).expand(len(requested), -1).clone(),
+                global_rows=requested,
+            )
+
+    source = RandomAccessLoaderSource(RandomLoader())
+    batch = source.batch_for_global_rows((5, 0, 5, 2))
+    assert batch.global_rows == (5, 0, 5, 2)
+    assert torch.equal(batch.activations[0], batch.activations[2])
+    with pytest.raises(FixedControlRunnerError, match="global rows"):
+        source.batch_for_global_rows((-1, 0))
+
+
+class _DirectionalTrainableHook(nn.Module):
+    method_id = "synthetic_directional"
+    readout_mode = "token_direction"
+
+    def __init__(self, vocabulary_size: int = 7, hidden_size: int = 3) -> None:
+        super().__init__()
+        self.delta = nn.Parameter(torch.zeros(vocabulary_size, hidden_size))
+
+    def score_rows(self, query_rows, logit_scale, embedding, *, base_logits=None):
+        del base_logits
+        return (query_rows @ (embedding + self.delta).transpose(0, 1)) * logit_scale
+
+    def loss_terms(self, logits, target_ids):
+        total = F.cross_entropy(logits, target_ids)
+        return {"cross_entropy": total, "total": total}
+
+    def optimizer_param_groups(self, decoder, *, base_learning_rate):
+        return (
+            {"name": "decoder", "params": list(decoder.parameters()), "lr": base_learning_rate},
+            {"name": "directions", "params": [self.delta], "lr": base_learning_rate},
+        )
+
+    def metadata(self):
+        return {"method_id": self.method_id}
+
+
+def test_train_step_clips_and_hashes_decoder_and_directional_parameters() -> None:
+    decoder = TinyDecoder()
+    hook = _DirectionalTrainableHook()
+    source = Source(_batch(rows=(2, 5)))
+    step = ScheduleStep(0, (2, 5), (0, 1, 0), (1, 2, 3), False)
+    config = _config()
+    optimizer = torch.optim.AdamW(
+        hook.optimizer_param_groups(decoder, base_learning_rate=config.learning_rate),
+        weight_decay=0.0,
+    )
+    before = hook.delta.detach().clone()
+    result = train_one_step(
+        decoder,
+        hook,
+        source,
+        step,
+        optimizer=optimizer,
+        embedding=torch.randn(7, 3),
+        config=config,
+        activation_dtype=torch.bfloat16,
+        compute_base_logits=False,
+        record_state_digest=True,
+    )
+    assert result.state_sha256 == method_state_digest(decoder, hook)
+    assert not torch.equal(before, hook.delta.detach())
+
+
+def test_train_step_rejects_optimizer_omitting_directional_parameters() -> None:
+    decoder = TinyDecoder()
+    hook = _DirectionalTrainableHook()
+    optimizer = torch.optim.AdamW(decoder.parameters(), lr=0.01)
+    with pytest.raises(FixedControlRunnerError, match="omits trainable"):
+        train_one_step(
+            decoder,
+            hook,
+            Source(_batch(rows=(2, 5))),
+            ScheduleStep(0, (2, 5), (0, 1, 0), (1, 2, 3), False),
+            optimizer=optimizer,
+            embedding=torch.randn(7, 3),
+            config=_config(),
+            activation_dtype=torch.bfloat16,
+        )
+
+
+def test_train_step_rejects_unowned_trainable_optimizer_parameters() -> None:
+    decoder = TinyDecoder()
+    hook = FixedPublicReadoutHook(method_id="fixed", embedding_sha256=_DIGEST)
+    foreign = nn.Parameter(torch.ones(2))
+    optimizer = torch.optim.AdamW(
+        [*decoder.parameters(), foreign],
+        lr=0.01,
+    )
+    with pytest.raises(FixedControlRunnerError, match="outside decoder/readout"):
+        train_one_step(
+            decoder,
+            hook,
+            Source(_batch(rows=(2, 5))),
+            ScheduleStep(0, (2, 5), (0, 1, 0), (1, 2, 3), False),
+            optimizer=optimizer,
+            embedding=torch.randn(7, 3),
+            config=_config(),
+            activation_dtype=torch.bfloat16,
+        )
+
+
+def test_train_step_rejects_a_masked_sampled_position() -> None:
+    decoder = TinyDecoder()
+    hook = FixedPublicReadoutHook(method_id="fixed", embedding_sha256=_DIGEST)
+    batch = _batch(rows=(2, 5))
+    batch.attention_mask[0, 1] = False
+    optimizer = torch.optim.AdamW(decoder.parameters(), lr=0.01)
+    with pytest.raises(FixedControlRunnerError, match="masked/invalid"):
+        train_one_step(
+            decoder,
+            hook,
+            Source(batch),
+            ScheduleStep(0, (2, 5), (0, 1, 0), (1, 2, 3), False),
+            optimizer=optimizer,
+            embedding=torch.randn(7, 3),
+            config=_config(),
+            activation_dtype=torch.bfloat16,
+        )
 
 
 def test_h128_validation_is_independent_from_fit_width() -> None:

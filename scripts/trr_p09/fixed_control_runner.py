@@ -14,7 +14,7 @@ supplied by the frozen caller rather than defaulted here.
 from __future__ import annotations
 
 from collections import Counter
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 import hashlib
@@ -67,8 +67,8 @@ class SequentialLoaderSource:
     """Adapt the setup loader when schedule order is the loader stream order.
 
     This adapter deliberately keeps no cache.  A schedule whose next batch is
-    not the next immutable shard batch fails closed; a future random-access
-    shard index can implement ``BatchSource`` without changing the runner.
+    not the next immutable shard batch fails closed; use
+    :class:`RandomAccessLoaderSource` for the real arbitrary schedule path.
     """
 
     def __init__(self, loader: LoaderLike) -> None:
@@ -90,6 +90,40 @@ class SequentialLoaderSource:
         return batch
 
 
+class RandomAccessLoaderSource:
+    """Adapt setup's hash-bound arbitrary-row shard loader.
+
+    ``get_records`` is required.  The adapter never falls back to
+    ``iter_batches`` because doing so would silently replace the frozen random
+    schedule with shard order.  The setup loader preserves cross-shard order
+    and repeated global rows; this adapter checks that promise at the boundary.
+    """
+
+    def __init__(self, loader: Any) -> None:
+        getter = getattr(loader, "get_records", None)
+        if not callable(getter):
+            raise FixedControlRunnerError(
+                "random-access source must provide get_records(global_indices)"
+            )
+        self._loader = loader
+        self._get_records = getter
+
+    def batch_for_global_rows(self, global_rows: Sequence[int]) -> BatchLike:
+        expected = tuple(int(row) for row in global_rows)
+        if not expected or any(row < 0 for row in expected):
+            raise FixedControlRunnerError("scheduled global rows must be nonnegative and nonempty")
+        try:
+            batch = self._get_records(expected)
+        except Exception as exc:
+            raise FixedControlRunnerError("random-access loader rejected scheduled rows") from exc
+        actual = tuple(int(row) for row in batch.global_rows)
+        if actual != expected:
+            raise FixedControlRunnerError(
+                f"random-access loader changed row order: expected {expected}, got {actual}"
+            )
+        return batch
+
+
 @dataclass(frozen=True)
 class ScheduleStep:
     """One serialized training update's batch and position draws."""
@@ -107,6 +141,8 @@ class ScheduleStep:
             raise FixedControlRunnerError("schedule batch size differs")
         if len(self.draw_record_slots) != position_budget or len(self.draw_position_slots) != position_budget:
             raise FixedControlRunnerError("schedule position budget differs")
+        if any(row < 0 for row in self.batch_global_rows):
+            raise FixedControlRunnerError("schedule batch rows must be nonnegative")
         if len(set(self.batch_global_rows)) != len(self.batch_global_rows):
             raise FixedControlRunnerError("schedule batch rows must be unique")
         if any(slot < 0 or slot >= record_batch_size for slot in self.draw_record_slots):
@@ -211,9 +247,11 @@ class StepResult:
     token_accuracy: float
     gradient_norm: float
     elapsed_seconds: float
+    load_seconds: float
+    update_seconds: float
     batch_global_rows: tuple[int, ...]
     used_replacement: bool
-    state_sha256: str
+    state_sha256: str | None
 
     def as_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -238,11 +276,78 @@ def tensor_digest(value: torch.Tensor) -> str:
     return hashlib.sha256(header + tensor.reshape(-1).view(torch.uint8).numpy().tobytes(order="C")).hexdigest()
 
 
-def module_parameter_digest(module: nn.Module) -> str:
+def _trainable_parameters(value: Any) -> list[nn.Parameter]:
+    parameters = getattr(value, "parameters", None)
+    if not callable(parameters):
+        return []
+    return [parameter for parameter in parameters() if parameter.requires_grad]
+
+
+def optimizer_parameters(optimizer: torch.optim.Optimizer) -> tuple[nn.Parameter, ...]:
+    """Return unique optimizer parameters in deterministic group order."""
+
+    result: list[nn.Parameter] = []
+    seen: set[int] = set()
+    for group in optimizer.param_groups:
+        for parameter in group.get("params", ()):
+            if not isinstance(parameter, nn.Parameter):
+                raise FixedControlRunnerError("optimizer group contains a non-parameter")
+            if id(parameter) not in seen:
+                seen.add(id(parameter))
+                result.append(parameter)
+    if not result:
+        raise FixedControlRunnerError("optimizer has no parameters")
+    return tuple(result)
+
+
+def validate_optimizer_coverage(
+    decoder: nn.Module,
+    hook: ReadoutHook,
+    optimizer: torch.optim.Optimizer,
+) -> tuple[nn.Parameter, ...]:
+    """Require decoder and hook trainable parameters to share one optimizer."""
+
+    parameters = optimizer_parameters(optimizer)
+    trainable_parameters = tuple(parameter for parameter in parameters if parameter.requires_grad)
+    if not trainable_parameters:
+        raise FixedControlRunnerError("optimizer has no trainable parameters")
+    identities = {id(parameter) for parameter in trainable_parameters}
+    owned_parameters = tuple(_trainable_parameters(decoder)) + tuple(_trainable_parameters(hook))
+    owned_identities = {id(parameter) for parameter in owned_parameters}
+    decoder_missing = [
+        parameter for parameter in _trainable_parameters(decoder) if id(parameter) not in identities
+    ]
+    hook_missing = [
+        parameter for parameter in _trainable_parameters(hook) if id(parameter) not in identities
+    ]
+    unowned = [parameter for parameter in trainable_parameters if id(parameter) not in owned_identities]
+    if decoder_missing or hook_missing:
+        raise FixedControlRunnerError(
+            "optimizer omits trainable decoder/readout parameters"
+        )
+    if unowned:
+        raise FixedControlRunnerError(
+            "optimizer contains trainable parameters outside decoder/readout contract"
+        )
+    return trainable_parameters
+
+
+def _state_entries(value: Any, *, prefix: str) -> list[tuple[str, torch.Tensor]]:
+    state_dict = getattr(value, "state_dict", None)
+    if not callable(state_dict):
+        return []
+    return [(f"{prefix}{name}", tensor) for name, tensor in state_dict().items()]
+
+
+def method_state_digest(decoder: nn.Module, hook: ReadoutHook) -> str:
+    """Hash decoder plus hook state for checkpoint receipts, not every step."""
+
     digest = hashlib.sha256()
-    for name, value in sorted(module.state_dict().items()):
-        digest.update(canonical_bytes({"name": name, "shape": list(value.shape), "dtype": str(value.dtype)}))
-        digest.update(value.detach().cpu().contiguous().reshape(-1).view(torch.uint8).numpy().tobytes(order="C"))
+    entries = _state_entries(decoder, prefix="decoder::") + _state_entries(hook, prefix="readout::")
+    for name, value in sorted(entries):
+        tensor = value.detach().cpu().contiguous()
+        digest.update(canonical_bytes({"name": name, "shape": list(tensor.shape), "dtype": str(tensor.dtype)}))
+        digest.update(tensor.reshape(-1).view(torch.uint8).numpy().tobytes(order="C"))
     return digest.hexdigest()
 
 
@@ -278,6 +383,8 @@ def validate_batch(
             raise FixedControlRunnerError(f"{label} geometry differs")
     if len(batch.global_rows) != expected_batch_records:
         raise FixedControlRunnerError("batch global row count differs")
+    if any(int(row) < 0 for row in batch.global_rows):
+        raise FixedControlRunnerError("batch global rows must be nonnegative")
     if expected_global_rows is not None and tuple(batch.global_rows) != tuple(int(row) for row in expected_global_rows):
         raise FixedControlRunnerError("batch global row order differs from schedule")
     mask = batch.attention_mask.to(dtype=torch.bool)
@@ -319,6 +426,7 @@ def train_one_step(
     config: RunnerConfig,
     activation_dtype: torch.dtype | None = None,
     compute_base_logits: bool = True,
+    record_state_digest: bool = False,
 ) -> StepResult:
     """Run one scheduled update against one lazy eight-record batch."""
 
@@ -329,6 +437,8 @@ def train_one_step(
         position_budget=config.position_budget,
         sequence_tokens=config.train_sequence_tokens,
     )
+    started = time.perf_counter()
+    load_started = time.perf_counter()
     batch = source.batch_for_global_rows(schedule_step.batch_global_rows)
     validate_batch(
         batch,
@@ -338,14 +448,21 @@ def train_one_step(
         expected_batch_records=config.record_batch_size,
         expected_activation_dtype=activation_dtype,
     )
-    started = time.perf_counter()
+    load_seconds = time.perf_counter() - load_started
+    update_started = time.perf_counter()
     decoder.train()
+    if isinstance(hook, nn.Module):
+        hook.train()
     activation = batch.activations.to(device=device, dtype=torch.float32)
     mask = batch.attention_mask.to(device=device, dtype=torch.bool)
     token_ids = batch.token_ids.to(device=device, dtype=torch.long)
     record_slots = torch.tensor(schedule_step.draw_record_slots, device=device, dtype=torch.long)
     position_slots = torch.tensor(schedule_step.draw_position_slots, device=device, dtype=torch.long)
+    sampled_mask = mask[record_slots, position_slots]
+    if not bool(sampled_mask.all().item()):
+        raise FixedControlRunnerError("schedule sampled a masked/invalid position")
     target_ids = token_ids[record_slots, position_slots]
+    optimizer_parameters_for_step = validate_optimizer_coverage(decoder, hook, optimizer)
     optimizer.zero_grad(set_to_none=True)
     try:
         _, logits, losses = shared_decoder_rows(
@@ -366,12 +483,12 @@ def train_one_step(
         raise FixedControlRunnerError("training loss is non-finite")
     total.backward()
     gradient_norm = torch.nn.utils.clip_grad_norm_(
-        list(decoder.parameters()), config.gradient_clip_norm, error_if_nonfinite=True
+        optimizer_parameters_for_step, config.gradient_clip_norm, error_if_nonfinite=True
     )
     optimizer.step()
-    for parameter in decoder.parameters():
+    for parameter in optimizer_parameters_for_step:
         if not torch.isfinite(parameter).all().item():
-            raise FixedControlRunnerError("decoder parameter became non-finite")
+            raise FixedControlRunnerError("optimizer parameter became non-finite")
     prediction = logits.detach().argmax(dim=-1)
     cross_entropy = losses.get("cross_entropy", total)
     return StepResult(
@@ -383,9 +500,11 @@ def train_one_step(
         token_accuracy=float(prediction.eq(target_ids).float().mean().detach().cpu()),
         gradient_norm=float(torch.as_tensor(gradient_norm).detach().cpu()),
         elapsed_seconds=time.perf_counter() - started,
+        load_seconds=load_seconds,
+        update_seconds=time.perf_counter() - update_started,
         batch_global_rows=tuple(schedule_step.batch_global_rows),
         used_replacement=bool(schedule_step.used_replacement),
-        state_sha256=module_parameter_digest(decoder),
+        state_sha256=(method_state_digest(decoder, hook) if record_state_digest else None),
     )
 
 
@@ -409,6 +528,8 @@ def evaluate_batches(
     if position_budget <= 0:
         raise FixedControlRunnerError("validation position budget must be positive")
     decoder.eval()
+    if isinstance(hook, nn.Module):
+        hook.eval()
     total_rows = 0
     correct = 0
     loss_sum = 0.0
@@ -460,6 +581,163 @@ def evaluate_batches(
         "token_accuracy": correct / total_rows,
         "cross_entropy_loss": loss_sum / total_rows,
         "compute_base_logits": compute_base_logits,
+    }
+
+
+
+def run_training(
+    decoder: nn.Module,
+    hook: ReadoutHook,
+    source: BatchSource,
+    schedule_steps: Iterable[ScheduleStep],
+    *,
+    schedule_steps_count: int,
+    schedule_seed: int,
+    schedule_semantic_sha256: str,
+    schedule_exposure: Mapping[str, Any],
+    optimizer: torch.optim.Optimizer,
+    embedding: torch.Tensor,
+    config: RunnerConfig,
+    validation_batches: Callable[[int], Iterable[BatchLike]],
+    validation_sequence_tokens: int,
+    validation_batch_records: int,
+    validation_activation_dtype: torch.dtype | None,
+    training_activation_dtype: torch.dtype | None,
+    checkpoint_steps: Sequence[int],
+    scheduler: Any | None = None,
+    compute_base_logits: bool = True,
+    checkpoint_callback: Callable[
+        [Mapping[str, Any], nn.Module, ReadoutHook], Mapping[str, Any] | None
+    ]
+    | None = None,
+    deadline_seconds: float | None = None,
+) -> dict[str, Any]:
+    """Run one fixed/directional continuation under one shared schedule.
+
+    ``schedule_steps`` is an iterable instead of a Python list so a production
+    safetensors schedule reader can stream 12,000 steps without materializing
+    millions of Python integers.  The caller binds the serialized schedule
+    digest and exposure summary before calling this function.  Validation is
+    supplied by a fresh-batch factory because the natural H128 view may have a
+    different sequence width from the 192-wide fit bank.  Domain-balanced
+    aggregation remains an evaluator concern; this function reports raw token
+    counts and the supplied validation metric.
+    """
+
+    config.validate()
+    if schedule_steps_count != config.steps:
+        raise FixedControlRunnerError("schedule step count differs from training contract")
+    if len(schedule_semantic_sha256) != 64 or schedule_semantic_sha256.lower() != schedule_semantic_sha256:
+        raise FixedControlRunnerError("schedule semantic digest is malformed")
+    checkpoints = tuple(sorted({int(step) for step in checkpoint_steps}))
+    if not checkpoints or checkpoints[0] != 0:
+        raise FixedControlRunnerError("checkpoint grid must include step zero")
+    if any(step < 0 or step > config.steps for step in checkpoints):
+        raise FixedControlRunnerError("checkpoint grid contains an out-of-range step")
+    if deadline_seconds is not None and deadline_seconds <= 0:
+        raise FixedControlRunnerError("deadline must be positive")
+    validate_optimizer_coverage(decoder, hook, optimizer)
+    device = _device_for(decoder)
+    _move_embedding_once(embedding, device)
+    started = time.perf_counter()
+    update_seconds = 0.0
+    load_seconds = 0.0
+    validation_seconds = 0.0
+    points: list[dict[str, Any]] = []
+    checkpoint_bindings: list[Mapping[str, Any]] = []
+    last_train: StepResult | None = None
+
+    def record_checkpoint(step: int, train_result: StepResult | None) -> None:
+        nonlocal validation_seconds
+        validation_started = time.perf_counter()
+        metrics = evaluate_batches(
+            decoder,
+            hook,
+            validation_batches(step),
+            embedding=embedding,
+            expected_sequence_tokens=validation_sequence_tokens,
+            expected_hidden_size=config.hidden_size,
+            expected_batch_records=validation_batch_records,
+            position_budget=config.position_budget,
+            activation_dtype=validation_activation_dtype,
+            compute_base_logits=compute_base_logits,
+        )
+        elapsed = time.perf_counter() - validation_started
+        validation_seconds += elapsed
+        point: dict[str, Any] = {
+            "step": int(step),
+            "validation": metrics,
+            "train": None if train_result is None else train_result.as_dict(),
+            "validation_seconds": elapsed,
+            "state_sha256": method_state_digest(decoder, hook),
+        }
+        if checkpoint_callback is not None:
+            binding = checkpoint_callback(point, decoder, hook)
+            if binding is not None:
+                point["state_binding"] = dict(binding)
+                checkpoint_bindings.append(dict(binding))
+        points.append(point)
+
+    record_checkpoint(0, None)
+    schedule_iterator = iter(schedule_steps)
+    for step_index in range(config.steps):
+        try:
+            schedule_step = next(schedule_iterator)
+        except StopIteration as exc:
+            raise FixedControlRunnerError("schedule ended before all updates") from exc
+        if schedule_step.step != step_index:
+            raise FixedControlRunnerError(
+                f"schedule step index differs: expected {step_index}, got {schedule_step.step}"
+            )
+        last_train = train_one_step(
+            decoder,
+            hook,
+            source,
+            schedule_step,
+            optimizer=optimizer,
+            embedding=embedding,
+            config=config,
+            activation_dtype=training_activation_dtype,
+            compute_base_logits=compute_base_logits,
+            record_state_digest=False,
+        )
+        load_seconds += last_train.load_seconds
+        update_seconds += last_train.update_seconds
+        if scheduler is not None:
+            scheduler.step()
+        completed_step = step_index + 1
+        if completed_step in checkpoints:
+            record_checkpoint(completed_step, last_train)
+        if deadline_seconds is not None and time.perf_counter() - started > deadline_seconds:
+            raise FixedControlRunnerError("training deadline exceeded")
+    try:
+        next(schedule_iterator)
+    except StopIteration:
+        pass
+    else:
+        raise FixedControlRunnerError("schedule contains more steps than training contract")
+    selected = select_earliest_maximum(points, metric=config.selection_metric)
+    return {
+        "schema": RUNNER_SCHEMA,
+        "status": "COMPLETED",
+        "schedule": {
+            "seed": int(schedule_seed),
+            "steps": int(schedule_steps_count),
+            "semantic_sha256": schedule_semantic_sha256,
+            "exposure": dict(schedule_exposure),
+        },
+        "checkpoints": list(checkpoints),
+        "selected_step": int(selected["step"]),
+        "selected_state_sha256": str(selected["state_sha256"]),
+        "checkpoint_state_bindings": checkpoint_bindings,
+        "learning_curve": points,
+        "timing": {
+            "whole_wall_seconds": time.perf_counter() - started,
+            "stream_load_seconds": load_seconds,
+            "optimizer_update_seconds": update_seconds,
+            "validation_seconds": validation_seconds,
+            "timing_boundary": "includes lazy batch load, decoder update, and validation synchronization as observed by this process",
+        },
     }
 
 
