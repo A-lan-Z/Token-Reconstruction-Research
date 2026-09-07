@@ -671,6 +671,17 @@ def _load_timing(binding: Mapping[str, Any], *, root: Path, method_id: str, cell
     return checked | {"payload": payload}
 
 
+def _revalidate_runtime_records(value: Any, *, root: Path, description: str) -> None:
+    if isinstance(value, Mapping):
+        if {"path", "bytes", "sha256"}.issubset(value):
+            _record(value, root=root, description=description)
+            return
+        for key, nested in value.items():
+            _revalidate_runtime_records(nested, root=root, description=f"{description}.{key}")
+    elif isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
+        for index, nested in enumerate(value):
+            _revalidate_runtime_records(nested, root=root, description=f"{description}[{index}]")
+
 def validate_public_outputs(
     *,
     registration_path: Path,
@@ -691,6 +702,9 @@ def validate_public_outputs(
     if run.get("schema") != RUN_SCHEMA or run.get("task_id") != TASK_ID or run.get("status") != RUN_STATUS:
         raise GateError("run manifest identity or status changed")
     _require_false_flags(run, description="run manifest")
+    runtime_recheck = run.get("runtime_recheck")
+    if isinstance(runtime_recheck, Mapping):
+        _revalidate_runtime_records(runtime_recheck, root=root, description="runtime recheck")
     if run.get("code_commit") != registration.get("code_commit"):
         raise GateError("run manifest code binding changed")
     nested_registration = run.get("registration")
