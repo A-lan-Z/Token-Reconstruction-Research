@@ -7,7 +7,8 @@
     "qualified_bank_manifest": "experiments/TRR-P09/setup/qualified-bank-manifest-r1.json",
     "public_validation_audit": "experiments/TRR-P09/setup/public-validation-r1-audit.json",
     "fixed_diagnostic_binding": "experiments/TRR-P09/setup/fixed-diagnostic-binding-r1.json",
-    "fixed_diagnostic_binder": "scripts/trr_p09/bind_fixed_diagnostic.py"
+    "fixed_diagnostic_binder": "scripts/trr_p09/bind_fixed_diagnostic.py",
+    "fixed_control_source_freeze": "experiments/TRR-P09/review/fixed-control-source-freeze-r1.json"
   },
   "bank_planning": {
     "access_boundary": {
@@ -392,11 +393,10 @@
     "runner_base": "b71feb433815f12e3274aa7525c8bbb23971e552"
   },
   "remaining_bindings_before_real_run": [
-    "complete the shared common fit-contract and loader integration before any optimizer step",
-    "complete the reviewed fixed-control fit qualification before production fits",
-    "implement fixed 64-row diagnostic metrics at step zero and every fixed-control checkpoint",
-    "implement full-bank start/end metrics and bind them in the fixed-control receipts",
-    "keep fitting, target observation, and evaluation truth access unopened until those gates are reviewed"
+    "complete the Agent1-owned largest-cell fit qualification and bind its accepted receipt",
+    "complete and accept the final joint fit-contract and loader handoff",
+    "run exactly the two fixed-control fits (B0 and B1) under the frozen r5 configuration",
+    "freeze and hand off both fit outputs and metrics; keep target observation and evaluation truth unopened until the approved final handoff"
   ],
   "schema": "token-reconstruction.trr-p09-implementation-manifest.v1",
   "scientific_execution": {
@@ -432,12 +432,16 @@
     "gpu_released": true,
     "public_validation_completed": true,
     "fixed_diagnostic_bound": true,
-    "fixed_control_fit_qualification": "PENDING",
-    "shared_fit_contract": "PENDING_REVIEW",
-    "fixed_metrics_implementation": "PENDING"
+    "fixed_control_fit_qualification": "PENDING_AGENT1_QUALIFICATION",
+    "shared_fit_contract": "PENDING_FINAL_JOINT_HANDOFF",
+    "fixed_metrics_implementation": "COMPLETE_SOURCE_FROZEN",
+    "fixed_control_source_frozen": true,
+    "fixed_control_source_freeze_status": "PASS_SOURCE_BYTES_FROZEN_NO_FIT_NO_TRUTH",
+    "fit_count": 0,
+    "optimizer_steps_executed": 0
   },
   "source_commit": "0c7279e30a41a5016ff97c9bcaa5e282db2dabe0",
-  "status": "STAGE1_PUBLIC_VALIDATION_DIAGNOSTIC_BOUND_NO_FIT_NO_TRUTH",
+  "status": "STAGE1_FIXED_CONTROL_SOURCE_FROZEN_NO_FIT_NO_TRUTH",
   "task_id": "TRR-P09",
   "validation": {
     "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p09_fixed_control_runner.py tests/test_trr_p09_fixed_control_adapter.py tests/test_trr_p09_bank_artifact.py",
@@ -580,7 +584,7 @@
     "base_branch": "task/TRR-0009",
     "base_sha": "4602f98eeb03ac121d8bbc230d7e2b219551b914",
     "head_branch": "task/TRR-P09",
-    "evidence_commit": "31963b67394082ac8d67b3878920aa2789eb1921",
+    "evidence_commit": "ebe05e88ddfebae0155fb016885c6c8938c32840",
     "approval_block_resolved_by_explicit_user_approval": true,
     "historical_approval_block": {
       "bytes": 1353,
@@ -671,7 +675,7 @@
     "gpu_launch_authorized": false,
     "fresh_bank_generation_authorized": true
   },
-  "updated_utc": "2026-09-07T13:09:51Z",
+  "updated_utc": "2026-09-07T13:28:17Z",
   "r2_cpu_audit": {
     "receipt": "experiments/TRR-P09/setup/stage1-input-preparation-r2-receipt.json",
     "receipt_sha256": "e8e0e2bad1bba8ba71482dd28babfff4bcdf391cf224a95551705d2643171c5d",
@@ -1151,11 +1155,120 @@
       "published_bank_manifests_modified": false
     },
     "remaining": [
-      "complete the shared common fit-contract and loader integration before any optimizer step",
-      "complete the reviewed fixed-control fit qualification before production fits",
-      "implement fixed 64-row diagnostic metrics at step zero and every fixed-control checkpoint",
-      "implement full-bank start/end metrics and bind them in the fixed-control receipts",
-      "keep fitting, target observation, and evaluation truth access unopened until those gates are reviewed"
+      "complete the Agent1-owned largest-cell fit qualification and bind its accepted receipt",
+      "complete and accept the final joint fit-contract and loader handoff",
+      "run exactly the two fixed-control fits (B0 and B1) under the frozen r5 configuration",
+      "freeze and hand off both fit outputs and metrics; keep target observation and evaluation truth unopened until the approved final handoff"
+    ],
+    "fixed_control_source_freeze": {
+      "status": "PASS_SOURCE_BYTES_FROZEN_NO_FIT_NO_TRUTH",
+      "receipt": {
+        "path": "experiments/TRR-P09/review/fixed-control-source-freeze-r1.json",
+        "sha256": "8412076b428ab1dbd14fa2cb83c6ecf5111c13bae04572f2d4139d1760d0a681",
+        "bytes": 10113
+      },
+      "source_commit": "ebe05e88ddfebae0155fb016885c6c8938c32840",
+      "focused_tests": {
+        "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p09_fixed_control_caller.py tests/test_trr_p09_fixed_control_cli.py tests/test_trr_p09_fixed_control_runner.py tests/test_trr_p09_fixed_control_adapter.py",
+        "result": "34 passed"
+      },
+      "actual_configuration": {
+        "banks": [
+          "B0",
+          "B1"
+        ],
+        "status": "PASS_B0_B1_ACTUAL_CONFIGURATION",
+        "checkpoint_grid": [
+          0,
+          1000,
+          2000,
+          4000,
+          8000,
+          12000,
+          13000
+        ],
+        "grid_receipt": {
+          "path": "experiments/TRR-P09/review/fixed-control-cli-config-r5.json",
+          "sha256": "3c8681f2f723729822aad0c132e92146a758ada2770b14c0cbbf7fdaa99a85b7"
+        },
+        "steps": 13000,
+        "seed": 4010,
+        "record_batch_size": 8,
+        "fit_sequence_tokens": 192,
+        "validation_sequence_tokens": 128,
+        "position_budget": 512,
+        "optimizer": "AdamW foreach=False",
+        "learning_rate": 0.0002,
+        "weight_decay": 0.0,
+        "gradient_clip_norm": 1.0
+      },
+      "optimizer_steps_executed": 0,
+      "fit_runs_completed": 0,
+      "model_loaded_for_fit": false,
+      "embedding_loaded_for_fit": false,
+      "public_fit_forward_started": false,
+      "evaluation_truth_opened": false,
+      "remaining": [
+        "complete the Agent1-owned largest-cell fit qualification and bind its accepted receipt",
+        "complete and accept the final joint fit-contract and loader handoff",
+        "run exactly the two fixed-control fits (B0 and B1) under the frozen r5 configuration",
+        "freeze and hand off both fit outputs and metrics; keep target observation and evaluation truth unopened until the approved final handoff"
+      ]
+    }
+  },
+  "fixed_control_source_freeze": {
+    "status": "PASS_SOURCE_BYTES_FROZEN_NO_FIT_NO_TRUTH",
+    "receipt": {
+      "path": "experiments/TRR-P09/review/fixed-control-source-freeze-r1.json",
+      "sha256": "8412076b428ab1dbd14fa2cb83c6ecf5111c13bae04572f2d4139d1760d0a681",
+      "bytes": 10113
+    },
+    "source_commit": "ebe05e88ddfebae0155fb016885c6c8938c32840",
+    "focused_tests": {
+      "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p09_fixed_control_caller.py tests/test_trr_p09_fixed_control_cli.py tests/test_trr_p09_fixed_control_runner.py tests/test_trr_p09_fixed_control_adapter.py",
+      "result": "34 passed"
+    },
+    "actual_configuration": {
+      "banks": [
+        "B0",
+        "B1"
+      ],
+      "status": "PASS_B0_B1_ACTUAL_CONFIGURATION",
+      "checkpoint_grid": [
+        0,
+        1000,
+        2000,
+        4000,
+        8000,
+        12000,
+        13000
+      ],
+      "grid_receipt": {
+        "path": "experiments/TRR-P09/review/fixed-control-cli-config-r5.json",
+        "sha256": "3c8681f2f723729822aad0c132e92146a758ada2770b14c0cbbf7fdaa99a85b7"
+      },
+      "steps": 13000,
+      "seed": 4010,
+      "record_batch_size": 8,
+      "fit_sequence_tokens": 192,
+      "validation_sequence_tokens": 128,
+      "position_budget": 512,
+      "optimizer": "AdamW foreach=False",
+      "learning_rate": 0.0002,
+      "weight_decay": 0.0,
+      "gradient_clip_norm": 1.0
+    },
+    "optimizer_steps_executed": 0,
+    "fit_runs_completed": 0,
+    "model_loaded_for_fit": false,
+    "embedding_loaded_for_fit": false,
+    "public_fit_forward_started": false,
+    "evaluation_truth_opened": false,
+    "remaining": [
+      "complete the Agent1-owned largest-cell fit qualification and bind its accepted receipt",
+      "complete and accept the final joint fit-contract and loader handoff",
+      "run exactly the two fixed-control fits (B0 and B1) under the frozen r5 configuration",
+      "freeze and hand off both fit outputs and metrics; keep target observation and evaluation truth unopened until the approved final handoff"
     ]
   }
 }

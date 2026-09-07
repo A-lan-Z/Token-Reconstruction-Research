@@ -26,7 +26,7 @@ Before any production capture or fit, the study caller still must bind the final
 
 ## Publication metadata
 
-This preparation checkpoint is published as draft [PR #19](https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/19) with base `task/TRR-0009` and evidence head `140ed70df03aca32814cbd4b48aa395745d57ad6`. The PR is open, draft, and unmerged; publication metadata does not change the preparation-pending scientific status above.
+This checkpoint is published as draft [PR #19](https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/19) with base `task/TRR-0009` and current evidence head `ebe05e88ddfebae0155fb016885c6c8938c32840`. The PR is open, draft, and unmerged; the scientific status remains pre-fit.
 
 ## Stage-1 authorization and cost-lineage update (2026-09-07)
 
@@ -253,3 +253,9 @@ The validation and diagnostic checkpoint is bound to evidence commit `31963b6739
 A root rerun was refused by the create-only preparation guard because `/tmp/trr-p09-runtime/public-validation-r1` already existed. That harmless duplicate-launch attempt is excluded and recorded at `/tmp/trr-p09-runtime/watchdog-public-validation-r1` (child and wrapper return code 125); it is distinct from both successful watchdog roots above.
 
 P09 still has zero fits and zero optimizer steps, with target observation and evaluation truth unopened. The remaining gates are the reviewed fixed-control fit qualification, final shared fit-contract/loader integration, fixed 64-row diagnostics at step zero and each checkpoint, and full-bank start/end metrics.
+
+## Fixed-control source freeze (2026-09-07)
+
+The fixed-control source and production configuration are now frozen in `experiments/TRR-P09/review/fixed-control-source-freeze-r1.json` (SHA-256 `8412076b428ab1dbd14fa2cb83c6ecf5111c13bae04572f2d4139d1760d0a681`), at source-freeze commit `ebe05e88ddfebae0155fb016885c6c8938c32840`. The receipt records 34 focused tests passing, actual B0/B1 configuration checks passing, and the corrected r5 checkpoint grid `[0, 1000, 2000, 4000, 8000, 12000, 13000]`; diagnostic hooks are source-frozen for 64-row checkpoints and full-bank step-zero/final metrics.
+
+This remains a pre-fit handoff: exactly 0 fit runs and exactly 0 optimizer steps have executed; no fit model, fit embedding, public fit forward, target observation, or evaluation truth was opened. The remaining gates are Agent1's largest-cell qualification, the final joint fit-contract/loader handoff, exactly two fixed-control fits (B0 and B1), and frozen output/metric handoff.
