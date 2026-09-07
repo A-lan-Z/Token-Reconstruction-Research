@@ -284,6 +284,37 @@ def test_r2_controlled_assignment_reuses_each_b0_template_nine_times() -> None:
     assert audit["controlled_addition_bucket_counts"] == {"pile_controlled|64": 18}
 
 
+def test_controlled_selection_skips_parent_with_structural_fixed_template_slot() -> None:
+    template = InputRow(
+        record_id="b0-template", source_record_id="b0-parent", dataset_key="pile",
+        stratum="pile_controlled", source_row_index=0, rendered_sha256="a" * 64,
+        source_full_token_count=129, target_post_bos_token_count=128,
+        token_ids=tuple([128000] + list(range(1, 129))), synthetic=True,
+        replacement_positions=tuple(range(1, 31)),
+        replacement_token_ids=tuple(range(1000, 1030)),
+    )
+    def candidate(index: int, second_token: int):
+        return type("Candidate", (), {
+            "record_id": f"candidate-{index}", "dataset_key": "pile", "dataset_id": "pile",
+            "split": "train", "revision": "rev", "row_index": index,
+            "rendered_sha256": f"{index + 100:064x}",
+            "token_ids": tuple([128000, second_token] + list(range(2, 128))),
+            "full_token_count": 129,
+        })()
+    exclusions = {
+        "record_ids": set(), "rendered_sha256": set(), "public_record_sha256": set(),
+        "h128_sha256": set(), "source_indices": {},
+    }
+    selected = select_candidates(
+        [candidate(0, 128000), candidate(1, 7)], stratum="pile_controlled",
+        exact_quota={128: 1}, exclusions=exclusions, used_ids=set(),
+        used_rendered=set(), used_h128=set(), template_buckets={
+            ("pile_controlled", 128): ((0, template),),
+        },
+    )
+    assert [item.record_id for item, _target in selected] == ["candidate-1"]
+
+
 def test_parent_exclusion_manifest_binds_dataset_scoped_rows(monkeypatch, tmp_path: Path) -> None:
     import hashlib
     import json

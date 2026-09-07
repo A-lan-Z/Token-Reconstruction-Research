@@ -825,7 +825,18 @@ def exact_addition_quotas(b0_records: Sequence[Mapping[str, Any]]) -> dict[str, 
     return result
 
 
-def select_candidates(candidates: Sequence[_Candidate], *, stratum: str, exact_quota: Mapping[int, int], exclusions: Mapping[str, Any], used_ids: set[str], used_rendered: set[str], used_h128: set[str], used_public: set[str] | None = None) -> list[tuple[_Candidate, int]]:
+def select_candidates(
+    candidates: Sequence[_Candidate],
+    *,
+    stratum: str,
+    exact_quota: Mapping[int, int],
+    exclusions: Mapping[str, Any],
+    used_ids: set[str],
+    used_rendered: set[str],
+    used_h128: set[str],
+    used_public: set[str] | None = None,
+    template_buckets: Mapping[tuple[str, int], Sequence[tuple[int, InputRow]]] | None = None,
+) -> list[tuple[_Candidate, int]]:
     """Select exact lengths target-slot-first, then stable source order."""
     remaining = {int(length): int(count) for length, count in exact_quota.items()}
     ordered = sorted(candidates, key=lambda c: (stable_source_key(c.dataset_id, c.split, c.revision, c.row_index), c.row_index))
@@ -843,6 +854,16 @@ def select_candidates(candidates: Sequence[_Candidate], *, stratum: str, exact_q
                     continue
                 if candidate.full_token_count - 1 < target:
                     continue
+                if template_buckets is not None and stratum.endswith("_controlled"):
+                    templates = template_buckets.get((stratum, int(target)))
+                    if not templates:
+                        raise PreparationErrorLocal(f"no immutable B0 template bucket for {(stratum, int(target))}")
+                    structural = {BOS_TOKEN_ID, PAD_TOKEN_ID}
+                    if any(
+                        any(int(candidate.token_ids[int(offset) + 1]) in structural for offset in template.replacement_positions)
+                        for _template_index, template in templates
+                    ):
+                        continue
                 chosen = candidate
                 break
             if chosen is None:
@@ -1241,7 +1262,12 @@ def compile_inputs(args: argparse.Namespace) -> dict[str, Any]:
     additions_by_stratum: dict[str, list[InputRow]] = {}
     cursor = 3600  # B0 controlled rows consume the first published cycle.
     for name, domain, controlled, _target, addition_quota in STRATA:
-        chosen = select_candidates(candidate_pools[domain], stratum=name, exact_quota=exact_quotas[name], exclusions=exclusions, used_ids=used_ids, used_rendered=used_rendered, used_h128=used_h128, used_public=used_public)
+        chosen = select_candidates(
+            candidate_pools[domain], stratum=name, exact_quota=exact_quotas[name],
+            exclusions=exclusions, used_ids=used_ids, used_rendered=used_rendered,
+            used_h128=used_h128, used_public=used_public,
+            template_buckets=b0_template_buckets if controlled else None,
+        )
         if controlled:
             additions_by_stratum[name], cursor = make_controlled_rows(
                 chosen, name, identity_ids, cursor, _special_token_ids(tokenizer),
