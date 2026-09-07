@@ -160,3 +160,26 @@ or evaluation truth was opened.
 
 The scientific status remains preparation-only: no P09 activation capture,
 model forward, fit, or truth access is authorized by this receipt.
+
+## Synthetic shard I/O qualification (2026-09-07)
+
+A bounded CPU-only synthetic benchmark used deterministic data with the planned
+`[64,192,2048]` BF16 geometry and the four P09 payload keys. The executable is
+`scripts/trr_p09/synthetic_io_qualification.py` (SHA-256
+`167702aeb5adf3262c2580027ce2f950d37b908f9cdc1b43747b47bcb9d3ee5e`) and the
+successful receipt is
+`experiments/TRR-P09/review/synthetic-io-qualification-r2.json` (SHA-256
+`27e90d3b0d91d6307c504ff3fa95be0ca6cd8a1902c86803111204ea2930e3cc`). The
+50,491,792-byte synthetic shard serialized in 0.0605 s, hashed in 0.0202 s,
+read its header in 0.000168 s, and read back 50,491,392 bytes in 0.000270 s
+with exact tensor equality. No public payload, model, forward, fit, or truth
+was accessed.\n
+For 169 shards, the measured payload size extrapolates to 8.533 GB (7.947 GiB).
+Applying a conservative 2x allowance for sidecars, temporary/retry space, and
+filesystem overhead gives 15.894 GiB against the 20 GiB retained cap, leaving
+4.106 GiB by this synthetic storage bound. Serial extrapolated write/hash/read
+costs are 10.22/3.42/0.046 seconds; these are local synthetic I/O timings and
+exclude model-forward and capture scheduling. Two setup-only synthetic failures
+are preserved in `synthetic-io-qualification-failure-r1.json` (missing shard
+directory) and `synthetic-io-qualification-failure-r2.json` (existing scratch
+directory); neither touched real P09 artifacts.

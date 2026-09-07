@@ -438,9 +438,10 @@
     "cpu_input_compilation_status": "R2_COMPLETED_METADATA_REVISED",
     "cpu_fit_authorized": false,
     "public_forward_authorized": false,
-    "status": "STAGE1_R2_CPU_COMPILED_NO_CAPTURE_NO_FIT"
+    "status": "STAGE1_R2_CPU_COMPILED_NO_CAPTURE_NO_FIT",
+    "synthetic_io_status": "PASS_SYNTHETIC_IO_ONLY_2X_BOUND_UNDER_20GIB"
   },
-  "updated_utc": "2026-09-07T11:06:30Z",
+  "updated_utc": "2026-09-07T11:25:06Z",
   "r2_cpu_audit": {
     "receipt": "experiments/TRR-P09/setup/stage1-input-preparation-r2-receipt.json",
     "receipt_sha256": "9b5b575fcd0454ca43c46f68e99cf9444cdde65c234a46aa571ef48051955798",
@@ -508,5 +509,39 @@
     "model_or_activations_opened": false,
     "truth_opened": false,
     "historical_r1_preserved_and_excluded": true
+  },
+  "synthetic_io_qualification": {
+    "status": "PASS_SYNTHETIC_IO_ONLY",
+    "script": "scripts/trr_p09/synthetic_io_qualification.py",
+    "script_sha256": "167702aeb5adf3262c2580027ce2f950d37b908f9cdc1b43747b47bcb9d3ee5e",
+    "receipt": "experiments/TRR-P09/review/synthetic-io-qualification-r2.json",
+    "receipt_sha256": "27e90d3b0d91d6307c504ff3fa95be0ca6cd8a1902c86803111204ea2930e3cc",
+    "failure_receipts": [
+      "experiments/TRR-P09/review/synthetic-io-qualification-failure-r1.json",
+      "experiments/TRR-P09/review/synthetic-io-qualification-failure-r2.json"
+    ],
+    "geometry": {
+      "records": 64,
+      "sequence_tokens": 192,
+      "hidden_size": 2048,
+      "hidden_dtype": "torch.bfloat16"
+    },
+    "payload_bytes_per_shard": 50491792,
+    "shards": 169,
+    "raw_payload_decimal_gb": 8.533112848,
+    "raw_payload_gib": 7.947080627083778,
+    "conservative_factor": 2.0,
+    "conservative_retained_gib": 15.894161254167557,
+    "retained_cap_gib": 20.0,
+    "cap_margin_gib": 4.105838745832443,
+    "cap_check": true,
+    "timing_seconds_per_shard": {
+      "serialize": 0.06047608400695026,
+      "sha256": 0.020229471003403887,
+      "header": 0.0001677630061749369,
+      "full_read": 0.00027030700584873557
+    },
+    "truth_boundary": "SYNTHETIC_ONLY_NO_PUBLIC_MODEL_OR_PAYLOAD_OR_TRUTH",
+    "capture_result": false
   }
 }

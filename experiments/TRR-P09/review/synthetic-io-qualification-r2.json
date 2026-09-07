@@ -1,0 +1,116 @@
+{
+  "cleanup": {
+    "failure_scratch_retained": false,
+    "payload_removed": true
+  },
+  "command": [
+    "/usr/bin/python3",
+    "scripts/trr_p09/synthetic_io_qualification.py",
+    "--scratch-root",
+    "/tmp/trr-p09-runtime",
+    "--receipt",
+    "experiments/TRR-P09/review/synthetic-io-qualification-r2.json"
+  ],
+  "cwd": "/tmp/trr-p09",
+  "extrapolation": {
+    "cap_check": true,
+    "cap_margin_gib": 4.105838745832443,
+    "conservative_factor": 2.0,
+    "conservative_retained_bytes": 17066225696,
+    "conservative_retained_gib": 15.894161254167557,
+    "interpretation": "synthetic serialization/hash/read timing only; excludes public-model forward and capture scheduling",
+    "raw_payload_bytes": 8533112848,
+    "raw_payload_decimal_gb": 8.533112848,
+    "raw_payload_gib": 7.947080627083778,
+    "retained_cap_bytes": 21474836480,
+    "retained_cap_gib": 20.0,
+    "shards": 169,
+    "time_seconds_if_serial": {
+      "full_read": 0.04568188398843631,
+      "header": 0.028351948043564335,
+      "serialize": 10.220458197174594,
+      "sha256": 3.418780599575257
+    }
+  },
+  "filesystem": {
+    "free_after_bytes": 286355800064,
+    "free_before_bytes": 286406303744,
+    "scratch_parent": "/tmp"
+  },
+  "finished_utc": "2026-09-07T11:25:06.564Z",
+  "geometry": {
+    "hidden_dtype": "torch.bfloat16",
+    "hidden_size": 2048,
+    "payload_keys": [
+      "activations",
+      "attention_mask",
+      "position_ids",
+      "token_ids"
+    ],
+    "records": 64,
+    "sequence_tokens": 192
+  },
+  "observations": {
+    "full_read_seconds": 0.00027030700584873557,
+    "header_seconds": 0.0001677630061749369,
+    "headers": {
+      "activations": {
+        "dtype": "BF16",
+        "shape": [
+          64,
+          192,
+          2048
+        ]
+      },
+      "attention_mask": {
+        "dtype": "U8",
+        "shape": [
+          64,
+          192
+        ]
+      },
+      "position_ids": {
+        "dtype": "I64",
+        "shape": [
+          64,
+          192
+        ]
+      },
+      "token_ids": {
+        "dtype": "I32",
+        "shape": [
+          64,
+          192
+        ]
+      }
+    },
+    "keys": [
+      "activations",
+      "attention_mask",
+      "position_ids",
+      "token_ids"
+    ],
+    "payload_bytes": 50491792,
+    "payload_path": "/tmp/trr-p09-runtime/synthetic-io-qualification-r1/shard-000000/payload.safetensors",
+    "payload_sha256": "334a1e3746738f8d8720c05148ec5f4a836342d20db7d515b4a47c59561b7c73",
+    "read_bytes": 50491392,
+    "readback_equal": true,
+    "serialized_seconds": 0.06047608400695026,
+    "sha256_seconds": 0.020229471003403887
+  },
+  "schema": "token-reconstruction.trr-p09-synthetic-io-qualification.v1",
+  "seed": 20260907,
+  "source_commit": "b6fc36290ac738a6279bec2fe3b08320eae1ef26",
+  "source_script_sha256": "167702aeb5adf3262c2580027ce2f950d37b908f9cdc1b43747b47bcb9d3ee5e",
+  "started_utc": "2026-09-07T11:25:06.472Z",
+  "status": "PASS_SYNTHETIC_IO_ONLY",
+  "task_id": "TRR-P09",
+  "truth_boundary": {
+    "activation_bank_opened": false,
+    "evaluation_truth_opened": false,
+    "model_loaded": false,
+    "public_forward_started": false,
+    "public_source_opened": false,
+    "synthetic_only": true
+  }
+}
