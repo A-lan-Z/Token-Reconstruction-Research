@@ -1,0 +1,47 @@
+{
+  "schema": "token-reconstruction.trr0009-metadata-gate-authorization.v1",
+  "task_id": "TRR-0009",
+  "recorded_utc": "2026-09-07T03:40:28.860701+00:00",
+  "authorization": {
+    "status": "EXPLICIT_USER_APPROVAL_RECEIVED",
+    "scope": "Implement the documented narrow metadata compatibility repair and proceed to scoring.",
+    "request_context": "Root explicitly requested implementation of the documented compatibility fix and proceeding to scoring.",
+    "verbatim_user_response": "Approved.",
+    "source": "user response relayed by root task message",
+    "truth_opened_at_receipt": false,
+    "quality_status_at_receipt": "UNKNOWN_PENDING_GATE_REPAIR"
+  },
+  "gate_failure": {
+    "path": "experiments/TRR-0009/evaluation/public_gate_v2_failure.json",
+    "bytes": 2158,
+    "sha256": "75274ae75b9198bfe1d64d709c029fd1ad5f332547ba09b045141339490347d2",
+    "status": "PUBLIC_GATE_FAILED_BEFORE_TRUTH",
+    "truth_opened": false,
+    "failure_check": "_validate_state_semantics",
+    "error": "state inference semantics changed: continued_fixed_readout"
+  },
+  "metadata_repair_automatic_review_rejection": {
+    "review_path": "experiments/TRR-0009/evaluation/metadata_compatibility_review.md",
+    "review_bytes": 6052,
+    "review_sha256": "5d24c9002de49d2577a97e9b3fc52098f89c9e1bf00d7217afafc2ddd3ab1b9f",
+    "action": "write a persistent exact-checkpoint metadata compatibility adapter wrapping fail-closed gate/truth validation",
+    "automatic_review_reason": "Automatic review rejected the proposed compatibility adapter as weakening truth access after a metadata failure.",
+    "proposal_status": "proposal only before explicit user approval; no implementation or fresh truth access was performed in the review",
+    "preserved": true
+  },
+  "prior_scheduling_rejection": {
+    "receipt_path": "experiments/TRR-0009/coordination/scheduling_approval_block.json",
+    "attempts_rejected": 2,
+    "action": "Request isolated local CPU/GPU scheduling window",
+    "automatic_review_reason": "This sends nonpublic resource-scheduling metadata to an unverified thread destination, and the user has not specifically authorized that destination.",
+    "delivered": false,
+    "workaround_attempted": false,
+    "preserved_as_separate_history": true
+  },
+  "constraints_after_authorization": [
+    "Do not open truth in this status update.",
+    "Await root gate implementation/review and explicit CPU-window release before substantial CPU scoring.",
+    "Do not change coordination/STATE.json or the active registry.",
+    "Preserve the failed gate, metadata-repair review, and prior scheduling rejection as separate evidence."
+  ]
+}
