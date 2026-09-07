@@ -1,8 +1,8 @@
 # TRR-0010 A1+A2 opened-fixture equivalence readiness
 
-Status: prepared, not launched. This note is metadata-only. No H tensor,
-model, H tensor, candidate array, target label, source text, or truth payload
-was materialized by this preparation step; the published prediction fixture was
+Status: completed. The v3 diagnostic passed; this note records the truth-free preparation and execution receipt. No H tensor,
+model, candidate array, target label, source text, or truth payload was
+materialized by the preparation step; the published prediction fixture was
 only identity/header/hash inspected.
 
 ## Fixture identity
@@ -28,7 +28,7 @@ are:
 - Finance: 256 x 128 x 2048 BF16 H, SHA-256
   7449bf11fd335ec8d46ca7581378b8e3a3351d7b7852561cac944c723dd643bb.
 
-The planned diagnostic is a direct native-versus-runner adapter comparison on
+The diagnostic is a direct native-versus-runner adapter comparison on
 only the first public-base H row per domain. It checks exact token-ID equality
 after the runner's normalization and records only aggregate digests.
 It is a loader/path equivalence qualifier, not an accuracy comparison.
@@ -69,10 +69,10 @@ helpers and the existing TRR-0010 _load_native_a1_a2 wrapper. Both paths share
 one loaded public model; the receipt therefore reports wrapper input/causal-state
 and output equivalence, not independent algorithm accuracy.
 
-The exact command, pending root's exclusive GPU lease, is:
+The exact command executed under the approved exclusive GPU lease was:
 
     cd /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010
-    env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false HF_DATASETS_OFFLINE=1 HF_HUB_OFFLINE=1 PYTHONPATH=.:src:scripts timeout --signal=TERM --kill-after=15s 180s python3 scripts/trr0010_a1_a2_opened_fixture_equivalence.py --repository-root . --descriptor experiments/TRR-0010/setup/a1_a2_public_runtime_descriptor_v1.json --observation-manifest /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/evaluation/public_observations_v2/observations.json --output-root experiments/TRR-0010/evaluation/a1_a2_opened_fixture_equivalence_v2 --device cuda --max-seconds 180
+    env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false HF_DATASETS_OFFLINE=1 HF_HUB_OFFLINE=1 PYTHONPATH=.:src:scripts timeout --signal=TERM --kill-after=15s 180s python3 scripts/trr0010_a1_a2_opened_fixture_equivalence.py --repository-root . --descriptor experiments/TRR-0010/setup/a1_a2_public_runtime_descriptor_v1.json --observation-manifest /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/evaluation/public_observations_v2/observations.json --output-root experiments/TRR-0010/evaluation/a1_a2_opened_fixture_equivalence_v3 --device cuda --max-seconds 180
 
 The diagnostic itself guards 8 GiB minimum free GPU memory before load, 6 GiB
 maximum CUDA reserved memory, 16 GiB maximum host RSS, GPU exclusivity and
@@ -100,8 +100,33 @@ published native 128-record timing fixture reached about 3.55 GiB reserved
 and 5.82 GiB RSS, so these limits retain margin; the full 256-Finance/128-Pile
 matrix requires a separate prospective budget and release.
 
-No GPU command was launched. This opened-fixture diagnostic binds the already
-opened TRR-0009 public observation manifest directly and does not require a
-final TRR-0010 registration. The separate full matrix command above still
-requires its final panel and A1+A2 resource registration; no historical
-prediction file is substituted for the missing same-record fixture.
+The v3 command completed with child exit 0 and status
+A1_A2_NATIVE_WRAPPER_EQUIVALENCE_PASS. It binds the already-opened TRR-0009
+public observation manifest directly and does not require a final TRR-0010
+registration. The separate full matrix command above still requires its final
+panel and A1+A2 resource registration; no historical prediction file is
+substituted for the missing same-record fixture.
+
+## v3 execution receipt
+
+The create-only result is
+experiments/TRR-0010/evaluation/a1_a2_opened_fixture_equivalence_v3/result.json
+(SHA-256 f3842b816a8894fa836be4d32d02955e02ef66884000cb58809421970d8babeb;
+9,663 bytes). One Pile and one Finance public-base H row were compared, with
+128 active token positions per row: exact normalized-token equality was 2/2
+rows and 256/256 positions. Direct native helper time was 2.482569201 seconds
+total (1.241284600 seconds per row mean); wrapper time was 1.976709913 seconds
+total (0.988354956 seconds per row mean). The elapsed process time was
+20.484903584 seconds. The direct calls executed 65,024 candidate simulations,
+committed 256 prefix tokens, and observed 510 prefix transitions; the wrapper
+observed 510 transitions.
+
+The resource guard passed at all checkpoints under the fixed bounds: 8 GiB
+minimum free GPU memory, 6 GiB maximum reserved CUDA memory, 16 GiB maximum
+host RSS, 10 GiB minimum host MemAvailable, 20 GiB minimum disk free, and a
+180-second wall limit. The receipt records these guard bounds; it does not
+claim an unrecorded peak telemetry value. Both paths intentionally shared one
+loaded public P0/lens/E model and the retained
+trr0003_footing_compare.propose_public_a1/decode_policy helpers. This is a
+wrapper input-staging, causal-state, and output-equivalence qualification,
+not an independent accuracy result.
