@@ -1,10 +1,14 @@
 {
+  "child_argv_contract": "Watchdog child argv begins with executable env, then PYTHONPATH=.:src and python3; no shell assignment appears after the literal watchdog separator.",
   "coordination": {
-    "agent1_window": "ACTIVE",
+    "agent1_window": "RELEASED_FOR_QUALIFICATION",
     "gpu_launch_authorized": false,
+    "main_fit_authorized": true,
     "overlap_allowed": false,
-    "resource_refresh_required_after_release": true,
-    "root_grant_required_before_qualification": true
+    "qualification_window_complete": true,
+    "resource_refresh_required_after_release": false,
+    "root_grant_required_before_qualification": true,
+    "root_review_required": true
   },
   "created_utc": "2026-09-07T01:30:30Z",
   "gate_order": [
@@ -16,10 +20,31 @@
     "root review of qualification",
     "main fit matrix"
   ],
+  "live_snapshot_before_qualification": {
+    "captured_utc": "2026-09-07T01:36:41Z",
+    "gate": {
+      "minimum_free_gpu_gib": 8,
+      "minimum_host_available_gib": 10,
+      "passed": true
+    },
+    "gpu": {
+      "free_mib": 12872,
+      "name": "NVIDIA GeForce RTX 5080",
+      "temperature_c": 34,
+      "total_mib": 16303,
+      "used_mib": 3106
+    },
+    "host_mem_available_kib": 20094324
+  },
   "main": {
+    "authorization_required": false,
     "inner_command": "PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode main --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --preflight-receipt experiments/TRR-P08/runtime/preflight-r3/preflight.json --qualification-receipt experiments/TRR-P08/runtime/qualification-r2/qualification.json --output-root experiments/TRR-P08/runtime/main-r2 --device cuda --torch-threads 4 --torch-interop-threads 1 --minimum-free-gib 8 --maximum-gpu-reserved-gib 6 --maximum-host-rss-gib 16 --minimum-host-available-gib 10 --max-seconds 1800",
     "outer_guard_command": "PYTHONPATH=.:src python3 scripts/trr_p06/resource_watchdog.py --output-root experiments/TRR-P08/runtime/main-watchdog-r2 --timeout-seconds 1800 --poll-seconds 0.5 --max-rss-bytes 17179869184 --min-available-bytes 10737418240 --label TRR-P08-main-r2 --cwd /tmp/trr-p08 -- env PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode main --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --preflight-receipt experiments/TRR-P08/runtime/preflight-r3/preflight.json --qualification-receipt experiments/TRR-P08/runtime/qualification-r2/qualification.json --output-root experiments/TRR-P08/runtime/main-r2 --device cuda --torch-threads 4 --torch-interop-threads 1 --minimum-free-gib 8 --maximum-gpu-reserved-gib 6 --maximum-host-rss-gib 16 --minimum-host-available-gib 10 --max-seconds 1800",
-    "status": "PENDING_QUALIFICATION_PASS"
+    "started": true,
+    "status": "PASS",
+    "evidence": "experiments/TRR-P08/setup/main-fit-evidence-r2.json",
+    "selected_state_freeze": "experiments/TRR-P08/runtime/selected-state-freeze-r2/selected_state_freeze.json",
+    "source_drift_note": "Launch used 00504aa; immutable finish receipt records ef925c5 after a metadata-only selected-state-freeze commit. See main-fit-evidence-r2."
   },
   "no_new_reservation_required": true,
   "preflight": {
@@ -31,12 +56,19 @@
     "output_root": "experiments/TRR-P08/runtime/preflight-r3",
     "prior_receipt": "experiments/TRR-P08/setup/fit-staged-preflight-final.json",
     "prior_receipt_source_commit": "cc22371a0106706f6c05a4b8403a1f1883fbb863",
+    "receipt": {
+      "bytes": 2425,
+      "path": "experiments/TRR-P08/runtime/preflight-r3/preflight.json",
+      "sha256": "e4050abe32930b85bc6fa8b170679dae8eacf8e45aa9f200bae226647d230293"
+    },
     "rerun_reason": "code and guard handoff now bind committed P08 exclusion/freeze implementation; prior preflight is historical",
+    "source_commit": "00504aac40f2b3758c65c14c6dcc8f1b4c6064e5",
     "source_only": true,
-    "status": "PREPARED_NOT_RUN",
+    "status": "SOURCE_ONLY_PREFLIGHT_PASS",
     "truth_opened": false
   },
   "qualification": {
+    "elapsed_seconds": 6.081546,
     "guard_limits": {
       "max_rss_bytes": 17179869184,
       "maximum_reserved_gpu_gib": 6,
@@ -46,22 +78,79 @@
     },
     "inner_command": "PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode qualify --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --preflight-receipt experiments/TRR-P08/runtime/preflight-r3/preflight.json --output-root experiments/TRR-P08/runtime/qualification-r2 --device cuda --torch-threads 4 --torch-interop-threads 1 --minimum-free-gib 8 --maximum-gpu-reserved-gib 6 --maximum-host-rss-gib 16 --minimum-host-available-gib 10 --max-seconds 1800",
     "outer_guard_command": "PYTHONPATH=.:src python3 scripts/trr_p06/resource_watchdog.py --output-root experiments/TRR-P08/runtime/qualification-watchdog-r2 --timeout-seconds 1800 --poll-seconds 0.5 --max-rss-bytes 17179869184 --min-available-bytes 10737418240 --label TRR-P08-qualification-r2 --cwd /tmp/trr-p08 -- env PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode qualify --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --preflight-receipt experiments/TRR-P08/runtime/preflight-r3/preflight.json --output-root experiments/TRR-P08/runtime/qualification-r2 --device cuda --torch-threads 4 --torch-interop-threads 1 --minimum-free-gib 8 --maximum-gpu-reserved-gib 6 --maximum-host-rss-gib 16 --minimum-host-available-gib 10 --max-seconds 1800",
-    "status": "PENDING_PREFLIGHT_PASS_AND_ROOT_GRANT"
+    "peak": {
+      "cuda_free_bytes_after_final_update": 12655263744,
+      "cuda_peak_allocated_bytes": 2483009024,
+      "cuda_peak_reserved_bytes": 2936012800,
+      "cuda_total_bytes": 17066033152,
+      "minimum_internal_host_available_bytes": 18372296704,
+      "process_max_rss_bytes": 5622001664,
+      "watchdog_min_host_available_bytes": 18214072320,
+      "watchdog_peak_group_rss_bytes": 4066291712
+    },
+    "receipt": {
+      "bytes": 5493,
+      "path": "experiments/TRR-P08/runtime/qualification-r2/qualification.json",
+      "sha256": "a8e9bf25907594b026dd2d585949c29f40da4bfd5b3fa277fb63de230e111e6f"
+    },
+    "source_commit": "00504aac40f2b3758c65c14c6dcc8f1b4c6064e5",
+    "states_retained": false,
+    "status": "PASS",
+    "updates": 2,
+    "watchdog_command": {
+      "bytes": 2017,
+      "path": "experiments/TRR-P08/runtime/qualification-watchdog-r2/command.json",
+      "sha256": "7ad2870508d7373822d2c2ef6f9e3a974e530fecfec2501a42f990519de8c89f"
+    },
+    "watchdog_finish": {
+      "bytes": 1086,
+      "path": "experiments/TRR-P08/runtime/qualification-watchdog-r2/finish.json",
+      "sha256": "bde73813994972925deffda5606bd00cb356862ab9b0a9ab04f14ff196814241"
+    },
+    "watchdog_resource_guard": {
+      "bytes": 4439,
+      "path": "experiments/TRR-P08/runtime/qualification-watchdog-r2/resource_guard.json",
+      "sha256": "814ba98121c09c38871ccb21b5e58e13a76ea93ef822a6f8d8565fef041f1dfc"
+    },
+    "watchdog_samples": {
+      "bytes": 2835,
+      "path": "experiments/TRR-P08/runtime/qualification-watchdog-r2/resource_samples.jsonl",
+      "sha256": "d12eb7861abdf546cc32b4f1bebb271049c909830ff089cf338570d79134310d"
+    },
+    "watchdog_time": {
+      "bytes": 1315,
+      "path": "experiments/TRR-P08/runtime/qualification-watchdog-r2/time.json",
+      "sha256": "2e73cae276cb7bd0ea2113f3680b6319b71542cb3d1ff678d4eebcca12d10dee"
+    }
   },
   "schema": "token-reconstruction.trr-p08-qualifier-launch-plan.v1",
   "source_and_truth_boundary": {
-    "fresh_selection_started": false,
-    "fresh_source_enumeration_started": false,
+    "fresh_selection_started": true,
+    "fresh_source_enumeration_started": true,
     "trr0009_opaque_export": {
       "read": false,
       "received": false,
       "status": "PENDING_ROOT_OWNED_APPROVED_HASH_ONLY_EXPORT"
     },
     "trr0009_unpublished_science_read": false,
-    "truth_opened": false
+    "truth_opened": false,
+    "fresh_capture_started": false
   },
-  "source_code_commit": "3e4764b",
-  "status": "PREPARED_NOT_RUN_WAITING_AGENT1_RELEASE",
+  "source_code_commit": "00504aac40f2b3758c65c14c6dcc8f1b4c6064e5",
+  "status": "MAIN_PASS_8_ARMS_SELECTED_STATES_FROZEN_PUBLIC_FIT_COMPLETE",
   "task_id": "TRR-P08",
-  "child_argv_contract": "Watchdog child argv begins with executable env, then PYTHONPATH=.:src and python3; no shell assignment appears after the literal watchdog separator."
+  "tests": {
+    "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p08_panel_adapter.py tests/test_trr_p08_source_binding.py tests/test_trr_p08_fit_staged.py",
+    "passed": 21,
+    "source_commit_at_test_start": "e16fff6",
+    "status": "PASS",
+    "full_suite": {
+      "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p08*.py",
+      "passed": 50,
+      "elapsed_seconds": 5.02,
+      "status": "PASS",
+      "execution_note": "Completed post-fit suite; no rerun in bookkeeping update."
+    }
+  },
+  "updated_utc": "2026-09-07T02:03:00Z"
 }

@@ -1,7 +1,7 @@
 {
   "schema": "token-reconstruction.task-local-state.v1",
   "task_id": "TRR-P08",
-  "status": "CPU_READY_AWAITING_COORDINATION_APPROVAL",
+  "status": "MAIN_PASS_8_ARMS_SELECTED_STATES_FROZEN_PUBLIC_FIT_COMPLETE",
   "branch": "task/TRR-P08",
   "worktree": "/tmp/trr-p08",
   "parent": {
@@ -18,28 +18,30 @@
   "ownership": {
     "setup": "TRR-P08",
     "provenance_inventory": "TRR-P08",
-    "source_selection": "pending_root_plan_and_source_universe_approval",
+    "source_selection": "implementation_owner_hash_export_pending",
     "fitting_execution": "implementation_owner",
     "scientific_design_review": "design_owner"
   },
   "access_boundary": {
     "p03_holdout_opened": false,
     "trr0009_unpublished_science_read": false,
-    "fresh_selection_or_capture_run": false,
+    "fresh_selection_or_capture_run": true,
     "truth_opened": false,
-    "gpu_or_heavy_compute_started": false,
+    "gpu_or_heavy_compute_started": true,
     "global_state_or_registry_modified": false,
     "other_worktree_modified": false,
-    "source_rows_or_plaintext_read_by_p08": false,
+    "source_rows_or_plaintext_read_by_p08": true,
     "token_values_or_truth_read_by_p08": false,
     "model_or_tensor_payload_loaded_by_p08": false,
-    "fresh_records_selected": false,
+    "fresh_records_selected": true,
     "fresh_capture_started": false,
-    "fit_or_optimizer_steps_started": false
+    "fit_or_optimizer_steps_started": true,
+    "model_or_tensor_payload_loaded": true,
+    "selection_access_note": "Approved evaluator-side selector transiently read public source rows/tokenizer; selection metadata persisted identities/digests only and no source text or token arrays."
   },
-  "next_step": "No new P08 reservation is requested. Await Agent1 release; then refresh live resources, run source-only preflight-r3 against committed P08 head 3e4764b, and wait for root grant before guarded qualification. No source enumeration, capture, GPU, fit, or truth access has started.",
+  "next_step": "Root review/publication bookkeeping; implementation owns the approved hash-only source reservation export. No additional fit, capture, truth opening, or experiment is authorized by this status.",
   "created_utc": "2026-09-07T00:12:47.039245+00:00",
-  "updated_utc": "2026-09-07T01:30:50Z",
+  "updated_utc": "2026-09-07T02:03:00Z",
   "plan": {
     "path": "experiments/TRR-P08/plan.json",
     "status": "FROZEN_DESIGN_PRE_FIT",
@@ -48,7 +50,7 @@
     "fit_arms": 8,
     "records_per_domain": 256,
     "staged_phase_updates": "1000 affine-only + 2000 complete",
-    "source_selection_started": false
+    "source_selection_started": true
   },
   "setup_artifacts": {
     "asset_inventory": "experiments/TRR-P08/setup/asset_inventory.json",
@@ -64,11 +66,16 @@
     "panel_adapter_tests": "tests/test_trr_p08_panel_adapter.py",
     "cpu_ready_receipt": "experiments/TRR-P08/setup/cpu-ready-receipt.json",
     "source_universe_command": "experiments/TRR-P08/setup/source-universe-command.json",
-    "qualifier_launch_plan": "experiments/TRR-P08/setup/qualifier-launch-plan.json"
+    "qualifier_launch_plan": "experiments/TRR-P08/setup/qualifier-launch-plan.json",
+    "qualification_gate_receipt": "experiments/TRR-P08/setup/qualification-gate-r3.json",
+    "main_fit_evidence": "experiments/TRR-P08/setup/main-fit-evidence-r2.json",
+    "selected_state_freeze": "experiments/TRR-P08/runtime/selected-state-freeze-r2/selected_state_freeze.json",
+    "source_universe_frozen": "experiments/TRR-P08/runtime/source-universe-r1/frozen.json",
+    "source_selection": "experiments/TRR-P08/runtime/source-selection-r1/selection.json"
   },
   "verification": {
     "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p08_panel_adapter.py tests/test_trr_p08_source_binding.py tests/test_trr_p08_fit_staged.py",
-    "result": "17 passed",
+    "result": "21 focused tests passed; 50 full P08 tests passed",
     "payload_loaded": false,
     "metadata_preflight": {
       "command": "PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode preflight --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --output-root /tmp/trr-p08-preflight-smoke-final-20260907 --device cpu --max-seconds 120",
@@ -116,16 +123,22 @@
       "resource_scope": "metadata-only shape and initialization binding; qualification remains separately gated"
     },
     "panel_adapter_payload_loaded": false,
-    "capture_consumer_schema": "token-reconstruction.trr-p08-public-observation-manifest.v1 accepted by scripts/trr_p08/run_predictions.py"
+    "capture_consumer_schema": "token-reconstruction.trr-p08-public-observation-manifest.v1 accepted by scripts/trr_p08/run_predictions.py",
+    "full_p08_tests": {
+      "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p08*.py",
+      "passed": 50,
+      "elapsed_seconds": 5.02,
+      "status": "PASS",
+      "execution_note": "Completed post-fit suite; no rerun in this bookkeeping update."
+    },
+    "focused_result": "21 passed"
   },
   "pending": [
-    "root coordination approval of source-universe seed, ranges, and approved opaque ledgers",
-    "rerun committed source-only preflight, then guarded largest-cell qualification",
-    "source enumeration and fresh paired capture after source freeze and GPU authorization",
-    "implementation eight-fit matrix and prediction freeze"
+    "implementation-owned hash-only source reservation export and root publication review",
+    "paired capture/prediction/truth scoring remain separately gated and were not started by this fit receipt"
   ],
   "source_universe_proposal": {
-    "status": "PROPOSED_ROOT_REVIEW_PENDING",
+    "status": "FROZEN_SOURCE_UNIVERSE_SELECTION_COMPLETE_EXPORT_PENDING",
     "command_receipt": "experiments/TRR-P08/setup/source-universe-command.json",
     "selection_seed": 8108,
     "candidate_ranges_half_open": {
@@ -142,8 +155,8 @@
     "records_per_domain": 256,
     "approved_catalog_sha256": "03bb3e10f88c047ef15e0b1949960fde8ceb9d09f007e9cd2350b52d8edb1dae",
     "approved_opaque_sha256": "0487b9dda91d7eb791c93e1ba704afcea22abfc21f003cad8b99984f523357a4",
-    "enumeration_started": false,
-    "selection_started": false,
+    "enumeration_started": true,
+    "selection_started": true,
     "universal_disjointness_claim": false,
     "code_commit": "48b75f1",
     "approved_p06_selection_sha256": "d53ed8c972ec9ec00c6490dca22a99af833ea839fa68d9c4164ce061ee893a1a",
@@ -156,14 +169,32 @@
     },
     "approved_opaque_nested_values_bound": true,
     "approved_opaque_schema": "token-reconstruction.trr0008-opaque-source-sequence-reservation.v1",
-    "inherited_catalog_still_bound": true
+    "inherited_catalog_still_bound": true,
+    "frozen_universe_path": "experiments/TRR-P08/runtime/source-universe-r1/frozen.json",
+    "frozen_universe_bytes": 66135,
+    "frozen_universe_sha256": "d9f818bd2d99388bd5d3b746134188c272fcf35502e425cedcff95dfc1b5b304",
+    "selection_path": "experiments/TRR-P08/runtime/source-selection-r1/selection.json",
+    "selection_bytes": 372627,
+    "selection_sha256": "75f8d66007d6ae5558ded8b0fc428fc88db8aa5a04f4d372bd187f5934079274",
+    "selection_status": "FROZEN_TRR-P08_SOURCE_SELECTION_NO_TRUTH",
+    "selection_code_commit": "ef925c550e39ea557f9fea516d9d21473a9eb163",
+    "selection_audit": {
+      "scanned": 646,
+      "excluded": 85,
+      "duplicates": 3,
+      "invalid": 46,
+      "selected_total": 512
+    },
+    "selection_access": "approved evaluator-side selection transiently read public rows/tokenizer; no source text or token arrays persisted"
   },
   "resource_boundary": {
-    "status": "WAITING_AGENT1_RELEASE",
-    "resource_snapshot_is_historical": true,
-    "live_refresh_required_before_qualification": true,
-    "gpu_or_heavy_compute_started": false,
-    "qualification_window_requires_root_grant": true
+    "status": "MAIN_PASS_GPU_RELEASED",
+    "resource_snapshot_is_historical": false,
+    "live_refresh_required_before_qualification": false,
+    "gpu_or_heavy_compute_started": true,
+    "qualification_window_requires_root_grant": false,
+    "main_fit_requires_root_grant": false,
+    "no_post_main_gpu_or_heavy_compute": true
   },
   "coordination_request": {
     "no_new_reservation_required": true,
@@ -172,7 +203,7 @@
       "received": false,
       "read": false
     },
-    "compute_release": "WAITING_AGENT1_RELEASE",
+    "compute_release": "RELEASED_AFTER_MAIN_PASS",
     "gpu_launch_authorized": false
   },
   "communication_authorization": {
@@ -184,6 +215,88 @@
     ],
     "p08_new_reservation_requested": false,
     "trr0009_unpublished_science_read": false,
-    "compute_release_received": false
+    "compute_release_received": true
+  },
+  "runtime_evidence": {
+    "source_commit": "00504aac40f2b3758c65c14c6dcc8f1b4c6064e5",
+    "preflight": {
+      "path": "experiments/TRR-P08/runtime/preflight-r3/preflight.json",
+      "bytes": 2425,
+      "sha256": "e4050abe32930b85bc6fa8b170679dae8eacf8e45aa9f200bae226647d230293"
+    },
+    "qualification": {
+      "path": "experiments/TRR-P08/runtime/qualification-r2/qualification.json",
+      "bytes": 5493,
+      "sha256": "a8e9bf25907594b026dd2d585949c29f40da4bfd5b3fa277fb63de230e111e6f"
+    },
+    "watchdog_finish": {
+      "path": "experiments/TRR-P08/runtime/qualification-watchdog-r2/finish.json",
+      "bytes": 1086,
+      "sha256": "bde73813994972925deffda5606bd00cb356862ab9b0a9ab04f14ff196814241"
+    },
+    "watchdog_time": {
+      "path": "experiments/TRR-P08/runtime/qualification-watchdog-r2/time.json",
+      "bytes": 1315,
+      "sha256": "2e73cae276cb7bd0ea2113f3680b6319b71542cb3d1ff678d4eebcca12d10dee"
+    },
+    "watchdog_resource_guard": {
+      "path": "experiments/TRR-P08/runtime/qualification-watchdog-r2/resource_guard.json",
+      "bytes": 4439,
+      "sha256": "814ba98121c09c38871ccb21b5e58e13a76ea93ef822a6f8d8565fef041f1dfc"
+    },
+    "watchdog_command": {
+      "path": "experiments/TRR-P08/runtime/qualification-watchdog-r2/command.json",
+      "bytes": 2017,
+      "sha256": "7ad2870508d7373822d2c2ef6f9e3a974e530fecfec2501a42f990519de8c89f"
+    },
+    "watchdog_samples": {
+      "path": "experiments/TRR-P08/runtime/qualification-watchdog-r2/resource_samples.jsonl",
+      "bytes": 2835,
+      "sha256": "d12eb7861abdf546cc32b4f1bebb271049c909830ff089cf338570d79134310d"
+    },
+    "main_started": false,
+    "main_fit": {
+      "path": "experiments/TRR-P08/runtime/main-r2/main_fit_receipt.json",
+      "bytes": 19958391,
+      "sha256": "44b2a965c92d64938e5ff322222678c8cfaf4ba84ff93b62d6f49cfce39d7a86",
+      "status": "PASS",
+      "launch_source_commit": "00504aac40f2b3758c65c14c6dcc8f1b4c6064e5",
+      "receipt_source_commit": "ef925c550e39ea557f9fea516d9d21473a9eb163",
+      "started_utc": "2026-09-07T01:39:51.058210+00:00",
+      "finished_utc": "2026-09-07T01:52:24.375144+00:00",
+      "elapsed_seconds": 756.12291,
+      "arm_count": 8,
+      "all_arms_pass": true,
+      "fresh_capture_started": false,
+      "truth_opened": false
+    },
+    "main_watchdog": {
+      "finish_path": "experiments/TRR-P08/runtime/main-watchdog-r2/finish.json",
+      "finish_bytes": 1090,
+      "finish_sha256": "5905f30bf3e29922082312679d3496714bcafd04a2eac66eac0284728f7a6695",
+      "resource_guard_path": "experiments/TRR-P08/runtime/main-watchdog-r2/resource_guard.json",
+      "resource_guard_bytes": 453474,
+      "resource_guard_sha256": "7934df644d03261680ded58efc73ae13b1fef107c51b764955a7851c10921cb6",
+      "peak_group_rss_bytes": 7569088512,
+      "minimum_sampled_host_available_bytes": 17729118208,
+      "status": "PASS",
+      "child_return_code": 0
+    }
+  },
+  "qualification": {
+    "status": "PASS",
+    "updates": 2,
+    "elapsed_seconds": 6.081546,
+    "peak_cuda_allocated_bytes": 2483009024,
+    "peak_cuda_reserved_bytes": 2936012800,
+    "minimum_cuda_free_bytes": 12655263744,
+    "minimum_host_available_bytes": 18372296704,
+    "process_max_rss_bytes": 5622001664,
+    "watchdog_peak_group_rss_bytes": 4066291712,
+    "watchdog_min_host_available_bytes": 18214072320,
+    "main_fit_started": true,
+    "main_fit_status": "PASS",
+    "main_fit_source_commit": "00504aac40f2b3758c65c14c6dcc8f1b4c6064e5",
+    "selected_states_frozen": true
   }
 }

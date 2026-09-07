@@ -1,0 +1,106 @@
+{
+  "access_boundary": {
+    "evaluator_truth_opened": false,
+    "fresh_capture_started": false,
+    "fresh_selection_started": false,
+    "fresh_source_enumeration_started": false,
+    "gpu_or_optimizer_work_started_for_qualification": true,
+    "model_or_public_fit_payload_loaded_for_qualification": true,
+    "p03_holdout_opened": false,
+    "trr0009_unpublished_science_read": false
+  },
+  "created_utc": "2026-09-07T01:39:05Z",
+  "live_snapshot_before_qualification": {
+    "captured_utc": "2026-09-07T01:36:41Z",
+    "gate": {
+      "minimum_free_gpu_gib": 8,
+      "minimum_host_available_gib": 10,
+      "passed": true
+    },
+    "gpu": {
+      "free_mib": 12872,
+      "name": "NVIDIA GeForce RTX 5080",
+      "temperature_c": 34,
+      "total_mib": 16303,
+      "used_mib": 3106
+    },
+    "host_mem_available_kib": 20094324
+  },
+  "main_fit": {
+    "authorization_required": true,
+    "started": false,
+    "status": "PENDING_ROOT_REVIEW"
+  },
+  "next_gate": "Root review of qualification peak/receipt; do not run the main matrix until root grants it.",
+  "preflight": {
+    "bytes": 2425,
+    "command": "PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode preflight --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --output-root experiments/TRR-P08/runtime/preflight-r3 --device cpu --max-seconds 120",
+    "gpu_started": false,
+    "model_loaded": false,
+    "path": "experiments/TRR-P08/runtime/preflight-r3/preflight.json",
+    "sha256": "e4050abe32930b85bc6fa8b170679dae8eacf8e45aa9f200bae226647d230293",
+    "source_commit": "00504aac40f2b3758c65c14c6dcc8f1b4c6064e5",
+    "status": "SOURCE_ONLY_PREFLIGHT_PASS",
+    "truth_opened": false
+  },
+  "qualification": {
+    "bytes": 5493,
+    "elapsed_seconds": 6.081546,
+    "fresh_selection_started": false,
+    "path": "experiments/TRR-P08/runtime/qualification-r2/qualification.json",
+    "peak": {
+      "cuda_free_bytes_after_final_update": 12655263744,
+      "cuda_peak_allocated_bytes": 2483009024,
+      "cuda_peak_reserved_bytes": 2936012800,
+      "cuda_total_bytes": 17066033152,
+      "minimum_internal_host_available_bytes": 18372296704,
+      "process_max_rss_bytes": 5622001664,
+      "watchdog_min_host_available_bytes": 18214072320,
+      "watchdog_peak_group_rss_bytes": 4066291712
+    },
+    "sha256": "a8e9bf25907594b026dd2d585949c29f40da4bfd5b3fa277fb63de230e111e6f",
+    "states_retained": false,
+    "status": "PASS",
+    "truth_opened": false,
+    "updates": 2,
+    "watchdog": {
+      "command": {
+        "bytes": 2017,
+        "path": "experiments/TRR-P08/runtime/qualification-watchdog-r2/command.json",
+        "sha256": "7ad2870508d7373822d2c2ef6f9e3a974e530fecfec2501a42f990519de8c89f"
+      },
+      "finish": {
+        "bytes": 1086,
+        "path": "experiments/TRR-P08/runtime/qualification-watchdog-r2/finish.json",
+        "sha256": "bde73813994972925deffda5606bd00cb356862ab9b0a9ab04f14ff196814241"
+      },
+      "resource_guard": {
+        "bytes": 4439,
+        "path": "experiments/TRR-P08/runtime/qualification-watchdog-r2/resource_guard.json",
+        "sha256": "814ba98121c09c38871ccb21b5e58e13a76ea93ef822a6f8d8565fef041f1dfc"
+      },
+      "samples": {
+        "bytes": 2835,
+        "path": "experiments/TRR-P08/runtime/qualification-watchdog-r2/resource_samples.jsonl",
+        "sha256": "d12eb7861abdf546cc32b4f1bebb271049c909830ff089cf338570d79134310d"
+      },
+      "time": {
+        "bytes": 1315,
+        "path": "experiments/TRR-P08/runtime/qualification-watchdog-r2/time.json",
+        "sha256": "2e73cae276cb7bd0ea2113f3680b6319b71542cb3d1ff678d4eebcca12d10dee"
+      }
+    }
+  },
+  "schema": "token-reconstruction.trr-p08-qualification-gate-receipt.v1",
+  "source_commit": "00504aac40f2b3758c65c14c6dcc8f1b4c6064e5",
+  "status": "QUALIFICATION_PASS_MAIN_PENDING_ROOT_REVIEW",
+  "task_id": "TRR-P08",
+  "tests": {
+    "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p08_panel_adapter.py tests/test_trr_p08_source_binding.py tests/test_trr_p08_fit_staged.py",
+    "failed": 0,
+    "note": "Focused synthetic/contract tests only; no fresh source enumeration or evaluator truth access.",
+    "passed": 21,
+    "result": "PASS",
+    "source_commit_at_test_start": "e16fff6"
+  }
+}

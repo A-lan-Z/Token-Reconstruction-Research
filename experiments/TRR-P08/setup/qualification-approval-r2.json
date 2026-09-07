@@ -1,0 +1,32 @@
+{
+  "authorization_source": "root task handoff after independent qualification review",
+  "created_utc": "2026-09-07T01:39:34Z",
+  "evaluator_truth_opened": false,
+  "fresh_capture_started": false,
+  "fresh_selection_started": false,
+  "guards": {
+    "max_rss_bytes": 17179869184,
+    "maximum_reserved_gpu_gib": 6,
+    "min_host_available_bytes": 10737418240,
+    "minimum_free_gpu_gib": 8,
+    "timeout_seconds": 1800
+  },
+  "main_command": "PYTHONPATH=.:src python3 scripts/trr_p06/resource_watchdog.py --output-root experiments/TRR-P08/runtime/main-watchdog-r2 --timeout-seconds 1800 --poll-seconds 0.5 --max-rss-bytes 17179869184 --min-available-bytes 10737418240 --label TRR-P08-main-r2 --cwd /tmp/trr-p08 -- env PYTHONPATH=.:src python3 scripts/trr_p08/fit_staged.py --mode main --repository-root /tmp/trr-p08 --fit-manifest experiments/TRR-P06/setup/public_fit_manifest_resolved.json --preflight-receipt experiments/TRR-P08/runtime/preflight-r3/preflight.json --qualification-receipt experiments/TRR-P08/runtime/qualification-r2/qualification.json --output-root experiments/TRR-P08/runtime/main-r2 --device cuda --torch-threads 4 --torch-interop-threads 1 --minimum-free-gib 8 --maximum-gpu-reserved-gib 6 --maximum-host-rss-gib 16 --minimum-host-available-gib 10 --max-seconds 1800",
+  "main_matrix_authorized": true,
+  "qualification_elapsed_seconds": 6.081546,
+  "qualification_min_host_available_bytes": 18372296704,
+  "qualification_peak_cuda_reserved_bytes": 2936012800,
+  "qualification_peak_process_rss_bytes": 5622001664,
+  "qualification_receipt": "experiments/TRR-P08/runtime/qualification-r2/qualification.json",
+  "qualification_status": "PASS",
+  "qualification_updates": 2,
+  "schema": "token-reconstruction.trr-p08-qualification-approval.v1",
+  "source_commit": "00504aac40f2b3758c65c14c6dcc8f1b4c6064e5",
+  "status": "ROOT_APPROVED_MAIN_R2",
+  "task_id": "TRR-P08",
+  "tests": {
+    "command": "PYTHONPATH=.:src pytest -q tests/test_trr_p08_panel_adapter.py tests/test_trr_p08_source_binding.py tests/test_trr_p08_fit_staged.py",
+    "passed": 21,
+    "result": "PASS"
+  }
+}
