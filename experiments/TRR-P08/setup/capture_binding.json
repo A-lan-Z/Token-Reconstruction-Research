@@ -1,0 +1,52 @@
+{
+  "schema": "token-reconstruction.trr-p08-capture-binding.v1",
+  "task_id": "TRR-P08",
+  "status": "SKELETON_ONLY_NO_CAPTURE",
+  "source_selection": {
+    "status": "PENDING_ROOT_SOURCE_UNIVERSE_FREEZE",
+    "path": null,
+    "selected": false
+  },
+  "model": {
+    "id": "meta-llama/Llama-3.2-1B-Instruct",
+    "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "cut_depth": 4,
+    "hidden_size": 2048
+  },
+  "geometry": {
+    "capture_batch_records": 8,
+    "capture_sequence_tokens": 192,
+    "stored_sequence_tokens_including_bos": 128,
+    "scored_post_bos_positions": 127,
+    "same_observation_for_all_arms": true,
+    "same_source_order_across_targets": true
+  },
+  "target_conditions": [
+    {
+      "id": "public_base",
+      "kind": "published_public_base",
+      "update_loaded": false
+    },
+    {
+      "id": "public_lora_2601",
+      "kind": "published_public_changed_target",
+      "config_path": "outputs/TRR-0002/public-calibration/generation.json",
+      "update_path": "outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors",
+      "update_loaded": false
+    }
+  ],
+  "observation_contract": {
+    "retain_hidden_states": "H_0..H_127 plus matching bool mask and position IDs",
+    "truth_or_source_rows_loaded": false,
+    "source_text_or_token_ids_written": false,
+    "raw_observations_publication": "local-only external payloads; publish metadata and hashes",
+    "padding_masked_from_keys_queries_and_denominators": true
+  },
+  "access_boundary": {
+    "model_loaded": false,
+    "capture_started": false,
+    "truth_opened": false,
+    "trr0009_unpublished_science_read": false,
+    "p03_holdout_opened": false
+  }
+}
