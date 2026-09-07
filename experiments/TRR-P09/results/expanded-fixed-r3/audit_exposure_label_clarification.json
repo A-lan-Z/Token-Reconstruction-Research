@@ -1,0 +1,40 @@
+{
+  "bank": "B1",
+  "batch_slot_counts": {
+    "meaning": "One (training_step, global_record) exposure per batch slot; every step has 8 distinct records.",
+    "numeric_counts_unchanged": true,
+    "record_batch_exposure_unique_pairs": 104000,
+    "record_batch_exposures": 104000,
+    "record_batch_slots_per_step": 8,
+    "record_batch_steps": 13000
+  },
+  "clarification": {
+    "field": "record_batch_exposure_counts",
+    "implementation_basis": "np.bincount(global_records.reshape(-1), minlength=12000)",
+    "meaning": "The min/max/mean values are per-record position-draw exposure counts, computed by binning global_records across all 6,656,000 scheduled position draws.",
+    "not_batch_appearance_counts": true,
+    "observed_values": {
+      "max": 1981,
+      "mean": 554.6666666666666,
+      "min": 0,
+      "records_with_nonzero_exposure": 11996
+    }
+  },
+  "created_utc": "2026-09-07T15:38:08.655253Z",
+  "immutable_audit": {
+    "bytes": 339623,
+    "label": "immutable B1 audit",
+    "path": "/tmp/trr-p09/experiments/TRR-P09/results/expanded-fixed-r3/audit.json",
+    "sha256": "09cfefba2082a7f290891e4aabbb839f6585d8c38eb49892e26518613feb6fed"
+  },
+  "immutable_schedule_exposure": {
+    "bytes": 3113,
+    "label": "immutable B1 schedule exposure export",
+    "path": "/tmp/trr-p09/experiments/TRR-P09/results/expanded-fixed-r3/schedule_exposure.json",
+    "sha256": "e21045da22a793d6f11f67be0ccd1851a75baa481f8142ed4e08bebe0960dc43"
+  },
+  "provenance_note": "This sidecar corrects only the human-readable label interpretation; it does not rerun or alter the immutable B1 audit, schedule exposure counts, checkpoint audit, or learning curves.",
+  "schema": "token-reconstruction.trr-p09-b1-audit-exposure-label-clarification.v1",
+  "status": "PASS_LABEL_CLARIFICATION",
+  "task_id": "TRR-P09"
+}
