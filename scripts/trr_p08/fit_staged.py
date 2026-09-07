@@ -749,9 +749,15 @@ def _train_arm(spec: ArmSpec, seed: int, data: PublicJointData, embedding: torch
         if cohort is None:
             continue
         rows = cohort["rows"]
-        affine_rows = _row_predictions(selected_model, data, runtime_embedding, rows, split=split, device=device, direct_only=True)
-        full_rows = _row_predictions(selected_model, data, runtime_embedding, rows, split=split, device=device, direct_only=False)
-        cohort_metrics[split] = {"cohort": {key: value for key, value in cohort.items() if key != "rows"}, "comparison": correction_summary(affine_rows, full_rows)}
+        selected_affine_rows = _row_predictions(selected_model, data, runtime_embedding, rows, split=split, device=device, direct_only=True)
+        selected_full_rows = _row_predictions(selected_model, data, runtime_embedding, rows, split=split, device=device, direct_only=False)
+        final_affine_rows = _row_predictions(model, data, runtime_embedding, rows, split=split, device=device, direct_only=True)
+        final_full_rows = _row_predictions(model, data, runtime_embedding, rows, split=split, device=device, direct_only=False)
+        cohort_metrics[split] = {
+            "cohort": {key: value for key, value in cohort.items() if key != "rows"},
+            "selected_checkpoint": {"step": int(best_step), "comparison": correction_summary(selected_affine_rows, selected_full_rows)},
+            "final_checkpoint": {"step": TOTAL_STEPS, "comparison": correction_summary(final_affine_rows, final_full_rows)},
+        }
     curve_path = output_dir / "learning_curve.json"
     _json_write_create(curve_path, {"schema": "token-reconstruction.trr-p08-learning-curve.v1", "task_id": TASK_ID, "arm_id": spec.arm_id, "visibility_method": spec.visibility_method, "schedule_kind": spec.schedule_kind, "seed": int(seed), "selection_metric": "validation_token_accuracy", "selection_rule": "earliest maximum, validation every 100 updates including step 0", "curve": curve})
     state_record = save_visibility_state(output_dir / "selected.safetensors", selected_model, selected_step=best_step, metadata={"task_id": TASK_ID, "p08_method_id": spec.arm_id, "schedule_kind": spec.schedule_kind, "fit_seed": int(seed), "standard_initialization_sha256": standard_initialization_sha256(), "schedule_sha256": schedule_record["schedule_sha256"], "selection_metric": "validation_token_accuracy", "selection_rule": "earliest maximum, validation every 100 updates including step 0"})
