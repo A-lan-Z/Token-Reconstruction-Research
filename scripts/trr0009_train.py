@@ -48,6 +48,7 @@ from token_reconstruction.trr0005_joint_decoder import (
     checkpoint_steps,
     evaluate_dataset,
     file_sha256,
+    load_public_joint_data,
     save_schedule,
     schedule_digest,
     schedule_metadata,
