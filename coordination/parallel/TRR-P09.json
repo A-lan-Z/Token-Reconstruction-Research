@@ -14,7 +14,8 @@
     "public_model_qualification_loaded": true,
     "public_model_forward_count": 1372,
     "activation_bank_opened": true,
-    "public_capture_completed": true
+    "public_capture_completed": true,
+    "forward_batch_qualification": "QUALIFICATION_PASS"
   },
   "bank_contract": {
     "arbitrary_schedule_rows_verified": true,
@@ -52,7 +53,11 @@
     "bank_manifest_sha256": "f1ad02c2836c53992299e3459d886bf87c2f0d2d437c86224ea4db689c1b2216",
     "qualification_receipt_path": "/tmp/trr-p09-runtime/stage1-qualification-r2-retry5/qualification-receipt.json",
     "qualification_receipt_sha256": "3b5c99cfc5a125b25339df558d3ffb6ea37249e3d49122178cf574e9f079df8c",
-    "qualification_watchdog_finish_sha256": "6ef585c784b6898884c9fb44243c3afe1833ea211618cc957f116bbd99479b38"
+    "qualification_watchdog_finish_sha256": "6ef585c784b6898884c9fb44243c3afe1833ea211618cc957f116bbd99479b38",
+    "qualified_bank_manifest": "experiments/TRR-P09/setup/qualified-bank-manifest-r1.json",
+    "qualified_bank_manifest_sha256": "657d73a2d9787bdb321260d1757c4a6e8c27c23dc1e07a30273bf7e2ff41c7d2",
+    "qualified_bank_manifest_payload_sha256": "0e14dbf74c947cfc6c586e7a5dbf76a27d8f0522fb8e54d2f98c6067bb36d196",
+    "qualified_bank_manifest_bytes": 145390
   },
   "communication": {
     "agent1_contract_detail": {
@@ -102,8 +107,8 @@
     "merge_allowed": false
   },
   "pending": [
-    "complete shared forward-batch geometry qualification and implementation loader review",
-    "keep fitting, target observation, and evaluation truth access unopened until the forward-batch gate passes"
+    "complete shared common fit-contract and loader integration before any optimizer step",
+    "keep fitting, target observation, and evaluation truth access unopened until that contract is reviewed"
   ],
   "preparation_audit": {
     "activation_bank_opened": true,
@@ -118,7 +123,19 @@
     "public_model_forward_count": 1372,
     "capture_complete": true,
     "clean_qualification_pass": true,
-    "historical_excluded_qualification_attempts": 5
+    "historical_excluded_qualification_attempts": 5,
+    "forward_batch_qualification": "QUALIFICATION_PASS",
+    "qualified_bank_manifest": {
+      "path": "/tmp/trr-p09-runtime/stage1-capture-r2/bank_manifest-qualified-r1.json",
+      "bytes": 145390,
+      "sha256": "0e14dbf74c947cfc6c586e7a5dbf76a27d8f0522fb8e54d2f98c6067bb36d196",
+      "status": "STAGE1_PUBLIC_BASE_CAPTURE_COMPLETE_NO_TRUTH",
+      "source_revision": "experiments/TRR-P09/setup/qualified-bank-manifest-r1.json",
+      "source_revision_sha256": "657d73a2d9787bdb321260d1757c4a6e8c27c23dc1e07a30273bf7e2ff41c7d2",
+      "payloads_unchanged": true,
+      "forward_batch_qualification": "QUALIFICATION_PASS"
+    },
+    "gpu_released": true
   },
   "publication": {
     "status": "COMPLETE_OPEN_UNMERGED",
@@ -155,12 +172,12 @@
     "live_snapshot_path": "experiments/TRR-P09/setup/resource-snapshot-r0.json",
     "preflight_required_before_compute": true,
     "public_forward_authorized": true,
-    "status": "STAGE1_PUBLIC_BASE_CAPTURE_COMPLETE_PENDING_FORWARD_BATCH_QUALIFICATION",
+    "status": "STAGE1_PUBLIC_BASE_CAPTURE_COMPLETE_NO_TRUTH",
     "cpu_input_compilation_authorized": true,
     "cpu_input_compilation_status": "R2_COMPLETED_METADATA_REVISED",
     "synthetic_io_status": "PASS_SYNTHETIC_IO_ONLY_2X_BOUND_UNDER_20GIB",
     "capture_status": "PASS_169_SHARDS_WATCHDOG_PASS",
-    "forward_batch_qualification": "PENDING_SHARED_GEOMETRY_QUALIFICATION"
+    "forward_batch_qualification": "QUALIFICATION_PASS"
   },
   "role_path": "experiments/TRR-P09/setup/agent2-role.md",
   "schema": "token-reconstruction.task-local-state.v1",
@@ -184,9 +201,9 @@
     "public_support_binding": "experiments/TRR-P09/setup/public-support-binding-r1.json"
   },
   "source_head_commit": "24a5fa69dfbbd621708a666ed561c56c1472f5aa",
-  "status": "STAGE1_PUBLIC_BASE_CAPTURE_COMPLETE_PENDING_FORWARD_BATCH_QUALIFICATION",
+  "status": "STAGE1_PUBLIC_BASE_CAPTURE_COMPLETE_NO_TRUTH",
   "task_id": "TRR-P09",
-  "updated_utc": "2026-09-07T12:11:19Z",
+  "updated_utc": "2026-09-07T12:28:01Z",
   "worktree": "/tmp/trr-p09",
   "cost_lineage": {
     "path": "experiments/TRR-P09/planning/starting-state-cost-lineage.md",
@@ -418,7 +435,18 @@
       "bank_manifest_sha256": "f1ad02c2836c53992299e3459d886bf87c2f0d2d437c86224ea4db689c1b2216",
       "status": "CAPTURE_COMPLETE_NO_TRUTH",
       "shards": 169,
-      "new_records": 10800
+      "new_records": 10800,
+      "qualified_bank_manifest": {
+        "path": "/tmp/trr-p09-runtime/stage1-capture-r2/bank_manifest-qualified-r1.json",
+        "bytes": 145390,
+        "sha256": "0e14dbf74c947cfc6c586e7a5dbf76a27d8f0522fb8e54d2f98c6067bb36d196",
+        "status": "STAGE1_PUBLIC_BASE_CAPTURE_COMPLETE_NO_TRUTH",
+        "source_revision": "experiments/TRR-P09/setup/qualified-bank-manifest-r1.json",
+        "source_revision_sha256": "657d73a2d9787bdb321260d1757c4a6e8c27c23dc1e07a30273bf7e2ff41c7d2",
+        "payloads_unchanged": true,
+        "forward_batch_qualification": "QUALIFICATION_PASS"
+      },
+      "capture_bank_manifest_sha256": "f1ad02c2836c53992299e3459d886bf87c2f0d2d437c86224ea4db689c1b2216"
     }
   },
   "common_schedules": {
@@ -522,5 +550,15 @@
       "fit_started": false,
       "evaluation_truth_opened": false
     }
+  },
+  "qualified_bank_manifest": {
+    "path": "/tmp/trr-p09-runtime/stage1-capture-r2/bank_manifest-qualified-r1.json",
+    "bytes": 145390,
+    "sha256": "0e14dbf74c947cfc6c586e7a5dbf76a27d8f0522fb8e54d2f98c6067bb36d196",
+    "status": "STAGE1_PUBLIC_BASE_CAPTURE_COMPLETE_NO_TRUTH",
+    "source_revision": "experiments/TRR-P09/setup/qualified-bank-manifest-r1.json",
+    "source_revision_sha256": "657d73a2d9787bdb321260d1757c4a6e8c27c23dc1e07a30273bf7e2ff41c7d2",
+    "payloads_unchanged": true,
+    "forward_batch_qualification": "QUALIFICATION_PASS"
   }
 }

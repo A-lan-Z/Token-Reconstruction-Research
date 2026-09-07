@@ -238,3 +238,10 @@ The bank manifest deliberately retains `geometry.forward_batch_qualification = P
 A CPU-only public support binding was also prepared from the compiled public token IDs and masks. B0 has 17,126 positive-support token IDs over 124,371 post-BOS positions; expanded B1 has 45,631 over 1,243,710 positions. The Agent1/TRR-0010 support digests are `f554d25681904530bf0f52752b50f92ae5da10b99998d06eb0cc30ed25fccd4d` (B0) and `f91eaf39433496ba6fd36c5c5233e1d8abbaa2527ff7d75e7b304ec4df4fbd0e` (B1). The compact binding is `experiments/TRR-P09/setup/public-support-binding-r1.json` (SHA-256 `1c202ab7518404c12726b75147e1246d72fc40bbaf7c4c043edf0792a5e65351`); support vectors are local runtime payloads, with the digest namespace distinguished from the historical TRR-0009 support digest.
 
 This current section supersedes the earlier pre-capture status statements for the qualification/capture phase; those statements remain retained as time-scoped historical evidence.
+
+
+## Qualified bank metadata revision (2026-09-07)
+
+Root reviewed and committed the final descriptive bank-manifest revision in `experiments/TRR-P09/setup/qualified-bank-manifest-r1.json` (SHA-256 `657d73a2d9787bdb321260d1757c4a6e8c27c23dc1e07a30273bf7e2ff41c7d2`). It points to the qualified manifest `/tmp/trr-p09-runtime/stage1-capture-r2/bank_manifest-qualified-r1.json` (145,390 bytes, SHA-256 `0e14dbf74c947cfc6c586e7a5dbf76a27d8f0522fb8e54d2f98c6067bb36d196`). The revision changes only the stale descriptive qualification/status fields; the original bank manifest, 169 shard payloads, sidecars, row order, geometry, and input bindings are unchanged.
+
+The shared forward-batch geometry gate is now recorded as `QUALIFICATION_PASS`. The capture watchdog remained PASS with 169 shards and 62.141337 seconds wrapper elapsed time. All five earlier qualification failures remain preserved and excluded, the accepted clean retry remains bound, and P09 has zero fits or optimizer steps, zero target observations, and unopened evaluation truth. GPU work is released; common schedules and the public support binding remain ready for the next reviewed fit-contract step.
