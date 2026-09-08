@@ -1,0 +1,28 @@
+from pathlib import Path
+import json,datetime,shutil,subprocess
+from scripts.agent3_shortlists.core import binding,verify,write_json
+root=Path.cwd();ev=root/'experiments/agent3-b1-small-budget-a2';out=root/'outputs/agent3-b1-small-budget-a2';f=json.loads((ev/'freeze.json').read_text());r=json.loads((ev/'results.json').read_text())
+truth=verify(r['truth_manifest']);shutil.copy2(truth,ev/'evaluator-truth-manifest.json')
+backup=Path('/mnt/c/Users/alanz/Token-Reconstruction-Backups/agent3-b1-small-budget-a2/stage1-r1/private-evaluator');backup.mkdir(exist_ok=False)
+tm=json.loads(truth.read_text());copies=[]
+for item in [truth,*[verify(c['artifact']) for c in tm['domains'].values()]]:
+ dest=backup/item.name;shutil.copy2(item,dest);a,b=binding(item),binding(dest);assert a['sha256']==b['sha256'];copies.append({'source':a,'backup':b})
+write_json(ev/'evaluator-byte-backup.json',{'status':'VERIFIED_ACTUAL_EVALUATOR_BYTES','verified_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'files':copies,'access':'Evaluator-only; opened after complete freeze'})
+receipts=[json.loads(verify(c['receipt']).read_text()) for c in f['cells']]
+watchdogs=[json.loads((ev/'execution'/f"{c['domain']}-{c['stage']}"/'finish.json').read_text()) for c in f['cells']]
+costs={'schema':'agent3-costs-v1','inference_commit':f['common_identity']['code_commit'],'environment':f['common_identity']['environment'],'cpu_model':next(l.split(':',1)[1].strip() for l in Path('/proc/cpuinfo').read_text().splitlines() if l.startswith('model name')),'cells':[],'total_prediction_seconds':sum(c['total_seconds'] for c in receipts),'sum_guarded_job_seconds':sum(c['elapsed_seconds'] for c in watchdogs),'peak_process_rss_bytes':max(c['peak_rss_bytes'] for c in receipts),'peak_gpu_bytes':0,'model_record_evaluations':{'b1':256,'a1':256},'a2_candidate_simulations':0,'adaptation_seconds':0,'prefix_maintenance_seconds':0,'scientific_failures':0,'uncontended_speed_comparison':False}
+for c in receipts:
+ methods=[]
+ for method in c['methods']:
+  phases={k:sum(x[k] for x in method['record_timings']) for k in ('scoring_seconds','ranking_seconds','transfer_hash_seconds')};phases.update(method=method['method'],output_io_seconds=method['output_io_seconds']);methods.append(phases)
+ costs['cells'].append({k:c[k] for k in ('domain','stage','start_utc','end_utc','total_seconds','observation_read_validate_seconds','load_seconds','peak_rss_bytes')}|{'methods':methods})
+write_json(ev/'costs.json',costs)
+m=json.loads((ev/'manifest.json').read_text());m.update(status='STAGE1_COMPLETE_STAGE2_NOT_TESTED_INTEGRATION_GAP',updated_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),scientific_metrics=binding(ev/'results.json'),result=binding(root/'coordination/results/agent3-b1-small-budget-a2.md'),inference_code_commit=f['common_identity']['code_commit'],evaluator_code_commit=tm['code_commit'],freeze=binding(ev/'freeze.json'),stage1_decision=r['stage1_decision'],globally_empirically_promising_budgets=r['globally_empirically_promising_budgets'],equivalence_established=False)
+m['completion']={'paired_unique_source_records':64,'domain_stage_cells':8,'proposers':2,'frozen_candidate_artifacts':16,'budgets':[1,8,16,32,64,256],'scientific_cells_passed':8,'scientific_cells_failed':0,'all_labels_opened_only_after_complete_matrix_freeze':True,'source_labels_used_for_prediction':False,'target_weights_loaded_into_reconstructor':False,'independent_scalar_audit':'All65024 per-position ranks and all96 budget count pairs matched independent Python list membership/index calculation','stage2':'Unavailable validated maintained recovered-model-prefix path; no hybrid run, no speed/quality equivalence or tracking claim','trajectory_scope':'One bounded q/v LoRA adaptation of layers0-3; first64 updates define fitted descendant;128/256 continued snapshots; no severe top1 collapse induced'}
+m['limitations']=['Only32 source records/domain; zero observed omissions cannot establish tight population equivalence.','Shared sources/trajectory with Agent2; not independent replication.','Production capture used qualified P11 full-sequence cut4 prefix executor; exact full-backbone H equivalence checked on base and adapted smoke fixtures.','Single bounded LoRA trajectory; arbitrary or severe target drift untested.','Full dual-canonical reconstruction matrix not run; component diagnostic only.','No maintained-prefix A2 hybrid; reduced list size is not measured acceleration.']
+m['deviations_and_failures']=['Pre-outcome P12 source-only amendment broadened the Pile range because the original range had only82 eligible records; exact amended ledger was bound before this matrix.','Capture interface wording initially suggested all16 layers; independently verified exact H equivalence and preserved profile clarification before production import.','Native smoke comparison initially used unstable topk ordering; corrected to the historical stable top512 path, with exact top256 and stored B1 top1 agreement.','Synthetic freeze test exposed a local loop-key shadowing bug; fixed and retested before scientific inference.','Import helper first lacked PYTHONPATH when run from /tmp; retried with PYTHONPATH=. before any scientific prediction.','No scientific cell failed or was discarded; no candidate revision after labels.']
+for p in sorted(ev.rglob('*')):
+ if p.is_file() and p.name!='manifest.json' and p.suffix not in ('.gz','.pyc'):
+  m['evidence'][str(p.relative_to(ev))]=binding(p)
+(ev/'manifest.json').write_text(json.dumps(m,indent=2)+'\n')
+print('Final manifest:',m['status']);print('Inference seconds:',costs['total_prediction_seconds'],'Guarded seconds:',costs['sum_guarded_job_seconds']);print('Evidence bindings:',len(m['evidence']))
