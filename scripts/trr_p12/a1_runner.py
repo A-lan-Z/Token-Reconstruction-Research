@@ -455,13 +455,17 @@ def _run(args: argparse.Namespace) -> dict[str, Any]:
             device=device,
         )
         load_seconds = time.perf_counter() - load_started
-        policy = p11_runtime.validate_native_policy(footing._fixed_k256_policy())
+        # Keep the native ResolvedPolicy object for decode_policy while
+        # retaining the validated serialized mapping for JSON receipts.
+        native_policy = footing._fixed_k256_policy()
+        native_policy.validate()
+        policy = p11_runtime.validate_native_policy(binding.get("policy", {}))
         adapter = legacy._A2Adapter(
             precut=precut,
             lens=lens_module,
             embeddings=embeddings,
             device=device,
-            policy=policy,
+            policy=native_policy,
         )
         preflight.append(legacy._resource_preflight(runtime_guard_args, device, stage="after_a1_load", started=started_clock))
         for domain in DOMAINS:
