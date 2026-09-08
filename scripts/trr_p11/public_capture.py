@@ -586,6 +586,27 @@ def build_observation_manifest(
     }
 
 
+def _read_p11_selected_row(dataset: Any, *, style: str, row_index: int) -> Mapping[str, Any]:
+    """Read only a row already frozen inside P11's registered source range.
+
+    TRR-0005's ``_read_reserved_row`` intentionally guards its older holdout
+    partition (Pile 7000+, Finance 28000+).  P11 registered the disjoint
+    public ranges [0, 2000) and [20000, 28000), so applying that older
+    holdout guard here would reject the released P11 selection.  The P11
+    selector has already validated the exact half-open range; this accessor
+    repeats that check immediately before the dataset subscript and retains
+    the trusted row-shape check.
+    """
+    selector._validate_p11_index(style, row_index)
+    try:
+        row = dataset[row_index]
+    except Exception as exc:
+        raise CaptureAdapterError(f"P11 selected {style} row {row_index} could not be read") from exc
+    if not isinstance(row, Mapping):
+        raise CaptureAdapterError(f"P11 selected {style} row {row_index} is malformed")
+    return row
+
+
 def _materialize_selected(context: selector.SelectionContext, *, trusted: Any, datasets: Mapping[str, Any], tokenizer: Any) -> dict[str, list[Any]]:
     """Reuse the qualified renderer and verify every frozen identity field."""
     records: dict[str, list[Any]] = {}
@@ -593,7 +614,7 @@ def _materialize_selected(context: selector.SelectionContext, *, trusted: Any, d
         values: list[Any] = []
         for declared in context.rows[domain]:
             index = int(declared["row_index"])
-            row = trusted._read_reserved_row(datasets[domain], style=domain, row_index=index)
+            row = _read_p11_selected_row(datasets[domain], style=domain, row_index=index)
             try:
                 candidate = trusted._render_row(domain, row, index, tokenizer)
             except Exception as exc:
