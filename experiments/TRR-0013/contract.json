@@ -1,0 +1,140 @@
+{
+  "task_id": "TRR-0013",
+  "status": "FROZEN_BEFORE_NEW_SOURCE_SELECTION_AND_CONTINUATION",
+  "created_utc": "2026-09-08T13:43:30.236902+00:00",
+  "starting_state": {
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/outputs/TRR-0012/model-package-actual-r2/states/expanded_fixed.safetensors",
+    "bytes": 29390268,
+    "sha256": "088be6a6b2842d526f3dab39789728d9cfc23f2fb1fb892d107d46ade2382706"
+  },
+  "readout": {
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/outputs/TRR-0012/model-package-actual-r2/readout/public_normalized_embeddings.safetensors",
+    "bytes": 1050673488,
+    "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+  },
+  "methods": [
+    "frozen_B1",
+    "ordinary_continuation",
+    "focused_continuation"
+  ],
+  "public_pool": {
+    "decision": "Original bank effectively memorized:21/1243710 errors,p99CE.00567, so add one correction pool.",
+    "original_B1_records": 12000,
+    "correction_records": {
+      "pile": 1024,
+      "finance": 1024
+    },
+    "same_combined_pool_for_both": true,
+    "pool_ranges": {
+      "pile": [
+        0,
+        10000
+      ],
+      "finance": [
+        30000,
+        40000
+      ]
+    },
+    "selection_seed": 5013,
+    "natural_rendering": "Unchanged TRR5/P11 Pile/Finance renderer; no wrappers or frequency balancing. >=128 tokens, truncate/pad192 for public capture.",
+    "exclude": "Complete released P11 identity union plus newly opened confirmation/transfer, relevant duplicates, and P12 opaque reservations. No P03 payload access.",
+    "modification_from_initial_note": "Use two-domain correction pool1024+1024 instead of adding Alpaca; existing trusted renderer suffices and original bank retains Alpaca exposure."
+  },
+  "fit": {
+    "additional_updates": 6000,
+    "record_batch": 8,
+    "position_draws_per_update": 512,
+    "position_exposures_per_arm": 3072000,
+    "sampler_seed": 5013,
+    "architecture": "unchanged residualMLP512 over trained diagonal base",
+    "readout": "fixed public normalizedE",
+    "loss": "ordinary full-vocabulary CE",
+    "optimizer": "Fresh AdamW foreach=false,weight_decay0,gradientclip1",
+    "learning_rate": 5e-05,
+    "lr_schedule": "CosineAnnealingLR T_max6000",
+    "reference_sampler": "Unchanged inherited_schedule_steps CPUtorch RNG;8uniform records withoutreplacement;512uniform valid postBOS positions withoutreplacement when possible.",
+    "focused_sampler": "Identical scheduled8records;retain first256reference draws;256replacement draws uniformly from top20% fitting-loss positions within batch; fixed initialB1 difficulty and stable record/position tie-break.",
+    "ordinary_exposure_fraction": 0.5,
+    "importance_correction": false,
+    "objective_effect": "Deliberately reweights the empirical CE objective toward initially difficult public positions.",
+    "checkpoints": [
+      0,
+      1000,
+      2000,
+      4000,
+      6000
+    ],
+    "validation": "Existing TRR12 public selection set,Finance256/Pile128; held out from all gradient data, selection-only.",
+    "selection": "Among grid points with Finance token accuracy no worse than step0 by0.05percentagepoints, maximize Pile exact records, then equal-domain token accuracy, then negative mean CE; earliest strict maximum. Step0 always eligible. Same rule both arms.",
+    "diagnostics": "Public train loss; validation loss/token/exact curves and support bins defined using actual combined-pool token frequencies, not B0 frequency assumptions.",
+    "preservation": "Every grid model+optimizer written persistently; selected states and publicE copied to Windows and restored into clean task-local inference directory before evaluation."
+  },
+  "evaluation": {
+    "sources": {
+      "pile": 512,
+      "finance": 256
+    },
+    "targets": [
+      "public_base",
+      "public_lora_2601"
+    ],
+    "target_pairing": "Same source across two targets;768 independent sources,1536source-target observations.",
+    "ranges": {
+      "pile": [
+        0,
+        10000
+      ],
+      "finance": [
+        40000,
+        50000
+      ]
+    },
+    "selection_seed": 6013,
+    "clip_tokens_including_bos": 128,
+    "scored_post_bos": 127,
+    "A1_A2_K256_subset": {
+      "sources_per_domain": 64,
+      "selection": "first64 in frozen evaluationorder;128 independent sources,256source-target observations;separate denominator"
+    },
+    "primary_contrast": "focused_continuation minus ordinary_continuation, Pile/public_base exact-clip rate",
+    "useful_gain": {
+      "Pile_exact_percentagepoints": 5.0,
+      "requires": "primary point>=5pp AND paired95% lower>0; Pile residualtoken errors do not increase; LoRA Pile exact point nonnegative; Finance token drops<=0.05pp vsordinary and vsfrozenB1 on each target."
+    },
+    "secondary_contrast": "ordinary_continuation minus frozenB1, same useful-gain and safeguards",
+    "inference_timing": "Every standalone method:identical recordloop Hcpu->GPU+decoder+argmax->CPU;1warmup+3measured repeats; equality required. Same timing boundary for A1; coldload separate. No concurrent heavyjobs.",
+    "intervals": "Source-paired bootstrap10000draws seed9013 for tokens; unchanged paired_exact_cp alpha.025 component.0125 for exact. Shared resample indices across methods/targets within domain, no pooled sources or simultaneous95% claim.",
+    "decision": "Focused improves if primary useful-gain rule passes; otherwise ordinary explains gain if secondary passes; otherwise neither demonstrates useful fresh-data improvement. Report inconclusive intervals explicitly; do not infer equivalence from nonsignificance.",
+    "freeze": "All selectedstate decisions, plans, inputs, code, completepredictions and timing immutable before scorer opens truth."
+  },
+  "resources": {
+    "gpu_cap_gib": 8,
+    "host_rss_cap_gib": 20,
+    "minimum_host_available_gib": 6,
+    "minimum_gpu_free_gib": 2,
+    "training_cap_seconds_per_arm": 2400,
+    "paid_compute": false,
+    "coordination": "GPUleases and opaque source reservations with P12; no shared implementation."
+  },
+  "scope_limits": [
+    "No merges/globalstate/registry changes",
+    "No P03holdout",
+    "No teacher/A2fallback/learnedreadout/newarchitecture",
+    "No automatic nextsampler"
+  ],
+  "temporary_source_reservations": {
+    "pile": [
+      [
+        8000,
+        9000
+      ]
+    ],
+    "finance": [
+      [
+        50000,
+        52000
+      ]
+    ]
+  },
+  "reservation_reason": "P12 requested temporary ranges before either study selects sources; retained conservatively for this fixed study even if unused ranges later released."
+}
