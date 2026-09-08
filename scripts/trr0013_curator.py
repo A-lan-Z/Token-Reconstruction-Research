@@ -93,7 +93,7 @@ def capture(selection_path,output,phase):
     s=json.loads(Path(selection_path).read_text());out=Path(output);out.mkdir(parents=True,exist_ok=False)
     started=time.perf_counter();guard=Guard(seconds=1200,rss_gib=16)
     targets=['public_base'] if phase=='correction' else ['public_base','public_lora_2601']
-    result={}
+    result={};qualifiers={}
     for target in targets:
         role='historical_trained_benchmark_adaptation' if target!='public_base' else 'public_base'
         model=load_public_target_model(SNAPSHOT,variant={'role':role},device=torch.device('cuda'),historical_lora_path=LORA if target!='public_base' else None)
@@ -101,7 +101,14 @@ def capture(selection_path,output,phase):
             t=load_file(str(verify(s['curator_payloads'][domain])))
             batch=pad_public_token_sequences([row[:int(mask.sum())].tolist() for row,mask in zip(t['token_ids'],t['attention_mask'])],maximum_tokens=192,bos_token_id=128000,pad_token_id=128001)
             assert all(torch.equal(getattr(batch,k),t[k]) for k in t)
+            small=pad_public_token_sequences([row[:int(mask.sum())].tolist() for row,mask in zip(t['token_ids'][:8],t['attention_mask'][:8])],maximum_tokens=192,bos_token_id=128000,pad_token_id=128001)
+            q=capture_full_forward(model,small,device=torch.device('cuda'),batch_size=8,resource_check=guard.check)
+            qualifiers[f'{domain}__{target}']={'resources':guard.check(),'batch_geometry':[8,192,2048]}
+            write_json(out/f'{domain}__{target}_qualification.json',qualifiers[f'{domain}__{target}'])
             H=capture_full_forward(model,batch,device=torch.device('cuda'),batch_size=8,resource_check=guard.check)
+            assert torch.equal(q,H[:8]),'Capture qualification output changed'
+            qualifiers[f'{domain}__{target}']['output_exact']=True
+            del q,small
             if phase=='correction':
                 values={'activations':H,**t}
             else:
@@ -109,7 +116,7 @@ def capture(selection_path,output,phase):
             result[f'{domain}__{target}']=save(out/f'{domain}__{target}.safetensors',values)
             del H,t,batch;guard.check()
         del model;torch.cuda.empty_cache()
-    write_json(out/'manifest.json',{'task_id':'TRR-0013','phase':phase,'observations':result,'source_selection':artifact(selection_path),'contract':s['contract'],'public_model':artifact(SNAPSHOT/'model.safetensors'),'lora':artifact(LORA) if phase!='correction' else None,'elapsed_seconds':time.perf_counter()-started,'resources':guard.check(),'reconstruction_truth_access':False,'source_tokens_only_in_correction_fitting_payloads':phase=='correction','curator_source':artifact(__file__),'provenance':provenance()})
+    write_json(out/'manifest.json',{'task_id':'TRR-0013','phase':phase,'observations':result,'qualifiers':qualifiers,'source_selection':artifact(selection_path),'contract':s['contract'],'public_model':artifact(SNAPSHOT/'model.safetensors'),'lora':artifact(LORA) if phase!='correction' else None,'elapsed_seconds':time.perf_counter()-started,'resources':guard.check(),'reconstruction_truth_access':False,'source_tokens_only_in_correction_fitting_payloads':phase=='correction','curator_source':artifact(__file__),'provenance':provenance()})
     print(json.dumps({'manifest':artifact(out/'manifest.json'),'elapsed_seconds':time.perf_counter()-started}),flush=True)
 
 
