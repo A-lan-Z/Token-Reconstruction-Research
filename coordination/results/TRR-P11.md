@@ -1,6 +1,6 @@
 # TRR-P11 — new-weight replication planning handoff
 
-Status: PLANNING_ONLY_NO_FIT_NO_SOURCE_SELECTION_NO_GPU_NO_TRUTH.
+Status: PREPARATION_IN_PROGRESS_EXCLUSIONS_PARTIAL_RESTORE_ASSETS_PENDING.
 
 TRR-P11 is an explicitly named successor to the blocked TRR-P10 exact-state
 confirmation. The exact PR20/TRR-0011 fixed-readout states are unavailable
@@ -19,6 +19,10 @@ restore gate, and independent scoring handoff. Agent 2 has performed no
 fitting, source selection, GPU work, activation capture, prediction, or truth
 access. The single Agent 1 fit is authorized only after the shared preflight
 and frozen-input checks; root controls that release.
+
+Preparation evidence is now recorded without opening the scientific boundary. The pure-Python selector validation receipt `experiments/TRR-P11/selector/validation-r2.json` (SHA-256 `192b26efd83592b5ba23c53c9e3cd14087752553b867b9292b16e25936e51639`) passes all 8 tests, including complete identity-union round-trip/tamper rejection, historical H40 rejection, authoritative B0/B1 input binding, and the injected trusted-selector path. It performed no source scan, model load, GPU work, or scientific prediction/evaluation truth access. The synthetic restore-gate receipt `experiments/TRR-P11/restore/execution-tests-r11.json` (SHA-256 `5ee820b3c66164d1f6d45db41f75e5b7cd4e9e98169143370ccbd67d39f274d5`) passes 12/12 tests, with the exact restore and smoke identity checks exercised synthetically; the actual Agent 1 package and independent secondary copy remain pending. The latest exclusion audit remains partial at `experiments/TRR-P11/exclusions/recovery_identity_audit_r4.json` (SHA-256 `2629c919e8de0b829b951826689256c5ad5bf2e824269407961fee875f49b1dd`), with selection release false.
+
+The exact B0/B1 bank and development-selection metadata are hash-bound in the manifest and parallel contract. The binding sidecar is `experiments/TRR-P11/exclusions/replication_inputs_binding_r1.json` (SHA-256 `6b1945a065d7a737b40ca0623bc5bedc909e8721836c95eed4742b64ae171c98`). This binds preparation inputs jointly with the partial audit while preserving the remaining canonical, legacy, and targetfit exclusion-coverage gaps. No fit, fresh source selection, activation capture, prediction, truth opening, or P03 access has occurred.
 
 The frozen evaluation geometry is 256 records per domain, 128 stored tokens
 including BOS, 127 scored post-BOS positions, and four separate

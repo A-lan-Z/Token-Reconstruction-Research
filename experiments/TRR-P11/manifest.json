@@ -1,7 +1,7 @@
 {
   "schema": "token-reconstruction.trr-p11-replication-manifest.v1",
   "task_id": "TRR-P11",
-  "status": "PLANNING_ONLY_NO_FIT_NO_SOURCE_SELECTION_NO_GPU_NO_TRUTH",
+  "status": "PREPARATION_IN_PROGRESS_EXCLUSIONS_PARTIAL_RESTORE_ASSETS_PENDING",
   "created_utc": "2026-09-08T05:09:14Z",
   "branch": "task/TRR-P11",
   "base_p10_commit": "cab7d455c305aa01c3d3bfac225fcffa3e66640b",
@@ -144,14 +144,79 @@
     ],
     "p04_fingerprint_producers_verified": false,
     "aggregate_panel_pointer_links_verified": false,
-    "status": "NOT_STARTED_PENDING_COMPLETE_AUDIT",
+    "status": "PARTIAL_CANONICAL_SEQUENCE_EXCLUSION_AUDIT",
     "selection_release": false,
     "public_rerender_and_tokenization_owner": "trusted_curator",
     "public_rerender_and_tokenization_is_metadata_only": false,
-    "agent2_receives": "approved_identity_metadata_and_opaque_hashes_only"
+    "agent2_receives": "approved_identity_metadata_and_opaque_hashes_only",
+    "latest_audit": {
+      "path": "experiments/TRR-P11/exclusions/recovery_identity_audit_r4.json",
+      "sha256": "2629c919e8de0b829b951826689256c5ad5bf2e824269407961fee875f49b1dd",
+      "status": "PARTIAL_CANONICAL_SEQUENCE_EXCLUSION_AUDIT",
+      "coverage_complete": false,
+      "selection_release": false,
+      "replication_inputs_binding": {
+        "status": "BOUND_EXACT_BANK_AND_SELECTION_IDENTITIES_AUDIT_PARTIAL",
+        "banks": {
+          "B0": {
+            "bank": "B0",
+            "bank_manifest": {
+              "path": "../TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_manifest.json",
+              "sha256": "c7a857e545a2f252ce8b3ab71bb2336e552fd212c7c434e39cef66f233b77a08",
+              "bytes": 8156
+            },
+            "ordered_identity": {
+              "path": "../TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_fit_records.json",
+              "sha256": "808cfd0f95ea3ee66c1d4094f3c10f1e346ba986a6d77138a61b8f8f13c4a738",
+              "bytes": 918427
+            }
+          },
+          "B1": {
+            "bank": "B1",
+            "bank_manifest": {
+              "path": "../TRR-0012/experiments/TRR-0012/capture/b1_activation_date07/bank_manifest.json",
+              "sha256": "8265df60998fd23a11db560de661e65d972aa8823df09101303f4bab44732c7c",
+              "bytes": 144117
+            },
+            "ordered_identity": {
+              "path": "../TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07/records.json",
+              "sha256": "367cfba0ffe78f59454861a76f23830f480a8745cc6b35e6b4a0d05eca53638b",
+              "bytes": 10767794
+            },
+            "preparation_manifest": {
+              "path": "../TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07/preparation_manifest.json",
+              "sha256": "d1097b467e4abe4ec9f39dfca27f34f1d481527d2de79ca610751a8fe260620e",
+              "bytes": 42163
+            }
+          }
+        },
+        "development_selection": {
+          "path": "../TRR-0012/experiments/TRR-0012/preparation/public_validation_r1/validation_manifest.json",
+          "sha256": "b47114d86d80d704c331f50693ae2bc79741147cc01cc692cacba0c5e0697f65",
+          "bytes": 468777
+        },
+        "historical_trr0009_selection": {
+          "path": "../TRR-0010/experiments/TRR-0009/selection_v2/source_selection.json",
+          "sha256": "c2e996514f7f45e55d7bfadc27fc8048bdb07a2c979b208de8716972d8d1def2",
+          "bytes": 287719
+        }
+      },
+      "validation_receipt": {
+        "path": "experiments/TRR-P11/exclusions/recovery_validation_r2.json",
+        "sha256": "10b36dcc6365b51b2f42986f6c9a86d18872ef3f08c47ae5c270c77759f96284",
+        "status": "PASS_FOCUSED_EXCLUSION_TESTS_PARTIAL_AUDIT",
+        "tests_passed": 21,
+        "tests_failed": 0
+      }
+    },
+    "replication_inputs_binding_sidecar": {
+      "path": "experiments/TRR-P11/exclusions/replication_inputs_binding_r1.json",
+      "sha256": "6b1945a065d7a737b40ca0623bc5bedc909e8721836c95eed4742b64ae171c98",
+      "status": "BOUND_EXACT_METADATA_PARTIAL_AUDIT"
+    }
   },
   "restore_gate": {
-    "status": "NOT_STARTED",
+    "status": "PASS_SYNTHETIC_E2E_ACTUAL_ASSETS_PENDING",
     "copy_a": "persistent_training_or_output_storage_to_be_bound",
     "copy_b": "/mnt/c/Users/alanz/Token-Reconstruction-Backups/TRR-0012",
     "clean_workspace_required": true,
@@ -181,7 +246,25 @@
       "selection_criterion": false
     },
     "minimum_free_gib_after_copy": 10,
-    "failure_boundary_note": "Protects against WSL reset and temporary-runtime loss; does not provide whole-host physical-failure backup."
+    "failure_boundary_note": "Protects against WSL reset and temporary-runtime loss; does not provide whole-host physical-failure backup.",
+    "validation_receipt": {
+      "path": "experiments/TRR-P11/restore/execution-tests-r11.json",
+      "sha256": "5ee820b3c66164d1f6d45db41f75e5b7cd4e9e98169143370ccbd67d39f274d5",
+      "status": "PASS_SYNTHETIC_RESTORE_E2E",
+      "tests_collected": 12,
+      "tests_passed": 12,
+      "tests_failed": 0,
+      "restore_gate_code_sha256": "3c2e7189a7f0ba8cfa469a746c02132c15658ac2cc4da25207ac05c332b3be4b",
+      "restore_test_code_sha256": "7c59d8d2a455516fcb51850af619f9e5d07ed13d51c232530fb9526a1513e409",
+      "pytest_elapsed_seconds": 3.49,
+      "wrapper_elapsed_seconds": 4.131441188,
+      "actual_package_restore": "PENDING_AGENT1_FROZEN_PACKAGE_AND_SECONDARY_COPY",
+      "gpu_used": false,
+      "model_loaded": false,
+      "real_source_or_truth_loaded": false,
+      "peak_rss_kb": 676188
+    },
+    "actual_package_restore": "PENDING_AGENT1_FROZEN_PACKAGE_AND_SECONDARY_COPY"
   },
   "new_model_states": {
     "current_b0": null,
@@ -198,9 +281,9 @@
   },
   "pending": [
     "Agent1 common-input and one-paired-fit inventory",
-    "complete exclusion coverage and producer fingerprint mappings",
+    "complete canonical, legacy, and targetfit exclusion coverage",
     "frozen task-local statistical implementation copy/hash",
-    "prospective source selection release after exclusions, frozen plan, and bank identities",
+    "prospective source selection release after complete exclusions, frozen plan, and bank identities",
     "new B0/B1 durable state identities frozen before restore",
     "two-copy restore gate and clean-workspace public smoke test before prediction/truth",
     "root release for capture, prediction, and truth"
@@ -227,5 +310,160 @@
     "validation_every_1000": "NOT_EXECUTED_NON_GRID",
     "selection_rule": "earliest maximum on the frozen seven-point grid; final independent outcomes never enter selection",
     "state_identity_freeze_before_restore": true
+  },
+  "replication_inputs": {
+    "status": "BOUND_EXACT_BANK_AND_SELECTION_IDENTITIES_AUDIT_PARTIAL",
+    "banks": {
+      "B0": {
+        "bank": "B0",
+        "bank_manifest": {
+          "path": "../TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_manifest.json",
+          "sha256": "c7a857e545a2f252ce8b3ab71bb2336e552fd212c7c434e39cef66f233b77a08",
+          "bytes": 8156
+        },
+        "ordered_identity": {
+          "path": "../TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_fit_records.json",
+          "sha256": "808cfd0f95ea3ee66c1d4094f3c10f1e346ba986a6d77138a61b8f8f13c4a738",
+          "bytes": 918427
+        }
+      },
+      "B1": {
+        "bank": "B1",
+        "bank_manifest": {
+          "path": "../TRR-0012/experiments/TRR-0012/capture/b1_activation_date07/bank_manifest.json",
+          "sha256": "8265df60998fd23a11db560de661e65d972aa8823df09101303f4bab44732c7c",
+          "bytes": 144117
+        },
+        "ordered_identity": {
+          "path": "../TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07/records.json",
+          "sha256": "367cfba0ffe78f59454861a76f23830f480a8745cc6b35e6b4a0d05eca53638b",
+          "bytes": 10767794
+        },
+        "preparation_manifest": {
+          "path": "../TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07/preparation_manifest.json",
+          "sha256": "d1097b467e4abe4ec9f39dfca27f34f1d481527d2de79ca610751a8fe260620e",
+          "bytes": 42163
+        }
+      }
+    },
+    "development_selection": {
+      "path": "../TRR-0012/experiments/TRR-0012/preparation/public_validation_r1/validation_manifest.json",
+      "sha256": "b47114d86d80d704c331f50693ae2bc79741147cc01cc692cacba0c5e0697f65",
+      "bytes": 468777
+    },
+    "historical_trr0009_selection": {
+      "path": "../TRR-0010/experiments/TRR-0009/selection_v2/source_selection.json",
+      "sha256": "c2e996514f7f45e55d7bfadc27fc8048bdb07a2c979b208de8716972d8d1def2",
+      "bytes": 287719
+    }
+  },
+  "preparation_evidence": {
+    "status": "PREPARATION_IN_PROGRESS_EXCLUSIONS_PARTIAL_RESTORE_ASSETS_PENDING",
+    "selector": {
+      "path": "experiments/TRR-P11/selector/validation-r2.json",
+      "sha256": "192b26efd83592b5ba23c53c9e3cd14087752553b867b9292b16e25936e51639",
+      "status": "PASS_SELECTOR_SYNTHETIC_NO_SOURCE_SCAN",
+      "tests_collected": 8,
+      "tests_passed": 8,
+      "tests_failed": 0,
+      "code_commit_at_run": "eef40f65f486fecd2ac31b03fb1d8b37cd9ecbc7",
+      "selector_code_sha256": "186d0fcda37519ed2dc7838441af2532e3cbcc230fc8a643ad52fd8d552b3712",
+      "test_code_sha256": "d1961d08f3312745910ae724314d11f624ea93214eadbfbcc82ddfa595e2cbc0",
+      "source_scan": false,
+      "truth_opened": false,
+      "gpu_used": false,
+      "peak_rss_kb": "unknown"
+    },
+    "restore_gate": {
+      "path": "experiments/TRR-P11/restore/execution-tests-r11.json",
+      "sha256": "5ee820b3c66164d1f6d45db41f75e5b7cd4e9e98169143370ccbd67d39f274d5",
+      "status": "PASS_SYNTHETIC_RESTORE_E2E",
+      "tests_collected": 12,
+      "tests_passed": 12,
+      "tests_failed": 0,
+      "restore_gate_code_sha256": "3c2e7189a7f0ba8cfa469a746c02132c15658ac2cc4da25207ac05c332b3be4b",
+      "restore_test_code_sha256": "7c59d8d2a455516fcb51850af619f9e5d07ed13d51c232530fb9526a1513e409",
+      "pytest_elapsed_seconds": 3.49,
+      "wrapper_elapsed_seconds": 4.131441188,
+      "actual_package_restore": "PENDING_AGENT1_FROZEN_PACKAGE_AND_SECONDARY_COPY",
+      "gpu_used": false,
+      "model_loaded": false,
+      "real_source_or_truth_loaded": false,
+      "peak_rss_kb": 676188
+    },
+    "exclusion_audit": {
+      "path": "experiments/TRR-P11/exclusions/recovery_identity_audit_r4.json",
+      "sha256": "2629c919e8de0b829b951826689256c5ad5bf2e824269407961fee875f49b1dd",
+      "status": "PARTIAL_CANONICAL_SEQUENCE_EXCLUSION_AUDIT",
+      "coverage_complete": false,
+      "selection_release": false,
+      "replication_inputs_binding": {
+        "status": "BOUND_EXACT_BANK_AND_SELECTION_IDENTITIES_AUDIT_PARTIAL",
+        "banks": {
+          "B0": {
+            "bank": "B0",
+            "bank_manifest": {
+              "path": "../TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_manifest.json",
+              "sha256": "c7a857e545a2f252ce8b3ab71bb2336e552fd212c7c434e39cef66f233b77a08",
+              "bytes": 8156
+            },
+            "ordered_identity": {
+              "path": "../TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_fit_records.json",
+              "sha256": "808cfd0f95ea3ee66c1d4094f3c10f1e346ba986a6d77138a61b8f8f13c4a738",
+              "bytes": 918427
+            }
+          },
+          "B1": {
+            "bank": "B1",
+            "bank_manifest": {
+              "path": "../TRR-0012/experiments/TRR-0012/capture/b1_activation_date07/bank_manifest.json",
+              "sha256": "8265df60998fd23a11db560de661e65d972aa8823df09101303f4bab44732c7c",
+              "bytes": 144117
+            },
+            "ordered_identity": {
+              "path": "../TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07/records.json",
+              "sha256": "367cfba0ffe78f59454861a76f23830f480a8745cc6b35e6b4a0d05eca53638b",
+              "bytes": 10767794
+            },
+            "preparation_manifest": {
+              "path": "../TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07/preparation_manifest.json",
+              "sha256": "d1097b467e4abe4ec9f39dfca27f34f1d481527d2de79ca610751a8fe260620e",
+              "bytes": 42163
+            }
+          }
+        },
+        "development_selection": {
+          "path": "../TRR-0012/experiments/TRR-0012/preparation/public_validation_r1/validation_manifest.json",
+          "sha256": "b47114d86d80d704c331f50693ae2bc79741147cc01cc692cacba0c5e0697f65",
+          "bytes": 468777
+        },
+        "historical_trr0009_selection": {
+          "path": "../TRR-0010/experiments/TRR-0009/selection_v2/source_selection.json",
+          "sha256": "c2e996514f7f45e55d7bfadc27fc8048bdb07a2c979b208de8716972d8d1def2",
+          "bytes": 287719
+        }
+      },
+      "validation_receipt": {
+        "path": "experiments/TRR-P11/exclusions/recovery_validation_r2.json",
+        "sha256": "10b36dcc6365b51b2f42986f6c9a86d18872ef3f08c47ae5c270c77759f96284",
+        "status": "PASS_FOCUSED_EXCLUSION_TESTS_PARTIAL_AUDIT",
+        "tests_passed": 21,
+        "tests_failed": 0
+      },
+      "binding_sidecar": {
+        "path": "experiments/TRR-P11/exclusions/replication_inputs_binding_r1.json",
+        "sha256": "6b1945a065d7a737b40ca0623bc5bedc909e8721836c95eed4742b64ae171c98",
+        "status": "BOUND_EXACT_METADATA_PARTIAL_AUDIT"
+      }
+    },
+    "scientific_execution": {
+      "agent1_fit_count": 0,
+      "source_selection_started": false,
+      "activation_capture_started": false,
+      "prediction_started": false,
+      "truth_opened": false,
+      "p03_holdout_accessed": false,
+      "new_model_states_bound": false
+    }
   }
 }

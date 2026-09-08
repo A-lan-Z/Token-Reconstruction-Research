@@ -437,7 +437,11 @@ def validate_p11_manifest(
     if manifest.get("schema") != MANIFEST_SCHEMA or manifest.get("task_id") != TASK_ID:
         raise P11PipelineError("P11 manifest schema or task identity changed")
     status = str(manifest.get("status", ""))
-    if not status.startswith("PLANNING_ONLY") and not status.startswith("READY"):
+    if not (
+        status.startswith("PLANNING_ONLY")
+        or status.startswith("PREPARATION_IN_PROGRESS")
+        or status.startswith("READY")
+    ):
         raise P11PipelineError(f"P11 manifest status is not a runnable preparation state: {status}")
     decision = manifest.get("decision")
     if not isinstance(decision, Mapping) or decision.get("current_arm") != "current_bank_B0_fixed_public_readout" or decision.get("expanded_arm") != "expanded_bank_B1_fixed_public_readout":
