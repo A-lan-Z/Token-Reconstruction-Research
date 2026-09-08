@@ -44,6 +44,26 @@ def _candidate(domain: str, index: int, *, offset: int = 0) -> dict[str, object]
     return selector._candidate_identity(raw)
 
 
+def _candidate_for_tokens(domain: str, index: int, token_ids: list[int], *, label: str) -> dict[str, object]:
+    raw = _Candidate(
+        token_ids,
+        {
+            "record_id": f"{domain}/row-{index}",
+            "public_record_sha256": hashlib.sha256(label.encode()).hexdigest(),
+            "dataset_key": domain,
+            "dataset_id": selector._DATASET_META[domain]["dataset_id"],
+            "split": "train",
+            "revision": selector._DATASET_META[domain]["revision"],
+            "row_index": index,
+            "source_index": index,
+            "full_token_count": len(token_ids),
+            "post_bos_token_count": len(token_ids) - 1,
+            "valid_tokens": selector.STORED_SEQUENCE_TOKENS,
+        },
+    )
+    return selector._candidate_identity(raw)
+
+
 def test_exact_128_candidate_has_h128_and_optional_h129() -> None:
     row = _candidate("pile", 7)
     assert isinstance(row["h128_sequence_sha256"], str)
@@ -51,6 +71,30 @@ def test_exact_128_candidate_has_h128_and_optional_h129() -> None:
     assert row["h129_sequence_sha256"] is None
     assert isinstance(row["trr0002_active_token_ids_sha256"], str)
     assert isinstance(row["trr0002_h40_token_ids_sha256"], str)
+    assert isinstance(row["h40_sequence_sha256"], str)
+    assert row["h40_sequence_sha256"] != row["trr0002_h40_token_ids_sha256"]
+
+
+def test_raw_h40_shared_prefix_rejects_different_rendered_and_h128_rows() -> None:
+    first = [128000] + list(range(1, 128))
+    second = first[:40] + [10000 + value for value in range(40, 128)]
+    left = _candidate_for_tokens("pile", 21, first, label="left-rendered")
+    right = _candidate_for_tokens("pile", 22, second, label="right-rendered")
+    assert left["public_record_sha256"] != right["public_record_sha256"]
+    assert left["h128_sequence_sha256"] != right["h128_sequence_sha256"]
+    assert left["h40_sequence_sha256"] == right["h40_sequence_sha256"]
+    assert left["h40_sequence_sha256"] != left["trr0002_h40_token_ids_sha256"]
+
+    union = IdentityBundle("raw-h40", "opened_development", Path("raw-h40.json"), "", 0)
+    namespace = Namespace(
+        "pile",
+        selector._DATASET_META["pile"]["dataset_id"],
+        "train",
+        selector._DATASET_META["pile"]["revision"],
+    )
+    union.add("h40_sequence_sha256", str(left["h40_sequence_sha256"]), namespace)
+    reasons = selector._candidate_exclusion_reasons(right, union)
+    assert any(reason["field"] == "h40_sequence_sha256" for reason in reasons)
 
 
 def test_h40_historical_prefix_rejects_longer_candidate() -> None:
@@ -270,10 +314,13 @@ def _write_complete_audit(
 
 def test_complete_identity_union_roundtrip_and_hash_tamper_rejection(tmp_path: Path) -> None:
     namespace = "pile|NeelNanda/pile-10k|train|127bfedcd5047750df5ccf3a12979a47bfa0bafa"
-    fields = {"trr0002_h40_token_ids_sha256": {namespace: ["f" * 64]}}
+    fields = {
+        "h40_sequence_sha256": {namespace: ["e" * 64]},
+        "trr0002_h40_token_ids_sha256": {namespace: ["f" * 64]},
+    }
     audit_path = _write_complete_audit(tmp_path, fields=fields)
     context = selector.load_complete_exclusions(audit_path, root=tmp_path)
-    assert context.union.counts() == {"trr0002_h40_token_ids_sha256": 1}
+    assert context.union.counts() == {"h40_sequence_sha256": 1, "trr0002_h40_token_ids_sha256": 1}
     union_path = tmp_path / "identity_union.json"
     union_path.write_text(union_path.read_text() + "\n")
     with pytest.raises(selector.SelectionError, match="binding changed"):

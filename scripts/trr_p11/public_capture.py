@@ -162,11 +162,13 @@ def _capture_output_root(path: Path, *, root: Path) -> Path:
     if not resolved.is_absolute():
         resolved = root / resolved
     resolved = resolved.resolve()
-    allowed = (root / "experiments" / TASK_ID / "evaluation").resolve()
-    try:
-        resolved.relative_to(allowed)
-    except ValueError as exc:
-        raise CaptureAdapterError(f"capture output must be below {allowed}") from exc
+    allowed_roots = (
+        (root / "experiments" / TASK_ID / "evaluation").resolve(),
+        (root / selector.PRIVATE_EVALUATION_ROOT_RELATIVE / "capture").resolve(),
+    )
+    if not any(resolved == allowed or allowed in resolved.parents for allowed in allowed_roots):
+        rendered = ", ".join(str(value) for value in allowed_roots)
+        raise CaptureAdapterError(f"capture output must be below one of: {rendered}")
     if resolved.exists() or resolved.is_symlink():
         raise CaptureAdapterError(f"capture output root is create-only: {resolved}")
     return resolved
@@ -597,7 +599,7 @@ def _materialize_selected(context: selector.SelectionContext, *, trusted: Any, d
             except Exception as exc:
                 raise CaptureAdapterError(f"frozen {domain} row {index} no longer renders") from exc
             actual = selector._selection_row(candidate)
-            for key in ("record_id", "public_record_sha256", "dataset_key", "dataset_id", "split", "revision", "row_index", "source_index", "full_token_count", "post_bos_token_count", "valid_tokens", "final_sequence_sha256", "h128_sequence_sha256", "h129_sequence_sha256"):
+            for key in ("record_id", "public_record_sha256", "dataset_key", "dataset_id", "split", "revision", "row_index", "source_index", "full_token_count", "post_bos_token_count", "valid_tokens", "final_sequence_sha256", "h40_sequence_sha256", "h128_sequence_sha256", "h129_sequence_sha256"):
                 if str(actual.get(key)) != str(declared.get(key)):
                     raise CaptureAdapterError(f"frozen {domain} row {index} changed: {key}")
             if len(candidate.token_ids) < STORED_SEQUENCE_TOKENS:

@@ -1,10 +1,14 @@
 """Fail-closed trusted-curator source selector for TRR-P11.
 
 The selector validates the frozen replication contract, the complete opaque
-identity-union export, and the exact Agent1 B0/B1 state bindings before it
-reads public rows.  Trusted rerender/tokenization is transient: outputs carry
-only approved identity metadata and opaque hashes.  Capture, prediction,
-truth, and scoring are separate later phases and are not invoked here.
+identity-union export, and the exact Agent1 B0/B1 bank/development-input
+bindings before it reads public rows.  Model-state identities are checked by
+the later restore/prediction phase.  Trusted rerender/tokenization is
+transient: outputs carry only approved identity metadata and opaque hashes.
+Raw signed-int32 H40 is a P11 identity namespace kept separate from the
+TRR-0002 tensor-header/int64 H40 namespace.
+Capture, prediction, truth, and scoring are separate later phases and are not
+invoked here.
 """
 from __future__ import annotations
 
@@ -69,6 +73,9 @@ SCORER_SOURCE_COMMIT = "70c57db7643913eea97cc606775b3f1f3807967a"
 BOOTSTRAP_SEED = 9009
 BOOTSTRAP_DRAWS = 10000
 BOOTSTRAP_ALPHA = 0.025
+# Future source IDs, observations, predictions, truth, and scores stay below
+# this ignored root.  Compact hash-bound descriptors remain in experiments/.
+PRIVATE_EVALUATION_ROOT_RELATIVE = Path("outputs") / TASK_ID / "private-evaluation"
 
 _DATASET_META = {
     "pile": {
@@ -85,6 +92,17 @@ _DATASET_META = {
 
 _SHA256_HEX = frozenset("0123456789abcdef")
 _COMMIT_HEX = frozenset("0123456789abcdef")
+_P11_UNION_FIELDS = frozenset({
+    "record_id",
+    "source_index",
+    "rendered_sha256",
+    "tokenized_record_sha256",
+    "h40_sequence_sha256",
+    "h128_sequence_sha256",
+    "h129_sequence_sha256",
+    "trr0002_active_token_ids_sha256",
+    "trr0002_h40_token_ids_sha256",
+})
 _FORBIDDEN_FALSE_KEYS = (
     "truth_opened",
     "truth_created",
@@ -260,11 +278,13 @@ def _task_output(path: Path, *, root: Path, phase: str) -> Path:
     if not raw.is_absolute():
         raw = root / raw
     resolved = raw.resolve()
-    allowed = (root / "experiments" / TASK_ID / phase).resolve()
-    try:
-        resolved.relative_to(allowed)
-    except ValueError as exc:
-        raise P11PipelineError(f"{phase} output must be below {allowed}") from exc
+    allowed_roots = (
+        (root / "experiments" / TASK_ID / phase).resolve(),
+        (root / PRIVATE_EVALUATION_ROOT_RELATIVE / phase).resolve(),
+    )
+    if not any(resolved == allowed or allowed in resolved.parents for allowed in allowed_roots):
+        rendered = ", ".join(str(value) for value in allowed_roots)
+        raise P11PipelineError(f"{phase} output must be below one of: {rendered}")
     if resolved.exists() or resolved.is_symlink():
         raise P11PipelineError(f"{phase} output is create-only: {resolved}")
     return resolved
@@ -559,8 +579,8 @@ def _load_identity_union(audit: Mapping[str, Any], *, root: Path) -> tuple[Any, 
     from scripts.trr_p10.build_exclusion_audit import IdentityBundle
     union = IdentityBundle("p11_identity_union_export", "union", Path("."), record["sha256"], record["bytes"], schema=payload["schema"], status=payload["status"])
     for field, by_namespace in fields.items():
-        if not isinstance(field, str) or not isinstance(by_namespace, Mapping):
-            raise SelectionError("identity-union field mapping is malformed")
+        if not isinstance(field, str) or field not in _P11_UNION_FIELDS or not isinstance(by_namespace, Mapping):
+            raise SelectionError(f"identity-union field is not an approved P11 namespace: {field!r}")
         for namespace_text, values in by_namespace.items():
             namespace = _parse_union_namespace(str(namespace_text))
             if not isinstance(values, list):
@@ -620,6 +640,10 @@ def _candidate_identity(candidate: Any) -> dict[str, Any]:
     metadata = dict(candidate.selection_metadata())
     metadata["trr0002_active_token_ids_sha256"] = fingerprints["trr0002_active_token_ids_sha256"]
     metadata["trr0002_h40_token_ids_sha256"] = fingerprints.get("trr0002_h40_token_ids_sha256")
+    # P11's raw signed-int32 first-40 namespace is distinct from the
+    # TRR-0002 tensor-header/int64 H40 digest above.  The frozen P10 helper
+    # computes the exact producer convention without modifying P10.
+    metadata["h40_sequence_sha256"] = p10._raw_int32_digest(token_ids[:40])
     metadata["h128_sequence_sha256"] = fingerprints["h128_sequence_sha256"]
     metadata["h129_sequence_sha256"] = fingerprints.get("h129_sequence_sha256")
     metadata["final_sequence_sha256"] = fingerprints["h128_sequence_sha256"]
@@ -638,11 +662,28 @@ def _candidate_exclusion_reasons(candidate_metadata: Mapping[str, Any], union: A
         "split": candidate_metadata["split"],
         "revision": candidate_metadata["revision"],
     }
-    for field in ("h129_sequence_sha256", "trr0002_active_token_ids_sha256", "trr0002_h40_token_ids_sha256"):
+    for field in (
+        "h129_sequence_sha256",
+        "trr0002_active_token_ids_sha256",
+        "trr0002_h40_token_ids_sha256",
+        "h40_sequence_sha256",
+    ):
         value = candidate_metadata.get(field)
         if value is not None:
             candidate[field] = value
-    return p10.check_candidate(candidate, union)
+    reasons = p10.check_candidate(candidate, union)
+    # Frozen P10 predates the P11 raw-int32 H40 namespace and must remain
+    # byte-identical.  Apply this one additional global identity route here.
+    raw_h40 = candidate_metadata.get("h40_sequence_sha256")
+    if raw_h40 is not None:
+        raw_h40 = str(raw_h40).casefold()
+        for namespace, values in union.values.get("h40_sequence_sha256", {}).items():
+            if raw_h40 in values:
+                reasons.append({"field": "h40_sequence_sha256", "namespace": namespace.as_string()})
+    return sorted(
+        {(item["field"], item["namespace"]): item for item in reasons}.values(),
+        key=lambda item: (item["field"], item["namespace"]),
+    )
 
 
 def _selection_row(candidate: Any) -> dict[str, Any]:
@@ -650,7 +691,7 @@ def _selection_row(candidate: Any) -> dict[str, Any]:
     allowed = (
         "record_id", "public_record_sha256", "dataset_key", "dataset_id", "split", "revision",
         "row_index", "source_index", "full_token_count", "post_bos_token_count", "valid_tokens",
-        "final_sequence_sha256", "h128_sequence_sha256", "h129_sequence_sha256",
+        "final_sequence_sha256", "h40_sequence_sha256", "h128_sequence_sha256", "h129_sequence_sha256",
         "trr0002_active_token_ids_sha256", "trr0002_h40_token_ids_sha256",
     )
     return {key: metadata[key] for key in allowed}
@@ -742,7 +783,7 @@ def select_sources(
             selected[domain].append({key: metadata[key] for key in (
                 "record_id", "public_record_sha256", "dataset_key", "dataset_id", "split", "revision",
                 "row_index", "source_index", "full_token_count", "post_bos_token_count", "valid_tokens",
-                "final_sequence_sha256", "h128_sequence_sha256", "h129_sequence_sha256",
+                "final_sequence_sha256", "h40_sequence_sha256", "h128_sequence_sha256", "h129_sequence_sha256",
                 "trr0002_active_token_ids_sha256", "trr0002_h40_token_ids_sha256",
             )})
             if len(selected[domain]) == RECORDS_PER_DOMAIN:
@@ -834,7 +875,7 @@ def _validate_selection_payload(payload: Mapping[str, Any], *, root: Path) -> Se
     counts: dict[str, int] = {}
     allowed = {
         "record_id", "public_record_sha256", "dataset_key", "dataset_id", "split", "revision", "row_index", "source_index",
-        "full_token_count", "post_bos_token_count", "valid_tokens", "final_sequence_sha256", "h128_sequence_sha256", "h129_sequence_sha256",
+        "full_token_count", "post_bos_token_count", "valid_tokens", "final_sequence_sha256", "h40_sequence_sha256", "h128_sequence_sha256", "h129_sequence_sha256",
         "trr0002_active_token_ids_sha256", "trr0002_h40_token_ids_sha256",
     }
     for domain in DOMAIN_ORDER:
@@ -849,7 +890,7 @@ def _validate_selection_payload(payload: Mapping[str, Any], *, root: Path) -> Se
             row = dict(value)
             if not isinstance(row.get("record_id"), str) or not row["record_id"] or row["record_id"] in seen_ids:
                 raise EvaluationError(f"P11 selection record ID is malformed: {domain}/{index}")
-            for key in ("public_record_sha256", "final_sequence_sha256", "h128_sequence_sha256", "trr0002_active_token_ids_sha256", "trr0002_h40_token_ids_sha256"):
+            for key in ("public_record_sha256", "final_sequence_sha256", "h40_sequence_sha256", "h128_sequence_sha256", "trr0002_active_token_ids_sha256", "trr0002_h40_token_ids_sha256"):
                 _require_sha(row.get(key), description=f"P11 selection {domain}/{index}/{key}")
             if row.get("h129_sequence_sha256") is not None:
                 _require_sha(row.get("h129_sequence_sha256"), description=f"P11 selection {domain}/{index}/h129_sequence_sha256")
@@ -883,7 +924,7 @@ def load_selection(selection_path: Path, *, root: Path) -> SelectionContext:
 
 def choose_identity_rows(candidates: Mapping[str, Sequence[Mapping[str, Any]]], *, union: Any, records_per_domain: int = RECORDS_PER_DOMAIN) -> tuple[dict[str, list[dict[str, Any]]], dict[str, dict[str, int]]]:
     """Select already-rendered identity metadata without reading source payloads."""
-    allowed = {"record_id", "public_record_sha256", "dataset_key", "dataset_id", "split", "revision", "row_index", "source_index", "full_token_count", "post_bos_token_count", "valid_tokens", "final_sequence_sha256", "h128_sequence_sha256", "h129_sequence_sha256", "trr0002_active_token_ids_sha256", "trr0002_h40_token_ids_sha256"}
+    allowed = {"record_id", "public_record_sha256", "dataset_key", "dataset_id", "split", "revision", "row_index", "source_index", "full_token_count", "post_bos_token_count", "valid_tokens", "final_sequence_sha256", "h40_sequence_sha256", "h128_sequence_sha256", "h129_sequence_sha256", "trr0002_active_token_ids_sha256", "trr0002_h40_token_ids_sha256"}
     chosen: dict[str, list[dict[str, Any]]] = {domain: [] for domain in DOMAIN_ORDER}
     diagnostics: dict[str, dict[str, int]] = {}
     seen_ids: set[str] = set(); seen_rendered: set[str] = set(); seen_h128: set[str] = set()
@@ -895,7 +936,7 @@ def choose_identity_rows(candidates: Mapping[str, Sequence[Mapping[str, Any]]], 
             if not isinstance(raw, Mapping) or set(raw) != allowed: raise SelectionError(f"candidate identity metadata is malformed: {domain}")
             row = dict(raw)
             if row.get("dataset_key") != domain or row.get("valid_tokens") != STORED_SEQUENCE_TOKENS: raise SelectionError(f"candidate contract changed: {domain}")
-            for key in ("public_record_sha256", "final_sequence_sha256", "h128_sequence_sha256", "trr0002_active_token_ids_sha256", "trr0002_h40_token_ids_sha256"):
+            for key in ("public_record_sha256", "final_sequence_sha256", "h40_sequence_sha256", "h128_sequence_sha256", "trr0002_active_token_ids_sha256", "trr0002_h40_token_ids_sha256"):
                 value = row.get(key)
                 if not isinstance(value, str) or len(value) != 64 or any(char not in _SHA256_HEX for char in value.lower()): raise SelectionError(f"candidate hash malformed: {domain}/{key}")
             if row.get("h129_sequence_sha256") is not None:
