@@ -60,9 +60,22 @@ def test_resource_plan_requires_largest_cell_qualification() -> None:
     assert plan["candidate_proposal_budget"] == 512
     assert plan["candidate_budget"] == 256
     assert plan["qualification_required_before_full_run"] is True
+    assert plan["external_live_watchdog_required"] is True
+    assert plan["largest_representative_cell"] == "finance__public_base"
+    assert plan["maximum_wall_seconds"] is None
     assert plan["candidate_arrays_persisted"] is True
     assert plan["preflight_basis"]["known_transient_bytes_per_qualified_cell"] > 0
     assert plan["preflight_basis"]["peak_memory_measurement"].startswith("required")
+
+
+def test_execution_cells_are_explicit_and_restart_safe() -> None:
+    assert runtime.execution_cells(qualification_only=True) == ("finance__public_base",)
+    remaining = runtime.execution_cells(qualification_cell="finance__public_base", reuse_qualification=True)
+    assert remaining == tuple(cell for cell in runtime.CELL_ORDER if cell != "finance__public_base")
+    with pytest.raises(runtime.A1A2RuntimeError, match="unknown qualification cell"):
+        runtime.execution_cells(qualification_cell="finance__unknown", qualification_only=True)
+    with pytest.raises(runtime.A1A2RuntimeError, match="cannot reuse"):
+        runtime.execution_cells(qualification_only=True, reuse_qualification=True)
 
 
 def test_runtime_requires_explicit_execute_before_cuda_import(tmp_path: Path) -> None:

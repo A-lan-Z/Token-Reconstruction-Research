@@ -258,6 +258,15 @@ def test_capture_public_injected_path_uses_p11_descriptors_and_trr6_keyword(tmp_
     update.write_bytes(b"lora")
     update_hash = hashlib.sha256(update.read_bytes()).hexdigest()
     monkeypatch.setattr(capture, "_load_target_lora_binding", lambda root: update_hash)
+    monkeypatch.setattr(
+        capture,
+        "_observation_tensor_bindings",
+        lambda path, normalized=False: {
+            "activations": "a" * 64,
+            "attention_mask": "b" * 64,
+            "position_ids": "c" * 64,
+        },
+    )
 
     output = root / "experiments" / "TRR-P11" / "evaluation" / "capture"
     result = capture.capture_public(

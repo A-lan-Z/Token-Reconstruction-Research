@@ -29,6 +29,8 @@ RUNTIME_SCHEMA = "token-reconstruction.trr-p11-a1-a2-runtime-binding.v1"
 RUNTIME_STATUS = "BOUND_NATIVE_A1_A2_K256_BEFORE_TRUTH"
 PREDICTION_SCHEMA = "token-reconstruction.trr-p11-a1-a2-prediction.v1"
 PREDICTION_STATUS = "A1_A2_K256_PREDICTIONS_COMPLETE_NO_TRUTH"
+QUALIFICATION_STATUS = "A1_A2_K256_QUALIFICATION_COMPLETE_NO_TRUTH"
+LARGEST_QUALIFICATION_CELL = "finance__public_base"
 DOMAIN_ORDER = selector.DOMAIN_ORDER
 CELL_ORDER = selector.CELL_ORDER
 A1_A2_RECORDS_PER_DOMAIN = selector.A1_A2_RECORDS_PER_DOMAIN
@@ -42,7 +44,8 @@ DEFAULT_RECORD_BATCH_SIZE = 1
 DEFAULT_MINIMUM_FREE_GIB = 8.0
 DEFAULT_MAXIMUM_RESERVED_GIB = 6.0
 DEFAULT_MAXIMUM_RSS_GIB = 16.0
-DEFAULT_MAX_SECONDS = 1800.0
+DEFAULT_MAX_SECONDS: float | None = None
+DEFAULT_WATCHDOG_POLL_SECONDS = 1.0
 
 _SHA256_HEX = frozenset("0123456789abcdef")
 
@@ -394,6 +397,155 @@ def _load_prediction_tensors(path: Path) -> tuple[Any, Any, Any]:
     return tensors["activations"], tensors["attention_mask"], tensors["position_ids"]
 
 
+def execution_cells(
+    *,
+    qualification_cell: str | None = None,
+    qualification_only: bool = False,
+    reuse_qualification: bool = False,
+) -> tuple[str, ...]:
+    """Return the explicit restart-safe cell plan without loading numerical data."""
+    cell = qualification_cell or LARGEST_QUALIFICATION_CELL
+    if cell not in CELL_ORDER:
+        raise A1A2RuntimeError(f"unknown qualification cell: {cell}")
+    if qualification_only and reuse_qualification:
+        raise A1A2RuntimeError("qualification_only cannot reuse an earlier qualification")
+    if qualification_only:
+        return (cell,)
+    if reuse_qualification:
+        return tuple(item for item in CELL_ORDER if item != cell)
+    return tuple(CELL_ORDER)
+
+
+def _load_qualification_receipt(
+    path: Path,
+    *,
+    binding: Mapping[str, Any],
+    observation_record: Mapping[str, Any],
+    expected_cell: str | None,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Validate the retained largest-cell artifacts before a resumed matrix."""
+    payload, record = _load_json(path, description="P11 A1+A2 qualification receipt")
+    if payload.get("schema") != PREDICTION_SCHEMA or payload.get("task_id") != TASK_ID or payload.get("status") != QUALIFICATION_STATUS:
+        raise A1A2RuntimeError("qualification receipt is not a completed truth-free qualification")
+    if payload.get("qualification_only") is not True or payload.get("truth_opened") is not False or payload.get("p03_holdout_accessed") is not False:
+        raise A1A2RuntimeError("qualification receipt boundary is changed")
+    if payload.get("selection_sha256") != binding.get("selection_sha256"):
+        raise A1A2RuntimeError("qualification selection binding differs from the current runtime")
+    observed = payload.get("observation_manifest")
+    if not isinstance(observed, Mapping) or observed.get("sha256") != observation_record.get("sha256"):
+        raise A1A2RuntimeError("qualification observation binding differs from the current capture")
+    cell = payload.get("qualification_cell")
+    if not isinstance(cell, str) or cell not in CELL_ORDER:
+        raise A1A2RuntimeError("qualification cell identity is absent or changed")
+    if expected_cell is not None and cell != expected_cell:
+        raise A1A2RuntimeError("qualification cell does not match the requested restart")
+    cells = payload.get("cells")
+    if not isinstance(cells, Mapping) or set(cells) != {cell}:
+        raise A1A2RuntimeError("qualification receipt does not contain exactly one retained cell")
+    cell_payload = cells[cell]
+    if not isinstance(cell_payload, Mapping):
+        raise A1A2RuntimeError("qualification cell payload is malformed")
+    for key in ("file", "trace", "cost", "receipt"):
+        value = cell_payload.get(key)
+        if not isinstance(value, Mapping):
+            raise A1A2RuntimeError(f"qualification {key} binding is absent")
+        _record(
+            Path(str(value.get("path", ""))),
+            expected_sha256=str(value.get("sha256")),
+            expected_bytes=int(value.get("bytes")) if value.get("bytes") is not None else None,
+            description=f"qualification {key} {cell}",
+        )
+    return payload, record
+
+
+def _watchdog_gpu_index(device: Any) -> int:
+    value = str(device)
+    if ":" in value:
+        value = value.rsplit(":", 1)[1]
+    try:
+        return int(value)
+    except ValueError as exc:
+        raise A1A2RuntimeError(f"cannot determine CUDA device index: {device}") from exc
+
+
+def _start_external_watchdog(
+    *,
+    root: Path,
+    output: Path,
+    device: Any,
+    maximum_rss_gib: float,
+    minimum_free_gpu_gib: float,
+    maximum_seconds: float | None,
+    phase: str,
+) -> tuple[subprocess.Popen[Any], Path, list[str]]:
+    script = root / "scripts" / "trr_p11" / "live_watchdog.py"
+    if script.is_symlink() or not script.is_file():
+        raise A1A2RuntimeError(f"P11 live watchdog is unavailable: {script}")
+    receipt_path = output / f"resource_watchdog_{phase}.json"
+    if receipt_path.exists() or receipt_path.is_symlink():
+        raise A1A2RuntimeError(f"P11 live watchdog receipt is create-only: {receipt_path}")
+    command = [
+        sys.executable,
+        str(script),
+        "--parent-pid",
+        str(__import__("os").getpid()),
+        "--output",
+        str(receipt_path),
+        "--minimum-free-gib",
+        str(minimum_free_gpu_gib),
+        "--maximum-rss-gib",
+        str(maximum_rss_gib),
+        "--poll-seconds",
+        str(DEFAULT_WATCHDOG_POLL_SECONDS),
+        "--gpu-index",
+        str(_watchdog_gpu_index(device)),
+    ]
+    if maximum_seconds is not None:
+        command.extend(["--maximum-seconds", str(maximum_seconds)])
+    try:
+        process = subprocess.Popen(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+    except OSError as exc:
+        raise A1A2RuntimeError("failed to start external P11 live watchdog") from exc
+    return process, receipt_path, command
+
+
+def _stop_external_watchdog(
+    process: subprocess.Popen[Any] | None,
+    receipt_path: Path | None,
+    *,
+    root: Path,
+    command: Sequence[str] | None,
+) -> dict[str, Any] | None:
+    if process is None or receipt_path is None:
+        return None
+    if process.poll() is None:
+        process.terminate()
+        try:
+            process.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.wait(timeout=5)
+    if not receipt_path.exists() and not receipt_path.is_symlink():
+        _write_create_only(
+            receipt_path,
+            {
+                "schema": "token-reconstruction.trr-p11-live-watchdog.v1",
+                "task_id": TASK_ID,
+                "status": "STOPPED_BY_RUNTIME_AFTER_PASS",
+                "parent_pid": __import__("os").getpid(),
+                "command": list(command or ()),
+            },
+            root=root,
+            description="P11 live watchdog receipt",
+        )
+    return {
+        "status": "EXTERNAL_WATCHDOG_STOPPED",
+        "command": list(command or ()),
+        "process_returncode": process.returncode,
+        "receipt": _record(receipt_path, description="P11 live watchdog receipt"),
+    }
+
+
 def run_native_a1_a2(
     *,
     binding_path: Path,
@@ -402,7 +554,10 @@ def run_native_a1_a2(
     repository_root: Path,
     device: str = "cuda",
     execute: bool = False,
-    max_seconds: float = DEFAULT_MAX_SECONDS,
+    max_seconds: float | None = DEFAULT_MAX_SECONDS,
+    qualification_cell: str | None = None,
+    qualification_only: bool = False,
+    qualification_receipt_path: Path | None = None,
 ) -> dict[str, Any]:
     """Run native A1+A2 on first-128 rows of each fresh P11 observation cell."""
     if not execute:
@@ -418,11 +573,20 @@ def run_native_a1_a2(
     except ValueError as exc:
         raise A1A2RuntimeError(f"A1+A2 output must be below {allowed}") from exc
     if output.exists() or output.is_symlink():
-        raise A1A2RuntimeError(f"A1+A2 output is create-only: {output}")
-    output.mkdir(parents=True)
+        if qualification_only or qualification_receipt_path is None or not output.is_dir():
+            raise A1A2RuntimeError(f"A1+A2 output is create-only: {output}")
+    else:
+        output.mkdir(parents=True)
+    if qualification_only and qualification_receipt_path is not None:
+        raise A1A2RuntimeError("qualification_only cannot receive a prior qualification receipt")
+    if not qualification_only and qualification_receipt_path is None:
+        raise A1A2RuntimeError("full A1+A2 matrix requires a prior retained qualification receipt")
     started_utc = _utc_now()
     started_clock = time.perf_counter()
     failure_path = output / "failure.json"
+    watchdog_process: subprocess.Popen[Any] | None = None
+    watchdog_receipt_path: Path | None = None
+    watchdog_command: list[str] | None = None
     try:
         binding, _binding_record = _load_json(Path(binding_path), description="P11 A1+A2 runtime binding")
         validate_runtime_binding(binding, root=root)
@@ -438,6 +602,27 @@ def run_native_a1_a2(
         subset = first128_subset_binding(selection_context)
         if subset["record_ids_sha256"] != binding["subset"]["record_ids_sha256"] or subset["h128_sequence_sha256_digest"] != binding["subset"]["h128_sequence_sha256_digest"]:
             raise A1A2RuntimeError("A1+A2 first-128 selection identity changed")
+        if qualification_only:
+            cells_to_run = execution_cells(qualification_cell=qualification_cell, qualification_only=True)
+            qualification_payload = None
+            qualification_record = None
+            reused_qualification_cell = None
+        else:
+            expected_qualification_cell = qualification_cell or LARGEST_QUALIFICATION_CELL
+            qualification_path = Path(qualification_receipt_path).expanduser()
+            if not qualification_path.is_absolute():
+                qualification_path = root / qualification_path
+            qualification_path = qualification_path.resolve()
+            if qualification_path.parent != output:
+                raise A1A2RuntimeError("qualification receipt and resumed matrix must share the output root")
+            qualification_payload, qualification_record = _load_qualification_receipt(
+                qualification_path,
+                binding=binding,
+                observation_record=observation_record,
+                expected_cell=expected_qualification_cell,
+            )
+            reused_qualification_cell = str(qualification_payload["qualification_cell"])
+            cells_to_run = execution_cells(qualification_cell=reused_qualification_cell, reuse_qualification=True)
 
         import gc
         import torch
@@ -455,8 +640,18 @@ def run_native_a1_a2(
             "minimum_free_gib": 8.0,
             "maximum_reserved_gib": 6.0,
             "maximum_rss_gib": 16.0,
-            "max_seconds": float(max_seconds),
+            "max_seconds": float(max_seconds) if max_seconds is not None else float("inf"),
         })()
+        watchdog_phase = "qualification" if qualification_only else "matrix"
+        watchdog_process, watchdog_receipt_path, watchdog_command = _start_external_watchdog(
+            root=root,
+            output=output,
+            device=torch_device,
+            maximum_rss_gib=float(guard_args.maximum_rss_gib),
+            minimum_free_gpu_gib=float(guard_args.minimum_free_gib),
+            maximum_seconds=max_seconds,
+            phase=watchdog_phase,
+        )
         preflight_events = [legacy._resource_preflight(guard_args, torch_device, stage="before_a1_a2_load", started=started_clock)]
         resources = binding["resources"]
         snapshot = Path(str(resources["model_snapshot"]["path"]))
@@ -479,10 +674,12 @@ def run_native_a1_a2(
             policy=policy,
         )
         cells: dict[str, Any] = {}
+        if qualification_payload is not None:
+            cells.update({str(key): dict(value) for key, value in qualification_payload["cells"].items()})
         subset_indices = list(range(A1_A2_RECORDS_PER_DOMAIN))
         subset_indices_sha256 = _canonical_digest(subset_indices)
         state_file_binding = dict(resources["retained_a1_lens"])
-        for cell in CELL_ORDER:
+        for cell in cells_to_run:
             descriptor = next((item.get("observation") for item in observations.get("cells", []) if isinstance(item, Mapping) and item.get("cell_id") == cell), None)
             if not isinstance(descriptor, Mapping):
                 raise A1A2RuntimeError(f"P11 observation cell is absent: {cell}")
@@ -652,10 +849,22 @@ def run_native_a1_a2(
             gc.collect()
             if torch_device.type == "cuda":
                 torch.cuda.empty_cache()
+        watchdog_record = _stop_external_watchdog(
+            watchdog_process,
+            watchdog_receipt_path,
+            root=root,
+            command=watchdog_command,
+        )
+        watchdog_process = None
+        run_status = QUALIFICATION_STATUS if qualification_only else PREDICTION_STATUS
         receipt = {
             "schema": PREDICTION_SCHEMA,
             "task_id": TASK_ID,
-            "status": PREDICTION_STATUS,
+            "status": run_status,
+            "qualification_only": qualification_only,
+            "qualification_cell": next(iter(cells)) if qualification_only else reused_qualification_cell,
+            "qualification_reused": qualification_payload is not None,
+            "qualification_receipt": qualification_record,
             "method_id": METHOD_ID,
             "runtime_binding": _record(Path(binding_path), description="P11 A1+A2 runtime binding"),
             "observation_manifest": observation_record,
@@ -663,16 +872,19 @@ def run_native_a1_a2(
             "subset": binding["subset"],
             "policy": validate_native_policy(binding["policy"]),
             "cells": cells,
-            "trace_files": [cells[cell]["trace"] for cell in CELL_ORDER],
-            "cost_files": [cells[cell]["cost"] for cell in CELL_ORDER],
+            "trace_files": [cells[cell]["trace"] for cell in CELL_ORDER if cell in cells],
+            "cost_files": [cells[cell]["cost"] for cell in CELL_ORDER if cell in cells],
             "candidate_arrays_persisted": True,
             "resource_preflight": preflight_events,
+            "resource_watchdog": watchdog_record,
             "public_prefix": public_evidence,
             "execution": {
                 "started_utc": started_utc,
                 "ended_utc": _utc_now(),
                 "elapsed_seconds": time.perf_counter() - started_clock,
                 "command": list(sys.argv),
+                "qualification_only": qualification_only,
+                "qualification_cell": next(iter(cells)) if qualification_only else reused_qualification_cell,
                 "code_commit": _git_head(root),
                 "python": sys.executable,
                 "python_version": platform.python_version(),
@@ -686,16 +898,29 @@ def run_native_a1_a2(
                 "p03_holdout_accessed": False,
             },
         }
-        receipt_record = _write_create_only(output / "predictions.json", receipt, root=root, description="P11 A1+A2 prediction receipt")
-        return {"task_id": TASK_ID, "status": PREDICTION_STATUS, "receipt": receipt_record, "truth_opened": False}
+        receipt_name = "qualification.json" if qualification_only else "predictions.json"
+        receipt_record = _write_create_only(output / receipt_name, receipt, root=root, description=f"P11 A1+A2 {receipt_name} receipt")
+        result = {"task_id": TASK_ID, "status": run_status, "truth_opened": False}
+        result["qualification_receipt" if qualification_only else "receipt"] = receipt_record
+        return result
     except Exception as exc:
+        if watchdog_process is not None:
+            try:
+                _stop_external_watchdog(
+                    watchdog_process,
+                    watchdog_receipt_path,
+                    root=root,
+                    command=watchdog_command,
+                )
+            except Exception:
+                pass
         if not failure_path.exists() and not failure_path.is_symlink():
             _write_create_only(
                 failure_path,
                 {
                     "schema": PREDICTION_SCHEMA,
                     "task_id": TASK_ID,
-                    "status": "A1_A2_K256_PREDICTIONS_FAILED_NO_TRUTH",
+                    "status": "A1_A2_K256_QUALIFICATION_OR_MATRIX_FAILED_NO_TRUTH",
                     "started_utc": started_utc,
                     "ended_utc": _utc_now(),
                     "error_type": type(exc).__name__,
@@ -734,7 +959,9 @@ def resource_plan() -> dict[str, Any]:
         "maximum_reserved_gpu_gib": DEFAULT_MAXIMUM_RESERVED_GIB,
         "maximum_host_rss_gib": DEFAULT_MAXIMUM_RSS_GIB,
         "maximum_wall_seconds": DEFAULT_MAX_SECONDS,
-        "largest_representative_cell": "one 128-record comparator subset per domain; P11 observations are 256 rows and the comparator consumes the first 128",
+        "external_live_watchdog_required": True,
+        "watchdog_poll_seconds": DEFAULT_WATCHDOG_POLL_SECONDS,
+        "largest_representative_cell": LARGEST_QUALIFICATION_CELL,
         "qualification_required_before_full_run": True,
         "candidate_arrays_persisted": True,
         "truth_opened": False,
@@ -751,6 +978,7 @@ def resource_plan() -> dict[str, Any]:
             "model_workspace_bound": "runtime-dependent; enforced by free/reserved/RSS guards",
             "peak_memory_measurement": "required from the largest representative cell before the four-cell matrix",
             "wall_time_measurement": "required from the largest representative cell before the four-cell matrix",
+            "external_watchdog": "separate stdlib child polls parent RSS, GPU free memory, temperature, and compute-app exclusivity between cell checks",
             "equivalence_check": "warmup output vs three measured outputs exact per record; first measured proposal trace retained for every record",
         },
     }
@@ -762,6 +990,7 @@ __all__ = [
     "METHOD_ID",
     "PREDICTION_SCHEMA",
     "bind_native_runtime",
+    "execution_cells",
     "first128_subset_binding",
     "resource_plan",
     "run_native_a1_a2",

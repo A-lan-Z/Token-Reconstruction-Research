@@ -1,0 +1,182 @@
+{
+  "aggregate_observed_historical": {
+    "candidate_simulations_total": 5439488,
+    "cold_peak_memory_maxima": {
+      "cuda_peak_allocated_bytes": 5378815488,
+      "cuda_peak_reserved_bytes": 5385486336,
+      "process_max_rss_bytes": 4991557632
+    },
+    "measured_seconds_sum": 108.31909075305157,
+    "peak_memory_maxima": {
+      "cuda_peak_allocated_bytes": 2398087168,
+      "cuda_peak_reserved_bytes": 3940548608,
+      "process_max_rss_bytes": 4991557632
+    },
+    "public_prefix_calls_total": 42752,
+    "timed_interval_total_seconds": 145.11571795299824,
+    "warmup_seconds_sum": 36.79304907799815
+  },
+  "calculation": {
+    "formula": "Apply the worst observed finance public_base per-record total (warmup plus three measured calls) to all 512 first-128 comparator records, then add one historical model/embedding/state startup; retain margin for P11 I/O, capture, allocator variance, and watchdog overhead.",
+    "geometry_aware_all_512_record_proxy_minutes": 30.616102524800226,
+    "geometry_aware_all_512_record_proxy_seconds": 1836.9661514880136,
+    "geometry_aware_proxy_plus_model_startup_minutes": 30.72912221851681,
+    "geometry_aware_proxy_plus_model_startup_seconds": 1843.7473331110086,
+    "geometry_caveat": "Historical Pile receipts used 40 tokens while P11 stores 128, so row scaling is a lower planning proxy rather than a P11 runtime guarantee.",
+    "historical_pile_tokens_including_bos": 40,
+    "historical_receipt_rows_per_cell": 16,
+    "model_startup_seconds_from_historical_finance_base": 6.781181622995064,
+    "p11_a1_a2_subset_records_per_domain": 128,
+    "p11_a1_a2_subset_total_records_across_four_cells": 512,
+    "p11_observation_tokens_including_bos": 128,
+    "row_scaled_measured_seconds_for_128_rows_per_domain": 866.5527260244126,
+    "row_scaled_timed_interval_minutes_for_128_rows_per_domain": 19.3487623937331,
+    "row_scaled_timed_interval_seconds_for_128_rows_per_domain": 1160.925743623986,
+    "row_scaled_warmup_seconds_for_128_rows_per_domain": 294.3443926239852,
+    "worst_finance_record_seconds_including_warmup_and_three_measured_calls": 3.5878245146250265
+  },
+  "interpretation": "The geometry-aware proxy is a release-planning envelope, not a completion claim or a fixed timeout. Qualify the largest representative cell with a live watchdog, then retain its first scientific output if it passes rather than rerunning solely for qualification.",
+  "purpose": "Bound the preregistered A1+A2 K256 comparator runtime before any P11 model or GPU execution.",
+  "resource_release_rules": {
+    "arbitrary_timeout_cap_must_not_truncate_matrix": true,
+    "development_scores_included": false,
+    "external_live_watchdog_required": true,
+    "largest_representative_cell_qualification_required": true,
+    "output_equivalence_required_for_batching_or_microbatching": true,
+    "p11_gpu_used": false,
+    "p11_model_loaded": false,
+    "p11_runtime_measured": false,
+    "restart_safe_cells_required": true,
+    "source_selection_started": false,
+    "truth_opened": false
+  },
+  "schema": "token-reconstruction.trr-p11-historical-a1-a2-runtime-estimate.v2",
+  "source_receipts": [
+    {
+      "bytes": 15903,
+      "candidate_simulations": 2080768,
+      "cell": "finance__public_base",
+      "cold_peak_memory": {
+        "cuda_peak_allocated_bytes": 5378815488,
+        "cuda_peak_reserved_bytes": 5385486336,
+        "process_max_rss_bytes": 4991557632
+      },
+      "historical_rows": 16,
+      "historical_sequence_tokens": 128,
+      "measured_runs_per_record": 3,
+      "measured_seconds_sum": 42.63983839302091,
+      "method": "frozen_a1_a2_k256",
+      "method_state_load_seconds": 0.030569326001568697,
+      "model_load_seconds": 5.285479084996041,
+      "path": "../TRR-0004/experiments/TRR-0004/fresh_confirmation_v1/predictions_v2/finance/public_base/frozen_a1_a2_k256.run.json",
+      "peak_memory": {
+        "cuda_peak_allocated_bytes": 2398087168,
+        "cuda_peak_reserved_bytes": 3940548608,
+        "process_max_rss_bytes": 4991557632
+      },
+      "per_record_total_seconds": 3.5878245146250265,
+      "public_embedding_load_seconds": 1.465133211997454,
+      "public_prefix_calls": 16320,
+      "runtime_device": "NVIDIA GeForce RTX 5080",
+      "sha256": "2ea08ba98940683f45291b8ef73ff61a2f51fe5b72377c209ed130a65e67c221",
+      "timed_interval_total_seconds": 57.405192234000424,
+      "warmup_runs_per_record": 1,
+      "warmup_seconds_sum": 14.764198027987732
+    },
+    {
+      "bytes": 15922,
+      "candidate_simulations": 2080768,
+      "cell": "finance__public_lora_2601",
+      "cold_peak_memory": {
+        "cuda_peak_allocated_bytes": 5378815488,
+        "cuda_peak_reserved_bytes": 5385486336,
+        "process_max_rss_bytes": 4991557632
+      },
+      "historical_rows": 16,
+      "historical_sequence_tokens": 128,
+      "measured_runs_per_record": 3,
+      "measured_seconds_sum": 41.59707301700837,
+      "method": "frozen_a1_a2_k256",
+      "method_state_load_seconds": 0.030569326001568697,
+      "model_load_seconds": 5.285479084996041,
+      "path": "../TRR-0004/experiments/TRR-0004/fresh_confirmation_v1/predictions_v2/finance/public_lora_2601/frozen_a1_a2_k256.run.json",
+      "peak_memory": {
+        "cuda_peak_allocated_bytes": 2398087168,
+        "cuda_peak_reserved_bytes": 3940548608,
+        "process_max_rss_bytes": 4991557632
+      },
+      "per_record_total_seconds": 3.481178657937562,
+      "public_embedding_load_seconds": 1.465133211997454,
+      "public_prefix_calls": 16320,
+      "runtime_device": "NVIDIA GeForce RTX 5080",
+      "sha256": "03782ce3a5988d26fc8e1976f616671c89a3a861b4c215c89fb1bc455b0ab166",
+      "timed_interval_total_seconds": 55.69885852700099,
+      "warmup_runs_per_record": 1,
+      "warmup_seconds_sum": 14.10097086802125
+    },
+    {
+      "bytes": 15951,
+      "candidate_simulations": 638976,
+      "cell": "pile__public_base",
+      "cold_peak_memory": {
+        "cuda_peak_allocated_bytes": 5378815488,
+        "cuda_peak_reserved_bytes": 5385486336,
+        "process_max_rss_bytes": 4991557632
+      },
+      "historical_rows": 16,
+      "historical_sequence_tokens": 40,
+      "measured_runs_per_record": 3,
+      "measured_seconds_sum": 12.137996273006138,
+      "method": "frozen_a1_a2_k256",
+      "method_state_load_seconds": 0.030569326001568697,
+      "model_load_seconds": 5.285479084996041,
+      "path": "../TRR-0004/experiments/TRR-0004/fresh_confirmation_v1/predictions_v2/pile/public_base/frozen_a1_a2_k256.run.json",
+      "peak_memory": {
+        "cuda_peak_allocated_bytes": 2191221760,
+        "cuda_peak_reserved_bytes": 3940548608,
+        "process_max_rss_bytes": 4991557632
+      },
+      "per_record_total_seconds": 1.0075737223123724,
+      "public_embedding_load_seconds": 1.465133211997454,
+      "public_prefix_calls": 5056,
+      "runtime_device": "NVIDIA GeForce RTX 5080",
+      "sha256": "02822abbaeec1bad00ec90ade5e4e70c4e73475dd37c7fc4d9536d5dce20d8c7",
+      "timed_interval_total_seconds": 16.12117955699796,
+      "warmup_runs_per_record": 1,
+      "warmup_seconds_sum": 3.9823705299859284
+    },
+    {
+      "bytes": 15988,
+      "candidate_simulations": 638976,
+      "cell": "pile__public_lora_2601",
+      "cold_peak_memory": {
+        "cuda_peak_allocated_bytes": 5378815488,
+        "cuda_peak_reserved_bytes": 5385486336,
+        "process_max_rss_bytes": 4991557632
+      },
+      "historical_rows": 16,
+      "historical_sequence_tokens": 40,
+      "measured_runs_per_record": 3,
+      "measured_seconds_sum": 11.944183070016152,
+      "method": "frozen_a1_a2_k256",
+      "method_state_load_seconds": 0.030569326001568697,
+      "model_load_seconds": 5.285479084996041,
+      "path": "../TRR-0004/experiments/TRR-0004/fresh_confirmation_v1/predictions_v2/pile/public_lora_2601/frozen_a1_a2_k256.run.json",
+      "peak_memory": {
+        "cuda_peak_allocated_bytes": 2191221760,
+        "cuda_peak_reserved_bytes": 3940548608,
+        "process_max_rss_bytes": 4991557632
+      },
+      "per_record_total_seconds": 0.9931554771874289,
+      "public_embedding_load_seconds": 1.465133211997454,
+      "public_prefix_calls": 5056,
+      "runtime_device": "NVIDIA GeForce RTX 5080",
+      "sha256": "431bce827cba6df4dabd09b3f5264cc442cbbb0df52c51780dedc97895dd1bce",
+      "timed_interval_total_seconds": 15.890487634998863,
+      "warmup_runs_per_record": 1,
+      "warmup_seconds_sum": 3.9455096520032384
+    }
+  ],
+  "status": "HISTORICAL_METADATA_ONLY_ESTIMATE",
+  "task_id": "TRR-P11"
+}

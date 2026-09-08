@@ -538,17 +538,7 @@ def build_observation_manifest(
 
             normalized_tensor_sha = normalized.get("normalized_tensor_sha256")
             if normalized_tensor_sha is None:
-                try:
-                    normalized_tensor_sha = _observation_tensor_bindings(Path(str(actual["path"])), normalized=True)
-                except CaptureAdapterError:
-                    # Synthetic adapter tests may supply a descriptor without a
-                    # readable safetensors payload.  A supplied tensor map is
-                    # still validated and retained as the test's normalized
-                    # stand-in; real capture files must pass the load above.
-                    if normalized.get("tensor_sha256") is not None and normalized.get("capture_tensor_sha256") is None:
-                        normalized_tensor_sha = normalized["tensor_sha256"]
-                    else:
-                        raise
+                normalized_tensor_sha = _observation_tensor_bindings(Path(str(actual["path"])), normalized=True)
             normalized["capture_tensor_sha256"] = raw_tensor_sha
             normalized["normalized_tensor_sha256"] = _validate_hash_map(
                 normalized_tensor_sha, description=f"P11 normalized observation {cell_id}"
