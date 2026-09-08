@@ -1,0 +1,168 @@
+{
+  "boundaries": {
+    "gpu_used": false,
+    "model_loaded": false,
+    "p03_holdout_accessed": false,
+    "selection_started": true,
+    "source_rows_read": true,
+    "source_text_or_token_ids_written": false,
+    "source_text_read": true,
+    "truth_opened": false
+  },
+  "command": [
+    "python3",
+    "scripts/trr_p11/run_source_selection.py",
+    "--repository-root",
+    ".",
+    "--manifest",
+    "experiments/TRR-P11/manifest.json",
+    "--audit",
+    "experiments/TRR-P11/exclusions/recovery_identity_audit_r17.json",
+    "--source-inputs",
+    "experiments/TRR-P11/selector/public_source_inputs_r1.json",
+    "--output",
+    "outputs/TRR-P11/private-evaluation/selection/source_selection.json",
+    "--pr20-root",
+    "../TRR-0010"
+  ],
+  "created_utc": "2026-09-08T10:17:07Z",
+  "entrypoint": {
+    "function": "select_sources",
+    "module": "scripts.trr_p11.source_selector",
+    "selector_source": {
+      "bytes": 52211,
+      "path": "scripts/trr_p11/source_selector.py",
+      "sha256": "0397c42b35e4962d1c443808714e8b0b86ad1e52a4dbe9eca82174039f70b700"
+    },
+    "selector_source_sha256": "0397c42b35e4962d1c443808714e8b0b86ad1e52a4dbe9eca82174039f70b700",
+    "wrapper": {
+      "bytes": 3096,
+      "path": "scripts/trr_p11/run_source_selection.py",
+      "sha256": "94a754d4f2a792c279796c414a1f68876b78ed7d1c774c0988b7a4df83dd67e5"
+    },
+    "wrapper_sha256": "94a754d4f2a792c279796c414a1f68876b78ed7d1c774c0988b7a4df83dd67e5"
+  },
+  "identity_contract": {
+    "raw_h40_namespace": "h40_sequence_sha256: raw little-endian signed-int32 first-40 IDs",
+    "records_per_domain": 256,
+    "scored_post_bos_tokens": 127,
+    "selection_seed": 5011,
+    "source_ranges_half_open": {
+      "finance": [
+        20000,
+        28000
+      ],
+      "pile": [
+        0,
+        2000
+      ]
+    },
+    "stored_sequence_tokens_including_bos": 128,
+    "trr0002_h40_namespace": "trr0002_h40_token_ids_sha256: tensor-header plus little-endian signed-int64 first-40 IDs"
+  },
+  "inputs": {
+    "audit": {
+      "coverage_complete": true,
+      "path": "experiments/TRR-P11/exclusions/recovery_identity_audit_r17.json",
+      "selection_release": true,
+      "sha256": "43416d0d1945821812278df8dfc3ee7639f872e9c8407abdf245fb281bda9d65",
+      "status": "COMPLETE_CANONICAL_SEQUENCE_EXCLUSION_AUDIT"
+    },
+    "manifest": {
+      "input_sha256_before_execution": "22e3b51e4835e85ccaf84c52248bb53c02e702c586f6d36116422e0fd5670f3a",
+      "path": "experiments/TRR-P11/manifest.json",
+      "selection_release_at_execution": true,
+      "task_id": "TRR-P11"
+    },
+    "pr20_root": "../TRR-0010",
+    "repository_root": ".",
+    "root_release": {
+      "path": "experiments/TRR-P11/exclusions/root_selection_release_r1.json",
+      "sha256": "0e1816711965b0601a2e00ce4c187bded9f0c0fca4493e71ef9478a772659f95",
+      "status": "PASS_ROOT_REVIEW_SELECTION_AUTHORIZED"
+    },
+    "source_inputs": {
+      "bytes": 3311,
+      "path": "experiments/TRR-P11/selector/public_source_inputs_r1.json",
+      "sha256": "1fa6aea4485ad602d396e6a57dc53257977a0f4581375892ef22ab176d52b409"
+    },
+    "union": {
+      "path": "experiments/TRR-P11/exclusions/identity_union_export_r14.json",
+      "selection_release": true,
+      "sha256": "125275eab38c66117d45f5e0df4085058dae8a5c939fff1554cab7e608eb1fe1"
+    }
+  },
+  "outer_execution": {
+    "command": [
+      "/usr/bin/env",
+      "HF_DATASETS_OFFLINE=1",
+      "HF_HUB_OFFLINE=1",
+      "OMP_NUM_THREADS=1",
+      "TOKENIZERS_PARALLELISM=false",
+      "/usr/bin/prlimit",
+      "--cpu=7200",
+      "--",
+      "/usr/bin/timeout",
+      "--foreground",
+      "--kill-after=60s",
+      "10800s",
+      "python3",
+      "scripts/trr_p11/run_source_selection.py",
+      "--repository-root",
+      ".",
+      "--manifest",
+      "experiments/TRR-P11/manifest.json",
+      "--audit",
+      "experiments/TRR-P11/exclusions/recovery_identity_audit_r17.json",
+      "--source-inputs",
+      "experiments/TRR-P11/selector/public_source_inputs_r1.json",
+      "--output",
+      "outputs/TRR-P11/private-evaluation/selection/source_selection.json",
+      "--pr20-root",
+      "../TRR-0010"
+    ],
+    "cpu_limit_seconds": 7200,
+    "environment": {
+      "HF_DATASETS_OFFLINE": "1",
+      "HF_HUB_OFFLINE": "1",
+      "OMP_NUM_THREADS": "1",
+      "TOKENIZERS_PARALLELISM": "false"
+    },
+    "kill_grace_seconds": 60,
+    "path_resolution": "wrapper resolves relative inputs/output from --repository-root; --pr20-root is the existing sibling ../TRR-0010",
+    "release_guard_order": "manifest, exact B0/B1 bank/development identities, and released r17 exclusion audit were validated before trusted public rerender/tokenization",
+    "started_or_observed": "2026-09-08",
+    "status": "EXECUTED_PASS",
+    "wall_limit_seconds": 10800
+  },
+  "output": {
+    "bytes": 629260,
+    "mode": "create_only",
+    "path": "outputs/TRR-P11/private-evaluation/selection/source_selection.json",
+    "private_payload": true,
+    "records_by_domain": {
+      "finance": 256,
+      "pile": 256
+    },
+    "sha256": "fe7129e9d7230100d1900facea98b15b8000f382a0bd7035b2039b4d9429bf68",
+    "status": "FROZEN_TRR-P11_SOURCE_SELECTION_NO_TRUTH"
+  },
+  "release_gate": {
+    "audit_selection_release_true_required": true,
+    "complete_exclusion_coverage_required": true,
+    "current_audit_blocks_execution": false,
+    "current_audit_review_caveat": "r15 has a complete canonical union with root-reviewed coverage but selection_release remains false; the stable release slot is intentionally not created here.",
+    "exact_replication_inputs_match_required": true,
+    "full_identity_union_required": true,
+    "root_review_required_before_execution": true,
+    "satisfied_by": {
+      "audit": "experiments/TRR-P11/exclusions/recovery_identity_audit_r17.json",
+      "root_release": "experiments/TRR-P11/exclusions/root_selection_release_r1.json",
+      "union": "experiments/TRR-P11/exclusions/identity_union_export_r14.json"
+    },
+    "selection_release_true_required": true
+  },
+  "schema": "token-reconstruction.trr-p11-source-selection-command.v1",
+  "status": "EXECUTED_SELECTION_RELEASED_NO_TRUTH",
+  "task_id": "TRR-P11"
+}
