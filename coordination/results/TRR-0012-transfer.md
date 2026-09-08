@@ -22,7 +22,7 @@ The immutable approved `variant_plan_v2.json` (SHA-256 `5ee7329a5e369558576c1879
 
 The focused actual-constructor proof passed and rejected the incompatible prior plan: `seed_compatibility_test_receipt_v2.json` SHA-256 `90208d1a0fba3e3dbfbc3f8a02fcdf382c46a04c2c9b7190b7e8aa10cddb0921`. The corrected plan `capture_plan_exec_v2.json` SHA-256 `8fee73332d66f247f09f7b55430284b53814f3b9dfa892107e8b3aa8535b8966` records approved and executed seeds separately, with exact update equivalence. Prior v1/v2 setup artifacts are excluded in `seed_plan_exclusion_receipt_v1.json` SHA-256 `a9a1bafbbfbf80afcaaf440c01054449e12af90258e18dc75e5b1c9de2767f25`.
 
-Use the superseding release `root_release_transfer_v2.json` SHA-256 `ae0d6643df04b065b727f48aaae0d5c4589d2e3789d53a73f0cf03ae6a664391`, config `capture_config_v3.json` SHA-256 `09188e549c618743aba56ccfbd28076cc4bb089b9bcbb3e5f9b547740596c30d`, and commands `capture_commands_v3.json` SHA-256 `f11baabab088b031ed64c8200e2c3b7582810e5ac2b437a41135fe301364b91f`. No GPU capture has started.
+Use the superseding release `root_release_transfer_v2.json` SHA-256 `ae0d6643df04b065b727f48aaae0d5c4589d2e3789d53a73f0cf03ae6a664391`, config `capture_config_v3.json` SHA-256 `09188e549c618743aba56ccfbd28076cc4bb089b9bcbb3e5f9b547740596c30d`, and commands `capture_commands_v3.json` SHA-256 `f11baabab088b031ed64c8200e2c3b7582810e5ac2b437a41135fe301364b91f`. At that preparation snapshot, no GPU capture had started; the later execution is documented below.
 
 ## Expanded transfer execution completion
 
