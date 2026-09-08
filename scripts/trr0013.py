@@ -243,7 +243,7 @@ def bank_check(inputs_path, output, limit=12000):
             count=min(tensors['token_ids'].shape[0],limit-origin)
             for j in range(0,count,8):
                 n=min(8,count-j);H=tensors['activations'][j:j+n].to('cuda',dtype=torch.float32)
-                M=tensors['attention_mask'][j:j+n].to('cuda');Y=tensors['token_ids'][j:j+n].to('cuda')
+                M=tensors['attention_mask'][j:j+n].to('cuda');Y=tensors['token_ids'][j:j+n].to('cuda',dtype=torch.long)
                 z=model.projected_hidden(H,M);valid=M.clone();valid[:,0]=False
                 ix=valid.nonzero()
                 for chunk in ix.split(256):
