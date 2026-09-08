@@ -393,13 +393,13 @@ def arm_watchdog(plan: Mapping[str, Any], bank: str) -> Path:
 
 
 
-def _verify_frozen_record(expected: Mapping[str, Any], *, label: str) -> dict[str, Any]:
+def _verify_frozen_record(expected: Mapping[str, Any], *, label: str, reject_tmp: bool = True) -> dict[str, Any]:
     """Re-read one plan-bound file and require byte/hash identity."""
 
     raw_path = expected.get("path")
     if not isinstance(raw_path, str) or not raw_path:
         raise LauncherError(f"{label} has no frozen path")
-    actual = record(Path(raw_path), label=label)
+    actual = record(Path(raw_path), label=label, reject_tmp=reject_tmp)
     for key in ("path", "bytes", "sha256"):
         if str(actual.get(key)) != str(expected.get(key)):
             raise LauncherError(
@@ -442,7 +442,16 @@ def verify_frozen_inputs(plan: Mapping[str, Any]) -> None:
     for role, expected in expected_b0_artifacts.items():
         if not isinstance(expected, Mapping):
             raise LauncherError(f"B0 artifact record is malformed: {role}")
-        _verify_frozen_record(expected, label=f"B0 {role}")
+        if role == "position_contract":
+            # The unmodified historical loader binding names this read-only
+            # metadata in /tmp. Its exact bytes also survive durably. This is
+            # not a model, bank payload, output, or deployment dependency.
+            durable = record(TASK_EXPERIMENT / "capture" / "b0-position-contract-r1.json", label="durable B0 position contract")
+            if any(str(durable[key]) != str(expected[key]) for key in ("bytes", "sha256")):
+                raise LauncherError("B0 position contract differs from its durable exact-byte copy")
+            _verify_frozen_record(expected, label=f"B0 {role}", reject_tmp=False)
+        else:
+            _verify_frozen_record(expected, label=f"B0 {role}")
     validation = plan.get("validation")
     if not isinstance(validation, Mapping):
         raise LauncherError("plan lacks frozen validation records")
