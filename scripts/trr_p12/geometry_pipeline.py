@@ -512,6 +512,7 @@ def run_pipeline(
             forecast_rows.append(_forecast_record(forecast, record_index=index0, slot=slot0))
     if len(forecast_rows) != len(stages[0].record_order):
         raise GeometryPipelineError("stage 0/64 record counts differ")
+    early_forecast_seconds = time.perf_counter() - stage0_64_started
     stage_bindings["0"] = stages[0].bindings()
     stage_bindings["64"] = stages[64].bindings()
     early_bindings = {"0": stage_bindings["0"], "64": stage_bindings["64"]}
@@ -641,7 +642,7 @@ def run_pipeline(
         },
         "outputs": _relative_output_bindings(outputs),
         "phases": {
-            "early_forecast_seconds": time.perf_counter() - stage0_64_started,
+            "early_forecast_seconds": early_forecast_seconds,
             "forecast_written_utc": forecast_written_utc,
             "later_features_opened_after_forecast": True,
             "later_features_opened_utc": later_load_started_utc,
