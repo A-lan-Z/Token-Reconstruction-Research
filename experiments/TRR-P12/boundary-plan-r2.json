@@ -1,0 +1,294 @@
+{
+  "access_boundary": {
+    "gpu_used_for_design": false,
+    "p03_holdout_accessed": false,
+    "target_prefix_queried_by_reconstructor": false,
+    "target_sources_loaded_by_reconstructor": false,
+    "target_weights_loaded_by_reconstructor": false,
+    "truth_opened_for_design": false
+  },
+  "actual_boundary_analysis": {
+    "full_vocabulary_competitor": "updated winner when argmax changes, otherwise baseline full-vocabulary runner-up; all IDs selected by exact torch.argmax over V=128256",
+    "full_vocabulary_required": true,
+    "geometric_distance": "when projected hidden rows and public E are available, use normal E[w]-E[c], signed distance z\u00b7normal/||normal|| and its signed displacement; verify score_margin = logit_scale * distance * ||normal|| within tolerance",
+    "geometric_pair": "transition competitor pair normal E[w]-E[c]; signed z projection and score-margin reconstruction are retained only where projected rows and public E are available",
+    "no_nearest_euclidean_claim_from_runner_up": true,
+    "retained_per_row": [
+      "baseline_winner",
+      "baseline_runner_up",
+      "updated_winner",
+      "updated_runner_up",
+      "transition_competitor",
+      "baseline_and_updated_scores_for_winner_and_competitor"
+    ],
+    "retrospective_only": true,
+    "runner_up_rule": "mask the full-vocabulary winner then torch.argmax; this is the minimum score margin competitor, not a Euclidean nearest hyperplane",
+    "signed_score_margin": "m_before = b[w]-b[c]; m_after = u[w]-u[c]; signed_displacement = m_after-m_before; negative points toward c",
+    "stage_pairs": [
+      "0_to_64",
+      "0_to_128",
+      "0_to_256"
+    ],
+    "status": "post-freeze_score_only_diagnostic",
+    "strict_crossing": "baseline argmax != updated argmax AND m_before >= 0 AND m_after < 0",
+    "tie_transition": "baseline argmax != updated argmax AND m_after == 0; report separately from strict crossing",
+    "transition_competitor": "updated full-vocabulary winner when its ID differs from baseline, otherwise baseline full-vocabulary runner-up",
+    "unsigned_movement": "report only as diagnostic; never label it a crossing or causal failure",
+    "winner_rule": "torch.argmax over all 128256 vocabulary scores, exact package tie rule"
+  },
+  "claim_scope": "One declared trajectory and its paired reconstruction panel only. This auxiliary result cannot complete or replace the canonical dual-benchmark matrix and must not be generalized to all fine-tuning.",
+  "code_bindings": {
+    "scripts/trr_p12/adapter.py": "83cd781174433eeb1c759cba5ff7b869e14e19407682ece9f8bf379a3682a36d",
+    "scripts/trr_p12/analysis.py": "ba7055caa0ffffb34b3777a1e758361312cfce6f02df57b28471b68fe7145021",
+    "scripts/trr_p12/boundary.py": "6e73c289014ef3c1f34b917afa404c38d7174926642897905c84f8e04d745bed",
+    "scripts/trr_p12/predict.py": "f20001f0139f94e0bc9375e27d8d4595c754265f7d25d52bacc69335a5a20400",
+    "scripts/trr_p12/run_b1.py": "d20137b196e289e9b6767e651cde3ae56603fe5a29190f0e98656605f48e3f34",
+    "tests/test_trr_p12_boundary.py": "431cd48b5c7e54a7a030a95fa82181e33f06770bc13d24ccafc34fffb72a2daf"
+  },
+  "cpu_fixture_validation": {
+    "receipt_path": "experiments/TRR-P12/cpu-fixture-test.receipt.json",
+    "receipt_schema": "token-reconstruction.trr-p12-cpu-fixture-test-receipt.v1",
+    "receipt_sha256": "d7ba3db442ad7b06f457e92443f4dcc0499cbe760e4428cfb4b8273b641b3aa9",
+    "scope": "one public fixture record, expanded_fixed prediction vector equal element-for-element to published expected_predictions.safetensors",
+    "status": "PASS_CPU_FIXTURE_EXACT",
+    "truth_opened": false
+  },
+  "early_direction_predictor": {
+    "first_half_use": "reserved design half only; no labels, later scores, threshold, or fit is used",
+    "forbidden_predictor_inputs": [
+      "stage_128_scores",
+      "stage_256_scores",
+      "later_truth",
+      "current_stage_truth",
+      "target_weights",
+      "target_prefix_outputs"
+    ],
+    "forecast": "u_t = u_0 + (t/64) * (u_64-u_0) for t in {128,256}",
+    "freeze_rule": "materialize predictor outputs for all registered rows before any evaluation truth is opened; later stage scores are used only for post-freeze forecast evaluation",
+    "full_panel_descriptive_records_per_domain": 128,
+    "heldout_check": "report all rows and a predeclared disjoint source-order half; no source/stage selection from later truth",
+    "inputs_only": [
+      "stage_0_full_vocabulary_scores",
+      "stage_64_full_vocabulary_scores"
+    ],
+    "interpretation": "prospective risk association only; it does not establish that a later failure crossed an actual decoder boundary",
+    "margin": "for each forecast t, score of the stage-0 winner w0 minus the maximum estimated score over every v != w0",
+    "method_id": "p12_early_direction_extrapolation_v1",
+    "no_fit_or_threshold_choice": true,
+    "predicted_tie": "risk == 0; retain torch.argmax forecast ID separately for tie handling",
+    "predicted_tie_by_stage": "margin_t == 0; report separately from strict prediction",
+    "primary_evaluation_records_per_domain": 64,
+    "primary_evaluation_source_half": "second 64 records in the frozen source order within each domain",
+    "risk": "-min(margin_128, margin_256)",
+    "risk_by_stage": "risk_t = -margin_t for the matching t in {128,256}",
+    "strict_predicted_change": "for a requested later stage t, predict strict change iff margin_t < 0; never substitute union risk for a single-stage table",
+    "target_label_after_freeze": "baseline-correct and later-stage-wrong token (broken token); report baseline errors and improved tokens separately",
+    "union_label": "baseline-correct and broken at either later stage, descriptive union only",
+    "union_not_used_for": "primary per-stage confusion tables, threshold selection, or stage-specific claims",
+    "union_risk": "-min(margin_128, margin_256), descriptive union only"
+  },
+  "frozen_decoder_binding": {
+    "b1_state": {
+      "method_id": "continued_fixed_readout",
+      "path": "states/expanded_fixed.safetensors",
+      "selected_step": 13000,
+      "sha256": "088be6a6b2842d526f3dab39789728d9cfc23f2fb1fb892d107d46ade2382706"
+    },
+    "b1_unchanged": true,
+    "decoder": {
+      "path": "code/token_reconstruction/trr0005_joint_decoder.py",
+      "sha256": "9cab3cf5ad664c37d91bcd90fe1852df71da25800ddf37291a57000908d3d38f"
+    },
+    "decoder_config": {
+      "path": "config/decoder.json",
+      "sha256": "8ecaa2c4d7ec7fe318ed3d38791ad240438f74266be517aaef118d6ac8de4e36"
+    },
+    "frozen_config": {
+      "path": "config/frozen_config.json",
+      "sha256": "4931a78dff4bd8039f2ba41a442a9dc5e06e0547e92dea114771ebbe87a05040"
+    },
+    "geometry": {
+      "argmax_tie_rule": "torch.argmax over full vocabulary dimension",
+      "compute_dtype": "torch.float32",
+      "hidden_size": 2048,
+      "input_activation_dtype": "torch.bfloat16",
+      "logit_scale": "exp(base.s)",
+      "logit_scale_value": 71.91000599857597,
+      "output_dtype": "torch.int64",
+      "scored_positions": "1:128",
+      "stored_tokens": 128,
+      "vocabulary_size": 128256
+    },
+    "loader": {
+      "path": "code/trr0010_p09_fixed_loader.py",
+      "sha256": "1225ebc9871aadae4a287a8a5c5a80c5d9903fc86ec5f83ae0bfdae8c9e94a94"
+    },
+    "package_cli": {
+      "path": "code/trr0012_package.py",
+      "sha256": "5023a9e7cb19611952c0ce16a440ec9fde6b6444fd74aaf74a7efbb5c671c13b"
+    },
+    "package_manifest": {
+      "path": "package_manifest.json",
+      "sha256": "868ea07fec21643c387119df416e72aeaf932964566d4b84ad4fa45b5dc16d31"
+    },
+    "package_root": "../TRR-P11/restore-runtime/actual-r2",
+    "positionwise_decoder": {
+      "path": "code/token_reconstruction/trr0007_positionwise.py",
+      "sha256": "89fcd036a57407c8c49294aa5fd15ccef46f02b6fabcc35435d097f1213de485"
+    },
+    "public_readout": {
+      "dtype": "torch.float32",
+      "path": "readout/public_normalized_embeddings.safetensors",
+      "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+      "shape": [
+        128256,
+        2048
+      ]
+    },
+    "runner_state_sha256": "209155048df936359870a1419803800d7bad4ab72a46e09bf3287648079964da"
+  },
+  "implementation_tests": [
+    "CPU synthetic full-vocabulary crossing with changed argmax and actual transition competitor",
+    "CPU synthetic away-update with large unsigned movement and no crossing",
+    "CPU synthetic tie transition under torch.argmax",
+    "CPU synthetic projected-hidden signed-distance score reconstruction",
+    "CPU synthetic stage-0/64 extrapolation with distinct 128-only and 256-only predictions",
+    "CPU synthetic post-BOS alignment, baseline-error exclusion, record mask, and every-cell confusion accounting",
+    "CPU source-paired broken/improved/exact-clip counts and deterministic intervals",
+    "published CPU frozen-package one-record exact expanded_fixed prediction fixture; no output artifact",
+    "persistent adapter single-load observation API and fail-closed cuda:0 equivalence gate",
+    "runner --check-only path/argument validation with no model load"
+  ],
+  "limitations": [
+    "one declared target trajectory is not a universal fine-tuning robustness claim",
+    "actual crossing analysis is retrospective explanatory evidence after score generation",
+    "early direction forecast is a fixed score-only association check, not causal proof or boundary proof",
+    "per-stage primary tables use the matching stage risk/margin; union outputs are descriptive only",
+    "optional A1+A2 is a 128-record geometry-compatible auxiliary subset and cannot complete the canonical dual-benchmark matrix"
+  ],
+  "paired_scoring": {
+    "absolute_metrics": [
+      "post-BOS token accuracy",
+      "token errors",
+      "exact clips"
+    ],
+    "domains": "each declared domain separately; do not pool domains or stages",
+    "optional_comparator": {
+      "b1_same_source_subset": "same first 32 source records/domain subset is scored with frozen B1",
+      "canonical_matrix_status": "incomplete auxiliary comparator; cannot establish dual-benchmark comparability",
+      "comparison_type": "geometry-compatible port; not a native replacement",
+      "domain_count": 4,
+      "enabled_only_if_independent_inputs_and_exclusions_are_released": true,
+      "method_id": "frozen A1+A2 K256",
+      "native_decision_rule": "native K256 decision/prefix rule remains unchanged",
+      "records_per_domain": 32,
+      "source_order": "first 32 in already frozen source order per domain",
+      "stages": [
+        0,
+        256
+      ],
+      "total_records": 128
+    },
+    "paired_metrics": [
+      "broken tokens: baseline correct/stage wrong",
+      "improved tokens: baseline wrong/stage correct",
+      "exact clips broken/improved",
+      "stage-minus-baseline token delta"
+    ],
+    "panel_records_per_domain": 128,
+    "primary_method": "frozen B1 only",
+    "primary_records_per_domain": 128,
+    "primary_stage_set": [
+      0,
+      64,
+      128,
+      256
+    ],
+    "same_source_order_across_stages": true,
+    "truth_boundary": "all B1 predictions, compact boundary rows, predictor outputs, stage IDs, source-order bindings, and timing artifacts freeze before truth; truth is scorer input only after freeze",
+    "uncertainty": {
+      "exact_ci": "paired_exact_cp, alpha 0.025",
+      "rate_ci": "validated bootstrap_ratio over source records; UNKNOWN on nonpositive denominator",
+      "token_ci": "scripts/trr_p11/scorer/trr0010_analysis.py paired_token_delta, seed 9012, draws 10000, one-sided alpha 0.025"
+    }
+  },
+  "question": "Does the frozen expanded B1 decoder retain reconstruction quality along one compatible public target-training trajectory, and do early score-direction forecasts identify later correctness failures?",
+  "resource_preflight": {
+    "compact_artifact": "retain full-vocabulary winner/runner-up IDs, cross-winner scores, margins, and optional geometric rows; raw logits are ephemeral",
+    "compact_geometry": "per-record slot, shapes/dtypes, prediction/projected tensor digests, valid count, position endpoints, and package/code/input bindings",
+    "cuda_equivalence_gate": {
+      "device": "cuda:0 only",
+      "receipt_schema": "token-reconstruction.trr-p12-cpu-gpu-fixture-equivalence.v1",
+      "required": "prediction_equal=true, identical CPU/GPU prediction tensor digest, package descriptor/B1/readout/adapter-code hashes match"
+    },
+    "execution": "stream one record or a bounded small chunk; never materialize full-panel [records,127,128256] logits in RAM",
+    "numerical_batching": "one record per projection/logit call; no numerical batching or microbatch workaround",
+    "one_record_logits_fp32_bytes": 65154048,
+    "one_record_logits_fp32_mib": 62.14,
+    "one_record_projected_hidden_fp32_bytes": 1040384,
+    "one_record_projected_hidden_fp32_mib": 0.99,
+    "persistent_binding": "load public E and B1 model once per process; stream records sequentially",
+    "public_readout_bytes": 1050673488,
+    "release_gate": "CPU exact fixture receipt plus CPU/GPU fixture-equivalence receipt before any cuda:0 production inference; no target trajectory truth is opened by this adapter",
+    "runner_outputs": "predictions and projected hidden features are create-only outputs/TRR-P12; raw full-vocabulary logits are ephemeral"
+  },
+  "runner": {
+    "access_boundary": "sanitized observations only; no source text, truth, token IDs, target prefix, or target weights",
+    "create_only": true,
+    "default_geometry_output": "outputs/TRR-P12/b1_compact_geometry.json",
+    "default_prediction_output": "outputs/TRR-P12/b1_predictions.safetensors",
+    "default_projected_output": "outputs/TRR-P12/b1_projected_hidden.safetensors",
+    "default_receipt_output": "experiments/TRR-P12/b1_run.receipt.json",
+    "entrypoint": "python -m scripts.trr_p12.run_b1",
+    "timing": "phase wall time, per-record wall time, CUDA peak allocation/reservation, current/lifetime RSS, optional GPU cost estimate"
+  },
+  "runtime_adapter": {
+    "class": "scripts.trr_p12.adapter.B1PersistentAdapter",
+    "cpu_facade": "scripts.trr_p12.adapter.B1CPUAdapter",
+    "device_policy": "cpu always; cuda:0 only with validated CPU/GPU fixture-equivalence receipt",
+    "one_record_api": "infer_one_record",
+    "package_math": "frozen trr0012_package producer and vendored package code only",
+    "stream_api": "load_observation_batch + iter_loaded_observations"
+  },
+  "schema": "token-reconstruction.trr-p12-boundary-plan.v2",
+  "status": "PREREGISTERED_CPU_DESIGN_R2_BEFORE_TARGET_RELEASE",
+  "supersedes": {
+    "path": "experiments/TRR-P12/boundary-plan-r1.json",
+    "reason": [
+      "per-stage forecast risks and matching-stage evaluation are explicit",
+      "post-BOS adapter/forecast alignment and masked confusion accounting are tested",
+      "persistent package adapter and CUDA fixture-equivalence gate are registered",
+      "loader binding uses the actual package-root code/trr0010_p09_fixed_loader.py path",
+      "limited A1+A2 comparator scope is fixed to baseline 0/final 256 and first 32 records/domain"
+    ]
+  },
+  "task_id": "TRR-P12",
+  "trajectory": {
+    "baseline_stage": 0,
+    "broader_sweep_after_first_result": false,
+    "early_direction_stages": [
+      0,
+      64
+    ],
+    "fit_source_separate_from_reconstruction_source": true,
+    "forecast_stages": [
+      128,
+      256
+    ],
+    "full_panel_descriptive": "128 records/domain",
+    "optional_comparator_stages": [
+      0,
+      256
+    ],
+    "primary_forecast_source_half": "second 64 records/domain",
+    "stage_pairing": "same target checkpoint lineage, same public source panel, same cut/rendering/mask/position/numerical path",
+    "stages": [
+      0,
+      64,
+      128,
+      256
+    ],
+    "target_weights_evaluator_only": true,
+    "update_budget": 256
+  }
+}
