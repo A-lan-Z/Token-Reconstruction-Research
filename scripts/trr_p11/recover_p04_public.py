@@ -9,13 +9,14 @@ import struct
 import sys
 import time
 
-import torch
 from datasets import Dataset
 from transformers import AutoTokenizer
 
 ROOT = Path('/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P11')
 SELECTION = Path('/tmp/trr_p11_p04_public_selection_r2.json')
-OUTPUT = ROOT / 'experiments/TRR-P11/exclusions/p04_h128_recovery_r1.json'
+OUTPUT = ROOT / 'experiments/TRR-P11/exclusions/p04_h128_recovery_r2.json'
+IDENTITY_OUTPUT = ROOT / 'experiments/TRR-P11/exclusions/p04_h128_identity_rows_r1.json'
+SCRIPT_PATH = Path(__file__).resolve()
 TOKENIZER_PATH = Path('/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6')
 BOS = 128000
 ALPACA_DATE = os.environ.get('TRR_P04_ALPACA_DATE', '06 Sep 2026')
@@ -115,6 +116,7 @@ def main():
     started = dt.datetime.now(dt.timezone.utc)
     t0 = time.monotonic()
     if OUTPUT.exists(): raise RuntimeError(f'refusing to overwrite {OUTPUT}')
+    if IDENTITY_OUTPUT.exists(): raise RuntimeError(f'refusing to overwrite {IDENTITY_OUTPUT}')
     meminfo = {line.split(':',1)[0]: int(line.split()[1])*1024 for line in Path('/proc/meminfo').read_text().splitlines() if ':' in line}
     available = meminfo.get('MemAvailable', 0)
     if available < MIN_FREE_BYTES: raise RuntimeError(f'host free memory {available} below required {MIN_FREE_BYTES}')
@@ -142,7 +144,7 @@ def main():
     if int(tokenizer.bos_token_id) != BOS: raise RuntimeError('tokenizer BOS changed')
     expected_by_key = {(r['style'], int(r['row_index'])): r for r in expected_rows}
     ordered = sorted(expected_by_key.items())
-    mismatches=[]; validated=0; h128=[]; h129=[]; rendered=[]; record_ids=[]
+    mismatches=[]; validated=0; h128=[]; h129=[]; rendered=[]; record_ids=[]; identity_by_key={}
     shard_lengths={style:[len(ds) for ds in shards] for style,shards in datasets.items()}
     for (style,row_index), expected in ordered:
         if style == 'finance_chat':
@@ -167,6 +169,20 @@ def main():
             if actual['h128_sequence_sha256'] is not None:
                 h128.append(actual['h128_sequence_sha256'])
             h129.append(actual['truncated_sequence_sha256']); rendered.append(actual['public_record_sha256']); record_ids.append(actual['record_id']); validated += 1
+            identity_by_key[(style, row_index)] = {
+                'pool': expected['pool'],
+                'style': expected['style'],
+                'dataset_id': expected['dataset_id'],
+                'dataset_revision': expected['dataset_revision'],
+                'row_index': int(expected['row_index']),
+                'record_id': actual['record_id'],
+                'public_record_sha256': actual['public_record_sha256'],
+                'h128_sequence_sha256': actual['h128_sequence_sha256'],
+                'h129_sequence_sha256': actual['truncated_sequence_sha256'],
+                'rendered_char_count': actual['rendered_char_count'],
+                'full_token_count': actual['full_token_count'],
+                'post_bos_token_count': actual['post_bos_token_count'],
+            }
         except Exception as exc:
             mismatches.append({'style':style,'row_index':row_index,'field':'exception','reason':type(exc).__name__+': '+str(exc)[:200]})
     ended = dt.datetime.now(dt.timezone.utc)
@@ -176,7 +192,7 @@ def main():
       'schema':'token-reconstruction.trr-p11-p04-h128-recovery.v1','task_id':'TRR-P11','status':status,
       'started_utc':started.isoformat(),'ended_utc':ended.isoformat(),'elapsed_seconds':time.monotonic()-t0,
       'resource':{'max_rss_kb':child.ru_maxrss,'max_rss_bytes':child.ru_maxrss*1024,'max_rss_limit_bytes':MAX_RSS_BYTES,'host_available_bytes_at_start':available,'host_minimum_bytes':MIN_FREE_BYTES,'threads':1,'timeout_seconds':180,'gpu_used':False,'model_loaded':False},
-      'source_code':{'prepare_panel_commit':'f423ef596a718a7c8a8480e6211295b97bdfd806','prepare_panel_sha256':'26c003fc37a80c549ca04ebbf0dd629ae09026fad5f4afc21af0adcca72db97f','alpaca_helper_sha256':sha_file(Path('/tmp/trr_p11_p04_alpaca_split.py'))},
+      'source_code':{'prepare_panel_commit':'f423ef596a718a7c8a8480e6211295b97bdfd806','prepare_panel_sha256':'26c003fc37a80c549ca04ebbf0dd629ae09026fad5f4afc21af0adcca72db97f','alpaca_helper_sha256':sha_file(Path('/tmp/trr_p11_p04_alpaca_split.py')),'recovery_script_path':str(SCRIPT_PATH),'recovery_script_sha256':sha_file(SCRIPT_PATH)},
       'tokenizer':{'snapshot':str(TOKENIZER_PATH),'revision':'9213176726f574b556790deb65791e0c5aa438b6','bos_token_id':BOS,'alpaca_date_string':ALPACA_DATE,'finance_date_string':'06 Aug 2026'},
       'assets':asset_checks,
       'selection':{'source_path':'experiments/TRR-P04/setup/public_selection-r2.json','source_sha256':sha_file(SELECTION),'rows_expected':520,'rows_validated':validated,'unique_selected_records':len(expected_by_key),'pools':{'correction':256,'validation':192,'fresh_evaluation':72}},
@@ -187,9 +203,28 @@ def main():
       'mismatch_count':len(mismatches),
       'access_boundary':{'source_text_materialized_transiently':True,'source_text_serialized':False,'source_tokens_materialized_transiently':True,'source_tokens_serialized':False,'token_values_emitted':False,'evaluation_truth_opened':False,'target_update_opened':False,'model_loaded':False,'gpu_used':False,'p03_holdout_accessed':False,'new_selection_started':False},
     }
+    if not mismatches:
+        identity_rows = [identity_by_key[(r['style'], int(r['row_index']))] for r in expected_rows]
+        identity_payload = {
+            'schema': 'token-reconstruction.trr-p11-p04-h128-identity-rows.v1',
+            'task_id': 'TRR-P11',
+            'status': 'PASS_P04_EXACT_RENDERED_H129_H128_RECOVERY',
+            'source_selection_sha256': sha_file(SELECTION),
+            'recovery_script_sha256': sha_file(SCRIPT_PATH),
+            'source_code': receipt['source_code'],
+            'records': identity_rows,
+            'record_count': len(identity_rows),
+            'pools': {'correction': 256, 'validation': 192, 'fresh_evaluation': 72},
+            'contains_source_text': False,
+            'contains_token_ids': False,
+            'contains_truth': False,
+            'access_boundary': receipt['access_boundary'],
+        }
+        with IDENTITY_OUTPUT.open('xb') as f: f.write((json.dumps(identity_payload,sort_keys=True,indent=2)+'\n').encode())
+        receipt['identity_export'] = {'path':str(IDENTITY_OUTPUT.relative_to(ROOT)),'bytes':IDENTITY_OUTPUT.stat().st_size,'sha256':sha_file(IDENTITY_OUTPUT),'schema':identity_payload['schema'],'record_count':len(identity_rows)}
     OUTPUT.parent.mkdir(parents=True,exist_ok=True)
     with OUTPUT.open('xb') as f: f.write((json.dumps(receipt,sort_keys=True,indent=2)+'\n').encode())
-    print(json.dumps({'output':str(OUTPUT),'status':status,'mismatches':len(mismatches),'h128_rows':len(h128),'h129_rows':len(h129),'elapsed_seconds':receipt['elapsed_seconds'],'max_rss_kb':child.ru_maxrss},sort_keys=True))
+    print(json.dumps({'output':str(OUTPUT),'identity_output':str(IDENTITY_OUTPUT) if not mismatches else None,'status':status,'mismatches':len(mismatches),'h128_rows':len(h128),'h129_rows':len(h129),'elapsed_seconds':receipt['elapsed_seconds'],'max_rss_kb':child.ru_maxrss},sort_keys=True))
     if mismatches: raise SystemExit(2)
 
 if __name__=='__main__': main()
