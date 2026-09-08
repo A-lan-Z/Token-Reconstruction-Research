@@ -85,6 +85,9 @@ class Guard:
 
     def check(self):
         rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1024
+        import psutil
+        if psutil.virtual_memory().available < 6 * 2**30:
+            raise RuntimeError('Host available memory guard failed')
         if time.perf_counter() - self.start > self.seconds or rss > self.rss:
             raise RuntimeError('Resource deadline/RSS guard failed')
         if torch.cuda.is_initialized():
