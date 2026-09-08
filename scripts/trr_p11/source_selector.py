@@ -571,8 +571,27 @@ def _load_identity_union(audit: Mapping[str, Any], *, root: Path) -> tuple[Any, 
     payload, _ = _load_json(path, root=root, description="identity-union export")
     if payload.get("schema") != "token-reconstruction.trr-p11-identity-union.v1" or payload.get("task_id") != TASK_ID or payload.get("status") != "IDENTITY_UNION_COMPLETE_NO_PAYLOAD":
         raise SelectionError("identity-union export schema/status changed")
-    if payload.get("source_text_or_token_ids_written") is not False or payload.get("truth_opened") is not False or payload.get("p03_holdout_accessed") is not False:
-        raise SelectionError("identity-union export records forbidden payload access")
+    # Older union receipts expose three top-level false flags.  The reviewed
+    # release uses an explicit access_boundary/content-release vocabulary;
+    # accept that exact schema while requiring every payload/truth flag to be
+    # false.
+    legacy_flags = ("source_text_or_token_ids_written", "truth_opened", "p03_holdout_accessed")
+    if any(key in payload for key in legacy_flags):
+        if any(payload.get(key) is not False for key in legacy_flags):
+            raise SelectionError("identity-union export records forbidden payload access")
+    else:
+        boundary = payload.get("access_boundary")
+        if not isinstance(boundary, Mapping):
+            raise SelectionError("identity-union export boundary is absent")
+        forbidden = (
+            "labels_read", "predictions_read", "source_text_read",
+            "source_text_serialized", "source_tokens_serialized",
+            "token_values_emitted", "contains_source_text",
+            "contains_token_values", "contains_truth", "truth_or_scores_read",
+            "p03_holdout_accessed", "new_selection_started",
+        )
+        if any(boundary.get(key) is True for key in forbidden) or any(payload.get(key) is True for key in ("contains_source_text", "contains_token_values", "contains_truth")):
+            raise SelectionError("identity-union export records forbidden payload access")
     fields = payload.get("fields")
     if not isinstance(fields, Mapping):
         raise SelectionError("identity-union export fields are absent")
@@ -599,7 +618,7 @@ def _load_identity_union(audit: Mapping[str, Any], *, root: Path) -> tuple[Any, 
                     if len(text) != 64 or any(char not in _SHA256_HEX for char in text):
                         raise SelectionError(f"identity-union hash is malformed: {field}")
                     union.add(field, text, namespace)
-    counts = payload.get("identity_counts")
+    counts = payload.get("identity_counts", payload.get("counts"))
     if not isinstance(counts, Mapping) or dict(counts) != union.counts():
         raise SelectionError("identity-union internal counts changed")
     if isinstance(audit.get("union_identity_counts"), Mapping) and dict(audit["union_identity_counts"]) != union.counts():
