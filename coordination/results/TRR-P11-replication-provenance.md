@@ -1,6 +1,6 @@
 # TRR-P11 replication provenance and cost
 
-This record summarizes the already completed TRR-0012 native fixed-readout pair, actual deployment package, and Agent 2’s independent restore. It reads hash-bound metadata receipts and the already-bound immutable runner definitions. It does not reopen model or source payloads, run a model, access GPU, select sources, or open truth. Structured evidence is in `experiments/TRR-P11/replication-provenance-r1.json` (SHA-256 `5fd3bc6da19689410769987092a371d27d4714bfff90eadf72848ae9b8e03ff1`).
+This record summarizes the already completed TRR-0012 native fixed-readout pair, actual deployment package, and Agent 2’s independent restore. It reads hash-bound metadata receipts and the already-bound immutable runner definitions. It does not reopen model or source payloads, run a model, access GPU, select sources, or open truth. Structured evidence is in `experiments/TRR-P11/replication-provenance-r1.json` (SHA-256 `280ff8fa5e59f3ac778033955f2c6f12abf19b0426468710587cf0cdc582d3a4`).
 
 ## What survived and what was rebuilt
 
