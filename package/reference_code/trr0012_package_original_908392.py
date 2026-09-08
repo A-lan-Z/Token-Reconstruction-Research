@@ -18,13 +18,7 @@ from pathlib import Path
 import platform
 import re
 import sys
-import time
 from typing import Any
-
-try:
-    import resource as _resource
-except ImportError:  # pragma: no cover - Windows has no resource module.
-    _resource = None
 
 from safetensors import safe_open
 from safetensors.torch import save_file
@@ -109,81 +103,6 @@ SMOKE_RECORD_IDENTITIES = {
     },
 }
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
-
-
-def _timing_synchronize(device: torch.device) -> None:
-    """Synchronize only at instrumentation boundaries for honest CUDA timing."""
-
-    if device.type == "cuda" and torch.cuda.is_available():
-        torch.cuda.synchronize(device)
-
-
-def _timing_process_memory() -> dict[str, int]:
-    """Return process RSS metadata without importing a monitoring dependency."""
-
-    result: dict[str, int] = {}
-    try:
-        for line in Path("/proc/self/status").read_text(encoding="utf-8").splitlines():
-            if line.startswith("VmRSS:"):
-                fields = line.split()
-                if len(fields) >= 2:
-                    result["process_rss_bytes"] = int(fields[1]) * 1024
-                break
-    except (OSError, UnicodeError, ValueError, IndexError):
-        pass
-    if _resource is not None:
-        try:
-            usage = _resource.getrusage(_resource.RUSAGE_SELF)
-            # Linux reports ru_maxrss in KiB; macOS reports bytes.
-            unit = 1024 if sys.platform.startswith("linux") else 1
-            result["process_peak_rss_bytes"] = int(usage.ru_maxrss * unit)
-        except (OSError, ValueError):
-            pass
-    return result
-
-
-def _timing_memory_snapshot(device: torch.device) -> dict[str, int]:
-    result = _timing_process_memory()
-    if device.type == "cuda" and torch.cuda.is_available():
-        result.update(
-            {
-                "gpu_allocated_bytes": int(torch.cuda.memory_allocated(device)),
-                "gpu_reserved_bytes": int(torch.cuda.memory_reserved(device)),
-                "gpu_peak_allocated_bytes": int(torch.cuda.max_memory_allocated(device)),
-                "gpu_peak_reserved_bytes": int(torch.cuda.max_memory_reserved(device)),
-            }
-        )
-    return result
-
-
-def _timing_begin(device: torch.device) -> tuple[float, dict[str, int]]:
-    _timing_synchronize(device)
-    return time.perf_counter(), _timing_memory_snapshot(device)
-
-
-def _timing_end(
-    device: torch.device,
-    started: float,
-    before: dict[str, int],
-    *,
-    phase: str,
-    record_count: int,
-) -> dict[str, Any]:
-    _timing_synchronize(device)
-    finished = time.perf_counter()
-    return {
-        "phase": phase,
-        "status": "RECORDED",
-        "record_count": record_count,
-        "elapsed_seconds": finished - started,
-        "before": before,
-        "after": _timing_memory_snapshot(device),
-    }
-
-
-def _timing_reset_gpu_peaks(device: torch.device) -> None:
-    if device.type == "cuda" and torch.cuda.is_available():
-        torch.cuda.reset_peak_memory_stats(device)
 
 
 class PackageError(RuntimeError):
@@ -1134,79 +1053,27 @@ def predict_package(
         receipt_path = output_path.with_suffix(".receipt.json")
     receipt_path = _ensure_create_only(Path(receipt_path).expanduser().resolve(), label="prediction receipt")
 
-    _timing_reset_gpu_peaks(device)
-    shared_started, shared_before = _timing_begin(device)
     activations, masks, positions, slots = _observation_batch(observation_path)
     readout, readout_path = _load_readout(package_root, descriptor)
     readout_device = readout.to(device=device).contiguous()
-    shared_phase = _timing_end(
-        device,
-        shared_started,
-        shared_before,
-        phase="shared_observation_readout_load",
-        record_count=int(activations.shape[0]),
-    )
     predictions: dict[str, torch.Tensor] = {}
     method_receipts: dict[str, Any] = {}
-    method_timing: dict[str, Any] = {}
-    record_count = int(activations.shape[0])
     for method_id in PACKAGE_METHODS:
-        load_started, load_before = _timing_begin(device)
         model, state_sha, state_path = _load_package_method(
             package_root, descriptor, method_id, device=device, readout=readout_device
         )
-        decoder_load_phase = _timing_end(
-            device,
-            load_started,
-            load_before,
-            phase="decoder_load",
-            record_count=0,
-        )
         rows = []
-        first_started, first_before = _timing_begin(device)
-        rows.append(
-            _predict_row_package(
-                model,
-                readout_device,
-                activations[0],
-                masks[0],
-                positions[0],
-                device=device,
-            )
-        )
-        first_record_phase = _timing_end(
-            device,
-            first_started,
-            first_before,
-            phase="first_record_prediction",
-            record_count=1,
-        )
-        if record_count > 1:
-            remaining_started, remaining_before = _timing_begin(device)
-            for row in range(1, record_count):
-                rows.append(
-                    _predict_row_package(
-                        model,
-                        readout_device,
-                        activations[row],
-                        masks[row],
-                        positions[row],
-                        device=device,
-                    )
+        for row in range(int(activations.shape[0])):
+            rows.append(
+                _predict_row_package(
+                    model,
+                    readout_device,
+                    activations[row],
+                    masks[row],
+                    positions[row],
+                    device=device,
                 )
-            remaining_phase = _timing_end(
-                device,
-                remaining_started,
-                remaining_before,
-                phase="remaining_record_predictions",
-                record_count=record_count - 1,
             )
-        else:
-            remaining_phase = {
-                "phase": "remaining_record_predictions",
-                "status": "NOT_APPLICABLE",
-                "record_count": 0,
-            }
         prediction = torch.stack(rows, dim=0).to(dtype=torch.long, device="cpu").contiguous()
         predictions[method_id] = prediction
         state_record = _loaded_file_record(
@@ -1225,19 +1092,10 @@ def predict_package(
             "tensor_sha256": tensor_digest(prediction),
             "per_record_tensor_sha256": [tensor_digest(value) for value in prediction],
         }
-        method_timing[method_id] = {
-            "state_path": state_record["relative_path"],
-            "state_sha256": state_record["sha256"],
-            "record_count": record_count,
-            "decoder_load": decoder_load_phase,
-            "first_record_prediction": first_record_phase,
-            "remaining_record_predictions": remaining_phase,
-        }
         del model
         if device.type == "cuda":
             torch.cuda.empty_cache()
 
-    output_write_started = time.perf_counter()
     save_file(
         predictions,
         str(output_path),
@@ -1252,50 +1110,8 @@ def predict_package(
             "token_ids_loaded": "false",
         },
     )
-    output_write_seconds = time.perf_counter() - output_write_started
     imported_modules = _loaded_decoder_modules(package_root)
     readout_record = _loaded_file_record(package_root, readout_path, label="loaded public readout")
-    shared_readout_allocation: dict[str, Any] = {
-        "attribution": "shared_observation_readout_load; charged once and shared across methods",
-        "allocation_note": "CPU/device byte fields are logical tensor sizes; CPU storage may alias device storage on CPU and fields must not be summed as distinct allocations",
-        "cpu_readout_bytes": int(readout.numel() * readout.element_size()),
-        "device_readout_bytes": int(readout_device.numel() * readout_device.element_size()),
-        "device": str(readout_device.device),
-        "shape": list(readout_device.shape),
-        "dtype": str(readout_device.dtype),
-    }
-    shared_before_memory = shared_phase["before"]
-    shared_after_memory = shared_phase["after"]
-    for key in ("gpu_allocated_bytes", "gpu_reserved_bytes"):
-        if key in shared_before_memory and key in shared_after_memory:
-            shared_readout_allocation[f"observed_{key}_delta_bytes"] = shared_after_memory[key] - shared_before_memory[key]
-    timing = {
-        "schema": "token-reconstruction.trr0012-package-timing.v1",
-        "clock": "time.perf_counter",
-        "synchronized_cuda_boundaries": True,
-        "method_order": list(PACKAGE_METHODS),
-        "internal_scope": "after package/CLI validation and before shared observation load; through prediction output write",
-        "external_wrapper_scope": "whole process including Python import, cold-start wall, and both receipt writes; not included in internal phase elapsed values",
-        "gpu_peak_scope": "from instrumentation peak reset through prediction loop; per-phase peak fields are run-scope allocator peaks",
-        "process_rss_scope": "process_rss_bytes is a boundary sample; process_peak_rss_bytes is the lifetime high-water value reported by resource.getrusage",
-        "first_record_may_include_initialization": True,
-        "first_record_phase_label": "first record; may include lazy CUDA/kernel initialization",
-        "remaining_record_phase_excludes_first_record": True,
-        "remaining_record_phase_label": "subsequent-record throughput; not a fully warmed benchmark",
-        "ordinary_selected_state_usage": {
-            "descriptor_source": "package descriptor methods[*].state_path/state binding",
-            "loader_function": "_load_package_method",
-            "per_method_phase": "methods[*].decoder_load",
-            "method_order": list(PACKAGE_METHODS),
-        },
-        "shared_observation_readout_load": shared_phase,
-        "shared_readout_allocation": shared_readout_allocation,
-        "methods": method_timing,
-        "run_peak_memory": _timing_memory_snapshot(device),
-        "file_io": {
-            "prediction_output_write_seconds": output_write_seconds,
-        },
-    }
     result = {
         "schema": "token-reconstruction.trr0012-prediction-receipt.v1",
         "task_id": TASK_ID,
@@ -1332,7 +1148,6 @@ def predict_package(
             "file_binding": readout_record,
         },
         "methods": method_receipts,
-        "timing": timing,
         "device": str(device),
         "numeric_profile": "qualified FP32 decoder",
         "runtime": _runtime_provenance(
@@ -1345,16 +1160,6 @@ def predict_package(
         "token_ids_loaded": False,
         "truth_opened": False,
     }
-    receipt_write_started = time.perf_counter()
-    receipt_path.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    receipt_write_seconds = time.perf_counter() - receipt_write_started
-    result["timing"]["file_io"].update(
-        {
-            "receipt_write_seconds_first_pass": receipt_write_seconds,
-            "receipt_write_measurement": "first write; final receipt rewrite persists the measured first-pass value",
-            "receipt_write_passes": 2,
-        }
-    )
     receipt_path.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     result["receipt"] = {
         "path": _path_label(package_root, receipt_path),
