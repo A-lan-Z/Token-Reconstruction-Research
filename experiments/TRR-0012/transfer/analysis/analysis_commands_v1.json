@@ -1,0 +1,33 @@
+{
+  "command": [
+    "env",
+    "OMP_NUM_THREADS=1",
+    "MKL_NUM_THREADS=1",
+    "OPENBLAS_NUM_THREADS=1",
+    "TOKENIZERS_PARALLELISM=false",
+    "PYTHONPATH=.",
+    "python3",
+    "scripts/trr0012_transfer_analysis.py",
+    "--matrix",
+    "experiments/TRR-0012/transfer/production_expanded_fixed_coordinator_r1/prediction_matrix_expanded_fixed.json",
+    "--freeze-receipt",
+    "experiments/TRR-0012/transfer/production_expanded_fixed_coordinator_r1/freeze_receipt.json",
+    "--truth-manifest",
+    "${AGENT2_TRUTH_MANIFEST}",
+    "--repository-root",
+    ".",
+    "--output",
+    "experiments/TRR-0012/transfer/analysis/analysis_result_v1.json"
+  ],
+  "execution_scope": "Agent2 evaluator custody after the public matrix/freeze gate; no GPU and no source/token exchange.",
+  "fail_closed": [
+    "matrix incomplete or wrong method/variant/domain order",
+    "prediction/geometry IDs, shapes, ranges, or bindings mismatch",
+    "freeze receipt/hash mismatch",
+    "after-cut H or prediction inequality",
+    "truth manifest contract mismatch"
+  ],
+  "schema": "token-reconstruction.trr0012-transfer-evaluator-analysis-command.v1",
+  "task_id": "TRR-0012",
+  "truth_manifest_placeholder": "${AGENT2_TRUTH_MANIFEST}"
+}
