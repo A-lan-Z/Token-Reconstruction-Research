@@ -366,12 +366,20 @@ def prepare_target_bundle(*, release_path: Path, union_path: Path, panel_path: P
     validation_pairs = selected[TRAIN_ROWS:]
     train_ids, train_masks = zip(*(_pad(values) for _, values in train_pairs))
     validation_ids, validation_masks = zip(*(_pad(values) for _, values in validation_pairs))
+    # A failed create-only attempt may leave complete tensor files before its
+    # JSON receipt is written.  Preserve those files and choose a fresh
+    # suffix on retry rather than overwriting them.
+    tensor_suffix = ""
+    if (output_manifest.parent / "train.safetensors").exists() or (output_manifest.parent / "validation.safetensors").exists():
+        tensor_suffix = ".retry1"
+    if (output_manifest.parent / f"train{tensor_suffix}.safetensors").exists() or (output_manifest.parent / f"validation{tensor_suffix}.safetensors").exists():
+        raise TargetSourceError("target tensor retry artifacts already exist; choose a new output directory")
     train_file = _create_safetensor(
-        output_manifest.parent / "train.safetensors",
+        output_manifest.parent / f"train{tensor_suffix}.safetensors",
         {"train_input_ids": torch.stack(train_ids), "train_attention_mask": torch.stack(train_masks)},
     )
     validation_file = _create_safetensor(
-        output_manifest.parent / "validation.safetensors",
+        output_manifest.parent / f"validation{tensor_suffix}.safetensors",
         {"validation_input_ids": torch.stack(validation_ids), "validation_attention_mask": torch.stack(validation_masks)},
     )
     train_rows = [metadata for metadata, _ in train_pairs]
@@ -401,7 +409,7 @@ def prepare_target_bundle(*, release_path: Path, union_path: Path, panel_path: P
             "arrow": arrow_binding,
             "candidate_range_half_open": list(CANDIDATE_RANGE),
             "selection_seed": SELECTION_SEED,
-            "order_sha256": json_digest([row["row_index"] for row in selected]),
+            "order_sha256": json_digest([metadata["row_index"] for metadata, _ in selected]),
         },
         "tokenizer": {"path": str(tokenizer_dir), "bos_token_id": BOS_TOKEN_ID, "pad_token_id": PAD_TOKEN_ID,
                       "tokenizer_json_sha256": sha256_file(tokenizer_dir / "tokenizer.json")},
@@ -422,7 +430,7 @@ def prepare_target_bundle(*, release_path: Path, union_path: Path, panel_path: P
         },
         "train_tensor": {"path": train_file["path"], "bytes": train_file["bytes"], "sha256": train_file["sha256"]},
         "validation_tensor": {"path": validation_file["path"], "bytes": validation_file["bytes"], "sha256": validation_file["sha256"]},
-        "selection_diagnostics": {**diagnostics, "eligible": len(selected), "candidate_pool": CANDIDATE_RANGE[1] - CANDIDATE_RANGE[0]},
+        "selection_diagnostics": {**diagnostics, "eligible": len(selected), "candidate_pool": CANDIDATE_RANGE[1] - CANDIDATE_RANGE[0], "tensor_suffix": tensor_suffix},
         "execution": {
             "command": list(sys.argv),
             "code_commit": _git_commit(root),
