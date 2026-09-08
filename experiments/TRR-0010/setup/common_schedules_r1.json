@@ -1,0 +1,140 @@
+{
+  "schema": "token-reconstruction.trr-p09-common-schedule-evidence.v1",
+  "task_id": "TRR-P09",
+  "status": "PASS_CPU_COMMON_SCHEDULES_PREPARED",
+  "source_commit": "8065fc84afc00c2fb81fbbff96f190febd5ea608",
+  "source_script": {
+    "path": "/tmp/trr-p09/scripts/trr_p09/prepare_common_schedules.py",
+    "bytes": 10614,
+    "sha256": "1a8beaa664172e14598f7eb577a390202f681e618c94724036ba5b55becec90e"
+  },
+  "command": [
+    "env",
+    "PYTHONPATH=.:src",
+    "OMP_NUM_THREADS=1",
+    "MKL_NUM_THREADS=1",
+    "OPENBLAS_NUM_THREADS=1",
+    "TOKENIZERS_PARALLELISM=false",
+    "python3",
+    "scripts/trr_p09/prepare_common_schedules.py",
+    "--input",
+    "/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/inputs.safetensors",
+    "--output-root",
+    "/tmp/trr-p09-runtime/common-schedules-r1"
+  ],
+  "input": {
+    "manifest_path": "/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/preparation_manifest-r2-corrected.json",
+    "manifest_sha256": "79bbd55c3e66555501e0abc886e69b5a4ff85bca5301a129f6e5d398524e844f",
+    "tensor_path": "/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/inputs.safetensors",
+    "tensor_record": {
+      "path": "/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/inputs.safetensors",
+      "bytes": 29952264,
+      "sha256": "8150184a349bebd31e24b128d23f096702898024a87a405322ee3ba95fa6682e"
+    },
+    "read_scope": "attention_mask only; no token_ids, position_ids, H, model, activation bank, fit, or evaluation truth"
+  },
+  "factory": {
+    "module": "scripts.trr_p09.fixed_control_caller",
+    "function": "materialize_schedule_plan",
+    "step_factory": "inherited_schedule_steps",
+    "semantic_digest_contract": "SchedulePlan.semantic_sha256",
+    "rng": "CPU torch.Generator with randperm/randint; no alternate RNG"
+  },
+  "schedule_contract": {
+    "seed": 4010,
+    "steps": 13000,
+    "record_batch_size": 8,
+    "position_budget": 512,
+    "sequence_tokens": 192,
+    "tensor_keys": [
+      "batch_record_indices",
+      "draw_record_slots",
+      "draw_position_slots",
+      "used_replacement"
+    ]
+  },
+  "artifacts": [
+    {
+      "bank": "B0",
+      "path": "/tmp/trr-p09-runtime/common-schedules-r1/schedule-b0-seed4010.safetensors",
+      "bytes": 27053864,
+      "sha256": "ba53cd4bad54bc88670f346a7f959eb0ce5278ec28eac8bdf6463cd44936ec6f",
+      "tensor_shapes": {
+        "batch_record_indices": [
+          13000,
+          8
+        ],
+        "draw_position_slots": [
+          13000,
+          512
+        ],
+        "draw_record_slots": [
+          13000,
+          512
+        ],
+        "used_replacement": [
+          13000
+        ]
+      },
+      "tensor_dtypes": {
+        "batch_record_indices": "torch.int32",
+        "draw_position_slots": "torch.int16",
+        "draw_record_slots": "torch.int16",
+        "used_replacement": "torch.uint8"
+      },
+      "schedule_semantic_sha256": "9aaad9c030f2f9b801f91f956c97f858966580edd21229cebb350dcde358f2c3",
+      "valid_mask_semantic_sha256": "1cae0090d1eb80479c0e0e18529efba3de508eba4ad497d680bcb478072ed0a0",
+      "valid_mask_post_bos_positions": 124371,
+      "unique_record_position_pairs": 124371,
+      "repeated_record_position_pairs": 124371,
+      "used_replacement_steps": 8
+    },
+    {
+      "bank": "B1",
+      "path": "/tmp/trr-p09-runtime/common-schedules-r1/schedule-b1-seed4010.safetensors",
+      "bytes": 27053864,
+      "sha256": "be0745ebb56e0ed39c2cf7e9c05a657209126f4c1c552242d3893c52d6718801",
+      "tensor_shapes": {
+        "batch_record_indices": [
+          13000,
+          8
+        ],
+        "draw_position_slots": [
+          13000,
+          512
+        ],
+        "draw_record_slots": [
+          13000,
+          512
+        ],
+        "used_replacement": [
+          13000
+        ]
+      },
+      "tensor_dtypes": {
+        "batch_record_indices": "torch.int32",
+        "draw_position_slots": "torch.int16",
+        "draw_record_slots": "torch.int16",
+        "used_replacement": "torch.uint8"
+      },
+      "schedule_semantic_sha256": "8acdb2c4f8e5afba546ad01cbe0adae340eb841c8e3322c919e976434d29ede5",
+      "valid_mask_semantic_sha256": "c9f72b4d3733f89171af1712505248a8c050d3220f1c4b43e4b343e94b7b5890",
+      "valid_mask_post_bos_positions": 1243710,
+      "unique_record_position_pairs": 1237403,
+      "repeated_record_position_pairs": 1205642,
+      "used_replacement_steps": 4
+    }
+  ],
+  "runtime_receipt": {
+    "path": "/tmp/trr-p09-runtime/common-schedules-r1/schedule-receipt.json",
+    "bytes": 5599,
+    "sha256": "a9fd0e71fb6754d0e9b2572b276dc5c624b9529d086e56c6cbb6d4cf2eadd885"
+  },
+  "output_scope": "Local runtime artifacts; schedule payloads are not source text, H, activations, model weights, fit states, or evaluation truth.",
+  "truth_boundary": {
+    "model_loaded": false,
+    "activation_bank_opened": false,
+    "fit_started": false,
+    "evaluation_truth_opened": false
+  }
+}

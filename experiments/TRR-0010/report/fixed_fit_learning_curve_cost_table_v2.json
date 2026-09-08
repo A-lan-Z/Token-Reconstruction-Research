@@ -1,0 +1,706 @@
+{
+  "schema": "token-reconstruction.trr0010.fixed-fit-descriptive-table.v2",
+  "artifact_status": "DESCRIPTIVE_FIXED_READOUT_FITS_NO_FINAL_QUALITY",
+  "created_utc": "2026-09-07T15:22:43Z",
+  "task_id": "TRR-0010",
+  "scope": {
+    "purpose": "Compact learning-curve, exposure, and cost table for the completed B0 current-fixed and B1 expanded-fixed readout fits.",
+    "quality_scope": "Opened public validation and fit diagnostics only; not final reconstruction quality, truth, or promotion evidence.",
+    "methods": {
+      "B0": "current_fixed_readout",
+      "B1": "expanded_fixed_readout"
+    },
+    "fit_effort_reported": "All 13,000 updates and 6,656,000 position draws per arm are retained even when checkpoint selection chose an earlier step.",
+    "directional_receipts": "Not present; schema reserves the same bank/step/cost fields for later directional receipts without claiming them."
+  },
+  "source_receipts": [
+    {
+      "role": "B0_current_fixed_audit",
+      "path": "/tmp/trr-p09-runtime/fixed-control-b0-r3-audit-r3/audit.json",
+      "bytes": 177488,
+      "sha256": "1f09e48753ecf5ef3561391465e33eca2ead713c48122633db4e0b08bc6bd6c6",
+      "status": "immutable_external_metadata"
+    },
+    {
+      "role": "B0_current_fixed_handoff",
+      "path": "/tmp/trr-p09-runtime/fixed-control-b0-r3-audit-r3/handoff_manifest.json",
+      "bytes": 2087,
+      "sha256": "9dc7c12a07d8c0d6ea4c11bccc4d86a2a8dc10660b66310c0ccd60ed7b06851d",
+      "status": "immutable_external_metadata"
+    },
+    {
+      "role": "B1_expanded_fixed_receipt",
+      "path": "/tmp/trr-p09-runtime/fixed-control-b1-r3/receipt.json",
+      "bytes": 7111987,
+      "sha256": "bc75d1c6837cd27bc2980cb448d4c309cecb279ab729b70db13367bac3eed47a",
+      "status": "immutable_external_metadata"
+    },
+    {
+      "role": "B1_schedule_receipt",
+      "path": "/tmp/trr-p09-runtime/fixed-control-b1-r3/schedule_receipt.json",
+      "bytes": 639,
+      "sha256": "bbe4fea6e49148e9bbe8a19325f5198ff1bf6f270a64c9dac807a43aa58b542e",
+      "status": "immutable_external_metadata"
+    },
+    {
+      "role": "support_binding_B0_and_B1",
+      "path": "experiments/TRR-0010/setup/public_support_binding_r1.json",
+      "bytes": 5091,
+      "sha256": "1c202ab7518404c12726b75147e1246d72fc40bbaf7c4c043edf0792a5e65351",
+      "status": "immutable_external_metadata"
+    },
+    {
+      "role": "fixed_diagnostic_binding",
+      "path": "experiments/TRR-0010/setup/fixed_diagnostic_binding_r1.json",
+      "bytes": 130098,
+      "sha256": "8b899bc168b55570e4cfd526ff4e8656b70050e840386cba9390ad6adb1f54c3",
+      "status": "immutable_external_metadata"
+    },
+    {
+      "role": "A2_published_final_manifest",
+      "path": "experiments/TRR-P09/manifest.json",
+      "bytes": 79938,
+      "sha256": "6371426c2ac587c90bdb86277b71c8a1274ebed625ab92a47e10d6b34f64c402",
+      "source_commit": "02fa090140cc3c55172225122eb4d7649e995951",
+      "status": "immutable_published_manifest",
+      "b1_audit_path": "scientific_execution.b1_audit",
+      "b1_audit_status": "PASS_93_OF_93"
+    }
+  ],
+  "training_contract": {
+    "seed": 4010,
+    "updates": 13000,
+    "position_draws_per_update": 512,
+    "total_position_draws_per_arm": 6656000,
+    "checkpoint_grid": [
+      0,
+      1000,
+      2000,
+      4000,
+      8000,
+      12000,
+      13000
+    ],
+    "validation_records": 384,
+    "validation_domains": {
+      "Finance": 256,
+      "Pile": 128
+    },
+    "validation_token_rows_per_checkpoint": 48768,
+    "diagnostic_record_count_per_bank": 64,
+    "diagnostic_quotas": {
+      "alpaca_natural": 32,
+      "pile_natural": 16,
+      "finance_natural": 10,
+      "pile_controlled": 3,
+      "finance_controlled": 3
+    },
+    "selection_metric": "domain_balanced_token_accuracy",
+    "selection_rule": "earliest strict maximum"
+  },
+  "exposure_by_bank": [
+    {
+      "bank": "B0",
+      "method_role": "current_fixed_readout",
+      "available_post_bos_positions": 124371,
+      "available_records": 1200,
+      "support_token_ids": 17126,
+      "support_source": "public_support_binding_r1.json",
+      "actual_sampled_unique_record_position_pairs": 124371,
+      "actual_sampled_repeat_draws": 6531629,
+      "actual_sampled_unique_records": 1200,
+      "record_batch_slots": 104000,
+      "total_draws": 6656000,
+      "replacement_steps": 8,
+      "schedule_semantic_sha256": "9aaad9c030f2f9b801f91f956c97f858966580edd21229cebb350dcde358f2c3",
+      "audit_status": "serialized_pair-support audit available",
+      "available_position_definition": "B0 published/current bank post-BOS positions."
+    },
+    {
+      "bank": "B1",
+      "method_role": "expanded_fixed_readout",
+      "available_post_bos_positions": 1243710,
+      "available_records": 12000,
+      "support_token_ids": 45631,
+      "support_source": "public_support_binding_r1.json",
+      "actual_sampled_unique_record_position_pairs": 1237403,
+      "actual_sampled_repeat_draws": 5418597,
+      "actual_sampled_unique_records": 11996,
+      "record_batch_slots": 104000,
+      "total_draws": 6656000,
+      "replacement_steps": 4,
+      "schedule_semantic_sha256": "8acdb2c4f8e5afba546ad01cbe0adae340eb841c8e3322c919e976434d29ede5",
+      "audit_status": "published A2 final-manifest audit PASS_93_OF_93; pair, repeat, sampled-record, and batch-slot counts are bound",
+      "available_position_definition": "Combined B0 plus B1 schedule geometry (1,243,710); B1 additions-only support metadata remains 1,119,339 positions.",
+      "max_frozen64_position_chunk_count": 19,
+      "audit_source": "experiments/TRR-P09/manifest.json#scientific_execution.b1_audit"
+    }
+  ],
+  "checkpoint_table": [
+    {
+      "bank": "B0",
+      "method_role": "current_fixed_readout",
+      "step": 0,
+      "selected": false,
+      "selection_metric": "domain_balanced_token_accuracy",
+      "state_logical_sha256": "3eae9b97d36a963b157128810895aadf7431ebb7740e9d703b8484dc695c391c",
+      "checkpoint_file_sha256": "26850f0699b2ccaf231116333ea663a948d3c775520b08e48f9c98976812d300",
+      "validation": {
+        "scope": "opened_public_development_validation",
+        "token_rows": 48768,
+        "correct_tokens": 47452,
+        "overall_token_accuracy": 0.9730150918635171,
+        "finance_token_accuracy": 0.9826833169291339,
+        "pile_token_accuracy": 0.9536786417322834,
+        "domain_balanced_token_accuracy": 0.9681809793307087,
+        "validation_seconds": 2.282393064990174,
+        "loss_available": false
+      },
+      "diagnostics": {
+        "frozen64": {
+          "scope": "frozen64",
+          "elapsed_seconds": 0.28049469701363705,
+          "rows": 6577,
+          "record_count": 64,
+          "batch_count": 8,
+          "position_chunk_count": 16
+        },
+        "full_bank_endpoint": {
+          "scope": "full_bank",
+          "elapsed_seconds": 4.871967834013049,
+          "rows": 124371,
+          "record_count": 1200,
+          "batch_count": 150,
+          "position_chunk_count": 311
+        }
+      }
+    },
+    {
+      "bank": "B0",
+      "method_role": "current_fixed_readout",
+      "step": 1000,
+      "selected": false,
+      "selection_metric": "domain_balanced_token_accuracy",
+      "state_logical_sha256": "6466a16bbeb8d135e4405e09a8e99ba41d58cce39c9b452aa78af6b276c3ebda",
+      "checkpoint_file_sha256": "091a51b4af7f77255d6534be6151cb7d80be187f13cefcdaaf4343716c756184",
+      "validation": {
+        "scope": "opened_public_development_validation",
+        "token_rows": 48768,
+        "correct_tokens": 47479,
+        "overall_token_accuracy": 0.9735687335958005,
+        "finance_token_accuracy": 0.9832984744094488,
+        "pile_token_accuracy": 0.9541092519685039,
+        "domain_balanced_token_accuracy": 0.9687038631889764,
+        "validation_seconds": 1.6743075819977093,
+        "loss_available": false
+      },
+      "diagnostics": {
+        "frozen64": {
+          "scope": "frozen64",
+          "elapsed_seconds": 0.2496095310198143,
+          "rows": 6577,
+          "record_count": 64,
+          "batch_count": 8,
+          "position_chunk_count": 16
+        },
+        "full_bank_endpoint": null
+      }
+    },
+    {
+      "bank": "B0",
+      "method_role": "current_fixed_readout",
+      "step": 2000,
+      "selected": false,
+      "selection_metric": "domain_balanced_token_accuracy",
+      "state_logical_sha256": "22e46111155c63d6c7aade4e4a514ae86e98d8b7ea5549033053c9bdb421f9d0",
+      "checkpoint_file_sha256": "1adb86081934d16df9314097a34abc31f74d7166c3ca5e4c86f3fb6ada8c8f21",
+      "validation": {
+        "scope": "opened_public_development_validation",
+        "token_rows": 48768,
+        "correct_tokens": 47525,
+        "overall_token_accuracy": 0.9745119750656168,
+        "finance_token_accuracy": 0.9829908956692913,
+        "pile_token_accuracy": 0.9575541338582677,
+        "domain_balanced_token_accuracy": 0.9702725147637795,
+        "validation_seconds": 1.8279214790090919,
+        "loss_available": false
+      },
+      "diagnostics": {
+        "frozen64": {
+          "scope": "frozen64",
+          "elapsed_seconds": 0.27344966199598275,
+          "rows": 6577,
+          "record_count": 64,
+          "batch_count": 8,
+          "position_chunk_count": 16
+        },
+        "full_bank_endpoint": null
+      }
+    },
+    {
+      "bank": "B0",
+      "method_role": "current_fixed_readout",
+      "step": 4000,
+      "selected": false,
+      "selection_metric": "domain_balanced_token_accuracy",
+      "state_logical_sha256": "45e85435cfc4ba82f1d18a0aaca177c409abc6834a7373cb04ab674ddf787647",
+      "checkpoint_file_sha256": "91ac370bac03a31f8df51b9a38df872263488d53aff8ce8c3030274ff4dee312",
+      "validation": {
+        "scope": "opened_public_development_validation",
+        "token_rows": 48768,
+        "correct_tokens": 47548,
+        "overall_token_accuracy": 0.974983595800525,
+        "finance_token_accuracy": 0.9833292322834646,
+        "pile_token_accuracy": 0.9582923228346457,
+        "domain_balanced_token_accuracy": 0.9708107775590551,
+        "validation_seconds": 1.8391006570018362,
+        "loss_available": false
+      },
+      "diagnostics": {
+        "frozen64": {
+          "scope": "frozen64",
+          "elapsed_seconds": 0.2587748469959479,
+          "rows": 6577,
+          "record_count": 64,
+          "batch_count": 8,
+          "position_chunk_count": 16
+        },
+        "full_bank_endpoint": null
+      }
+    },
+    {
+      "bank": "B0",
+      "method_role": "current_fixed_readout",
+      "step": 8000,
+      "selected": true,
+      "selection_metric": "domain_balanced_token_accuracy",
+      "state_logical_sha256": "58aeaf1b3e16c760cc3bbaccd8413a5f2674fd07f59e4f527a53b8bf3ca0243a",
+      "checkpoint_file_sha256": "d2477cdf11422cb2d028196d72775825246f65f7e07394952375b3929627475a",
+      "validation": {
+        "scope": "opened_public_development_validation",
+        "token_rows": 48768,
+        "correct_tokens": 47568,
+        "overall_token_accuracy": 0.9753937007874016,
+        "finance_token_accuracy": 0.9837906003937008,
+        "pile_token_accuracy": 0.9585999015748031,
+        "domain_balanced_token_accuracy": 0.971195250984252,
+        "validation_seconds": 1.7198746840003878,
+        "loss_available": false
+      },
+      "diagnostics": {
+        "frozen64": {
+          "scope": "frozen64",
+          "elapsed_seconds": 0.2622241060016677,
+          "rows": 6577,
+          "record_count": 64,
+          "batch_count": 8,
+          "position_chunk_count": 16
+        },
+        "full_bank_endpoint": null
+      }
+    },
+    {
+      "bank": "B0",
+      "method_role": "current_fixed_readout",
+      "step": 12000,
+      "selected": false,
+      "selection_metric": "domain_balanced_token_accuracy",
+      "state_logical_sha256": "e3a07471ec90f72ebf6cd49cbe59b64fd4041934e289e205fa5d32cec53408e6",
+      "checkpoint_file_sha256": "8906c93aff5eb8ded082d36ef70521b059b365cd969c7e7d6ac66b6e7db754ca",
+      "validation": {
+        "scope": "opened_public_development_validation",
+        "token_rows": 48768,
+        "correct_tokens": 47555,
+        "overall_token_accuracy": 0.9751271325459318,
+        "finance_token_accuracy": 0.9837290846456693,
+        "pile_token_accuracy": 0.9579232283464567,
+        "domain_balanced_token_accuracy": 0.970826156496063,
+        "validation_seconds": 1.783619626017753,
+        "loss_available": false
+      },
+      "diagnostics": {
+        "frozen64": {
+          "scope": "frozen64",
+          "elapsed_seconds": 0.2733549340046011,
+          "rows": 6577,
+          "record_count": 64,
+          "batch_count": 8,
+          "position_chunk_count": 16
+        },
+        "full_bank_endpoint": null
+      }
+    },
+    {
+      "bank": "B0",
+      "method_role": "current_fixed_readout",
+      "step": 13000,
+      "selected": false,
+      "selection_metric": "domain_balanced_token_accuracy",
+      "state_logical_sha256": "109b649a0fe3d30de9e6ae9ef10afb97b7b650e228b5c536c1be86382d0f58b1",
+      "checkpoint_file_sha256": "b532d96f2bceae80f58cd6009ecd188272ae22adcd273ba395386ab8a000a58c",
+      "validation": {
+        "scope": "opened_public_development_validation",
+        "token_rows": 48768,
+        "correct_tokens": 47556,
+        "overall_token_accuracy": 0.9751476377952756,
+        "finance_token_accuracy": 0.9837598425196851,
+        "pile_token_accuracy": 0.9579232283464567,
+        "domain_balanced_token_accuracy": 0.9708415354330708,
+        "validation_seconds": 1.6844374229840469,
+        "loss_available": false
+      },
+      "diagnostics": {
+        "frozen64": {
+          "scope": "frozen64",
+          "elapsed_seconds": 0.2587417639733758,
+          "rows": 6577,
+          "record_count": 64,
+          "batch_count": 8,
+          "position_chunk_count": 16
+        },
+        "full_bank_endpoint": {
+          "scope": "full_bank",
+          "elapsed_seconds": 4.5686828379984945,
+          "rows": 124371,
+          "record_count": 1200,
+          "batch_count": 150,
+          "position_chunk_count": 311
+        }
+      }
+    },
+    {
+      "bank": "B1",
+      "method_role": "expanded_fixed_readout",
+      "step": 0,
+      "selected": false,
+      "selection_metric": "domain_balanced_token_accuracy",
+      "state_logical_sha256": "3eae9b97d36a963b157128810895aadf7431ebb7740e9d703b8484dc695c391c",
+      "checkpoint_file_sha256": "396925ba7264050fadfa8b0e44fbfc9f3c37802387b4104d61c4605ff6949569",
+      "validation": {
+        "scope": "opened_public_development_validation",
+        "token_rows": 48768,
+        "correct_tokens": 47452,
+        "overall_token_accuracy": 0.9730150918635171,
+        "finance_token_accuracy": 0.9826833169291339,
+        "pile_token_accuracy": 0.9536786417322834,
+        "domain_balanced_token_accuracy": 0.9681809793307087,
+        "cross_entropy_loss": 0.19891194561178602,
+        "validation_seconds": 2.347028174001025,
+        "loss_available": true
+      },
+      "diagnostics": {
+        "frozen64": {
+          "scope": "frozen64",
+          "elapsed_seconds": 1.2680617959995288,
+          "rows": 6972,
+          "record_count": 64,
+          "batch_count": 8,
+          "position_chunk_count": 19,
+          "token_accuracy": 0.9711703958691911,
+          "cross_entropy_loss": 0.17546298043247754
+        },
+        "full_bank_endpoint": {
+          "scope": "full_bank",
+          "elapsed_seconds": 72.83089950101567,
+          "rows": 1243710,
+          "record_count": 12000,
+          "batch_count": 1500,
+          "position_chunk_count": 3104,
+          "token_accuracy": 0.9758142975452477,
+          "cross_entropy_loss": 0.14987262685937344
+        }
+      }
+    },
+    {
+      "bank": "B1",
+      "method_role": "expanded_fixed_readout",
+      "step": 1000,
+      "selected": false,
+      "selection_metric": "domain_balanced_token_accuracy",
+      "state_logical_sha256": "564ff09a15543c478f6ef0e827099a1a9d6c4409c71f149d67c6300523c27aac",
+      "checkpoint_file_sha256": "d233fa0885db09f19d1e59dc73c6673668ee9e4e354076130fed15d0ccdc5209",
+      "validation": {
+        "scope": "opened_public_development_validation",
+        "token_rows": 48768,
+        "correct_tokens": 48171,
+        "overall_token_accuracy": 0.9877583661417323,
+        "finance_token_accuracy": 0.9908649114173228,
+        "pile_token_accuracy": 0.9815452755905512,
+        "domain_balanced_token_accuracy": 0.986205093503937,
+        "cross_entropy_loss": 0.08548927991565444,
+        "validation_seconds": 1.6935582589940168,
+        "loss_available": true
+      },
+      "diagnostics": {
+        "frozen64": {
+          "scope": "frozen64",
+          "elapsed_seconds": 0.9628922670090105,
+          "rows": 6972,
+          "record_count": 64,
+          "batch_count": 8,
+          "position_chunk_count": 19,
+          "token_accuracy": 0.99469305794607,
+          "cross_entropy_loss": 0.0431556029611802
+        },
+        "full_bank_endpoint": null
+      }
+    },
+    {
+      "bank": "B1",
+      "method_role": "expanded_fixed_readout",
+      "step": 2000,
+      "selected": false,
+      "selection_metric": "domain_balanced_token_accuracy",
+      "state_logical_sha256": "ea8d8cc9bbf8fb437aa03ac48b9821f1bbc79bf186cb9363a3beb3c702b48cad",
+      "checkpoint_file_sha256": "19181d7f8cd295c675e9c79570bdba8617a62f8ae492621ec995b987a29ccb43",
+      "validation": {
+        "scope": "opened_public_development_validation",
+        "token_rows": 48768,
+        "correct_tokens": 48313,
+        "overall_token_accuracy": 0.9906701115485564,
+        "finance_token_accuracy": 0.9917568897637795,
+        "pile_token_accuracy": 0.9884965551181102,
+        "domain_balanced_token_accuracy": 0.9901267224409449,
+        "cross_entropy_loss": 0.059478648476243956,
+        "validation_seconds": 1.6885260890121572,
+        "loss_available": true
+      },
+      "diagnostics": {
+        "frozen64": {
+          "scope": "frozen64",
+          "elapsed_seconds": 0.8119304130086675,
+          "rows": 6972,
+          "record_count": 64,
+          "batch_count": 8,
+          "position_chunk_count": 19,
+          "token_accuracy": 0.9988525530694206,
+          "cross_entropy_loss": 0.019526782790781332
+        },
+        "full_bank_endpoint": null
+      }
+    },
+    {
+      "bank": "B1",
+      "method_role": "expanded_fixed_readout",
+      "step": 4000,
+      "selected": false,
+      "selection_metric": "domain_balanced_token_accuracy",
+      "state_logical_sha256": "79b5f11279875ea1b3566acab10ca030cb39b42b3fcf1eaa1c5d377d485b700c",
+      "checkpoint_file_sha256": "9392a1af3b917093e583ff2ec5cf1de0b0b946e8d603acfc77a4c669eb055f92",
+      "validation": {
+        "scope": "opened_public_development_validation",
+        "token_rows": 48768,
+        "correct_tokens": 48447,
+        "overall_token_accuracy": 0.99341781496063,
+        "finance_token_accuracy": 0.9936331200787402,
+        "pile_token_accuracy": 0.9929872047244095,
+        "domain_balanced_token_accuracy": 0.9933101624015748,
+        "cross_entropy_loss": 0.04076357524636693,
+        "validation_seconds": 1.8703994930256158,
+        "loss_available": true
+      },
+      "diagnostics": {
+        "frozen64": {
+          "scope": "frozen64",
+          "elapsed_seconds": 0.88009952698485,
+          "rows": 6972,
+          "record_count": 64,
+          "batch_count": 8,
+          "position_chunk_count": 19,
+          "token_accuracy": 0.9997131382673551,
+          "cross_entropy_loss": 0.005364995039956739
+        },
+        "full_bank_endpoint": null
+      }
+    },
+    {
+      "bank": "B1",
+      "method_role": "expanded_fixed_readout",
+      "step": 8000,
+      "selected": false,
+      "selection_metric": "domain_balanced_token_accuracy",
+      "state_logical_sha256": "aaed04ab06a9ec73eba4f622a7fc3ecc8b314a619956723cc59ad0d3657803f5",
+      "checkpoint_file_sha256": "2188a7f52e2143b199317e41fad9f4a33b00fa5a0bc6d269533dadd5a6f41d22",
+      "validation": {
+        "scope": "opened_public_development_validation",
+        "token_rows": 48768,
+        "correct_tokens": 48463,
+        "overall_token_accuracy": 0.9937458989501312,
+        "finance_token_accuracy": 0.9938176673228346,
+        "pile_token_accuracy": 0.9936023622047244,
+        "domain_balanced_token_accuracy": 0.9937100147637795,
+        "cross_entropy_loss": 0.030045525114946653,
+        "validation_seconds": 1.944957299012458,
+        "loss_available": true
+      },
+      "diagnostics": {
+        "frozen64": {
+          "scope": "frozen64",
+          "elapsed_seconds": 0.8501110869983677,
+          "rows": 6972,
+          "record_count": 64,
+          "batch_count": 8,
+          "position_chunk_count": 19,
+          "token_accuracy": 1.0,
+          "cross_entropy_loss": 0.0011400956073690397
+        },
+        "full_bank_endpoint": null
+      }
+    },
+    {
+      "bank": "B1",
+      "method_role": "expanded_fixed_readout",
+      "step": 12000,
+      "selected": false,
+      "selection_metric": "domain_balanced_token_accuracy",
+      "state_logical_sha256": "116e7a6b0aea86e3a225c7259664433bf4433dcd98bdeae3168fc8f3815874fc",
+      "checkpoint_file_sha256": "e17bf5e10e4b80e3a714532f07d64245dd2fa15fec4d9a07d629117bca5860c4",
+      "validation": {
+        "scope": "opened_public_development_validation",
+        "token_rows": 48768,
+        "correct_tokens": 48487,
+        "overall_token_accuracy": 0.9942380249343832,
+        "finance_token_accuracy": 0.9938791830708661,
+        "pile_token_accuracy": 0.9949557086614174,
+        "domain_balanced_token_accuracy": 0.9944174458661417,
+        "cross_entropy_loss": 0.027386651675062854,
+        "validation_seconds": 1.8007744899950922,
+        "loss_available": true
+      },
+      "diagnostics": {
+        "frozen64": {
+          "scope": "frozen64",
+          "elapsed_seconds": 0.8721330180123914,
+          "rows": 6972,
+          "record_count": 64,
+          "batch_count": 8,
+          "position_chunk_count": 19,
+          "token_accuracy": 1.0,
+          "cross_entropy_loss": 0.00031825750851811337
+        },
+        "full_bank_endpoint": null
+      }
+    },
+    {
+      "bank": "B1",
+      "method_role": "expanded_fixed_readout",
+      "step": 13000,
+      "selected": true,
+      "selection_metric": "domain_balanced_token_accuracy",
+      "state_logical_sha256": "209155048df936359870a1419803800d7bad4ab72a46e09bf3287648079964da",
+      "checkpoint_file_sha256": "5757506003f0a4b82cb1cd6de2a82f11345f2dbcbce13c8cf18c4f515de3ec3a",
+      "validation": {
+        "scope": "opened_public_development_validation",
+        "token_rows": 48768,
+        "correct_tokens": 48487,
+        "overall_token_accuracy": 0.9942380249343832,
+        "finance_token_accuracy": 0.9938484251968503,
+        "pile_token_accuracy": 0.9950172244094488,
+        "domain_balanced_token_accuracy": 0.9944328248031495,
+        "cross_entropy_loss": 0.027384654195762907,
+        "validation_seconds": 1.8173816819908097,
+        "loss_available": true
+      },
+      "diagnostics": {
+        "frozen64": {
+          "scope": "frozen64",
+          "elapsed_seconds": 0.8422396929818206,
+          "rows": 6972,
+          "record_count": 64,
+          "batch_count": 8,
+          "position_chunk_count": 19,
+          "token_accuracy": 1.0,
+          "cross_entropy_loss": 0.00031529662847316946
+        },
+        "full_bank_endpoint": {
+          "scope": "full_bank",
+          "elapsed_seconds": 75.29783406699426,
+          "rows": 1243710,
+          "record_count": 12000,
+          "batch_count": 1500,
+          "position_chunk_count": 3104,
+          "token_accuracy": 0.9999831150348554,
+          "cross_entropy_loss": 0.0003633679116939009
+        }
+      }
+    }
+  ],
+  "cost_and_resources_by_bank": [
+    {
+      "bank": "B0",
+      "method_role": "current_fixed_readout",
+      "updates": 13000,
+      "total_position_draws": 6656000,
+      "selected_step": 8000,
+      "optimizer_update_seconds": 487.291513516946,
+      "stream_load_seconds": 47.97053069571848,
+      "validation_seconds": 12.811654516001,
+      "fitting_diagnostics_seconds": 11.29730021301657,
+      "process_wall_seconds": 574.7391980069806,
+      "external_watchdog_seconds": 588.368602,
+      "validation_checkpoint_count": 7,
+      "validation_token_rows_across_checkpoints": 341376,
+      "full_bank_diagnostic_endpoint_count": 2,
+      "gpu_peak_reserved_bytes": 2959081472,
+      "gpu_peak_allocated_bytes": 2533930496,
+      "host_peak_rss_bytes": 3652083712,
+      "pretraining_or_ancestor_cost": "not included",
+      "startup_cold_seconds": null,
+      "startup_cold_status": "not separately measured",
+      "timing_note": "Phase times are nested process accounting; do not add them to process wall."
+    },
+    {
+      "bank": "B1",
+      "method_role": "expanded_fixed_readout",
+      "updates": 13000,
+      "total_position_draws": 6656000,
+      "selected_step": 13000,
+      "optimizer_update_seconds": 488.3537717303261,
+      "stream_load_seconds": 1091.4970333801466,
+      "validation_seconds": 13.162625486031175,
+      "fitting_diagnostics_seconds": 154.61620136900456,
+      "process_wall_seconds": 1762.8824152240122,
+      "external_watchdog_seconds": null,
+      "external_watchdog_status": "not separately bound; process wall is receipt timing",
+      "validation_checkpoint_count": 7,
+      "validation_token_rows_across_checkpoints": 341376,
+      "full_bank_diagnostic_endpoint_count": 2,
+      "gpu_peak_reserved_bytes": 2959081472,
+      "gpu_peak_allocated_bytes": 2533930496,
+      "host_peak_rss_bytes": 3651964928,
+      "pretraining_or_ancestor_cost": "not included",
+      "startup_cold_seconds": null,
+      "startup_cold_status": "not separately measured",
+      "timing_note": "Phase times are nested process accounting; do not add them to process wall."
+    }
+  ],
+  "accounting_notes": [
+    "The optimizer, stream-load, and validation phase times are nested under each process wall value and are not summed as independent wall time.",
+    "Fitting diagnostic timings are reported separately; they are not added to process wall.",
+    "The B0 external watchdog elapsed time includes process/wrapper overhead and is retained separately from the in-process phase breakdown.",
+    "Host RSS is a process high-water measurement. GPU peak values are the per-fit receipt peaks; no final deployed per-method memory claim is made here.",
+    "Preparation, inherited ancestor/pretraining, cold disk startup, and any future directional preparation are outside these incremental fit timings unless explicitly bound above."
+  ],
+  "quality_boundary": {
+    "truth_opened": false,
+    "final_evaluation_started": false,
+    "fresh_quality_result_available": false,
+    "promotion_or_architecture_claim": false,
+    "interpretation": "The curves and costs describe fit/selection behavior on public development validation; they do not establish final reconstruction quality."
+  },
+  "reproducibility": {
+    "extraction_scope": "Read JSON receipt metadata and compact task-local support/diagnostic bindings only; no tensor payloads, source rows, hidden states, or truth payloads were opened by this extraction.",
+    "checkpoint_table_rows": 14,
+    "source_receipts_are_external_or_compact_bindings": true,
+    "generation_note": "Generated from the immutable B0 audit, B1 receipt, and the published A2 final manifest; the v1 table remains preserved with its provisional unknown B1 audit fields."
+  },
+  "revision": {
+    "id": "trr0010_fixed_fit_learning_curve_cost_table_v2",
+    "supersedes": {
+      "path": "experiments/TRR-0010/report/fixed_fit_learning_curve_cost_table_v1.json",
+      "sha256": "fcdac6275a2300834566cbbf2a8a188d1204e1cae6cdbadae717ee3cebac1d56",
+      "status": "IMMUTABLE_HISTORICAL_V1_WITH_B1_AUDIT_COUNTS_UNKNOWN"
+    },
+    "reason": "Replace the provisional unknown B1 sampled-pair, repeat-draw, and sampled-record fields with the published A2 final-manifest audit."
+  }
+}

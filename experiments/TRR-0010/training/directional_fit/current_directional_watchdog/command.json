@@ -1,0 +1,54 @@
+{
+  "command": [
+    "python3",
+    "scripts/trr0010_directional_fit_cli.py",
+    "--arm",
+    "current_directional",
+    "--provider",
+    "trr0010_production_provider:build_inputs",
+    "--binding-current",
+    "experiments/TRR-0010/setup/production_arm_binding_current_stage3_v3.json",
+    "--diagnostic-binding",
+    "/tmp/trr-p09/experiments/TRR-P09/setup/fixed-diagnostic-binding-r1.json",
+    "--lease",
+    "experiments/TRR-0010/training/directional_fit/current_directional_lease.json",
+    "--output-root",
+    "experiments/TRR-0010/training/directional_fit/current_directional_watchdog/fit",
+    "--device",
+    "cuda",
+    "--deadline-seconds",
+    "7200"
+  ],
+  "created_utc": "2026-09-07T16:08:27.551687Z",
+  "cwd": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010",
+  "environment": {
+    "MKL_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "PYTHONPATH": ".:src:scripts",
+    "TOKENIZERS_PARALLELISM": "false"
+  },
+  "environment_allowlist": [
+    "CUDA_VISIBLE_DEVICES",
+    "OMP_NUM_THREADS",
+    "MKL_NUM_THREADS",
+    "TOKENIZERS_PARALLELISM",
+    "PYTHONPATH",
+    "HF_HUB_OFFLINE",
+    "HF_DATASETS_OFFLINE",
+    "TRANSFORMERS_OFFLINE"
+  ],
+  "environment_redacted": true,
+  "label": "TRR-0010-directional-current",
+  "process_group": "new_session_start_new_session_true",
+  "schema": "token-reconstruction.trr0010-resource-watchdog-command.v1",
+  "shell_command": "python3 scripts/trr0010_directional_fit_cli.py --arm current_directional --provider trr0010_production_provider:build_inputs --binding-current experiments/TRR-0010/setup/production_arm_binding_current_stage3_v3.json --diagnostic-binding /tmp/trr-p09/experiments/TRR-P09/setup/fixed-diagnostic-binding-r1.json --lease experiments/TRR-0010/training/directional_fit/current_directional_lease.json --output-root experiments/TRR-0010/training/directional_fit/current_directional_watchdog/fit --device cuda --deadline-seconds 7200",
+  "task_id": "TRR-0010",
+  "thresholds": {
+    "kill_grace_seconds": 2.0,
+    "max_output_bytes": 5368709120,
+    "max_rss_bytes": 12884901888,
+    "min_available_bytes": 8589934592,
+    "poll_seconds": 0.5,
+    "timeout_seconds": 7200.0
+  }
+}

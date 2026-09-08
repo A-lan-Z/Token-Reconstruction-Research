@@ -1,0 +1,52 @@
+{
+  "bound_artifacts": {
+    "experiments/TRR-0010/setup/p09_largest_cell_qualification_template_v1.json": "92d886c3f5ebb0bd6ccc119f04aa754036dd0a6e0305eacf9a4630b759f62513",
+    "experiments/TRR-0010/setup/p09_schedule_deserializer_cpu_v1.json": "a978a69c7cd59b9caa32b39d378e06d89e23a29083c78e0429d90b4a40b7e06d"
+  },
+  "checks": [
+    "B0+B1 combined loader is hash-bound and retains global record indices.",
+    "Validation views gather declared non-contiguous/interleaved rows in order.",
+    "Activations, labels, and masks may be bound to separate files and tensor keys.",
+    "Qualification export writes base-only decoder, compact directional training checkpoint, and effective readout.",
+    "Nonzero-direction export/reload fixture remains exact in logits and argmax IDs."
+  ],
+  "limitations": [
+    "This receipt is synthetic-only; final validation manifest, full H bank, schedule/contract execution, and GPU qualification remain pending.",
+    "The compact checkpoint stores model state only; optimizer state remains external by design."
+  ],
+  "schema": "token-reconstruction.trr0010-p09-provider-validation-tests.v1",
+  "scope": {
+    "fit_or_capture_run": false,
+    "gpu_used": false,
+    "public_payload_loaded": false,
+    "purpose": "combined B0+B1 provider binding, exact validation row gathering, and qualification export serialization checks",
+    "truth_opened": false
+  },
+  "source_commit_at_test": "97274f366d310fff44ff8d7cc951f3b6af3aa64f",
+  "source_files": {
+    "scripts/trr0010_p09_provider.py": "df9fb4e752afe9e18a29eb86984e9a3da9143196943cdcb93056d2b62a00f2e3",
+    "scripts/trr0010_p09_qualifier.py": "e11eadf61302380abd7ddfdfe6ce4ee08c6b45e0d8427bc1a265cbd81e04af27",
+    "tests/test_trr0010_p09_provider.py": "cd204faf45bbb337027f15cceb4e7c3458b16a3a2bc9a6184f288ecea512d88f"
+  },
+  "status": "SYNTHETIC_ONLY_PASS",
+  "task_id": "TRR-0010",
+  "test": {
+    "command": "env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false PYTHONPATH=.:src:scripts python3 -m pytest -q tests/test_trr0010_p09_provider.py tests/test_trr0010_p09_qualifier.py tests/test_trr0010_p09_caller.py tests/test_trr0010_p09_integration.py",
+    "elapsed_seconds_wall_wrapper": 2.542972,
+    "end_utc": "2026-09-07T12:26:13.004243Z",
+    "pytest_output": "22 passed in 1.56s",
+    "result": "22 passed in 1.58s",
+    "start_utc": "2026-09-07T12:26:10.461271Z",
+    "test_files": [
+      "scripts/trr0010_p09_provider.py",
+      "scripts/trr0010_p09_qualifier.py",
+      "tests/test_trr0010_p09_provider.py"
+    ],
+    "thread_caps": {
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "TOKENIZERS_PARALLELISM": "false"
+    }
+  }
+}

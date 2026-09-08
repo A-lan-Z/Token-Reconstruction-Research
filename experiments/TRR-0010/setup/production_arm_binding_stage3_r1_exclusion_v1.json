@@ -1,0 +1,71 @@
+{
+  "created_scope": "Metadata-only correction; no provider/source, bank payload, schedule payload, fit, GPU, or truth changes.",
+  "excluded_artifacts": [
+    {
+      "arm_name": "current_directional",
+      "bytes": 13205,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/setup/production_arm_binding_current_stage3_v1.json",
+      "sha256": "dda2847c3c3cf372b740e01598d8eb0c31d8be454d377b1153d8f4b13584ae53",
+      "status": "PRESERVED_READ_ONLY"
+    },
+    {
+      "arm_name": "expanded_directional",
+      "bytes": 13206,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/setup/production_arm_binding_expanded_stage3_v1.json",
+      "sha256": "8dc6ad2b67face67f1af3074d7071b255c0eb69f2a9c00e53bb4c80701361873",
+      "status": "PRESERVED_READ_ONLY"
+    }
+  ],
+  "fit_started": false,
+  "gpu_fit_started": false,
+  "measured_qualification": {
+    "bytes": 28147,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/training/qualification_v2/qualification.json",
+    "sha256": "58594a477733c2f1ce21d356ec9acead92de6001b2c31bd41f635213700bca66",
+    "status": "QUALIFICATION_PASS"
+  },
+  "measured_resource_guard": {
+    "bytes": 17692,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/training/qualification_v2/resource_guard.json",
+    "sha256": "c14d22414ae4feac0f7c021d3278bb5fbfe5baa90c6d5eeb9e47b3f172042893",
+    "status": "PASS"
+  },
+  "production_caps": {
+    "disk_free_floor_bytes": 21474836480,
+    "gpu_free_floor_bytes": 2147483648,
+    "gpu_reserved_limit_bytes": 10737418240,
+    "host_available_floor_bytes": 8589934592,
+    "host_rss_limit_bytes": 12884901888,
+    "output_bytes_limit": 5368709120,
+    "wall_limit_seconds": 7200
+  },
+  "reason": {
+    "current_directional": {
+      "placeholder_resource": "r1 reported zero GPU peak, zero host peak RSS, and zero wall time rather than the measured GPU qualification/watchdog receipt.",
+      "wrong_schedule": "r1 current_directional declared B0 but bound the B1 schedule (semantic 8acdb2...) and B1 additions manifest."
+    },
+    "disposition": "Neither r1 descriptor was used to launch a GPU fit, select a state, open evaluation truth, or score an arm.",
+    "expanded_directional": {
+      "placeholder_resource": "r1 reported zero GPU peak, zero host peak RSS, and zero wall time rather than the measured GPU qualification/watchdog receipt.",
+      "wrong_schedule": false
+    }
+  },
+  "replacement_artifacts": [
+    {
+      "arm_name": "current_directional",
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/setup/production_arm_binding_current_stage3_v2.json",
+      "status": "V2_CORRECTED_BINDING_WRITTEN"
+    },
+    {
+      "arm_name": "expanded_directional",
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/setup/production_arm_binding_expanded_stage3_v2.json",
+      "status": "V2_CORRECTED_BINDING_WRITTEN"
+    }
+  ],
+  "schema": "token-reconstruction.trr0010-directional-production-binding-exclusion.v1",
+  "scope": "Both stage-3 directional production-binding r1 descriptors",
+  "selection_used": false,
+  "status": "EXCLUDED_CPU_CONFIGURATION_WRONG_SCHEDULE_PLACEHOLDER_RESOURCE",
+  "task_id": "TRR-0010",
+  "truth_opened": false
+}

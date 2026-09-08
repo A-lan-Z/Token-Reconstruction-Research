@@ -1,0 +1,47 @@
+{
+  "bindings": {
+    "benefit_alpha": 0.025,
+    "bootstrap_draws": 10000,
+    "bootstrap_seed": 10010,
+    "exact_method": "paired-discordance Clopper-Pearson; component tail alpha/2; lower=L_CP(gains)-U_CP(losses), upper=U_CP(gains)-L_CP(losses)",
+    "fixed_width_token_delta": "Requires equal per-record exposure; variable-exposure strata must call bootstrap_ratio",
+    "frequency_stratum_accounting": "caller supplies per-record correct/exposure contributions to bootstrap_ratio; no per-record accuracy averaging",
+    "harm_alpha": 0.05,
+    "percentile_convention": "ascending order statistics: lower index=floor(alpha * draws); upper index=ceil((1-alpha) * draws)-1",
+    "ratio_nonpositive_denominator": "UNKNOWN for whole ratio route if observed or any bootstrap denominator is nonpositive; no draw discarded",
+    "token_zero_variance": "UNKNOWN for route or safeguard",
+    "unit": "source_record",
+    "weighted_rare_token_harm_note": "bootstrap_ratio is not itself a harm gate; any weighted rare-token harm wrapper must also apply zero-variance UNKNOWN"
+  },
+  "code": {
+    "bytes": 13220,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/scripts/trr0010_analysis.py",
+    "sha256": "90078ac78bfcdcfb5f782a598c943b78cb0417f6895906a1e6d61056a3793cef"
+  },
+  "contract": {
+    "bytes": 38409,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/planning/shared_contract.proposal.json",
+    "sha256": "3b0a68a4a05304e285c1fedcf8a2982bf4bef831e2e5bc0cebb20b8b2dba08b3"
+  },
+  "created_utc": "2026-09-07T08:30:18Z",
+  "schema": "token-reconstruction.trr0010-analysis-setup.v1",
+  "scope_note": "Synthetic numeric analysis only. This receipt does not contain predictions, labels, source rows, model state, truth, or selected records.",
+  "status": "CPU_SYNTHETIC_ANALYSIS_TESTS_PASS",
+  "task_id": "TRR-0010",
+  "test_command": "PYTHONPATH=.:src:scripts pytest -q tests/test_trr0010_analysis.py",
+  "test_result": {
+    "combined_synthetic_suite": "tests/test_trr0010_model.py + tests/test_trr0010_analysis.py: 25 passed in 1.44s",
+    "elapsed_seconds": 0.44,
+    "failed": 0,
+    "models_loaded": false,
+    "passed": 16,
+    "selection_performed": false,
+    "source_data_accessed": false,
+    "truth_opened": false
+  },
+  "tests": {
+    "bytes": 4788,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/tests/test_trr0010_analysis.py",
+    "sha256": "e000eaffba1837df30c5476f8c936ccd2d295934cbebca7f70047ddd81f21405"
+  }
+}

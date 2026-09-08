@@ -1,0 +1,178 @@
+{
+  "audit": {
+    "all_attention_masks_exact": true,
+    "all_position_ids_exact": true,
+    "all_record_ids_exact": true,
+    "all_token_ids_exact": true,
+    "bos_token_id": 128000,
+    "command": "env PYTHONPATH=.:src:scripts HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TOKENIZERS_PARALLELISM=false python3 scripts/trr_p09/resource_watchdog.py --output-root /tmp/trr-p09-runtime/public-validation-audit-watchdog-r1 --timeout-seconds 900 --max-rss-bytes 8589934592 --min-available-bytes 10737418240 --cwd /tmp/trr-p09 --label TRR-P09-public-validation-audit -- python3 scripts/trr_p09/audit_public_validation.py --repository-root /tmp/trr-p09 --selection experiments/TRR-0009/selection_v2/source_selection.json --observations experiments/TRR-0009/evaluation/public_observations_v2/observations.json --runtime-root /tmp/trr-p09-runtime/public-validation-r1",
+    "generated_attention_masks_exact": true,
+    "generated_position_ids_exact": true,
+    "h_activations_loaded": false,
+    "h_attention_masks_opened": true,
+    "h_file_hashes_verified": true,
+    "h_payloads_opened_for_audit": true,
+    "h_position_ids_opened": true,
+    "h_row_join_exact": true,
+    "lora_loaded": false,
+    "model_loaded": false,
+    "preparation_h_payloads_opened": false,
+    "public_base_h_activations_loaded": false,
+    "public_base_h_attention_masks_exact": true,
+    "public_base_h_file_hashes_exact": true,
+    "public_base_h_position_ids_exact": true,
+    "public_forward_count": 0,
+    "script": {
+      "bytes": 10034,
+      "path": "/tmp/trr-p09/scripts/trr_p09/audit_public_validation.py",
+      "sha256": "344384e2754827099b741579c933651480ee89a8914b000a4489a96341bde945"
+    },
+    "source_text_written": false,
+    "status": "PASS_PUBLIC_VALIDATION_AUDIT",
+    "trusted_label_re_materialization": true,
+    "trusted_token_ids_re_materialized_exact": true,
+    "truth_opened": false,
+    "watchdog": {
+      "child_return_code": 0,
+      "command": {
+        "bytes": 1578,
+        "path": "/tmp/trr-p09-runtime/public-validation-audit-watchdog-r1/command.json",
+        "sha256": "39e99a2981fcf388ea675ca5b7e88d46ca7109a9815c93fa0aaad5301fcef513"
+      },
+      "finish": {
+        "bytes": 1088,
+        "path": "/tmp/trr-p09-runtime/public-validation-audit-watchdog-r1/finish.json",
+        "sha256": "159055736ff5c75e49ee02a6c5c5fda85586f6609a1b303d3ec577adc389eeeb"
+      },
+      "guard": {
+        "bytes": 5028,
+        "path": "/tmp/trr-p09-runtime/public-validation-audit-watchdog-r1/resource_guard.json",
+        "sha256": "a44acb04903643bbc5484256fc2c512c086d4fd839b2b4c516fc25831dff2048"
+      },
+      "minimum_sampled_host_mem_available_bytes": 19213017088,
+      "peak_group_rss_bytes": 1159303168,
+      "status": "PASS",
+      "stdout": {
+        "bytes": 2293,
+        "path": "/tmp/trr-p09-runtime/public-validation-audit-watchdog-r1/stdout.txt",
+        "sha256": "3e953731a039ee1feea89e183126047ee0a4c3608061df267ebe728916f05659"
+      },
+      "wrapper_exit_code": 0
+    }
+  },
+  "execution": {
+    "focused_test": {
+      "bytes": 2961,
+      "command": "PYTHONPATH=.:src:scripts pytest -q tests/test_trr_p09_prepare_public_validation.py",
+      "path": "tests/test_trr_p09_prepare_public_validation.py",
+      "result": "2 passed",
+      "sha256": "aa9a9a13564a242e963cd5d1d5f5504c2553d2485ec05f9f1989511ab560ab74"
+    },
+    "helper": {
+      "bytes": 29917,
+      "path": "/tmp/trr-p09/scripts/trr_p09/prepare_public_validation.py",
+      "sha256": "1a8c0dac61445e74d11bf1841bfae792443d67cb1bb7ab9671dbb24710cf4c77"
+    },
+    "preparation_receipt": {
+      "bytes": 5705,
+      "path": "/tmp/trr-p09-runtime/public-validation-r1/preparation_receipt.json",
+      "sha256": "26b6954c5832d9fd3090943ebe32b6836b4babf8a27e9785164c1d5efcbb067f"
+    },
+    "runtime_root": "/tmp/trr-p09-runtime/public-validation-r1",
+    "source_commit": "0fec16d8c150772b5c540f09315f6e589e010c4f"
+  },
+  "inputs": {
+    "observation_manifest": {
+      "path": "experiments/TRR-0009/evaluation/public_observations_v2/observations.json",
+      "sha256": "8ad89e2598e7b1e774c43b3fd1d0f1a990615069cd1f488e8aa139463087d430"
+    },
+    "public_base_h": {
+      "Finance": {
+        "bytes": 134513416,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/evaluation/public_observations_v2/observations/finance__public_base.safetensors",
+        "payload_opened": false,
+        "sha256": "7449bf11fd335ec8d46ca7581378b8e3a3351d7b7852561cac944c723dd643bb"
+      },
+      "Pile": {
+        "bytes": 67257088,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/evaluation/public_observations_v2/observations/pile__public_base.safetensors",
+        "payload_opened": false,
+        "sha256": "5ad0fece58e4247d8fb1a1d8f5d1d5a021eb96cded0be112f0aafa9052dab89a"
+      }
+    },
+    "source_selection": {
+      "path": "experiments/TRR-0009/selection_v2/source_selection.json",
+      "sha256": "c2e996514f7f45e55d7bfadc27fc8048bdb07a2c979b208de8716972d8d1def2"
+    }
+  },
+  "outputs": {
+    "global_row_order": "Finance_then_Pile",
+    "label_join_sha256": "35b8341d95e08d4375fbb122251309f258d5fced134675bae495f92721bcc23f",
+    "payloads": {
+      "Finance": {
+        "bytes": 427104,
+        "keys": [
+          "token_ids",
+          "attention_mask",
+          "position_ids"
+        ],
+        "path": "/tmp/trr-p09-runtime/public-validation-r1/finance_validation_h128.safetensors",
+        "sha256": "90622fa9530e7fd9b83e81f91e1c2d0ce5c42ea8c0c776ce97df2e6f7408f408",
+        "shape": [
+          256,
+          128
+        ]
+      },
+      "Pile": {
+        "bytes": 214096,
+        "keys": [
+          "token_ids",
+          "attention_mask",
+          "position_ids"
+        ],
+        "path": "/tmp/trr-p09-runtime/public-validation-r1/pile_validation_h128.safetensors",
+        "sha256": "68e41349657b282afe2d6c431512db5f9ce4d1484babca66f2c5807e1ea811b6",
+        "shape": [
+          128,
+          128
+        ]
+      }
+    },
+    "records": 384,
+    "records_by_domain": {
+      "Finance": 256,
+      "Pile": 128
+    },
+    "sequence_tokens_including_bos": 128,
+    "validation_manifest": {
+      "bytes": 468369,
+      "path": "/tmp/trr-p09-runtime/public-validation-r1/validation_manifest.json",
+      "sha256": "2ae3c36d62a3219f0df24ef6d87a9c76418b408d946ba52bcedd020b6b403d38"
+    },
+    "validation_rows": {
+      "bytes": 72111,
+      "path": "/tmp/trr-p09-runtime/public-validation-r1/validation_rows.json",
+      "sha256": "3877baf2a8ad894cb7c971aadd1591854852f77091bdbdb218b3617a6971919f"
+    }
+  },
+  "schema": "token-reconstruction.trr-p09-public-validation-audit.v1",
+  "status": "PASS_PUBLIC_VALIDATION_384_AUDITED_NO_TRUTH",
+  "task_id": "TRR-P09",
+  "watchdog": {
+    "child_return_code": 0,
+    "finish": {
+      "bytes": 1088,
+      "path": "/tmp/trr-p09-runtime/public-validation-watchdog-r1/finish.json",
+      "sha256": "ec1c241ef021a44132fb301ef8a4669bab1d92202b195352a5fe8653da9a31e3"
+    },
+    "guard": {
+      "bytes": 5026,
+      "path": "/tmp/trr-p09-runtime/public-validation-watchdog-r1/resource_guard.json",
+      "sha256": "2d75826d11c6a0d5d5df40b5909979e18445ca1d563c8d71e50d1805550ecc33"
+    },
+    "minimum_sampled_host_mem_available_bytes": 19226554368,
+    "peak_group_rss_bytes": 1160151040,
+    "status": "PASS",
+    "wrapper_exit_code": 0
+  }
+}

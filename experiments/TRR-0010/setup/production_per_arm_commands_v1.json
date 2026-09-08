@@ -1,0 +1,106 @@
+{
+  "arm_bindings": {
+    "current_directional": {
+      "bank_role": "B0",
+      "bytes": 13205,
+      "lease_path": "experiments/TRR-0010/training/directional_fit/current_directional/lease.json",
+      "output_root": "experiments/TRR-0010/training/directional_fit/current_directional",
+      "path": "experiments/TRR-0010/setup/production_arm_binding_current_stage3_v1.json",
+      "sha256": "dda2847c3c3cf372b740e01598d8eb0c31d8be454d377b1153d8f4b13584ae53"
+    },
+    "expanded_directional": {
+      "bank_role": "B1",
+      "bytes": 13206,
+      "lease_path": "experiments/TRR-0010/training/directional_fit/expanded_directional/lease.json",
+      "output_root": "experiments/TRR-0010/training/directional_fit/expanded_directional",
+      "path": "experiments/TRR-0010/setup/production_arm_binding_expanded_stage3_v1.json",
+      "sha256": "8dc6ad2b67face67f1af3074d7071b255c0eb69f2a9c00e53bb4c80701361873"
+    }
+  },
+  "commands": {
+    "current_directional": [
+      "env",
+      "OMP_NUM_THREADS=8",
+      "MKL_NUM_THREADS=8",
+      "OPENBLAS_NUM_THREADS=8",
+      "PYTHONPATH=.:src:scripts",
+      "python3",
+      "scripts/trr0010_directional_fit_cli.py",
+      "--arm",
+      "current_directional",
+      "--provider",
+      "trr0010_production_provider:build_inputs",
+      "--binding-current",
+      "experiments/TRR-0010/setup/production_arm_binding_current_stage3_v1.json",
+      "--diagnostic-binding",
+      "/tmp/trr-p09/experiments/TRR-P09/setup/fixed-diagnostic-binding-r1.json",
+      "--lease",
+      "experiments/TRR-0010/training/directional_fit/current_directional/lease.json",
+      "--output-root",
+      "experiments/TRR-0010/training/directional_fit/current_directional",
+      "--device",
+      "cuda",
+      "--deadline-seconds",
+      "7200"
+    ],
+    "expanded_directional": [
+      "env",
+      "OMP_NUM_THREADS=8",
+      "MKL_NUM_THREADS=8",
+      "OPENBLAS_NUM_THREADS=8",
+      "PYTHONPATH=.:src:scripts",
+      "python3",
+      "scripts/trr0010_directional_fit_cli.py",
+      "--arm",
+      "expanded_directional",
+      "--provider",
+      "trr0010_production_provider:build_inputs",
+      "--binding-expanded",
+      "experiments/TRR-0010/setup/production_arm_binding_expanded_stage3_v1.json",
+      "--diagnostic-binding",
+      "/tmp/trr-p09/experiments/TRR-P09/setup/fixed-diagnostic-binding-r1.json",
+      "--lease",
+      "experiments/TRR-0010/training/directional_fit/expanded_directional/lease.json",
+      "--output-root",
+      "experiments/TRR-0010/training/directional_fit/expanded_directional",
+      "--device",
+      "cuda",
+      "--deadline-seconds",
+      "7200"
+    ]
+  },
+  "diagnostic_binding": {
+    "bytes": 130098,
+    "path": "/tmp/trr-p09/experiments/TRR-P09/setup/fixed-diagnostic-binding-r1.json",
+    "sha256": "8b899bc168b55570e4cfd526ff4e8656b70050e840386cba9390ad6adb1f54c3"
+  },
+  "preflight": {
+    "current_max_rss_kb": 3384340,
+    "current_wall_seconds": 9.14,
+    "expanded_max_rss_kb": 3384288,
+    "expanded_wall_seconds": 17.12,
+    "lease_required_before_production": true,
+    "no_gpu_fit_launch": true,
+    "per_arm_fresh_output_and_lease": true,
+    "qualification_receipt": "experiments/TRR-0010/setup/production_provider_cpu_assembly_smoke_v1.json"
+  },
+  "resource_guard": {
+    "cuda_reserved_limit_bytes": 10737418240,
+    "disk_free_floor_bytes": 21474836480,
+    "gpu_free_floor_bytes": 2147483648,
+    "guard_policy": "fail closed before provider load and at every provider/runner/checkpoint stage; stop on allocator, driver, thermal, disk, or deadline anomaly",
+    "host_available_floor_bytes": 8589934592,
+    "host_rss_limit_bytes": 12884901888,
+    "max_seconds_including_preparation_diagnostics_checkpoint_export": 7200,
+    "output_bytes_limit": 5368709120
+  },
+  "schema": "token-reconstruction.trr0010-per-arm-production-command.v1",
+  "signed_contract": {
+    "bytes": 25643,
+    "path": "experiments/TRR-0010/planning/shared_stage3_contract_v1.json",
+    "sha256": "23e4bde4475082cc004e7ef787c22fed6301275ce2ff23a0396d975b439faf9d"
+  },
+  "source_commit": "dd5fca499c389451f196d317c5fd604a8c28fcc1",
+  "status": "READY_PENDING_EXCLUSIVE_CUDA_LEASE",
+  "task_id": "TRR-0010"
+}

@@ -1,0 +1,50 @@
+{
+  "accounting_contract": {
+    "cuda_memory": "cuda peak counters reset before method load and before each cell; steady fields are per-cell while the method remains resident",
+    "host_memory": "process_max_rss_bytes is whole-runner ru_maxrss high-water",
+    "method_preparation": "one readout/decoder load per method shared across four cells; charge_count=1",
+    "registration_hash_verification": "included in common_preparation.seconds and elapsed_seconds"
+  },
+  "receipt_self_hash": "omitted to avoid a self-referential hash; source files above are independently bound by bytes and SHA256",
+  "recorded_utc": "2026-09-07T10:10:10.645280+00:00",
+  "reviewed_base_commit": "d904b4f824b2329b1a01e2317b86ece65a793ff9",
+  "schema": "token-reconstruction.trr0010-evaluation-runner-source-receipt.v1",
+  "scope": "CPU-only synthetic integration; no public assets, fitting, production prediction, capture, truth, GPU, numerical results, or resource qualification",
+  "source_files": [
+    {
+      "bytes": 50617,
+      "path": "scripts/trr0010_eval_runner.py",
+      "role": "runner",
+      "sha256": "90f3fe55ef9f714decfa12110d88b8d4f33c39e968e3a2153c566cebe01ef696"
+    },
+    {
+      "bytes": 44076,
+      "path": "scripts/trr0010_eval_gate.py",
+      "role": "gate",
+      "sha256": "ac2ce64375690f6f2a743e79f07f5d2941ee4865dcd8d500a8a209540794157d"
+    },
+    {
+      "bytes": 10429,
+      "path": "tests/test_trr0010_eval_runner.py",
+      "role": "runner_tests",
+      "sha256": "2f566f4c9a41d27d61ad39dbf89273706a396476bd37240e9e98acc9c31ba46b"
+    },
+    {
+      "bytes": 6603,
+      "path": "experiments/TRR-0010/planning/evaluation_reuse_note_v1.md",
+      "role": "reuse_note",
+      "sha256": "274cc99a42c4717846c51c7b0ea0c94a07460f48bdf0122373d6bb8d034e0bf8"
+    }
+  ],
+  "status": "SYNTHETIC_SOURCE_CHECK_COMPLETE",
+  "task_id": "TRR-0010",
+  "validation": {
+    "command": "python3 -m pytest -q tests/test_trr0010_eval_gate.py tests/test_trr0010_eval_runner.py",
+    "compile_check": "python3 -m py_compile scripts/trr0010_eval_runner.py scripts/trr0010_eval_gate.py tests/test_trr0010_eval_runner.py",
+    "diff_check": "git diff --check -- scripts/trr0010_eval_runner.py scripts/trr0010_eval_gate.py tests/test_trr0010_eval_runner.py experiments/TRR-0010/planning/evaluation_reuse_note_v1.md",
+    "elapsed_seconds": 1.89,
+    "returncode": 0,
+    "stdout": "...........................                                               [100%]\n27 passed in 1.89s\n",
+    "test_count": 27
+  }
+}

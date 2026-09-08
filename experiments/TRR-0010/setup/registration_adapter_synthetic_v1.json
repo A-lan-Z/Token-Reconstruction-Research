@@ -1,0 +1,43 @@
+{
+  "base_commit": "f32e365dde4acddccaa4b5abd5e3c2913b3437fc",
+  "receipt_self_hash": "omitted to avoid a self-referential hash",
+  "recorded_utc": "2026-09-07T10:28:19.057168+00:00",
+  "schema": "token-reconstruction.trr0010-registration-adapter-synthetic-receipt.v1",
+  "source_files": [
+    {
+      "bytes": 29412,
+      "path": "scripts/trr0010_eval_register.py",
+      "role": "registration_adapter",
+      "sha256": "e6d5d3e540d6a4fb203eb23bc0922460fd756d17e71feff9b6697149f2dec252"
+    },
+    {
+      "bytes": 1983,
+      "path": "tests/test_trr0010_eval_register.py",
+      "role": "registration_tests",
+      "sha256": "b5e82738772cdf2eb574ccf4e9a765c948a4521c3c8c6688b2f7a33d76b222db"
+    },
+    {
+      "bytes": 8717,
+      "path": "experiments/TRR-0010/planning/evaluation_reuse_note_v1.md",
+      "role": "reuse_note",
+      "sha256": "b02a5784e8796c6007287afe190057f8c20ca5d84af86db9e3149046e3b57d96"
+    }
+  ],
+  "status": "SYNTHETIC_WIRING_CHECK_COMPLETE",
+  "task_id": "TRR-0010",
+  "validation": {
+    "command": "python3 -m pytest -q tests/test_trr0010_eval_register.py tests/test_trr0010_eval_gate.py tests/test_trr0010_eval_runner.py",
+    "compile_check": "python3 -m py_compile scripts/trr0010_eval_register.py",
+    "diff_check": "git diff --check -- scripts/trr0010_eval_register.py tests/test_trr0010_eval_register.py experiments/TRR-0010/planning/evaluation_reuse_note_v1.md",
+    "elapsed_seconds": 2.13,
+    "returncode": 0,
+    "stdout": "..............................                                           [100%]\\n30 passed in 2.13s\\n",
+    "test_count": 30
+  },
+  "wiring_scope": {
+    "capture": "lower-level TRR-0009/TRR-0005 public producer call specification only; no capture invoked",
+    "production": "no source selection, public source read, model load, GPU, capture, prediction, or truth access",
+    "selection": "metadata-only reuse of trr0009_eval_capture.load_selection with 128 Finance and 128 Pile expected counts",
+    "truth": "private truth curator remains separate and unopened"
+  }
+}

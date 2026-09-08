@@ -1,0 +1,79 @@
+{
+  "adapter": {
+    "bytes": 40202,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/scripts/trr0010_eval_gate.py",
+    "sha256": "6cd51752c69e3099c04f458b6e48d76febee013174a8f9a35933ff4fb8fead6a"
+  },
+  "command": "PYTHONPATH=.:src:scripts python3 -m pytest -q tests/test_trr0010_eval_gate.py tests/test_trr0010_analysis.py",
+  "contract_binding": {
+    "bytes": 38409,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/planning/shared_contract.proposal.json",
+    "sha256": "3b0a68a4a05304e285c1fedcf8a2982bf4bef831e2e5bc0cebb20b8b2dba08b3"
+  },
+  "corrections": [
+    "A1+A2 uses separate reconstructed-prefix K256 loader semantics and explicitly hashed public embedding E, retained A1 lens, and public P0 prefix resources; other methods retain current-H/full-vocabulary semantics.",
+    "Prediction files must preserve a signed integer tensor dtype and all 128 positions must be valid vocabulary IDs with BOS; padding or -1 suffixes are rejected.",
+    "Every measured duration and aggregate timing cost must be finite and nonnegative.",
+    "External shared assets are accepted only with readonly=true and exact current bytes/SHA-256; task-owned output roots remain strictly inside experiments/TRR-0010.",
+    "Each cell binds an actual safetensors observation payload, exact tensor-key/metadata geometry, and a source-selection record-ID ordering digest; run and freeze revalidation compare these bindings."
+  ],
+  "generated_at_utc": "2026-09-07T09:15:31.341770+00:00",
+  "matrix": {
+    "a1_a2_is_single_comparator": true,
+    "cell_order": [
+      "pile__public_base",
+      "pile__public_lora_2601",
+      "finance__public_base",
+      "finance__public_lora_2601"
+    ],
+    "entries": 24,
+    "method_order": [
+      "unchanged_shared_start",
+      "current_fixed",
+      "current_directional",
+      "expanded_fixed",
+      "expanded_directional",
+      "frozen_a1_a2_k256"
+    ],
+    "records_by_domain": {
+      "finance": 128,
+      "pile": 128
+    }
+  },
+  "schema": "token-reconstruction.trr0010-eval-gate-receipt.v2",
+  "scope_note": "Synthetic-only task-local gate correction; no source selection, capture, real prediction, model execution, truth opening, registry, status, contract, manifest, or shared readonly asset edits.",
+  "status": "SYNTHETIC_PUBLIC_GATE_CORRECTION_PASS",
+  "supersedes_failed_review_receipt": {
+    "bytes": 2589,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/setup/eval_gate_v1.json",
+    "sha256": "a73c6db507c5c18c4b05b129931050a2e083a1a4aefcc5a1d973573e65d1fba6"
+  },
+  "synthetic_negative_coverage": [
+    "missing prediction",
+    "duplicate prediction path",
+    "foreign prediction key",
+    "changed input/state/code binding",
+    "changed observation payload",
+    "changed observation record-order digest",
+    "invalid A1+A2 resources",
+    "floating-point prediction",
+    "incomplete -1 prediction suffix",
+    "NaN timing duration",
+    "unmarked external asset"
+  ],
+  "task_id": "TRR-0010",
+  "test_result": {
+    "analysis_tests": 16,
+    "failed": 0,
+    "gate_tests": 15,
+    "model_or_gpu_used": false,
+    "passed": 31,
+    "real_data_accessed": false,
+    "truth_opened": false
+  },
+  "tests": {
+    "bytes": 21662,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/tests/test_trr0010_eval_gate.py",
+    "sha256": "8a8e70d19e57fc17f0fee8c8d957ec47c381ce2be2763095843fc596734f0c10"
+  }
+}

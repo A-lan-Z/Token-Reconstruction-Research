@@ -1,0 +1,619 @@
+{
+  "schema": "token-reconstruction.trr0010-shared-contract-proposal.v4",
+  "task_id": "TRR-0010",
+  "status": "PROPOSAL_V4_READY_FOR_ROOT_REVIEW_BEFORE_A2_HANDOFF",
+  "proposal_scope": "Common design proposal v4. No source selection, bank generation, fitting, truth opening, or scientific freeze has occurred. v4 fixes tail directions, deterministic update/grid rules, verified geometry, panel roles, memory/cost semantics, count receipts, and rare-stratum missingness.",
+  "starting_resource": {
+    "published_task": "TRR-0009",
+    "published_commit": "4602f98eeb03ac121d8bbc230d7e2b219551b914",
+    "method_id": "continued_fixed_readout",
+    "selected_step": 400,
+    "state_path": "experiments/TRR-0009/training/run_v1/continued_fixed_readout/selected.safetensors",
+    "state_bytes": 29390492,
+    "state_sha256": "5cada4a3d04bb5477eaf0be25ed8d8ac25a89283223e9ba14b18fa10416bee14",
+    "selection_rule": "Use this published selected state; do not choose initialization from fresh answers or TRR-0010 evaluation truth.",
+    "unchanged_reference": {
+      "role": "unchanged_shared_starting_reference",
+      "state_path": "experiments/TRR-0009/training/run_v1/continued_fixed_readout/selected.safetensors",
+      "state_bytes": 29390492,
+      "state_sha256": "5cada4a3d04bb5477eaf0be25ed8d8ac25a89283223e9ba14b18fa10416bee14"
+    }
+  },
+  "ownership_and_boundaries": {
+    "agent_one": "Directional readout implementation and fits; owns this common-contract proposal.",
+    "agent_two": "Nested public fitting-bank preparation and fixed-readout data-scaling controls.",
+    "shared_artifacts": "Public preparation artifacts are read-only across worktrees and bound by exact path, size, and SHA-256.",
+    "a2_in_deployment": false,
+    "forbidden": "No P03 holdout, private study workspace/results, active-registry edits, paid compute, or truth-driven selection.",
+    "truth_boundary": "Freeze source identities, fit/validation roles, model outputs, thresholds, and the final panel before one common natural-evaluation truth opening."
+  },
+  "crossed_design": {
+    "arms": [
+      {
+        "id": "current_fixed",
+        "bank": "current",
+        "readout": "fixed",
+        "role": "continued-training control for current coverage (second required control; no pre-data strength ranking)"
+      },
+      {
+        "id": "current_directional",
+        "bank": "current",
+        "readout": "directional",
+        "role": "directional factor at current coverage"
+      },
+      {
+        "id": "expanded_fixed",
+        "bank": "expanded",
+        "readout": "fixed",
+        "role": "data-scaling control with equal optimizer opportunities"
+      },
+      {
+        "id": "expanded_directional",
+        "bank": "expanded",
+        "readout": "directional",
+        "role": "predeclared primary candidate arm"
+      }
+    ],
+    "factor_contrasts": {
+      "directional_current": "current_directional minus current_fixed",
+      "directional_expanded": "expanded_directional minus expanded_fixed",
+      "data_fixed": "expanded_fixed minus current_fixed",
+      "combined_candidate": "expanded_directional minus current_fixed",
+      "interaction": "(expanded_directional - expanded_fixed) - (current_directional - current_fixed)",
+      "all_four_reported_separately": true
+    },
+    "equal_optimizer_opportunities": true,
+    "same_decoder_schedule_in_all_arms": true,
+    "unchanged_starting_reference_reported": true,
+    "a1_a2_comparators": "A1+A2 is one historical comparator with one bound method/state identity; bind it before final evaluation. It is not a new A1-only or A2-only arm, and A2 is never deployed."
+  },
+  "public_banks": {
+    "current": {
+      "target_unique_fit_records": 1200,
+      "source": "The exact published 1,200-record TRR-0009 improved public fitting bank is reused unchanged as B0; it is not an unspecified nested subset.",
+      "published_fit_post_bos_positions": 124371,
+      "identity_receipt": "PENDING_A2_PUBLIC_BANK_PREPARATION",
+      "controlled_draw_accounting": "If replacement sampling is used, report the exact controlled-draw count and draw semantics; this proposal imposes no minimum controlled-record or controlled-draw floor.",
+      "reuse_rule": "Known old fitting, validation, or opened-evaluation identities are excluded from NEW B1 additions and from the final natural evaluation panel. That exclusion does not retroactively filter the intentionally reused published B0."
+    },
+    "expanded": {
+      "target_unique_fit_records": 12000,
+      "minimum_unique_fit_records_for_order_of_magnitude_claim": 10000,
+      "minimum_new_records_over_current": 8800,
+      "nested_includes_current_bank": true,
+      "substantially_new_examples_required": true,
+      "same_natural_format_and_public_model_forward_requirement": true,
+      "identity_receipt": "PENDING_A2_PUBLIC_BANK_PREPARATION_AND_EXCLUSION_REVIEW",
+      "construction_and_accounting_note": "A2 must bind whether the expanded bank preserves the current mixture or appends natural rows; any mixture change is a data-factor deviation, not silently called pure coverage.",
+      "a2_strata_proposal_pending_manifest": {
+        "status": "A2_PROPOSAL_NOT_FROZEN",
+        "current_b0_total_records": 1200,
+        "current_b0_strata": {
+          "Alpaca": 600,
+          "Pile_natural": 300,
+          "Finance_natural": 180,
+          "Pile_controlled": 60,
+          "Finance_controlled": 60
+        },
+        "expanded_additions_total_records": 10800,
+        "expanded_additions_strata": {
+          "Alpaca": 5400,
+          "Pile_natural": 2700,
+          "Finance_natural": 1620,
+          "Pile_controlled": 540,
+          "Finance_controlled": 540
+        },
+        "expanded_total_records": 12000,
+        "mixture_warning": "A2 rejects an all-natural append as a mixture confound: the current 10% controlled share would fall to approximately 1%; unique new-parent availability and public-cache capacity remain to be verified.",
+        "interface_note": "A2 accepts score rows with normalized query/scale inputs and optional base-logit E inputs; capacity must freeze the executable interface before fit.",
+        "controlled_draw_accounting": "The B0 proposal contains 120 controlled records (60 Pile and 60 Finance); exact replacement-draw semantics remain an A2 artifact field, with no invented minimum.",
+        "feasibility_pending_artifact": {
+          "status": "A2_PROPOSAL_PENDING_EXACT_RECIPE_HASHES_AND_EXCLUSION_RECEIPTS",
+          "b1_total_strata": {
+            "Alpaca_natural": 6000,
+            "Pile_natural": 3000,
+            "Finance_natural": 1800,
+            "Pile_controlled": 600,
+            "Finance_controlled": 600
+          },
+          "b0_parent_ids_and_rendered_hashes_unique": true,
+          "controlled_parents_disjoint_from_natural_parents": true,
+          "alpaca_pinned_cache_rows": 52002,
+          "alpaca_known_row_exclusions": 1224,
+          "alpaca_candidates_after_known_exclusions": 50778,
+          "conservative_published_capacity": {
+            "Pile": 4495,
+            "Finance": 9760
+          },
+          "interpretation": "The required new-parent counts are 3,240 Pile and 2,160 Finance; they are not an availability claim. Exact candidate/exclusion receipts remain pending.",
+          "required_new_parent_counts": {
+            "Pile": 3240,
+            "Finance": 2160
+          }
+        }
+      },
+      "coverage_note": "At the recommended 12,000 updates, 6,144,000 position draws over the estimated 1.24M expanded valid positions give approximately 4.94 exposures; use the explicit five-exposure gate in training_geometry_and_schedule."
+    },
+    "construction_and_accounting": {
+      "preserve_current_mixture_where_feasible": true,
+      "new_examples_match_declared_domain_style_strata_where_feasible": true,
+      "natural_only_append_warning": "If expanded preparation can only append natural rows on top of the current bank, report the data factor as coverage-plus-mixture rather than pure coverage.",
+      "report_separately": [
+        "unique parent sources",
+        "unique final sequences",
+        "valid token/context positions",
+        "identity support rows",
+        "derived variants and repetitions"
+      ],
+      "derived_variants_are_independent_sources": false
+    },
+    "sampling_requirements": [
+      "Expanded rows must be new unique public examples with varied token identities and contexts, not repetitions or a replacement mixture of the same size.",
+      "Fit-bank rows are excluded from the final natural panel, public validation panel, and known train/validation/opened-evaluation ledgers permitted by the charter.",
+      "A2 reports distinct records, post-BOS positions, supported-token counts, frequency strata, repeated exposures, and exact sampler draws.",
+      "No fit-bank count or support set is chosen using final evaluation answers."
+    ],
+    "coverage_note": "At the 12,000-update lower bound, 6,144,000 position draws over the estimated 1.24M expanded valid positions give approximately 4.94 exposures; use the explicit five-exposure gate in training_geometry_and_schedule."
+  },
+  "training_geometry_and_schedule": {
+    "status": "VERIFIED_WIDTH_192_FIT_WIDTH_128_NATURAL_EVAL",
+    "published_reference_geometry": {
+      "position_budget": 512,
+      "record_batch_size": 8,
+      "published_fit_record_ids": 1200,
+      "published_validation_record_ids": 48
+    },
+    "geometry_gate": "Verified full width-192 fit geometry and separate width-128 natural-validation geometry; no crop substitution.",
+    "allowed_update_range_before_exact_freeze": [
+      12000,
+      20000
+    ],
+    "exact_update_count_freeze": "Freeze the exact integer N from the deterministic formula before fitting; do not choose it from final outcomes.",
+    "batch_records": 8,
+    "schedule": "Cosine decay, AdamW, base learning rate 2e-4, weight_decay=0, gradient_clip_norm=1.0, seed 4010; no staging schedule, teacher ranking, search, or A2 fallback.",
+    "expanded_bank_coverage_reason": "Compute actual_B1_valid_positions from the bound expanded bank. The formula targets at least five valid-position exposures and rounds N upward in common 1,000-update increments.",
+    "validation_selection": "Earliest maximum of a predeclared domain-balanced public token-accuracy score on the exact sorted-unique checkpoint grid [0, 1000, 2000, 4000, 8000, 12000, N]; ties choose earliest.",
+    "fit_context_width": 192,
+    "natural_validation_context_width": 128,
+    "source_interface": "Fit rows and natural-validation clips use separately declared context widths; fitting uses verified all-valid geometry and final clips retain 127 post-BOS positions.",
+    "position_draws_per_update": 512,
+    "expanded_position_exposure_requirement": {
+      "minimum": 5,
+      "target": [
+        5,
+        10
+      ],
+      "unit": "valid fitting positions",
+      "freeze_rule": "Compute actual_B1_valid_positions from the bound expanded bank; if formula-derived N exceeds 20,000, stop for contract revision."
+    },
+    "checkpoint_grid_updates": [
+      0,
+      1000,
+      2000,
+      4000,
+      8000,
+      12000,
+      "N"
+    ],
+    "checkpoint_grid_rule": "At execution replace symbolic N by its exact integer, sort and deduplicate the grid, and evaluate no other checkpoints.",
+    "recommended_schedule_receipt": "A2 fixed-control review proposed 12,000 updates; v4 replaces that provisional count with the deterministic N formula.",
+    "minimum_optimizer_updates": 12000,
+    "exact_update_count_formula": {
+      "symbol": "N",
+      "actual_b1_valid_positions_symbol": "actual_B1_valid_positions",
+      "position_draws_per_update": 512,
+      "minimum_exposure": 5,
+      "formula": "N = max(12000, 1000 * ceil((5 * actual_B1_valid_positions / 512) / 1000))",
+      "cap_updates": 20000,
+      "cap_rule": "If computed N exceeds 20,000, stop and request contract revision before any fit; never silently cap or reduce exposure.",
+      "common_arm_rule": "Use the same exact integer N for all four arms."
+    },
+    "position_draws_at_minimum_count": 6144000,
+    "verified_geometry": {
+      "fit_context_width": 192,
+      "natural_validation_context_width": 128,
+      "stored_fit_position_slots": [
+        1,
+        191
+      ],
+      "historical_schedule_total_position_draws": 1536000,
+      "historical_schedule_positions_128_through_191": 131576,
+      "statement": "The fit mask is full width-192 geometry; width-128 is only the natural-evaluation clip."
+    }
+  },
+  "directional_readout": {
+    "status": "CAPACITY_DESIGN_PROPOSED_PENDING_LARGEST_CELL_QUALIFICATION",
+    "goal": "Genuine token-specific scoring-vector direction freedom beyond gain/bias-only calibration and a global absorbable transform.",
+    "base_readout": "Published FP32 public embedding/readout E remains the immutable anchor for all vocabulary rows.",
+    "parameterization": "E_eff[v] = E[v] + Delta[v] for v in supported fitting rows S; E_eff[v] = E[v] outside S. Delta[S] is a full independent [|S|, 2048] FP32 row table.",
+    "initialization": "Delta[S] is zero-initialized; the public E rows and logits/argmax must be bit-equivalent at step zero.",
+    "optimizer": "Decoder base learning rate remains 2e-4 in the common schedule; directional Delta learning rate is proposed as 1e-4. All four arms receive the same declared optimizer opportunity, with no hidden directional-only schedule; exact optimizer implementation remains capacity-owned.",
+    "regularization": "lambda * mean_v[(1 + 4/sqrt(count_v)) * ||Delta[v]||_2^2 / (H * rms(E[v])^2 + eps)] with lambda=1e-4; frequency-weighted relative L2 to E.",
+    "safety_bound": "CAPACITY_PROPOSAL_REQUIRED; structural checks must still show unsupported rows unchanged and no global transform.",
+    "support_definition": "S is every vocabulary row with positive fitting-bank count; absent rows have no adapter parameters and remain the base readout.",
+    "deployment": "Merged full readout W is the required training-qualification and inference path; no special validation hook is assumed. Any sparse supported-column implementation is diagnostic-only for output-equivalence checks and cannot be used as a fit, validation, or deployment fallback. W replaces E in deployed storage.",
+    "structural_checks": [
+      "Unsupported rows are tensor-equivalent to the public anchor.",
+      "Updates are not constrained to scalar gain/bias or one global transform; non-collinear token-row updates are checked on public/synthetic diagnostics.",
+      "Support IDs, counts, adapter tensors, optimizer state, and serialized artifact sizes are recorded separately.",
+      "Any sparse score implementation is diagnostic-only and must match merged-W outputs before it is retained as an audit artifact."
+    ],
+    "capacity_preference": "Use full independent supported rows and merged-W training/inference after qualification with a measured safety margin below the approximately 12.2 GiB live-free-memory snapshot; no sparse fallback is permitted.",
+    "row_support": {
+      "current_supported_token_count": 17126,
+      "current_learned_parameter_count": 35074048,
+      "current_parameter_bytes": 140296192,
+      "current_parameter_gradient_adam_bytes": 561184768,
+      "expanded_support_bound": "|S| <= 128256; bind actual expanded support before fit.",
+      "expanded_parameter_gradient_adam_bound_bytes": 4200000000
+    },
+    "row_constraints": "No hard gain/bias bound and no row renormalization. Unsupported rows have no adapter parameter and remain E exactly.",
+    "qualification_memory": "Capacity handoff estimates merged-primary memory at 6.389 GiB for current support and 11.477 GiB for full-vocabulary support. These are not GPU qualification results. The 12.2 GiB value is a live-free-memory snapshot, not reserved capacity; qualify actual B1 support with a measured margin and fail closed.",
+    "directional_learning_rate": 0.0001,
+    "capacity_final_handoff": {
+      "path": "experiments/TRR-0010/setup/agent1_final_handoff_v2.json",
+      "sha256": "191f0b23d5a09bc830cc544dea17e07908dabef0cf7303333dc3b820b1532a54",
+      "status": "ROOT_REVIEWED_IMPLEMENTATION_AND_SYNTHETIC_TEST_RECEIPT",
+      "model_module_path": "scripts/trr0010_model.py",
+      "model_module_sha256": "9eb38939ba0541f51ce7a964080a058c313081f7ef7b25e2b51f91bac92310db",
+      "tests_path": "experiments/TRR-0010/setup/model_tests_v6.json",
+      "tests_sha256": "d46b8fcfa131ee4014d5d9086200aa0c96ea79bace8f36f7913be24dc762a0e9",
+      "tests_passed": 9,
+      "primary_score_path": "merged materialized effective E for score_rows, forward, training, validation, inference",
+      "sparse_score_path": "diagnostic-only and inactive",
+      "memory_estimate_gib": {
+        "current_support": 6.389434814453125,
+        "full_vocab_support": 11.4765625
+      },
+      "gpu_qualification": false,
+      "shared_foreach_proposed": false,
+      "shared_foreach_status": "PENDING_A2_AGREEMENT",
+      "version": 2,
+      "protocol_smoke_path": "experiments/TRR-0010/setup/protocol_smoke_v4.json",
+      "protocol_smoke_sha256": "99b93293d537453905320e7e9df13404a455544b94d09adc2e9735d50aa5ed52",
+      "protocol_smoke_status": "PASS",
+      "serialization_assertion": "PASS: nonzero-Delta serialized W reload preserves full logits and argmax IDs against the merged primary path; sparse path remains diagnostic-only."
+    }
+  },
+  "validation": {
+    "panel": "Opened TRR-0009 matched public natural panel, proposed as TRR-0010 public development only.",
+    "target_unique_records": 384,
+    "domain_counts": {
+      "Finance": 256,
+      "Pile": 128
+    },
+    "target_conditions": [
+      "public_base"
+    ],
+    "target_observations": 384,
+    "post_bos_positions_per_clip": 127,
+    "metric": "Equal-domain-weighted natural token accuracy: mean(Finance token accuracy, Pile token accuracy); target conditions remain paired within source.",
+    "checkpoint_rule": "Earliest maximum at the declared checkpoint interval; no final truth is opened for this selection.",
+    "source_identity_and_sequence_receipt": "PENDING_A2_BINDING_OF_TRR9_384_RECORD_PANEL",
+    "bank_exclusion": "Validation records and derived rows are excluded from both fitting banks and the final natural panel.",
+    "fit_vs_validation_geometry": "Fit context width 192; natural validation clip width 128 with 127 scored post-BOS positions.",
+    "selection_scope": "Selection validation is exactly the 384 matched-public observations: 256 Finance + 128 Pile, public_base only. The LoRA target is not used for checkpoint selection.",
+    "secondary": "The inherited 48-record style-balanced panel is secondary diagnostic context only, not checkpoint-selection evidence."
+  },
+  "final_evaluation": {
+    "status": "PROPOSAL_ONLY_NO_SOURCE_SELECTION",
+    "target_unique_records": 256,
+    "domain_counts": {
+      "Finance": 128,
+      "Pile": 128
+    },
+    "target_conditions": [
+      "public_base",
+      "public_lora_2601"
+    ],
+    "target_observations": 512,
+    "post_bos_positions_per_clip": 127,
+    "a1_a2_common_subset": {
+      "role": "single historical A1_plus_A2 comparator on the same proposed final panel",
+      "target_unique_records_per_domain": 128,
+      "resource_range_per_domain": [
+        128,
+        128
+      ],
+      "target_unique_records": 256,
+      "target_observations": 512,
+      "denominator_statement": "When the corrected intersection is complete, the historical A1+A2 comparator and all four TRR-0010 arms use the same 128 Finance + 128 Pile source records and two paired target conditions; source records, not target observations, are the bootstrap unit.",
+      "identity_receipt": "PENDING_ROOT_A2_FINAL_PANEL_FREEZE_AND_TIMING_REVIEW",
+      "separate_from_full_panel": false,
+      "availability_note": "Root-reviewed native A1+A2 metadata indicates 128/domain common-panel feasibility and per-cell warm timing of approximately 262–267 seconds; this is planning metadata, not a TRR-0010 fit or quality result."
+    },
+    "roles": "The 128 Finance + 128 Pile final panel is also the common A1+A2 comparison panel. Select it once after methods and exclusion ledgers are frozen; do not create a smaller nested confirmation panel or expand after outcomes.",
+    "metrics": [
+      "token errors over post-BOS positions",
+      "exact recovery of all 127 post-BOS positions per clip",
+      "paired gains/losses by source record",
+      "Finance and Pile separately",
+      "frequency-stratum rare/absent regressions",
+      "common-panel denominator and gap-closure uncertainty"
+    ],
+    "bootstrap": {
+      "unit": "source_record",
+      "draws": 10000,
+      "seed": 10010,
+      "target_conditions_nested": true,
+      "domains_separate": true
+    },
+    "exclusions": "All known fitting, validation, opened-evaluation, TRR-0009, and approved other-study ledgers; no P03 holdout or private workspace access.",
+    "panel_size_rationale": "Proposed 128 records per domain because root-reviewed A1+A2 availability supports a common panel of that size within existing public ranges; exact-gain precision is limited, and corrected zero-overlap scanning must confirm the panel before selection. Do not use the prior pre-TRR-0009-exclusion Pile cardinality or any larger Pile-panel availability notion.",
+    "panel_status": "PROPOSAL_PENDING_CORRECTED_ZERO_OVERLAP_SCAN_AND_ROOT_SOURCE_FREEZE",
+    "corrected_exclusion_note": "The final intersection must apply the union of the approved P08 r1/r2 and TRR-0009 exclusions. A prior Pile count predating TRR-0009 exclusions is not an eligible final-panel count.",
+    "corrected_count_scan_receipt": {
+      "receipt": {
+        "path": "experiments/TRR-0010/planning/count_scan/combined_exclusion_receipt.json",
+        "bytes": 16198,
+        "sha256": "02a8d5d20b7c3b403c4a53addc2529941aa9058036a25aa4584c1a27e2b3d9a8"
+      },
+      "authoritative_scan": {
+        "path": "experiments/TRR-0010/planning/count_scan/inventory_7000_trr9_p08_union.json",
+        "bytes": 25002,
+        "sha256": "d64eae6b5e0137f1fb76e89ba7b618455853977330f13058877c6a7c3ab9038b"
+      },
+      "eligible_unique_after_trr9_p08_union": {
+        "Finance": 3867,
+        "Pile": 236
+      },
+      "source_ranges_half_open": {
+        "Finance": [
+          12000,
+          20000
+        ],
+        "Pile": [
+          7000,
+          10000
+        ]
+      },
+      "extension_attempt": {
+        "requested_pile_range": [
+          6000,
+          10000
+        ],
+        "status": "EXCLUDED_FAIL_CLOSED_NO_EXTENSION_PLANNED",
+        "failure_receipt": {
+          "path": "experiments/TRR-0010/planning/count_scan/inventory_6000_time_retry.txt",
+          "bytes": 2016,
+          "sha256": "0b1f27f8b4556808e488165b076427d9e46f28b0c2f2eecfd0f90aa6e0033a66"
+        },
+        "reason": "Published partition guard rejected Pile row 6022 below the declared holdout start; no fit-row bypass or extension was attempted."
+      },
+      "selection_or_truth": false
+    },
+    "a1_a2_timing_receipt": {
+      "metadata_receipt": {
+        "path": "experiments/TRR-0010/planning/A1A2availability.md",
+        "bytes": 17685,
+        "sha256": "57da0caab4c3e893c8e4352267d45fdb33d23b9f1d160ce2d6c65e25b991e7aa"
+      },
+      "status": "ROOT_REVIEWED_PLANNING_METADATA_PENDING_FINAL_COMPARATOR_BINDING",
+      "common_records_per_domain": 128,
+      "warm_seconds_per_128_record_cell": [
+        262,
+        267
+      ],
+      "quality_result": false
+    }
+  },
+  "useful_outcome_proposal": {
+    "primary_candidate": "expanded_directional",
+    "fixed_control_selection": "Directional route compares expanded_directional with both expanded_fixed (matched data) and current_fixed (second required current-coverage control); no posthoc fixed-arm winner or pre-data strength ranking.",
+    "absolute_routes": {
+      "token": {
+        "remaining_error_reduction_fraction": 0.2,
+        "absolute_accuracy_floor_pp": 0.5,
+        "positive_paired_lower_bound": true,
+        "route_alpha": 0.025,
+        "formula": "(token_errors_relevant_fixed - token_errors_candidate) / token_errors_relevant_fixed",
+        "ceiling_policy": "If the relevant fixed accuracy leaves less than 0.5 percentage points of attainable headroom, report the absolute floor as ceiling-limited rather than as a failure; require the relative-error reduction, positive paired lower bound, and the predeclared A1+A2 anchor gap-closure evidence for a useful claim."
+      },
+      "exact": {
+        "point_floor_pp": 5.0,
+        "positive_paired_lower_bound": true,
+        "route_alpha": 0.025
+      }
+    },
+    "gap_closure": {
+      "formula": "closure_m = (M_candidate - M_unchanged_shared_start) / (M_A1_plus_A2 - M_unchanged_shared_start), computed on the common final panel per source-record bootstrap draw when the denominator is positive.",
+      "visible_gap_requirement": {
+        "token_gap_pp": 1.0,
+        "exact_gap_pp": 5.0
+      },
+      "minimum_fraction": 0.25,
+      "lower_bound_requirement": ">= 0.25 on the same declared metric and anchor subset",
+      "unknown_rule": "If any bootstrap denominator is nonpositive or the visibility floor is not met, mark the whole ratio route UNKNOWN; never discard nonpositive denominators opportunistically.",
+      "scope": "Data and directional routes each report common-panel closure separately; no A1-only/A2-only decomposition."
+    },
+    "family_rule": "Exact and token routes are separate predeclared routes, each route alpha 0.025; data and directional factor decisions are separate scientific questions with no pooled domains, target conditions, or metric families.",
+    "interpretation": "Useful result is mechanism evidence for this crossed study only. It does not automatically replace the reference, retrain, or expand the panel.",
+    "control_requirement": "Directional usefulness is reported separately from the data-scaling route. A flat directional contrast does not fail the study if expanded_fixed clears the predeclared data route.",
+    "historical_comparator": "A1+A2 (single historical comparator)",
+    "baseline": "unchanged_shared_start (the shared TRR-0009 continued-fixed selected state)",
+    "decision_routes": {
+      "directional_useful": {
+        "contrast": "expanded_directional versus expanded_fixed, with expanded_directional versus current_fixed as the required robustness comparison",
+        "success": "Material absolute readout-direction route in both domains with all main-cell safeguards/cost gates; rare/absent strata are reported diagnostically."
+      },
+      "data_useful": {
+        "contrast": "expanded_fixed versus current_fixed and unchanged_shared_start",
+        "success": "Material expanded-coverage route in both domains with baseline-to-A1+A2 anchor closure and all main-cell safeguards/cost gates; rare/absent strata are reported diagnostically; this route can succeed when directional interaction is flat."
+      },
+      "combined_candidate": {
+        "contrast": "expanded_directional versus unchanged_shared_start",
+        "success": "Report total improvement and interaction; do not replace the separate directional/data decisions."
+      }
+    },
+    "domain_rule": "A route is study-useful only when its declared material absolute criterion and positive paired lower bound hold separately in both Finance and Pile. A one-domain result is reported as domain-specific evidence, not a global promotion."
+  },
+  "safeguards_and_cost": {
+    "harm_safeguards": {
+      "exact_lower_bound_pp": -3.0,
+      "token_lower_bound_pp": -0.5,
+      "confidence": "One-sided lower q_0.05 bound for candidate-minus-control delta; require LCB >= the declared negative margin.",
+      "unit": "paired source records",
+      "status": "PROPOSED_STRONGER_HARM_LIMITS_PENDING_ROOT_REVIEW"
+    },
+    "rare_absent": {
+      "bins": [
+        "0",
+        "1-4",
+        "5-9",
+        "10-49",
+        "50+"
+      ],
+      "minimum_exposed_source_records": 32,
+      "lower_bound_pp": -0.5,
+      "underpowered": "UNKNOWN when fewer than 32 exposed source records; zero exposed sources are NO_EXPOSURE/UNKNOWN, never automatic PASS or zero-harm evidence.",
+      "route_role": "Diagnostic-only. UNKNOWN rare/absent bins do not automatically veto a main useful route; if support reaches 32 sources, report the lower harm bound separately."
+    },
+    "warmed_inference_runtime_ratio_max": 1.5,
+    "training_budget": {
+      "paid_compute": false,
+      "max_updates_per_arm": 20000,
+      "arms": 4,
+      "shared_public_preparation_counted_once": true
+    },
+    "qualification": "Qualify the largest expanded-directional cell and merged serialized adapter before the full matrix with fail-closed wall, disk, host-RSS, isolated-GPU-memory, and output-equivalence guards plus a measured free-memory margin; stop on allocator, driver, or output-equivalence anomalies. The current proposal is not execution-ready until the caps are jointly agreed.",
+    "streaming": "Public activation generation and expanded-bank preparation are chunked; no unbounded resident corpus or artifact expansion.",
+    "deployed_artifact_accounting": "An exported full readout W replaces the shared E file in deployed inference; do not charge E + W. Report the full training checkpoint, optimizer state, and preparation artifacts separately because they can be much larger.",
+    "deployed_readout_storage_limit": "PENDING_CAPACITY_AND_A2_COST_REVIEW",
+    "isolated_method_peak_gpu_memory_ratio_max": 1.5,
+    "memory_gate_unit": "Gate memory using each method's isolated peak; pooled four-arm harness peaks are reported separately and are not deployment-memory gates.",
+    "main_cell_safeguards_required": true,
+    "candidate_to_a1_a2_warmed_runtime_ratio_max": 0.25,
+    "candidate_to_a1_a2_cost_gate": "Measure candidate_warmed_runtime / A1+A2_warmed_runtime on the common panel; PASS requires <=0.25 when the comparator is bound, otherwise UNKNOWN.",
+    "resource_caps": {
+      "status": "PENDING_MEASURED_LARGEST_CELL_QUALIFICATION_AND_JOINT_AGREEMENT",
+      "wall_seconds_cap": "PENDING_MEASURED_QUALIFICATION",
+      "disk_footprint_bytes_cap": "PENDING_MEASURED_QUALIFICATION",
+      "host_rss_bytes_cap": "PENDING_MEASURED_QUALIFICATION",
+      "isolated_gpu_peak_bytes_cap": "PENDING_MEASURED_QUALIFICATION",
+      "hard_guard": "No unbounded run; stop before full matrix unless all four caps and fail-closed guards are jointly agreed from a representative largest-cell receipt.",
+      "execution_ready": false
+    }
+  },
+  "resource_estimate_from_published_trr0009": {
+    "fit_reference_cuda_peak_reserved_bytes": 3917479936,
+    "fit_reference_host_peak_rss_bytes": 5620727808,
+    "reference_arm_wall_seconds": 393.802617079,
+    "interpretation": "Published peaks are qualification references, not guarantees. Expanded activations and directional state require a fresh preflight and representative qualification before a full run.",
+    "directional_adapter_capacity_note": "Capacity binds full supported-row parameter count, optimizer state, merged-readout workspace, and qualification memory before fit.",
+    "preferred_full_row_qualification_free_memory_snapshot_gib": 12.2,
+    "memory_note": "The 12.2 GiB value is a live free-memory snapshot, not reserved GPU capacity; qualification must retain a measured safety margin.",
+    "directional_learning_rate": 0.0001,
+    "capacity_final_handoff_sha256": "191f0b23d5a09bc830cc544dea17e07908dabef0cf7303333dc3b820b1532a54",
+    "capacity_final_handoff_status": "Implementation/tests reviewed; merged-W serialization smoke PASS; memory estimates are not GPU qualification.",
+    "capacity_final_handoff_path": "experiments/TRR-0010/setup/agent1_final_handoff_v2.json"
+  },
+  "coordination_status": {
+    "agent_two": "A2 feasibility is recorded as required parent counts, not availability; exact recipe hashes, exclusion receipts, and final source/validation bindings remain pending.",
+    "capacity": "Root reviewed full supported rows, directional learning rate 1e-4, merged-W training/inference, and the v2 serialized-W reload smoke; precise free-memory margin and largest-cell GPU qualifier remain pending.",
+    "root_freeze_required": true,
+    "agreement_status": "PROPOSAL_V4_READY_FOR_ROOT_REVIEW_BEFORE_A2_HANDOFF",
+    "a2_runner_receipt": {
+      "path": "/tmp/trr-p09-fixed-control-review.md",
+      "sha256": "d0ddc1ccbb9a247b59ecc10fd944bff9311584831283610975e784d0b289a75f",
+      "status": "A2_PROPOSAL_REVIEWED_NOT_FROZEN"
+    },
+    "resource_caps": "Wall, disk, host-RSS, and isolated-GPU caps remain deferred to measured largest-cell qualification; no unbounded run and no execution-ready claim.",
+    "destination_approval_scope": "Destination/public contract-sharing approval does not substitute for A2 contract agreement or resource qualification."
+  },
+  "non_agreements_pending_review": [
+    "Exact expanded-bank recipe hashes, parent/row exclusions, controlled-draw semantics, and source inventory from A2.",
+    "Exact common optimizer schedule and directional learning-rate implementation before fitting.",
+    "Capacity qualification of merged-W training/inference with a measured margin below the 12.2 GiB live-free-memory snapshot.",
+    "A1+A2 comparator identity/cost receipt; corrected count scan is 3,867 Finance and 236 Pile after the TRR9+P08 union.",
+    "Root agreement on the common 128/domain panel; no extension is planned from the excluded 6,000 Pile probe."
+  ],
+  "statistical_procedure": {
+    "status": "PROPOSED_PREDECLARED_BEFORE_FIT",
+    "source_record_bootstrap": {
+      "unit": "source_record",
+      "draws": 10000,
+      "seed": 10010,
+      "sampling": "With replacement within each domain; all methods and declared target conditions for a source remain paired within each draw.",
+      "domains": [
+        "Finance",
+        "Pile"
+      ],
+      "target_conditions": [
+        "public_base",
+        "public_lora_2601"
+      ],
+      "frequency_strata": "Resample source records, then sum correct and exposed-token numerators/denominators within each draw; do not average per-record stratum accuracies.",
+      "pooling": "Domains, target conditions, and metric families remain separate; no pooled pass is reported."
+    },
+    "confidence_tails": {
+      "benefit_routes": {
+        "alpha": 0.025,
+        "tail": "one-sided lower",
+        "bound": "q_alpha of the paired source-record bootstrap delta"
+      },
+      "harm_safeguards": {
+        "alpha": 0.05,
+        "tail": "one-sided lower",
+        "bound": "q_alpha of candidate-minus-control delta; require the lower bound to be >= the declared negative harm margin"
+      },
+      "gap_closure": {
+        "alpha": 0.025,
+        "tail": "one-sided lower",
+        "bound": "q_alpha of the source-record bootstrap closure fraction when the visibility rule is met"
+      },
+      "descriptive_points": "Report point deltas and denominators even when a bound or route is UNKNOWN.",
+      "exact_binary": {
+        "unit": "paired source-record exact outcome (all 127 post-BOS positions in each 128-token clip)",
+        "benefit_alpha": 0.025,
+        "benefit_component_tail": 0.0125,
+        "harm_alpha": 0.05,
+        "harm_component_tail": 0.025,
+        "lower_bound": "L_CP(gains; component_tail) - U_CP(losses; component_tail)",
+        "upper_bound": "U_CP(gains; component_tail) - L_CP(losses; component_tail)",
+        "paired_discordance": true,
+        "bootstrap_substitution_forbidden": true
+      }
+    },
+    "checkpoint_selection": {
+      "validation_conditions": [
+        "public_base"
+      ],
+      "validation_records": 384,
+      "metric": "Equal-domain-weighted token accuracy: mean(Finance token accuracy, Pile token accuracy).",
+      "grid_updates": [
+        0,
+        1000,
+        2000,
+        4000,
+        8000,
+        12000,
+        "N"
+      ],
+      "rule": "At execution replace N by the exact formula-derived integer, sort and deduplicate [0, 1000, 2000, 4000, 8000, 12000, N], choose the earliest checkpoint attaining the maximum metric, and break exact ties by earliest step. Do not use final-panel outcomes, LoRA validation, or posthoc grid changes."
+    },
+    "contrast_rules": {
+      "benefit_delta": "candidate minus the named fixed comparator, paired per source record; report the percentile lower bound under the route alpha.",
+      "harm_delta": "candidate minus the named fixed comparator, paired per source record; report the one-sided lower q_0.05 bound and compare it with the negative harm margin.",
+      "rare_missingness": "Fewer than 32 exposed source records is UNKNOWN; zero exposed sources are NO_EXPOSURE/UNKNOWN and never a zero-harm result.",
+      "ratio_denominator": "For each remaining-error or gap-closure ratio route, if ANY bootstrap denominator is nonpositive, mark the WHOLE ratio interval UNKNOWN; never discard such draws opportunistically or treat them as zero.",
+      "exact_binary_bounds": {
+        "unit": "paired source-record exact outcome (all 127 post-BOS positions in each 128-token clip)",
+        "benefit_alpha": 0.025,
+        "benefit_component_tail": 0.0125,
+        "harm_alpha": 0.05,
+        "harm_component_tail": 0.025,
+        "lower": "L_CP(gains; component_tail) - U_CP(losses; component_tail)",
+        "upper": "U_CP(gains; component_tail) - L_CP(losses; component_tail)",
+        "method": "paired-discordance Clopper-Pearson bounds",
+        "not_bootstrap_degenerate_bounds": true
+      },
+      "token_zero_variance": {
+        "condition": "The source-record bootstrap token delta has zero observed-difference variance.",
+        "decision": "UNKNOWN for the route or safeguard under review.",
+        "interpretation": "Do not treat a degenerate bootstrap interval as proof of no harm or adequate uncertainty."
+      }
+    },
+    "route_separation": "Token versus exact and directional versus data routes are separate predeclared questions. Each useful route uses alpha=0.025; no pooled family claim or post-score threshold substitution is allowed."
+  },
+  "deployment": "Merged full readout W is the required training-qualification and inference path; no special validation hook is assumed. Any sparse supported-column implementation is diagnostic-only for output-equivalence checks and cannot be used as a fit, validation, or deployment fallback. W replaces E in deployed storage."
+}

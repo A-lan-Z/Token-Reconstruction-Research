@@ -1,0 +1,535 @@
+{
+  "schema": "token-reconstruction.trr0010-final-scoring-rules-binding.v1",
+  "task_id": "TRR-0010",
+  "status": "FROZEN_V4_SCORING_RULES_BINDING_FOR_CAPACITY_WRAPPER",
+  "scientific_changes": false,
+  "source_proposal": {
+    "path": "experiments/TRR-0010/planning/shared_contract.proposal.json",
+    "bytes": 38409,
+    "sha256": "3b0a68a4a05304e285c1fedcf8a2982bf4bef831e2e5bc0cebb20b8b2dba08b3",
+    "status": "PROPOSAL_V4_READY_FOR_ROOT_REVIEW_BEFORE_A2_HANDOFF",
+    "source_status": "PROPOSAL_V4_READY_FOR_ROOT_REVIEW_BEFORE_A2_HANDOFF",
+    "source_sha256_required_by_capacity": "3b0a68a4a05304e285c1fedcf8a2982bf4bef831e2e5bc0cebb20b8b2dba08b3"
+  },
+  "statistical_procedure": {
+    "status": "PROPOSED_PREDECLARED_BEFORE_FIT",
+    "source_record_bootstrap": {
+      "unit": "source_record",
+      "draws": 10000,
+      "seed": 10010,
+      "sampling": "With replacement within each domain; all methods and declared target conditions for a source remain paired within each draw.",
+      "domains": [
+        "Finance",
+        "Pile"
+      ],
+      "target_conditions": [
+        "public_base",
+        "public_lora_2601"
+      ],
+      "frequency_strata": "Resample source records, then sum correct and exposed-token numerators/denominators within each draw; do not average per-record stratum accuracies.",
+      "pooling": "Domains, target conditions, and metric families remain separate; no pooled pass is reported."
+    },
+    "confidence_tails": {
+      "benefit_routes": {
+        "alpha": 0.025,
+        "tail": "one-sided lower",
+        "bound": "q_alpha of the paired source-record bootstrap delta"
+      },
+      "harm_safeguards": {
+        "alpha": 0.05,
+        "tail": "one-sided lower",
+        "bound": "q_alpha of candidate-minus-control delta; require the lower bound to be >= the declared negative harm margin"
+      },
+      "gap_closure": {
+        "alpha": 0.025,
+        "tail": "one-sided lower",
+        "bound": "q_alpha of the source-record bootstrap closure fraction when the visibility rule is met"
+      },
+      "descriptive_points": "Report point deltas and denominators even when a bound or route is UNKNOWN.",
+      "exact_binary": {
+        "unit": "paired source-record exact outcome (all 127 post-BOS positions in each 128-token clip)",
+        "benefit_alpha": 0.025,
+        "benefit_component_tail": 0.0125,
+        "harm_alpha": 0.05,
+        "harm_component_tail": 0.025,
+        "lower_bound": "L_CP(gains; component_tail) - U_CP(losses; component_tail)",
+        "upper_bound": "U_CP(gains; component_tail) - L_CP(losses; component_tail)",
+        "paired_discordance": true,
+        "bootstrap_substitution_forbidden": true
+      }
+    },
+    "checkpoint_selection": {
+      "validation_conditions": [
+        "public_base"
+      ],
+      "validation_records": 384,
+      "metric": "Equal-domain-weighted token accuracy: mean(Finance token accuracy, Pile token accuracy).",
+      "grid_updates": [
+        0,
+        1000,
+        2000,
+        4000,
+        8000,
+        12000,
+        "N"
+      ],
+      "rule": "At execution replace N by the exact formula-derived integer, sort and deduplicate [0, 1000, 2000, 4000, 8000, 12000, N], choose the earliest checkpoint attaining the maximum metric, and break exact ties by earliest step. Do not use final-panel outcomes, LoRA validation, or posthoc grid changes."
+    },
+    "contrast_rules": {
+      "benefit_delta": "candidate minus the named fixed comparator, paired per source record; report the percentile lower bound under the route alpha.",
+      "harm_delta": "candidate minus the named fixed comparator, paired per source record; report the one-sided lower q_0.05 bound and compare it with the negative harm margin.",
+      "rare_missingness": "Fewer than 32 exposed source records is UNKNOWN; zero exposed sources are NO_EXPOSURE/UNKNOWN and never a zero-harm result.",
+      "ratio_denominator": "For each remaining-error or gap-closure ratio route, if ANY bootstrap denominator is nonpositive, mark the WHOLE ratio interval UNKNOWN; never discard such draws opportunistically or treat them as zero.",
+      "exact_binary_bounds": {
+        "unit": "paired source-record exact outcome (all 127 post-BOS positions in each 128-token clip)",
+        "benefit_alpha": 0.025,
+        "benefit_component_tail": 0.0125,
+        "harm_alpha": 0.05,
+        "harm_component_tail": 0.025,
+        "lower": "L_CP(gains; component_tail) - U_CP(losses; component_tail)",
+        "upper": "U_CP(gains; component_tail) - L_CP(losses; component_tail)",
+        "method": "paired-discordance Clopper-Pearson bounds",
+        "not_bootstrap_degenerate_bounds": true
+      },
+      "token_zero_variance": {
+        "condition": "The source-record bootstrap token delta has zero observed-difference variance.",
+        "decision": "UNKNOWN for the route or safeguard under review.",
+        "interpretation": "Do not treat a degenerate bootstrap interval as proof of no harm or adequate uncertainty."
+      }
+    },
+    "route_separation": "Token versus exact and directional versus data routes are separate predeclared questions. Each useful route uses alpha=0.025; no pooled family claim or post-score threshold substitution is allowed."
+  },
+  "useful_outcome_proposal": {
+    "primary_candidate": "expanded_directional",
+    "fixed_control_selection": "Directional route compares expanded_directional with both expanded_fixed (matched data) and current_fixed (second required current-coverage control); no posthoc fixed-arm winner or pre-data strength ranking.",
+    "absolute_routes": {
+      "token": {
+        "remaining_error_reduction_fraction": 0.2,
+        "absolute_accuracy_floor_pp": 0.5,
+        "positive_paired_lower_bound": true,
+        "route_alpha": 0.025,
+        "formula": "(token_errors_relevant_fixed - token_errors_candidate) / token_errors_relevant_fixed",
+        "ceiling_policy": "If the relevant fixed accuracy leaves less than 0.5 percentage points of attainable headroom, report the absolute floor as ceiling-limited rather than as a failure; require the relative-error reduction, positive paired lower bound, and the predeclared A1+A2 anchor gap-closure evidence for a useful claim."
+      },
+      "exact": {
+        "point_floor_pp": 5.0,
+        "positive_paired_lower_bound": true,
+        "route_alpha": 0.025
+      }
+    },
+    "gap_closure": {
+      "formula": "closure_m = (M_candidate - M_unchanged_shared_start) / (M_A1_plus_A2 - M_unchanged_shared_start), computed on the common final panel per source-record bootstrap draw when the denominator is positive.",
+      "visible_gap_requirement": {
+        "token_gap_pp": 1.0,
+        "exact_gap_pp": 5.0
+      },
+      "minimum_fraction": 0.25,
+      "lower_bound_requirement": ">= 0.25 on the same declared metric and anchor subset",
+      "unknown_rule": "If any bootstrap denominator is nonpositive or the visibility floor is not met, mark the whole ratio route UNKNOWN; never discard nonpositive denominators opportunistically.",
+      "scope": "Data and directional routes each report common-panel closure separately; no A1-only/A2-only decomposition."
+    },
+    "family_rule": "Exact and token routes are separate predeclared routes, each route alpha 0.025; data and directional factor decisions are separate scientific questions with no pooled domains, target conditions, or metric families.",
+    "interpretation": "Useful result is mechanism evidence for this crossed study only. It does not automatically replace the reference, retrain, or expand the panel.",
+    "control_requirement": "Directional usefulness is reported separately from the data-scaling route. A flat directional contrast does not fail the study if expanded_fixed clears the predeclared data route.",
+    "historical_comparator": "A1+A2 (single historical comparator)",
+    "baseline": "unchanged_shared_start (the shared TRR-0009 continued-fixed selected state)",
+    "decision_routes": {
+      "directional_useful": {
+        "contrast": "expanded_directional versus expanded_fixed, with expanded_directional versus current_fixed as the required robustness comparison",
+        "success": "Material absolute readout-direction route in both domains with all main-cell safeguards/cost gates; rare/absent strata are reported diagnostically."
+      },
+      "data_useful": {
+        "contrast": "expanded_fixed versus current_fixed and unchanged_shared_start",
+        "success": "Material expanded-coverage route in both domains with baseline-to-A1+A2 anchor closure and all main-cell safeguards/cost gates; rare/absent strata are reported diagnostically; this route can succeed when directional interaction is flat."
+      },
+      "combined_candidate": {
+        "contrast": "expanded_directional versus unchanged_shared_start",
+        "success": "Report total improvement and interaction; do not replace the separate directional/data decisions."
+      }
+    },
+    "domain_rule": "A route is study-useful only when its declared material absolute criterion and positive paired lower bound hold separately in both Finance and Pile. A one-domain result is reported as domain-specific evidence, not a global promotion."
+  },
+  "safeguards_and_cost": {
+    "harm_safeguards": {
+      "exact_lower_bound_pp": -3.0,
+      "token_lower_bound_pp": -0.5,
+      "confidence": "One-sided lower q_0.05 bound for candidate-minus-control delta; require LCB >= the declared negative margin.",
+      "unit": "paired source records",
+      "status": "PROPOSED_STRONGER_HARM_LIMITS_PENDING_ROOT_REVIEW"
+    },
+    "rare_absent": {
+      "bins": [
+        "0",
+        "1-4",
+        "5-9",
+        "10-49",
+        "50+"
+      ],
+      "minimum_exposed_source_records": 32,
+      "lower_bound_pp": -0.5,
+      "underpowered": "UNKNOWN when fewer than 32 exposed source records; zero exposed sources are NO_EXPOSURE/UNKNOWN, never automatic PASS or zero-harm evidence.",
+      "route_role": "Diagnostic-only. UNKNOWN rare/absent bins do not automatically veto a main useful route; if support reaches 32 sources, report the lower harm bound separately."
+    },
+    "warmed_inference_runtime_ratio_max": 1.5,
+    "training_budget": {
+      "paid_compute": false,
+      "max_updates_per_arm": 20000,
+      "arms": 4,
+      "shared_public_preparation_counted_once": true
+    },
+    "qualification": "Qualify the largest expanded-directional cell and merged serialized adapter before the full matrix with fail-closed wall, disk, host-RSS, isolated-GPU-memory, and output-equivalence guards plus a measured free-memory margin; stop on allocator, driver, or output-equivalence anomalies. The current proposal is not execution-ready until the caps are jointly agreed.",
+    "streaming": "Public activation generation and expanded-bank preparation are chunked; no unbounded resident corpus or artifact expansion.",
+    "deployed_artifact_accounting": "An exported full readout W replaces the shared E file in deployed inference; do not charge E + W. Report the full training checkpoint, optimizer state, and preparation artifacts separately because they can be much larger.",
+    "deployed_readout_storage_limit": "PENDING_CAPACITY_AND_A2_COST_REVIEW",
+    "isolated_method_peak_gpu_memory_ratio_max": 1.5,
+    "memory_gate_unit": "Gate memory using each method's isolated peak; pooled four-arm harness peaks are reported separately and are not deployment-memory gates.",
+    "main_cell_safeguards_required": true,
+    "candidate_to_a1_a2_warmed_runtime_ratio_max": 0.25,
+    "candidate_to_a1_a2_cost_gate": "Measure candidate_warmed_runtime / A1+A2_warmed_runtime on the common panel; PASS requires <=0.25 when the comparator is bound, otherwise UNKNOWN.",
+    "resource_caps": {
+      "status": "PENDING_MEASURED_LARGEST_CELL_QUALIFICATION_AND_JOINT_AGREEMENT",
+      "wall_seconds_cap": "PENDING_MEASURED_QUALIFICATION",
+      "disk_footprint_bytes_cap": "PENDING_MEASURED_QUALIFICATION",
+      "host_rss_bytes_cap": "PENDING_MEASURED_QUALIFICATION",
+      "isolated_gpu_peak_bytes_cap": "PENDING_MEASURED_QUALIFICATION",
+      "hard_guard": "No unbounded run; stop before full matrix unless all four caps and fail-closed guards are jointly agreed from a representative largest-cell receipt.",
+      "execution_ready": false
+    }
+  },
+  "referenced_constants": {
+    "final_evaluation": {
+      "target_unique_records": 256,
+      "domain_counts": {
+        "Finance": 128,
+        "Pile": 128
+      },
+      "target_conditions": [
+        "public_base",
+        "public_lora_2601"
+      ],
+      "target_observations": 512,
+      "post_bos_positions_per_clip": 127,
+      "bootstrap": {
+        "unit": "source_record",
+        "draws": 10000,
+        "seed": 10010,
+        "target_conditions_nested": true,
+        "domains_separate": true
+      }
+    },
+    "public_development_validation": {
+      "panel": "Opened TRR-0009 matched public natural panel, proposed as TRR-0010 public development only.",
+      "target_unique_records": 384,
+      "domain_counts": {
+        "Finance": 256,
+        "Pile": 128
+      },
+      "target_conditions": [
+        "public_base"
+      ],
+      "target_observations": 384,
+      "post_bos_positions_per_clip": 127,
+      "metric": "Equal-domain-weighted natural token accuracy: mean(Finance token accuracy, Pile token accuracy); target conditions remain paired within source.",
+      "checkpoint_rule": "Earliest maximum at the declared checkpoint interval; no final truth is opened for this selection.",
+      "source_identity_and_sequence_receipt": "PENDING_A2_BINDING_OF_TRR9_384_RECORD_PANEL",
+      "bank_exclusion": "Validation records and derived rows are excluded from both fitting banks and the final natural panel.",
+      "fit_vs_validation_geometry": "Fit context width 192; natural validation clip width 128 with 127 scored post-BOS positions.",
+      "selection_scope": "Selection validation is exactly the 384 matched-public observations: 256 Finance + 128 Pile, public_base only. The LoRA target is not used for checkpoint selection.",
+      "secondary": "The inherited 48-record style-balanced panel is secondary diagnostic context only, not checkpoint-selection evidence."
+    },
+    "training_geometry_and_schedule": {
+      "status": "VERIFIED_WIDTH_192_FIT_WIDTH_128_NATURAL_EVAL",
+      "published_reference_geometry": {
+        "position_budget": 512,
+        "record_batch_size": 8,
+        "published_fit_record_ids": 1200,
+        "published_validation_record_ids": 48
+      },
+      "geometry_gate": "Verified full width-192 fit geometry and separate width-128 natural-validation geometry; no crop substitution.",
+      "allowed_update_range_before_exact_freeze": [
+        12000,
+        20000
+      ],
+      "exact_update_count_freeze": "Freeze the exact integer N from the deterministic formula before fitting; do not choose it from final outcomes.",
+      "batch_records": 8,
+      "schedule": "Cosine decay, AdamW, base learning rate 2e-4, weight_decay=0, gradient_clip_norm=1.0, seed 4010; no staging schedule, teacher ranking, search, or A2 fallback.",
+      "expanded_bank_coverage_reason": "Compute actual_B1_valid_positions from the bound expanded bank. The formula targets at least five valid-position exposures and rounds N upward in common 1,000-update increments.",
+      "validation_selection": "Earliest maximum of a predeclared domain-balanced public token-accuracy score on the exact sorted-unique checkpoint grid [0, 1000, 2000, 4000, 8000, 12000, N]; ties choose earliest.",
+      "fit_context_width": 192,
+      "natural_validation_context_width": 128,
+      "source_interface": "Fit rows and natural-validation clips use separately declared context widths; fitting uses verified all-valid geometry and final clips retain 127 post-BOS positions.",
+      "position_draws_per_update": 512,
+      "expanded_position_exposure_requirement": {
+        "minimum": 5,
+        "target": [
+          5,
+          10
+        ],
+        "unit": "valid fitting positions",
+        "freeze_rule": "Compute actual_B1_valid_positions from the bound expanded bank; if formula-derived N exceeds 20,000, stop for contract revision."
+      },
+      "checkpoint_grid_updates": [
+        0,
+        1000,
+        2000,
+        4000,
+        8000,
+        12000,
+        "N"
+      ],
+      "checkpoint_grid_rule": "At execution replace symbolic N by its exact integer, sort and deduplicate the grid, and evaluate no other checkpoints.",
+      "recommended_schedule_receipt": "A2 fixed-control review proposed 12,000 updates; v4 replaces that provisional count with the deterministic N formula.",
+      "minimum_optimizer_updates": 12000,
+      "exact_update_count_formula": {
+        "symbol": "N",
+        "actual_b1_valid_positions_symbol": "actual_B1_valid_positions",
+        "position_draws_per_update": 512,
+        "minimum_exposure": 5,
+        "formula": "N = max(12000, 1000 * ceil((5 * actual_B1_valid_positions / 512) / 1000))",
+        "cap_updates": 20000,
+        "cap_rule": "If computed N exceeds 20,000, stop and request contract revision before any fit; never silently cap or reduce exposure.",
+        "common_arm_rule": "Use the same exact integer N for all four arms."
+      },
+      "position_draws_at_minimum_count": 6144000,
+      "verified_geometry": {
+        "fit_context_width": 192,
+        "natural_validation_context_width": 128,
+        "stored_fit_position_slots": [
+          1,
+          191
+        ],
+        "historical_schedule_total_position_draws": 1536000,
+        "historical_schedule_positions_128_through_191": 131576,
+        "statement": "The fit mask is full width-192 geometry; width-128 is only the natural-evaluation clip."
+      }
+    },
+    "directional_readout_constants": {
+      "directional_learning_rate": 0.0001,
+      "regularization": "lambda * mean_v[(1 + 4/sqrt(count_v)) * ||Delta[v]||_2^2 / (H * rms(E[v])^2 + eps)] with lambda=1e-4; frequency-weighted relative L2 to E.",
+      "parameterization": "E_eff[v] = E[v] + Delta[v] for v in supported fitting rows S; E_eff[v] = E[v] outside S. Delta[S] is a full independent [|S|, 2048] FP32 row table.",
+      "support_definition": "S is every vocabulary row with positive fitting-bank count; absent rows have no adapter parameters and remain the base readout.",
+      "deployment": "Merged full readout W is the required training-qualification and inference path; no special validation hook is assumed. Any sparse supported-column implementation is diagnostic-only for output-equivalence checks and cannot be used as a fit, validation, or deployment fallback. W replaces E in deployed storage.",
+      "row_constraints": "No hard gain/bias bound and no row renormalization. Unsupported rows have no adapter parameter and remain E exactly."
+    }
+  },
+  "opaque_ledger_declarations": {
+    "shared_stage1_plan": {
+      "path": "experiments/TRR-0010/planning/shared_stage1_public_bank_plan.json",
+      "bytes": 26127,
+      "sha256": "bca93d6099760791c5ecbf3be8177d250cc672c62b2177a3d72d79b934c3826c",
+      "status": "PROPOSED_STAGE1_PLAN_NO_SELECTION_NO_FREEZE"
+    },
+    "stage1_selection_exclusions": {
+      "path": "experiments/TRR-0009/selection_v2/source_exclusions.json",
+      "sha256": "bba988428e6e1d13c2916b5e9c001acd86aa37d838bda553744eecd0f88d806f"
+    },
+    "stage1_agent1_public_development_selection": {
+      "record_count": 384,
+      "source_id_count": 384,
+      "source_selection_path": "experiments/TRR-0009/selection_v2/source_selection.json",
+      "source_selection_bytes": 287719,
+      "source_selection_sha256": "c2e996514f7f45e55d7bfadc27fc8048bdb07a2c979b208de8716972d8d1def2",
+      "status": "MACHINE_VERIFIED_SOURCE_SELECTION_METADATA_BOUND_COMPILED_NAMESPACE_DIGEST_PENDING"
+    },
+    "stage1_approved_opaque_ledgers": [
+      {
+        "id": "TRR-P08-r1-sanitized-opaque-export",
+        "path": "experiments/TRR-0009/coordination/approved_opaque/p08_opaque_hash_exchange_sanitized.json",
+        "sha256": "3383356794d3498830f5cd69ed2c552f4ed527eceed7e05f61cc3c49eba2eb38",
+        "namespace": [
+          "public_record_sha256",
+          "final_sequence_sha256"
+        ],
+        "status": "APPROVED_HASH_ONLY_INPUT"
+      },
+      {
+        "id": "TRR-P08-r2-sanitized-opaque-export",
+        "path": "experiments/TRR-0009/coordination/approved_opaque/p08_opaque_hash_exchange_sanitized_r2.json",
+        "sha256": "62828543ff8bcd3f9a36f048a8708000a89e33000dc2b619acddf51e6b6644b7",
+        "namespace": [
+          "public_record_sha256",
+          "final_sequence_sha256"
+        ],
+        "status": "APPROVED_HASH_ONLY_INPUT"
+      },
+      {
+        "id": "TRR-P08-r2-acknowledgement",
+        "path": "experiments/TRR-0009/coordination/approved_opaque/p08_r2_acknowledgement.json",
+        "sha256": "bea002ebe9a63c4f07cc01c7721a633bfd694221c61936e446bf88a922ca13e3",
+        "namespace": [
+          "public_record_sha256",
+          "final_sequence_sha256"
+        ],
+        "status": "APPROVED_HASH_ONLY_ACKNOWLEDGEMENT"
+      },
+      {
+        "id": "TRR-0008-selection-opaque-source-sequence-reservation",
+        "path": "experiments/TRR-0008/selection/opaque_source_sequence_reservation.json",
+        "sha256": "0487b9dda91d7eb791c93e1ba704afcea22abfc21f003cad8b99984f523357a4",
+        "namespace": [
+          "public_record_sha256",
+          "final_sequence_sha256"
+        ],
+        "status": "PUBLISHED_APPROVED_LEDGER"
+      },
+      {
+        "id": "TRR-0008-selection-source-exclusions",
+        "path": "experiments/TRR-0008/selection/source_exclusions.json",
+        "sha256": "acdbabb1a923ed9acccc17076f615201baca0a2d0fb6a40177bf41bb96bd09c4",
+        "namespace": [
+          "identity_ids",
+          "source_indices",
+          "public_record_sha256",
+          "final_sequence_sha256"
+        ],
+        "status": "PUBLISHED_APPROVED_LEDGER"
+      },
+      {
+        "id": "TRR-P06-generic-hash-construction-receipt",
+        "path": "experiments/TRR-0008/planning/approved_opaque/p06_hash_construction_receipt.json",
+        "sha256": "b06ca9ccae7b831318604351ce76f183a8c2745780494e20b263279f146ba92c",
+        "namespace": [
+          "public_record_sha256",
+          "final_sequence_sha256"
+        ],
+        "status": "APPROVED_CANONICALIZATION_RULES"
+      }
+    ],
+    "stage1_declared_combined_exclusion_receipt": {
+      "path": "experiments/TRR-0010/planning/count_scan/combined_exclusion_receipt.json",
+      "sha256": "02a8d5d20b7c3b403c4a53addc2529941aa9058036a25aa4584c1a27e2b3d9a8",
+      "authoritative_inventory_path": "experiments/TRR-0010/planning/count_scan/inventory_7000_trr9_p08_union.json",
+      "authoritative_inventory_sha256": "d64eae6b5e0137f1fb76e89ba7b618455853977330f13058877c6a7c3ab9038b",
+      "eligible_counts_metadata_only": {
+        "Finance": 3867,
+        "Pile": 236
+      },
+      "status": "DECLARED_CONTRACT_REFERENCE_ROW_LEVEL_REPLAY_PENDING_LOCAL_SETUP_MANIFEST"
+    },
+    "count_scan_inventory": {
+      "path": "experiments/TRR-0010/planning/count_scan/inventory_7000_trr9_p08_union.json",
+      "bytes": 25002,
+      "sha256": "d64eae6b5e0137f1fb76e89ba7b618455853977330f13058877c6a7c3ab9038b",
+      "status": "IDENTITY_INVENTORY_COMPLETE_NO_SELECTION_NO_TRUTH"
+    },
+    "count_scan_combined_exclusion_receipt": {
+      "path": "experiments/TRR-0010/planning/count_scan/combined_exclusion_receipt.json",
+      "bytes": 16198,
+      "sha256": "02a8d5d20b7c3b403c4a53addc2529941aa9058036a25aa4584c1a27e2b3d9a8",
+      "status": "COUNT_ONLY_EXCLUSION_RECEIPT"
+    },
+    "inventory_exclusion_policy": {
+      "all_known_fit_validation_opened_eval_ledgers_applied": true,
+      "identity_only": true,
+      "p03_holdout_opened": false,
+      "p04_opaque_identity_only": true,
+      "p06_opaque_identity_only": true,
+      "p07_workspace_or_results_opened": false,
+      "p08_new_reservation_status": "READY_FOR_HASH_ONLY_EXCHANGE",
+      "p08_opaque_identity_only": true,
+      "source_text_or_target_labels_written": false,
+      "trr8_panel_excluded": true
+    },
+    "inventory_known_exclusion_chain": {
+      "interpretation": "TRR7 ledgers cover prior fit/dev/opened public identities; TRR8 selection adds 1,024 Finance and 384 Pile source identities; P07 reports no new identities and reuses already-opened panels.",
+      "p07_resource_reply": {
+        "bytes": 778,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/coordination/p07_resource_exclusion_reply.json",
+        "sha256": "eb9eb29d43b9f4a6d4a94f7e062098cc82fc9a60fcd15a907f1083582aed38b1"
+      },
+      "trr0007_ledgers": [
+        {
+          "bytes": 30762,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0007/selection/eligibility_inventory.json",
+          "sha256": "bb7c94580e5c0b4cefdbdda7b80d36e4a64aefa36b944359cb200ed02cb89e35"
+        },
+        {
+          "bytes": 22555,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0007/selection/source_exclusions.json",
+          "sha256": "7547ac0b85052955d355b58ab83bdf5ba24f9d621f514da480a336b01858760e"
+        },
+        {
+          "bytes": 198090,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0007/selection/source_selection.json",
+          "sha256": "0adf45078ee017ab1877e5d8b905261583d9916cf59c9237591166d0b39c431c"
+        },
+        {
+          "bytes": 1179665,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0007/support/broader_bank_v5/public_parent_exclusion_manifest.json",
+          "sha256": "bd1359f1184091570023e22a7682d1f97c08f8f05e47f69f6b3e6be089cd0181"
+        },
+        {
+          "bytes": 114285,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0007/support/broader_bank_v5/selected_parent_rows.json",
+          "sha256": "7de2ce7fca1d9489f652e0229b7cbfeacd625ca6ebd37c56d4405962da79f547"
+        },
+        {
+          "bytes": 2528630,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0007/support/broader_bank_v5/corpus_plan.json",
+          "sha256": "35d74424df60a1d62f7962850eaa3132fa57dd7001024f915cc4fc470a6d0e76"
+        },
+        {
+          "bytes": 259979,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0007/support/public_fit_prefix_exclusions_v3.json",
+          "sha256": "c4993d24d838ce2635b28b6736b85ffa849045f37e3a1e38b3904f3cbdb709e1"
+        }
+      ],
+      "trr0008_exclusions": {
+        "bytes": 18344,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0008/selection/source_exclusions.json",
+        "sha256": "acdbabb1a923ed9acccc17076f615201baca0a2d0fb6a40177bf41bb96bd09c4"
+      },
+      "trr0008_inventory": {
+        "bytes": 12077,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0008/planning/identity_inventory_1thread.json",
+        "sha256": "40b53deb39a3eaf964607f09f8e57574079e14d06cc7ec848f9478952cebfc3b"
+      },
+      "trr0008_reservation": {
+        "bytes": 216396,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0008/selection/opaque_source_sequence_reservation.json",
+        "sha256": "0487b9dda91d7eb791c93e1ba704afcea22abfc21f003cad8b99984f523357a4"
+      },
+      "trr0008_selection": {
+        "bytes": 997800,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0008/selection/source_selection.json",
+        "sha256": "ea9a7bf2edcc22eee1a8e791a331d423ccd940e0fcab3079b6b43cc456ee8e57"
+      }
+    },
+    "namespace_canonicalization": {
+      "status": "RULES_BOUND_COMPILED_OVERLAP_PENDING",
+      "rule": "Do not compare rendered, public-record, final-sequence, reservation, source-ID, or row-index digests across namespaces; use each receipt canonicalization exactly.",
+      "compiled_zero_overlap_receipt": null
+    }
+  },
+  "capacity_wrapper_instruction": {
+    "recipient_role": "capacity",
+    "wrapper_status": "FROZEN",
+    "wrapper_field": "decision_rules",
+    "wrapper_shape": {
+      "status": "FROZEN",
+      "source_binding": "source_proposal",
+      "rules": [
+        "statistical_procedure",
+        "useful_outcome_proposal",
+        "safeguards_and_cost",
+        "referenced_constants"
+      ]
+    },
+    "required_source_sha256": "3b0a68a4a05304e285c1fedcf8a2982bf4bef831e2e5bc0cebb20b8b2dba08b3",
+    "do_not_change": [
+      "thresholds",
+      "alpha values",
+      "bootstrap seed/draws",
+      "checkpoint grid",
+      "harm margins",
+      "cost ratios",
+      "rare-stratum rule"
+    ]
+  },
+  "truth_boundary": {
+    "truth_opened": false,
+    "quality_results": false,
+    "source_text_or_target_labels_in_binding": false,
+    "identity_or_source_payload_exported": false
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "adapter": {
+    "bytes": 43256,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/scripts/trr0010_eval_gate.py",
+    "sha256": "5fd03eef978ac28a3bac6a30ddf8dad3b5038fc790ad5189073d549bd3cd432a"
+  },
+  "command": "PYTHONPATH=.:src:scripts python3 -m pytest -q tests/test_trr0010_eval_gate.py tests/test_trr0010_analysis.py",
+  "corrections": [
+    "Direct methods bind hash-checked public embedding E and base/decoder state resources; directional methods bind hash-checked exported effective W and base/decoder state resources.",
+    "The generic method state and explicit base_decoder_state resource must identify the same bytes, preventing an unregistered decoder substitution.",
+    "A1+A2 native loader semantics use candidate_k=256; prefix_width is not accepted as a K alias.",
+    "Observation binding checks actual safetensors tensor-header shape and dtype via safe_open get_slice without materializing H; production cut-4 geometry is records x 128 x 2048, BF16 activations, U8 mask, and I64 positions.",
+    "Synthetic tests use an explicit test-only monkeypatch of the hidden-width constant and retain production default 2048.",
+    "Negative tests cover missing resources, changed public E, changed effective W, tensor-header geometry mismatch, and metadata-shape mismatch before the truth opener."
+  ],
+  "generated_at_utc": "2026-09-07T09:26:35.355745+00:00",
+  "matrix": {
+    "a1_a2_is_single_comparator": true,
+    "cell_order": [
+      "pile__public_base",
+      "pile__public_lora_2601",
+      "finance__public_base",
+      "finance__public_lora_2601"
+    ],
+    "entries": 24,
+    "method_order": [
+      "unchanged_shared_start",
+      "current_fixed",
+      "current_directional",
+      "expanded_fixed",
+      "expanded_directional",
+      "frozen_a1_a2_k256"
+    ],
+    "records_by_domain": {
+      "finance": 128,
+      "pile": 128
+    }
+  },
+  "observation_header_contract": {
+    "activations_dtype": "BF16",
+    "attention_mask_dtype": "U8",
+    "header_read": "safetensors.safe_open.get_slice without tensor materialization",
+    "position_ids_dtype": "I64",
+    "shape": [
+      "records",
+      128,
+      2048
+    ],
+    "synthetic_override": "tests monkeypatch gate.OBSERVATION_HIDDEN_SIZE to 2 only"
+  },
+  "resource_requirements": {
+    "current_directional": [
+      "effective_readout_w",
+      "base_decoder_state"
+    ],
+    "current_fixed": [
+      "public_embedding_table",
+      "base_decoder_state"
+    ],
+    "expanded_directional": [
+      "effective_readout_w",
+      "base_decoder_state"
+    ],
+    "expanded_fixed": [
+      "public_embedding_table",
+      "base_decoder_state"
+    ],
+    "frozen_a1_a2_k256": [
+      "public_embedding_table",
+      "retained_a1_lens",
+      "public_p0_prefix"
+    ],
+    "unchanged_shared_start": [
+      "public_embedding_table",
+      "base_decoder_state"
+    ]
+  },
+  "schema": "token-reconstruction.trr0010-eval-gate-receipt.v3",
+  "scope_note": "Synthetic-only task-local gate correction; no source selection, capture, real prediction, model execution, truth opening, registry, status, contract, manifest, or shared readonly asset edits.",
+  "status": "SYNTHETIC_PUBLIC_GATE_CORRECTION_PASS",
+  "supersedes_review_receipt": {
+    "bytes": 3575,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/setup/eval_gate_v2.json",
+    "prior_failed_review": {
+      "bytes": 2589,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/setup/eval_gate_v1.json",
+      "sha256": "a73c6db507c5c18c4b05b129931050a2e083a1a4aefcc5a1d973573e65d1fba6"
+    },
+    "sha256": "bdab0d8f0b2bec3a20d814e90b6db2cd0d348532efdcd489b6372f090dcea74b"
+  },
+  "task_id": "TRR-0010",
+  "test_result": {
+    "analysis_tests": 16,
+    "failed": 0,
+    "gate_tests": 20,
+    "model_or_gpu_used": false,
+    "passed": 36,
+    "real_data_accessed": false,
+    "truth_opened": false
+  },
+  "tests": {
+    "bytes": 28097,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/tests/test_trr0010_eval_gate.py",
+    "sha256": "1605db968477628d5961ddcbbef22e0277ba2086e880b414ab13fedd52d2f654"
+  }
+}

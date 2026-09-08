@@ -1,0 +1,168 @@
+{
+  "candidate_arrays_persisted": false,
+  "capture": {
+    "bytes": 2681,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/public_capture_watchdog_r5/observations_v1/capture.json",
+    "sha256": "0d8014708f58f42efb258a2a1750b3a36d1e493bf05c6f5340b606b0b6539303"
+  },
+  "capture_geometry": {
+    "batch_records": 8,
+    "hidden_size": 2048,
+    "retain_first_128": true,
+    "scored_post_bos_tokens": 127,
+    "sequence_tokens": 192,
+    "stored_sequence_tokens": 128,
+    "vocabulary_size": 128256
+  },
+  "cell_order": [
+    "pile__public_base",
+    "pile__public_lora_2601",
+    "finance__public_base",
+    "finance__public_lora_2601"
+  ],
+  "design": {
+    "bytes": 58145,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/final_evaluation_design_r5.json",
+    "sha256": "218256bf4155c375f50f974db9a31d6be48fadcf17ebdacacd26a35c0bd03143"
+  },
+  "generated_utc": "2026-09-07T20:14:31Z",
+  "measured_runs_per_record": 1,
+  "measurement": {
+    "prediction_outputs_truth_free": true,
+    "synchronization": "explicit device synchronization immediately before and after each warmup/measured row call",
+    "timed_interval": "synchronized public activation H staging -> FP32 current-H decoder -> full-vocabulary logits -> CPU token IDs",
+    "timing_receipts_per_method_cell": "<prediction_root>/timings/<domain>/<condition>/<method_id>.run.json"
+  },
+  "method_order": [
+    "unchanged_shared_start",
+    "current_fixed",
+    "current_directional",
+    "expanded_fixed",
+    "expanded_directional",
+    "frozen_a1_a2_k256"
+  ],
+  "numerical_settings": {
+    "batch_records": 8,
+    "checkpoint_grid": [
+      0,
+      1000,
+      2000,
+      4000,
+      8000,
+      12000,
+      13000
+    ],
+    "decoder_learning_rate": 0.0002,
+    "directional_learning_rate": 0.0001,
+    "exact_update_count": 13000,
+    "fit_context_width": 192,
+    "foreach": false,
+    "gradient_clip_norm": 1.0,
+    "natural_validation_context_width": 128,
+    "optimizer": "AdamW",
+    "position_draws_per_update": 512,
+    "seed": 4010,
+    "weight_decay": 0.0
+  },
+  "observation_manifest": {
+    "bytes": 13942,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/public_capture_watchdog_r5/observations_v1/observations.json",
+    "sha256": "01731e73e8028847303606681829a75c67c77fb088bc51b36e131ed48b42b98c"
+  },
+  "output_root": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/public_prediction_watchdog_r5",
+  "panel": {
+    "bytes": 2217,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/public_capture_watchdog_r5/observations_v1/panel.json",
+    "sha256": "8a0f9ec2aca85bef88004738d7dda69f44774f7c4299fbfea3cbe7fd0c376122"
+  },
+  "planned_runner_argv": [
+    "env",
+    "OMP_NUM_THREADS=1",
+    "MKL_NUM_THREADS=1",
+    "OPENBLAS_NUM_THREADS=1",
+    "TOKENIZERS_PARALLELISM=false",
+    "PYTHONPATH=.:src:scripts",
+    "python3",
+    "scripts/trr0010_eval_runner.py",
+    "--repository-root",
+    "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010",
+    "--registration",
+    "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/registration_r5.json",
+    "--device",
+    "cuda"
+  ],
+  "provenance": {
+    "capture_runtime_commit": "48eae8cc6755cae13db9145824c88e349b2291e4",
+    "native_r2_producer_root": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/public_capture_watchdog_r2/producer_capture",
+    "registration_builder_source_commit": "d493e16ac8237ad835b4459c419c4ae55b00f534",
+    "registration_capture_metadata_adapter": {
+      "bytes": 2159,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/setup/capture_registration_metadata_adapter_r2.json",
+      "sha256": "7d5da162328f6552dcb045009f46d03fb783b9d07104f3bd414b8896b6176b03"
+    },
+    "repackage_validation_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/setup/native_observation_port_r5_receipt.json",
+    "repackage_validation_status": "R5_CPU_NATIVE_TO_TRR10_PORT_PASS_NO_TRUTH",
+    "repackaging_source_commit": "95ab8cc159dfe5deaf9fafd992bfa4fde33afa1e",
+    "superseded_registration_capture_aliases": [
+      {
+        "bytes": 2535,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/public_capture_watchdog_r2/observations_v1/capture_registration.json",
+        "sha256": "035f741ba73e06eaeeb2e2dc70a24300bbec98b5882ec9e1babaa747dbfa6762"
+      }
+    ],
+    "unused_scratch_policy": "preserved for provenance only; not referenced by registration or prediction inputs",
+    "unused_scratch_r4_repackage_root": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/public_capture_watchdog_r4/observations_v1"
+  },
+  "records_by_domain": {
+    "finance": 128,
+    "pile": 128
+  },
+  "records_per_cell": 128,
+  "registration_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/registration_r5.json",
+  "resource_guard": {
+    "fresh_preflight_required": {
+      "continuous_runtime_check": false,
+      "disk_reservation_explanation": "20 GiB runtime floor plus the 5 GiB maximum guarded output reservation.",
+      "min_cuda_free_bytes": 11811160064,
+      "min_disk_free_bytes": 26843545600,
+      "min_host_available_bytes": 12884901888,
+      "sampled_before_launch": true
+    },
+    "outer_watchdog": {
+      "max_output_bytes": 5368709120,
+      "max_rss_bytes": 12884901888,
+      "max_seconds": 3600,
+      "min_available_bytes": 8589934592
+    },
+    "registered_inner": {
+      "directional_max_cuda_reserved_bytes": 10737418240,
+      "disk_check_scope": "runner checks disk-free floor at its registered method/record/cell boundaries during the whole matrix",
+      "fixed_and_a1_a2_max_cuda_reserved_bytes": 8589934592,
+      "max_output_bytes": 5368709120,
+      "max_rss_bytes": 12884901888,
+      "min_cuda_free_bytes": 2147483648,
+      "min_disk_free_bytes": 21474836480,
+      "min_host_available_bytes": 8589934592,
+      "whole_matrix_deadline_seconds": 3600
+    }
+  },
+  "schema": "token-reconstruction.trr0010-prediction-timing-plan.v1",
+  "selection": {
+    "bytes": 188063,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/source_selection.json",
+    "sha256": "7b6ae489a65615eeefcb2ac7a53b6d915b62675341fcedb51783b346c8bf3283"
+  },
+  "selection_binding": {
+    "bytes": 14515,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/source_selection_binding_r4.json",
+    "sha256": "2c22abf0f8e4a2ee173f7b321ff50d34a3c7c4ab90647534cecfced8563102c4"
+  },
+  "source_text_loaded": false,
+  "source_text_written": false,
+  "status": "FROZEN_TRR0010_PREDICTION_TIMING_PLAN_BEFORE_TRUTH",
+  "target_labels_loaded": false,
+  "task_id": "TRR-0010",
+  "token_ids_written": false,
+  "truth_opened": false,
+  "warmup_runs_per_record": 1
+}

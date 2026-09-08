@@ -1,0 +1,152 @@
+{
+  "schema": "token-reconstruction.trr0010-curator-score-execution-binding.v1",
+  "task_id": "TRR-0010",
+  "status": "CURATOR_AND_SCORE_COMPLETE_AFTER_PUBLIC_FREEZE",
+  "recorded_utc": "2026-09-08T00:55:30.135886+00:00",
+  "current_head": "d493e16ac8237ad835b4459c419c4ae55b00f534",
+  "user_authorization": {
+    "receipt": {
+      "path": "experiments/TRR-0010/setup/curator_authorization_receipt_r5.json",
+      "bytes": 924,
+      "sha256": "6107ee5fed6017733989e5b4626b682aab127a30a5e1ea3c428b0799937fe3fa"
+    },
+    "exact_reply": "Approved.",
+    "scope": "creating the curator adapter and opening the frozen panel\u2019s labels to score the existing predictions."
+  },
+  "environment": {
+    "python_executable": "/usr/bin/python3",
+    "python_version": "3.12.3",
+    "pythonpath_for_both_commands": ".:src:scripts",
+    "working_directory": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010",
+    "frozen_code_commit": "d493e16ac8237ad835b4459c419c4ae55b00f534"
+  },
+  "frozen_inputs": {
+    "public_freeze": {
+      "path": "experiments/TRR-0010/evaluation/public_prediction_watchdog_r5/public_freeze.json",
+      "bytes": 224655,
+      "sha256": "73e0fce672c27d7e8e1cb931f975029a9309dbd099f94f884661ccde95447d91"
+    },
+    "source_selection_wrapper": {
+      "path": "experiments/TRR-0010/evaluation/source_selection_binding_r4.json",
+      "bytes": 14515,
+      "sha256": "2c22abf0f8e4a2ee173f7b321ff50d34a3c7c4ab90647534cecfced8563102c4"
+    },
+    "source_selection_ledger": {
+      "path": "experiments/TRR-0010/evaluation/source_selection.json",
+      "bytes": 188063,
+      "sha256": "7b6ae489a65615eeefcb2ac7a53b6d915b62675341fcedb51783b346c8bf3283"
+    }
+  },
+  "adapter_phase": {
+    "source": {
+      "path": "experiments/TRR-0010/setup/trr0010_curator_adapter.py",
+      "bytes": 12842,
+      "sha256": "37348d30604b82404419f3585c3fd2ca20e61ed4cfbd6cd10264746245a2ca1f"
+    },
+    "full_argv": [
+      "experiments/TRR-0010/setup/trr0010_curator_adapter.py",
+      "prepare",
+      "--repository-root",
+      ".",
+      "--freeze",
+      "experiments/TRR-0010/evaluation/public_prediction_watchdog_r5/public_freeze.json",
+      "--truth-sidecar",
+      "/tmp/trr0010_final_truth_v1.safetensors",
+      "--descriptor",
+      "experiments/TRR-0010/evaluation/truth_descriptor_r5.json",
+      "--adapter-receipt",
+      "experiments/TRR-0010/evaluation/curator_adapter_receipt_r5.json",
+      "--approval-receipt",
+      "experiments/TRR-0010/setup/curator_authorization_receipt_r5.json",
+      "--require-current-head"
+    ],
+    "environment_prefix": [
+      "PYTHONPATH=.:src:scripts"
+    ],
+    "receipt": {
+      "path": "experiments/TRR-0010/evaluation/curator_adapter_receipt_r5.json",
+      "bytes": 3675,
+      "sha256": "45ace33863f55a1ec6753c4bbbfdb2fc1a0289f1e764c5a86b9b5afe3b7549e6"
+    },
+    "descriptor": {
+      "path": "experiments/TRR-0010/evaluation/truth_descriptor_r5.json",
+      "bytes": 6065,
+      "sha256": "97b49b269af119a4cda30c66bd9e94c7ee831775113d92c0e72389439929b81a"
+    },
+    "truth_sidecar": {
+      "path": "/tmp/trr0010_final_truth_v1.safetensors",
+      "bytes": 525192,
+      "sha256": "731a0458c019bd5bf398ee2743c8d6e3b854ac4add86005d007d2cf7a7b8c3a1"
+    },
+    "truth_opened": false,
+    "labels_materialized": true,
+    "phase_boundary_note": "truth_opened=false is the adapter-phase value; the score phase below opened the same validated sidecar after the public freeze.",
+    "receipt_filesystem_observed_utc": "2026-09-08T00:43:43.181395+00:00",
+    "descriptor_filesystem_observed_utc": "2026-09-08T00:43:43.181395+00:00"
+  },
+  "score_phase": {
+    "source": {
+      "path": "scripts/trr0010_score_cli.py",
+      "bytes": 12321,
+      "sha256": "af5d314e5b933c5714e1f36aa3498f75305a9d0b2021076e0ff9fc9fd7da406a"
+    },
+    "full_argv": [
+      "scripts/trr0010_score_cli.py",
+      "--repository-root",
+      ".",
+      "--freeze",
+      "experiments/TRR-0010/evaluation/public_prediction_watchdog_r5/public_freeze.json",
+      "--truth-descriptor",
+      "experiments/TRR-0010/evaluation/truth_descriptor_r5.json",
+      "--frequency-reference-b0",
+      "experiments/TRR-0010/evaluation/frequency_reference_B0.json",
+      "--frequency-reference-b1",
+      "experiments/TRR-0010/evaluation/frequency_reference_B1.json",
+      "--cost-evidence",
+      "experiments/TRR-0010/evaluation/cost_evidence_r5.json",
+      "--output",
+      "experiments/TRR-0010/evaluation/score_v1.json",
+      "--boundary-receipt",
+      "experiments/TRR-0010/evaluation/score_v1.boundary.json",
+      "--bootstrap-seed",
+      "10010",
+      "--bootstrap-draws",
+      "10000",
+      "--require-current-head",
+      "--execute"
+    ],
+    "environment_prefix": [
+      "PYTHONPATH=.:src:scripts"
+    ],
+    "score_artifact": {
+      "path": "experiments/TRR-0010/evaluation/score_v1.json",
+      "bytes": 988310,
+      "sha256": "69e70215c4da85957117a6cbb350b31bcba36f754ead026d05bb0d1157651c49"
+    },
+    "boundary_receipt": {
+      "path": "experiments/TRR-0010/evaluation/score_v1.boundary.json",
+      "bytes": 2096,
+      "sha256": "6b81861013d8c3bad8a76d629c43fc942f28d0a1b0189527279b5f34495e8d0d"
+    },
+    "truth_descriptor": {
+      "path": "experiments/TRR-0010/evaluation/truth_descriptor_r5.json",
+      "bytes": 6065,
+      "sha256": "97b49b269af119a4cda30c66bd9e94c7ee831775113d92c0e72389439929b81a"
+    },
+    "truth_sidecar": {
+      "path": "/tmp/trr0010_final_truth_v1.safetensors",
+      "bytes": 525192,
+      "sha256": "731a0458c019bd5bf398ee2743c8d6e3b854ac4add86005d007d2cf7a7b8c3a1"
+    },
+    "truth_opened": true,
+    "truth_loader_invocations": 1,
+    "score_filesystem_observed_utc": "2026-09-08T00:45:03.330466+00:00",
+    "boundary_filesystem_observed_utc": "2026-09-08T00:45:03.334456+00:00"
+  },
+  "integrity": {
+    "source_selection_or_model_or_rule_changed": false,
+    "score_artifact_rewritten": false,
+    "public_freeze_revalidated_before_truth": true,
+    "no_postscore_scientific_changes": true
+  }
+}

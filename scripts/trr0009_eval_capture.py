@@ -135,12 +135,35 @@ def load_selection(path: Path, *, repository_root: Path, expected_counts: Mappin
     return selection, selection_record, rows, counts
 
 
-def _capture_output(path: Path, *, root: Path) -> Path:
+def _capture_output(
+    path: Path,
+    *,
+    root: Path,
+    allowed_output_root: Path | None = None,
+) -> Path:
+    """Resolve a create-only producer output under an explicit task scope.
+
+    Legacy TRR-0009 callers retain their original task-local default.  The
+    TRR-0010 bridge must pass its own evaluation root explicitly; accepting
+    that one reviewed scope avoids copying producer artifacts into TRR-0009
+    while keeping arbitrary path escapes rejected.
+    """
     path = Path(path).expanduser()
     if not path.is_absolute():
         path = root / path
     path = path.resolve()
-    task_root = (root / "experiments" / contract.TASK_ID / "evaluation").resolve()
+    if allowed_output_root is None:
+        task_root = (root / "experiments" / contract.TASK_ID / "evaluation").resolve()
+    else:
+        task_root = Path(allowed_output_root).expanduser()
+        if not task_root.is_absolute():
+            task_root = root / task_root
+        task_root = task_root.resolve()
+        expected = (root / "experiments" / "TRR-0010" / "evaluation").resolve()
+        if task_root != expected:
+            raise CaptureError(
+                "explicit capture output scope must be the reviewed TRR-0010 evaluation root"
+            )
     try:
         path.relative_to(task_root)
     except ValueError as exc:
@@ -160,6 +183,7 @@ def save_observation(
     selection_sha256: str,
     record_ids_sha256: str,
     repository_root: Path,
+    allowed_output_root: Path | None = None,
 ) -> dict[str, Any]:
     root = _root(repository_root)
     if cell_id not in contract.CELL_ORDER:
@@ -181,7 +205,7 @@ def save_observation(
         raise CaptureError(f"{cell_id} position IDs changed")
     if not torch.isfinite(activation.float()).all().item():
         raise CaptureError(f"{cell_id} activation contains non-finite values")
-    path = _capture_output(path, root=root)
+    path = _capture_output(path, root=root, allowed_output_root=allowed_output_root)
     path.parent.mkdir(parents=True, exist_ok=True)
     save_file(
         {"activations": activation, "attention_mask": mask.to(torch.uint8), "position_ids": positions.to(torch.int64)},
@@ -392,6 +416,7 @@ def _capture_condition_with_producer(
     selection_sha256: str,
     repository_root: Path,
     device: torch.device,
+    allowed_output_root: Path | None = None,
 ) -> tuple[dict[str, dict[str, Any]], dict[str, Any]]:
     """Run the qualified TRR5/TRR6 public producer, then package its outputs.
 
@@ -454,6 +479,7 @@ def _capture_condition_with_producer(
                     selection_sha256=selection_sha256,
                     record_ids_sha256=record_ids_sha256[style],
                     repository_root=repository_root,
+                    allowed_output_root=allowed_output_root,
                 )
                 ceiling(
                     device,
@@ -508,7 +534,12 @@ def capture_public(args: argparse.Namespace) -> dict[str, Any]:
     root = _root(args.repository_root)
     selection_path = _resolve_path(args.selection, root=root)
     selection, selection_record, selected_rows, counts = load_selection(selection_path, repository_root=root)
-    output_root = _capture_output(args.output_root, root=root)
+    allowed_output_root = getattr(args, "allowed_output_root", None)
+    output_root = _capture_output(
+        args.output_root,
+        root=root,
+        allowed_output_root=Path(allowed_output_root) if allowed_output_root is not None else None,
+    )
     output_root.mkdir(parents=True)
     failure_path = output_root / "failure.json"
     started_utc = _utc_now()
@@ -549,6 +580,7 @@ def capture_public(args: argparse.Namespace) -> dict[str, Any]:
                 selection_sha256=selection_record["sha256"],
                 repository_root=root,
                 device=device,
+                allowed_output_root=allowed_output_root,
             )
             observations.update(current)
             conditions[condition] = receipt
@@ -621,6 +653,11 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--lora-config", type=Path)
     parser.add_argument("--lora-update", type=Path)
     parser.add_argument("--output-root", type=Path, default=Path("experiments/TRR-0009/evaluation/public_observations"))
+    parser.add_argument(
+        "--allowed-output-root",
+        type=Path,
+        help="explicit reviewed task evaluation root for a cross-task adapter invocation",
+    )
     parser.add_argument("--device", choices=("auto", "cpu", "cuda"), default="auto")
     return parser
 

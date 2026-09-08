@@ -1,0 +1,293 @@
+{
+  "bindings": {
+    "diagnostic_binding": {
+      "bytes": 130098,
+      "path": "/tmp/trr-p09/experiments/TRR-P09/setup/fixed-diagnostic-binding-r1.json",
+      "sha256": "8b899bc168b55570e4cfd526ff4e8656b70050e840386cba9390ad6adb1f54c3"
+    },
+    "model_loader_source": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/scripts/trr0010_model.py",
+      "sha256": "9eb38939ba0541f51ce7a964080a058c313081f7ef7b25e2b51f91bac92310db"
+    },
+    "production_binding": {
+      "bytes": 20359,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/setup/production_arm_binding_current_stage3_v3.json",
+      "sha256": "854e9f0cc84f6876b5164174e56b66436618406baaa39a7e77993d6500140bc7"
+    },
+    "provider_source": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/scripts/trr0010_production_provider.py",
+      "sha256": "c6544c694d2114ba25e38fcdabaf40ec2be068460123c30a2c3a2b14c84e6d51"
+    }
+  },
+  "checkpoint": {
+    "all_state_tensors_exact_after_load": true,
+    "base_decoder_tensor_count": 15,
+    "bytes": 170030316,
+    "delta_state_keys": [
+      "delta_rows",
+      "support_ids",
+      "support_counts",
+      "anchor_weights"
+    ],
+    "eval_after_load": true,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/training/directional_fit/current_directional_watchdog_r2/fit/checkpoints/checkpoint_step_000000.safetensors",
+    "selected_step": 0,
+    "sha256": "9740c7e0ef0e5ddef56cf671833f7c68f599ed3222901225aea000b4c6e0ca7b",
+    "strict_state_load": true
+  },
+  "command": [
+    "scripts/trr0010_validate_recovery_cpu.py",
+    "--checkpoint",
+    "experiments/TRR-0010/training/directional_fit/current_directional_watchdog_r2/fit/checkpoints/checkpoint_step_000000.safetensors",
+    "--raw-runner",
+    "experiments/TRR-0010/training/directional_fit/current_directional_watchdog_r2/fit/raw_runner_result.json",
+    "--binding",
+    "experiments/TRR-0010/setup/production_arm_binding_current_stage3_v3.json",
+    "--diagnostic-binding",
+    "/tmp/trr-p09/experiments/TRR-P09/setup/fixed-diagnostic-binding-r1.json",
+    "--output",
+    "experiments/TRR-0010/setup/current_directional_recovery_cpu_validation_v1.json",
+    "--max-seconds",
+    "900"
+  ],
+  "gpu_launched": false,
+  "provider_configuration_dry_run": {
+    "arm": {
+      "a2_helpers": {
+        "scripts/trr_p09/fixed_control_caller.py": {
+          "bytes": 43629,
+          "commit": "ebe05e88ddfebae0155fb016885c6c8938c32840",
+          "path": "/tmp/trr-p09/scripts/trr_p09/fixed_control_caller.py",
+          "sha256": "13410a03b825467479001fa97112ed05c9784b9ad64dd46880bcd8076de53f6b"
+        },
+        "scripts/trr_p09/fixed_control_cli.py": {
+          "bytes": 60492,
+          "commit": "e811207308518a2364785888ff39eb04d35e8c2f",
+          "path": "/tmp/trr-p09/scripts/trr_p09/fixed_control_cli.py",
+          "sha256": "707848724cff8bdaadbbd287cf61b2eafebf32bd9f40add7645e25bf2800234e"
+        },
+        "scripts/trr_p09/public_validation_loader.py": {
+          "bytes": 14230,
+          "commit": "ebe05e88ddfebae0155fb016885c6c8938c32840",
+          "path": "/tmp/trr-p09/scripts/trr_p09/public_validation_loader.py",
+          "sha256": "3705ff2a58d34512c7f30d9eb2657206fca3621eb9f6fb685b82c12ee008cd0f"
+        }
+      },
+      "a2_sources": {
+        "scripts/trr_p09/fixed_control_runner.py": {
+          "bytes": 41553,
+          "commit": "8398666cb8d0222e613c362eae33d77d972ab385",
+          "path": "/tmp/trr-p09/scripts/trr_p09/fixed_control_runner.py",
+          "sha256": "fde3db3c9655afca1678f3d2d0641fba5d4130a73fdb77cc2287a38b1741a98e"
+        },
+        "scripts/trr_p09/prepare_streamed_bank.py": {
+          "bytes": 67303,
+          "commit": "d03e63ecdf6e08e34d97528221ae3b7b03dffbc2",
+          "path": "/tmp/trr-p09/scripts/trr_p09/prepare_streamed_bank.py",
+          "sha256": "e76a27f94328648f8fe3da6c6fae48fffd27006b213f9b70b976bcb5f4077c4b"
+        },
+        "src/token_reconstruction/trr_p09_fixed_control_adapter.py": {
+          "bytes": 13376,
+          "commit": "0aee09c4abb8d65b6ed3a42dc8ae93789509a518",
+          "path": "/tmp/trr-p09/src/token_reconstruction/trr_p09_fixed_control_adapter.py",
+          "sha256": "aa6a8b21fcc03d55583e69940b722bc9a1e4f4caa05e888f7dab8bf02d3e1a41"
+        }
+      },
+      "arm_name": "current_directional",
+      "artifacts": {
+        "bank_manifest": {
+          "bytes": 5070,
+          "path": "/tmp/trr-p09/experiments/TRR-P09/setup/b0-immutable-loader-binding-r1.json",
+          "sha256": "7e6d7d3ac0ceec77f8b1e961a1a74b0675fd43e6ef3e4e77dcdd368d0c27445d"
+        },
+        "base_state": {
+          "bytes": 29390492,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/training/run_v1/continued_fixed_readout/selected.safetensors",
+          "sha256": "5cada4a3d04bb5477eaf0be25ed8d8ac25a89283223e9ba14b18fa10416bee14"
+        },
+        "contract": {
+          "bytes": 25643,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/planning/shared_stage3_contract_v1.json",
+          "sha256": "23e4bde4475082cc004e7ef787c22fed6301275ce2ff23a0396d975b439faf9d"
+        },
+        "fit_manifest": {
+          "bytes": 5070,
+          "path": "/tmp/trr-p09/experiments/TRR-P09/setup/b0-immutable-loader-binding-r1.json",
+          "sha256": "7e6d7d3ac0ceec77f8b1e961a1a74b0675fd43e6ef3e4e77dcdd368d0c27445d"
+        },
+        "public_embedding": {
+          "bytes": 1050673488,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+          "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+        },
+        "schedule": {
+          "bytes": 27053864,
+          "path": "/tmp/trr-p09-runtime/common-schedules-r1/schedule-b0-seed4010.safetensors",
+          "sha256": "ba53cd4bad54bc88670f346a7f959eb0ce5278ec28eac8bdf6463cd44936ec6f"
+        },
+        "support_counts": {
+          "bytes": 274352,
+          "path": "/tmp/trr-p09-runtime/public-support-r1/support-b0-seed4010.safetensors",
+          "sha256": "0673f9df86a591342ea931ec21ac30f680b8ab052d5e66555ca7d5011f6414ce"
+        },
+        "support_ids": {
+          "bytes": 274352,
+          "path": "/tmp/trr-p09-runtime/public-support-r1/support-b0-seed4010.safetensors",
+          "sha256": "0673f9df86a591342ea931ec21ac30f680b8ab052d5e66555ca7d5011f6414ce"
+        }
+      },
+      "bank_role": "B0",
+      "diagnostic": {
+        "bank_index_sha256": "2dba4fdb243f742496cc010985820205a6d36f8c29b7ed3058369322d181f907",
+        "bank_role": "B0",
+        "bytes": 130098,
+        "fit_record_count": 64,
+        "full_bank_endpoint_steps": [
+          0,
+          13000
+        ],
+        "path": "/tmp/trr-p09/experiments/TRR-P09/setup/fixed-diagnostic-binding-r1.json",
+        "schema": "token-reconstruction.trr-p09-fixed-diagnostic-binding.v1",
+        "selection_isolated": true,
+        "sha256": "8b899bc168b55570e4cfd526ff4e8656b70050e840386cba9390ad6adb1f54c3"
+      },
+      "model_allocated": false,
+      "resource_qualification": {
+        "measured": {
+          "gpu_peak_reserved_bytes": 7600078848,
+          "host_available_bytes": 18282762240,
+          "host_peak_rss_bytes": 4276609024
+        },
+        "production_caps": {
+          "disk_free_floor_bytes": 21474836480,
+          "gpu_free_floor_bytes": 2147483648,
+          "gpu_reserved_limit_bytes": 10737418240,
+          "host_available_floor_bytes": 8589934592,
+          "host_rss_limit_bytes": 12884901888,
+          "output_bytes_limit": 5368709120,
+          "wall_limit_seconds": 7200
+        },
+        "qualification_receipt": {
+          "bytes": 28147,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/training/qualification_v2/qualification.json",
+          "sha256": "58594a477733c2f1ce21d356ec9acead92de6001b2c31bd41f635213700bca66",
+          "status": "QUALIFICATION_PASS"
+        },
+        "resource_guard_receipt": {
+          "bytes": 17692,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/training/qualification_v2/resource_guard.json",
+          "sha256": "c14d22414ae4feac0f7c021d3278bb5fbfe5baa90c6d5eeb9e47b3f172042893",
+          "status": "PASS"
+        },
+        "status": "PASS"
+      },
+      "schedule": {
+        "contract_schedule_binding": {
+          "bytes": 27053864,
+          "path": "/tmp/trr-p09-runtime/common-schedules-r1/schedule-b0-seed4010.safetensors",
+          "seed": 4010,
+          "semantic_sha256": "9aaad9c030f2f9b801f91f956c97f858966580edd21229cebb350dcde358f2c3",
+          "sha256": "ba53cd4bad54bc88670f346a7f959eb0ce5278ec28eac8bdf6463cd44936ec6f",
+          "steps": 13000
+        },
+        "control_schedule_binding": {
+          "bytes": 27053864,
+          "exposure": {
+            "draws_per_step": 512,
+            "max_exposures_per_record_position": 89,
+            "repeated_record_position_pairs": 124371,
+            "total_draws": 6656000,
+            "unique_record_position_pairs": 124371,
+            "used_replacement_steps": 8
+          },
+          "path": "/tmp/trr-p09-runtime/common-schedules-r1/schedule-b0-seed4010.safetensors",
+          "seed": 4010,
+          "semantic_sha256": "9aaad9c030f2f9b801f91f956c97f858966580edd21229cebb350dcde358f2c3",
+          "serialized_tensor_keys": [
+            "batch_record_indices",
+            "draw_position_slots",
+            "draw_record_slots",
+            "used_replacement"
+          ],
+          "sha256": "ba53cd4bad54bc88670f346a7f959eb0ce5278ec28eac8bdf6463cd44936ec6f",
+          "status": "FROZEN",
+          "steps": 13000,
+          "valid_mask_semantic_sha256": "1cae0090d1eb80479c0e0e18529efba3de508eba4ad497d680bcb478072ed0a0"
+        },
+        "exposure": {
+          "draws_per_step": 512,
+          "max_exposures_per_record_position": 89,
+          "repeated_record_position_pairs": 124371,
+          "total_draws": 6656000,
+          "unique_record_position_pairs": 124371,
+          "used_replacement_steps": 8
+        },
+        "schedule_binding": {
+          "bytes": 27053864,
+          "path": "/tmp/trr-p09-runtime/common-schedules-r1/schedule-b0-seed4010.safetensors",
+          "semantic_sha256": "9aaad9c030f2f9b801f91f956c97f858966580edd21229cebb350dcde358f2c3",
+          "sha256": "ba53cd4bad54bc88670f346a7f959eb0ce5278ec28eac8bdf6463cd44936ec6f",
+          "status": "FROZEN",
+          "valid_mask_semantic_sha256": "1cae0090d1eb80479c0e0e18529efba3de508eba4ad497d680bcb478072ed0a0"
+        },
+        "seed": 4010,
+        "semantic_sha256": "9aaad9c030f2f9b801f91f956c97f858966580edd21229cebb350dcde358f2c3",
+        "steps": 13000
+      },
+      "settings": {
+        "base_learning_rate": 0.0002,
+        "directional_learning_rate": 0.0001,
+        "gradient_clip_norm": 1.0,
+        "hidden_size": 2048,
+        "position_budget": 512,
+        "record_batch_size": 8,
+        "selection_metric": "domain_balanced_token_accuracy",
+        "sequence_tokens": 192,
+        "steps": 13000,
+        "validation_every": 1000,
+        "validation_sequence_tokens": 128,
+        "vocabulary_size": 128256,
+        "weight_decay": 0.0
+      },
+      "support": {
+        "bank_role": "B0",
+        "post_bos_positions": 124371,
+        "support_count": 17126,
+        "support_digest": "f554d25681904530bf0f52752b50f92ae5da10b99998d06eb0cc30ed25fccd4d"
+      },
+      "truth_opened": false,
+      "updates": false,
+      "validation": {
+        "record_count": 384,
+        "sequence_tokens": 128
+      }
+    },
+    "model_allocated": false,
+    "status": "PASS_CONFIGURATION_DRY_RUN",
+    "truth_opened": false,
+    "updates": false
+  },
+  "recovery_lease_validation": {
+    "accepted_max_seconds": 900,
+    "disk_free_floor_bytes": 21474836480,
+    "gpu_free_floor_bytes": 2147483648,
+    "gpu_reserved_limit_bytes": 10737418240,
+    "host_available_floor_bytes": 8589934592,
+    "host_rss_limit_bytes": 12884901888,
+    "lease_claimed": false,
+    "production_signed_wall_limit_untouched": 7200
+  },
+  "schema": "token-reconstruction.trr0010-recovery-cpu-validation.v1",
+  "source_runner_receipt": {
+    "bytes": 62160,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/training/directional_fit/current_directional_watchdog_r2/fit/raw_runner_result.json",
+    "selected_state_sha256": "ac1e9d41f5058bbcf61fdab938e81e9e0818d759f49f0ebfd53cb91d2ef09ab7",
+    "selected_step": 0,
+    "sha256": "de89e05c2d93a7bd44b84fac8d70dea8a064722557e37869ea434c9f9f2019c7",
+    "status": "COMPLETED"
+  },
+  "status": "PASS_CPU_STATE_AND_CONFIGURATION",
+  "task_id": "TRR-0010",
+  "truth_opened": false,
+  "updates": false
+}

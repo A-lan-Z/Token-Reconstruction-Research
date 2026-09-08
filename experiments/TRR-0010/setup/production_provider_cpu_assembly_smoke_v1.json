@@ -1,0 +1,222 @@
+{
+  "approved_diagnostic_binding": {
+    "B0_index_sha256": "2dba4fdb243f742496cc010985820205a6d36f8c29b7ed3058369322d181f907",
+    "B1_index_sha256": "670624a8ef439fe11b250f1ba432d87922d6ff53da38ff8514203880237b6933",
+    "bytes": 130098,
+    "path": "/tmp/trr-p09/experiments/TRR-P09/setup/fixed-diagnostic-binding-r1.json",
+    "sha256": "8b899bc168b55570e4cfd526ff4e8656b70050e840386cba9390ad6adb1f54c3",
+    "truth_opened": false
+  },
+  "bindings": {
+    "current": {
+      "bytes": 12496,
+      "path": "experiments/TRR-0010/setup/production_provider_cpu_smoke_current.json",
+      "sha256": "6921bb4ddd46231399226dad38d629f40057c48a2b904729e62d457f210c7a75"
+    },
+    "expanded": {
+      "bytes": 12497,
+      "path": "experiments/TRR-0010/setup/production_provider_cpu_smoke_expanded.json",
+      "sha256": "949085592afaf3689a384fba3b2670b9ca86c64de3465369a446a5f9a754a3f2"
+    }
+  },
+  "code_commit_before_provider": "2712d8ac8551ee601d5248e8ebb0160c972e0ec1",
+  "commands": [
+    "PYTHONPATH=.:src:scripts OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python3 -m pytest -q tests/test_trr0010_directional_fit.py tests/test_trr0010_directional_fit_cli.py tests/test_trr0010_production_provider.py tests/test_trr0010_p09_caller.py tests/test_trr0010_p09_integration.py tests/test_trr0010_model.py",
+    "env PYTHONPATH=.:src:scripts OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 /usr/bin/time -v python3 /tmp/trr0010_prod_smoke/build_one.py --binding /tmp/trr0010_prod_smoke/current_directional.json --arm current_directional --role B0 --diagnostic /tmp/trr-p09/experiments/TRR-P09/setup/fixed-diagnostic-binding-r1.json",
+    "env PYTHONPATH=.:src:scripts OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 /usr/bin/time -v python3 /tmp/trr0010_prod_smoke/build_one.py --binding /tmp/trr0010_prod_smoke/expanded_directional.json --arm expanded_directional --role B1 --diagnostic /tmp/trr-p09/experiments/TRR-P09/setup/fixed-diagnostic-binding-r1.json",
+    "env PYTHONPATH=.:src:scripts OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python3 scripts/trr0010_directional_fit_cli.py --configuration-dry-run --provider trr0010_production_provider:build_inputs --binding-current experiments/TRR-0010/setup/production_arm_binding_current_stage3_v1.json --binding-expanded experiments/TRR-0010/setup/production_arm_binding_expanded_stage3_v1.json --diagnostic-binding /tmp/trr-p09/experiments/TRR-P09/setup/fixed-diagnostic-binding-r1.json --lease /tmp/trr0010_prod_smoke/lease.json --output-root /tmp/trr0010_prod_smoke/cli_stage3_dryrun_v1 --device cpu --deadline-seconds 30",
+    "env PYTHONPATH=.:src:scripts OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python3 scripts/trr0010_directional_fit_cli.py --configuration-dry-run --arm current_directional --provider trr0010_production_provider:build_inputs --binding-current experiments/TRR-0010/setup/production_arm_binding_current_stage3_v1.json --diagnostic-binding /tmp/trr-p09/experiments/TRR-P09/setup/fixed-diagnostic-binding-r1.json --lease /tmp/trr0010_prod_smoke/lease.json --output-root /tmp/trr0010_prod_smoke/cli_single_current_v1 --device cpu --deadline-seconds 30"
+  ],
+  "configuration_dry_run": {
+    "bytes": 16279,
+    "path": "experiments/TRR-0010/setup/production_provider_configuration_dryrun_v1.json",
+    "sha256": "7cb0f3b51741c1b2742cd1fdb1e49618b638540f6fe044c93a5b499e20d01047"
+  },
+  "configuration_dry_runs": {
+    "both_stage3": {
+      "bytes": 16568,
+      "path": "experiments/TRR-0010/setup/production_provider_configuration_dryrun_stage3_v1.json",
+      "sha256": "a782ae4b2487ce90503d7979a4afe8fc9f831b92f92c18baacb6828c20ffe8e5"
+    },
+    "single_current": {
+      "bytes": 8816,
+      "path": "experiments/TRR-0010/setup/production_provider_configuration_dryrun_single_current_v1.json",
+      "sha256": "bf3cf26f21f4dca544a0e346c93400a0cff4c5160af47d83ad0a98510d17e33a"
+    }
+  },
+  "current_source_commit_after_receipt": "dd5fca499c389451f196d317c5fd604a8c28fcc1",
+  "executed_file_bindings": {
+    "experiments/TRR-0010/setup/production_provider_cpu_assembly_build_one_v1.py": {
+      "bytes": 1464,
+      "path": "experiments/TRR-0010/setup/production_provider_cpu_assembly_build_one_v1.py",
+      "sha256": "a5e66d2856e29aea320f10e7521c034e7c9d4405d432f7cba35b788f1b12d067"
+    },
+    "scripts/trr0010_directional_fit.py": {
+      "bytes": 34978,
+      "commit": "ceef4e46e8f7ca6d6b7f2e4a3a4a0cf39f263548",
+      "path": "scripts/trr0010_directional_fit.py",
+      "sha256": "54d7d3e92f1cf64f3dc91e30399d24316aeb4dedf8fff88de4af780e59f9b165"
+    },
+    "scripts/trr0010_directional_fit_cli.py": {
+      "bytes": 13681,
+      "commit": "ceef4e46e8f7ca6d6b7f2e4a3a4a0cf39f263548",
+      "path": "scripts/trr0010_directional_fit_cli.py",
+      "sha256": "e0b0257b84286fe96413ca578bd38dafb92144f1cb48719c9c5f2d53bbf68de3"
+    },
+    "scripts/trr0010_production_provider.py": {
+      "bytes": 37401,
+      "commit": "ceef4e46e8f7ca6d6b7f2e4a3a4a0cf39f263548",
+      "path": "scripts/trr0010_production_provider.py",
+      "sha256": "c095667d24a3374bcc21ddb28e922582006d63a31fbfd4b4ee4478e7454a3a3b"
+    }
+  },
+  "execution_logs": {
+    "current_v4_stdout": {
+      "bytes": 589,
+      "path": "experiments/TRR-0010/setup/production_provider_cpu_assembly_current_v4.stdout",
+      "sha256": "dff5fc0ea2037eb4b251a0c727e550f8b391f370a321873ed2c7940ed323c602"
+    },
+    "current_v4_time": {
+      "bytes": 955,
+      "path": "experiments/TRR-0010/setup/production_provider_cpu_assembly_current_v4.time",
+      "sha256": "19e69c41948849ea7f55b5f32fa606834eca0181946ccf43458a9bda1243124c"
+    },
+    "expanded_v3_stdout": {
+      "bytes": 591,
+      "path": "experiments/TRR-0010/setup/production_provider_cpu_assembly_expanded_v3.stdout",
+      "sha256": "00e8a04229a13cc6d71e9b292c095010eccf7010a3d9e4d776914de1f82ef451"
+    },
+    "expanded_v3_time": {
+      "bytes": 961,
+      "path": "experiments/TRR-0010/setup/production_provider_cpu_assembly_expanded_v3.time",
+      "sha256": "2701ef3b80334612228fda3d0540ccc56670890354c6671b31e76610e3d4c977"
+    }
+  },
+  "failed_attempts": [
+    {
+      "arm": "current_directional",
+      "cause": "task-owned adapter lookup bug fixed before PASS retry",
+      "error": "KeyError: hidden_size",
+      "model_forward": false,
+      "stage": "provider_assembly",
+      "truth_opened": false
+    },
+    {
+      "attempt": "current_v2",
+      "binding_sha256": "7f30bfeab38b091a41f7e2034905ceb6734e938452522acaa7a41b1aa5bac665",
+      "error": "A2 helper scripts/trr_p09/fixed_control_cli.py changed after its binding",
+      "error_type": "ProviderError",
+      "source_commit": "84d53a6",
+      "stage": "helper_import",
+      "status": "FAILED_BEFORE_MODEL_FORWARD",
+      "truth_opened": false
+    },
+    {
+      "attempt": "current_v3",
+      "cause": "current qualification fixture pointed at B1 support artifact; corrected to verified B0 support artifact before PASS",
+      "error": "loaded B0 support vectors do not match the bank-specific contract count",
+      "error_type": "ProductionProviderError",
+      "stage": "support_binding",
+      "status": "FAILED_BEFORE_MODEL_FORWARD",
+      "truth_opened": false
+    }
+  ],
+  "recorded_unix_seconds": 1788788382.3213065,
+  "recorded_utc": "2026-09-07T14:44:42.528965+00:00",
+  "results": {
+    "current_directional": {
+      "attempt": "current_v4",
+      "bank_role": "B0",
+      "diagnostic_callback_constructed": true,
+      "elapsed_seconds": 7.694611457991414,
+      "full_bank_rows": 1200,
+      "max_rss_kb": 3384340,
+      "schedule_steps": 13000,
+      "selected_step": 400,
+      "starting_state_sha256": "5cada4a3d04bb5477eaf0be25ed8d8ac25a89283223e9ba14b18fa10416bee14",
+      "status": "PASS_PROVIDER_ASSEMBLY_CPU",
+      "support_count": 17126,
+      "support_digest": "f554d25681904530bf0f52752b50f92ae5da10b99998d06eb0cc30ed25fccd4d",
+      "system_seconds": 1.87,
+      "user_seconds": 7.01,
+      "wall_seconds": 9.14
+    },
+    "expanded_directional": {
+      "attempt": "expanded_v3",
+      "bank_role": "B1",
+      "diagnostic_callback_constructed": true,
+      "elapsed_seconds": 15.62914515598095,
+      "full_bank_rows": 12000,
+      "max_rss_kb": 3384288,
+      "schedule_steps": 13000,
+      "selected_step": 400,
+      "starting_state_sha256": "5cada4a3d04bb5477eaf0be25ed8d8ac25a89283223e9ba14b18fa10416bee14",
+      "status": "PASS_PROVIDER_ASSEMBLY_CPU",
+      "support_count": 45631,
+      "support_digest": "f91eaf39433496ba6fd36c5c5233e1d8abbaa2527ff7d75e7b304ec4df4fbd0e",
+      "system_seconds": 4.6,
+      "user_seconds": 11.43,
+      "wall_seconds": 17.12
+    }
+  },
+  "schema": "token-reconstruction.trr0010-production-provider-cpu-assembly.v2",
+  "scope": {
+    "configuration_dry_run": true,
+    "fit_started": false,
+    "gpu_started": false,
+    "model_forward": false,
+    "model_payload_loaded": true,
+    "optimizer_update": false,
+    "runner_started": false,
+    "selection": false,
+    "truth_opened": false
+  },
+  "signed_contract": {
+    "bytes": 25643,
+    "path": "experiments/TRR-0010/planning/shared_stage3_contract_v1.json",
+    "sha256": "23e4bde4475082cc004e7ef787c22fed6301275ce2ff23a0396d975b439faf9d",
+    "status": "FROZEN_STAGE3_AGREED"
+  },
+  "source_commit_at_success": "ceef4e46e8f7ca6d6b7f2e4a3a4a0cf39f263548",
+  "status": "PASS_CPU_PROVIDER_ASSEMBLY_NO_UPDATE",
+  "task_id": "TRR-0010",
+  "task_input_bindings": {
+    "current_qualification": {
+      "bytes": 12876,
+      "path": "experiments/TRR-0010/setup/production_provider_cpu_smoke_current.json",
+      "sha256": "a6834548701a75e33fef2257318ddb3ef9f28826a8b418b5329ec0ae35200b65"
+    },
+    "current_stage3": {
+      "bytes": 13205,
+      "path": "experiments/TRR-0010/setup/production_arm_binding_current_stage3_v1.json",
+      "sha256": "dda2847c3c3cf372b740e01598d8eb0c31d8be454d377b1153d8f4b13584ae53"
+    },
+    "expanded_qualification": {
+      "bytes": 12877,
+      "path": "experiments/TRR-0010/setup/production_provider_cpu_smoke_expanded.json",
+      "sha256": "435c762bf6ba2716de33cb656670078ccde16ae94cd6eeda20390a2017423489"
+    },
+    "expanded_stage3": {
+      "bytes": 13206,
+      "path": "experiments/TRR-0010/setup/production_arm_binding_expanded_stage3_v1.json",
+      "sha256": "8dc6ad2b67face67f1af3074d7071b255c0eb69f2a9c00e53bb4c80701361873"
+    }
+  },
+  "temporary_input_bindings": {
+    "current": {
+      "bytes": 12876,
+      "path": "/tmp/trr0010_prod_smoke/current_directional.json",
+      "sha256": "a6834548701a75e33fef2257318ddb3ef9f28826a8b418b5329ec0ae35200b65"
+    },
+    "diagnostic": {
+      "bytes": 130098,
+      "path": "/tmp/trr-p09/experiments/TRR-P09/setup/fixed-diagnostic-binding-r1.json",
+      "sha256": "8b899bc168b55570e4cfd526ff4e8656b70050e840386cba9390ad6adb1f54c3"
+    },
+    "expanded": {
+      "bytes": 12877,
+      "path": "/tmp/trr0010_prod_smoke/expanded_directional.json",
+      "sha256": "435c762bf6ba2716de33cb656670078ccde16ae94cd6eeda20390a2017423489"
+    }
+  }
+}
