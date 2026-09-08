@@ -3,7 +3,8 @@
   "task_id": "TRR-P11",
   "status": "PASS_OPAQUE_EXPORTS_READY_FOR_EXCLUSION_WORKER",
   "created_utc": "2026-09-08T08:52:08Z",
-  "purpose": "Provide hash-only H128/H129 identity exports for canonical exclusion-union integration. The exports contain no token IDs, source text, answers, truth, activations, or scores.",
+  "purpose": "Provide hash-only H128/H129 identity exports for canonical exclusion-union integration. The recovery read only historical public token_ids and attention_mask tensors to derive opaque hashes; the exports contain no serialized token IDs, source text, answers, truth, activations, or scores.",
+  "historical_public_token_mask_tensors_read_for_hashing": true,
   "recovery_program": {
     "path": "scripts/trr_p11/recover_public_token_payload.py",
     "bytes": 10095,
@@ -203,6 +204,7 @@
   "access_boundary": {
     "source_text_read": false,
     "source_text_serialized": false,
+    "historical_public_token_mask_tensors_read_for_hashing": true,
     "source_tokens_serialized": false,
     "token_values_emitted": false,
     "activations_read": false,
