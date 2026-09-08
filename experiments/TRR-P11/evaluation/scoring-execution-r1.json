@@ -1,0 +1,98 @@
+{
+  "accuracy_execution": {
+    "command": [
+      "/usr/bin/python3",
+      "outputs/TRR-P11/private-evaluation/evaluation/build_accuracy_summary_r1.py",
+      "--freeze",
+      "outputs/TRR-P11/private-evaluation/evaluation/freeze-r1.json",
+      "--truth",
+      "outputs/TRR-P11/private-evaluation/evaluation/truth-r1/truth_descriptor.json",
+      "--score",
+      "outputs/TRR-P11/private-evaluation/evaluation/score-r1.json",
+      "--output",
+      "outputs/TRR-P11/private-evaluation/evaluation/accuracy-summary-r1.json"
+    ],
+    "command_provenance": "Exact helper path and argument contract are preserved; no independent outer-launcher receipt was captured.",
+    "ended_utc": null,
+    "helper_bytes_identical": true,
+    "helper_private_original": {
+      "bytes": 5360,
+      "path": "outputs/TRR-P11/private-evaluation/evaluation/build_accuracy_summary_r1.py",
+      "sha256": "1684b3b7af14b09da089ea80a92f156aa803279ce0dc3add70e401ff59117ddc"
+    },
+    "helper_tracked_exact_copy": {
+      "bytes": 5360,
+      "path": "scripts/trr_p11/build_accuracy_summary_r1.py",
+      "sha256": "1684b3b7af14b09da089ea80a92f156aa803279ce0dc3add70e401ff59117ddc"
+    },
+    "output": {
+      "bytes": 54643,
+      "path": "outputs/TRR-P11/private-evaluation/evaluation/accuracy-summary-r1.json",
+      "sha256": "94a2262f4ae671d255ecfb53d584f17d3544b11280bfa9f455bdabe4246f92e3"
+    },
+    "registered_scorer": "bootstrap_token_delta with seed9009, draws10000, one-sided alpha0.025",
+    "started_utc": null,
+    "status": "DESCRIPTIVE_ACCURACY_INTERVALS_COMPLETE_AFTER_TRUTH",
+    "timing_status": "UNAVAILABLE_NOT_INDEPENDENTLY_INSTRUMENTED",
+    "wall_seconds": null
+  },
+  "created_utc": "2026-09-08T12:58:32.233987+00:00",
+  "implementation": {
+    "evaluator": {
+      "bytes": 112941,
+      "path": "scripts/trr_p11/evaluation.py",
+      "sha256": "77159b801e11e4fa9cf430bf0b8ec1a5c4205af150d080e32aeca59ba1042219",
+      "source_commit": "fc8c0a9"
+    },
+    "scorer": {
+      "bootstrap_draws": 10000,
+      "bootstrap_seed": 9009,
+      "functions": [
+        "paired_exact_cp",
+        "bootstrap_token_delta"
+      ],
+      "one_sided_alpha": 0.025,
+      "path": "scripts/trr_p11/scorer/trr0010_analysis.py",
+      "sha256": "90078ac78bfcdcfb5f782a598c943b78cb0417f6895906a1e6d61056a3793cef",
+      "source_commit": "70c57db7643913eea97cc606775b3f1f3807967a"
+    }
+  },
+  "no_fabricated_fields": [
+    "Accuracy start/end/wall were unavailable and are left null; no timing was inferred from file mtimes or tool latency."
+  ],
+  "schema": "token-reconstruction.trr-p11-scoring-execution.v1",
+  "score_execution": {
+    "api_call": [
+      "from scripts.trr_p11.evaluation import load_truth_after_freeze, score_after_truth",
+      "load_truth_after_freeze(freeze_path=\"outputs/TRR-P11/private-evaluation/evaluation/freeze-r1.json\", truth_descriptor_path=\"outputs/TRR-P11/private-evaluation/evaluation/truth-r1/truth_descriptor.json\", repository_root=\".\")",
+      "score_after_truth(freeze_path=\"outputs/TRR-P11/private-evaluation/evaluation/freeze-r1.json\", truth_descriptor_path=\"outputs/TRR-P11/private-evaluation/evaluation/truth-r1/truth_descriptor.json\", output_path=\"outputs/TRR-P11/private-evaluation/evaluation/score-r1.json\", repository_root=\".\")"
+    ],
+    "ended_utc": "2026-09-08T12:29:53.132330+00:00",
+    "outer_shell_command_receipt": "UNAVAILABLE; persisted API call above is the exact registered invocation.",
+    "output": {
+      "bytes": 876155,
+      "path": "outputs/TRR-P11/private-evaluation/evaluation/score-r1.json",
+      "sha256": "9f251d0a9fffddc0024c59f61cfaac85dbf83f1de9d0d7931e7fa24a9a1dd26d"
+    },
+    "started_utc": "2026-09-08T12:29:45.055659+00:00",
+    "status": "SCORE_COMPLETE_AFTER_TRUTH",
+    "wall_seconds": 8.076651573181152
+  },
+  "status": "SCORE_AND_ACCURACY_RECEIPTS_PRESERVED",
+  "task_id": "TRR-P11",
+  "truth_boundary": {
+    "inference_rerun_for_receipt": false,
+    "p03_holdout_accessed": false,
+    "prediction_freeze": {
+      "bytes": 264659,
+      "path": "outputs/TRR-P11/private-evaluation/evaluation/freeze-r1.json",
+      "sha256": "1b27af8ca3c395187a68ce548cd60e3b812a5b3353c7c5d38795c36b318d481b"
+    },
+    "truth_descriptor": {
+      "bytes": 46072,
+      "path": "outputs/TRR-P11/private-evaluation/evaluation/truth-r1/truth_descriptor.json",
+      "sha256": "d72f01744ee30e8a41a328334b98c43dcd5fefdc5998a11e1710b63b90d73b9f"
+    },
+    "truth_opened_after_freeze": true
+  }
+}
