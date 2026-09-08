@@ -6,7 +6,9 @@ Detailed installed dependency versions and actual archive hashes are in
 in `evidence/clean_restore.json`. Python, OS libraries and GPU drivers remain
 external runtime requirements. The global repository pyproject is unchanged.
 
-All commands run from this worktree, with:
+For the original CPU results, use their recorded phase commits (primary `8117c0668c075fd1537fc411f51270ef75bad691`); the current loader intentionally corrects rotary precision and will not reproduce legacy CPU observations. For the corrected GPU supplement, use `ae5275561a6dd74c7e07ecbe93f26648c887c693`.
+
+All commands run from the chosen checkout, with:
 
 ```sh
 export OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 PYTHONPATH=src
@@ -72,3 +74,12 @@ The initial closure archive remains intact. The supplement includes the actual
 installed runtime module omitted from OS dependency metadata; the final child
 uses Python `-S` and only restored package paths, then reproduces a prefix output.
 Both actual archives and their failed-attempt history are retained.
+
+## Retrospective GPU supplement
+
+GPU execution requires a coordinated lease. The executed command sequence is
+`evidence/gpu_supplement_summary.json` → `commands`; run in that order, in a fresh
+output root. Source bytes are in `gpu_retrospective_sources.json`. Source truth
+is already opened; repeats remain retrospective. Both runs preserve the frozen
+Adam settings and native A1+A2 rule. The legacy and corrected independent public
+loader probes are retained; do not overwrite the legacy probe with current code.

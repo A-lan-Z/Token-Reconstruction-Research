@@ -28,7 +28,7 @@ proposal with stable tie ordering, first256 candidates, and native cached
 _candidate_hidden execution. It uses direct cosine, its own committed prefix,
 and no early exit/abstention. Short unpadded rows and record batch1 adapt the
 geometry. A synthetic public fixture produced identical ordered candidates
-and outputs to native decode_policy. Model precision and SDPA are preserved.
+and outputs to native decode_policy. SDPA is preserved. The original CPU loader rounded the nonpersistent rotary frequencies to BF16; the GPU supplement corrects them to native FP32. Original CPU results are labeled rounded-RoPE ports.
 
 Reconstruction wall includes raw vocabulary-scoring setup, candidate execution,
 backward computation, discrete scoring, prefix reconstruction/cache commit,
@@ -47,3 +47,8 @@ reconstructed prefix or surrogate mismatch.
 The global dual benchmark matrix is NOT RUN. This task is locally registered
 and obeys the packet's explicit ban on global-registry changes. No comparison-
 complete or state-of-the-art claim is made.
+
+The corrected GPU supplement reuses two already scored clips and is retrospective.
+Both its prediction sets were frozen before its new score process. Its separate
+summary records the loader correction and forbids attributing the joint backend/
+precision change to either factor alone.

@@ -1,8 +1,8 @@
 # Agent 4 — Prefix-only inversion pilot
 
 1. **Can reconstruction remove the fitted token guesser?** It can recover tokens, but the frozen pilot recovered 80/90 post-BOS tokens and 1/6 complete matched-model clips. No A1/B0/B1 or external language model entered the primary solver.
-2. **Matching or recovered weights?** Matching public-prefix results are measured below. Static Vikhr mismatch recovered 29/30 tokens. **No legitimately recovered prefix was available or tested.** Static mismatch is not a recovery result.
-3. **Is cost competitive?** Matched CPU reconstruction took 79.82× the native-policy A1+A2 comparator on the same inputs. These are two-thread CPU measurements; GPU performance was not measured. The quality/cost target was >=95% tokens, >=50% complete clips, and <=2× comparator wall.
+2. **Matching or recovered weights?** The original CPU results use matching rounded-RoPE ports; a corrected GPU subset is reported separately below. Static Vikhr mismatch recovered 29/30 tokens. **No legitimately recovered prefix was available or tested.** Static mismatch is not a recovery result.
+3. **Is cost competitive?** Matched CPU reconstruction took 79.82× the native-policy A1+A2 comparator on the same inputs. These are two-thread CPU measurements. A later corrected GPU subset took 5.82× the comparator wall. The quality/cost target was >=95% tokens, >=50% complete clips, and <=2× comparator wall.
 4. **Was cold-start tracking demonstrated?** No. This is independent token search using a supplied public prefix, with no model-prefix recovery updates and no tracking sequence. Historical A1 fitting is a comparator preparation cost not remeasured here.
 5. **Recommendation:** **Stop the tested bounded variant.** One justified optimizer correction was already tested. These results do not show information loss or rule out other inversion algorithms.
 
@@ -16,9 +16,9 @@ The one corrective variant uses Adam (learning rate 0.01), a float32 provisional
 
 The source model is public Llama-3.2-1B-Instruct revision `9213176726f574b556790deb65791e0c5aa438b6`; boundary is after blocks 0–3. Forward input embeddings retain their original magnitudes. Full own-prefix recomputation avoids candidate-cache mutation but adds repeated computation. A1+A2 uses its native cached candidate helper and stable top 512 proposal, first 256 candidates, direct cosine and own prior commitments. Its CPU geometry port passed ordered-candidate and prediction equivalence against native `decode_policy` on a public fixture.
 
-## Frozen final measurements
+## Original CPU measurements — rounded-RoPE port
 
-Four public-domain ordinary-text clips and two generated identifier clips, each 16 positions including BOS, were selected after settings freeze. They are unused within this task; this is not a canonical or repository-wide fresh benchmark. All 90 post-BOS tokens remain in the matched denominator. BF16 capture and reconstruction ran on AMD Ryzen 9 9950X3D with two CPU threads. The GPU remained leased to Agent 2; this pilot did not use it.
+Four public-domain ordinary-text clips and two generated identifier clips, each 16 positions including BOS, were selected after settings freeze. They are unused within this task; this is not a canonical or repository-wide fresh benchmark. All 90 post-BOS tokens remain in the matched denominator. BF16 capture and reconstruction ran on AMD Ryzen 9 9950X3D with two CPU threads. During this original phase, the GPU remained leased to Agent 2. The later GPU supplement is separate.
 
 | Method / observations | Tokens | Complete clips | Total reconstruction s | Median / p95 clip s | Candidate checks | Gradients | Vocabulary scans |
 |---|---:|---:|---:|---:|---:|---:|---:|
@@ -83,11 +83,30 @@ The common warm-up was one public forward pass. Backward/optimizer initializatio
 | Prefix-only / static | 0.05 | 438.73 | 3.762 |
 | A1+A2 / static | 0.59 | 5.85 | 3.286 |
 
-Whole-process wall includes loading and JSON I/O. All GPU peak allocations for this task are zero because reconstruction used CPU. No online prefix-maintenance cost was incurred.
+Whole-process wall includes loading and JSON I/O. GPU allocations were zero for these original CPU phases; measured GPU peaks for the supplement appear below. No online prefix-maintenance cost was incurred.
+
+## Corrected GPU supplement — retrospective
+
+After Agent 2 released the GPU, a public synthetic loader check found that the original whole-module BF16 conversion had also rounded the nonpersistent rotary `inv_freq` buffer. Learned weights were exact, but the 16-token output differed from an independently loaded public checkpoint by MSE 8.4363e-7. **The CPU tables above are matching rounded-RoPE ports, not exact native public-prefix executions.** The static comparison also includes this source-loader deviation. Original observations, traces and results are preserved.
+
+Commit `ae5275561a6dd74c7e07ecbe93f26648c887c693` recreates rotary frequencies in native FP32 after moving learned parameters. The corrected CPU fixture exactly matches the independent public checkpoint (zero boundary MSE); GPU full discrete/continuous execution and independent asset restore checks pass. These are bounded fixture checks, not proof of equivalence for every input. The Adam search, random seed, 128-step budget and allclose tolerances are unchanged.
+
+The GPU component check reuses the first ordinary and first stress clips, the same pair already used for static mismatch. Their truth had been opened in the CPU phase, so this is **retrospective**, despite freezing both new prediction sets before the new scorer ran. Both GPU methods use identical newly captured observations. Hardware is one RTX 5080 with 16 GiB VRAM.
+
+| Method | Tokens | Complete clips | Reconstruction s | Median / p95 clip s | Checks | Gradients / scans | Peak reserved GiB |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Prefix-only Adam | 29/30 | 1/2 | 9.824 | 4.912 / 6.453 | 1028 | 1001 / 1001 | 2.928 |
+| A1+A2 K256 | 30/30 | 2/2 | 1.688 | 0.844 / 0.927 | 7680 | 0 / 30 | 2.932 |
+
+The ordinary clip is 15/15; stress is 14/15 for the primary method. It discovers 29/30 genuine tokens and never selects incorrectly after discovery. Three tokens exhaust the budget, versus 29/30 on the original CPU matching subset; there are no timeouts or abstentions. Quality meets the predeclared thresholds on this two-clip subset, but the 5.82× runtime ratio misses the <=2× cost target. This is too small and already opened to establish a general performance claim. The GPU/backend and loader both changed, so these measurements do not isolate a hardware speedup or the effect of rotary precision.
+
+Primary/comparator load times are 0.415/0.441s and whole-process times are 10.657/2.559s. Peak allocated GPU memory is 2.917/1.994 GiB. Guards passed with a 6 GiB reserved-memory cap, >=2 GiB free GPU margin and >=8 GiB available host memory. Prior 128-position FP32/BF16 forward/backward qualification passed with <=2.01 GiB reserved; the native comparator fixture passed ordered-candidate and prediction equivalence. The GPU was explicitly released at 16:31:34 UTC on September 8, 2026. Exact commands, timings, peaks and hashes are in `gpu_supplement_summary.json`, prediction freezes and watchdog receipts.
+
+The recommendation remains to stop this tested bounded variant. The GPU result narrows the CPU-only limitation but establishes neither recovered-prefix effectiveness nor cold-start tracking, and does not repair the absent canonical matrix.
 
 ## Stages 2 and 3 limitations
 
-A two-record static fallback uses the existing [Vikhr descendant](https://huggingface.co/Vikhrmodels/Vikhr-Llama-3.2-1B-Instruct/tree/7fa9d06a59246629244cdd3b6b92e4fc756baa0f), cast from its published fp16 weights to BF16 for capture. Tokenizer vocabulary identity and exact target restore were checked by the evaluator. Only the evaluator loads these target weights. Both reconstruction methods still use the untouched public Llama approximation. No target adapter was supplied as a recovery model, and no target was newly trained. The target is a public checkpoint intentionally withheld from the reconstruction code path; it is not cryptographically inaccessible to the shared Unix account.
+A two-record static fallback uses the existing [Vikhr descendant](https://huggingface.co/Vikhrmodels/Vikhr-Llama-3.2-1B-Instruct/tree/7fa9d06a59246629244cdd3b6b92e4fc756baa0f), cast from its published fp16 weights to BF16 for capture. Tokenizer vocabulary identity and exact target restore were checked by the evaluator. Only the evaluator loads these target weights. Both reconstruction methods use the public Llama learned weights with the legacy rounded-RoPE loader. No target adapter was supplied as a recovery model, and no target was newly trained. The target is a public checkpoint intentionally withheld from the reconstruction code path; it is not cryptographically inaccessible to the shared Unix account.
 
 No validated online model-prefix recovery implementation/state was located in the pinned resources. Agent 2 was asked for qualified assets and provenance; no such recovery state was integrated. Consequently, the required public-versus-recovered comparison and own-history closed-loop Stage3 were not run. No cold-start tracking claim is made.
 
