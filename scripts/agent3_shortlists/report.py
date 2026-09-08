@@ -1,6 +1,7 @@
 """Render already-scored Stage1 evidence; never changes reconstructions."""
 from __future__ import annotations
 import argparse
+import csv
 import json
 from pathlib import Path
 from scripts.agent3_shortlists.core import BUDGETS, binding, write_json
@@ -34,17 +35,24 @@ def main(a):
     comparable=[c for c in r['contrasts'] if c['method']=='b1' and c['k'] in (8,16,32) and c['reference']==f"a1_stage{c['stage']}_k{c['k']}"]
     deltas=[c['token_delta']['estimate']*100 for c in comparable]
     lines.append(f"Across the named cells and small budgets, B1 minus historical A1 token recall ranged from {min(deltas):+.3f} to {max(deltas):+.3f} percentage points. The complete separate comparisons are in the structured result; no cross-snapshot pooled score is used.")
-    lines+=['',
-            '## Complete shortlist matrix','',
-            'Each domain has32 unique paired records and4,064 scored positions per snapshot. Repeated target observations are not additional independent sources. K64/K256 are diagnostics; each budget is a nested slice of the same full-vocabulary ranking.','',
-            '| Domain | Stage | Proposer | K | Included / scored | Omitted | Complete clips | Recall on top1-wrong positions |',
-            '|---|---:|---|---:|---:|---:|---:|---:|']
+    csv_path=Path(a.results).with_name('shortlist-metrics.csv')
+    with csv_path.open('x',newline='') as stream:
+        writer=csv.writer(stream)
+        writer.writerow(['domain','stage','method','k','records','scored_tokens','included_tokens','omitted_tokens','recall','recall_ci_low','recall_ci_high','complete_clips','clip_coverage','clip_ci_low','clip_ci_high','top1_wrong_tokens','rescued_top1_wrong_tokens','recall_among_top1_wrong'])
+        for (domain,stage,method),budgets in sorted(cells.items()):
+            for k,c in budgets.items():
+                writer.writerow([domain,stage,method,k,c['records'],c['scored_tokens'],c['included_tokens'],c['omitted_tokens'],c['token_recall']['estimate'],*c['token_recall']['paired_source_bootstrap_95'],c['complete_clips'],c['clip_coverage']['estimate'],*c['clip_coverage']['paired_source_bootstrap_95'],c['top1_wrong_tokens'],c['rescued_top1_wrong_tokens'],c['recall_among_top1_wrong']])
+    lines+=['','## Complete shortlist matrix','',
+            'Each domain has 32 unique paired records and 4,064 scored positions per snapshot. The entries below use K = 1 / 8 / 16 / 32 / 64 / 256 in that order. All omission counts, conditional rescue rates and uncertainty intervals are retained in `shortlist-metrics.csv` beside the structured results.','',
+            '| Domain | Stage | Proposer | Token recall (%) at the six budgets | Complete clips out of 32 at the six budgets |',
+            '|---|---:|---|---|---|']
     for domain in ('pile','finance'):
         for stage in (0,64,128,256):
             for method in ('b1','a1'):
-                for k in BUDGETS:
-                    c=cells[domain,stage,method][k];q=c['recall_among_top1_wrong']
-                    lines.append(f"| {domain} | {stage} | {method} | {k} | {c['included_tokens']}/{c['scored_tokens']} | {c['omitted_tokens']} | {c['complete_clips']}/32 | {percent(q) if q is not None else 'undefined (no top1 errors)'} |")
+                c=cells[domain,stage,method]
+                recalls=' / '.join(f"{100*c[k]['token_recall']['estimate']:.3f}" for k in BUDGETS)
+                clips=' / '.join(str(c[k]['complete_clips']) for k in BUDGETS)
+                lines.append(f"| {domain} | {stage} | {method} | {recalls} | {clips} |")
     lines+=['','## Source-level uncertainty and paired effects','',
             'The structured result retains every per-record rank (right-censored beyond256), omission count, paired B1-minus-A1 comparison, and change from stages0 and64. Intervals resample source records jointly with10,000 draws and seed9013. Each domain/stage is reported separately.','',
             'With32 records, even zero records losing candidate inclusion gives a one-sided95% exact upper bound of approximately8.94% on the population probability of any loss in a record. A zero-width bootstrap interval at zero observed losses is not evidence of equivalence. This modest pilot can identify clear omissions; it cannot establish very tight whole-clip noninferiority.','',
