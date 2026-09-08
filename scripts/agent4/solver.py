@@ -13,6 +13,7 @@ class Settings:
     token_seconds: float = 30.0
     record_seconds: float = 600.0
     seed: int = 4401
+    optimizer: str = "sgd"
 
 
 def continuous_forward(prefix, hidden):
@@ -53,6 +54,7 @@ def reconstruct(prefix, observation, settings=Settings(), bos=128000, guard=None
         committed = table[torch.tensor(tokens,device=device)].detach().unsqueeze(0)
         initial = int(torch.randint(len(table),(1,),generator=generator).item())
         z = table[initial].float().clone().requires_grad_()
+        optimizer = torch.optim.Adam([z], lr=settings.learning_rate) if settings.optimizer == "adam" else None
         candidate = initial
         tried = torch.zeros(len(table),device=device,dtype=torch.bool)
         checks, gradient_norms, losses = [], [], []
@@ -84,11 +86,16 @@ def reconstruct(prefix, observation, settings=Settings(), bos=128000, guard=None
             with torch.no_grad():
                 gradient = gradient / gradient.norm().clamp(min=1)
                 lr = settings.learning_rate * max(.01,1-.99*step/settings.snap_every)
-                z -= lr*gradient
+                if optimizer is None:
+                    z -= lr*gradient
+                else:
+                    z.grad=gradient
+                    optimizer.step()
+                    optimizer.zero_grad(set_to_none=True)
                 distances=norms-2*(scoring@z)+z.square().sum()
                 distances.masked_fill_(tried,float('inf'))
                 candidate=int(distances.argmin()); scans+=1
-                if (step+1)%settings.snap_every==0:
+                if optimizer is None and (step+1)%settings.snap_every==0:
                     z.copy_(table[candidate]); snaps+=1
         tokens.append(best_id)
         sync(device)
