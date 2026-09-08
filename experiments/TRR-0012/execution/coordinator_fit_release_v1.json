@@ -1,0 +1,57 @@
+{
+  "schema": "token-reconstruction.trr0012-coordinator-fit-release.v1",
+  "task_id": "TRR-0012",
+  "status": "AUTHORIZED",
+  "created_utc": "2026-09-08T06:51:26.053769+00:00",
+  "substantive_fit": true,
+  "paid_compute": false,
+  "evaluation_truth_access": false,
+  "shared_contract_sha256": "bd7028b8723bad66409f5f56f8783561efc569ac8bfdb34f0eb549799854ffb6",
+  "capture_manifest_sha256": "8265df60998fd23a11db560de661e65d972aa8823df09101303f4bab44732c7c",
+  "scope": "One B0/B1 replication pair using published native P09 fixed_control_cli, plus bounded discarded-update resource qualification. No fitting retry to recover old scores.",
+  "preconditions": [
+    "Native configuration dry-run passes against actual recovered bank, schedules and public validation.",
+    "Actual source and task-launcher hashes are frozen and rechecked immediately before each child launch.",
+    "Fresh live preflight confirms no conflicting numerical job, at least8GiB host available,2GiB GPU free and20GiB disk free.",
+    "A representative full-width B8x192,512 sampled positions/full-vocabulary CE training and B8x128 validation qualification passes within limits, with updates discarded and original common start reloaded for each real arm.",
+    "All seven checkpoint paths are persistent and create-only; original selection uses public development data only."
+  ],
+  "qualification_limits": {
+    "maximum_discarded_updates": 8,
+    "timeout_seconds": 300,
+    "maximum_group_rss_bytes": 12884901888,
+    "maximum_gpu_reserved_bytes": 8589934592,
+    "minimum_host_available_bytes": 8589934592,
+    "minimum_gpu_free_bytes": 2147483648,
+    "maximum_output_bytes": 2147483648
+  },
+  "pair_limits": {
+    "runs": {
+      "B0": 1,
+      "B1": 1
+    },
+    "updates_per_arm": 13000,
+    "checkpoint_grid": [
+      0,
+      1000,
+      2000,
+      4000,
+      8000,
+      12000,
+      13000
+    ],
+    "seed": 4010,
+    "timeout_seconds_per_arm": 7200,
+    "maximum_group_rss_bytes": 12884901888,
+    "maximum_gpu_reserved_bytes": 8589934592,
+    "minimum_host_available_bytes": 8589934592,
+    "minimum_gpu_free_bytes": 2147483648,
+    "minimum_disk_free_bytes": 21474836480,
+    "maximum_output_bytes_per_arm": 5368709120
+  },
+  "delegated_execution": "Fit worker may finalize native receipt metadata, run bounded qualification after static checks, and release the single pair if every precondition passes. No additional user or coordinator permission is needed. Preserve and report any failed attempt; stop and reassess on numerical/resource anomaly.",
+  "non_claims": [
+    "No claim of equivalence to missing selected states.",
+    "No independent evaluation until actual durable backup and Agent2 restore pass."
+  ]
+}
