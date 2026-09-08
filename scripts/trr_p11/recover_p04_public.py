@@ -12,10 +12,13 @@ import time
 from datasets import Dataset
 from transformers import AutoTokenizer
 
-ROOT = Path('/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P11')
-SELECTION = Path('/tmp/trr_p11_p04_public_selection_r2.json')
-OUTPUT = ROOT / 'experiments/TRR-P11/exclusions/p04_h128_recovery_r2.json'
-IDENTITY_OUTPUT = ROOT / 'experiments/TRR-P11/exclusions/p04_h128_identity_rows_r1.json'
+ROOT = Path(__file__).resolve().parents[2]
+SELECTION = ROOT / 'experiments/TRR-P11/exclusions/p04_public_selection_r2.json'
+SELECTION_EXPECTED_SHA256 = '05f941e0dbcf29ea3efc47c7bc8abb3a7146a266eeea770f05052bb7728cde6a'
+OUTPUT = ROOT / 'experiments/TRR-P11/exclusions/p04_h128_recovery_r3.json'
+IDENTITY_OUTPUT = ROOT / 'experiments/TRR-P11/exclusions/p04_h128_identity_rows_r2.json'
+ALPACA_HELPER = ROOT / 'src/token_reconstruction/alpaca_split.py'
+ALPACA_HELPER_EXPECTED_SHA256 = 'fa9a15fd4cf92ffa06be3bd77888324536180e8a2fdc2c43ae14f20e470a3626a'
 SCRIPT_PATH = Path(__file__).resolve()
 TOKENIZER_PATH = Path('/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6')
 BOS = 128000
@@ -120,6 +123,12 @@ def main():
     meminfo = {line.split(':',1)[0]: int(line.split()[1])*1024 for line in Path('/proc/meminfo').read_text().splitlines() if ':' in line}
     available = meminfo.get('MemAvailable', 0)
     if available < MIN_FREE_BYTES: raise RuntimeError(f'host free memory {available} below required {MIN_FREE_BYTES}')
+    if not SELECTION.is_file() or SELECTION.is_symlink(): raise RuntimeError(f'P04 selection metadata is unavailable: {SELECTION}')
+    selection_sha = sha_file(SELECTION)
+    if selection_sha != SELECTION_EXPECTED_SHA256: raise RuntimeError(f'P04 selection metadata changed: {SELECTION}')
+    if not ALPACA_HELPER.is_file() or ALPACA_HELPER.is_symlink(): raise RuntimeError(f'Alpaca helper is unavailable: {ALPACA_HELPER}')
+    alpaca_helper_sha = sha_file(ALPACA_HELPER)
+    if alpaca_helper_sha != ALPACA_HELPER_EXPECTED_SHA256: raise RuntimeError(f'Alpaca helper changed: {ALPACA_HELPER}')
     selection = json.loads(SELECTION.read_text())
     expected_rows = [r for pool in ('correction','validation','fresh_evaluation') for r in selection['pools'][pool]['records']]
     if len(expected_rows) != 520 or len({r['record_id'] for r in expected_rows}) != 520: raise RuntimeError('P04 selection rows are not 520 unique records')
@@ -192,10 +201,10 @@ def main():
       'schema':'token-reconstruction.trr-p11-p04-h128-recovery.v1','task_id':'TRR-P11','status':status,
       'started_utc':started.isoformat(),'ended_utc':ended.isoformat(),'elapsed_seconds':time.monotonic()-t0,
       'resource':{'max_rss_kb':child.ru_maxrss,'max_rss_bytes':child.ru_maxrss*1024,'max_rss_limit_bytes':MAX_RSS_BYTES,'host_available_bytes_at_start':available,'host_minimum_bytes':MIN_FREE_BYTES,'threads':1,'timeout_seconds':180,'gpu_used':False,'model_loaded':False},
-      'source_code':{'prepare_panel_commit':'f423ef596a718a7c8a8480e6211295b97bdfd806','prepare_panel_sha256':'26c003fc37a80c549ca04ebbf0dd629ae09026fad5f4afc21af0adcca72db97f','alpaca_helper_sha256':sha_file(Path('/tmp/trr_p11_p04_alpaca_split.py')),'recovery_script_path':str(SCRIPT_PATH),'recovery_script_sha256':sha_file(SCRIPT_PATH)},
+      'source_code':{'prepare_panel_commit':'f423ef596a718a7c8a8480e6211295b97bdfd806','prepare_panel_sha256':'26c003fc37a80c549ca04ebbf0dd629ae09026fad5f4afc21af0adcca72db97f','alpaca_helper_path':str(ALPACA_HELPER.relative_to(ROOT)),'alpaca_helper_sha256':alpaca_helper_sha,'alpaca_helper_expected_sha256':ALPACA_HELPER_EXPECTED_SHA256,'recovery_script_path':str(SCRIPT_PATH),'recovery_script_sha256':sha_file(SCRIPT_PATH)},
       'tokenizer':{'snapshot':str(TOKENIZER_PATH),'revision':'9213176726f574b556790deb65791e0c5aa438b6','bos_token_id':BOS,'alpaca_date_string':ALPACA_DATE,'finance_date_string':'06 Aug 2026'},
       'assets':asset_checks,
-      'selection':{'source_path':'experiments/TRR-P04/setup/public_selection-r2.json','source_sha256':sha_file(SELECTION),'rows_expected':520,'rows_validated':validated,'unique_selected_records':len(expected_by_key),'pools':{'correction':256,'validation':192,'fresh_evaluation':72}},
+      'selection':{'source_path':str(SELECTION.relative_to(ROOT)),'original_source_path':'experiments/TRR-P04/setup/public_selection-r2.json','source_sha256':selection_sha,'expected_source_sha256':SELECTION_EXPECTED_SHA256,'rows_expected':520,'rows_validated':validated,'unique_selected_records':len(expected_by_key),'pools':{'correction':256,'validation':192,'fresh_evaluation':72}},
       'coverage':{'by_style':{style:{'rows':sum(1 for r in expected_rows if r['style']==style),'h128_rows':sum(1 for r in expected_rows if r['style']==style and (next((a for a in []),None) is None))} for style in ARROWS},'h128_rows':len(h128),'h129_rows':len(h129),'rendered_hash_rows':len(rendered),'short_h128_rows':sum(1 for r in expected_rows if r['full_token_count']<128)},
       'hashchecks':{'record_id': not any(x['field']=='record_id' for x in mismatches),'public_record_sha256':not any(x['field']=='public_record_sha256' for x in mismatches),'truncated_sequence_sha256_h129':not any(x['field']=='truncated_sequence_sha256' for x in mismatches),'geometry':not any(x['field'] in {'rendered_char_count','full_token_count','post_bos_token_count'} for x in mismatches),'h128_derived_after_checks':not bool(mismatches)},
       'identity_commitments':{'record_ids_ordered_sha256':sha_bytes(('\n'.join(record_ids)+'\n').encode()),'rendered_hashes_ordered_sha256':sha_bytes(('\n'.join(rendered)+'\n').encode()),'h129_hashes_ordered_sha256':sha_bytes(('\n'.join(h129)+'\n').encode()),'h128_hashes_ordered_sha256':sha_bytes(('\n'.join(h128)+'\n').encode()) if h128 else None},

@@ -18,6 +18,8 @@ from scripts.trr_p11.exclusions import (
     load_p04,
     rehash_public_token_rows,
     validate_panel_selection,
+    write_identity_union_export,
+    load_identity_union_export,
 )
 
 
@@ -77,13 +79,22 @@ def test_p04_mapping_is_strict_and_targetfit_is_explicitly_unavailable() -> None
     counts = result.bundle.counts()
     assert counts["rendered_sha256"] == 1720
     assert counts["h129_sequence_sha256"] == 520
-    assert result.proof["status"] == "PASS_PRODUCER_CONVENTION_VERIFIED_PARTIAL_H128"
+    assert counts["h128_sequence_sha256"] == 520
+    assert result.proof["status"] == "PASS_PRODUCER_CONVENTION_VERIFIED_H128_TARGETFIT_PARTIAL"
     assert result.proof["producer_source_bytes_available"] is True
     assert result.proof["top_level_exchange_digest_recomputed"] is True
     assert result.proof["individual_record_ids_available"] is True
     assert result.proof["declared_convention_checks"]["signed_int32_binary"] is True
     assert result.proof["declared_convention_checks"]["bos_plus_128_h129"] is True
     assert result.proof["targetfit_individual_hashes_available"] is False
+    assert result.proof["h128_individual_hashes_available"] is True
+    assert result.proof["h128_identity_export"]["record_count"] == 520
+    assert result.proof["h128_identity_export"]["recipe_migration"]["status"] == "PASS_RECIPE_PATH_MIGRATION_NO_RERUN"
+    assert result.proof["targetfit_plan_proof"]["status"] == "PASS_TARGET_RULE_COUNTS_ONLY"
+    assert result.proof["targetfit_plan_proof"]["selected_rows"] == 256
+    assert result.proof["targetfit_plan_proof"]["row_ids_serialized_in_public_metadata"] is False
+    assert all(result.proof["recovered_ledger_proof"][pool]["h128_values_present"] for pool in ("correction", "validation", "fresh_evaluation"))
+    assert not any(gap["field"].endswith(".h128_sequence_sha256") for gap in result.gaps)
     assert any(gap["field"] == "targetfit.truncated_sequence_sha256" for gap in result.gaps)
 
 
@@ -195,7 +206,8 @@ def test_full_metadata_audit_is_partial_but_binds_all_aggregate_panels() -> None
     assert audit["source_count"] == 48
     assert audit["aggregate_panel_binding"]["status"] == "PASS_ALL_SIX"
     assert audit["trr0009_selection_manifest_required_and_loaded"] is True
-    assert audit["p04_convention_proof"]["status"] == "PASS_PRODUCER_CONVENTION_VERIFIED_PARTIAL_H128"
+    assert audit["p04_convention_proof"]["status"] == "PASS_PRODUCER_CONVENTION_VERIFIED_H128_TARGETFIT_PARTIAL"
+    assert audit["p04_convention_proof"]["h128_individual_hashes_available"] is True
     assert audit["canonical_sequence_audit"]["public_payload_rehash"]["status"] == "PENDING_ROOT_LEASE"
     sequence_by_label = {item["label"]: item for item in audit["canonical_sequence_audit"]["per_source"]}
     finance = sequence_by_label["trr0002_public_finance_records"]
@@ -210,3 +222,50 @@ def test_full_metadata_audit_is_partial_but_binds_all_aggregate_panels() -> None
     assert any("targetfit" in gap for gap in audit["coverage_gaps"])
     assert not any("producer source bytes are unavailable" in gap for gap in audit["coverage_gaps"])
     assert audit["selection_release"] is False
+    aliases = audit["canonical_sequence_audit"]["legacy_alias_reconciliation"]
+    assert aliases["source_count_including_replication_metadata"] == 50
+    assert aliases["unique_uncovered_identity_keys_across_sources"] == 142
+    by_label = {item["label"]: item for item in aliases["per_source"]}
+    assert by_label["trr0002_public_finance_records"]["unique_uncovered_row_keys"] == 24
+    assert by_label["trr0005_enriched_fit"]["unique_uncovered_row_keys"] == 118
+    assert all(item["available"] and item["sha256_match"] for item in aliases["replication_metadata"])
+
+
+def test_sanitized_identity_union_round_trip_is_payload_free_and_create_only(tmp_path: Path) -> None:
+    bundle = IdentityBundle("fixture", "union", tmp_path / "fixture.json", "", 0)
+    namespace = Namespace("pile", "fixture", "train", "rev")
+    bundle.add("record_id", "fixture/row-1", namespace)
+    bundle.add("source_index", 17, namespace)
+    bundle.add("rendered_sha256", "a" * 64, namespace)
+    bundle.add("h128_sequence_sha256", "b" * 64, namespace)
+    bundle.add("h129_sequence_sha256", "c" * 64, namespace)
+    bundle.add("trr0002_h40_token_ids_sha256", "d" * 64, namespace)
+    output = tmp_path / "identity_union.json"
+    descriptor = write_identity_union_export(output, bundle, root=tmp_path)
+    assert descriptor["schema"] == "token-reconstruction.trr-p11-identity-union.v1"
+    assert descriptor["status"] == "PARTIAL_IDENTITY_UNION_NO_SELECTION_RELEASE"
+    loaded = load_identity_union_export(output, expected_counts=bundle.counts())
+    assert loaded.counts() == bundle.counts()
+    assert loaded.namespace_counts() == bundle.namespace_counts()
+    reasons = check_candidate(
+        {
+            "record_id": "fixture/row-1",
+            "public_record_sha256": "a" * 64,
+            "final_sequence_sha256": "b" * 64,
+            "truncated_sequence_sha256": "c" * 64,
+            "style": "pile",
+            "dataset_id": "fixture",
+            "split": "train",
+            "revision": "rev",
+        },
+        loaded,
+    )
+    assert {item["field"] for item in reasons} >= {"record_id", "rendered_sha256", "h128_sequence_sha256", "h129_sequence_sha256"}
+    with pytest.raises(ExclusionAuditError, match="overwrite"):
+        write_identity_union_export(output, bundle, root=tmp_path)
+    exported = json.loads(output.read_text())
+    assert "source_text" not in exported
+    assert "token_ids" not in exported
+    assert "source_text" not in exported["fields"]
+    assert "token_ids" not in exported["fields"]
+    assert exported["counts"] == bundle.counts()
