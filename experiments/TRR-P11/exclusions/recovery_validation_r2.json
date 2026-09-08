@@ -1,0 +1,120 @@
+{
+  "audit_path": "experiments/TRR-P11/exclusions/recovery_identity_audit_r3.json",
+  "audit_sha256": "9be27b5490e7a4cd183099bbbb2f05705d32589fb12f5639e7132469bacb5772",
+  "audit_status": "PARTIAL_CANONICAL_SEQUENCE_EXCLUSION_AUDIT",
+  "bounded_audit_run": {
+    "command": "env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false PYTHONPATH=. /usr/bin/time -v timeout 120s python3 scripts/trr_p11/exclusions.py --root . --pr20-root ../TRR-0010 --public-token-payload ../TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_fit_cut4.safetensors --public-token-metadata ../TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_fit_records.json --output experiments/TRR-P11/exclusions/recovery_identity_audit_r3.json",
+    "elapsed_seconds": 2.46,
+    "h128_rows": 350,
+    "max_rss_kb": 693012,
+    "metadata_sha256": "808cfd0f95ea3ee66c1d4094f3c10f1e346ba986a6d77138a61b8f8f13c4a738",
+    "payload_sha256": "a55814759dfa9d2567587935063fc49e44d8bff949c50014793deb982ebdf35d",
+    "return_code": 0,
+    "rows_seen": 1200,
+    "short_rows_h128_inapplicable": 850,
+    "tensors_not_read": [
+      "activations",
+      "position_ids",
+      "post_bos_selector_large",
+      "post_bos_selector_small"
+    ],
+    "tensors_read": [
+      "token_ids",
+      "attention_mask"
+    ],
+    "timeout_seconds": 120,
+    "timestamp_note": "The /usr/bin/time invocation was completed before this validation wrapper; timestamps are intentionally not reconstructed.",
+    "timestamps_captured": false
+  },
+  "checks": {
+    "aggregate_panels_all_six_bound": true,
+    "all_48_explicit_sources_loaded": true,
+    "bounded_public_h128_rehash": true,
+    "h128_h129_separate": true,
+    "historical_h40_prefix_rejection_fixture": true,
+    "model_loaded": false,
+    "negative_binding_fixtures": true,
+    "new_selection_started": false,
+    "p03_holdout_accessed": false,
+    "p04_convention_checks": {
+      "bos_plus_128_h129": true,
+      "canonical_json_sha256": true,
+      "ordered_opaque_value_sha256": true,
+      "ordered_pair_sha256": true,
+      "signed_int32_binary": true,
+      "unique_set_canonical_json_sha256": true
+    },
+    "p04_exchange_digest_recomputed": true,
+    "p04_producer_bytes_verified": true,
+    "p04_targetfit_individual_hashes_available": false,
+    "trr0009_selection_manifest_bound": true,
+    "truth_opened": false
+  },
+  "code": {
+    "bytes": 61553,
+    "path": "scripts/trr_p11/exclusions.py",
+    "sha256": "cad5d5391acc5736a2087a4463171f78184f5a4d5bac26e6c169f2c64a0d1bc9",
+    "test_bytes": 9193,
+    "test_path": "tests/test_trr_p11_exclusions.py",
+    "test_sha256": "3b95c656510ea3d691009bb20da57abe0d92358bb83cad144de1a604a8f9ab48"
+  },
+  "coverage_complete": false,
+  "known_gaps": [
+    "P03 sealed holdout is intentionally unopened and absent from this inventory.",
+    "P04 targetfit public_record_sha256 and truncated_sequence_sha256 arrays are unavailable; aggregate counts are not treated as zero overlap.",
+    "P04 producer/helper bytes and the three public pool ledgers are verified from retained Git objects; the exchange convention and top-level digest are recomputed, while P04 H128 remains absent from the exchange and must be derived from exact public token inputs. P04 targetfit remains counts-only.",
+    "Inherited fitting rows with no direct H128 are classified per-source below; verified short rows are H128-inapplicable, while eligible rows without exact token inputs remain unresolved.",
+    "TRR-0002 Pile remains H40-only because every opened row is exactly 40 tokens; TRR-0002 Finance H128 is derived only for exact active rows of length at least 128, with shorter rows marked inapplicable. Historical active/H40 fields remain candidate rejection keys.",
+    "No new candidate rows were scanned and no selection/capture/prediction/truth operation was performed.",
+    "PR20 final sources are explicitly development/selection-overlapping and cannot be reused as an independent final panel.",
+    {
+      "field": "correction.h128_sequence_sha256",
+      "reason": "recovered public ledger proves every row is H128-eligible by length but publishes H129 only; exact H128 requires public token inputs and producer preprocessing"
+    },
+    {
+      "field": "validation.h128_sequence_sha256",
+      "reason": "recovered public ledger proves every row is H128-eligible by length but publishes H129 only; exact H128 requires public token inputs and producer preprocessing"
+    },
+    {
+      "field": "fresh_evaluation.h128_sequence_sha256",
+      "reason": "recovered public ledger proves every row is H128-eligible by length but publishes H129 only; exact H128 requires public token inputs and producer preprocessing"
+    },
+    {
+      "field": "fit_replay.public_record_sha256",
+      "reason": "replay metadata exposes rendered_sha256 under a different field; no per-record public field mapping is emitted"
+    },
+    {
+      "field": "fit_replay.truncated_sequence_sha256",
+      "reason": "immutable replay metadata contains no per-record sequence array"
+    },
+    {
+      "field": "targetfit.public_record_sha256",
+      "reason": "target preparation/audit serialize counts only"
+    },
+    {
+      "field": "targetfit.truncated_sequence_sha256",
+      "reason": "target preparation/audit serialize counts only"
+    }
+  ],
+  "note": "Fresh immutable P11 validation for the bounded identity audit. P10 artifacts are unchanged; P03 remains sealed; no selection or truth operation was performed. The shared restore-gate test is outside this owned exclusion validation and remains under root coordination.",
+  "schema": "token-reconstruction.trr-p11-exclusion-validation.v1",
+  "selection_release": false,
+  "status": "PASS_FOCUSED_EXCLUSION_TESTS_PARTIAL_AUDIT",
+  "task_id": "TRR-P11",
+  "validation": {
+    "child_max_rss_kb": 85832,
+    "child_system_seconds": 0.097299,
+    "child_user_seconds": 1.738486,
+    "commands": [
+      "PYTHONPATH=. pytest -q tests/test_trr_p11_exclusions.py tests/test_trr_p10_exclusion.py"
+    ],
+    "elapsed_seconds": 1.895621,
+    "ended_at_utc": "2026-09-08T05:53:07.067088+00:00",
+    "inherited_p10_tests_passed": 13,
+    "p11_exclusion_tests_passed": 8,
+    "return_code": 0,
+    "started_at_utc": "2026-09-08T05:53:05.171467+00:00",
+    "tests_failed": 0,
+    "tests_passed": 21
+  }
+}

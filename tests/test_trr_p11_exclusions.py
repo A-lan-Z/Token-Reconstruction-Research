@@ -1,0 +1,212 @@
+from __future__ import annotations
+
+import copy
+import json
+from pathlib import Path
+
+import pytest
+
+from scripts.trr_p10.build_exclusion_audit import (
+    IdentityBundle,
+    Namespace,
+    candidate_sequence_fingerprints,
+    check_candidate,
+)
+from scripts.trr_p11.exclusions import (
+    ExclusionAuditError,
+    build_audit,
+    load_p04,
+    rehash_public_token_rows,
+    validate_panel_selection,
+)
+
+
+ROOT = Path(__file__).resolve().parents[1]
+PR20 = ROOT.parent / "TRR-0010"
+
+
+def test_h128_h129_prefixes_are_exact_and_separate() -> None:
+    values = list(range(192))
+    full = candidate_sequence_fingerprints(values)
+    first40 = candidate_sequence_fingerprints(values[:40])
+    first128 = candidate_sequence_fingerprints(values[:128])
+    first129 = candidate_sequence_fingerprints(values[:129])
+    assert full["trr0002_h40_token_ids_sha256"] == first40["trr0002_h40_token_ids_sha256"]
+    assert full["h128_sequence_sha256"] == first128["h128_sequence_sha256"]
+    assert full["h129_sequence_sha256"] == first129["h129_sequence_sha256"]
+    assert full["h128_sequence_sha256"] != full["h129_sequence_sha256"]
+
+
+def test_h40_historical_prefix_rejects_longer_candidate_with_same_prefix() -> None:
+    historical = list(range(40))
+    longer_candidate = historical + list(range(1000, 1128))
+    historical_fp = candidate_sequence_fingerprints(historical)
+    candidate_fp = candidate_sequence_fingerprints(longer_candidate)
+    bundle = IdentityBundle("trr2-pile", "opened_development", Path("trr2-pile.json"), "", 0)
+    ns = Namespace("pile", "NeelNanda/pile-10k", "train", "rev")
+    bundle.add("trr0002_h40_token_ids_sha256", historical_fp["trr0002_h40_token_ids_sha256"], ns)
+    reasons = check_candidate(
+        {**candidate_fp, "style": "pile", "dataset_id": "NeelNanda/pile-10k", "split": "train", "revision": "rev"},
+        bundle,
+    )
+    assert any(item["field"] == "trr0002_h40_token_ids_sha256" for item in reasons)
+
+
+def test_h129_helper_key_is_consumed_without_cross_namespace_match() -> None:
+    values = list(range(192))
+    fp = candidate_sequence_fingerprints(values)
+    bundle = IdentityBundle("h129", "opened_evaluation", Path("h129.json"), "", 0)
+    ns = Namespace("pile", "dataset", "train", "rev")
+    bundle.add("h129_sequence_sha256", fp["h129_sequence_sha256"], ns)
+    candidate = {**fp, "style": "pile", "dataset_id": "dataset", "split": "train", "revision": "rev"}
+    assert {item["field"] for item in check_candidate(candidate, bundle)} == {"h129_sequence_sha256"}
+    assert check_candidate(
+        {
+            "h128_sequence_sha256": fp["h129_sequence_sha256"],
+            "style": "pile",
+            "dataset_id": "dataset",
+            "split": "train",
+            "revision": "rev",
+        },
+        bundle,
+    ) == []
+
+
+def test_p04_mapping_is_strict_and_targetfit_is_explicitly_unavailable() -> None:
+    result = load_p04(ROOT)
+    counts = result.bundle.counts()
+    assert counts["rendered_sha256"] == 1720
+    assert counts["h129_sequence_sha256"] == 520
+    assert result.proof["status"] == "PASS_PRODUCER_CONVENTION_VERIFIED_PARTIAL_H128"
+    assert result.proof["producer_source_bytes_available"] is True
+    assert result.proof["top_level_exchange_digest_recomputed"] is True
+    assert result.proof["individual_record_ids_available"] is True
+    assert result.proof["declared_convention_checks"]["signed_int32_binary"] is True
+    assert result.proof["declared_convention_checks"]["bos_plus_128_h129"] is True
+    assert result.proof["targetfit_individual_hashes_available"] is False
+    assert any(gap["field"] == "targetfit.truncated_sequence_sha256" for gap in result.gaps)
+
+
+def _real_panel_and_selection() -> tuple[dict, dict]:
+    panel = json.loads(
+        (ROOT / "experiments/TRR-0009/evaluation/public_observations_v2/panel.json").read_text()
+    )
+    selection = json.loads(
+        (ROOT / "experiments/TRR-0009/selection_v2/source_selection.json").read_text()
+    )
+    return panel, selection
+
+
+def test_aggregate_binding_rejects_digest_count_and_descriptor_mutations() -> None:
+    panel, selection = _real_panel_and_selection()
+    passed = validate_panel_selection(panel, selection, label="fixture")
+    assert passed["status"] == "PASS"
+
+    bad_digest = copy.deepcopy(panel)
+    bad_digest["record_ids_sha256"]["pile"] = "0" * 64
+    with pytest.raises(ExclusionAuditError, match="digest mismatch"):
+        validate_panel_selection(bad_digest, selection, label="bad_digest")
+
+    bad_count = copy.deepcopy(panel)
+    bad_count["records_by_domain"]["pile"] -= 1
+    with pytest.raises(ExclusionAuditError, match="row count mismatch"):
+        validate_panel_selection(bad_count, selection, label="bad_count")
+
+    bad_row = copy.deepcopy(selection)
+    bad_row["selection_rule"]["records"]["pile"][0]["record_id"] = ""
+    with pytest.raises(ExclusionAuditError, match="record_id"):
+        validate_panel_selection(panel, bad_row, label="bad_row")
+
+    bad_flags = copy.deepcopy(panel)
+    bad_flags["truth_opened"] = True
+    with pytest.raises(ExclusionAuditError, match="access flags"):
+        validate_panel_selection(bad_flags, selection, label="bad_flags")
+
+
+def test_actual_trr9_selection_record_is_rejected() -> None:
+    selection = json.loads(
+        (ROOT / "experiments/TRR-0009/selection_v2/source_selection.json").read_text()
+    )
+    rows = selection["selection_rule"]["records"]["pile"]
+    row = rows[0]
+    bundle = IdentityBundle("trr9", "opened_evaluation", Path("selection.json"), "", 0)
+    ns = Namespace("pile", row["dataset_id"], row["split"], row["revision"])
+    bundle.add("record_id", row["record_id"], ns)
+    bundle.add("rendered_sha256", row["public_record_sha256"], ns)
+    bundle.add("h128_sequence_sha256", row["final_sequence_sha256"], ns)
+    reasons = check_candidate(
+        {
+            "record_id": row["record_id"],
+            "public_record_sha256": row["public_record_sha256"],
+            "final_sequence_sha256": row["final_sequence_sha256"],
+            "style": "pile",
+            "dataset_id": row["dataset_id"],
+            "split": row["split"],
+            "revision": row["revision"],
+        },
+        bundle,
+    )
+    assert {item["field"] for item in reasons} >= {"record_id", "rendered_sha256", "h128_sequence_sha256"}
+
+
+def test_bounded_public_token_rehash_marks_short_rows_without_emitting_tokens(tmp_path: Path) -> None:
+    metadata = [
+        {
+            "record_id": "pile/row-0",
+            "dataset_key": "pile",
+            "dataset_id": "pile",
+            "split": "train",
+            "revision": "rev",
+            "rendered_sha256": "a" * 64,
+        },
+        {
+            "record_id": "pile/row-1",
+            "dataset_key": "pile",
+            "dataset_id": "pile",
+            "split": "train",
+            "revision": "rev",
+            "rendered_sha256": "b" * 64,
+        },
+    ]
+    long_ids = [128000] + list(range(1, 128))
+    short_ids = [128000] + list(range(1, 20))
+    payload_path = tmp_path / "public.safetensors"
+    payload_path.write_bytes(b"fixture")
+    bundle, receipt = rehash_public_token_rows(
+        metadata,
+        [long_ids, short_ids],
+        [[1] * len(long_ids), [1] * len(short_ids)],
+        payload_path=payload_path,
+        payload_sha256="c" * 64,
+    )
+    assert receipt["h128_rows"] == 1
+    assert receipt["short_rows_h128_inapplicable"] == 1
+    assert bundle.counts()["h128_sequence_sha256"] == 1
+    assert receipt["token_values_emitted"] is False
+    assert json.dumps(long_ids) not in json.dumps(receipt)
+
+
+def test_full_metadata_audit_is_partial_but_binds_all_aggregate_panels() -> None:
+    if not PR20.exists():
+        pytest.skip("TRR-0010 worktree unavailable")
+    audit = build_audit(root=ROOT, pr20_root=PR20)
+    assert audit["status"] == "PARTIAL_CANONICAL_SEQUENCE_EXCLUSION_AUDIT"
+    assert audit["coverage_complete"] is False
+    assert audit["source_count"] == 48
+    assert audit["aggregate_panel_binding"]["status"] == "PASS_ALL_SIX"
+    assert audit["trr0009_selection_manifest_required_and_loaded"] is True
+    assert audit["p04_convention_proof"]["status"] == "PASS_PRODUCER_CONVENTION_VERIFIED_PARTIAL_H128"
+    assert audit["canonical_sequence_audit"]["public_payload_rehash"]["status"] == "PENDING_ROOT_LEASE"
+    sequence_by_label = {item["label"]: item for item in audit["canonical_sequence_audit"]["per_source"]}
+    finance = sequence_by_label["trr0002_public_finance_records"]
+    assert finance["direct_h128_count"] == 21
+    assert finance["verified_short_rows_h128_inapplicable"] == 11
+    assert finance["eligible_rows_without_h128"] == 0
+    assert finance["status"] == "PARTIAL_H128_DERIVED_FROM_TRR2_ACTIVE_INPUT_PLUS_VERIFIED_SHORT_ROWS"
+    pile = sequence_by_label["trr0002_public_pile_records"]
+    assert pile["status"] == "H40_ONLY_H128_INAPPLICABLE_TO_OPENED_40_TOKEN_OBSERVATION"
+    assert pile["eligible_rows_without_h128"] == 0
+    assert any("P03" in gap for gap in audit["coverage_gaps"])
+    assert any("targetfit" in gap for gap in audit["coverage_gaps"])
+    assert not any("producer source bytes are unavailable" in gap for gap in audit["coverage_gaps"])
+    assert audit["selection_release"] is False
