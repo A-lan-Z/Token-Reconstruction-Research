@@ -26,3 +26,16 @@ All grid model states and optimizer states are written before selection, verifie
 The fitting qualifier uses20 discarded updates. Its native training geometry is unchanged at8×192×2048 with512 sampled positions. Cache values were compared exactly against every original payload boundary; no numerical microbatch workaround is introduced. The generic watchdog may wrap long commands with a2400-second deadline,20GiB RSS cap and6GiB free-host floor; the in-process GPU guard enforces8GiB reserved and2GiB free.
 
 Historical failed attempt: the first8-record bank classifier received int32 labels and failed before completing any classification. The preserved log documents the error; labels were converted to int64 as in the unchanged native fitting step. No failed model state was selected. Long-source tokenizer warnings during selection are expected because source identity is computed from the full public record; the model receives only the declared192-token clip.
+
+After the grid states are frozen, create the package, verify the independent Windows copy and clean restore, and run the frozen inference commands:
+
+```bash
+python3 scripts/trr0013_eval.py package --output outputs/TRR-0013/model_package_r1
+python3 scripts/trr0013_eval.py predict --package outputs/TRR-0013/model_package_r1/package.json --observations outputs/TRR-0013/evaluation_capture_r1/manifest.json --output outputs/TRR-0013/standalone_predictions_r1
+python3 scripts/trr0013_eval.py anchor --package outputs/TRR-0013/model_package_r1/package.json --observations outputs/TRR-0013/evaluation_capture_r1/manifest.json --output outputs/TRR-0013/anchor_predictions_r1
+python3 scripts/trr0013_eval.py freeze --package outputs/TRR-0013/model_package_r1/package.json --observations outputs/TRR-0013/evaluation_capture_r1/manifest.json --standalone outputs/TRR-0013/standalone_predictions_r1/receipt.json --anchor outputs/TRR-0013/anchor_predictions_r1/receipt.json --output outputs/TRR-0013/prediction_freeze_r1.json
+python3 scripts/trr0013_eval.py score --freeze outputs/TRR-0013/prediction_freeze_r1.json --output outputs/TRR-0013/score_r1.json
+python3 experiments/TRR-0013/render_report.py
+```
+
+`restore_receipt.json` records the exact isolated smoke commands and working directories. They load code/state/readout bytes solely from the copied package and compare four public observation fixtures. `package_preservation.json` and `evaluation_preservation.json` bind the independent Windows copies. Final freeze/scoring used `CUDA_VISIBLE_DEVICES=''` to leave the GPU to P12. The focused fit and A1 anchor were wrapped by `scripts/trr0010_p09_watchdog.py`; their exact wrapper commands and success receipts are retained in the output directories and manifest evidence. All recorded times use the executed boundaries; nested phases must not be summed twice.
