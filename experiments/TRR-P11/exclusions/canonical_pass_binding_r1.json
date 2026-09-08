@@ -1,0 +1,72 @@
+{
+  "access_boundary": {
+    "activations_read": false,
+    "evaluation_truth_opened": false,
+    "gpu_used": false,
+    "model_loaded": false,
+    "new_selection_started": false,
+    "p03_holdout_accessed": false,
+    "source_text_materialized_transiently_for_p04": true,
+    "source_text_serialized": false,
+    "source_tokens_serialized": false,
+    "token_values_emitted": false
+  },
+  "note": "Outer /usr/bin/time max RSS is retained separately from each script internal ru_maxrss; P05 output reads token_ids/attention_mask only and P04 output renders the predeclared no_robots rows only.",
+  "resource_contract": {
+    "gpu_used": false,
+    "max_rss_bytes": 2147483648,
+    "min_host_available_bytes": 12884901888,
+    "model_loaded": false,
+    "threads": 1,
+    "timeout_seconds": 240
+  },
+  "schema": "token-reconstruction.trr-p11-canonical-pass-binding.v1",
+  "status": "PASS_P05_TOKEN_MASK_AND_P04_TARGETFIT_CANONICAL_RECOVERY",
+  "steps": [
+    {
+      "command": "env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false PYTHONPATH=. /usr/bin/time -v timeout 240s python3 scripts/trr_p11/recover_public_token_payload.py --payload ../TRR-0005/outputs/TRR-0005/enriched_fit_cut4.safetensors --metadata ../TRR-0005/experiments/TRR-0005/public_activation_v1/enriched_fit_records.json --identity-output experiments/TRR-P11/exclusions/p05_h128_identity_rows_r1.json --receipt-output experiments/TRR-P11/exclusions/p05_h128_recovery_r1.json --source-label trr0005_enriched_fit_public_payload --expected-payload-sha256 191cb77dae8d002402bcf3f126a20c5d8d34111a6e6871d66507503ca6725a99 --expected-metadata-sha256 7f197b077aa0aa66edfdd8d92c8daa5b4cb2ae36bdbb80938e4ab8f1de117943",
+      "coverage": {
+        "h128_rows": 350,
+        "h129_rows": 343,
+        "rows_seen": 1200,
+        "short_rows_h128_inapplicable": 850
+      },
+      "elapsed_seconds": 2.7489760249991377,
+      "ended_utc": "2026-09-08T06:43:55Z",
+      "identity_path": "experiments/TRR-P11/exclusions/p05_h128_identity_rows_r1.json",
+      "identity_sha256": "894359966b7af396ad841da13e3ff1caa1854db6cc81ae3d7382be10d60cdcad",
+      "internal_max_rss_bytes": 548147200,
+      "label": "p05_enriched_fit_token_mask",
+      "recovery_path": "experiments/TRR-P11/exclusions/p05_h128_recovery_r1.json",
+      "recovery_sha256": "3c5251076a51a78aa1bae1da304098aa7fba8d9865e85e6e6e5092f6ac0ba1f9",
+      "script_path": "scripts/trr_p11/recover_public_token_payload.py",
+      "script_sha256": "ea17fe280c2a739ad5b680a9f56b1cec08a662919fc282cac2282f4e31fdb5aa",
+      "started_utc": "2026-09-08T06:43:53Z",
+      "status": "PASS_PUBLIC_TOKEN_IDENTITY_RECOVERY",
+      "wrapper_max_rss_kb": 663124
+    },
+    {
+      "command": "env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false HF_DATASETS_OFFLINE=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONPATH=. /usr/bin/time -v timeout 240s python3 scripts/trr_p11/recover_p04_targetfit.py --identity-output experiments/TRR-P11/exclusions/p04_targetfit_identity_rows_r1.json --receipt-output experiments/TRR-P11/exclusions/p04_targetfit_recovery_r1.json",
+      "coverage": {
+        "h128_rows": 212,
+        "h129_rows": 210,
+        "selected_rows": 256,
+        "short_rows_h128_inapplicable": 44
+      },
+      "elapsed_seconds": 0.7728063439990365,
+      "ended_utc": "2026-09-08T06:45:59Z",
+      "identity_path": "experiments/TRR-P11/exclusions/p04_targetfit_identity_rows_r1.json",
+      "identity_sha256": "2a800aaec35e8dbc2437f5bb1c5a5c4e0a3ca67f5b68ed2b092b53ee6f6e40a4",
+      "internal_max_rss_bytes": 1098551296,
+      "label": "p04_no_robots_targetfit",
+      "recovery_path": "experiments/TRR-P11/exclusions/p04_targetfit_recovery_r1.json",
+      "recovery_sha256": "e83095caf3cc50356b896911dc13e9cd666fbaff7bdb3f6063bcc6feb32dc955",
+      "script_path": "scripts/trr_p11/recover_p04_targetfit.py",
+      "script_sha256": "73a2b8cf6caa0e60660a9ab465f3ff5a5956d7cd68070476be90b3a464c33b34",
+      "started_utc": "2026-09-08T06:45:58Z",
+      "status": "PASS_P04_TARGETFIT_EXACT_RENDERED_H129_H128_RECOVERY",
+      "wrapper_max_rss_kb": 1194464
+    }
+  ],
+  "task_id": "TRR-P11"
+}

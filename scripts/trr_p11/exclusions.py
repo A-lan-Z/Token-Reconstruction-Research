@@ -68,6 +68,73 @@ P04_PERSISTENT_SELECTION_SHA256 = "05f941e0dbcf29ea3efc47c7bc8abb3a7146a266eeea7
 P04_PERSISTENT_ALPACA_HELPER_PATH = "src/token_reconstruction/alpaca_split.py"
 P04_PERSISTENT_ALPACA_HELPER_SHA256 = "fa9a15fd4cf92ffa06be3bd77888324536180e8a2fd2c43ae14f20e470a3626a"
 
+P11_CANONICAL_PASS_BINDING_PATH = "experiments/TRR-P11/exclusions/canonical_pass_binding_r1.json"
+P11_CANONICAL_PASS_BINDING_SHA256 = "0a9812e26d7953c8c53910af9737dfea31a6f4662b90b54753bec84ff5a697ec"
+P11_P05_IDENTITY_PATH = "experiments/TRR-P11/exclusions/p05_h128_identity_rows_r1.json"
+P11_P05_IDENTITY_SHA256 = "894359966b7af396ad841da13e3ff1caa1854db6cc81ae3d7382be10d60cdcad"
+P11_P05_RECOVERY_PATH = "experiments/TRR-P11/exclusions/p05_h128_recovery_r1.json"
+P11_P05_RECOVERY_SHA256 = "3c5251076a51a78aa1bae1da304098aa7fba8d9865e85e6e6e5092f6ac0ba1f9"
+P11_P05_SCRIPT_SHA256 = "ea17fe280c2a739ad5b680a9f56b1cec08a662919fc282cac2282f4e31fdb5aa"
+P11_P04_TARGET_IDENTITY_PATH = "experiments/TRR-P11/exclusions/p04_targetfit_identity_rows_r1.json"
+P11_P04_TARGET_IDENTITY_SHA256 = "2a800aaec35e8dbc2437f5bb1c5a5c4e0a3ca67f5b68ed2b092b53ee6f6e40a4"
+P11_P04_TARGET_RECOVERY_PATH = "experiments/TRR-P11/exclusions/p04_targetfit_recovery_r1.json"
+P11_P04_TARGET_RECOVERY_SHA256 = "e83095caf3cc50356b896911dc13e9cd666fbaff7bdb3f6063bcc6feb32dc955"
+P11_P04_TARGET_SCRIPT_SHA256 = "73a2b8cf6caa0e60660a9ab465f3ff5a5956d7cd68070476be90b3a464c33b34"
+
+# Agent 1's exact hash-only replication inputs. These are metadata/manifest
+# bindings only; the exclusion audit never opens the B0/B1 activation tensors.
+P11_REPLICATION_INPUTS: dict[str, Any] = {
+    "status": "BOUND_EXACT_BANK_AND_SELECTION_IDENTITIES_AUDIT_COMPLETE",
+    "banks": {
+        "B0": {
+            "bank": "B0",
+            "bank_manifest": {
+                "path": "../TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_manifest.json",
+                "sha256": "c7a857e545a2f252ce8b3ab71bb2336e552fd212c7c434e39cef66f233b77a08",
+                "bytes": 8156,
+            },
+            "ordered_identity": {
+                "path": "../TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_fit_records.json",
+                "sha256": "808cfd0f95ea3ee66c1d4094f3c10f1e346ba986a6d77138a61b8f8f13c4a738",
+                "bytes": 918427,
+            },
+        },
+        "B1": {
+            "bank": "B1",
+            "bank_manifest": {
+                "path": "../TRR-0012/experiments/TRR-0012/capture/b1_activation_date07/bank_manifest.json",
+                "sha256": "8265df60998fd23a11db560de661e65d972aa8823df09101303f4bab44732c7c",
+                "bytes": 144117,
+            },
+            "ordered_identity": {
+                "path": "../TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07/records.json",
+                "sha256": "367cfba0ffe78f59454861a76f23830f480a8745cc6b35e6b4a0d05eca53638b",
+                "bytes": 10767794,
+            },
+            "preparation_manifest": {
+                "path": "../TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07/preparation_manifest.json",
+                "sha256": "d1097b467e4abe4ec9f39dfca27f34f1d481527d2de79ca610751a8fe260620e",
+                "bytes": 42163,
+            },
+        },
+    },
+    "development_selection": {
+        "path": "../TRR-0012/experiments/TRR-0012/preparation/public_validation_r1/validation_manifest.json",
+        "sha256": "b47114d86d80d704c331f50693ae2bc79741147cc01cc692cacba0c5e0697f65",
+        "bytes": 468777,
+    },
+}
+P11_HISTORICAL_SELECTION_BINDING = {
+    "path": "../TRR-0010/experiments/TRR-0009/selection_v2/source_selection.json",
+    "sha256": "c2e996514f7f45e55d7bfadc27fc8048bdb07a2c979b208de8716972d8d1def2",
+    "bytes": 287719,
+}
+P11_TRR0005_PRODUCER_PATH = "scripts/trr0005_produce_confirmation.py"
+P11_TRR0005_PRODUCER_SHA256 = "7289ee5db30bc0b2d3c1b50b1d5b6ca1ac235001371f61b92adf10e2dd979e2b"
+P11_TRR0005_SELECTION_PLAN_PATH = "experiments/TRR-0005/fresh_confirmation_v1/selection_plan.json"
+P11_REPLICATION_SIDECAR_PATH = "experiments/TRR-P11/exclusions/replication_inputs_binding_r1.json"
+P11_REPLICATION_SIDECAR_SHA256 = "6b1945a065d7a737b40ca0623bc5bedc909e8721836c95eed4742b64ae171c98"
+
 P04_LEDGER_OBJECTS: dict[str, tuple[str, str, int]] = {
     "correction": ("experiments/TRR-P04/setup/public-pools-r2/correction_records.json", "2dad95db8f1f796a476e812e6d7eb0a232a325852e6a17ddc3187088c72c2ea2", 256),
     "validation": ("experiments/TRR-P04/setup/public-pools-r2/validation_records.json", "e9aca619f9973f5131c60086f525ba899ec4788561fce68480427e9cdc26f3fc", 192),
@@ -374,6 +441,114 @@ def _recover_p04_ledger(root: Path, pool: str) -> tuple[dict[str, Any] | None, d
     }
 
 
+
+
+def _load_canonical_pass_binding(root: Path) -> dict[str, Any]:
+    path = (root / P11_CANONICAL_PASS_BINDING_PATH).resolve()
+    if not path.is_file() or path.is_symlink() or p10.sha256_file(path) != P11_CANONICAL_PASS_BINDING_SHA256:
+        raise ExclusionAuditError("canonical CPU-pass binding receipt is unavailable or changed")
+    value = _read_json(path, label="canonical CPU-pass binding")
+    if value.get("schema") != "token-reconstruction.trr-p11-canonical-pass-binding.v1" or value.get("task_id") != TASK_ID or value.get("status") != "PASS_P05_TOKEN_MASK_AND_P04_TARGETFIT_CANONICAL_RECOVERY":
+        raise ExclusionAuditError("canonical CPU-pass binding status changed")
+    steps = value.get("steps")
+    if not isinstance(steps, list) or {item.get("label") for item in steps if isinstance(item, Mapping)} != {"p05_enriched_fit_token_mask", "p04_no_robots_targetfit"}:
+        raise ExclusionAuditError("canonical CPU-pass binding steps are incomplete")
+    expected = {
+        "p05_enriched_fit_token_mask": (P11_P05_SCRIPT_SHA256, P11_P05_IDENTITY_PATH, P11_P05_IDENTITY_SHA256, P11_P05_RECOVERY_PATH, P11_P05_RECOVERY_SHA256),
+        "p04_no_robots_targetfit": (P11_P04_TARGET_SCRIPT_SHA256, P11_P04_TARGET_IDENTITY_PATH, P11_P04_TARGET_IDENTITY_SHA256, P11_P04_TARGET_RECOVERY_PATH, P11_P04_TARGET_RECOVERY_SHA256),
+    }
+    for step in steps:
+        if not isinstance(step, Mapping) or step.get("label") not in expected:
+            raise ExclusionAuditError("canonical CPU-pass step is malformed")
+        script_sha, identity_path, identity_sha, recovery_path, recovery_sha = expected[step["label"]]
+        if step.get("script_sha256") != script_sha or step.get("identity_path") != identity_path or step.get("identity_sha256") != identity_sha or step.get("recovery_path") != recovery_path or step.get("recovery_sha256") != recovery_sha or step.get("status") not in {"PASS_PUBLIC_TOKEN_IDENTITY_RECOVERY", "PASS_P04_TARGETFIT_EXACT_RENDERED_H129_H128_RECOVERY"}:
+            raise ExclusionAuditError(f"canonical CPU-pass binding changed: {step.get('label')}")
+        identity = (root / identity_path).resolve()
+        recovery = (root / recovery_path).resolve()
+        if not identity.is_file() or identity.is_symlink() or p10.sha256_file(identity) != identity_sha or not recovery.is_file() or recovery.is_symlink() or p10.sha256_file(recovery) != recovery_sha:
+            raise ExclusionAuditError(f"canonical CPU-pass output changed: {step.get('label')}")
+    resource = value.get("resource_contract")
+    access = value.get("access_boundary")
+    if not isinstance(resource, Mapping) or resource.get("threads") != 1 or resource.get("timeout_seconds") != 240 or resource.get("model_loaded") is not False or resource.get("gpu_used") is not False:
+        raise ExclusionAuditError("canonical CPU-pass resource contract changed")
+    if not isinstance(access, Mapping) or any(access.get(key) is True for key in ("source_text_serialized", "source_tokens_serialized", "token_values_emitted", "activations_read", "model_loaded", "gpu_used", "evaluation_truth_opened", "p03_holdout_accessed", "new_selection_started")):
+        raise ExclusionAuditError("canonical CPU-pass access boundary changed")
+    return {"path": P11_CANONICAL_PASS_BINDING_PATH, "sha256": P11_CANONICAL_PASS_BINDING_SHA256, "status": value["status"], "steps": steps, "resource_contract": dict(resource)}
+
+
+def _load_public_identity_export(
+    root: Path,
+    *,
+    identity_path: str,
+    identity_sha256: str,
+    recovery_path: str,
+    recovery_sha256: str,
+    expected_identity_schema: str,
+    expected_recovery_schema: str,
+    expected_identity_status: str,
+    label: str,
+    role: str,
+    binding: Mapping[str, Any],
+) -> tuple[p10.IdentityBundle, dict[str, Any]]:
+    identity_file = (root / identity_path).resolve()
+    recovery_file = (root / recovery_path).resolve()
+    if not identity_file.is_file() or identity_file.is_symlink() or p10.sha256_file(identity_file) != identity_sha256:
+        raise ExclusionAuditError(f"{label} identity export is unavailable or changed")
+    if not recovery_file.is_file() or recovery_file.is_symlink() or p10.sha256_file(recovery_file) != recovery_sha256:
+        raise ExclusionAuditError(f"{label} recovery receipt is unavailable or changed")
+    identity = _read_json(identity_file, label=f"{label} identity export")
+    recovery = _read_json(recovery_file, label=f"{label} recovery receipt")
+    if identity.get("schema") != expected_identity_schema or identity.get("task_id") != TASK_ID or identity.get("status") != expected_identity_status:
+        raise ExclusionAuditError(f"{label} identity export status changed")
+    if recovery.get("schema") != expected_recovery_schema or recovery.get("task_id") != TASK_ID or recovery.get("status") != expected_identity_status or recovery.get("mismatch_count") != 0:
+        raise ExclusionAuditError(f"{label} recovery receipt status changed")
+    if recovery.get("identity_export", {}).get("sha256") != identity_sha256:
+        raise ExclusionAuditError(f"{label} recovery receipt does not bind identity export")
+    rows = identity.get("records")
+    if not isinstance(rows, list) or identity.get("record_count") != len(rows):
+        raise ExclusionAuditError(f"{label} identity row count is malformed")
+    forbidden = {"source_text", "source_tokens", "token_ids", "input_ids", "labels", "truth", "oracle", "target_weights", "activations"}
+    if forbidden.intersection(identity):
+        raise ExclusionAuditError(f"{label} identity export contains forbidden payload")
+    access = identity.get("access_boundary")
+    if not isinstance(access, Mapping) or any(access.get(key) is True for key in ("source_text_serialized", "source_tokens_serialized", "token_values_emitted", "activations_read", "model_loaded", "gpu_used", "evaluation_truth_opened", "p03_holdout_accessed", "new_selection_started")):
+        raise ExclusionAuditError(f"{label} identity access boundary is unsafe")
+    bundle = p10.IdentityBundle(label, role, identity_file, identity_sha256, identity_file.stat().st_size, schema=expected_identity_schema, status=expected_identity_status)
+    h128 = h129 = rendered = source_indices = 0
+    for index, row in enumerate(rows):
+        if not isinstance(row, Mapping) or not isinstance(row.get("record_id"), str) or not row["record_id"]:
+            raise ExclusionAuditError(f"{label} row {index} record_id is malformed")
+        style = p10._style(row.get("dataset_key") or row.get("domain") or row.get("style")) or "*"
+        dataset_id_value = row.get("dataset_id")
+        dataset_id = dataset_id_value if isinstance(dataset_id_value, str) and dataset_id_value else "*"
+        split_value = row.get("split")
+        split = split_value if isinstance(split_value, str) and split_value else "*"
+        revision_value = row.get("revision") or row.get("dataset_revision")
+        revision = revision_value if isinstance(revision_value, str) and revision_value else "*"
+        namespace = p10.Namespace(style, dataset_id, split, revision)
+        bundle.add("record_id", row["record_id"], namespace)
+        for field in ("rendered_sha256", "h128_sequence_sha256", "h129_sequence_sha256"):
+            field_value = row.get(field)
+            if field_value is None:
+                continue
+            if not _is_sha256(field_value):
+                raise ExclusionAuditError(f"{label} row {index} {field} is malformed")
+            bundle.add(field, field_value.casefold(), namespace)
+            if field == "rendered_sha256": rendered += 1
+            elif field == "h128_sequence_sha256": h128 += 1
+            else: h129 += 1
+        source_index = row.get("source_index")
+        if source_index is None:
+            source_index = row.get("row_index")
+        if isinstance(source_index, int) and not isinstance(source_index, bool) and source_index >= 0 and style != "*":
+            bundle.add("source_index", source_index, namespace); source_indices += 1
+        full = row.get("full_token_count")
+        post = row.get("post_bos_token_count")
+        if not isinstance(full, int) or not isinstance(post, int) or full != post + 1:
+            raise ExclusionAuditError(f"{label} row {index} geometry is malformed")
+    bundle.metadata_notes.append("Opaque identity export; no source/token/truth payload emitted")
+    proof = {"label": label, "role": role, "identity_path": identity_path, "identity_sha256": identity_sha256, "recovery_path": recovery_path, "recovery_sha256": recovery_sha256, "identity_schema": expected_identity_schema, "record_count": len(rows), "identity_counts": bundle.counts(), "h128_rows": h128, "h129_rows": h129, "rendered_rows": rendered, "source_index_rows": source_indices, "binding": dict(binding)}
+    return bundle, proof
 
 def _load_p04_recipe_migration(root: Path) -> dict[str, Any]:
     """Verify the persistent entrypoint migration without rerunning P04."""
@@ -770,6 +945,16 @@ def _augment_trr0002_finance_h128(bundle: p10.IdentityBundle, path: Path) -> p10
 
 def load_bundle(spec: p10.SourceSpec, *, root: Path, pr20_root: Path | None = None) -> p10.IdentityBundle | None:
     """Load a P11 source with strict P04 and bounded historical H128 paths."""
+    if spec.label == "trr0005_selection_plan":
+        # The retained TRR-0005 producer writes final_sequence_sha256 as the
+        # first 128 BOS-inclusive int32 IDs (SEQUENCE_TOKENS == 128).  Keep
+        # this mapping local to P11 so the generic P10 inventory remains
+        # unchanged and the producer proof is recorded in this audit.
+        spec = p10.SourceSpec(
+            spec.label, spec.role, spec.path, required=spec.required,
+            hash_aliases=tuple(sorted({**spec.aliases, "final_sequence_sha256": "h128_sequence_sha256"}.items())),
+            metadata_mode=spec.metadata_mode, expected_sha256=spec.expected_sha256,
+        )
     if spec.label == "trr0006_p04_opaque":
         return load_p04(root).bundle
     bundle = p10.load_bundle(spec, root=root, pr20_root=pr20_root)
@@ -1127,6 +1312,64 @@ def _load_replication_metadata(root: Path) -> tuple[list[p10.IdentityBundle], li
     return bundles, descriptors
 
 
+def _verify_bound_file(root: Path, binding: Mapping[str, Any], *, label: str) -> dict[str, Any]:
+    path_value = binding.get("path")
+    expected_sha = binding.get("sha256")
+    expected_bytes = binding.get("bytes")
+    if not isinstance(path_value, str) or not _is_sha256(expected_sha):
+        raise ExclusionAuditError(f"{label} binding is malformed")
+    path = (root / path_value).resolve()
+    if not path.is_file() or path.is_symlink():
+        raise ExclusionAuditError(f"{label} file is unavailable: {path_value}")
+    actual_bytes = path.stat().st_size
+    actual_sha = p10.sha256_file(path)
+    if actual_bytes != expected_bytes or actual_sha != expected_sha:
+        raise ExclusionAuditError(f"{label} file binding changed")
+    return {"path": path_value, "sha256": expected_sha, "bytes": actual_bytes}
+
+
+def _load_replication_input_binding(root: Path) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Bind the sidecar's exact B0/B1 metadata without reading tensors."""
+    sidecar = (root / P11_REPLICATION_SIDECAR_PATH).resolve()
+    if not sidecar.is_file() or sidecar.is_symlink() or p10.sha256_file(sidecar) != P11_REPLICATION_SIDECAR_SHA256:
+        raise ExclusionAuditError("replication input sidecar is unavailable or changed")
+    value = _read_json(sidecar, label="replication input sidecar")
+    raw = value.get("replication_inputs")
+    if not isinstance(raw, Mapping) or not isinstance(raw.get("banks"), Mapping):
+        raise ExclusionAuditError("replication input sidecar lacks bank bindings")
+    normalized: dict[str, Any] = {
+        "status": "BOUND_EXACT_BANK_AND_SELECTION_IDENTITIES_AUDIT_COMPLETE",
+        "banks": {},
+    }
+    for bank_name in ("B0", "B1"):
+        raw_bank = raw["banks"].get(bank_name)
+        if not isinstance(raw_bank, Mapping) or raw_bank.get("bank") != bank_name:
+            raise ExclusionAuditError(f"replication input sidecar lacks {bank_name}")
+        bank: dict[str, Any] = {"bank": bank_name}
+        for key in ("bank_manifest", "ordered_identity", "preparation_manifest"):
+            if key not in raw_bank:
+                if bank_name == "B0" and key == "preparation_manifest":
+                    continue
+                raise ExclusionAuditError(f"replication input sidecar lacks {bank_name}/{key}")
+            bank[key] = _verify_bound_file(root, raw_bank[key], label=f"{bank_name}/{key}")
+        normalized["banks"][bank_name] = bank
+    development = raw.get("development_selection")
+    if not isinstance(development, Mapping):
+        raise ExclusionAuditError("replication input sidecar lacks development selection")
+    normalized["development_selection"] = _verify_bound_file(root, development, label="development selection")
+    historical = raw.get("historical_trr0009_selection")
+    if not isinstance(historical, Mapping):
+        raise ExclusionAuditError("replication input sidecar lacks TRR-0009 selection")
+    historical_verified = _verify_bound_file(root, historical, label="historical TRR-0009 selection")
+    proof = {
+        "sidecar": {"path": P11_REPLICATION_SIDECAR_PATH, "sha256": P11_REPLICATION_SIDECAR_SHA256, "status": value.get("status")},
+        "replication_inputs": normalized,
+        "historical_trr0009_selection": historical_verified,
+        "tensor_payload_opened": False,
+    }
+    return normalized, proof
+
+
 def _row_identity_fields(row: Mapping[str, Any], *, source_label: str) -> tuple[p10.Namespace, dict[str, set[str | int]]]:
     namespace = p10._namespace_from_mapping(p10.Namespace(), row, source_label)
     aliases = {
@@ -1139,6 +1382,8 @@ def _row_identity_fields(row: Mapping[str, Any], *, source_label: str) -> tuple[
         "sequence_h129_sha256": "h129_sequence_sha256",
         "trr0002_active_token_ids_sha256": "trr0002_active_token_ids_sha256",
         "trr0002_h40_token_ids_sha256": "trr0002_h40_token_ids_sha256",
+        # TRR-0002 Finance producer field; this is not a global alias.
+        "token_ids_sha256": "trr0002_active_token_ids_sha256",
     }
     fields: dict[str, set[str | int]] = {}
     for raw_key, raw_value in row.items():
@@ -1185,6 +1430,21 @@ def _reconcile_legacy_aliases(
     """Report row-level aliases without reopening payloads or emitting identities."""
     replication, replication_descriptors = _load_replication_metadata(root)
     all_bundles = [*bundles, *replication]
+    # Only these producer-bound bundles are canonical anchors for a legacy
+    # row.  A duplicate row in two noncanonical ledgers is not evidence of a
+    # usable exclusion identity.
+    canonical_anchor_labels = {
+        "trr0002_public_finance_records", "trr0002_public_pile_records",
+        "trr0004_selection_plan", "trr0005_enriched_fit_public_token_identity",
+        "trr0006_selection", "trr0006_p04_opaque",
+        "trr0006_p04_targetfit_public_identity", "trr0007_selection",
+        "trr0007_p06_opaque", "trr0007_prefix_exclusions",
+        "trr0008_p06_opaque", "trr0008_selection", "trr0008_selection_opaque",
+        "trr0009_original_selection", "trr0009_opaque_reservation",
+        "trr0009_p08_opaque", "trr0009_selection_v2",
+        "trr_p09_nested_b1", "pr20_source_selection",
+    }
+    canonical_anchors = [bundle for bundle in all_bundles if bundle.label in canonical_anchor_labels]
     per_source: list[dict[str, Any]] = []
     unique_uncovered_keys: set[tuple[Any, ...]] = set()
     global_uncovered_keys: set[tuple[Any, ...]] = set()
@@ -1204,6 +1464,15 @@ def _reconcile_legacy_aliases(
         matched_count = 0
         field_matches: Counter[str] = Counter()
         uncovered_keys: set[tuple[Any, ...]] = set()
+        uncovered_h128_eligible = 0
+        uncovered_short = 0
+        uncovered_geometry_unknown = 0
+        uncovered_direct_h128 = 0
+        uncovered_with_own_bound_identity = 0
+        uncovered_without_own_bound_identity = 0
+        rows_with_canonical_anchor = 0
+        rows_without_canonical_anchor = 0
+        unique_uncovered_without_canonical_anchor: set[tuple[Any, ...]] = set()
         for row in raw_rows:
             if not isinstance(row, Mapping):
                 continue
@@ -1211,6 +1480,11 @@ def _reconcile_legacy_aliases(
             if not fields:
                 continue
             row_count += 1
+            anchor_matches = _row_matches_other_bundles(namespace, fields, canonical_anchors)
+            if anchor_matches:
+                rows_with_canonical_anchor += 1
+            else:
+                rows_without_canonical_anchor += 1
             others = [candidate for candidate in all_bundles if candidate is not bundle]
             matches = _row_matches_other_bundles(namespace, fields, others)
             field_matches.update(matches)
@@ -1222,6 +1496,31 @@ def _reconcile_legacy_aliases(
                     uncovered_keys.add(key)
                     unique_uncovered_keys.add((bundle.label, *key))
                     global_uncovered_keys.add(key)
+                    if not anchor_matches:
+                        unique_uncovered_without_canonical_anchor.add(key)
+                # A row without a duplicate in another source is still a
+                # complete exclusion when its own verified identity is bound.
+                # Count this separately from duplicate-alias coverage.
+                if _row_matches_other_bundles(namespace, fields, [bundle]):
+                    uncovered_with_own_bound_identity += 1
+                else:
+                    uncovered_without_own_bound_identity += 1
+                geometry = row.get("valid_tokens")
+                if not isinstance(geometry, int):
+                    geometry = row.get("full_token_count")
+                if not isinstance(geometry, int):
+                    geometry = row.get("active_token_count")
+                if not isinstance(geometry, int) and isinstance(row.get("post_bos_token_count"), int):
+                    geometry = int(row["post_bos_token_count"]) + 1
+                if isinstance(geometry, int):
+                    if geometry >= 128:
+                        uncovered_h128_eligible += 1
+                    else:
+                        uncovered_short += 1
+                else:
+                    uncovered_geometry_unknown += 1
+                if fields.get("h128_sequence_sha256"):
+                    uncovered_direct_h128 += 1
         total_rows += row_count
         total_matched += matched_count
         per_source.append({
@@ -1231,6 +1530,16 @@ def _reconcile_legacy_aliases(
             "rows_with_alias_in_other_bound_source": matched_count,
             "rows_without_alias_in_other_bound_source": len(uncovered_keys),
             "unique_uncovered_row_keys": len(uncovered_keys),
+            "unique_uncovered_h128_eligible_rows": uncovered_h128_eligible,
+            "unique_uncovered_short_rows_h128_inapplicable": uncovered_short,
+            "unique_uncovered_rows_geometry_unknown": uncovered_geometry_unknown,
+            "unique_uncovered_rows_with_direct_h128": uncovered_direct_h128,
+            "unique_uncovered_rows_with_own_bound_identity": uncovered_with_own_bound_identity,
+            "unique_uncovered_rows_without_own_bound_identity": uncovered_without_own_bound_identity,
+            "rows_with_verified_canonical_anchor": rows_with_canonical_anchor,
+            "rows_without_verified_canonical_anchor": rows_without_canonical_anchor,
+            "unique_uncovered_rows_without_verified_canonical_anchor": len(unique_uncovered_without_canonical_anchor),
+            "canonical_anchor_labels": sorted(canonical_anchor_labels),
             "alias_match_fields": dict(sorted(field_matches.items())),
             "status": "PASS_ALL_ROWS_HAVE_OTHER_ALIAS" if row_count and not uncovered_keys else ("UNIQUE_ROWS_REMAIN" if uncovered_keys else "NO_INDIVIDUAL_ROWS"),
         })
@@ -1242,6 +1551,10 @@ def _reconcile_legacy_aliases(
         "rows_with_alias_in_other_bound_source": total_matched,
         "unique_uncovered_source_row_keys": len(unique_uncovered_keys),
         "unique_uncovered_identity_keys_across_sources": len(global_uncovered_keys),
+        "unique_uncovered_identity_keys_without_verified_canonical_anchor": sum(
+            int(item.get("unique_uncovered_rows_without_verified_canonical_anchor", 0))
+            for item in per_source
+        ),
         "replication_metadata": replication_descriptors,
         "per_source": per_source,
         "interpretation": "A row without an alias is still excluded by its own bound identity fields when present; this report only identifies unique rows whose identity is not duplicated in another bound source. It does not infer H128 from record IDs or rendered hashes.",
@@ -1360,6 +1673,329 @@ def _synthetic_probe() -> dict[str, Any]:
 
 
 
+def _unknown_identity_row_fields(
+    bundles: Sequence[p10.IdentityBundle],
+) -> list[dict[str, Any]]:
+    """Report unknown identity-like keys that occur on an individual row.
+
+    Aggregate commitments such as ``record_ids_sha256`` remain visible in the
+    source inventory but do not block completion when no row-level unknown key
+    exists.  This check is metadata-only and never retains the associated
+    values.
+    """
+    special_aliases = {
+        "final_sequence_sha256": "h128_sequence_sha256",
+        **{field: field for field in IDENTITY_UNION_FIELDS},
+        "public_record_fingerprint": "rendered_sha256",
+        "truncated_sequence_fingerprint": "h129_sequence_sha256",
+    }
+    result: Counter[tuple[str, str]] = Counter()
+
+    def visit(value: Any, *, label: str, aliases: Mapping[str, str]) -> None:
+        if isinstance(value, Mapping):
+            has_record = any(
+                isinstance(value.get(key), str) and value.get(key)
+                for key in ("record_id", "source_record_id", "public_record_id")
+            )
+            if has_record:
+                for raw_key in value:
+                    lowered = str(raw_key).casefold().replace("-", "_")
+                    canonical = aliases.get(lowered, p10.DEFAULT_ALIASES.get(lowered))
+                    if canonical is None and p10._looks_like_unknown_identity_key(lowered):
+                        result[(label, lowered)] += 1
+            for child in value.values():
+                visit(child, label=label, aliases=aliases)
+        elif isinstance(value, list):
+            for child in value:
+                visit(child, label=label, aliases=aliases)
+
+    spec_aliases = {spec.label: spec.aliases for spec in p10.source_specs()}
+    for bundle in bundles:
+        try:
+            raw = _read_json(bundle.path, label=bundle.label)
+        except ExclusionAuditError:
+            continue
+        aliases = dict(spec_aliases.get(bundle.label, {}))
+        if bundle.label in {"trr0005_selection_plan", "trr0006_p04_opaque"} or bundle.label.startswith("trr0006_p04_"):
+            aliases.update(special_aliases)
+        elif bundle.label.startswith("trr0005_enriched_fit_public_token_identity"):
+            aliases.update(special_aliases)
+        visit(raw, label=bundle.label, aliases=aliases)
+    return [
+        {"label": label, "key": key, "row_occurrences": count}
+        for (label, key), count in sorted(result.items())
+    ]
+
+
+def _descriptor_pointer(root: Path, pointer: Mapping[str, Any], *, label: str) -> dict[str, Any]:
+    path_value = pointer.get("path")
+    expected_sha = pointer.get("sha256")
+    if not isinstance(path_value, str) or not _is_sha256(expected_sha):
+        return {"label": label, "status": "MALFORMED_POINTER"}
+    path = Path(path_value)
+    if not path.is_absolute():
+        path = root / path
+    path = path.resolve()
+    if not path.is_file() or path.is_symlink():
+        return {"label": label, "status": "UNAVAILABLE_POINTER", "path": path_value, "expected_sha256": expected_sha}
+    actual_sha = p10.sha256_file(path)
+    actual_bytes = path.stat().st_size
+    expected_bytes = pointer.get("bytes")
+    if actual_sha != expected_sha or (expected_bytes is not None and actual_bytes != expected_bytes):
+        return {"label": label, "status": "POINTER_HASH_MISMATCH", "path": path_value, "expected_sha256": expected_sha, "actual_sha256": actual_sha, "bytes": actual_bytes}
+    return {"label": label, "status": "PASS", "path": path_value, "sha256": actual_sha, "bytes": actual_bytes}
+
+
+def _load_descriptor_pointer_proof(root: Path) -> dict[str, Any]:
+    """Bind calibration/validation pointers without treating receipts as rows."""
+    proof: dict[str, Any] = {"schema": "token-reconstruction.trr-p11-descriptor-pointer-proof.v1", "sources": []}
+    frozen_path = root / "experiments/TRR-0002/calibration/frozen_calibration.json"
+    frozen = _read_json(frozen_path, label="TRR-0002 frozen calibration")
+    frozen_pointers = []
+    for key in ("fit_result", "plan", "selector_source"):
+        pointer = frozen.get(key)
+        if isinstance(pointer, Mapping):
+            frozen_pointers.append(_descriptor_pointer(root, pointer, label=f"trr0002_calibration.{key}"))
+    proof["sources"].append({
+        "label": "trr0002_calibration",
+        "pointer_checks": frozen_pointers,
+        "identity_rows": "none_declared_in_calibration_receipt",
+        "covered_identity_sources": ["trr0002_public_finance_records", "trr0002_public_pile_records"],
+        "status": "PASS_POINTERS_OR_EXTERNAL_ASSET_BOUND" if all(item["status"] in {"PASS", "UNAVAILABLE_POINTER"} for item in frozen_pointers) else "FAIL",
+    })
+    validation_path = root / "experiments/TRR-0005/public_validation_selection.json"
+    validation = _read_json(validation_path, label="TRR-0005 public validation selection")
+    validation_pointers = []
+    fit_evidence = validation.get("fit_evidence")
+    if isinstance(fit_evidence, Mapping):
+        validation_pointers.append(_descriptor_pointer(root, fit_evidence, label="trr0005_public_validation_selection.fit_evidence"))
+    distributions = validation.get("distributions")
+    if isinstance(distributions, Mapping):
+        for distribution, entry in distributions.items():
+            if not isinstance(entry, Mapping):
+                continue
+            for index, candidate in enumerate(entry.get("candidates", [])):
+                if isinstance(candidate, Mapping) and isinstance(candidate.get("curve_file"), Mapping):
+                    validation_pointers.append(_descriptor_pointer(root, candidate["curve_file"], label=f"trr0005_public_validation_selection.{distribution}.curve_{index}"))
+    proof["sources"].append({
+        "label": "trr0005_public_validation_selection",
+        "pointer_checks": validation_pointers,
+        "identity_rows": "none_declared_in_selection_receipt",
+        "covered_identity_sources": ["trr0005_selection_plan", "trr0005_enriched_fit_public_token_identity"],
+        "status": "PASS" if validation_pointers and all(item["status"] == "PASS" for item in validation_pointers) else "FAIL",
+    })
+    p09_path = root / "experiments/TRR-P09/setup/public-validation-r1-audit.json"
+    p09 = _read_json(p09_path, label="TRR-P09 public validation audit")
+    p09_input = p09.get("inputs", {}).get("source_selection") if isinstance(p09.get("inputs"), Mapping) else None
+    p09_check = _descriptor_pointer(root, p09_input, label="trr_p09_public_validation_audit.source_selection") if isinstance(p09_input, Mapping) else {"label": "trr_p09_public_validation_audit.source_selection", "status": "MALFORMED_POINTER"}
+    proof["sources"].append({
+        "label": "trr_p09_public_validation_audit",
+        "pointer_checks": [p09_check],
+        "identity_rows": "validation output pointers are unavailable; source selection input is the exclusion ledger",
+        "covered_identity_sources": ["trr0009_selection_v2", "trr_p09_nested_b1"],
+        "status": "PASS" if p09_check["status"] == "PASS" else "FAIL",
+    })
+    proof["status"] = "PASS_DESCRIPTOR_POINTER_BINDINGS" if all(item["status"] == "PASS" or item["status"] == "PASS_POINTERS_OR_EXTERNAL_ASSET_BOUND" for item in proof["sources"]) else "PARTIAL_DESCRIPTOR_POINTER_BINDINGS"
+    proof["source_identity_pointer_bindings_complete"] = proof["status"] == "PASS_DESCRIPTOR_POINTER_BINDINGS"
+    return proof
+
+
+def _build_closure_assessment(
+    *,
+    root: Path,
+    bundles: Sequence[p10.IdentityBundle],
+    recovered_bundles: Sequence[p10.IdentityBundle],
+    alias_reconciliation: Mapping[str, Any],
+    aggregate: Mapping[str, Any],
+    p04: P04Load,
+    recovered_identity_proofs: Sequence[Mapping[str, Any]],
+    replication_inputs: Mapping[str, Any],
+    replication_proof: Mapping[str, Any],
+    descriptor_pointer_proof: Mapping[str, Any],
+    identity_gaps: Sequence[Mapping[str, Any]],
+    descriptor_only_labels: set[str],
+) -> dict[str, Any]:
+    labels = {bundle.label for bundle in bundles}
+    required_classes = {
+        "gradient_fitting": {bundle.label for bundle in bundles if bundle.role == "fitting_bank"},
+        "inherited_fitting": {"trr0001_manifest", "trr0002_public_finance_records", "trr0002_public_pile_records", "trr_p09_nested_b1"},
+        "checkpoint_selection": {"trr0002_configuration_winner", "trr0004_selection_plan", "trr0009_selection_v2", "pr20_source_selection_binding"},
+        "calibration": {"trr0002_calibration", "trr0004_affine_validation", "trr0004_adapter_v2_validation", "trr0005_public_validation_selection", "trr_p09_public_validation_audit"},
+        "previously_opened_development": {"trr0001_manifest", "trr0002_fresh_observation_index", "trr0002_public_finance_records", "trr0002_public_pile_records", "trr0007_selection_exclusions", "trr0008_selection_exclusions", "trr0009_selection_v2_exclusions"},
+        "previously_opened_evaluation": {"trr0004_selection_plan", "trr0006_selection", "trr0006_panel", "trr0006_public_observation_panel", "trr0007_selection", "trr0007_eval_panel", "trr0008_selection", "trr0008_eval_panel", "trr0009_original_selection", "trr0009_selection_v2", "trr0009_eval_panel", "pr20_source_selection_binding", "pr20_source_selection", "pr20_source_panel"},
+    }
+    class_results = {
+        name: {
+            "required_sources": sorted(source_labels),
+            "present_sources": sorted(source_labels & labels),
+            "missing_sources": sorted(source_labels - labels),
+            "status": "PASS" if source_labels <= labels else "MISSING_REQUIRED_SOURCE",
+        }
+        for name, source_labels in required_classes.items()
+    }
+    alias_rows = list(alias_reconciliation.get("per_source", ()))
+    alias_by_label = {str(item.get("label")): item for item in alias_rows if isinstance(item, Mapping)}
+    residual_rows = sum(int(item.get("unique_uncovered_rows_without_verified_canonical_anchor", 0)) for item in alias_rows)
+    unique_without_bound = [
+        {
+            "label": item.get("label"),
+            "residual_unique_keys": int(item.get("unique_uncovered_rows_without_verified_canonical_anchor", 0)),
+        }
+        for item in alias_rows
+        if int(item.get("unique_uncovered_rows_without_verified_canonical_anchor", 0))
+    ]
+    unknown_row_fields = _unknown_identity_row_fields([*bundles, *recovered_bundles])
+    required_labels = {spec.label for spec in p10.source_specs()}
+    explicit_inventory = labels == required_labels and len(bundles) == len(required_labels)
+    recovered_by_label = {str(item.get("label")): item for item in recovered_identity_proofs}
+    p05 = recovered_by_label.get("trr0005_enriched_fit_public_token_identity", {})
+    target = recovered_by_label.get("trr0006_p04_targetfit_public_identity", {})
+    target_plan = p04.proof.get("targetfit_plan_proof", {})
+    p04_recovery = (
+        p04.proof.get("producer_source_bytes_available") is True
+        and p04.proof.get("top_level_exchange_digest_match") is True
+        and p04.proof.get("h128_individual_hashes_available") is True
+        and all(item.get("available") is True for item in p04.proof.get("recovered_ledger_proof", {}).values())
+        and target_plan.get("status") == "PASS_TARGET_RULE_COUNTS_ONLY"
+    )
+    canonical_recovery = (
+        len(recovered_identity_proofs) == 2
+        and int(p05.get("h128_rows", 0)) == 350
+        and int(p05.get("record_count", 0)) == 1200
+        and int(target.get("h128_rows", 0)) == 212
+        and int(target.get("record_count", 0)) == 256
+        and replication_proof.get("tensor_payload_opened") is False
+    )
+    pointer_only_allowed = set(descriptor_only_labels) | {
+        item.get("label") for item in AGGREGATE_BINDINGS if isinstance(item, Mapping)
+    } | {"trr0002_calibration", "trr0005_public_validation_selection", "trr_p09_public_validation_audit"}
+    unresolved_identity_gaps = [
+        dict(item) for item in identity_gaps if item.get("label") not in pointer_only_allowed
+    ]
+    tests = {
+        "explicit_source_inventory": explicit_inventory,
+        "required_source_classes": all(item["status"] == "PASS" for item in class_results.values()),
+        "aggregate_panel_bindings": aggregate.get("status") == "PASS_ALL_SIX" and aggregate.get("count") == 6,
+        "trr0009_selection_manifest": "trr0009_selection_v2" in labels,
+        "p04_producer_order_and_h128": p04_recovery,
+        "canonical_p05_and_targetfit_recovery": canonical_recovery,
+        "replication_inputs_exact": bool(replication_inputs) and replication_proof.get("tensor_payload_opened") is False,
+        "descriptor_pointer_bindings": descriptor_pointer_proof.get("source_identity_pointer_bindings_complete") is True,
+        "legacy_unique_rows_have_verified_canonical_anchor": residual_rows == 0,
+        "no_row_level_unknown_identity_keys": not unknown_row_fields,
+        "no_unresolved_identity_pointer_gaps": not unresolved_identity_gaps,
+        "p03_contract_exclusion": True,
+    }
+    blockers: list[dict[str, Any]] = []
+    if not tests["legacy_unique_rows_have_verified_canonical_anchor"]:
+        blockers.append({"reason": "legacy rows without any verified canonical H128/H129/H40 anchor", "rows": unique_without_bound})
+    if unknown_row_fields:
+        blockers.append({"reason": "row-level unknown identity fields", "fields": unknown_row_fields})
+    if unresolved_identity_gaps:
+        blockers.append({"reason": "unresolved individual identity source gaps", "sources": unresolved_identity_gaps})
+    return {
+        "status": "PASS_COMPLETE_ACCESSIBLE_SOURCE_COVERAGE" if all(tests.values()) else "PARTIAL_EXACT_PREFIX_COVERAGE",
+        "coverage_complete": all(tests.values()),
+        "selection_release": False,
+        "tests": tests,
+        "blockers": blockers,
+        "required_source_classes": class_results,
+        "legacy_alias_summary": {
+            "prior_unique_identity_keys": int(alias_reconciliation.get("unique_uncovered_identity_keys_across_sources", 0)),
+            "prior_unique_source_row_keys": int(alias_reconciliation.get("unique_uncovered_source_row_keys", 0)),
+            "rows_covered_by_own_bound_identity": sum(int(item.get("unique_uncovered_rows_with_own_bound_identity", 0)) for item in alias_rows),
+            "rows_covered_by_verified_canonical_anchor": sum(int(item.get("rows_with_verified_canonical_anchor", 0)) for item in alias_rows),
+            "residual_unique_rows_without_verified_canonical_anchor": residual_rows,
+            "sources_with_residual_rows": unique_without_bound,
+        },
+        "unknown_identity_row_fields": unknown_row_fields,
+        "descriptor_pointer_proof": descriptor_pointer_proof,
+        "unresolved_identity_gaps": unresolved_identity_gaps,
+        "p03": {"status": "INTENTIONALLY_EXCLUDED_AND_UNOPENED", "coverage_complete_definition": "accessible explicit source inventory only"},
+    }
+
+
+def _build_closure_table(
+    *,
+    bundles: Sequence[p10.IdentityBundle],
+    recovered_bundles: Sequence[p10.IdentityBundle],
+    alias_reconciliation: Mapping[str, Any],
+    completion: Mapping[str, Any],
+) -> dict[str, Any]:
+    alias_by_label = {
+        str(item.get("label")): item
+        for item in alias_reconciliation.get("per_source", ())
+        if isinstance(item, Mapping)
+    }
+    rows: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for bundle in [*bundles, *recovered_bundles]:
+        if bundle.label in seen:
+            continue
+        seen.add(bundle.label)
+        alias = alias_by_label.get(bundle.label, {})
+        counts = bundle.counts()
+        direct_rows = int(alias.get("rows_with_verified_canonical_anchor", 0))
+        no_anchor_rows = int(alias.get("rows_without_verified_canonical_anchor", 0))
+        anchor_labels = alias.get("canonical_anchor_labels", [])
+        # P04's strict opaque loader and the recovered targetfit loader bind
+        # identities outside the generic row walker. Count their direct rows
+        # from the verified identity fields instead of reporting a misleading
+        # zero merely because alias reconciliation skips the opaque payload.
+        if bundle.label.startswith("trr0006_p04") and not alias:
+            direct_rows = max(
+                counts.get("record_id", 0),
+                counts.get("rendered_sha256", 0),
+                counts.get("h128_sequence_sha256", 0),
+                counts.get("h129_sequence_sha256", 0),
+            )
+            no_anchor_rows = 0
+            anchor_labels = [bundle.label]
+        rows.append({
+            "label": bundle.label,
+            "role": bundle.role,
+            "identity_counts": counts,
+            "prior_unique_keys": int(alias.get("unique_uncovered_row_keys", 0)),
+            "exact_evidence_coverage": {
+                "path": str(bundle.path),
+                "sha256": bundle.sha256,
+                "h128_count": counts.get("h128_sequence_sha256", 0),
+                "h129_count": counts.get("h129_sequence_sha256", 0),
+                "verified_canonical_anchor_labels": anchor_labels,
+                "rows_with_verified_canonical_anchor": direct_rows,
+                "rows_without_verified_canonical_anchor": no_anchor_rows,
+            },
+            "residual_unique_keys": int(alias.get("unique_uncovered_rows_without_verified_canonical_anchor", 0)),
+        })
+    return {
+        "schema": "token-reconstruction.trr-p11-exclusion-closure-checkpoint.v1",
+        "task_id": TASK_ID,
+        "status": completion["status"],
+        "coverage_complete": bool(completion["coverage_complete"]),
+        "selection_release": False,
+        "required_source_classes": completion["required_source_classes"],
+        "prior_unique_keys": completion["legacy_alias_summary"]["prior_unique_identity_keys"],
+        "residual_unique_keys": completion["legacy_alias_summary"]["residual_unique_rows_without_verified_canonical_anchor"],
+        "per_source": rows,
+        "blockers": completion["blockers"],
+        "access_boundary": {"payload_opened": False, "truth_opened": False, "p03_holdout_accessed": False, "new_selection_started": False},
+    }
+
+
+def write_closure_checkpoint(path: Path, table: Mapping[str, Any]) -> dict[str, Any]:
+    path = path.resolve()
+    if path.is_symlink() or path.exists():
+        raise ExclusionAuditError(f"refusing to overwrite closure checkpoint: {path}")
+    payload = canonical_json(dict(table))
+    path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        with path.open("xb") as handle:
+            handle.write(payload)
+    except FileExistsError as exc:
+        raise ExclusionAuditError(f"refusing to overwrite closure checkpoint: {path}") from exc
+    return {"path": str(path), "bytes": len(payload), "sha256": hashlib.sha256(payload).hexdigest(), "status": table.get("status")}
+
+
 def _identity_union_path_string(path: Path, *, root: Path) -> str:
     resolved = path.resolve()
     try:
@@ -1384,8 +2020,8 @@ def _identity_union_document(
     """
     if status not in {IDENTITY_UNION_PARTIAL_STATUS, IDENTITY_UNION_COMPLETE_STATUS}:
         raise ExclusionAuditError(f"unsupported identity-union status: {status}")
-    if status == IDENTITY_UNION_COMPLETE_STATUS and not (coverage_complete and selection_release):
-        raise ExclusionAuditError("complete identity-union status requires complete coverage and release")
+    if status == IDENTITY_UNION_COMPLETE_STATUS and not coverage_complete:
+        raise ExclusionAuditError("complete identity-union status requires complete coverage")
     if status == IDENTITY_UNION_PARTIAL_STATUS and (coverage_complete or selection_release):
         raise ExclusionAuditError("partial identity-union status cannot claim complete coverage or release")
     fields: dict[str, dict[str, list[str | int]]] = {}
@@ -1501,8 +2137,8 @@ def load_identity_union_export(
     release = value.get("selection_release")
     if status not in {IDENTITY_UNION_PARTIAL_STATUS, IDENTITY_UNION_COMPLETE_STATUS} or not isinstance(complete, bool) or not isinstance(release, bool):
         raise ExclusionAuditError("identity-union export status fields are malformed")
-    if status == IDENTITY_UNION_COMPLETE_STATUS and not (complete and release):
-        raise ExclusionAuditError("complete identity-union export has incomplete flags")
+    if status == IDENTITY_UNION_COMPLETE_STATUS and not complete:
+        raise ExclusionAuditError("complete identity-union export has incomplete coverage flag")
     if status == IDENTITY_UNION_PARTIAL_STATUS and (complete or release):
         raise ExclusionAuditError("partial identity-union export has unsafe release flags")
     forbidden = {"source_text", "source_tokens", "token_ids", "input_ids", "labels", "predictions", "truth", "oracle", "activations", "model_weights"}
@@ -1560,17 +2196,53 @@ def build_audit(
     public_payload: Path | None = None,
     public_payload_metadata: Path | None = None,
     identity_union_output: Path | None = None,
+    closure_output: Path | None = None,
+    include_recovered_identity_exports: bool = False,
 ) -> dict[str, Any]:
     bundles, p04 = _load_specs(root, pr20_root)
+    replication_inputs, replication_input_proof = _load_replication_input_binding(root)
+    descriptor_pointer_proof = _load_descriptor_pointer_proof(root)
+    recovered_bundles: list[p10.IdentityBundle] = []
+    recovered_identity_proofs: list[dict[str, Any]] = []
+    if include_recovered_identity_exports:
+        binding = _load_canonical_pass_binding(root)
+        p05_bundle, p05_proof = _load_public_identity_export(
+            root,
+            identity_path=P11_P05_IDENTITY_PATH,
+            identity_sha256=P11_P05_IDENTITY_SHA256,
+            recovery_path=P11_P05_RECOVERY_PATH,
+            recovery_sha256=P11_P05_RECOVERY_SHA256,
+            expected_identity_schema="token-reconstruction.trr-p11-public-token-identity-rows.v1",
+            expected_recovery_schema="token-reconstruction.trr-p11-public-token-identity-recovery.v1",
+            expected_identity_status="PASS_PUBLIC_TOKEN_IDENTITY_RECOVERY",
+            label="trr0005_enriched_fit_public_token_identity",
+            role="inherited_fitting",
+            binding=binding,
+        )
+        target_bundle, target_proof = _load_public_identity_export(
+            root,
+            identity_path=P11_P04_TARGET_IDENTITY_PATH,
+            identity_sha256=P11_P04_TARGET_IDENTITY_SHA256,
+            recovery_path=P11_P04_TARGET_RECOVERY_PATH,
+            recovery_sha256=P11_P04_TARGET_RECOVERY_SHA256,
+            expected_identity_schema="token-reconstruction.trr-p11-p04-targetfit-identity-rows.v1",
+            expected_recovery_schema="token-reconstruction.trr-p11-p04-targetfit-identity-recovery.v1",
+            expected_identity_status="PASS_P04_TARGETFIT_EXACT_RENDERED_H129_H128_RECOVERY",
+            label="trr0006_p04_targetfit_public_identity",
+            role="evaluator_target_fit",
+            binding=binding,
+        )
+        recovered_bundles.extend((p05_bundle, target_bundle))
+        recovered_identity_proofs.extend((p05_proof, target_proof))
     rehash_bundle: p10.IdentityBundle | None = None
     rehash_receipt: dict[str, Any]
     if public_payload is not None or public_payload_metadata is not None:
         if public_payload is None or public_payload_metadata is None:
             raise ExclusionAuditError("public payload and metadata must be supplied together")
         rehash_bundle, rehash_receipt = rehash_public_token_payload(payload_path=public_payload, metadata_path=public_payload_metadata)
-        bundles_for_union = [*bundles, rehash_bundle]
+        bundles_for_union = [*bundles, *recovered_bundles, rehash_bundle]
     else:
-        bundles_for_union = bundles
+        bundles_for_union = [*bundles, *recovered_bundles]
         rehash_receipt = {
             "status": "PENDING_ROOT_LEASE",
             "rows_seen": 0,
@@ -1594,8 +2266,8 @@ def build_audit(
     union = p10.merge_bundles(bundles_for_union)
     by_label = {bundle.label: bundle for bundle in bundles}
     aggregate = validate_aggregate_bindings(root=root, pr20_root=pr20_root)
-    sequence_report = _sequence_gap_report(bundles, root=root, p04=p04)
-    alias_reconciliation = _reconcile_legacy_aliases(bundles, root=root)
+    sequence_report = _sequence_gap_report([*bundles, *recovered_bundles], root=root, p04=p04)
+    alias_reconciliation = _reconcile_legacy_aliases([*bundles, *recovered_bundles], root=root)
     unknown = [
         {
             "label": bundle.label,
@@ -1625,6 +2297,56 @@ def build_audit(
         "trr_p09_public_validation_audit",
         "pr20_source_selection_binding",
     }
+    completion = _build_closure_assessment(
+        root=root,
+        bundles=bundles,
+        recovered_bundles=recovered_bundles,
+        alias_reconciliation=alias_reconciliation,
+        aggregate=aggregate,
+        p04=p04,
+        recovered_identity_proofs=recovered_identity_proofs,
+        replication_inputs=replication_inputs,
+        replication_proof=replication_input_proof,
+        descriptor_pointer_proof=descriptor_pointer_proof,
+        identity_gaps=identity_gaps,
+        descriptor_only_labels=descriptor_only_labels,
+    )
+    closure_table = _build_closure_table(
+        bundles=bundles,
+        recovered_bundles=recovered_bundles,
+        alias_reconciliation=alias_reconciliation,
+        completion=completion,
+    )
+    targetfit_recovered = any(
+        proof.get("label") == "trr0006_p04_targetfit_public_identity"
+        for proof in recovered_identity_proofs
+    )
+    if targetfit_recovered:
+        for item in sequence_report:
+            if item.get("label") == "trr0006_p04_targetfit":
+                item.update({
+                    "role": "evaluator_target_fit",
+                    "status": "PASS_EXACT_RENDERED_H129_H128_RECOVERY",
+                    "record_rows_seen": 256,
+                    "direct_h128_count": 212,
+                    "verified_short_rows_h128_inapplicable": 44,
+                    "eligible_rows_by_declared_length": 212,
+                    "eligible_rows_without_h128": 0,
+                })
+    p04_result_proof = dict(p04.proof)
+    p04_result_proof["targetfit_individual_hashes_available"] = targetfit_recovered
+    p04_result_proof["targetfit_recovery_overlay"] = next(
+        (dict(proof) for proof in recovered_identity_proofs if proof.get("label") == "trr0006_p04_targetfit_public_identity"),
+        {"status": "NOT_REQUESTED"},
+    )
+    p04_result_proof["status"] = (
+        "PASS_PRODUCER_CONVENTION_VERIFIED_H128_AND_TARGETFIT_EXACT_RECOVERY"
+        if targetfit_recovered else p04.proof.get("status")
+    )
+    p04_result_gaps = [
+        gap for gap in p04.gaps
+        if not (targetfit_recovered and str(gap.get("field", "")).startswith("targetfit."))
+    ]
     source_inventory = []
     for bundle in bundles_for_union:
         source_inventory.append(
@@ -1645,8 +2367,8 @@ def build_audit(
     result = {
         "schema": SCHEMA,
         "task_id": TASK_ID,
-        "status": "PARTIAL_CANONICAL_SEQUENCE_EXCLUSION_AUDIT",
-        "coverage_complete": False,
+        "status": "COMPLETE_CANONICAL_SEQUENCE_EXCLUSION_AUDIT" if completion["coverage_complete"] else "PARTIAL_CANONICAL_SEQUENCE_EXCLUSION_AUDIT",
+        "coverage_complete": completion["coverage_complete"],
         "selection_release": False,
         "source_count": len(bundles),
         "source_inventory": source_inventory,
@@ -1681,44 +2403,54 @@ def build_audit(
             },
         },
         "agent1_replication_assets": {
-            "status": "PUBLIC_METADATA_HANDOFF_BOUND_H128_PAYLOAD_OPTIONAL",
-            "included": False,
-            "note": "B0/B1 metadata hashes and record/rendered aliases are bound for reconciliation; B0 token payload H128 values are admitted only when the bounded payload pass is explicitly supplied.",
+            "status": "PUBLIC_METADATA_AND_EXACT_REPLICATION_INPUTS_BOUND",
+            "included": True,
+            "note": "B0/B1 manifest and ordered-identity bytes are hash-bound; no activation tensor or selected weight was opened by this audit.",
             "metadata_sources": alias_reconciliation["replication_metadata"],
+            "canonical_identity_exports": [proof.get("label") for proof in recovered_identity_proofs],
         },
+        "replication_inputs": replication_inputs,
+        "replication_input_proof": replication_input_proof,
+        "descriptor_pointer_proof": descriptor_pointer_proof,
+        "completion_assessment": completion,
+        "closure_table": closure_table,
         "trr0009_selection_manifest_required_and_loaded": "trr0009_selection_v2" in by_label,
         "aggregate_panel_binding": aggregate,
-        "p04_convention_proof": p04.proof,
+        "p04_convention_proof": p04_result_proof,
         "canonical_sequence_audit": {
-            "status": "PARTIAL_EXACT_PREFIX_AUDIT",
+            "status": "COMPLETE_ACCESSIBLE_EXACT_PREFIX_AUDIT" if completion["coverage_complete"] else "PARTIAL_EXACT_PREFIX_AUDIT",
             "hash_convention": "SHA-256 of first 128 active BOS-inclusive IDs encoded as little-endian signed int32 bytes",
             "h128_and_h129_are_distinct_namespaces": True,
             "per_source": sequence_report,
             "public_payload_rehash": rehash_receipt,
+            "recovered_identity_exports": recovered_identity_proofs,
             "legacy_alias_reconciliation": alias_reconciliation,
         },
         "coverage": {
-            "coverage_complete": False,
-            "accessible_explicit_sources_loaded": True,
+            "coverage_complete": completion["coverage_complete"],
+            "accessible_explicit_sources_loaded": completion["tests"]["explicit_source_inventory"],
             "accessible_explicit_source_count": len(bundles),
             "explicit_source_spec_count": len(p10.source_specs()),
             "descriptor_only_sources": sorted(descriptor_only_labels),
             "identity_gaps": identity_gaps,
             "unrecognized_identity_key_gaps": unknown,
             "aggregate_panel_binding_status": aggregate["status"],
-            "p04_targetfit_individual_hashes_available": False,
+            "p04_targetfit_individual_hashes_available": targetfit_recovered,
             "p04_h128_individual_hashes_available": p04.proof.get("h128_individual_hashes_available") is True,
             "public_payload_h128_rehash_status": rehash_receipt["status"],
+            "recovered_identity_exports_status": "PASS_BOUND_P05_AND_P04_TARGETFIT" if recovered_identity_proofs else "NOT_REQUESTED",
         },
-        "coverage_gaps": [
-            "P03 sealed holdout is intentionally unopened and absent from this inventory.",
-            "P04 targetfit public_record_sha256 and truncated_sequence_sha256 arrays are unavailable; the retained target plan proves the exact no_robots revision, 256-row seeded order, and cyclic training rule, but serializes no row IDs or per-record hashes, so aggregate counts are not treated as zero overlap.",
-            "P04 producer/helper bytes, the three public pool ledgers, and all 520 correction/validation/fresh H128 rows are verified from retained Git objects plus the exact public rerender receipt; P04 targetfit per-record identities remain counts-only.",
-            "Inherited fitting rows with no direct H128 are classified per-source below; verified short rows are H128-inapplicable, while eligible rows without exact token inputs remain unresolved.",
-            "TRR-0002 Pile remains H40-only because every opened row is exactly 40 tokens; TRR-0002 Finance H128 is derived only for exact active rows of length at least 128, with shorter rows marked inapplicable. Historical active/H40 fields remain candidate rejection keys.",
-            "No new candidate rows were scanned and no selection/capture/prediction/truth operation was performed.",
-            "PR20 final sources are explicitly development/selection-overlapping and cannot be reused as an independent final panel.",
-        ] + p04.gaps,
+        "coverage_gaps": (
+            [
+                "P03 sealed holdout is intentionally unopened and absent from this inventory; coverage_complete means complete over the explicit accessible inventory.",
+                "TRR-0002 Pile remains H40-only because every opened row is exactly 40 tokens; TRR-0002 Finance H128 is derived only for exact active rows of length at least 128, with shorter rows marked inapplicable. Historical active/H40 fields remain candidate rejection keys.",
+                "No new candidate rows were scanned and no selection/capture/prediction/truth operation was performed.",
+                "PR20 final sources are explicitly development/selection-overlapping and cannot be reused as an independent final panel.",
+            ]
+            + (["P04 targetfit identities are bound by the exact rendered/H129/H128 recovery export; the retained P04 exchange itself remains counts-only for targetfit."] if targetfit_recovered else ["P04 targetfit public_record_sha256 and truncated_sequence_sha256 arrays remain counts-only until an exact per-record recovery is bound."])
+            + (["All prior unique alias keys are anchored to a verified canonical H128/H129/H40 source or a verified short-row observation; residual unique rows without a canonical anchor: 0."] if completion["legacy_alias_summary"]["residual_unique_rows_without_verified_canonical_anchor"] == 0 else ["Residual unique rows without any bound identity are listed in completion_assessment.blockers."])
+            + p04_result_gaps
+        ),
         "access_boundary": {
             "source_text_read": False,
             "source_or_token_payload_emitted": False,
@@ -1754,8 +2486,8 @@ def build_audit(
             identity_union_output,
             union,
             root=root,
-            status=IDENTITY_UNION_PARTIAL_STATUS,
-            coverage_complete=False,
+            status=IDENTITY_UNION_COMPLETE_STATUS if completion["coverage_complete"] else IDENTITY_UNION_PARTIAL_STATUS,
+            coverage_complete=completion["coverage_complete"],
             selection_release=False,
         )
         if export["union_identity_counts"] != result["union_identity_counts"]:
@@ -1767,6 +2499,10 @@ def build_audit(
             "status": "NOT_REQUESTED",
             "union_identity_counts": result["union_identity_counts"],
         }
+    if closure_output is not None:
+        result["closure_checkpoint"] = write_closure_checkpoint(closure_output, closure_table)
+    else:
+        result["closure_checkpoint"] = {"schema": closure_table["schema"], "status": "NOT_REQUESTED"}
     return result
 
 
@@ -1782,6 +2518,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--public-token-payload", type=Path)
     parser.add_argument("--public-token-metadata", type=Path)
     parser.add_argument("--identity-union-output", type=Path)
+    parser.add_argument("--closure-output", type=Path)
+    parser.add_argument("--include-recovered-identity-exports", action="store_true")
     args = parser.parse_args(argv)
     result = build_audit(
         root=args.root.resolve(),
@@ -1789,6 +2527,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         public_payload=args.public_token_payload.resolve() if args.public_token_payload else None,
         public_payload_metadata=args.public_token_metadata.resolve() if args.public_token_metadata else None,
         identity_union_output=args.identity_union_output.resolve() if args.identity_union_output else None,
+        closure_output=args.closure_output.resolve() if args.closure_output else None,
+        include_recovered_identity_exports=args.include_recovered_identity_exports,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     try:

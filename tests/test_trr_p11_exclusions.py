@@ -269,3 +269,38 @@ def test_sanitized_identity_union_round_trip_is_payload_free_and_create_only(tmp
     assert "source_text" not in exported["fields"]
     assert "token_ids" not in exported["fields"]
     assert exported["counts"] == bundle.counts()
+
+
+def test_recovered_canonical_closure_is_complete_but_selection_closed(tmp_path: Path) -> None:
+    if not PR20.exists():
+        pytest.skip("TRR-0010 worktree unavailable")
+    union_path = tmp_path / "identity_union_complete.json"
+    closure_path = tmp_path / "closure_checkpoint.json"
+    audit = build_audit(
+        root=ROOT,
+        pr20_root=PR20,
+        include_recovered_identity_exports=True,
+        identity_union_output=union_path,
+        closure_output=closure_path,
+    )
+    assert audit["status"] == "COMPLETE_CANONICAL_SEQUENCE_EXCLUSION_AUDIT"
+    assert audit["coverage_complete"] is True
+    assert audit["selection_release"] is False
+    assert all(audit["completion_assessment"]["tests"].values())
+    assert audit["completion_assessment"]["legacy_alias_summary"]["prior_unique_identity_keys"] == 24
+    assert audit["completion_assessment"]["legacy_alias_summary"]["residual_unique_rows_without_verified_canonical_anchor"] == 0
+    assert audit["descriptor_pointer_proof"]["status"] == "PASS_DESCRIPTOR_POINTER_BINDINGS"
+    assert any("exact rendered/H129/H128 recovery" in gap for gap in audit["coverage_gaps"])
+    assert not any("arrays remain counts-only" in gap for gap in audit["coverage_gaps"])
+    assert audit["identity_union_export"]["status"] == "IDENTITY_UNION_COMPLETE_NO_PAYLOAD"
+    assert audit["identity_union_export"]["coverage_complete"] is True
+    assert audit["identity_union_export"]["selection_release"] is False
+    assert audit["closure_checkpoint"]["status"] == "PASS_COMPLETE_ACCESSIBLE_SOURCE_COVERAGE"
+    exported = json.loads(union_path.read_text())
+    assert exported["coverage_complete"] is True
+    assert exported["selection_release"] is False
+    loaded = load_identity_union_export(union_path, expected_counts=audit["union_identity_counts"])
+    assert loaded.counts() == audit["union_identity_counts"]
+    closure = json.loads(closure_path.read_text())
+    assert closure["residual_unique_keys"] == 0
+    assert closure["access_boundary"]["p03_holdout_accessed"] is False
