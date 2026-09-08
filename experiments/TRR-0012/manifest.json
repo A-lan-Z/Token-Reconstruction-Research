@@ -189,7 +189,7 @@
     "root": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07",
     "short_row_policy": "8500 ledger-short rows have no canonical H128 hash; no padding"
   },
-  "status": "PACKAGE_ASSEMBLED_AWAITING_AGENT2_RESTORE_AND_EVALUATION",
+  "status": "PACKAGE_RESTORABLE_INDEPENDENT_EVALUATION_PENDING",
   "task_id": "TRR-0012",
   "truth_boundary": {
     "activations_created": false,
@@ -199,7 +199,7 @@
     "model_loaded": false,
     "new_selection_executed": false
   },
-  "current_stage": "PACKAGE_ASSEMBLED_AWAITING_AGENT2_RESTORE_AND_EVALUATION",
+  "current_stage": "PACKAGE_RESTORABLE_INDEPENDENT_EVALUATION_PENDING",
   "capture_completion": {
     "artifacts": {
       "authorization": {
@@ -836,12 +836,8 @@
       "evidence": "experiments/TRR-0012/package/actual_package_completion_v1.json"
     },
     "clean_restore_and_smoke": {
-      "status": "PENDING",
-      "owner_context": "Agent2/restore worker",
-      "items": [
-        "Agent2 clean retrieval from Windows secondary, actual file/tensor identity validation and exact packaged smoke reproduction."
-      ],
-      "producer_equivalence": "PASS: actual four-source/two-method CUDA equality; independent restored smoke remains pending."
+      "status": "COMPLETE",
+      "receipt": "experiments/TRR-0012/package/agent2_restore_receipt_actual_r2.json"
     },
     "independent_evaluation": {
       "status": "PENDING",
@@ -875,7 +871,7 @@
     "scope": "Status before the native fit pair; retained for preparation/inventory history only."
   },
   "deployment_package": {
-    "status": "ASSEMBLED_SECONDARY_VERIFIED_AWAITING_INDEPENDENT_RESTORE",
+    "status": "FROZEN_AND_INDEPENDENTLY_RESTORED",
     "completion_receipt": "experiments/TRR-0012/package/actual_package_completion_v1.json",
     "completion_receipt_sha256": "4d3edd7fd5b3927ef4a0e09b7691e77ba8655998971cb1d481637b30b011d8a3",
     "primary": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/outputs/TRR-0012/model-package-actual-r2",
@@ -895,7 +891,89 @@
       "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/package/contract_actual_5023a9e7_r2.json",
       "sha256": "011e31d32b2cff4b0e39399cad6e4879b8d2526c46572f975ea8a67cb026ea83"
     },
-    "independent_restore_passed": false,
+    "independent_restore_passed": true,
     "failure_boundary": "Windows secondary survives WSL reset/distro loss; not whole-host failure."
+  },
+  "restore_gate_passed": true,
+  "independent_restore": {
+    "status": "PASS_RESTORED_SMOKE",
+    "owner": "Agent2 / TRR-P11",
+    "receipt": "experiments/TRR-0012/package/agent2_restore_receipt_actual_r2.json",
+    "receipt_sha256": "311ed83312c620eef81a8401901876cd55d5c93ea6860955aa4c6f44df4bd7f8",
+    "source_receipt": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P11/experiments/TRR-P11/restore/restore_receipt_actual_r2.json",
+    "restore_manifest": {
+      "bytes": 28709,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P11/experiments/TRR-P11/restore/restore_manifest_actual_r2.json",
+      "sha256": "ab9cb8b88dbfceb17db79ddd9cc1d93ac08eac40bec8eed5c046088323403b49"
+    },
+    "source_boundary": "secondary",
+    "clean_runtime": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P11/restore-runtime/actual-r2",
+    "elapsed_seconds": 4.668795925001177,
+    "training_worktree_import": false,
+    "smoke_comparison": {
+      "keys": [
+        "current_fixed",
+        "expanded_fixed"
+      ],
+      "tensor_digests": {
+        "current_fixed": "50fce79bb0084502e61934c5d8d58ebf70ef09c6ed4b670fc3b6dc176ca6b22d",
+        "expanded_fixed": "b710c2a5adb467fdcd8a44e277c285057f5402a68547211f743a325da29a11e7"
+      },
+      "verified": true
+    },
+    "tensor_identity": {
+      "current_fixed": {
+        "file_sha256": "73df57a384daab9b58186195dace233d702ed801fb5daee462e8c219fdf2d61a",
+        "tensor_count": 15,
+        "tensor_keys": [
+          "base.W",
+          "base.b",
+          "base.key.bias",
+          "base.key.weight",
+          "base.output.bias",
+          "base.output.weight",
+          "base.query.bias",
+          "base.query.weight",
+          "base.s",
+          "base.value.bias",
+          "base.value.weight",
+          "down.bias",
+          "down.weight",
+          "up.bias",
+          "up.weight"
+        ],
+        "verified": true
+      },
+      "expanded_fixed": {
+        "file_sha256": "088be6a6b2842d526f3dab39789728d9cfc23f2fb1fb892d107d46ade2382706",
+        "tensor_count": 15,
+        "tensor_keys": [
+          "base.W",
+          "base.b",
+          "base.key.bias",
+          "base.key.weight",
+          "base.output.bias",
+          "base.output.weight",
+          "base.query.bias",
+          "base.query.weight",
+          "base.s",
+          "base.value.bias",
+          "base.value.weight",
+          "down.bias",
+          "down.weight",
+          "up.bias",
+          "up.weight"
+        ],
+        "verified": true
+      },
+      "public_readout": {
+        "file_sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+        "tensor_count": 1,
+        "tensor_keys": [
+          "embeddings"
+        ],
+        "verified": true
+      }
+    }
   }
 }
