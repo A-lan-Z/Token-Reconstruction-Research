@@ -39,8 +39,8 @@ historical predictions and scores are preserved and reinterpreted as
 selection-overlapping development evidence.
 
 The registered source-extension candidates are Finance [20,000,28,000) and
-Pile [0,2,000), with seed 5011. Exclusion-audit and selector preparation must
-be rebuilt from preserved metadata before any source selection. The missing
+Pile [0,2,000), with seed 5011. The exclusion audit has been rebuilt but remains partial; its remaining
+coverage gaps must be resolved and the selector rebuilt before source selection. The missing
 B0/B1 state files must also be reverified by their published hashes. The
 published public embedding dependency remains available at its existing
 hash-verified path. No old run receipt is being recreated.
@@ -48,9 +48,9 @@ hash-verified path. No old run receipt is being recreated.
 The full curator boundary, paired error inventory, candidate-failure taxonomy,
 and historical runtime/memory basis are in
 experiments/TRR-P10/planning/confirmation_plan.md and
-coordination/parallel/TRR-P10.json. Release remains blocked by the missing
-exclusion/selector preparation, B0/B1 state re-verification, the opaque
-reservation agreement, and root's explicit compute release.
+coordination/parallel/TRR-P10.json. Release remains blocked by incomplete exclusion coverage, the unreconstructed
+selector, exact B0/B1 state restoration, the opaque reservation, and resource
+qualification.
 
 ## Recovery checkpoint — 2026-09-08
 
