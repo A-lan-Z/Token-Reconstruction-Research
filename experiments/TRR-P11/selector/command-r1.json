@@ -1,0 +1,124 @@
+{
+  "boundaries": {
+    "gpu_used": false,
+    "model_loaded": false,
+    "p03_holdout_accessed": false,
+    "replace_audit_path_before_execution": true,
+    "selection_started": false,
+    "source_text_or_token_ids_written": false,
+    "truth_opened": false
+  },
+  "command": [
+    "python3",
+    "scripts/trr_p11/run_source_selection.py",
+    "--repository-root",
+    ".",
+    "--manifest",
+    "experiments/TRR-P11/manifest.json",
+    "--audit",
+    "experiments/TRR-P11/exclusions/recovery_identity_audit_r7.json",
+    "--source-inputs",
+    "experiments/TRR-P11/selector/public_source_inputs_r1.json",
+    "--output",
+    "experiments/TRR-P11/selector/source_selection.json",
+    "--pr20-root",
+    "../TRR-0010"
+  ],
+  "entrypoint": {
+    "function": "select_sources",
+    "module": "scripts.trr_p11.source_selector",
+    "selector_source": {
+      "bytes": 48944,
+      "path": "scripts/trr_p11/source_selector.py",
+      "sha256": "186d0fcda37519ed2dc7838441af2532e3cbcc230fc8a643ad52fd8d552b3712"
+    },
+    "wrapper": {
+      "bytes": 3096,
+      "path": "scripts/trr_p11/run_source_selection.py",
+      "sha256": "94a754d4f2a792c279796c414a1f68876b78ed7d1c774c0988b7a4df83dd67e5"
+    },
+    "wrapper_sha256": "94a754d4f2a792c279796c414a1f68876b78ed7d1c774c0988b7a4df83dd67e5"
+  },
+  "inputs": {
+    "audit": {
+      "coverage_complete": false,
+      "effective_status": "REJECTED_BY_ROOT_REVIEW_FALSE_COMPLETENESS",
+      "path": "experiments/TRR-P11/exclusions/recovery_identity_audit_r7.json",
+      "producer_claimed_status": "COMPLETE_CANONICAL_SEQUENCE_EXCLUSION_AUDIT",
+      "selection_release": false,
+      "sha256": "b0357082d50082231b0b53e61a77a8e9159e72351689993fbe63502d7a7491e3"
+    },
+    "manifest": {
+      "path": "experiments/TRR-P11/manifest.json",
+      "selection_release": false,
+      "status": "PREPARATION_IN_PROGRESS_EXCLUSIONS_PARTIAL_RESTORE_ASSETS_PENDING",
+      "task_id": "TRR-P11"
+    },
+    "pr20_root": "../TRR-0010",
+    "repository_root": ".",
+    "source_inputs": {
+      "bytes": 3311,
+      "path": "experiments/TRR-P11/selector/public_source_inputs_r1.json",
+      "sha256": "1fa6aea4485ad602d396e6a57dc53257977a0f4581375892ef22ab176d52b409"
+    }
+  },
+  "outer_execution": {
+    "command": [
+      "/usr/bin/env",
+      "HF_DATASETS_OFFLINE=1",
+      "HF_HUB_OFFLINE=1",
+      "OMP_NUM_THREADS=1",
+      "TOKENIZERS_PARALLELISM=false",
+      "/usr/bin/prlimit",
+      "--cpu=7200",
+      "--",
+      "/usr/bin/timeout",
+      "--foreground",
+      "--kill-after=60s",
+      "10800s",
+      "python3",
+      "scripts/trr_p11/run_source_selection.py",
+      "--repository-root",
+      ".",
+      "--manifest",
+      "experiments/TRR-P11/manifest.json",
+      "--audit",
+      "experiments/TRR-P11/exclusions/recovery_identity_audit_r7.json",
+      "--source-inputs",
+      "experiments/TRR-P11/selector/public_source_inputs_r1.json",
+      "--output",
+      "experiments/TRR-P11/selector/source_selection.json",
+      "--pr20-root",
+      "../TRR-0010"
+    ],
+    "cpu_limit_seconds": 7200,
+    "environment": {
+      "HF_DATASETS_OFFLINE": "1",
+      "HF_HUB_OFFLINE": "1",
+      "OMP_NUM_THREADS": "1",
+      "TOKENIZERS_PARALLELISM": "false"
+    },
+    "kill_grace_seconds": 60,
+    "path_resolution": "wrapper resolves every relative input/output path from --repository-root; --pr20-root is the existing sibling ../TRR-0010",
+    "release_guard_order": "manifest and complete released audit are validated before source-input normalization or trusted public loading",
+    "status": "PREPARED_NOT_EXECUTED",
+    "wall_limit_seconds": 10800
+  },
+  "output": {
+    "mode": "create_only",
+    "path": "experiments/TRR-P11/selector/source_selection.json",
+    "status_before_release": "NOT_CREATED"
+  },
+  "release_gate": {
+    "audit_selection_release_true_required": true,
+    "complete_exclusion_coverage_required": true,
+    "current_audit_blocks_execution": true,
+    "current_audit_review_caveat": "The r7 producer receipt is rejected by root review for false completeness: nonzero rows were proved, and the ALL-unanchored-versus-unique-row treatment plus calibration-pointer proof remain unresolved. A replacement audit binding is pending; it is not a released selection audit.",
+    "exact_replication_inputs_match_required": true,
+    "replacement_audit_binding_required": true,
+    "root_review_required_before_execution": true
+  },
+  "schema": "token-reconstruction.trr-p11-source-selection-command.v1",
+  "status": "READY_BUT_BLOCKED_PENDING_REPLACEMENT_AUDIT",
+  "task_id": "TRR-P11"
+}

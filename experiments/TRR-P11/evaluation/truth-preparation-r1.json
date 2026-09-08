@@ -1,0 +1,161 @@
+{
+  "access_boundary": {
+    "gpu_used": false,
+    "model_loaded": false,
+    "p03_holdout_accessed": false,
+    "raw_token_values_printed": false,
+    "source_text_read_transiently": true,
+    "source_text_written": false,
+    "target_labels_loaded": false,
+    "token_ids_written_private_only": true
+  },
+  "bindings": {
+    "descriptor": {
+      "bytes": 46072,
+      "path": "outputs/TRR-P11/private-evaluation/evaluation/truth-r1/truth_descriptor.json",
+      "sha256": "d72f01744ee30e8a41a328334b98c43dcd5fefdc5998a11e1710b63b90d73b9f"
+    },
+    "freeze": {
+      "bytes": 264659,
+      "path": "outputs/TRR-P11/private-evaluation/evaluation/freeze-r1.json",
+      "sha256": "1b27af8ca3c395187a68ce548cd60e3b812a5b3353c7c5d38795c36b318d481b"
+    },
+    "producer_failure_receipt": {
+      "bytes": 1211,
+      "path": "outputs/TRR-P11/private-evaluation/evaluation/truth-r1/producer_failure_receipt.json",
+      "sha256": "1940a613b9527ce8738216fc874bf196a02901144113a40dfda8f3eee49bbecd"
+    },
+    "producer_receipt": {
+      "bytes": 47152,
+      "path": "outputs/TRR-P11/private-evaluation/evaluation/truth-r1/producer_receipt.json",
+      "sha256": "e145f3b26651a9ab721575667375f8fa9304dbf7d1729fd2b137d035711689ee"
+    },
+    "selection": {
+      "bytes": 629260,
+      "path": "outputs/TRR-P11/private-evaluation/selection/source_selection.json",
+      "sha256": "fe7129e9d7230100d1900facea98b15b8000f382a0bd7035b2039b4d9429bf68"
+    },
+    "sidecar": {
+      "bytes": 525096,
+      "path": "outputs/TRR-P11/private-evaluation/evaluation/truth-r1/truth_tokens.safetensors",
+      "sha256": "23a457c7232ef3dd4690526e1f59903aaa1df2312662748798952e7deeaa315b"
+    }
+  },
+  "code_hashes": {
+    "scripts/trr0005_produce_confirmation.py": {
+      "bytes": 83875,
+      "sha256": "7289ee5db30bc0b2d3c1b50b1d5b6ca1ac235001371f61b92adf10e2dd979e2b"
+    },
+    "scripts/trr_p11/evaluation.py": {
+      "bytes": 112941,
+      "sha256": "77159b801e11e4fa9cf430bf0b8ec1a5c4205af150d080e32aeca59ba1042219"
+    },
+    "scripts/trr_p11/materialize_truth_r1.py": {
+      "bytes": 17635,
+      "sha256": "617d32ac4e1135df834bbb82bbde8bc1a4a380bbe75ff09f70fbadca1c69b6c0"
+    },
+    "scripts/trr_p11/public_capture.py": {
+      "bytes": 41533,
+      "sha256": "143b6e40e0b1ba891e7fda1b8b021777e7694026b9720090ae12b875eb17a273"
+    },
+    "scripts/trr_p11/source_selector.py": {
+      "bytes": 52211,
+      "sha256": "0397c42b35e4962d1c443808714e8b0b86ad1e52a4dbe9eca82174039f70b700"
+    }
+  },
+  "command": {
+    "argv": [
+      "outputs/TRR-P11/private-evaluation/evaluation/truth-r1/produce_truth_r1.py",
+      "--root",
+      ".",
+      "--selection",
+      "outputs/TRR-P11/private-evaluation/selection/source_selection.json",
+      "--freeze",
+      "outputs/TRR-P11/private-evaluation/evaluation/freeze-r1.json",
+      "--output-dir",
+      "outputs/TRR-P11/private-evaluation/evaluation/truth-r1",
+      "--write"
+    ],
+    "cwd": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P11",
+    "environment": {
+      "CUDA_VISIBLE_DEVICES": "",
+      "HF_DATASETS_OFFLINE": "1",
+      "HF_HUB_OFFLINE": "1",
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "PYTHONPATH": ".:src:scripts",
+      "TOKENIZERS_PARALLELISM": "false",
+      "TRANSFORMERS_OFFLINE": "1"
+    },
+    "python": "/usr/bin/python3",
+    "python_version": "3.12.3"
+  },
+  "freeze_binding": {
+    "p03_holdout_accessed": false,
+    "predictions_frozen_before_truth": true,
+    "sha256": "1b27af8ca3c395187a68ce548cd60e3b812a5b3353c7c5d38795c36b318d481b",
+    "status": "P11_PREDICTIONS_FROZEN_BEFORE_TRUTH"
+  },
+  "private_failure": {
+    "error_message": "No module named 'scripts'",
+    "error_type": "ModuleNotFoundError",
+    "failure_stage": "module_import_before_selection_load",
+    "outputs_created": false,
+    "receipt_sha256": "1940a613b9527ce8738216fc874bf196a02901144113a40dfda8f3eee49bbecd",
+    "status": "FAILED_BEFORE_TRUTH_MATERIALIZATION",
+    "truth_opened": false
+  },
+  "producer": {
+    "byte_identical": true,
+    "entrypoint": "scripts/trr_p11/materialize_truth_r1.py",
+    "helpers": [
+      "scripts/trr_p11/public_capture.py::_materialize_selected",
+      "scripts/trr_p11/source_selector.py::load_selection",
+      "scripts/trr_p11/source_selector.py::_normalize_source_inputs",
+      "scripts/trr_p11/evaluation.py::load_truth_after_freeze"
+    ],
+    "private_script": {
+      "bytes": 17635,
+      "path": "outputs/TRR-P11/private-evaluation/evaluation/truth-r1/produce_truth_r1.py",
+      "sha256": "617d32ac4e1135df834bbb82bbde8bc1a4a380bbe75ff09f70fbadca1c69b6c0"
+    },
+    "tracked_script": {
+      "bytes": 17635,
+      "path": "scripts/trr_p11/materialize_truth_r1.py",
+      "sha256": "617d32ac4e1135df834bbb82bbde8bc1a4a380bbe75ff09f70fbadca1c69b6c0"
+    }
+  },
+  "purpose": "Sanitized provenance for the authorized post-freeze truth materialization; raw source identities, ordering lists, and token values are excluded.",
+  "schema": "token-reconstruction.trr-p11-truth-preparation-public-receipt.v1",
+  "status": "TRUTH_PREPARED_AFTER_PREDICTION_FREEZE",
+  "task_id": "TRR-P11",
+  "timing": {
+    "cpu_threads": 1,
+    "device": "cpu",
+    "finished_utc": "2026-09-08T12:28:31.469365Z",
+    "gpu_used": false,
+    "inference_performed": false,
+    "model_loaded": false,
+    "network_used": false,
+    "peak_rss_bytes": 1147428864,
+    "started_utc": "2026-09-08T12:28:25.162121Z",
+    "wall_seconds": 6.307269848999567
+  },
+  "truth_binding": {
+    "descriptor_sha256": "d72f01744ee30e8a41a328334b98c43dcd5fefdc5998a11e1710b63b90d73b9f",
+    "matrix_status": "P11_PREDICTIONS_FROZEN_BEFORE_TRUTH",
+    "schema": "token-reconstruction.trr-p11-evaluation-truth.v1",
+    "sidecar_bytes": 525096,
+    "sidecar_sha256": "23a457c7232ef3dd4690526e1f59903aaa1df2312662748798952e7deeaa315b",
+    "status": "TRUTH_PREPARED_AFTER_PREDICTION_FREEZE",
+    "tensor_count": 4,
+    "tensor_dtype": "int32",
+    "tensor_shape": [
+      256,
+      128
+    ],
+    "truth_opened": true,
+    "validator": "scripts/trr_p11/evaluation.py::load_truth_after_freeze",
+    "validator_status": "PASS"
+  }
+}

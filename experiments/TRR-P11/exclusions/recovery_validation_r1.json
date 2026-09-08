@@ -1,0 +1,109 @@
+{
+  "audit_path": "experiments/TRR-P11/exclusions/recovery_identity_audit_r1.json",
+  "audit_sha256": "6a89ac75e999c9b3592e334122f7b50f989254ae455e4f48b770cb9f8d0d4b30",
+  "audit_status": "PARTIAL_CANONICAL_SEQUENCE_EXCLUSION_AUDIT",
+  "canonical_sequence_rehash": {
+    "h128_rows": 0,
+    "payload_not_opened": true,
+    "planned_metadata": "TRR-0007/support/broader_capture_v2/enriched_fit_records.json",
+    "planned_payload": "TRR-0007/support/broader_capture_v2/enriched_fit_cut4.safetensors",
+    "planned_payload_bytes": 947176760,
+    "planned_payload_sha256": "a55814759dfa9d2567587935063fc49e44d8bff949c50014793deb982ebdf35d",
+    "resource_plan": {
+      "expected_peak_tensor_bytes": 1152000,
+      "model_loaded": false,
+      "rows": 1200,
+      "safety_margin": "payload is 947176760 bytes on disk; safetensors selective reads avoid activation/model allocation",
+      "tensor_bytes_estimate": 1152000,
+      "tensors_not_read": [
+        "activations",
+        "position_ids",
+        "post_bos_selector_large",
+        "post_bos_selector_small"
+      ],
+      "tensors_read": [
+        "token_ids",
+        "attention_mask"
+      ]
+    },
+    "rows_seen": 0,
+    "short_rows_h128_inapplicable": 0,
+    "status": "PENDING_ROOT_LEASE"
+  },
+  "checks": {
+    "aggregate_panels_all_six_bound": true,
+    "all_48_explicit_sources_loaded": true,
+    "h128_h129_separate": true,
+    "model_loaded": false,
+    "negative_binding_fixtures": true,
+    "new_selection_started": false,
+    "p03_holdout_accessed": false,
+    "p04_convention_checks": {
+      "bos_plus_128_h129": true,
+      "canonical_json_sha256": true,
+      "ordered_opaque_value_sha256": true,
+      "ordered_pair_sha256": true,
+      "signed_int32_binary": true,
+      "unique_set_canonical_json_sha256": true
+    },
+    "p04_targetfit_individual_hashes_available": false,
+    "trr0009_selection_manifest_bound": true,
+    "truth_opened": false
+  },
+  "code": {
+    "bytes": 48005,
+    "path": "scripts/trr_p11/exclusions.py",
+    "restore_test_bytes": 11173,
+    "restore_test_path": "tests/test_trr_p11_restore_gate.py",
+    "restore_test_sha256": "fa603e63ec1120193e9c2299a8af9c637f283feb98d13c0e4341f503278b1a6f",
+    "sha256": "af09a73895d5ad93232700c6730622a01e9dac1f856a0e983d27274c84fb1d58",
+    "test_bytes": 7327,
+    "test_path": "tests/test_trr_p11_exclusions.py",
+    "test_sha256": "1b15de8222824e2dabdc22324b65652fd1638157a0ec8cefdbcee70038f62c3e"
+  },
+  "coverage_complete": false,
+  "known_gaps": [
+    "P03 sealed holdout is intentionally unopened and absent from this inventory.",
+    "P04 targetfit public_record_sha256 and truncated_sequence_sha256 arrays are unavailable; aggregate counts are not treated as zero overlap.",
+    "P04 producer source bytes are unavailable; the declared exchange file, ordered/set commitments, signed-int32/BOS+128 convention, and surviving H129 consumers are checked, while the top-level producer digest is preserved rather than recomputed.",
+    "Inherited fitting rows with no direct H128 are classified per-source below; verified short rows are H128-inapplicable, while eligible rows without exact token inputs remain unresolved.",
+    "No new candidate rows were scanned and no selection/capture/prediction/truth operation was performed.",
+    "PR20 final sources are explicitly development/selection-overlapping and cannot be reused as an independent final panel.",
+    {
+      "field": "fit_replay.public_record_sha256",
+      "reason": "replay metadata exposes rendered_sha256 under a different field; no per-record public field mapping is emitted"
+    },
+    {
+      "field": "fit_replay.truncated_sequence_sha256",
+      "reason": "immutable replay metadata contains no per-record sequence array"
+    },
+    {
+      "field": "targetfit.public_record_sha256",
+      "reason": "target preparation/audit serialize counts only"
+    },
+    {
+      "field": "targetfit.truncated_sequence_sha256",
+      "reason": "target preparation/audit serialize counts only"
+    },
+    {
+      "field": "producer_source_bytes",
+      "reason": "declared P04 producer script and preparation modules are unavailable in this checkout; exact top-level exchange digest cannot be independently recomputed"
+    }
+  ],
+  "note": "Fresh P11 receipt; P10 receipts and code are preserved unchanged. Root lease is required before selective public-token payload read.",
+  "schema": "token-reconstruction.trr-p11-exclusion-validation.v1",
+  "selection_release": false,
+  "status": "PASS_METADATA_BINDINGS_PARTIAL_CANONICAL_SEQUENCE_AUDIT",
+  "task_id": "TRR-P11",
+  "validation": {
+    "commands": [
+      "PYTHONPATH=. pytest -q tests/test_trr_p11_exclusions.py tests/test_trr_p11_restore_gate.py",
+      "PYTHONPATH=. pytest -q tests/test_trr_p10_exclusion.py"
+    ],
+    "elapsed_seconds": null,
+    "inherited_p10_tests_passed": 13,
+    "p11_tests_passed": 14,
+    "tests_failed": 0,
+    "tests_passed": 27
+  }
+}

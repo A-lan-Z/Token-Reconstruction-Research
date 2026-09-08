@@ -1,0 +1,148 @@
+{
+  "boundaries": {
+    "gpu_used": false,
+    "model_loaded": false,
+    "p03_holdout_accessed": false,
+    "replace_audit_path_before_execution": false,
+    "selection_started": false,
+    "source_text_or_token_ids_written": false,
+    "truth_opened": false
+  },
+  "command": [
+    "python3",
+    "scripts/trr_p11/run_source_selection.py",
+    "--repository-root",
+    ".",
+    "--manifest",
+    "experiments/TRR-P11/manifest.json",
+    "--audit",
+    "experiments/TRR-P11/exclusions/recovery_identity_audit_release.json",
+    "--source-inputs",
+    "experiments/TRR-P11/selector/public_source_inputs_r1.json",
+    "--output",
+    "outputs/TRR-P11/private-evaluation/selection/source_selection.json",
+    "--pr20-root",
+    "../TRR-0010"
+  ],
+  "entrypoint": {
+    "function": "select_sources",
+    "module": "scripts.trr_p11.source_selector",
+    "selector_source": {
+      "bytes": 51072,
+      "path": "scripts/trr_p11/source_selector.py",
+      "sha256": "a816a5294668e12545780c2ea7974355521ed0399ebca703dba0dd9403cb0583"
+    },
+    "wrapper": {
+      "bytes": 3096,
+      "path": "scripts/trr_p11/run_source_selection.py",
+      "sha256": "94a754d4f2a792c279796c414a1f68876b78ed7d1c774c0988b7a4df83dd67e5"
+    }
+  },
+  "identity_contract": {
+    "raw_h40_namespace": "h40_sequence_sha256: raw little-endian signed-int32 first-40 IDs",
+    "records_per_domain": 256,
+    "scored_post_bos_tokens": 127,
+    "selection_seed": 5011,
+    "source_ranges_half_open": {
+      "finance": [
+        20000,
+        28000
+      ],
+      "pile": [
+        0,
+        2000
+      ]
+    },
+    "stored_sequence_tokens_including_bos": 128,
+    "trr0002_h40_namespace": "trr0002_h40_token_ids_sha256: tensor-header plus little-endian signed-int64 first-40 IDs"
+  },
+  "inputs": {
+    "audit": {
+      "current_reviewed_candidate": {
+        "bytes": 317844,
+        "path": "experiments/TRR-P11/exclusions/recovery_identity_audit_r15.json",
+        "sha256": "a7d84333821a3e0976c8f0f2ab1f7124d9e660a8f8d44ab54354eeb43c87114b"
+      },
+      "current_reviewed_candidate_coverage_complete": true,
+      "current_reviewed_candidate_selection_release": false,
+      "current_reviewed_candidate_status": "COMPLETE_CANONICAL_SEQUENCE_EXCLUSION_AUDIT",
+      "path": "experiments/TRR-P11/exclusions/recovery_identity_audit_release.json",
+      "release_slot": true,
+      "root_review_required": true,
+      "selection_release_required": true
+    },
+    "manifest": {
+      "path": "experiments/TRR-P11/manifest.json",
+      "selection_release": false,
+      "status": "PREPARATION_IN_PROGRESS_EXCLUSIONS_PARTIAL_RESTORE_ASSETS_PENDING",
+      "task_id": "TRR-P11"
+    },
+    "pr20_root": "../TRR-0010",
+    "repository_root": ".",
+    "source_inputs": {
+      "bytes": 3311,
+      "path": "experiments/TRR-P11/selector/public_source_inputs_r1.json",
+      "sha256": "1fa6aea4485ad602d396e6a57dc53257977a0f4581375892ef22ab176d52b409"
+    }
+  },
+  "outer_execution": {
+    "command": [
+      "/usr/bin/env",
+      "HF_DATASETS_OFFLINE=1",
+      "HF_HUB_OFFLINE=1",
+      "OMP_NUM_THREADS=1",
+      "TOKENIZERS_PARALLELISM=false",
+      "/usr/bin/prlimit",
+      "--cpu=7200",
+      "--",
+      "/usr/bin/timeout",
+      "--foreground",
+      "--kill-after=60s",
+      "10800s",
+      "python3",
+      "scripts/trr_p11/run_source_selection.py",
+      "--repository-root",
+      ".",
+      "--manifest",
+      "experiments/TRR-P11/manifest.json",
+      "--audit",
+      "experiments/TRR-P11/exclusions/recovery_identity_audit_release.json",
+      "--source-inputs",
+      "experiments/TRR-P11/selector/public_source_inputs_r1.json",
+      "--output",
+      "outputs/TRR-P11/private-evaluation/selection/source_selection.json",
+      "--pr20-root",
+      "../TRR-0010"
+    ],
+    "cpu_limit_seconds": 7200,
+    "environment": {
+      "HF_DATASETS_OFFLINE": "1",
+      "HF_HUB_OFFLINE": "1",
+      "OMP_NUM_THREADS": "1",
+      "TOKENIZERS_PARALLELISM": "false"
+    },
+    "kill_grace_seconds": 60,
+    "path_resolution": "wrapper resolves relative inputs/output from --repository-root; --pr20-root is the existing sibling ../TRR-0010",
+    "release_guard_order": "manifest, exact B0/B1 bank/development identities, and complete released audit are validated before source-input normalization or trusted public loading",
+    "status": "PREPARED_NOT_EXECUTED",
+    "wall_limit_seconds": 10800
+  },
+  "output": {
+    "mode": "create_only",
+    "path": "outputs/TRR-P11/private-evaluation/selection/source_selection.json",
+    "private_payload": true,
+    "status_before_release": "NOT_CREATED"
+  },
+  "release_gate": {
+    "audit_selection_release_true_required": true,
+    "complete_exclusion_coverage_required": true,
+    "current_audit_blocks_execution": true,
+    "current_audit_review_caveat": "r15 has a complete canonical union with root-reviewed coverage but selection_release remains false; the stable release slot is intentionally not created here.",
+    "exact_replication_inputs_match_required": true,
+    "full_identity_union_required": true,
+    "root_review_required_before_execution": true
+  },
+  "schema": "token-reconstruction.trr-p11-source-selection-command.v1",
+  "status": "READY_BUT_BLOCKED_PENDING_ROOT_RELEASE",
+  "task_id": "TRR-P11"
+}

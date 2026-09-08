@@ -1,0 +1,796 @@
+{
+  "schema": "token-reconstruction.trr-p11-replication-manifest.v1",
+  "task_id": "TRR-P11",
+  "status": "PREPARATION_IN_PROGRESS_EXCLUSIONS_PARTIAL_RESTORE_ASSETS_PENDING",
+  "created_utc": "2026-09-08T05:09:14Z",
+  "branch": "task/TRR-P11",
+  "base_p10_commit": "cab7d455c305aa01c3d3bfac225fcffa3e66640b",
+  "packet_path": "coordination/requests/TRR-P11.md",
+  "packet_sha256": "70a2cf13b2795916749031bcfed3a55205cd52a44926c1d160bd83508706d9b6",
+  "plan_path": "experiments/TRR-P11/planning/replication_plan.md",
+  "parallel_state_path": "coordination/parallel/TRR-P11.json",
+  "result_path": "coordination/results/TRR-P11.md",
+  "predecessor": {
+    "task_id": "TRR-P10",
+    "head": "cab7d455c305aa01c3d3bfac225fcffa3e66640b",
+    "pull_request": "https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/22",
+    "pull_request_status": "OPEN_DRAFT_UNMERGED",
+    "exact_confirmation_status": "BLOCKED_INCOMPLETE_MISSING_FROZEN_ASSETS",
+    "old_states_reused": false
+  },
+  "decision": {
+    "type": "NEW_WEIGHT_REPLICATION",
+    "current_arm": "current_bank_B0_fixed_public_readout",
+    "expanded_arm": "expanded_bank_B1_fixed_public_readout",
+    "new_state_identities": "NOT_BOUND_AGENT1_FIT_PENDING",
+    "old_p10_selected_steps": "UNAVAILABLE_AND_NOT_REUSED",
+    "directional_readout": false,
+    "architecture_or_loss_change": false,
+    "additional_fit": false
+  },
+  "ownership": {
+    "agent1": "one paired B0/B1 fit and durable deployment package",
+    "agent2": "exclusions, prospective evaluation, restore gate, scoring handoff",
+    "root": "coordination and resource/source/evaluation release"
+  },
+  "evaluation_contract": {
+    "domains": [
+      "pile",
+      "finance"
+    ],
+    "targets": [
+      "public_base",
+      "public_lora_2601"
+    ],
+    "cells": [
+      "pile__public_base",
+      "pile__public_lora_2601",
+      "finance__public_base",
+      "finance__public_lora_2601"
+    ],
+    "records_per_domain": 256,
+    "stored_tokens_including_bos": 128,
+    "scored_post_bos_tokens": 127,
+    "token_positions_per_cell": 32512,
+    "exact_records_per_cell": 256,
+    "a1_a2_subset_records_per_domain": 128,
+    "a1_a2_subset_token_positions_per_cell": 16256,
+    "a1_a2_subset_exact_records_per_cell": 128,
+    "target_resource_binding": {
+      "public_lora_2601": {
+        "path": "outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors",
+        "sha256": "eea7bb49f801b61df2e26a8f59af7c3096f6f3a2604404e16e589443bcfba595",
+        "generation_sha256": "6bed8aca6668bd749bbad03c0c85bbace306085dac3141895dad7685f03d0682",
+        "role": "evaluator_only"
+      }
+    },
+    "primary_contrast": {
+      "candidate": "new_expanded_fixed_B1",
+      "control": "new_current_fixed_B0",
+      "paired_unit": "source_record",
+      "exact_record_inventory": [
+        "gains",
+        "losses",
+        "ties"
+      ],
+      "reported_separately_per_cell": true
+    }
+  },
+  "source_reservation": {
+    "seed": 5011,
+    "pile_half_open": [
+      0,
+      2000
+    ],
+    "finance_half_open": [
+      20000,
+      28000
+    ],
+    "status": "NOT_STARTED_PENDING_COMPLETE_EXCLUSION_AUDIT"
+  },
+  "statistical_contract": {
+    "bootstrap_unit": "source_record",
+    "bootstrap_seed": 9009,
+    "bootstrap_resamples": 10000,
+    "shared_schedule_within_domain": true,
+    "token_interval": {
+      "type": "descriptive_central_percentile",
+      "confidence": 0.95,
+      "lower_quantile": 0.025,
+      "upper_quantile": 0.975,
+      "percentile_convention": "ascending order statistics: lower index=floor(alpha * draws); upper index=ceil((1-alpha) * draws)-1"
+    },
+    "exact_record_interval": {
+      "path": "scripts/trr0010_analysis.py",
+      "function": "paired_exact_cp",
+      "source_commit": "70c57db7643913eea97cc606775b3f1f3807967a",
+      "source_sha256": "90078ac78bfcdcfb5f782a598c943b78cb0417f6895906a1e6d61056a3793cef",
+      "route_alpha": 0.025,
+      "component_alpha": 0.0125,
+      "unit": "paired source-record exact outcome; all 127 post-BOS positions",
+      "bootstrap_used": false
+    },
+    "token_contrast_function": {
+      "path": "scripts/trr0010_analysis.py",
+      "function": "bootstrap_token_delta",
+      "source_commit": "70c57db7643913eea97cc606775b3f1f3807967a",
+      "source_sha256": "90078ac78bfcdcfb5f782a598c943b78cb0417f6895906a1e6d61056a3793cef",
+      "one_sided_alpha": 0.025,
+      "central_interval_confidence": 0.95
+    },
+    "automatic_ci_gate": false,
+    "pooling": false,
+    "task_local_hash_required_before_truth": true,
+    "status": "HISTORICAL_HASH_BOUND_TASK_LOCAL_COPY_REQUIRED",
+    "owner": "Agent2",
+    "separate_from_agent1_decoder_package": true
+  },
+  "exclusion_contract": {
+    "required_source_classes": [
+      "gradient_fitting",
+      "inherited_fitting",
+      "checkpoint_selection",
+      "calibration",
+      "previously_opened_development",
+      "previously_opened_evaluation"
+    ],
+    "trr0009_selection_manifest_required": true,
+    "identity_fields": [
+      "dataset_revision_split_row",
+      "record_id",
+      "rendered_record_sha256",
+      "canonical_h128_sequence_sha256",
+      "producer_published_h129_or_truncated_sequence_fingerprint"
+    ],
+    "p04_fingerprint_producers_verified": false,
+    "aggregate_panel_pointer_links_verified": false,
+    "status": "PARTIAL_CANONICAL_SEQUENCE_EXCLUSION_AUDIT",
+    "selection_release": false,
+    "public_rerender_and_tokenization_owner": "trusted_curator",
+    "public_rerender_and_tokenization_is_metadata_only": false,
+    "agent2_receives": "approved_identity_metadata_and_opaque_hashes_only",
+    "latest_audit": {
+      "path": "experiments/TRR-P11/exclusions/recovery_identity_audit_r7.json",
+      "sha256": "b0357082d50082231b0b53e61a77a8e9159e72351689993fbe63502d7a7491e3",
+      "status": "REJECTED_BY_ROOT_REVIEW_FALSE_COMPLETENESS",
+      "coverage_complete": false,
+      "selection_release": false,
+      "replication_inputs_binding": {
+        "status": "BOUND_EXACT_BANK_AND_SELECTION_IDENTITIES_AUDIT_PARTIAL",
+        "banks": {
+          "B0": {
+            "bank": "B0",
+            "bank_manifest": {
+              "path": "../TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_manifest.json",
+              "sha256": "c7a857e545a2f252ce8b3ab71bb2336e552fd212c7c434e39cef66f233b77a08",
+              "bytes": 8156
+            },
+            "ordered_identity": {
+              "path": "../TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_fit_records.json",
+              "sha256": "808cfd0f95ea3ee66c1d4094f3c10f1e346ba986a6d77138a61b8f8f13c4a738",
+              "bytes": 918427
+            }
+          },
+          "B1": {
+            "bank": "B1",
+            "bank_manifest": {
+              "path": "../TRR-0012/experiments/TRR-0012/capture/b1_activation_date07/bank_manifest.json",
+              "sha256": "8265df60998fd23a11db560de661e65d972aa8823df09101303f4bab44732c7c",
+              "bytes": 144117
+            },
+            "ordered_identity": {
+              "path": "../TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07/records.json",
+              "sha256": "367cfba0ffe78f59454861a76f23830f480a8745cc6b35e6b4a0d05eca53638b",
+              "bytes": 10767794
+            },
+            "preparation_manifest": {
+              "path": "../TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07/preparation_manifest.json",
+              "sha256": "d1097b467e4abe4ec9f39dfca27f34f1d481527d2de79ca610751a8fe260620e",
+              "bytes": 42163
+            }
+          }
+        },
+        "development_selection": {
+          "path": "../TRR-0012/experiments/TRR-0012/preparation/public_validation_r1/validation_manifest.json",
+          "sha256": "b47114d86d80d704c331f50693ae2bc79741147cc01cc692cacba0c5e0697f65",
+          "bytes": 468777
+        },
+        "historical_trr0009_selection": {
+          "path": "../TRR-0010/experiments/TRR-0009/selection_v2/source_selection.json",
+          "sha256": "c2e996514f7f45e55d7bfadc27fc8048bdb07a2c979b208de8716972d8d1def2",
+          "bytes": 287719
+        }
+      },
+      "validation_receipt": {
+        "path": "experiments/TRR-P11/exclusions/recovery_validation_r2.json",
+        "sha256": "10b36dcc6365b51b2f42986f6c9a86d18872ef3f08c47ae5c270c77759f96284",
+        "status": "PASS_FOCUSED_EXCLUSION_TESTS_PARTIAL_AUDIT",
+        "tests_passed": 21,
+        "tests_failed": 0
+      },
+      "producer_claimed_status": "COMPLETE_CANONICAL_SEQUENCE_EXCLUSION_AUDIT",
+      "review_caveat": "The r7 producer receipt is rejected by root review for false completeness: nonzero rows were proved, and the ALL-unanchored-versus-unique-row treatment plus calibration-pointer proof remain unresolved. A replacement audit binding is pending; it is not a released selection audit.",
+      "replacement_binding_pending": true
+    },
+    "replication_inputs_binding_sidecar": {
+      "path": "experiments/TRR-P11/exclusions/replication_inputs_binding_r1.json",
+      "sha256": "6b1945a065d7a737b40ca0623bc5bedc909e8721836c95eed4742b64ae171c98",
+      "status": "BOUND_EXACT_METADATA_PARTIAL_AUDIT"
+    },
+    "audit_review_caveat": "The r7 producer receipt is rejected by root review for false completeness: nonzero rows were proved, and the ALL-unanchored-versus-unique-row treatment plus calibration-pointer proof remain unresolved. A replacement audit binding is pending; it is not a released selection audit."
+  },
+  "restore_gate": {
+    "status": "PASS_SYNTHETIC_E2E_ACTUAL_ASSETS_PENDING",
+    "copy_a": "persistent_training_or_output_storage_to_be_bound",
+    "copy_b": "/mnt/c/Users/alanz/Token-Reconstruction-Backups/TRR-0012",
+    "clean_workspace_required": true,
+    "opened_public_smoke_test_required": true,
+    "tensor_identity_required": true,
+    "source_selection_can_precede_restore": true,
+    "prediction_and_truth_blocked_until_pass": true,
+    "opened_public_smoke_test": {
+      "source": "TRR-0010 already-opened public_base fixture",
+      "records_per_domain": 2,
+      "domain_order": [
+        "finance",
+        "pile"
+      ],
+      "methods": [
+        "new_current_fixed_B0",
+        "new_expanded_fixed_B1"
+      ],
+      "identity_hashes_frozen_before_fit": [
+        "record_ids",
+        "order",
+        "H",
+        "mask",
+        "position_ids"
+      ],
+      "after_normal_checkpoint_selection": true,
+      "selection_criterion": false
+    },
+    "minimum_free_gib_after_copy": 10,
+    "failure_boundary_note": "Protects against WSL reset and temporary-runtime loss; does not provide whole-host physical-failure backup.",
+    "validation_receipt": {
+      "path": "experiments/TRR-P11/restore/execution-tests-r11.json",
+      "sha256": "5ee820b3c66164d1f6d45db41f75e5b7cd4e9e98169143370ccbd67d39f274d5",
+      "status": "PASS_SYNTHETIC_RESTORE_E2E",
+      "tests_collected": 12,
+      "tests_passed": 12,
+      "tests_failed": 0,
+      "restore_gate_code_sha256": "3c2e7189a7f0ba8cfa469a746c02132c15658ac2cc4da25207ac05c332b3be4b",
+      "restore_test_code_sha256": "7c59d8d2a455516fcb51850af619f9e5d07ed13d51c232530fb9526a1513e409",
+      "pytest_elapsed_seconds": 3.49,
+      "wrapper_elapsed_seconds": 4.131441188,
+      "actual_package_restore": "PENDING_AGENT1_FROZEN_PACKAGE_AND_SECONDARY_COPY",
+      "gpu_used": false,
+      "model_loaded": false,
+      "real_source_or_truth_loaded": false,
+      "peak_rss_kb": 676188
+    },
+    "actual_package_restore": "PENDING_AGENT1_FROZEN_PACKAGE_AND_SECONDARY_COPY"
+  },
+  "new_model_states": {
+    "current_b0": null,
+    "expanded_b1": null,
+    "status": "NOT_BOUND_AGENT1_FIT_PENDING",
+    "identity_freeze_required_before_restore": true
+  },
+  "truth_boundary": {
+    "source_selection_started": false,
+    "observations_captured": false,
+    "predictions_started": false,
+    "truth_opened": false,
+    "p03_holdout_accessed": false
+  },
+  "pending": [
+    "Agent1 common-input and one-paired-fit inventory",
+    "complete canonical, legacy, and targetfit exclusion coverage",
+    "frozen task-local statistical implementation copy/hash",
+    "prospective source selection release after complete exclusions, frozen plan, and bank identities",
+    "new B0/B1 durable state identities frozen before restore",
+    "two-copy restore gate and clean-workspace public smoke test before prediction/truth",
+    "root release for capture, prediction, and truth"
+  ],
+  "publication": {
+    "number": 24,
+    "url": "https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/24",
+    "base": "task/TRR-P10",
+    "head": "task/TRR-P11",
+    "status": "OPEN_DRAFT_UNMERGED",
+    "result_path": "coordination/results/TRR-P11.md",
+    "manifest_path": "experiments/TRR-P11/manifest.json"
+  },
+  "fit_contract": {
+    "checkpoint_grid_updates": [
+      0,
+      1000,
+      2000,
+      4000,
+      8000,
+      12000,
+      13000
+    ],
+    "validation_every_1000": "NOT_EXECUTED_NON_GRID",
+    "selection_rule": "earliest maximum on the frozen seven-point grid; final independent outcomes never enter selection",
+    "state_identity_freeze_before_restore": true
+  },
+  "replication_inputs": {
+    "status": "BOUND_EXACT_BANK_AND_SELECTION_IDENTITIES_AUDIT_PARTIAL",
+    "banks": {
+      "B0": {
+        "bank": "B0",
+        "bank_manifest": {
+          "path": "../TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_manifest.json",
+          "sha256": "c7a857e545a2f252ce8b3ab71bb2336e552fd212c7c434e39cef66f233b77a08",
+          "bytes": 8156
+        },
+        "ordered_identity": {
+          "path": "../TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_fit_records.json",
+          "sha256": "808cfd0f95ea3ee66c1d4094f3c10f1e346ba986a6d77138a61b8f8f13c4a738",
+          "bytes": 918427
+        }
+      },
+      "B1": {
+        "bank": "B1",
+        "bank_manifest": {
+          "path": "../TRR-0012/experiments/TRR-0012/capture/b1_activation_date07/bank_manifest.json",
+          "sha256": "8265df60998fd23a11db560de661e65d972aa8823df09101303f4bab44732c7c",
+          "bytes": 144117
+        },
+        "ordered_identity": {
+          "path": "../TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07/records.json",
+          "sha256": "367cfba0ffe78f59454861a76f23830f480a8745cc6b35e6b4a0d05eca53638b",
+          "bytes": 10767794
+        },
+        "preparation_manifest": {
+          "path": "../TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07/preparation_manifest.json",
+          "sha256": "d1097b467e4abe4ec9f39dfca27f34f1d481527d2de79ca610751a8fe260620e",
+          "bytes": 42163
+        }
+      }
+    },
+    "development_selection": {
+      "path": "../TRR-0012/experiments/TRR-0012/preparation/public_validation_r1/validation_manifest.json",
+      "sha256": "b47114d86d80d704c331f50693ae2bc79741147cc01cc692cacba0c5e0697f65",
+      "bytes": 468777
+    },
+    "historical_trr0009_selection": {
+      "path": "../TRR-0010/experiments/TRR-0009/selection_v2/source_selection.json",
+      "sha256": "c2e996514f7f45e55d7bfadc27fc8048bdb07a2c979b208de8716972d8d1def2",
+      "bytes": 287719
+    }
+  },
+  "preparation_evidence": {
+    "status": "PREPARATION_IN_PROGRESS_EXCLUSIONS_PARTIAL_RESTORE_ASSETS_PENDING",
+    "selector": {
+      "path": "experiments/TRR-P11/selector/validation-r2.json",
+      "sha256": "192b26efd83592b5ba23c53c9e3cd14087752553b867b9292b16e25936e51639",
+      "status": "PASS_SELECTOR_SYNTHETIC_NO_SOURCE_SCAN",
+      "tests_collected": 8,
+      "tests_passed": 8,
+      "tests_failed": 0,
+      "code_commit_at_run": "eef40f65f486fecd2ac31b03fb1d8b37cd9ecbc7",
+      "selector_code_sha256": "186d0fcda37519ed2dc7838441af2532e3cbcc230fc8a643ad52fd8d552b3712",
+      "test_code_sha256": "d1961d08f3312745910ae724314d11f624ea93214eadbfbcc82ddfa595e2cbc0",
+      "source_scan": false,
+      "truth_opened": false,
+      "gpu_used": false,
+      "peak_rss_kb": "unknown"
+    },
+    "restore_gate": {
+      "path": "experiments/TRR-P11/restore/execution-tests-r11.json",
+      "sha256": "5ee820b3c66164d1f6d45db41f75e5b7cd4e9e98169143370ccbd67d39f274d5",
+      "status": "PASS_SYNTHETIC_RESTORE_E2E",
+      "tests_collected": 12,
+      "tests_passed": 12,
+      "tests_failed": 0,
+      "restore_gate_code_sha256": "3c2e7189a7f0ba8cfa469a746c02132c15658ac2cc4da25207ac05c332b3be4b",
+      "restore_test_code_sha256": "7c59d8d2a455516fcb51850af619f9e5d07ed13d51c232530fb9526a1513e409",
+      "pytest_elapsed_seconds": 3.49,
+      "wrapper_elapsed_seconds": 4.131441188,
+      "actual_package_restore": "PENDING_AGENT1_FROZEN_PACKAGE_AND_SECONDARY_COPY",
+      "gpu_used": false,
+      "model_loaded": false,
+      "real_source_or_truth_loaded": false,
+      "peak_rss_kb": 676188
+    },
+    "exclusion_audit": {
+      "path": "experiments/TRR-P11/exclusions/recovery_identity_audit_r7.json",
+      "sha256": "b0357082d50082231b0b53e61a77a8e9159e72351689993fbe63502d7a7491e3",
+      "status": "REJECTED_BY_ROOT_REVIEW_FALSE_COMPLETENESS",
+      "coverage_complete": false,
+      "selection_release": false,
+      "replication_inputs_binding": {
+        "status": "BOUND_EXACT_BANK_AND_SELECTION_IDENTITIES_AUDIT_PARTIAL",
+        "banks": {
+          "B0": {
+            "bank": "B0",
+            "bank_manifest": {
+              "path": "../TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_manifest.json",
+              "sha256": "c7a857e545a2f252ce8b3ab71bb2336e552fd212c7c434e39cef66f233b77a08",
+              "bytes": 8156
+            },
+            "ordered_identity": {
+              "path": "../TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_fit_records.json",
+              "sha256": "808cfd0f95ea3ee66c1d4094f3c10f1e346ba986a6d77138a61b8f8f13c4a738",
+              "bytes": 918427
+            }
+          },
+          "B1": {
+            "bank": "B1",
+            "bank_manifest": {
+              "path": "../TRR-0012/experiments/TRR-0012/capture/b1_activation_date07/bank_manifest.json",
+              "sha256": "8265df60998fd23a11db560de661e65d972aa8823df09101303f4bab44732c7c",
+              "bytes": 144117
+            },
+            "ordered_identity": {
+              "path": "../TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07/records.json",
+              "sha256": "367cfba0ffe78f59454861a76f23830f480a8745cc6b35e6b4a0d05eca53638b",
+              "bytes": 10767794
+            },
+            "preparation_manifest": {
+              "path": "../TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07/preparation_manifest.json",
+              "sha256": "d1097b467e4abe4ec9f39dfca27f34f1d481527d2de79ca610751a8fe260620e",
+              "bytes": 42163
+            }
+          }
+        },
+        "development_selection": {
+          "path": "../TRR-0012/experiments/TRR-0012/preparation/public_validation_r1/validation_manifest.json",
+          "sha256": "b47114d86d80d704c331f50693ae2bc79741147cc01cc692cacba0c5e0697f65",
+          "bytes": 468777
+        },
+        "historical_trr0009_selection": {
+          "path": "../TRR-0010/experiments/TRR-0009/selection_v2/source_selection.json",
+          "sha256": "c2e996514f7f45e55d7bfadc27fc8048bdb07a2c979b208de8716972d8d1def2",
+          "bytes": 287719
+        }
+      },
+      "validation_receipt": {
+        "path": "experiments/TRR-P11/exclusions/recovery_validation_r2.json",
+        "sha256": "10b36dcc6365b51b2f42986f6c9a86d18872ef3f08c47ae5c270c77759f96284",
+        "status": "PASS_FOCUSED_EXCLUSION_TESTS_PARTIAL_AUDIT",
+        "tests_passed": 21,
+        "tests_failed": 0
+      },
+      "binding_sidecar": {
+        "path": "experiments/TRR-P11/exclusions/replication_inputs_binding_r1.json",
+        "sha256": "6b1945a065d7a737b40ca0623bc5bedc909e8721836c95eed4742b64ae171c98",
+        "status": "BOUND_EXACT_METADATA_PARTIAL_AUDIT"
+      },
+      "producer_claimed_status": "COMPLETE_CANONICAL_SEQUENCE_EXCLUSION_AUDIT",
+      "review_caveat": "The r7 producer receipt is rejected by root review for false completeness: nonzero rows were proved, and the ALL-unanchored-versus-unique-row treatment plus calibration-pointer proof remain unresolved. A replacement audit binding is pending; it is not a released selection audit.",
+      "replacement_binding_pending": true
+    },
+    "scientific_execution": {
+      "agent1_fit_count": 0,
+      "source_selection_started": false,
+      "activation_capture_started": false,
+      "prediction_started": false,
+      "truth_opened": false,
+      "p03_holdout_accessed": false,
+      "new_model_states_bound": false,
+      "agent1_progress": {
+        "status": "B0_FIT_COMPLETE_B1_RUNNING",
+        "native_pair": "r4",
+        "native_b0_started_utc": "2026-09-08T07:32:14Z",
+        "source_commit": "c943663356ee5016a5ed6bd83c6d714e1aae22f0",
+        "b0": {
+          "status": "COMPLETE_NATIVE_13000_UPDATE_FIT",
+          "selected_step": 8000,
+          "selection_rule": "earliest strict maximum on the registered seven-point grid",
+          "persistent_checkpoints_verified": 7,
+          "development_scores_included": false
+        },
+        "b1": {
+          "status": "RUNNING_LATEST_CONFIRMED_STEP_2000",
+          "started_step": 0,
+          "latest_confirmed_step": 2000,
+          "latest_interval_2_seconds": 174.7,
+          "model_id": "expanded_fixed_replication_1",
+          "development_scores_included": false
+        },
+        "qualification_receipt": {
+          "path": "../TRR-0012/outputs/TRR-0012/qualification_fixed_b1_v2/qualification_receipt.json",
+          "sha256": "2eba2b75b64015911f9801637814e5de9698a2f00824f67980d720a14872c706",
+          "bytes": 19925,
+          "status": "QUALIFICATION_PASS",
+          "discarded_updates": 8,
+          "development_scores_included": false,
+          "metadata_only_binding": true,
+          "role": "SEPARATE_8_UPDATE_QUALIFIER",
+          "describes_b0_fit": false,
+          "describes_b1_fit": false
+        },
+        "truth_boundary": "No P11 source selection, capture, prediction, truth access, or P03 access is recorded here."
+      }
+    },
+    "agent1_progress": {
+      "status": "B0_FIT_COMPLETE_B1_RUNNING",
+      "native_pair": "r4",
+      "native_b0_started_utc": "2026-09-08T07:32:14Z",
+      "source_commit": "c943663356ee5016a5ed6bd83c6d714e1aae22f0",
+      "b0": {
+        "status": "COMPLETE_NATIVE_13000_UPDATE_FIT",
+        "selected_step": 8000,
+        "selection_rule": "earliest strict maximum on the registered seven-point grid",
+        "persistent_checkpoints_verified": 7,
+        "development_scores_included": false
+      },
+      "b1": {
+        "status": "RUNNING_LATEST_CONFIRMED_STEP_2000",
+        "started_step": 0,
+        "latest_confirmed_step": 2000,
+        "latest_interval_2_seconds": 174.7,
+        "model_id": "expanded_fixed_replication_1",
+        "development_scores_included": false
+      },
+      "qualification_receipt": {
+        "path": "../TRR-0012/outputs/TRR-0012/qualification_fixed_b1_v2/qualification_receipt.json",
+        "sha256": "2eba2b75b64015911f9801637814e5de9698a2f00824f67980d720a14872c706",
+        "bytes": 19925,
+        "status": "QUALIFICATION_PASS",
+        "discarded_updates": 8,
+        "development_scores_included": false,
+        "metadata_only_binding": true,
+        "role": "SEPARATE_8_UPDATE_QUALIFIER",
+        "describes_b0_fit": false,
+        "describes_b1_fit": false
+      },
+      "truth_boundary": "No P11 source selection, capture, prediction, truth access, or P03 access is recorded here."
+    },
+    "historical_runtime_estimate": {
+      "path": "experiments/TRR-P11/capture/historical_a1_runtime_estimate_r1.json",
+      "sha256": "366c92b2aea776d592e1b669caf2b44811bc7cb3534c32ee3f338cef9d6a9cd1",
+      "bytes": 8502,
+      "status": "HISTORICAL_METADATA_ONLY_ESTIMATE",
+      "p11_runtime_measured": false,
+      "development_scores_included": false,
+      "geometry_aware_proxy_plus_model_startup_minutes": 30.72912221851681
+    },
+    "capture_adapter_checkpoint": {
+      "commit": "177532c",
+      "status": "STATIC_SCHEMA_ALIGNED_NO_CAPTURE_RUN",
+      "capture_cells_in_receipt": true,
+      "normalized_record_slots": "record/{index:03d}",
+      "raw_bindings_preserved": [
+        "capture_record_order",
+        "capture_tensor_sha256"
+      ],
+      "normalized_bindings": [
+        "record_order",
+        "tensor_sha256",
+        "normalized_tensor_sha256"
+      ],
+      "tests_passed": 9,
+      "source_selection_started": false,
+      "truth_opened": false
+    },
+    "selector_command": {
+      "path": "experiments/TRR-P11/selector/command-r1.json",
+      "sha256": "7daae7d003b60a3c62f096b914d27df9e36f40e72a67d054cef182552654db5a",
+      "bytes": 4549,
+      "status": "READY_BUT_BLOCKED_PENDING_REPLACEMENT_AUDIT",
+      "selection_started": false
+    },
+    "source_input_descriptor": {
+      "path": "experiments/TRR-P11/selector/public_source_inputs_r1.json",
+      "sha256": "1fa6aea4485ad602d396e6a57dc53257977a0f4581375892ef22ab176d52b409",
+      "bytes": 3311,
+      "status": "HASH_ONLY_METADATA_DESCRIPTOR",
+      "source_scan": false
+    },
+    "native_runtime": {
+      "status": "STATIC_QUALIFICATION_RESUME_AND_WATCHDOG_VALIDATED_NO_NATIVE_RUN",
+      "runtime_code": {
+        "path": "scripts/trr_p11/a1_a2_runtime.py",
+        "sha256": "0f8063921dbb23fbb19f04e9f460e03e20ba52adabc58d4e8ae5e5d9ef54342a"
+      },
+      "watchdog_code": {
+        "path": "scripts/trr_p11/live_watchdog.py",
+        "sha256": "abefa22c32a1f8d487a5819ed55de326562b84402864e42564abf8f58e3db7d2"
+      },
+      "test_code": {
+        "path": "tests/test_trr_p11_a1_a2_runtime.py",
+        "sha256": "7828f9d1e2d901001914e66d2805d8878309566a6ac982c169229f9da631fed7"
+      },
+      "pure_tests": {
+        "runtime": 6,
+        "capture": 9,
+        "selector": 9,
+        "wrapper": 2,
+        "total": 26
+      },
+      "qualification_cell": "finance__public_base",
+      "qualification_only_entry": "qualification.json",
+      "matrix_resume_requires_qualification_receipt": true,
+      "qualified_cell_reused_without_rerun": true,
+      "default_wall_limit_seconds": null,
+      "external_live_watchdog": {
+        "path": "scripts/trr_p11/live_watchdog.py",
+        "poll_seconds": 1.0,
+        "checks": [
+          "parent_rss",
+          "gpu_free_memory",
+          "gpu_temperature",
+          "other_compute_apps"
+        ]
+      },
+      "native_run_started": false,
+      "model_loaded": false,
+      "gpu_used": false,
+      "predictions_started": false,
+      "truth_opened": false
+    }
+  },
+  "original_payload_recovery": {
+    "status": "PASS_BOTH_OPAQUE_EXPORTS_READY_FOR_EXCLUSION_WORKER",
+    "handoff_receipt": {
+      "path": "experiments/TRR-P11/exclusions/original_payload_recovery_handoff_r1.json",
+      "bytes": 9584,
+      "sha256": "af52b27c503a2e935a7beb0978fd5fe3b07d27bebe0893aa6ecf9c34d91a5986"
+    },
+    "plan": {
+      "path": "experiments/TRR-P11/exclusions/original_payload_recovery_plan_r1.json",
+      "bytes": 14415,
+      "sha256": "68431b459bfbb87d3fde98c4168a9352742ee07b7992ef0fc63d01d13ada6ccc"
+    },
+    "identity_exports": {
+      "original_fit_1200": {
+        "path": "experiments/TRR-P11/exclusions/original_fit_1200_identity_r1.json",
+        "bytes": 487363,
+        "sha256": "45700bb02bbb89e7c8006e0bc6cff60b8f3afaeea533e1d9c4c41cc19531a9da"
+      },
+      "validation_48": {
+        "path": "experiments/TRR-P11/exclusions/validation_48_identity_r1.json",
+        "bytes": 16614,
+        "sha256": "d68d98aecdfd0cf041be1e508074ffbf4ded24e0bc0a401362f1eb262e5e17ab"
+      }
+    },
+    "recovery_receipts": {
+      "original_fit_1200": {
+        "path": "experiments/TRR-P11/exclusions/original_fit_1200_recovery_r1.json",
+        "bytes": 1868,
+        "sha256": "3f06a5287beaccb39efc3bf6b0ad2da9dbf09e376eb4d58fb2406152b0bd95a1"
+      },
+      "validation_48": {
+        "path": "experiments/TRR-P11/exclusions/validation_48_recovery_r1.json",
+        "bytes": 1878,
+        "sha256": "9473f1b378add851456dc1acf120cb530738ddbb055695c46613fcb0311efc0e"
+      }
+    },
+    "watchdog_receipts": {
+      "original_fit_1200": "experiments/TRR-P11/exclusions/watchdog_original_fit_r1",
+      "validation_48": "experiments/TRR-P11/exclusions/watchdog_validation_48_r1"
+    },
+    "coverage": {
+      "original_fit_1200": {
+        "rows": 1200,
+        "h128_rows": 350,
+        "h129_rows": 343,
+        "mismatches": 0,
+        "max_rss_bytes": 549892096,
+        "guard_peak_group_rss_bytes": 325758976,
+        "guard_status": "PASS",
+        "wall_seconds": 2.023938
+      },
+      "validation_48": {
+        "rows": 48,
+        "h128_rows": 6,
+        "h129_rows": 5,
+        "mismatches": 0,
+        "max_rss_bytes": 536866816,
+        "guard_peak_group_rss_bytes": 537128960,
+        "guard_status": "PASS",
+        "wall_seconds": 2.040834
+      }
+    },
+    "access_boundary": {
+      "source_text_read": false,
+      "source_text_serialized": false,
+      "historical_public_token_mask_tensors_read_for_hashing": true,
+      "source_tokens_serialized": false,
+      "token_values_emitted": false,
+      "activations_read": false,
+      "model_loaded": false,
+      "gpu_used": false,
+      "evaluation_truth_opened": false,
+      "p03_holdout_accessed": false,
+      "new_selection_started": false
+    },
+    "selection_release": false,
+    "restore_gate_status": "UNCHANGED_PENDING_ACTUAL_PACKAGE_AND_SECONDARY_COPY",
+    "exclusion_audit_status": "PARTIAL_CANONICAL_SEQUENCE_EXCLUSION_AUDIT"
+  },
+  "updated_utc": "2026-09-08T08:54:31Z",
+  "agent1_progress": {
+    "status": "B0_FIT_COMPLETE_B1_RUNNING",
+    "native_pair": "r4",
+    "native_b0_started_utc": "2026-09-08T07:32:14Z",
+    "source_commit": "c943663356ee5016a5ed6bd83c6d714e1aae22f0",
+    "b0": {
+      "status": "COMPLETE_NATIVE_13000_UPDATE_FIT",
+      "selected_step": 8000,
+      "selection_rule": "earliest strict maximum on the registered seven-point grid",
+      "persistent_checkpoints_verified": 7,
+      "development_scores_included": false
+    },
+    "b1": {
+      "status": "RUNNING_LATEST_CONFIRMED_STEP_2000",
+      "started_step": 0,
+      "latest_confirmed_step": 2000,
+      "latest_interval_2_seconds": 174.7,
+      "model_id": "expanded_fixed_replication_1",
+      "development_scores_included": false
+    },
+    "qualification_receipt": {
+      "path": "../TRR-0012/outputs/TRR-0012/qualification_fixed_b1_v2/qualification_receipt.json",
+      "sha256": "2eba2b75b64015911f9801637814e5de9698a2f00824f67980d720a14872c706",
+      "bytes": 19925,
+      "status": "QUALIFICATION_PASS",
+      "discarded_updates": 8,
+      "development_scores_included": false,
+      "metadata_only_binding": true,
+      "role": "SEPARATE_8_UPDATE_QUALIFIER",
+      "describes_b0_fit": false,
+      "describes_b1_fit": false
+    },
+    "truth_boundary": "No P11 source selection, capture, prediction, truth access, or P03 access is recorded here."
+  },
+  "selector_preflight": {
+    "command_path": "experiments/TRR-P11/selector/command-r1.json",
+    "command_sha256": "7daae7d003b60a3c62f096b914d27df9e36f40e72a67d054cef182552654db5a",
+    "source_input_descriptor_path": "experiments/TRR-P11/selector/public_source_inputs_r1.json",
+    "source_input_descriptor_sha256": "1fa6aea4485ad602d396e6a57dc53257977a0f4581375892ef22ab176d52b409",
+    "audit_path": "experiments/TRR-P11/exclusions/recovery_identity_audit_r7.json",
+    "audit_sha256": "b0357082d50082231b0b53e61a77a8e9159e72351689993fbe63502d7a7491e3",
+    "audit_status": "REJECTED_BY_ROOT_REVIEW_FALSE_COMPLETENESS",
+    "selection_release": false,
+    "selection_started": false,
+    "execution_command_ready": true,
+    "replacement_binding_pending": true
+  },
+  "native_runtime_checkpoint": {
+    "status": "STATIC_QUALIFICATION_RESUME_AND_WATCHDOG_VALIDATED_NO_NATIVE_RUN",
+    "runtime_code": {
+      "path": "scripts/trr_p11/a1_a2_runtime.py",
+      "sha256": "0f8063921dbb23fbb19f04e9f460e03e20ba52adabc58d4e8ae5e5d9ef54342a"
+    },
+    "watchdog_code": {
+      "path": "scripts/trr_p11/live_watchdog.py",
+      "sha256": "abefa22c32a1f8d487a5819ed55de326562b84402864e42564abf8f58e3db7d2"
+    },
+    "test_code": {
+      "path": "tests/test_trr_p11_a1_a2_runtime.py",
+      "sha256": "7828f9d1e2d901001914e66d2805d8878309566a6ac982c169229f9da631fed7"
+    },
+    "pure_tests": {
+      "runtime": 6,
+      "capture": 9,
+      "selector": 9,
+      "wrapper": 2,
+      "total": 26
+    },
+    "qualification_cell": "finance__public_base",
+    "qualification_only_entry": "qualification.json",
+    "matrix_resume_requires_qualification_receipt": true,
+    "qualified_cell_reused_without_rerun": true,
+    "default_wall_limit_seconds": null,
+    "external_live_watchdog": {
+      "path": "scripts/trr_p11/live_watchdog.py",
+      "poll_seconds": 1.0,
+      "checks": [
+        "parent_rss",
+        "gpu_free_memory",
+        "gpu_temperature",
+        "other_compute_apps"
+      ]
+    },
+    "native_run_started": false,
+    "model_loaded": false,
+    "gpu_used": false,
+    "predictions_started": false,
+    "truth_opened": false
+  }
+}

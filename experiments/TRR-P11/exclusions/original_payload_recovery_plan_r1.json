@@ -1,0 +1,322 @@
+{
+  "schema": "token-reconstruction.trr-p11-original-token-payload-recovery-plan.v1",
+  "task_id": "TRR-P11",
+  "status": "EXECUTED_PASS_BOTH_OPAQUE_EXPORTS_READY",
+  "created_utc": "2026-09-08T00:00:00Z",
+  "purpose": "Recover opaque sequence identities for the original 1200-record fitting bank and original 48-record validation bank after the exclusive Agent 1 comparative smoke window. This plan reads token_ids and attention_mask only during the bounded recovery; it does not publish source text, token content, truth, or scores.",
+  "defer_reason": "Comparative smoke completed; both bounded CPU recoveries passed under the existing RSS watchdog.",
+  "scope_boundary": {
+    "included": [
+      "original TRR4 public fit payload reused by TRR4 affine/adapter, TRR5 original-like bank, and TRR7 original-like bank",
+      "original TRR4 adapter validation payload reused by TRR5/TRR7 common validation",
+      "opaque H128/H129 identity derivation and hash-only receipts"
+    ],
+    "excluded": [
+      "TRR5 enriched payload",
+      "TRR7 enriched payload",
+      "new B0/B1 bank selection or capture",
+      "source text and answer/truth fields",
+      "P03 holdout",
+      "any fitting or model evaluation"
+    ],
+    "truth_opened": false,
+    "source_text_accessed": false,
+    "historical_public_token_mask_tensors_read_for_hashing": true,
+    "token_values_published": false,
+    "gpu_used": false,
+    "model_loaded": false,
+    "selection_started": false
+  },
+  "payloads": {
+    "original_fit_1200": {
+      "payload": {
+        "path": "../TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_cut4.safetensors",
+        "bytes": 947176648,
+        "sha256_from_immutable_manifest": "d1c78fcf1acc91b57d51355ee11f267bf4c12f1bc7d5160164b3b6ea11b45344",
+        "hash_reverified_in_this_checkpoint": false
+      },
+      "immutable_geometry": {
+        "records": 1200,
+        "native_tokens": 192,
+        "hidden_size": 2048
+      },
+      "header_only_keys": {
+        "activations": {
+          "dtype": "BF16",
+          "shape": [
+            1200,
+            192,
+            2048
+          ]
+        },
+        "attention_mask": {
+          "dtype": "U8",
+          "shape": [
+            1200,
+            192
+          ]
+        },
+        "position_ids": {
+          "dtype": "I64",
+          "shape": [
+            1200,
+            192
+          ]
+        },
+        "post_bos_selector_large": {
+          "dtype": "U8",
+          "shape": [
+            1200,
+            192
+          ]
+        },
+        "post_bos_selector_small": {
+          "dtype": "U8",
+          "shape": [
+            1200,
+            192
+          ]
+        },
+        "token_ids": {
+          "dtype": "I32",
+          "shape": [
+            1200,
+            192
+          ]
+        }
+      },
+      "metadata_for_recovery": "TRR4 affine fit records with actual rendered_record_sha256 fields",
+      "metadata_binding": {
+        "path": "../TRR-0004/experiments/TRR-0004/fit/affine_fit_records.json",
+        "bytes": 463510,
+        "sha256": "3f733212efd62b19e71f60f002f4e9756b4975ebfb4dcabf0ac27935929f94ff"
+      }
+    },
+    "validation_48": {
+      "payload": {
+        "path": "../TRR-0004/experiments/TRR-0004/fit/adapter_v2/validation_mixed_cut4.safetensors",
+        "bytes": 37795064,
+        "sha256_from_immutable_manifest": "a8e7633ffb369864af33754c5ebb2d9a4ca9d6e7d4550731e8ff26e20c8200cf",
+        "hash_reverified_in_this_checkpoint": false
+      },
+      "immutable_geometry": {
+        "records": 48,
+        "native_tokens": 192,
+        "hidden_size": 2048
+      },
+      "header_only_keys": {
+        "activations": {
+          "dtype": "BF16",
+          "shape": [
+            48,
+            192,
+            2048
+          ]
+        },
+        "attention_mask": {
+          "dtype": "U8",
+          "shape": [
+            48,
+            192
+          ]
+        },
+        "token_ids": {
+          "dtype": "I32",
+          "shape": [
+            48,
+            192
+          ]
+        }
+      },
+      "metadata_for_recovery": "TRR4 adapter validation records; mixed rendered/public-record fields remain in the source sidecar",
+      "metadata_binding": {
+        "path": "../TRR-0004/experiments/TRR-0004/fit/adapter_v2/affine_validation_records.json",
+        "bytes": 16456,
+        "sha256": "30b422b681bef5e7af4c26d339e57dfb3571ecef8077bdc4be5d960ef05c9777"
+      }
+    }
+  },
+  "producer_and_reuse_bindings": {
+    "trr4_fit_manifest": {
+      "path": "../TRR-0004/experiments/TRR-0004/fit/public_fit_manifest.json",
+      "bytes": 4826,
+      "sha256": "96144c506572a50d41a78cbe0481464751878c3118f208e523265addba838391"
+    },
+    "trr4_adapter_fit_manifest": {
+      "path": "../TRR-0004/experiments/TRR-0004/fit/adapter_v2/public_fit_manifest.json",
+      "bytes": 4838,
+      "sha256": "432285de19bde996dfd1b3b7c289d321b93e99ed0fba88303bb99331c69c118f"
+    },
+    "trr4_preparation_evidence": {
+      "path": "../TRR-0004/outputs/TRR-0004/public_activation_v2/preparation_evidence.json",
+      "bytes": 17361,
+      "sha256": "77e7bcbe2a95c526e805d384aec7ba8bf731630b6734d6542ba71d0af4ec120b"
+    },
+    "trr5_original_manifest": {
+      "path": "../TRR-0005/experiments/TRR-0005/public_activation_v1/original_manifest.json",
+      "bytes": 8283,
+      "sha256": "a1a0294cf210392de7da340c1f0ff6dd287b7f8f4fd8ba9acbafbff04134db08"
+    },
+    "trr5_capture_receipt": {
+      "path": "../TRR-0005/experiments/TRR-0005/public_activation_v1/capture_manifest_receipt.json",
+      "bytes": 19350,
+      "sha256": "48c469373de931b905af642a21977b2fe85877208db16ec9cc13adc88fec5a7a"
+    },
+    "trr5_original_records": {
+      "path": "../TRR-0005/experiments/TRR-0005/public_activation_v1/original_fit_records.json",
+      "bytes": 754638,
+      "sha256": "9c577f4ecb54ccb61e114aa741859e1bc045a4fd9d302479b2a49d17050dcf81"
+    },
+    "trr7_original_manifest": {
+      "path": "../TRR-0007/experiments/TRR-0007/support/broader_capture_v2/original_manifest.json",
+      "bytes": 8355,
+      "sha256": "e0b3182c10dad06dae6c54be7bc1bba05f867020d6ffc419f6964563a0e64109"
+    },
+    "trr7_capture_receipt": {
+      "path": "../TRR-0007/experiments/TRR-0007/support/broader_capture_v2/capture_manifest_receipt.json",
+      "bytes": 18870,
+      "sha256": "5a892ba16d7dc0a2f22668f4672498ee9a51fbb0f78a78f5ef5cf74a8ebe0aa5"
+    },
+    "trr7_original_records": {
+      "path": "../TRR-0007/experiments/TRR-0007/support/broader_capture_v2/original_fit_records.json",
+      "bytes": 754638,
+      "sha256": "9c577f4ecb54ccb61e114aa741859e1bc045a4fd9d302479b2a49d17050dcf81"
+    },
+    "shared_original_record_sidecar": {
+      "path": "../TRR-0004/experiments/TRR-0004/fit/affine_fit_records.json",
+      "bytes": 463510,
+      "sha256": "3f733212efd62b19e71f60f002f4e9756b4975ebfb4dcabf0ac27935929f94ff"
+    },
+    "shared_original_record_sidecar_duplicate": {
+      "path": "../TRR-0004/experiments/TRR-0004/fit/adapter_v2/affine_fit_records.json",
+      "bytes": 463510,
+      "sha256": "3f733212efd62b19e71f60f002f4e9756b4975ebfb4dcabf0ac27935929f94ff"
+    },
+    "shared_original_order": {
+      "record_count": 1200,
+      "record_ids_canonical_sha256": "2ddb655190ba267a03a0f90e1544c9e4a144144d22660cf01c965c5bd9c15065",
+      "record_ids_newline_sha256": "a7ed5ca7c0c4b4242218a18049266d5a12c295dcfe3492513e098389f21147f9"
+    },
+    "shared_validation_order": {
+      "record_count": 48,
+      "record_ids_canonical_sha256": "254ec105c1dfa645bff091fb0816cd9493c8f6e08cc23fdc5abcb8eed5b532c8",
+      "record_ids_newline_sha256": "b1769b13afc6fdb395adaa0f34721f01df74de44ecc222c77ad8f090ea4e760d"
+    },
+    "relationship_statement": "TRR5 and TRR7 original-like manifests explicitly reuse the TRR4 public fit H read-only; their original record sidecars are byte-identical and retain the same 1200-record order. Their enriched payloads are excluded."
+  },
+  "recovery_program": {
+    "script": {
+      "path": "scripts/trr_p11/recover_public_token_payload.py",
+      "bytes": 10095,
+      "sha256": "ea17fe280c2a739ad5b680a9f56b1cec08a662919fc282cac2282f4e31fdb5aa"
+    },
+    "reads": [
+      "token_ids",
+      "attention_mask"
+    ],
+    "does_not_read_or_emit": [
+      "activations",
+      "source text",
+      "answers",
+      "truth",
+      "scores"
+    ],
+    "planned_outputs_create_only": [
+      {
+        "identity_output": "experiments/TRR-P11/exclusions/original_fit_1200_identity_r1.json",
+        "receipt_output": "experiments/TRR-P11/exclusions/original_fit_1200_recovery_r1.json"
+      },
+      {
+        "identity_output": "experiments/TRR-P11/exclusions/validation_48_identity_r1.json",
+        "receipt_output": "experiments/TRR-P11/exclusions/validation_48_recovery_r1.json"
+      }
+    ],
+    "output_status": "CREATED_AND_VERIFIED",
+    "resource_guard": {
+      "implementation": {
+        "path": "scripts/trr_p09/resource_watchdog.py",
+        "bytes": 29785,
+        "sha256": "07691ea3d8c86e2bea56a85a304ac6952ad14272a146af9cea5f0e5401a42b22",
+        "role": "existing CPU-only process-group RSS/host-memory watchdog; no GPU guard or address-space ulimit"
+      },
+      "threads": 1,
+      "omp_num_threads": 1,
+      "max_rss_bytes": 2147483648,
+      "min_available_bytes": 12884901888,
+      "poll_seconds": 1.0,
+      "wall_limit_seconds": 120.0,
+      "kill_grace_seconds": 15.0,
+      "address_space_limit_bytes": null,
+      "vms_cap_removed_reason": "PyTorch/shared-library mmap compatibility; RSS is the enforced memory bound."
+    },
+    "command_templates": [
+      "/usr/bin/env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false PYTHONPATH=. python3 scripts/trr_p09/resource_watchdog.py --output-root experiments/TRR-P11/exclusions/watchdog_original_fit_r1 --timeout-seconds 120 --poll-seconds 1 --max-rss-bytes 2147483648 --min-available-bytes 12884901888 --kill-grace-seconds 15 --cwd . --label TRR-P11-original-fit-token-identity -- python3 scripts/trr_p11/recover_public_token_payload.py --payload ../TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_cut4.safetensors --metadata ../TRR-0004/experiments/TRR-0004/fit/affine_fit_records.json --identity-output experiments/TRR-P11/exclusions/original_fit_1200_identity_r1.json --receipt-output experiments/TRR-P11/exclusions/original_fit_1200_recovery_r1.json --source-label trr4_original_fit_1200 --expected-payload-sha256 d1c78fcf1acc91b57d51355ee11f267bf4c12f1bc7d5160164b3b6ea11b45344 --expected-metadata-sha256 3f733212efd62b19e71f60f002f4e9756b4975ebfb4dcabf0ac27935929f94ff",
+      "/usr/bin/env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false PYTHONPATH=. python3 scripts/trr_p09/resource_watchdog.py --output-root experiments/TRR-P11/exclusions/watchdog_validation_48_r1 --timeout-seconds 120 --poll-seconds 1 --max-rss-bytes 2147483648 --min-available-bytes 12884901888 --kill-grace-seconds 15 --cwd . --label TRR-P11-validation-48-token-identity -- python3 scripts/trr_p11/recover_public_token_payload.py --payload ../TRR-0004/experiments/TRR-0004/fit/adapter_v2/validation_mixed_cut4.safetensors --metadata ../TRR-0004/experiments/TRR-0004/fit/adapter_v2/affine_validation_records.json --identity-output experiments/TRR-P11/exclusions/validation_48_identity_r1.json --receipt-output experiments/TRR-P11/exclusions/validation_48_recovery_r1.json --source-label trr4_original_validation_48 --expected-payload-sha256 a8e7633ffb369864af33754c5ebb2d9a4ca9d6e7d4550731e8ff26e20c8200cf --expected-metadata-sha256 30b422b681bef5e7af4c26d339e57dfb3571ecef8077bdc4be5d960ef05c9777"
+    ],
+    "handoff_receipt": {
+      "path": "experiments/TRR-P11/exclusions/original_payload_recovery_handoff_r1.json",
+      "sha256": "af52b27c503a2e935a7beb0978fd5fe3b07d27bebe0893aa6ecf9c34d91a5986",
+      "bytes": 9584
+    },
+    "actual_outputs": {
+      "original_fit_1200": {
+        "identity": {
+          "path": "experiments/TRR-P11/exclusions/original_fit_1200_identity_r1.json",
+          "bytes": 487363,
+          "sha256": "45700bb02bbb89e7c8006e0bc6cff60b8f3afaeea533e1d9c4c41cc19531a9da"
+        },
+        "receipt": {
+          "path": "experiments/TRR-P11/exclusions/original_fit_1200_recovery_r1.json",
+          "bytes": 1868,
+          "sha256": "3f06a5287beaccb39efc3bf6b0ad2da9dbf09e376eb4d58fb2406152b0bd95a1"
+        },
+        "watchdog_root": "experiments/TRR-P11/exclusions/watchdog_original_fit_r1",
+        "status": "PASS_PUBLIC_TOKEN_IDENTITY_RECOVERY",
+        "rows": 1200,
+        "h128_rows": 350,
+        "h129_rows": 343,
+        "mismatch_count": 0
+      },
+      "validation_48": {
+        "identity": {
+          "path": "experiments/TRR-P11/exclusions/validation_48_identity_r1.json",
+          "bytes": 16614,
+          "sha256": "d68d98aecdfd0cf041be1e508074ffbf4ded24e0bc0a401362f1eb262e5e17ab"
+        },
+        "receipt": {
+          "path": "experiments/TRR-P11/exclusions/validation_48_recovery_r1.json",
+          "bytes": 1878,
+          "sha256": "9473f1b378add851456dc1acf120cb530738ddbb055695c46613fcb0311efc0e"
+        },
+        "watchdog_root": "experiments/TRR-P11/exclusions/watchdog_validation_48_r1",
+        "status": "PASS_PUBLIC_TOKEN_IDENTITY_RECOVERY",
+        "rows": 48,
+        "h128_rows": 6,
+        "h129_rows": 5,
+        "mismatch_count": 0
+      }
+    }
+  },
+  "handoff_requirements": {
+    "before_run": [
+      "Agent 1 comparative smoke is complete and root releases the numerical lease",
+      "root/exclusion worker accepts the immutable bindings and confirms output paths are create-only",
+      "no enriched payload is substituted for either original payload"
+    ],
+    "after_run": [
+      "bind identity and receipt hashes in P11 manifest/state",
+      "deliver opaque identity export to the exclusion worker for canonical union integration",
+      "record timeout/resource evidence and preserve missing rendered/public-record fields without invention"
+    ],
+    "selection_release_dependency": "These recovery receipts are inputs to the complete exclusion audit; they do not themselves authorize source selection."
+  },
+  "execution_release": {
+    "comparative_smoke": "COMPLETE_AGENT1_RELEASED_CPU_LEASE",
+    "released_utc": "2026-09-08T08:47:56Z",
+    "no_new_source_selection": true,
+    "no_truth_access": true,
+    "no_gpu_or_model": true,
+    "recovery_completed_utc": "2026-09-08T08:52:08Z",
+    "recovery_status": "PASS_BOTH"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "checks": {
+    "git_diff_check": {
+      "command": "git diff --check -- owned TRR-P11 evaluator/restore files",
+      "status": "PASS"
+    },
+    "json_contract_example": {
+      "command": "python3 -m json.tool experiments/TRR-P11/evaluation/adapter-contract.example.json",
+      "status": "PASS"
+    },
+    "py_compile": {
+      "command": "python3 -m py_compile scripts/trr_p11/evaluation.py tests/test_trr_p11_evaluation.py",
+      "status": "PASS"
+    },
+    "pytest": {
+      "command": "env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. /usr/bin/time -v timeout 120 /usr/bin/python3 -m pytest -q tests/test_trr_p11_evaluation.py tests/test_trr_p11_restore_gate.py",
+      "status": "PENDING_EXPLICIT_CPU_WINDOW"
+    }
+  },
+  "code_sha256": {
+    "experiments/TRR-P11/evaluation/adapter-contract.example.json": "1e617e7855ead1575d438be44d34d746d0676e78b47e94bcd3c360ed3e98f81b",
+    "experiments/TRR-P11/evaluation/adapter-contract.md": "9d4a29643acd166f14b398e95d2d32c40e779fedb90cfccffe55d88483a7a2ca",
+    "experiments/TRR-P11/restore/restore_contract.md": "858a9c52ddffc1326dd8565f792f4add04d10062b91f6afee9c7406774bfbec7",
+    "scripts/trr_p11/evaluation.py": "d5631cd19d75161dee9ee272a96002095ae21538945570b79700d90e8b49d67e",
+    "scripts/trr_p11/restore_gate.py": "8cf31863aeb1607dd22049ddecc6974fd7ff5c14d47f9660df7edc5d14a897e7",
+    "tests/test_trr_p11_evaluation.py": "a104a2a9b8b0a7407849f6c86a2634d0a0a5c63f28d34f6fa76245e055f6544a",
+    "tests/test_trr_p11_restore_gate.py": "0302ba440ffcc64cbbb018ddf7520793e73a94b571e0ba836c3a25d2a9098357"
+  },
+  "created_utc": "2026-09-08T08:00:07Z",
+  "prior_attempts_preserved": [
+    {
+      "path": "experiments/TRR-P11/evaluation/execution-tests-r1.json",
+      "status": "FAILED_PRESERVED"
+    },
+    {
+      "path": "experiments/TRR-P11/evaluation/execution-tests-r2.json",
+      "status": "FAILED_PRESERVED"
+    },
+    {
+      "path": "experiments/TRR-P11/evaluation/execution-tests-r3.json",
+      "status": "PASS_PRESERVED_BEFORE_INTERFACE_CHANGES"
+    },
+    {
+      "path": "experiments/TRR-P11/evaluation/execution-tests-r4.json",
+      "status": "FAILED_PRESERVED_AFTER_INTERFACE_CHANGES"
+    }
+  ],
+  "python": "3.12.3",
+  "schema": "token-reconstruction.trr-p11-static-validation.v1",
+  "scope": {
+    "gpu": false,
+    "model_run": false,
+    "p03_holdout_accessed": false,
+    "public_evaluation_data": false,
+    "truth_opened": false
+  },
+  "status": "STATIC_VALIDATION_ONLY_NUMERICAL_PENDING",
+  "task_id": "TRR-P11"
+}

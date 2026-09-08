@@ -1,0 +1,84 @@
+{
+  "attempt": "r13",
+  "boundary": "synthetic tensors only; no source, truth, public embedding, model, GPU, or P03 holdout",
+  "code": {
+    "scripts/trr_p11/evaluation.py": {
+      "bytes": 110825,
+      "sha256": "cf6a4c8850ec636a069e3d42fb3af291eedd1ddaee87407b1ffcaea143cc1788"
+    },
+    "tests/test_trr_p11_evaluation.py": {
+      "bytes": 32606,
+      "sha256": "ff7b138be3e082c4537fe2d95812db14ea461bc68c504666178cb534e2b0533e"
+    }
+  },
+  "command": [
+    "env",
+    "OMP_NUM_THREADS=1",
+    "MKL_NUM_THREADS=1",
+    "OPENBLAS_NUM_THREADS=1",
+    "NUMEXPR_NUM_THREADS=1",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "PYTHONPATH=.",
+    "HF_HUB_OFFLINE=1",
+    "HF_DATASETS_OFFLINE=1",
+    "TRANSFORMERS_OFFLINE=1",
+    "TOKENIZERS_PARALLELISM=false",
+    "/usr/bin/time",
+    "-v",
+    "timeout",
+    "120",
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_trr_p11_evaluation.py"
+  ],
+  "cwd": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P11",
+  "failed_attempts_preserved": [
+    {
+      "attempt": "r13-pre-fix-1",
+      "observed_error": "prediction receipt method binding is absent .../selection_plan_sha256",
+      "reason": "local selection-key loop variable shadowed the receipt method key; synthetic failure only",
+      "status": "EXCLUDED_TEST_FAILURE",
+      "tests_failed": 5,
+      "tests_passed": 7
+    },
+    {
+      "attempt": "r13-pre-fix-2",
+      "observed_error": "prediction receipt method binding is absent .../predictions",
+      "reason": "actual-schema test exposed missing comparator receipt-method default; synthetic failure only",
+      "status": "EXCLUDED_TEST_FAILURE",
+      "tests_failed": 1,
+      "tests_passed": 11
+    }
+  ],
+  "git_head_before_commit": "08587dc3673529adf26ff9a3878d2d579224c973",
+  "gpu_used": false,
+  "model_or_public_data_opened": false,
+  "observed_at_utc": "2026-09-08T09:59:54.523861Z",
+  "peak_child_rss_kib": 868292,
+  "returncode": 0,
+  "schema": "token-reconstruction.trr-p11-test-execution.v1",
+  "status": "PASS",
+  "task_id": "TRR-P11",
+  "tests": {
+    "collected": 12,
+    "failed": 0,
+    "files": [
+      "tests/test_trr_p11_evaluation.py"
+    ],
+    "focused_actual_schema_test": {
+      "deselected": 11,
+      "passed": 1
+    },
+    "passed": 12
+  },
+  "timeout_seconds": 120,
+  "timing": {
+    "pytest_reported_seconds": 5.65,
+    "source": "/usr/bin/time -v and pytest summary",
+    "utc_process_start_end_independently_captured": false,
+    "wall_seconds": 6.06
+  },
+  "truth_opened": false
+}

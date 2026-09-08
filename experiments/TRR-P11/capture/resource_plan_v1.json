@@ -1,0 +1,169 @@
+{
+  "boundary": {
+    "gpu_used": false,
+    "model_loaded": false,
+    "native_matrix_started": false,
+    "native_qualification_started": false,
+    "p03_holdout_accessed": false,
+    "prediction_started": false,
+    "source_scan": false,
+    "truth_opened": false
+  },
+  "exact_local_code_bindings": {
+    "a1_a2_configuration_search": {
+      "path": "src/token_reconstruction/a1a2_configuration_search.py",
+      "sha256": "608bead6291353cacaa700a85f3dd619fb3261375e6fd5ba19cbc43fd738315b"
+    },
+    "component_crossover": {
+      "path": "src/token_reconstruction/component_crossover.py",
+      "sha256": "2cd03fda1f29f30d0a92246252ba2d2d89d3890abc6739ae0c8bae0a5c105b7d"
+    },
+    "fresh_confirmation_contract": {
+      "path": "scripts/trr0004_fresh_confirmation.py",
+      "sha256": "482c3a75d2fc641f90fe9c531584e2be14aefe914d97b246fe3633bdaa3d2945"
+    },
+    "legacy_confirmation_adapter": {
+      "path": "scripts/trr0004_predict_confirmation.py",
+      "sha256": "36f6aa7b4493c60b257b3896c975f523595da912e14a97dba3f6440d419e8427"
+    },
+    "native_driver": {
+      "path": "scripts/trr0003_footing_compare.py",
+      "sha256": "bb3690a481014f3ea12b411a3ec6eb58d7c888ef6c4135f9e03908027857f98e"
+    },
+    "public_prefix": {
+      "path": "src/token_reconstruction/public_prefix.py",
+      "sha256": "b9dca1d8d56c7c07413015aea4bde79e8ceac827c32ee9bc0d1a236ea1dd35f6"
+    }
+  },
+  "fresh_panel_requirements": {
+    "first128_per_domain_from_frozen_selection": true,
+    "historical_prediction_reuse_forbidden": true,
+    "new_observations_required": true,
+    "selection_path_bound_at_runtime": true,
+    "selection_release_required": true
+  },
+  "method": "frozen_a1_a2_k256",
+  "native_output_contract": {
+    "designated_measured_run": 1,
+    "first_measured_candidate_trace_per_record": true,
+    "measured_runs_per_record": 3,
+    "per_cell_receipt_fields": [
+      "output",
+      "observations",
+      "methods.a1_a2_k256.state_file_binding",
+      "trace",
+      "cost"
+    ],
+    "prediction_shape": [
+      128,
+      128
+    ],
+    "prediction_tensor_key": "predictions",
+    "repeated_prediction_exact_required": true,
+    "trace_shape": [
+      128,
+      128,
+      512
+    ],
+    "trace_tensor_keys": [
+      "candidates",
+      "candidate_scores"
+    ],
+    "truth_opened": false,
+    "warmup_runs_per_record": 1
+  },
+  "note": "Historical A1+A2 descriptors and binary resources are available as read-only inputs, but this receipt does not reuse their old predictions. The P11 runtime binds the future selected first-128 identities and writes new predictions plus every-record first-measured candidate traces only after the separate capture/restore/resource gates.",
+  "pending_dependencies": [
+    "complete exclusion audit and explicit P11 source-selection release",
+    "fresh P11 public observations for all four cells",
+    "create-only native runtime binding with first-128 selection identities",
+    "resource preflight and largest representative A1+A2 cell qualification",
+    "exclusive CUDA lease and runtime rehash of external model/reference assets",
+    "native first-128 predictions and per-cell trace/cost receipts after qualification"
+  ],
+  "public_resources": {
+    "historical_runtime_descriptor": {
+      "path": "../TRR-0010/experiments/TRR-0010/setup/a1_a2_public_runtime_descriptor_v1.json",
+      "sha256": "5a299574d9b69b8365c6a67c39d8669949c8037103e2f178ed97085ba3b34928",
+      "status": "AVAILABLE_METADATA_ONLY_HISTORICAL_BINDING"
+    },
+    "model_snapshot": {
+      "status": "DESCRIPTOR_HASH_BOUND_EXTERNAL_SNAPSHOT_RUNTIME_REVERIFY_REQUIRED"
+    },
+    "public_embedding_table": {
+      "bytes": 1050673488,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+      "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+      "status": "AVAILABLE_EXTERNAL_HASH_VERIFIED_READ_ONLY"
+    },
+    "public_reference": {
+      "sha256": "10532a746cb8c30eb2caf338e206e1fa9d85e708d4db43a0d8fd4a2ff1a6f8bd",
+      "status": "DESCRIPTOR_HASH_BOUND_EXTERNAL_PATH_RUNTIME_REVERIFY_REQUIRED"
+    },
+    "retained_a1_lens": {
+      "bytes": 16787653,
+      "path": "experiments/TRR-0004/evidence/comparators/public_a1_lens.pt",
+      "sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742",
+      "status": "AVAILABLE_P11_WORKTREE_HASH_VERIFIED_READ_ONLY"
+    }
+  },
+  "resource_plan": {
+    "candidate_arrays_persisted": true,
+    "candidate_budget": 256,
+    "candidate_proposal_budget": 512,
+    "capture_batch_records": 8,
+    "device_required": "cuda",
+    "external_live_watchdog_required": true,
+    "largest_representative_cell": "finance__public_base",
+    "maximum_host_rss_gib": 16.0,
+    "maximum_reserved_gpu_gib": 6.0,
+    "maximum_wall_seconds": null,
+    "method_id": "frozen_a1_a2_k256",
+    "minimum_free_gpu_gib": 8.0,
+    "model_dtype": "bfloat16",
+    "preflight_basis": {
+      "basis": "geometry-only upper bound; no P11 runtime has executed",
+      "candidate_bytes_int64": 67108864,
+      "candidate_elements": 8388608,
+      "candidate_score_bytes_float32": 33554432,
+      "equivalence_check": "warmup output vs three measured outputs exact per record; first measured proposal trace retained for every record",
+      "known_transient_bytes_per_qualified_cell": 167772160,
+      "known_transient_gib_per_qualified_cell": 0.15625,
+      "model_workspace_bound": "runtime-dependent; enforced by free/reserved/RSS guards",
+      "observation_bytes_bfloat16": 67108864,
+      "observation_elements": 33554432,
+      "peak_memory_measurement": "required from the largest representative cell before the four-cell matrix",
+      "public_embedding_bytes_bound": 1050673488,
+      "wall_time_measurement": "required from the largest representative cell before the four-cell matrix"
+    },
+    "proposal_chunk": 256,
+    "qualification_entry": {
+      "matrix_resume_requires_retained_receipt": true,
+      "qualification_cell": "finance__public_base",
+      "qualification_only": true,
+      "retained_receipt": "qualification.json",
+      "reuses_qualified_cell_without_rerun": true
+    },
+    "qualification_required_before_full_run": true,
+    "record_batch_size": 1,
+    "records_per_domain": 128,
+    "stored_sequence_tokens": 128,
+    "truth_opened": false,
+    "watchdog": {
+      "implementation": "scripts/trr_p11/live_watchdog.py",
+      "mode": "external_stdlib_child",
+      "no_default_wall_limit": true,
+      "optional_wall_limit": true,
+      "polls": [
+        "parent_rss",
+        "gpu_free_memory",
+        "gpu_temperature",
+        "other_compute_apps"
+      ]
+    },
+    "watchdog_poll_seconds": 1.0
+  },
+  "schema": "token-reconstruction.trr-p11-capture-resource-plan.v1",
+  "status": "PREPARED_METADATA_ASSETS_RUNTIME_BINDING_PENDING_SELECTION",
+  "task_id": "TRR-P11"
+}

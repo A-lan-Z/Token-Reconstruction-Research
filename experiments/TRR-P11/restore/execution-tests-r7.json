@@ -1,0 +1,47 @@
+{
+  "actual_package_restore": "PENDING_AGENT1_FROZEN_PACKAGE_AND_SECONDARY_COPY",
+  "code_hashes_at_failed_attempt": {
+    "scripts/trr_p11/restore_gate.py": "d8819159fbf9f538af9983d87cd48f209eec60168d0ef325b5005ba402c2de25",
+    "tests/test_trr_p11_restore_gate.py": "44a3b429a1299668681f0d881047cc84881e9410f64371ff043b77c06671e69c"
+  },
+  "command": "env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. timeout 120 /usr/bin/python3 -m pytest -q tests/test_trr_p11_restore_gate.py",
+  "exit_code": 1,
+  "failure": {
+    "cause": "synthetic selection_receipt fixture omitted complete_before_smoke=True; production gate correctly rejected the incomplete binding",
+    "exception": "scripts.trr_p11.restore_gate.RestoreGateError",
+    "message": "smoke was not bound after complete checkpoint selection",
+    "test": "test_restore_and_run_smoke_end_to_end_synthetic_bundle"
+  },
+  "peak_rss_kb": 671748,
+  "preflight": {
+    "gpu_used": false,
+    "memory_limit_intent": "under 2 GiB peak RSS",
+    "model_loaded": false,
+    "real_source_or_truth_loaded": false,
+    "safetensors": "0.7.0",
+    "thread_env": {
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "torch": "2.10.0+cu128"
+  },
+  "process_ended_utc": "2026-09-08T06:20:27.240547235Z",
+  "process_started_utc": "2026-09-08T06:20:24.111843370Z",
+  "pytest_elapsed_seconds": 1.95,
+  "schema": "token-reconstruction.trr-p11-execution-test.v1",
+  "scope": "synthetic tensors, prefixed smoke identity, prediction identity, sibling receipt provenance, and end-to-end secondary-copy subprocess; no model/GPU/source/truth",
+  "status": "FAILED_SYNTHETIC_E2E_FIXTURE_BINDING",
+  "stdout_stderr_log": {
+    "ephemeral": true,
+    "path": "/tmp/trr_p11_synthetic_r7.out",
+    "sha256": "8eff20016151b8f11aee023321f8350df187ba071f50cf855de508cbe880c5cb"
+  },
+  "task_id": "TRR-P11",
+  "tests_collected": 12,
+  "tests_failed": 1,
+  "tests_passed": 11,
+  "timeout_seconds": 120,
+  "wrapper_elapsed_seconds": 3.128703865
+}

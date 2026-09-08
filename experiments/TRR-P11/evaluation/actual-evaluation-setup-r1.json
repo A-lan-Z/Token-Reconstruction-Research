@@ -1,0 +1,290 @@
+{
+  "a1_a2_comparator": {
+    "candidate_budget": 256,
+    "device": "cuda",
+    "matrix_resume_command_template": "from scripts.trr_p11.a1_a2_runtime import run_native_a1_a2; run_native_a1_a2(binding_path=\"<A1_BINDING>\", observations_path=\"<A1_OBSERVATIONS>\", output_root=\"outputs/TRR-P11/private-evaluation/actual-r1/a1_a2\", repository_root=\".\", device=\"cuda\", execute=True, max_seconds=3600, qualification_cell=\"finance__public_base\", qualification_only=False, qualification_receipt_path=\"outputs/TRR-P11/private-evaluation/actual-r1/a1_a2/qualification.json\")",
+    "maximum_seconds": 3600,
+    "method_id": "frozen_a1_a2_k256",
+    "minimum_planned_envelope_seconds": 2700,
+    "output_root": "outputs/TRR-P11/private-evaluation/actual-r1/a1_a2",
+    "prediction_shape": [
+      128,
+      128
+    ],
+    "proposal_budget": 512,
+    "qualification_cell": "finance__public_base",
+    "qualification_command_template": "from scripts.trr_p11.a1_a2_runtime import run_native_a1_a2; run_native_a1_a2(binding_path=\"<A1_BINDING>\", observations_path=\"<A1_OBSERVATIONS>\", output_root=\"outputs/TRR-P11/private-evaluation/actual-r1/a1_a2\", repository_root=\".\", device=\"cuda\", execute=True, max_seconds=3600, qualification_cell=\"finance__public_base\", qualification_only=True)",
+    "receipt_requirements": "Every cell must retain predictions, sibling prediction receipt, first-measured candidate trace, cost receipt, observations and runtime binding; evaluation.py consumes the trace tensor and binds actual receipt methods[a1_a2_k256].tensor_sha256/shape/dtype.",
+    "rows_per_domain": 128,
+    "rows_total": 512,
+    "trace_keys": [
+      "candidates",
+      "candidate_scores"
+    ],
+    "trace_shape": [
+      128,
+      128,
+      512
+    ]
+  },
+  "bound_implementation": {
+    "contract": {
+      "path": "experiments/TRR-P11/evaluation/adapter-contract.md",
+      "sha256": "563462ba035fd1e117e5bddf42b6136980bcd9f21f7a1623bb92cdb4d9232c49"
+    },
+    "evaluator": {
+      "bytes": 110825,
+      "path": "scripts/trr_p11/evaluation.py",
+      "sha256": "cf6a4c8850ec636a069e3d42fb3af291eedd1ddaee87407b1ffcaea143cc1788"
+    },
+    "synthetic_validation": {
+      "bytes": 2530,
+      "path": "experiments/TRR-P11/evaluation/execution-tests-r13.json",
+      "sha256": "fc052e404ee5bf0b4442bb087619c88b2d8d2542e62f3c1ae2a98f24c644df2d",
+      "sha256_pending_after_commit": true,
+      "status": "PASS",
+      "tests_passed": 12
+    }
+  },
+  "boundary": {
+    "new_a1_model_started": false,
+    "new_prediction_started": false,
+    "p03_holdout_accessed": false,
+    "selection_release_received": false,
+    "source_text_loaded": false,
+    "truth_opened": false
+  },
+  "cells": [
+    "pile__public_base",
+    "pile__public_lora_2601",
+    "finance__public_base",
+    "finance__public_lora_2601"
+  ],
+  "freeze_and_truth_commands": {
+    "freeze_python": "from scripts.trr_p11.evaluation import freeze_predictions; freeze_predictions(manifest_path=\"<P11_EVALUATION_MANIFEST>\", output_path=\"outputs/TRR-P11/private-evaluation/actual-r1/freeze.json\", repository_root=\".\")",
+    "truth_python_after_freeze_only": "from scripts.trr_p11.evaluation import load_truth_after_freeze, score_after_truth; load_truth_after_freeze(freeze_path=\"outputs/TRR-P11/private-evaluation/actual-r1/freeze.json\", truth_descriptor_path=\"<TRUTH_DESCRIPTOR>\", repository_root=\".\"); score_after_truth(freeze_path=\"outputs/TRR-P11/private-evaluation/actual-r1/freeze.json\", truth_descriptor_path=\"<TRUTH_DESCRIPTOR>\", output_path=\"outputs/TRR-P11/private-evaluation/actual-r1/score.json\", repository_root=\".\")",
+    "truth_rule": "Do not resolve or open the truth descriptor/sidecar until freeze_predictions has rehashed the complete required prediction, trace, cost, observation, selection, restore, state and support bindings and written a create-only freeze."
+  },
+  "preflight": {
+    "a1_historical_basis": {
+      "agreed_envelope": "At least 2700 seconds (45 minutes); the command template uses a 3600-second guarded ceiling to retain margin without truncating a successful cell.",
+      "estimate": "experiments/TRR-P11/capture/historical_a1_runtime_estimate_r1.json",
+      "estimate_sha256": "366c92b2aea776d592e1b669caf2b44811bc7cb3534c32ee3f338cef9d6a9cd1",
+      "geometry_aware_proxy_minutes": 30.72912221851681,
+      "geometry_aware_proxy_seconds": 1843.7473331110086,
+      "guards": {
+        "maximum_host_rss_gib": 16.0,
+        "maximum_reserved_gpu_gib": 6.0,
+        "minimum_free_gpu_gib": 8.0,
+        "watchdog": "scripts/trr_p11/live_watchdog.py",
+        "watchdog_poll_seconds": 1.0
+      },
+      "proxy_caveat": "Historical Pile receipts used 40 tokens while P11 stores 128; proxy is planning evidence, not a P11 runtime guarantee."
+    },
+    "primary_representative_cell": {
+      "cell": "finance__public_base",
+      "largest_cell_qualification_required": true,
+      "release_order": [
+        "stage sanitized observations",
+        "rehash staged file and observation receipt",
+        "run primary fixed pair",
+        "retain first full-cell timing/RSS/GPU receipt",
+        "only then release remaining cells"
+      ],
+      "resource_rule": "Use the restored smoke only as the already-passed package/load/output-equivalence baseline. Capture the full-cell first-record and remaining-record timings from the actual sibling receipt; do not extrapolate a full matrix duration from four rows or silently batch/microbatch."
+    },
+    "restore_basis": {
+      "execution_receipt": "experiments/TRR-P11/restore/restore-execution-actual-r2-attempt3.json",
+      "interpretation": "Measured copy, full asset verification, bundled consumer and four-row CUDA smoke; this is the fixed-readout restore baseline, not a full 256-row timing claim.",
+      "peak_child_rss_kib": 3500580,
+      "wall_seconds": 56.195277586000884
+    }
+  },
+  "primary_fixed_readout": {
+    "device": "cuda",
+    "method_ids": [
+      "new_current_fixed_B0",
+      "new_expanded_fixed_B1"
+    ],
+    "package_output_keys": [
+      "current_fixed",
+      "expanded_fixed"
+    ],
+    "path_constraint": "The restored CLI requires observations and outputs to be regular files below the clean package root; external capture paths are staged by hash into the ignored runtime input directory first.",
+    "predict_command_template": [
+      "env",
+      "HF_HUB_OFFLINE=1",
+      "HF_DATASETS_OFFLINE=1",
+      "TRANSFORMERS_OFFLINE=1",
+      "TOKENIZERS_PARALLELISM=false",
+      "PYTHONPATH=restore-runtime/actual-r2/code",
+      "/usr/bin/python3",
+      "restore-runtime/actual-r2/code/trr0012_package.py",
+      "predict",
+      "--package-root",
+      "restore-runtime/actual-r2",
+      "--observations",
+      "input/observations/<CELL>.safetensors",
+      "--output",
+      "runtime/predictions/<CELL>.safetensors",
+      "--device",
+      "cuda"
+    ],
+    "receipt": "Each output must retain its sibling .receipt.json; evaluation.py rehashes output, receipt, package descriptor, readout, state, observation and normalized tensor bindings before freeze.",
+    "rows_per_cell": 256,
+    "stage_command_template": [
+      "/usr/bin/install",
+      "-m",
+      "0444",
+      "<CAPTURE_OBSERVATION_FILE>",
+      "restore-runtime/actual-r2/input/observations/<CELL>.safetensors"
+    ],
+    "stored_tokens": 128
+  },
+  "private_outputs": {
+    "create_only": true,
+    "ignored_by": "outputs/",
+    "root": "outputs/TRR-P11/private-evaluation/actual-r1",
+    "runtime_input_root": "restore-runtime/actual-r2/input/observations",
+    "runtime_prediction_root": "restore-runtime/actual-r2/runtime/predictions",
+    "source_policy": "Only sanitized, hash-bound observation tensors may be staged into the clean package root; no source text, token truth, or training path may be copied."
+  },
+  "release_gates": [
+    "complete exclusion audit and explicit selector release",
+    "fresh four-cell sanitized observations and hash-bound source order",
+    "new primary fixed-readout predictions and sibling receipts for all four cells",
+    "new A1+A2 qualification plus resumed matrix with predictions, traces and costs for all four cells",
+    "restore receipt, state/readout/code identities and support binding revalidated at freeze",
+    "freeze_predictions status P11_PREDICTIONS_FROZEN_BEFORE_TRUTH before any truth access"
+  ],
+  "remaining_blockers": [
+    "Selector worker has not yet released the complete exclusion audit and frozen P11 selection.",
+    "Fresh sanitized observations, primary outputs, A1 outputs/traces/costs and the complete P11 evaluation manifest do not yet exist.",
+    "No scientific prediction or truth result is claimed by this setup record."
+  ],
+  "restore": {
+    "clean_runtime": "restore-runtime/actual-r2",
+    "distinct_mount_devices": {
+      "primary_wsl": 2096,
+      "secondary_windows": 68
+    },
+    "execution_receipt": {
+      "bytes": 2017,
+      "path": "experiments/TRR-P11/restore/restore-execution-actual-r2-attempt3.json",
+      "peak_child_rss_kib": 3500580,
+      "sha256": "f1434bae7178a1ae8a86765ad353f13d73cc7ace5ec3b9926a88b3b9b6d93ccc",
+      "status": "PASS_EXECUTION_WRAPPER",
+      "wall_seconds": 56.195277586000884
+    },
+    "manifest": {
+      "bytes": 28709,
+      "path": "experiments/TRR-P11/restore/restore_manifest_actual_r2.json",
+      "sha256": "ab9cb8b88dbfceb17db79ddd9cc1d93ac08eac40bec8eed5c046088323403b49"
+    },
+    "receipt": {
+      "bytes": 58849,
+      "path": "experiments/TRR-P11/restore/restore_receipt_actual_r2.json",
+      "sha256": "311ed83312c620eef81a8401901876cd55d5c93ea6860955aa4c6f44df4bd7f8",
+      "status": "PASS_RESTORED_SMOKE"
+    },
+    "smoke": {
+      "actual_package_cli_sha256": "5023a9e7cb19611952c0ce16a440ec9fde6b6444fd74aaf74a7efbb5c671c13b",
+      "consumer_temporary_dependency": false,
+      "consumer_training_worktree_import": false,
+      "device": "cuda",
+      "methods": [
+        "new_current_fixed_B0",
+        "new_expanded_fixed_B1"
+      ],
+      "offline": true,
+      "output_equivalence": "verification/smoke_equivalence.json",
+      "records": 4
+    },
+    "source_boundary": "windows_persistent_secondary_copy",
+    "state_and_readout": {
+      "new_current_fixed_B0": {
+        "bytes": 29390260,
+        "model_id": "TRR-0012/current_fixed_replication_1",
+        "selected_step": 8000,
+        "sha256": "73df57a384daab9b58186195dace233d702ed801fb5daee462e8c219fdf2d61a"
+      },
+      "new_expanded_fixed_B1": {
+        "bytes": 29390268,
+        "model_id": "TRR-0012/expanded_fixed_replication_1",
+        "selected_step": 13000,
+        "sha256": "088be6a6b2842d526f3dab39789728d9cfc23f2fb1fb892d107d46ade2382706"
+      },
+      "public_readout": {
+        "bytes": 1050673488,
+        "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+      }
+    }
+  },
+  "restore_gate": {
+    "already_passed": true,
+    "command_template": [
+      "env",
+      "OMP_NUM_THREADS=1",
+      "MKL_NUM_THREADS=1",
+      "OPENBLAS_NUM_THREADS=1",
+      "NUMEXPR_NUM_THREADS=1",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "PYTHONPATH=.",
+      "HF_HUB_OFFLINE=1",
+      "HF_DATASETS_OFFLINE=1",
+      "TRANSFORMERS_OFFLINE=1",
+      "TOKENIZERS_PARALLELISM=false",
+      "/usr/bin/timeout",
+      "600",
+      "/usr/bin/python3",
+      "scripts/trr_p11/restore_gate.py",
+      "experiments/TRR-P11/restore/restore_manifest_actual_r2.json",
+      "--restore-smoke",
+      "--clean-root",
+      "restore-runtime/actual-r2",
+      "--receipt",
+      "experiments/TRR-P11/restore/restore_receipt_actual_r2.json"
+    ],
+    "replay_policy": "Do not replay against the existing create-only runtime; the immutable receipt and attempt3 wrapper receipt are the evidence for this setup."
+  },
+  "schema": "token-reconstruction.trr-p11-actual-evaluation-setup.v1",
+  "status": "STATIC_SETUP_READY_PREDICTION_AND_TRUTH_PENDING",
+  "support": {
+    "binding": {
+      "bytes": 2963,
+      "path": "experiments/TRR-P11/evaluation/support-binding-r1.json",
+      "sha256": "14644f0ba71f67daf882a46368720ab23b8a355afcceb0b5d40915598404e732",
+      "status": "AVAILABLE_PUBLIC_FIT_SUPPORT"
+    },
+    "common_frequency": {
+      "bytes": 1300320,
+      "path": "experiments/TRR-P11/support/public_common_frequency_b0_seed4010.safetensors",
+      "sha256": "b2b975f67fc469392c0dc035a3d2666ef90d8a0a306064afbc09f9bb5f0cb2ea"
+    },
+    "definition": {
+      "common_reference": "B0 post-BOS public-fit frequency map",
+      "correctness_bin_selection": false,
+      "evaluation_positions": "one-based post-BOS positions 1-127; 128-191 retained as empty contract bins",
+      "frequency_bins": [
+        "unseen_0",
+        "seen_1",
+        "seen_2_4",
+        "seen_5_16",
+        "seen_17_64",
+        "seen_65_plus"
+      ],
+      "position_bins": [
+        "1-15",
+        "16-39",
+        "40-79",
+        "80-127",
+        "128-191"
+      ]
+    },
+    "histogram": {
+      "path": "experiments/TRR-P11/support/support-histogram-r1.json",
+      "sha256": "5b491246475b0d1eb518ec0846dbbc81b6b7fb9f32d3300530f732f89f23c4d5"
+    }
+  },
+  "task_id": "TRR-P11"
+}
