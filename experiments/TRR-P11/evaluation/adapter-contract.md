@@ -35,9 +35,7 @@ registered byte-identical scorer at
 one-sided alpha 0.025) separately for each cell. Domains and target conditions
 are never pooled.
 
-The score report exposes primary and comparator position strata separately, hash-bound cost receipts with parsed numeric fields, and the historical P07 support definition as `PENDING_FROZEN_FIT_SUPPORT_BINDING` until the common frequency reference and native B0/B1 fit position/attention-mask counts are bound. It never derives support from post-truth target rows. The current adapter and tests only use synthetic tensors. They do not access
-source text, a model, public E, a P03 holdout, or evaluation truth from the
-research run.
+The score report exposes primary and comparator position strata separately, hash-bound cost receipts with parsed numeric fields, and the completed public support binding. The binding revalidates the common B0 frequency map, fixed P07 frequency/position bins, and native B0/B1 full-bank plus B1-addition denominators. After the prediction freeze, the scorer assigns target positions to those fixed bins and reports correct/total tokens for B0/B1 and the A1 first-128 subset; correctness never selects records, checkpoints, bins, or methods. It never treats bank-local counts as the common reference. The current adapter and tests only use synthetic prediction/truth tensors for validation. They do not access source text, a model, public E, a P03 holdout, or evaluation truth from the research run.
 
 The restore receipt must identify `source_boundary=secondary` both at the
 receipt root and in its `retrieval` record for the agreed Windows persistent

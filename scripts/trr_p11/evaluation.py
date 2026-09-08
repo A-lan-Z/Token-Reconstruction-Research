@@ -85,6 +85,24 @@ _FORBIDDEN_TRUE = (
     "token_ids_written",
     "p03_holdout_accessed",
 )
+SUPPORT_HISTOGRAM_SCHEMA = "token-reconstruction.trr-p11-public-support-histogram.v1"
+SUPPORT_EXECUTION_SCHEMA = "token-reconstruction.trr-p11-public-support-histogram-execution.v1"
+SUPPORT_RECOVERY_EXECUTION_SCHEMA = "token-reconstruction.trr-p11-common-frequency-recovery-execution.v1"
+SUPPORT_FREQUENCY_BINS = (
+    ("unseen_0", 0, 0),
+    ("seen_1", 1, 1),
+    ("seen_2_4", 2, 4),
+    ("seen_5_16", 5, 16),
+    ("seen_17_64", 17, 64),
+    ("seen_65_plus", 65, None),
+)
+SUPPORT_POSITION_BINS = (
+    ("1-15", 1, 15, True),
+    ("16-39", 16, 39, True),
+    ("40-79", 40, 79, True),
+    ("80-127", 80, 127, True),
+    ("128-191", 128, 191, False),
+)
 
 
 class EvaluationError(ValueError):
@@ -614,6 +632,230 @@ def _validate_trace_costs(manifest: Mapping[str, Any], *, root: Path) -> tuple[l
     return result[0], result[1]
 
 
+def _validate_support(value: Any, *, root: Path) -> dict[str, Any] | None:
+    """Validate the frozen public fitting-support preparation artifacts.
+
+    The support map and histograms are public fitting diagnostics.  This check
+    binds their bytes, fixed bins, bank denominators, and truth-free execution
+    receipts before a prediction freeze.  It never reads evaluation truth or
+    reconstruction outputs.
+    """
+    if value is None:
+        return None
+    if not isinstance(value, Mapping):
+        raise EvaluationError("public fitting support binding is malformed")
+    required = ("histogram", "common_frequency", "contract", "execution")
+    missing = [name for name in required if not isinstance(value.get(name), Mapping)]
+    if missing:
+        raise EvaluationError(f"public fitting support bindings are absent: {', '.join(missing)}")
+
+    histogram, histogram_record = _load_json_binding(
+        value["histogram"], root=root, description="public support histogram"
+    )
+    if (
+        histogram.get("schema") != SUPPORT_HISTOGRAM_SCHEMA
+        or histogram.get("task_id") != TASK_ID
+        or histogram.get("status") != "COMPLETE_PUBLIC_SUPPORT_HISTOGRAM"
+    ):
+        raise EvaluationError("public support histogram is not complete")
+    truth_boundary = histogram.get("truth_boundary")
+    if not isinstance(truth_boundary, Mapping):
+        raise EvaluationError("public support histogram truth boundary is absent")
+    for key in ("evaluation_truth_opened", "hidden_states_read", "model_opened", "reconstruction_predictions_read", "source_text_read"):
+        if truth_boundary.get(key) is not False:
+            raise EvaluationError(f"public support histogram crosses the truth/model boundary: {key}")
+    counting_audit = histogram.get("counting_audit")
+    if not isinstance(counting_audit, Mapping):
+        raise EvaluationError("public support histogram counting audit is absent")
+    for key in ("exclude_bos", "exclude_padding", "frequency_reference_is_common", "b0_prefix_not_concatenated_to_b1", "b1_full_file_counted_once"):
+        if counting_audit.get(key) is not True:
+            raise EvaluationError(f"public support counting audit changed: {key}")
+
+    contract, contract_record = _load_json_binding(
+        value["contract"], root=root, description="public support contract"
+    )
+    if contract.get("schema") != SUPPORT_HISTOGRAM_SCHEMA or contract.get("task_id") != TASK_ID:
+        raise EvaluationError("public support contract identity changed")
+    contract_bins = contract.get("bins")
+    if not isinstance(contract_bins, Mapping):
+        raise EvaluationError("public support bin contract is absent")
+    contract_frequency_bins = contract_bins.get("frequency_bins")
+    contract_position_bins = contract_bins.get("position_bins")
+    if not isinstance(contract_frequency_bins, list) or not isinstance(contract_position_bins, list):
+        raise EvaluationError("public support bin lists are malformed")
+    expected_frequency_bins = [
+        {"name": name, "lower": lower, "upper": upper}
+        for name, lower, upper in SUPPORT_FREQUENCY_BINS
+    ]
+    expected_position_bins = [
+        {"name": name, "lower": lower, "upper": upper, "evaluation_range": evaluation_range}
+        for name, lower, upper, evaluation_range in SUPPORT_POSITION_BINS
+    ]
+    if contract_frequency_bins != expected_frequency_bins or contract_position_bins != expected_position_bins:
+        raise EvaluationError("public support bin definitions changed")
+    if contract_bins.get("evaluation_width") != STORED_SEQUENCE_TOKENS or contract_bins.get("support_width") != 192:
+        raise EvaluationError("public support widths changed")
+    if contract_bins.get("common_frequency_map_for_bin_assignment") is not True or contract_bins.get("bank_local_frequency_counts_reported_separately") is not True:
+        raise EvaluationError("public support frequency assignment policy changed")
+
+    common_record = _record(
+        value["common_frequency"],
+        root=root,
+        description="public common frequency map",
+        declared=value["common_frequency"],
+    )
+    histogram_config = histogram.get("config")
+    if not isinstance(histogram_config, Mapping):
+        raise EvaluationError("public support histogram contract binding is absent")
+    histogram_config_file = histogram_config.get("file") if isinstance(histogram_config.get("file"), Mapping) else histogram_config
+    if _require_sha(histogram_config_file.get("sha256"), description="public support histogram contract") != contract_record["sha256"]:
+        raise EvaluationError("public support histogram/contract hash changed")
+    if histogram_config_file.get("bytes") is not None and int(histogram_config_file["bytes"]) != contract_record["bytes"]:
+        raise EvaluationError("public support histogram/contract byte binding changed")
+    histogram_common = histogram.get("common_frequency_reference")
+    contract_common = contract.get("common_frequency_reference")
+    if not isinstance(histogram_common, Mapping) or not isinstance(contract_common, Mapping):
+        raise EvaluationError("public common frequency reference metadata is absent")
+    histogram_common_file = histogram_common.get("file")
+    if not isinstance(histogram_common_file, Mapping):
+        raise EvaluationError("public histogram common frequency file binding is absent")
+    _same_content(common_record, histogram_common_file, description="public histogram/common frequency map")
+    expected_common_sha = _require_sha(contract_common.get("sha256"), description="public contract common frequency")
+    if expected_common_sha != common_record["sha256"] or int(contract_common.get("bytes", -1)) != common_record["bytes"]:
+        raise EvaluationError("public contract common frequency map binding changed")
+    for key in ("support_count", "positive_occurrences", "support_digest_trr0010", "support_ids_tensor_sha256", "support_counts_tensor_sha256", "frequency_vector_tensor_sha256"):
+        if key not in histogram_common or key not in contract_common or histogram_common[key] != contract_common[key]:
+            raise EvaluationError(f"public common frequency identity changed: {key}")
+    if int(contract_common.get("vocabulary_size", -1)) != VOCABULARY_SIZE:
+        raise EvaluationError("public common frequency vocabulary size changed")
+
+    try:
+        with safe_open(common_record["path"], framework="pt", device="cpu") as handle:
+            expected_keys = {"frequency_counts", "support_ids", "support_counts"}
+            if set(handle.keys()) != expected_keys:
+                raise EvaluationError("public common frequency tensor keys changed")
+            tensors = {key: handle.get_tensor(key).detach().cpu().contiguous() for key in expected_keys}
+    except EvaluationError:
+        raise
+    except Exception as exc:
+        raise EvaluationError("public common frequency map is unreadable") from exc
+    expected_shapes = {
+        "frequency_counts": [VOCABULARY_SIZE],
+        "support_ids": [int(contract_common["support_count"])],
+        "support_counts": [int(contract_common["support_count"])],
+    }
+    expected_digests = {
+        "frequency_counts": str(contract_common["frequency_vector_tensor_sha256"]),
+        "support_ids": str(contract_common["support_ids_tensor_sha256"]),
+        "support_counts": str(contract_common["support_counts_tensor_sha256"]),
+    }
+    tensor_records: dict[str, Any] = {}
+    for key, tensor in tensors.items():
+        if list(tensor.shape) != expected_shapes[key] or str(tensor.dtype) != "torch.int64":
+            raise EvaluationError(f"public common frequency tensor geometry changed: {key}")
+        digest = p10.tensor_digest(tensor)
+        if digest != expected_digests[key]:
+            raise EvaluationError(f"public common frequency tensor digest changed: {key}")
+        tensor_records[key] = {"shape": list(tensor.shape), "dtype": str(tensor.dtype), "sha256": digest}
+
+    execution, execution_record = _load_json_binding(
+        value["execution"], root=root, description="public support histogram execution receipt"
+    )
+    if execution.get("schema") != SUPPORT_EXECUTION_SCHEMA or execution.get("task_id") != TASK_ID or execution.get("status") != "PASS_PUBLIC_SUPPORT_HISTOGRAM":
+        raise EvaluationError("public support histogram execution receipt is not a pass")
+    for key in ("gpu_used", "model_opened", "truth_opened"):
+        if execution.get(key) is not False:
+            raise EvaluationError(f"public support execution boundary changed: {key}")
+    recovery_execution_record = None
+    if isinstance(value.get("frequency_recovery_execution"), Mapping):
+        recovery_execution, recovery_execution_record = _load_json_binding(
+            value["frequency_recovery_execution"],
+            root=root,
+            description="public common frequency recovery execution receipt",
+        )
+        if recovery_execution.get("schema") != SUPPORT_RECOVERY_EXECUTION_SCHEMA or recovery_execution.get("task_id") != TASK_ID or recovery_execution.get("status") != "PASS_PUBLIC_B0_FREQUENCY_DERIVED":
+            raise EvaluationError("public common frequency recovery execution is not a pass")
+        for key in ("gpu_used", "model_opened", "truth_opened"):
+            if recovery_execution.get(key) is not False:
+                raise EvaluationError(f"public common frequency recovery boundary changed: {key}")
+
+    histograms = histogram.get("histograms")
+    if not isinstance(histograms, Mapping):
+        raise EvaluationError("public support histograms are absent")
+    expected_bank_geometry = {
+        "B0": (1200, 124371, [0, 1200]),
+        "B1": (12000, 1243710, [0, 12000]),
+        "B1_additions": (10800, 1119339, [1200, 12000]),
+    }
+    bank_views: dict[str, Any] = {}
+    for bank_name, (expected_records, expected_positions, expected_slice) in expected_bank_geometry.items():
+        bank = histograms.get(bank_name)
+        if not isinstance(bank, Mapping):
+            raise EvaluationError(f"public support histogram bank is absent: {bank_name}")
+        if bank.get("correctness_status") != "not_computed":
+            raise EvaluationError(f"public support histogram correctness was computed: {bank_name}")
+        if int(bank.get("records", -1)) != expected_records or int(bank.get("post_bos_positions", -1)) != expected_positions:
+            raise EvaluationError(f"public support histogram denominator changed: {bank_name}")
+        if bank.get("row_slice_in_source") != expected_slice:
+            raise EvaluationError(f"public support histogram row slice changed: {bank_name}")
+        common_bins = bank.get("common_reference_frequency", {}).get("bin_occurrences")
+        if not isinstance(common_bins, Mapping) or set(common_bins) != {name for name, _, _ in SUPPORT_FREQUENCY_BINS}:
+            raise EvaluationError(f"public support histogram frequency bins are incomplete: {bank_name}")
+        if sum(int(common_bins[name]) for name, _, _ in SUPPORT_FREQUENCY_BINS) != expected_positions:
+            raise EvaluationError(f"public support histogram frequency denominator changed: {bank_name}")
+        position_bins = bank.get("position_bins")
+        if not isinstance(position_bins, Mapping) or set(position_bins) != {name for name, _, _, _ in SUPPORT_POSITION_BINS}:
+            raise EvaluationError(f"public support histogram position bins are incomplete: {bank_name}")
+        position_total = 0
+        for name, _, _, evaluation_range in SUPPORT_POSITION_BINS:
+            item = position_bins[name]
+            if not isinstance(item, Mapping) or item.get("in_evaluation_range") is not evaluation_range:
+                raise EvaluationError(f"public support histogram position definition changed: {bank_name}/{name}")
+            position_total += int(item.get("post_bos_positions", -1))
+        if position_total != expected_positions:
+            raise EvaluationError(f"public support histogram position denominator changed: {bank_name}")
+        bank_views[bank_name] = {
+            key: bank[key]
+            for key in (
+                "label", "records", "post_bos_positions", "row_slice_in_source", "coverage",
+                "common_reference_frequency", "position_bins", "source_type_positions",
+                "own_bank_frequency", "style_summary", "joint_style_position_frequency",
+                "correctness_status",
+            )
+            if key in bank
+        }
+
+    return {
+        "status": "AVAILABLE_PUBLIC_FIT_SUPPORT",
+        "histogram": histogram_record,
+        "common_frequency": common_record,
+        "contract": contract_record,
+        "execution": execution_record,
+        "frequency_recovery_execution": recovery_execution_record,
+        "frequency_map": {
+            "file": dict(common_record),
+            "tensor_keys": sorted(tensor_records),
+            "tensors": tensor_records,
+            "support_count": int(contract_common["support_count"]),
+            "positive_occurrences": int(contract_common["positive_occurrences"]),
+            "support_digest_trr0010": str(contract_common["support_digest_trr0010"]),
+        },
+        "definition": {
+            "frequency_bins": expected_frequency_bins,
+            "position_bins": expected_position_bins,
+            "position_coordinate": "one-based post-BOS position",
+            "labels": "token_ids[:, 1:][attention_mask[:, 1:]]",
+            "exclude_bos": True,
+            "exclude_padding": True,
+            "evaluation_width": STORED_SEQUENCE_TOKENS,
+            "support_width": 192,
+            "assignment_source": "frozen common public B0 frequency map",
+            "correctness_is_not_used_for_bin_selection": True,
+        },
+        "fit_bank_counts": bank_views,
+    }
+
+
 def _validate_state(method: str, value: Any, *, root: Path) -> tuple[dict[str, Any], dict[str, Any]]:
     if not isinstance(value, Mapping):
         raise EvaluationError(f"state descriptor is absent: {method}")
@@ -823,6 +1065,7 @@ def _validate_document(document: Mapping[str, Any], *, root: Path, allow_freeze:
     selection_ids = selection_identity["record_ids_sha256"]
     capture, capture_record, observations = _validate_capture(document.get("capture"), root=root, selection_identity=selection_identity, observation_bindings=document.get("observations", {}))
     restore, restore_record = _validate_restore(document.get("restore"), root=root)
+    support = _validate_support(document.get("support"), root=root)
     trace_files, cost_files = _validate_trace_costs(document, root=root)
     source_order = document.get("source_order")
     if not isinstance(source_order, Mapping):
@@ -896,7 +1139,7 @@ def _validate_document(document: Mapping[str, Any], *, root: Path, allow_freeze:
         dict(selection_record),
         dict(capture_record),
         dict(restore_record),
-        {"payload": document.get("source_order"), "observations": observations, "selection_ids": selection_ids, "selection_identity": selection_identity, "restore_links": restore_links},
+        {"payload": document.get("source_order"), "observations": observations, "selection_ids": selection_ids, "selection_identity": selection_identity, "restore_links": restore_links, "support": support},
         prediction_bindings,
         states,
         trace_files,
@@ -967,6 +1210,7 @@ def freeze_predictions(*, manifest_path: Path, output_path: Path, repository_roo
         "source_text_or_target_labels": False,
         "candidate_arrays_persisted": False,
         "p03_holdout_accessed": False,
+        "support": source_context["support"],
     }
     record = _write_json(Path(output_path), payload, root=root, description="P11 evaluation freeze")
     return {"task_id": TASK_ID, "status": matrix_status, "freeze": record, "truth_opened": False}
@@ -1267,6 +1511,195 @@ def _parse_cost_files(cost_files: Sequence[Mapping[str, Any]]) -> dict[str, Any]
     return {"status": "AVAILABLE" if parsed else "UNAVAILABLE", "files": parsed}
 
 
+def _build_support_strata(
+    frozen: FrozenEvaluation,
+    truth: Mapping[str, torch.Tensor],
+    *,
+    support: Mapping[str, Any],
+    root: Path,
+) -> dict[str, Any]:
+    """Assign post-freeze target positions to the frozen public support bins.
+
+    The common frequency map and bank histograms are fixed before evaluation.
+    Target rows are used only after the prediction freeze to report correctness
+    by the preregistered support/position strata; they never choose records,
+    checkpoints, bins, or methods.
+    """
+    if not isinstance(support, Mapping) or support.get("status") != "AVAILABLE_PUBLIC_FIT_SUPPORT":
+        raise EvaluationError("public fitting support is not validated")
+    frequency_map = support.get("frequency_map")
+    if not isinstance(frequency_map, Mapping) or not isinstance(frequency_map.get("file"), Mapping):
+        raise EvaluationError("public common frequency map binding is absent")
+    frequency_file = _record(
+        frequency_map["file"],
+        root=root,
+        description="scoring common frequency map",
+        declared=frequency_map["file"],
+    )
+    expected_tensor = frequency_map.get("tensors", {}).get("frequency_counts") if isinstance(frequency_map.get("tensors"), Mapping) else None
+    if not isinstance(expected_tensor, Mapping):
+        raise EvaluationError("public common frequency vector binding is absent")
+    try:
+        with safe_open(frequency_file["path"], framework="pt", device="cpu") as handle:
+            if set(handle.keys()) != {"frequency_counts", "support_ids", "support_counts"}:
+                raise EvaluationError("public common frequency tensor keys changed before scoring")
+            frequency_counts = handle.get_tensor("frequency_counts").detach().cpu().contiguous()
+    except EvaluationError:
+        raise
+    except Exception as exc:
+        raise EvaluationError("public common frequency vector cannot be reopened") from exc
+    if list(frequency_counts.shape) != [VOCABULARY_SIZE] or str(frequency_counts.dtype) != "torch.int64":
+        raise EvaluationError("public common frequency vector geometry changed before scoring")
+    if p10.tensor_digest(frequency_counts) != expected_tensor.get("sha256"):
+        raise EvaluationError("public common frequency vector changed before scoring")
+
+    definition = support.get("definition")
+    if not isinstance(definition, Mapping):
+        raise EvaluationError("public support definition is absent")
+    frequency_bins = tuple(SUPPORT_FREQUENCY_BINS)
+    position_bins = tuple(SUPPORT_POSITION_BINS)
+    cells: dict[str, Any] = {}
+    for cell in CELL_ORDER:
+        observation = frozen.payload.get("observations", {}).get(cell) if isinstance(frozen.payload.get("observations"), Mapping) else None
+        if not isinstance(observation, Mapping):
+            raise EvaluationError(f"support observation binding is absent: {cell}")
+        observation_record = _record(
+            observation,
+            root=root,
+            description=f"support observation {cell}",
+            declared=observation,
+        )
+        try:
+            with safe_open(observation_record["path"], framework="pt", device="cpu") as handle:
+                if set(handle.keys()) != {"activations", "attention_mask", "position_ids"}:
+                    raise EvaluationError(f"support observation tensor keys changed: {cell}")
+                attention_mask = handle.get_tensor("attention_mask").detach().cpu().contiguous()
+        except EvaluationError:
+            raise
+        except Exception as exc:
+            raise EvaluationError(f"support observation cannot be reopened: {cell}") from exc
+        if tuple(attention_mask.shape) != (RECORDS_PER_DOMAIN, STORED_SEQUENCE_TOKENS):
+            raise EvaluationError(f"support observation mask geometry changed: {cell}")
+        active = attention_mask.to(torch.bool)[:, 1:STORED_SEQUENCE_TOKENS]
+        target = torch.as_tensor(truth[cell]).detach().cpu().contiguous()
+        if tuple(target.shape) != (RECORDS_PER_DOMAIN, STORED_SEQUENCE_TOKENS):
+            raise EvaluationError(f"support truth geometry changed: {cell}")
+        target_evaluation = target[:, 1:STORED_SEQUENCE_TOKENS]
+        if target_evaluation.numel() and (target_evaluation.lt(0).any().item() or target_evaluation.ge(VOCABULARY_SIZE).any().item()):
+            raise EvaluationError(f"support truth token range changed: {cell}")
+        frequencies = frequency_counts[target_evaluation.to(dtype=torch.long)]
+        position_numbers = torch.arange(1, SCORED_POST_BOS_TOKENS + 1, dtype=torch.int64)
+        position_bin_indices = torch.full((SCORED_POST_BOS_TOKENS,), -1, dtype=torch.int64)
+        for index, (_name, lower, upper, _evaluation_range) in enumerate(position_bins):
+            if lower <= SCORED_POST_BOS_TOKENS:
+                end = min(int(upper), SCORED_POST_BOS_TOKENS) if upper is not None else SCORED_POST_BOS_TOKENS
+                if end >= lower:
+                    position_bin_indices[(position_numbers >= lower) & (position_numbers <= end)] = index
+        frequency_bin_indices = torch.full_like(frequencies, -1)
+        for index, (_name, lower, upper) in enumerate(frequency_bins):
+            condition = frequencies.ge(lower)
+            if upper is not None:
+                condition &= frequencies.le(upper)
+            frequency_bin_indices[condition] = index
+        if (frequency_bin_indices.lt(0) & active).any().item():
+            raise EvaluationError(f"support frequency bins do not cover active target positions: {cell}")
+        method_tensors: dict[str, torch.Tensor] = {
+            method: frozen.predictions[f"{method}::{cell}"][:, 1:STORED_SEQUENCE_TOKENS]
+            for method in PRIMARY_METHODS
+        }
+        method_records: dict[str, int] = {method: RECORDS_PER_DOMAIN for method in PRIMARY_METHODS}
+        if f"{COMPARATOR_METHOD}::{cell}" in frozen.predictions:
+            method_tensors[COMPARATOR_METHOD] = frozen.predictions[f"{COMPARATOR_METHOD}::{cell}"][:, 1:STORED_SEQUENCE_TOKENS]
+            method_records[COMPARATOR_METHOD] = COMPARATOR_RECORDS_PER_DOMAIN
+        method_totals: dict[str, int] = {}
+        method_correct: dict[str, int] = {}
+        for method, prediction in method_tensors.items():
+            rows = method_records[method]
+            method_active = active[:rows]
+            method_target = target_evaluation[:rows]
+            if tuple(prediction.shape) != tuple(method_target.shape):
+                raise EvaluationError(f"support prediction geometry changed: {method}/{cell}")
+            method_totals[method] = int(method_active.sum().item())
+            method_correct[method] = int((prediction.eq(method_target) & method_active).sum().item())
+
+        strata: dict[str, dict[str, Any]] = {}
+        for frequency_index, (frequency_name, _lower, _upper) in enumerate(frequency_bins):
+            by_position: dict[str, Any] = {}
+            frequency_mask = frequency_bin_indices.eq(frequency_index)
+            for position_index, (position_name, _plower, _pupper, _evaluation_range) in enumerate(position_bins):
+                position_mask = position_bin_indices.eq(position_index).unsqueeze(0)
+                primary_mask = active & frequency_mask & position_mask
+                denominator = int(primary_mask.sum().item())
+                methods_report: dict[str, Any] = {}
+                for method, prediction in method_tensors.items():
+                    rows = method_records[method]
+                    mask = primary_mask[:rows]
+                    target_rows = target_evaluation[:rows]
+                    correct = int((prediction.eq(target_rows) & mask).sum().item())
+                    methods_report[method] = {
+                        "records": rows,
+                        "correct_tokens": correct,
+                        "total_tokens": int(mask.sum().item()),
+                    }
+                by_position[position_name] = {
+                    "denominator_tokens": denominator,
+                    "methods": methods_report,
+                }
+            strata[frequency_name] = by_position
+        denominator_by_frequency = {
+            name: int((active & frequency_bin_indices.eq(index).to(active.device)).sum().item())
+            for index, (name, _lower, _upper) in enumerate(frequency_bins)
+        }
+        denominator_by_position = {
+            name: int((active & position_bin_indices.eq(index).unsqueeze(0)).sum().item())
+            for index, (name, _lower, _upper, _evaluation_range) in enumerate(position_bins)
+        }
+        cells[cell] = {
+            "records": RECORDS_PER_DOMAIN,
+            "scored_post_bos_positions": SCORED_POST_BOS_TOKENS,
+            "denominator_tokens": int(active.sum().item()),
+            "denominator_by_frequency": denominator_by_frequency,
+            "denominator_by_position": denominator_by_position,
+            "methods": {
+                method: {
+                    "records": method_records[method],
+                    "correct_tokens": method_correct[method],
+                    "total_tokens": method_totals[method],
+                }
+                for method in method_tensors
+            },
+            "frequency_position_strata": strata,
+            "observation": observation_record,
+        }
+    return {
+        "status": "AVAILABLE_PUBLIC_FIT_SUPPORT",
+        "assignment": {
+            "frequency_reference": dict(frequency_map["file"]),
+            "source": "frozen common public B0 frequency map plus post-freeze target rows",
+            "selection_used": False,
+            "checkpoint_selection_used": False,
+            "truth_opened_before_prediction_freeze": False,
+            "exclude_bos": True,
+            "exclude_padding": True,
+            "position_coordinate": "one-based post-BOS position",
+        },
+        "definition": dict(definition),
+        "reference_artifacts": {
+            "histogram": dict(support["histogram"]),
+            "common_frequency": dict(support["common_frequency"]),
+            "contract": dict(support["contract"]),
+            "execution": dict(support["execution"]),
+            "frequency_recovery_execution": dict(support["frequency_recovery_execution"])
+            if isinstance(support.get("frequency_recovery_execution"), Mapping)
+            else None,
+        },
+        "frequency_map": dict(frequency_map),
+        "fit_bank_counts": dict(support.get("fit_bank_counts", {})),
+        "cells": cells,
+        "method_order": list(PRIMARY_METHODS) + ([COMPARATOR_METHOD] if any(f"{COMPARATOR_METHOD}::{cell}" in frozen.predictions for cell in CELL_ORDER) else []),
+    }
+
+
 def _support_strata_unavailable() -> dict[str, Any]:
     return {
         "status": "PENDING_FROZEN_FIT_SUPPORT_BINDING",
@@ -1393,7 +1826,11 @@ def score_after_truth(*, freeze_path: Path, truth_descriptor_path: Path, output_
         "trace_status": ("AVAILABLE" if frozen.payload.get("trace_files") else "UNAVAILABLE_PREREGISTERED"),
         "cost_files": [dict(item) for item in frozen.payload.get("cost_files", [])],
         "parsed_costs": _parse_cost_files(frozen.payload.get("cost_files", [])),
-        "support_strata": _support_strata_unavailable(),
+        "support_strata": (
+            _build_support_strata(frozen, truth, support=frozen.payload["support"], root=root)
+            if isinstance(frozen.payload.get("support"), Mapping)
+            else _support_strata_unavailable()
+        ),
         "a1_diagnostics": (
             {"status": "UNAVAILABLE", "matrix_status": "QUALIFIED_PARTIAL_A1_BLOCKER", "reason": frozen.payload["comparator"].get("reason"), "blocker_id": frozen.payload["comparator"].get("blocker_id")}
             if partial

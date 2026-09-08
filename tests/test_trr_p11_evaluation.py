@@ -455,3 +455,51 @@ def test_prediction_receipt_requires_explicit_observation_binding(tmp_path: Path
     _write_json(bad, manifest)
     with pytest.raises(ev.EvaluationError, match="observation binding is absent"):
         ev.freeze_predictions(manifest_path=bad, output_path=tmp_path / "freeze.json", repository_root=tmp_path)
+
+
+
+def test_recovered_public_support_binding_reports_frozen_strata(tmp_path: Path) -> None:
+    repository_root = Path(ev.__file__).resolve().parents[2]
+    support_path = repository_root / "experiments/TRR-P11/evaluation/support-binding-r1.json"
+    support = json.loads(support_path.read_text(encoding="utf-8"))
+    for key in ("histogram", "common_frequency", "contract", "execution", "frequency_recovery_execution", "frequency_recovery_receipt"):
+        if isinstance(support.get(key), dict):
+            support[key]["path"] = str(repository_root / support[key]["path"])
+    support = ev._validate_support(support, root=repository_root)
+    assert support["status"] == "AVAILABLE_PUBLIC_FIT_SUPPORT"
+    assert {name: support["fit_bank_counts"][name]["records"] for name in ("B0", "B1", "B1_additions")} == {"B0": 1200, "B1": 12000, "B1_additions": 10800}
+
+    observation_path = tmp_path / "observation.safetensors"
+    save_file(
+        {
+            "activations": torch.zeros((ev.RECORDS_PER_DOMAIN, ev.STORED_SEQUENCE_TOKENS, 2), dtype=torch.float32),
+            "attention_mask": torch.ones((ev.RECORDS_PER_DOMAIN, ev.STORED_SEQUENCE_TOKENS), dtype=torch.uint8),
+            "position_ids": torch.arange(ev.STORED_SEQUENCE_TOKENS, dtype=torch.int64).expand(ev.RECORDS_PER_DOMAIN, -1).contiguous(),
+        },
+        str(observation_path),
+    )
+    observation = _record(observation_path)
+    truth = {cell: _truth_tensor() for cell in ev.CELL_ORDER}
+    predictions: dict[str, torch.Tensor] = {}
+    for cell in ev.CELL_ORDER:
+        predictions[f"new_current_fixed_B0::{cell}"] = truth[cell].clone()
+        predictions[f"new_expanded_fixed_B1::{cell}"] = truth[cell].clone()
+        predictions[f"{ev.COMPARATOR_METHOD}::{cell}"] = truth[cell][:ev.COMPARATOR_RECORDS_PER_DOMAIN].clone()
+    frozen = ev.FrozenEvaluation(
+        freeze_path=tmp_path / "freeze.json",
+        freeze_record={},
+        payload={"observations": {cell: observation for cell in ev.CELL_ORDER}},
+        predictions=predictions,
+        prediction_bindings={},
+        states={},
+        records_by_cell={cell: ev.RECORDS_PER_DOMAIN for cell in ev.CELL_ORDER},
+        subsets={},
+    )
+    report = ev._build_support_strata(frozen, truth, support=support, root=tmp_path)
+    assert report["status"] == "AVAILABLE_PUBLIC_FIT_SUPPORT"
+    for cell in ev.CELL_ORDER:
+        cell_report = report["cells"][cell]
+        assert cell_report["denominator_tokens"] == ev.RECORDS_PER_DOMAIN * ev.SCORED_POST_BOS_TOKENS
+        assert cell_report["denominator_by_position"]["128-191"] == 0
+        assert cell_report["methods"]["new_current_fixed_B0"]["total_tokens"] == cell_report["denominator_tokens"]
+        assert cell_report["methods"][ev.COMPARATOR_METHOD]["records"] == ev.COMPARATOR_RECORDS_PER_DOMAIN
