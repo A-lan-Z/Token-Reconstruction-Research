@@ -1,0 +1,87 @@
+{
+  "consumer_paths_package_relative": true,
+  "inference": {
+    "argmax_tie_rule": "torch.argmax over full vocabulary dimension",
+    "batching": "one record at a time for bounded memory; must be output-equivalent to a batched call",
+    "compute_dtype": "torch.float32",
+    "input_activation_dtype": "torch.bfloat16",
+    "output_bos_token_id": 128000,
+    "output_dtype": "torch.int64",
+    "output_shape": "[N,128]",
+    "readout_dtype": "torch.float32",
+    "scored_positions": "1:128"
+  },
+  "loader": {
+    "function": "load_p09_fixed_state",
+    "module": "trr0010_p09_fixed_loader",
+    "path": "code/trr0010_p09_fixed_loader.py",
+    "serialized_method_id": "continued_fixed_readout"
+  },
+  "methods": {
+    "current_fixed": {
+      "bank": "B0",
+      "loader_kwargs": null,
+      "model_id": null,
+      "selected_step": null,
+      "state_path": "states/current_fixed.safetensors"
+    },
+    "expanded_fixed": {
+      "bank": "B1",
+      "loader_kwargs": null,
+      "model_id": null,
+      "selected_step": null,
+      "state_path": "states/expanded_fixed.safetensors"
+    }
+  },
+  "model": {
+    "bottleneck_size": 512,
+    "builder": "build_residual_mlp512",
+    "class": "ResidualMLPPositionwiseDecoder",
+    "context_width": 128,
+    "current_H_only": true,
+    "hidden_size": 2048,
+    "module": "token_reconstruction.trr0007_positionwise",
+    "readout_mode": "fixed_public_normalized_E",
+    "seed": 4005,
+    "vocabulary_size": 128256
+  },
+  "readout": {
+    "dtype": "torch.float32",
+    "key": "embeddings",
+    "path": "readout/public_normalized_embeddings.safetensors",
+    "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+    "shape": [
+      128256,
+      2048
+    ]
+  },
+  "runtime": {
+    "entrypoint": "python code/trr0012_package.py predict --package-root . --observations <observations> --output <output> --device <cpu-or-cuda>",
+    "numpy": "1.26.4",
+    "python": "3.12.3",
+    "pythonpath_relative": [
+      "code"
+    ],
+    "safetensors": "0.7.0",
+    "torch": "2.10.0"
+  },
+  "schema": "token-reconstruction.trr0012-fixed-decoder-config.v1",
+  "smoke": {
+    "expected_path": "smoke/expected_predictions.safetensors",
+    "input_path": "smoke/public_base_first2.safetensors",
+    "record_order": [
+      "finance/public_base/000",
+      "finance/public_base/001",
+      "pile/public_base/000",
+      "pile/public_base/001"
+    ]
+  },
+  "status": "DRAFT_PRE_SELECTION",
+  "task_id": "TRR-0012",
+  "truth_boundary": {
+    "independent_evaluation_truth_opened": false,
+    "smoke_used_for_selection": false,
+    "source_text_loaded": false,
+    "token_ids_loaded": false
+  }
+}

@@ -1,0 +1,460 @@
+{
+  "commands": [
+    {
+      "command": [
+        "nvidia-smi",
+        "--query-gpu=memory.free,memory.total",
+        "--format=csv,noheader,nounits"
+      ],
+      "guard": "Require free GPU >= 11811160064 bytes, host headroom >= 8589934592 bytes, host RSS cap 12884901888 bytes, disk free >= 21474836480 bytes.",
+      "run": false,
+      "step": "fresh_external_preflight"
+    },
+    {
+      "command": [
+        "python3",
+        "$REPO/scripts/trr0011_capture.py",
+        "validate-plan",
+        "--plan",
+        "$REPO/experiments/outputs/TRR-0012/transfer/capture_plan_exec_v2.json"
+      ],
+      "env": {
+        "HF_HUB_OFFLINE": "1",
+        "MKL_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "TOKENIZERS_PARALLELISM": "false",
+        "TRANSFORMERS_OFFLINE": "1"
+      },
+      "run": false,
+      "step": "validate_executable_plan"
+    },
+    {
+      "command": [
+        "python3",
+        "$REPO/scripts/trr0011_capture.py",
+        "validate-panel",
+        "--panel",
+        "${AGENT2_OPAQUE_PANEL_JSON:?set Agent2 reserved opaque panel JSON}"
+      ],
+      "env": {
+        "HF_HUB_OFFLINE": "1",
+        "MKL_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "TOKENIZERS_PARALLELISM": "false",
+        "TRANSFORMERS_OFFLINE": "1"
+      },
+      "requires": [
+        "AGENT2_OPAQUE_PANEL_JSON"
+      ],
+      "run": false,
+      "step": "validate_agent2_panel"
+    },
+    {
+      "command": [
+        "python3",
+        "$REPO/scripts/trr0011_capture.py",
+        "capture-variant",
+        "--plan",
+        "$REPO/experiments/outputs/TRR-0012/transfer/capture_plan_exec_v2.json",
+        "--panel",
+        "${AGENT2_OPAQUE_PANEL_JSON:?set Agent2 reserved opaque panel JSON}",
+        "--source-input",
+        "${AGENT2_EVALUATOR_TOKEN_BATCH_JSON:?set evaluator-owned token batch JSON}",
+        "--model-snapshot",
+        "$MODEL_SNAPSHOT",
+        "--tokenizer",
+        "$MODEL_SNAPSHOT/tokenizer.json",
+        "--variant",
+        "clean_public",
+        "--output-root",
+        "$REPO/experiments/outputs/TRR-0012/transfer/capture",
+        "--receipt",
+        "$REPO/experiments/outputs/TRR-0012/transfer/capture/clean_public/capture_variant_receipt.json",
+        "--root-release-receipt",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/outputs/TRR-0012/transfer/root_release_transfer_v2.json",
+        "--device",
+        "cuda",
+        "--full-reference-output",
+        "$REPO/experiments/outputs/TRR-0012/transfer/capture/clean_public/full_reference.safetensors"
+      ],
+      "env": {
+        "HF_HUB_OFFLINE": "1",
+        "MKL_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "TOKENIZERS_PARALLELISM": "false",
+        "TRANSFORMERS_OFFLINE": "1"
+      },
+      "requires": [
+        "AGENT2_OPAQUE_PANEL_JSON",
+        "AGENT2_EVALUATOR_TOKEN_BATCH_JSON",
+        "ROOT_CAPTURE_RELEASE_JSON"
+      ],
+      "run": false,
+      "step": "capture_clean_public",
+      "watchdog": "timeout --kill-after=30s 900s"
+    },
+    {
+      "command": [
+        "python3",
+        "$REPO/scripts/trr0011_capture.py",
+        "capture-variant",
+        "--plan",
+        "$REPO/experiments/outputs/TRR-0012/transfer/capture_plan_exec_v2.json",
+        "--panel",
+        "${AGENT2_OPAQUE_PANEL_JSON:?set Agent2 reserved opaque panel JSON}",
+        "--source-input",
+        "${AGENT2_EVALUATOR_TOKEN_BATCH_JSON:?set evaluator-owned token batch JSON}",
+        "--model-snapshot",
+        "$MODEL_SNAPSHOT",
+        "--tokenizer",
+        "$MODEL_SNAPSHOT/tokenizer.json",
+        "--variant",
+        "layer1_block_rel1e-3",
+        "--output-root",
+        "$REPO/experiments/outputs/TRR-0012/transfer/capture",
+        "--receipt",
+        "$REPO/experiments/outputs/TRR-0012/transfer/capture/layer1_block_rel1e-3/capture_variant_receipt.json",
+        "--root-release-receipt",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/outputs/TRR-0012/transfer/root_release_transfer_v2.json",
+        "--device",
+        "cuda"
+      ],
+      "env": {
+        "HF_HUB_OFFLINE": "1",
+        "MKL_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "TOKENIZERS_PARALLELISM": "false",
+        "TRANSFORMERS_OFFLINE": "1"
+      },
+      "requires": [
+        "AGENT2_OPAQUE_PANEL_JSON",
+        "AGENT2_EVALUATOR_TOKEN_BATCH_JSON",
+        "ROOT_CAPTURE_RELEASE_JSON"
+      ],
+      "run": false,
+      "step": "capture_layer1_block_rel1e-3",
+      "watchdog": "timeout --kill-after=30s 900s"
+    },
+    {
+      "command": [
+        "python3",
+        "$REPO/scripts/trr0011_capture.py",
+        "capture-variant",
+        "--plan",
+        "$REPO/experiments/outputs/TRR-0012/transfer/capture_plan_exec_v2.json",
+        "--panel",
+        "${AGENT2_OPAQUE_PANEL_JSON:?set Agent2 reserved opaque panel JSON}",
+        "--source-input",
+        "${AGENT2_EVALUATOR_TOKEN_BATCH_JSON:?set evaluator-owned token batch JSON}",
+        "--model-snapshot",
+        "$MODEL_SNAPSHOT",
+        "--tokenizer",
+        "$MODEL_SNAPSHOT/tokenizer.json",
+        "--variant",
+        "layer1_block_rel1e-2",
+        "--output-root",
+        "$REPO/experiments/outputs/TRR-0012/transfer/capture",
+        "--receipt",
+        "$REPO/experiments/outputs/TRR-0012/transfer/capture/layer1_block_rel1e-2/capture_variant_receipt.json",
+        "--root-release-receipt",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/outputs/TRR-0012/transfer/root_release_transfer_v2.json",
+        "--device",
+        "cuda"
+      ],
+      "env": {
+        "HF_HUB_OFFLINE": "1",
+        "MKL_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "TOKENIZERS_PARALLELISM": "false",
+        "TRANSFORMERS_OFFLINE": "1"
+      },
+      "requires": [
+        "AGENT2_OPAQUE_PANEL_JSON",
+        "AGENT2_EVALUATOR_TOKEN_BATCH_JSON",
+        "ROOT_CAPTURE_RELEASE_JSON"
+      ],
+      "run": false,
+      "step": "capture_layer1_block_rel1e-2",
+      "watchdog": "timeout --kill-after=30s 900s"
+    },
+    {
+      "command": [
+        "python3",
+        "$REPO/scripts/trr0011_capture.py",
+        "capture-variant",
+        "--plan",
+        "$REPO/experiments/outputs/TRR-0012/transfer/capture_plan_exec_v2.json",
+        "--panel",
+        "${AGENT2_OPAQUE_PANEL_JSON:?set Agent2 reserved opaque panel JSON}",
+        "--source-input",
+        "${AGENT2_EVALUATOR_TOKEN_BATCH_JSON:?set evaluator-owned token batch JSON}",
+        "--model-snapshot",
+        "$MODEL_SNAPSHOT",
+        "--tokenizer",
+        "$MODEL_SNAPSHOT/tokenizer.json",
+        "--variant",
+        "layer3_block_rel1e-3",
+        "--output-root",
+        "$REPO/experiments/outputs/TRR-0012/transfer/capture",
+        "--receipt",
+        "$REPO/experiments/outputs/TRR-0012/transfer/capture/layer3_block_rel1e-3/capture_variant_receipt.json",
+        "--root-release-receipt",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/outputs/TRR-0012/transfer/root_release_transfer_v2.json",
+        "--device",
+        "cuda"
+      ],
+      "env": {
+        "HF_HUB_OFFLINE": "1",
+        "MKL_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "TOKENIZERS_PARALLELISM": "false",
+        "TRANSFORMERS_OFFLINE": "1"
+      },
+      "requires": [
+        "AGENT2_OPAQUE_PANEL_JSON",
+        "AGENT2_EVALUATOR_TOKEN_BATCH_JSON",
+        "ROOT_CAPTURE_RELEASE_JSON"
+      ],
+      "run": false,
+      "step": "capture_layer3_block_rel1e-3",
+      "watchdog": "timeout --kill-after=30s 900s"
+    },
+    {
+      "command": [
+        "python3",
+        "$REPO/scripts/trr0011_capture.py",
+        "capture-variant",
+        "--plan",
+        "$REPO/experiments/outputs/TRR-0012/transfer/capture_plan_exec_v2.json",
+        "--panel",
+        "${AGENT2_OPAQUE_PANEL_JSON:?set Agent2 reserved opaque panel JSON}",
+        "--source-input",
+        "${AGENT2_EVALUATOR_TOKEN_BATCH_JSON:?set evaluator-owned token batch JSON}",
+        "--model-snapshot",
+        "$MODEL_SNAPSHOT",
+        "--tokenizer",
+        "$MODEL_SNAPSHOT/tokenizer.json",
+        "--variant",
+        "layer3_block_rel1e-2",
+        "--output-root",
+        "$REPO/experiments/outputs/TRR-0012/transfer/capture",
+        "--receipt",
+        "$REPO/experiments/outputs/TRR-0012/transfer/capture/layer3_block_rel1e-2/capture_variant_receipt.json",
+        "--root-release-receipt",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/outputs/TRR-0012/transfer/root_release_transfer_v2.json",
+        "--device",
+        "cuda"
+      ],
+      "env": {
+        "HF_HUB_OFFLINE": "1",
+        "MKL_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "TOKENIZERS_PARALLELISM": "false",
+        "TRANSFORMERS_OFFLINE": "1"
+      },
+      "requires": [
+        "AGENT2_OPAQUE_PANEL_JSON",
+        "AGENT2_EVALUATOR_TOKEN_BATCH_JSON",
+        "ROOT_CAPTURE_RELEASE_JSON"
+      ],
+      "run": false,
+      "step": "capture_layer3_block_rel1e-2",
+      "watchdog": "timeout --kill-after=30s 900s"
+    },
+    {
+      "command": [
+        "python3",
+        "$REPO/scripts/trr0011_capture.py",
+        "capture-variant",
+        "--plan",
+        "$REPO/experiments/outputs/TRR-0012/transfer/capture_plan_exec_v2.json",
+        "--panel",
+        "${AGENT2_OPAQUE_PANEL_JSON:?set Agent2 reserved opaque panel JSON}",
+        "--source-input",
+        "${AGENT2_EVALUATOR_TOKEN_BATCH_JSON:?set evaluator-owned token batch JSON}",
+        "--model-snapshot",
+        "$MODEL_SNAPSHOT",
+        "--tokenizer",
+        "$MODEL_SNAPSHOT/tokenizer.json",
+        "--variant",
+        "layer4_null_block_rel1e-2",
+        "--output-root",
+        "$REPO/experiments/outputs/TRR-0012/transfer/capture",
+        "--receipt",
+        "$REPO/experiments/outputs/TRR-0012/transfer/capture/layer4_null_block_rel1e-2/capture_variant_receipt.json",
+        "--root-release-receipt",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/outputs/TRR-0012/transfer/root_release_transfer_v2.json",
+        "--device",
+        "cuda",
+        "--clean-reference",
+        "$REPO/experiments/outputs/TRR-0012/transfer/capture/clean_public/full_reference.safetensors"
+      ],
+      "env": {
+        "HF_HUB_OFFLINE": "1",
+        "MKL_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "TOKENIZERS_PARALLELISM": "false",
+        "TRANSFORMERS_OFFLINE": "1"
+      },
+      "requires": [
+        "AGENT2_OPAQUE_PANEL_JSON",
+        "AGENT2_EVALUATOR_TOKEN_BATCH_JSON",
+        "ROOT_CAPTURE_RELEASE_JSON",
+        "clean_public/full_reference.safetensors"
+      ],
+      "run": false,
+      "step": "capture_layer4_null",
+      "watchdog": "timeout --kill-after=30s 900s"
+    },
+    {
+      "command": [
+        "python3",
+        "$REPO/scripts/trr0011_capture.py",
+        "capture-variant",
+        "--plan",
+        "$REPO/experiments/outputs/TRR-0012/transfer/capture_plan_exec_v2.json",
+        "--panel",
+        "${AGENT2_OPAQUE_PANEL_JSON:?set Agent2 reserved opaque panel JSON}",
+        "--source-input",
+        "${AGENT2_EVALUATOR_TOKEN_BATCH_JSON:?set evaluator-owned token batch JSON}",
+        "--model-snapshot",
+        "$MODEL_SNAPSHOT",
+        "--tokenizer",
+        "$MODEL_SNAPSHOT/tokenizer.json",
+        "--variant",
+        "historical_public_lora_2601",
+        "--output-root",
+        "$REPO/experiments/outputs/TRR-0012/transfer/capture",
+        "--receipt",
+        "$REPO/experiments/outputs/TRR-0012/transfer/capture/historical_public_lora_2601/capture_variant_receipt.json",
+        "--root-release-receipt",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/outputs/TRR-0012/transfer/root_release_transfer_v2.json",
+        "--device",
+        "cuda",
+        "--historical-lora",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors"
+      ],
+      "env": {
+        "HF_HUB_OFFLINE": "1",
+        "MKL_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "TOKENIZERS_PARALLELISM": "false",
+        "TRANSFORMERS_OFFLINE": "1"
+      },
+      "independent_target": false,
+      "requires": [
+        "AGENT2_OPAQUE_PANEL_JSON",
+        "AGENT2_EVALUATOR_TOKEN_BATCH_JSON",
+        "historical public_lora_2601 asset",
+        "root_release_transfer_v1.json"
+      ],
+      "run": false,
+      "step": "capture_historical_public_lora_2601",
+      "watchdog": "timeout --kill-after=30s 900s"
+    },
+    {
+      "command": [
+        "python3",
+        "$REPO/scripts/trr0011_capture.py",
+        "assemble-manifest",
+        "--plan",
+        "$REPO/experiments/outputs/TRR-0012/transfer/capture_plan_exec_v2.json",
+        "--panel",
+        "${AGENT2_OPAQUE_PANEL_JSON:?set Agent2 reserved opaque panel JSON}",
+        "--capture-root",
+        "$REPO/experiments/outputs/TRR-0012/transfer/capture",
+        "--output",
+        "$REPO/experiments/outputs/TRR-0012/transfer/capture/transfer_capture_manifest.json"
+      ],
+      "env": {
+        "HF_HUB_OFFLINE": "1",
+        "MKL_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "TOKENIZERS_PARALLELISM": "false",
+        "TRANSFORMERS_OFFLINE": "1"
+      },
+      "requires": [
+        "all seven capture_variant_receipt.json files"
+      ],
+      "run": false,
+      "step": "assemble_existing_capture_manifest"
+    }
+  ],
+  "correction": {
+    "historical_lora_absolute_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors",
+    "reason": "Use the persistent main-repository historical LoRA path and the delegated transfer root-release receipt; v1 remains preserved.",
+    "root_release_receipt_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/outputs/TRR-0012/transfer/root_release_transfer_v2.json",
+    "schema": "token-reconstruction.trr0012-evaluator-transfer-command-correction.v1",
+    "supersedes": {
+      "bytes": 14538,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/outputs/TRR-0012/transfer/capture_commands_v1.json",
+      "readonly": true,
+      "sha256": "fad25997f41fddd12e5c6b48fb7e9dcba7bf344ed0385eb6d811a3c1d8ebd131"
+    }
+  },
+  "excluded_setup_receipt": {
+    "bytes": 2717,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/outputs/TRR-0012/transfer/seed_plan_exclusion_receipt_v1.json",
+    "readonly": true,
+    "sha256": "a9a1bafbbfbf80afcaaf440c01054449e12af90258e18dc75e5b1c9de2767f25"
+  },
+  "no_data_expansion": true,
+  "no_truth_or_selection": true,
+  "ordering": "clean; four prefix perturbations; after-cut null against clean full reference; historical public_lora_2601; assemble manifest",
+  "release_receipt": {
+    "bytes": 5065,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/outputs/TRR-0012/transfer/root_release_transfer_v2.json",
+    "readonly": true,
+    "sha256": "ae0d6643df04b065b727f48aaae0d5c4589d2e3789d53a73f0cf03ae6a664391"
+  },
+  "root_release_receipt_v2": {
+    "bytes": 5065,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/outputs/TRR-0012/transfer/root_release_transfer_v2.json",
+    "readonly": true,
+    "sha256": "ae0d6643df04b065b727f48aaae0d5c4589d2e3789d53a73f0cf03ae6a664391"
+  },
+  "run_commands": false,
+  "schema": "token-reconstruction.trr0012-evaluator-transfer-capture-commands.v1",
+  "seed_compatibility_proof": {
+    "bytes": 3743,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/outputs/TRR-0012/transfer/seed_compatibility_test_receipt_v2.json",
+    "readonly": true,
+    "sha256": "90208d1a0fba3e3dbfbc3f8a02fcdf382c46a04c2c9b7190b7e8aa10cddb0921"
+  },
+  "seed_policy": "Run only capture_plan_exec_v2. Its approved_recipe_seed fields are 1101/1111/1101/1111/1113 and its executed recipe_seed is truthfully 1101 for all; equivalence is proven by the actual constructor test.",
+  "shell_preamble": [
+    "set -euo pipefail",
+    "REPO=/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012",
+    "MODEL_SNAPSHOT=/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+    "export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1",
+    "ROOT_CAPTURE_RELEASE_JSON=$REPO/experiments/outputs/TRR-0012/transfer/root_release_transfer_v1.json; export ROOT_CAPTURE_RELEASE_JSON; Agent2 panel and fresh live preflight are still required before launch."
+  ],
+  "status": "DEFERRED_APPROVED_PLAN_PANEL_AND_LIVE_PREFLIGHT",
+  "supersedes": {
+    "bytes": 16571,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/outputs/TRR-0012/transfer/capture_commands_v2.json",
+    "readonly": true,
+    "sha256": "72a31c4e37936a73cf9f154761b8b5f7b9faf602220d680fbc1dae85309393a5"
+  },
+  "task_id": "TRR-0012"
+}

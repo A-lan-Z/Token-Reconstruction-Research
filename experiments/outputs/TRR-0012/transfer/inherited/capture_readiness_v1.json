@@ -1,0 +1,108 @@
+{
+  "capture_scope": {
+    "after_cut_null_requires_exact_prefix_equality": true,
+    "bos_token_id": 128000,
+    "cut_depth": 4,
+    "full_forward": "B8 x 192 BF16 public target forward",
+    "historical_variant_optional": true,
+    "pad_token_id": 128001,
+    "retained_shape": [
+      32,
+      128,
+      2048
+    ],
+    "retained_tensors": [
+      "activations",
+      "attention_mask",
+      "position_ids"
+    ],
+    "scored_post_bos_tokens": 127,
+    "variants": [
+      "clean_public",
+      "layer1_block_rel1e-3",
+      "layer1_block_rel1e-2",
+      "layer3_block_rel1e-3",
+      "layer3_block_rel1e-2",
+      "layer4_null_block_rel1e-2",
+      "historical_public_lora_2601"
+    ],
+    "vocabulary_size": 128256
+  },
+  "created_utc": "2026-09-08T03:11:37Z",
+  "historical_public_lora_2601": {
+    "independent_adaptation_claim": false,
+    "new_training_or_download": false,
+    "provenance_receipt": {
+      "bytes": 1639,
+      "path": "experiments/TRR-0011/transfer/public_lora_2601_provenance.json",
+      "readonly": true,
+      "sha256": "a7752f433addb79afc05f6cb29d4383ffb1d136af156c5e8855a224bce24cfb7"
+    },
+    "role": "historical_trained_benchmark_adaptation"
+  },
+  "implementation": {
+    "production_capture_executed": false,
+    "runner": {
+      "bytes": 49274,
+      "path": "scripts/trr0011_capture.py",
+      "readonly": true,
+      "sha256": "19585ce65312b5b824bce99962a9244187f59d31161b4adafd2897d3ae3211e1"
+    },
+    "syntax_check_command": "python3 -m py_compile scripts/trr0011_capture.py",
+    "test_command": "PYTHONPATH=.:src:scripts pytest -q tests/test_trr0011_capture.py",
+    "test_result": "5 passed",
+    "tests": {
+      "bytes": 6434,
+      "path": "tests/test_trr0011_capture.py",
+      "readonly": true,
+      "sha256": "a5e3c9aef4a8a25e8b7d31aa003f661f25d3c5447894e5e6d0e22b16296038af"
+    }
+  },
+  "next_binding_required": "approved 32/domain opaque panel descriptor with complete panel_sha256, reservation receipt, paired order, and no source/truth fields",
+  "panel": {
+    "domains": [
+      "finance",
+      "pile"
+    ],
+    "panel_sha256_required_before_run": true,
+    "records_per_domain": 32,
+    "selection_performed": false,
+    "source_ids_or_text_bound": false,
+    "status": "PENDING_P10_OPAQUE_RESERVATION"
+  },
+  "recipe_binding": {
+    "bytes": 6440,
+    "path": "experiments/TRR-0011/transfer/capture_recipe_v1.json",
+    "readonly": true,
+    "sha256": "0df03774d1245cf2a2ce8db36dd6bc0009a6253061b8e13a53c011d500935d23"
+  },
+  "resource_policy": {
+    "download_or_paid_compute": false,
+    "host_rss_cap_bytes": 12884901888,
+    "launch_authorized": false,
+    "minimum_disk_free_bytes": 21474836480,
+    "minimum_free_gpu_bytes": 11811160064,
+    "minimum_host_headroom_bytes": 8589934592,
+    "one_variant_per_process": true,
+    "reserved_gpu_ceiling_bytes": 8589934592,
+    "watchdog_seconds_per_variant": 900
+  },
+  "schema": "token-reconstruction.trr0011-controlled-target-capture-readiness.v1",
+  "status": "DESIGN_ONLY_NO_OPAQUE_PANEL_NO_CAPTURE",
+  "task_id": "TRR-0011",
+  "truth_boundary": {
+    "candidate_arrays_persisted": false,
+    "decoder_inputs_only": [
+      "activations",
+      "attention_mask",
+      "position_ids",
+      "opaque_record_ids"
+    ],
+    "source_text_loaded": false,
+    "target_labels_loaded": false,
+    "target_weights_evaluator_only": true,
+    "tokenized_sources_evaluator_only": true,
+    "truth_opened": false,
+    "truth_sidecar_emitted": false
+  }
+}

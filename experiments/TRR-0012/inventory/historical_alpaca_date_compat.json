@@ -1,0 +1,51 @@
+{
+  "$schema": "token-reconstruction.trr-0012-historical-alpaca-date-compat.v1",
+  "base_compiler_sha256": "5792ad63c5a542fd81ca805ca86e1affb48cf1d634ed38221bcdb0d9649dc19d",
+  "base_source_commit": "15be77368dae5129a216c9354975b6347cf28720",
+  "basis": {
+    "compatibility_scope": "Only pin the documented Alpaca chat-template date for historical identity comparison; selection, source rows, caps, tokenization call, geometry, controlled templates, and output schema unchanged.",
+    "current_gate_thread_env": {
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "finance_rule": "Finance renderer explicitly passes date_string=\"06 Aug 2026\"",
+    "historical_r2_end_utc": "2026-09-07T10:54:02.564771Z",
+    "historical_r2_thread_env": {
+      "MKL_NUM_THREADS": "4",
+      "OMP_NUM_THREADS": "4"
+    },
+    "tokenizer_template_rule": "if date_string absent and strftime_now defined, the bound Llama template calls strftime_now(\"%d %b %Y\")"
+  },
+  "dependency_versions": {
+    "datasets": "4.8.3",
+    "python": "3.12.3",
+    "safetensors": "0.7.0",
+    "torch": "2.10.0",
+    "transformers": "5.3.0"
+  },
+  "historical_date_string": "07 Sep 2026",
+  "no_data_or_truth_access": true,
+  "no_model_or_gpu": true,
+  "patch_file": {
+    "apply_to": "/tmp/trr12-p09-source-15be/src/token_reconstruction/alpaca_split.py",
+    "bytes": 454,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/inventory/historical_alpaca_date_compat.patch",
+    "sha256": "5516429350af37027516577bf13ff650419a68a2ab9fb5e9c92ec9ab17b0cbc3"
+  },
+  "renderer_file": {
+    "base_sha256": "fa9a15fd4cf92ffa06be3bd77888324536180e8a2fd2c43ae14f20e470a3626a",
+    "bytes": 19038,
+    "change": "apply_chat_template(..., add_generation_prompt=True, date_string=\"07 Sep 2026\")",
+    "path": "src/token_reconstruction/alpaca_split.py",
+    "sha256": "9ef3cff308767a1e74b7d6f9feeb435bc8573c4a901998490081fe991683bbb7"
+  },
+  "scratch_root": "/tmp/trr12-p09-source-15be-date07",
+  "status": "SCRATCH_COMPATIBILITY_CHECK_ONLY",
+  "task_id": "TRR-0012",
+  "tokenizer_binding": {
+    "snapshot_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "tokenizer_config_sha256": "9823dcfdc1121869029da45192238e85cf44f0b232a6d9dc20e4fe6f4242a14e",
+    "tokenizer_json_sha256": "79e3e522635f3171300913bb421464a87de6222182a0570b9b2ccba2a964b2b4"
+  }
+}

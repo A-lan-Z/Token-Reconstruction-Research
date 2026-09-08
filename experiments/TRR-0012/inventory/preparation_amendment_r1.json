@@ -1,0 +1,307 @@
+{
+  "$schema": "token-reconstruction.trr-0012-bank-preparation-amendment.v1",
+  "attempt": {
+    "artifacts": {
+      "COMPLETE": {
+        "bytes": 35,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07/COMPLETE",
+        "sha256": "dcfed81b7d543d49d425a8afe4d64fda3f3487bce763e61ecf8b06371e68af78"
+      },
+      "inputs.safetensors": {
+        "bytes": 29952264,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07/inputs.safetensors",
+        "sha256": "8150184a349bebd31e24b128d23f096702898024a87a405322ee3ba95fa6682e"
+      },
+      "preparation_manifest.json": {
+        "bytes": 42163,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07/preparation_manifest.json",
+        "sha256": "d1097b467e4abe4ec9f39dfca27f34f1d481527d2de79ca610751a8fe260620e"
+      },
+      "records.json": {
+        "bytes": 10767794,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07/records.json",
+        "sha256": "367cfba0ffe78f59454861a76f23830f480a8745cc6b35e6b4a0d05eca53638b"
+      }
+    },
+    "command": {
+      "command": [
+        "env",
+        "PYTHONPATH=src:.",
+        "HF_HUB_OFFLINE=1",
+        "HF_DATASETS_OFFLINE=1",
+        "TRANSFORMERS_OFFLINE=1",
+        "TOKENIZERS_PARALLELISM=false",
+        "OMP_NUM_THREADS=1",
+        "MKL_NUM_THREADS=1",
+        "OPENBLAS_NUM_THREADS=1",
+        "python3",
+        "scripts/trr_p09/prepare_stage1_inputs.py",
+        "--plan",
+        "experiments/TRR-P09/planning/stage1-public-bank-plan.json",
+        "--plan-countersignature",
+        "experiments/TRR-P09/setup/stage1-plan-countersignature-r1.json",
+        "--published-trr0007-root",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007",
+        "--output-root",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07",
+        "--repository-root",
+        "/tmp/trr12-p09-source-15be-date07",
+        "--max-seconds",
+        "1700"
+      ],
+      "created_utc": "2026-09-08T06:00:38.708701Z",
+      "cwd": "/tmp/trr12-p09-source-15be-date07",
+      "environment": {
+        "HF_DATASETS_OFFLINE": "1",
+        "HF_HUB_OFFLINE": "1",
+        "MKL_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "PYTHONPATH": "src:.",
+        "TOKENIZERS_PARALLELISM": "false",
+        "TRANSFORMERS_OFFLINE": "1"
+      },
+      "environment_allowlist": [
+        "CUDA_VISIBLE_DEVICES",
+        "OMP_NUM_THREADS",
+        "MKL_NUM_THREADS",
+        "TOKENIZERS_PARALLELISM",
+        "PYTHONPATH",
+        "HF_HUB_OFFLINE",
+        "HF_DATASETS_OFFLINE",
+        "TRANSFORMERS_OFFLINE"
+      ],
+      "environment_redacted": true,
+      "label": "TRR-0012-cpu-prep-date07-compat",
+      "process_group": "new_session_start_new_session_true",
+      "schema": "token-reconstruction.trr-p06-resource-watchdog-command.v1",
+      "shell_command": "env PYTHONPATH=src:. HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python3 scripts/trr_p09/prepare_stage1_inputs.py --plan experiments/TRR-P09/planning/stage1-public-bank-plan.json --plan-countersignature experiments/TRR-P09/setup/stage1-plan-countersignature-r1.json --published-trr0007-root /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007 --output-root /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07 --repository-root /tmp/trr12-p09-source-15be-date07 --max-seconds 1700",
+      "task_id": "TRR-P06",
+      "thresholds": {
+        "kill_grace_seconds": 2.0,
+        "max_rss_bytes": 8589934592,
+        "min_available_bytes": 12884901888,
+        "poll_seconds": 1.0,
+        "timeout_seconds": 1800.0
+      }
+    },
+    "dependency_versions": {
+      "datasets": "4.8.3",
+      "python": "3.12.3",
+      "safetensors": "0.7.0",
+      "torch": "2.10.0",
+      "transformers": "5.3.0"
+    },
+    "historical_payload_comparison": {
+      "inputs_sha256_actual": "8150184a349bebd31e24b128d23f096702898024a87a405322ee3ba95fa6682e",
+      "inputs_sha256_expected": "8150184a349bebd31e24b128d23f096702898024a87a405322ee3ba95fa6682e",
+      "manifest_difference": "Current manifest is a new execution receipt; historical corrected manifest was metadata-only and its payload_files_unchanged binding is satisfied.",
+      "manifest_expected_historical_corrected_sha256": "79bbd55c3e66555501e0abc886e69b5a4ff85bca5301a129f6e5d398524e844f",
+      "manifest_sha256_actual": "d1097b467e4abe4ec9f39dfca27f34f1d481527d2de79ca610751a8fe260620e",
+      "payload_hashes_match": true,
+      "records_sha256_actual": "367cfba0ffe78f59454861a76f23830f480a8745cc6b35e6b4a0d05eca53638b",
+      "records_sha256_expected": "367cfba0ffe78f59454861a76f23830f480a8745cc6b35e6b4a0d05eca53638b"
+    },
+    "identity_comparison": {
+      "generated_nonapplicable_h128_sidecars": {
+        "rows": 3488,
+        "status": "EXCLUDED_BY_LEDGER_APPLICABILITY"
+      },
+      "h128_applicable": {
+        "ledger_rows": 3500,
+        "mismatches": 0,
+        "status": "PASS"
+      },
+      "ordered_record_ids": {
+        "mismatches": 0,
+        "rows": 12000,
+        "status": "PASS"
+      },
+      "public_record_sha256": {
+        "mismatches": 0,
+        "published_rows": 10800,
+        "status": "PASS"
+      },
+      "rendered_sha256": {
+        "mismatches": 0,
+        "rows": 12000,
+        "status": "PASS"
+      },
+      "short_rows": {
+        "hashes_required": 0,
+        "ledger_rows": 8500,
+        "status": "EXPLICITLY_INELIGIBLE_NO_PADDING_HASH"
+      },
+      "source_indices": {
+        "mismatches": 0,
+        "rows": 12000,
+        "status": "PASS"
+      },
+      "source_record_ids": {
+        "mismatches": 0,
+        "rows": 12000,
+        "status": "PASS"
+      },
+      "strata": {
+        "alpaca_natural": {
+          "h128_applicable_rows": 780,
+          "h128_mismatches": 0,
+          "records": 6000,
+          "rendered_mismatches": 0
+        },
+        "finance_controlled": {
+          "h128_applicable_rows": 600,
+          "h128_mismatches": 0,
+          "records": 600,
+          "rendered_mismatches": 0
+        },
+        "finance_natural": {
+          "h128_applicable_rows": 590,
+          "h128_mismatches": 0,
+          "records": 1800,
+          "rendered_mismatches": 0
+        },
+        "pile_controlled": {
+          "h128_applicable_rows": 600,
+          "h128_mismatches": 0,
+          "records": 600,
+          "rendered_mismatches": 0
+        },
+        "pile_natural": {
+          "h128_applicable_rows": 930,
+          "h128_mismatches": 0,
+          "records": 3000,
+          "rendered_mismatches": 0
+        }
+      }
+    },
+    "label": "b1_cpu_r4_date07",
+    "prep_root": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07",
+    "renderer_patch_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/inventory/historical_alpaca_date_compat.patch",
+    "renderer_patch_sha256": "5516429350af37027516577bf13ff650419a68a2ab9fb5e9c92ec9ab17b0cbc3",
+    "resource": {
+      "child_return_code": 0,
+      "elapsed_seconds": 33.195524,
+      "end_utc": "2026-09-08T06:01:11.902814Z",
+      "errors": [],
+      "initial_host_mem_available_bytes": 30431203328,
+      "minimum_sampled_host_mem_available_bytes": 29292093440,
+      "peak_group_rss_bytes": 1651253248,
+      "receipt_hashes": {
+        "command.json": {
+          "bytes": 2566,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07_watchdog/command.json",
+          "sha256": "25778ddda546773c1b8f0c37d01651a7c861afb8d661b13832d9b3e18fa597f1"
+        },
+        "finish.json": {
+          "bytes": 1091,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07_watchdog/finish.json",
+          "sha256": "790705fe4f78e4434a4a4c05a16d8ebd286013965f54dc495e5d9f9059f59c8d"
+        },
+        "resource_guard.json": {
+          "bytes": 10843,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07_watchdog/resource_guard.json",
+          "sha256": "d7f9c56f8a1b2c7d9706272ca64cb70ba3715e73c3c10fc9e91eb0bc2d1bddfb"
+        },
+        "resource_samples.jsonl": {
+          "bytes": 7581,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07_watchdog/resource_samples.jsonl",
+          "sha256": "112fcee64d134b7967a953903f9f8cb28289a0d8121bca49a86a7493b8d1cef2"
+        },
+        "stderr.txt": {
+          "bytes": 0,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07_watchdog/stderr.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout.txt": {
+          "bytes": 43201,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07_watchdog/stdout.txt",
+          "sha256": "053167bff81f0cbcbf909228bba212071e0cb6a0115f50dd7e30ec79d03ed4f9"
+        },
+        "time.json": {
+          "bytes": 1482,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07_watchdog/time.json",
+          "sha256": "777a39d911953dee09448237aa4db49eb6ea9a745e4432f645a3413ea6b882ee"
+        }
+      },
+      "sample_count": 34,
+      "start_utc": "2026-09-08T06:00:38.713247Z",
+      "termination_reason": null,
+      "thresholds": {
+        "kill_grace_seconds": 2.0,
+        "max_rss_bytes": 8589934592,
+        "min_available_bytes": 12884901888,
+        "poll_seconds": 1.0,
+        "timeout_seconds": 1800.0
+      },
+      "watchdog_status": "PASS",
+      "wrapper_exit_code": 0
+    },
+    "scratch_source_root": "/tmp/trr12-p09-source-15be-date07",
+    "source_files": {
+      "alpaca_split.py": {
+        "sha256": "9ef3cff308767a1e74b7d6f9feeb435bc8573c4a901998490081fe991683bbb7"
+      },
+      "prepare_stage1_inputs.py": {
+        "sha256": "5792ad63c5a542fd81ca805ca86e1affb48cf1d634ed38221bcdb0d9649dc19d"
+      },
+      "trr0005_prepare_public_corpus.py": {
+        "sha256": "c18e5c22d5332c87d632a88615d7614606e4bdb09264d645b887dd215e82d777"
+      },
+      "trr0005_public_corpus.py": {
+        "sha256": "57afda7dd872bf8dbdd61de02e5421afada8943f799b50029074ec2f138dcfff"
+      }
+    },
+    "watchdog_root": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07_watchdog"
+  },
+  "capture_gate": {
+    "activation_payload_created": false,
+    "capture_started": false,
+    "evaluation_truth_opened": false,
+    "gpu_used": false,
+    "model_loaded": false,
+    "required_next_checks": [
+      "root review date-compat receipt and resource plan",
+      "verify capture lease/resource release",
+      "use only new rows 1200:12000 with exact input/record hashes"
+    ],
+    "short_row_rule": "Do not synthesize or pad H128 for the 8,500 ledger-short rows.",
+    "status": "READY_FOR_ROOT_REVIEW_ONLY"
+  },
+  "diagnosis_and_repair": {
+    "base_compiler_sha256": "5792ad63c5a542fd81ca805ca86e1affb48cf1d634ed38221bcdb0d9649dc19d",
+    "base_payload_source_commit": "15be77368dae5129a216c9354975b6347cf28720",
+    "base_renderer_sha256": "fa9a15fd4cf92ffa06be3bd77888324536180e8a2fd2c43ae14f20e470a3626a",
+    "compatibility_recipe": "Historical Alpaca renderer call only: apply_chat_template([{\"role\":\"user\",\"content\":user[:1200]}], tokenize=False, add_generation_prompt=True, date_string=\"07 Sep 2026\"); output, selection, source rows, caps, tokenization flags, geometry, and controlled-template assignment unchanged.",
+    "date_pinned_renderer_sha256": "9ef3cff308767a1e74b7d6f9feeb435bc8573c4a901998490081fe991683bbb7",
+    "diagnosis": "The bound Llama template uses strftime_now(\"%d %b %Y\") when Alpaca omits date_string; Finance explicitly pins 06 Aug 2026. The historical r2 ended on local 07 Sep 2026; the rerun on local 08 Sep therefore changed all newly rendered natural Alpaca records while leaving Finance/Pile rendering unchanged.",
+    "evidence_tokenizer_config_sha256": "9823dcfdc1121869029da45192238e85cf44f0b232a6d9dc20e4fe6f4242a14e",
+    "patch_file": {
+      "bytes": 454,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/inventory/historical_alpaca_date_compat.patch",
+      "sha256": "5516429350af37027516577bf13ff650419a68a2ab9fb5e9c92ec9ab17b0cbc3"
+    },
+    "scratch_recipe_receipt": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/inventory/historical_alpaca_date_compat.json",
+    "scratch_recipe_receipt_sha256": "761a0cfa45f0ee80b4ec1707b9e59ed6b0d0c8551b973761e9124c26d5922de8"
+  },
+  "frozen_ledger": {
+    "b0_prefix": 1200,
+    "b1_additions": 10800,
+    "h128_rule": "Compare only ledger final_sequence_sha256 values for rows with actual active_token_count >= 128; first 128 actual active int32 IDs including BOS, little-endian contiguous C-order SHA256. Short rows have no padded hash.",
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P11/experiments/TRR-P09/setup/nested-b1-exclusion-ledger-r1.json",
+    "records": 12000,
+    "sha256": "48b6656845a18428e1fdd54c194928538cd9aa87dfb010b5238f11df3c33fbb0"
+  },
+  "historical_target": {
+    "corrected_manifest_path": "/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/preparation_manifest-r2-corrected.json",
+    "corrected_manifest_sha256": "79bbd55c3e66555501e0abc886e69b5a4ff85bca5301a129f6e5d398524e844f",
+    "historical_r2_end_utc": "2026-09-07T10:54:02.564771Z",
+    "inputs_path": "/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/inputs.safetensors",
+    "inputs_sha256": "8150184a349bebd31e24b128d23f096702898024a87a405322ee3ba95fa6682e",
+    "payload_source_commit": "15be77368dae5129a216c9354975b6347cf28720",
+    "records_path": "/tmp/trr-p09-runtime/stage1-input-preparation-r2-slot-compat-final/records.json",
+    "records_sha256": "367cfba0ffe78f59454861a76f23830f480a8745cc6b35e6b4a0d05eca53638b"
+  },
+  "scope": "CPU-only public token/mask/position preparation; no model, GPU, activation capture, fit, evaluation truth, hidden panel, source expansion, or new selection",
+  "status": "PASS_HISTORICAL_PUBLIC_B0_B1_INPUT_IDENTITIES_REPRODUCED",
+  "task_id": "TRR-0012"
+}

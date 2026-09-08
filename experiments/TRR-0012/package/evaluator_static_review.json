@@ -1,0 +1,187 @@
+{
+  "schema": "token-reconstruction.trr0012-evaluator-static-review.v1",
+  "task_id": "TRR-0012",
+  "review_status": "STATIC_REVIEW_COMPLETE",
+  "review_scope": {
+    "reviewed_task": "TRR-P11",
+    "pinned_source_commit": "ee793cf3007bb1c2e387084c1f45073a1af696bc",
+    "reviewed_files": [
+      "scripts/trr_p11/evaluation.py",
+      "scripts/trr_p11/restore_gate.py",
+      "tests/test_trr_p11_evaluation.py",
+      "tests/test_trr_p11_restore_gate.py",
+      "experiments/TRR-P11/evaluation/adapter-contract.md"
+    ],
+    "actual_producer_source": "scripts/trr0012_package.py",
+    "actual_producer_source_commit": "c943663356ee5016a5ed6bd83c6d714e1aae22f0",
+    "truth_or_scientific_data_opened": false,
+    "evaluation_truth_opened": false,
+    "model_or_public_E_loaded": false,
+    "numerical_execution": false,
+    "sibling_workspace_edited": false
+  },
+  "source_hashes": {
+    "scripts/trr_p11/evaluation.py": "d5631cd19d75161dee9ee272a96002095ae21538945570b79700d90e8b49d67e9",
+    "scripts/trr_p11/restore_gate.py": "8cf31863aeb1607dd22049ddecc6974fd7ff5c14d47f9660df7edc5d14a897e7",
+    "tests/test_trr_p11_evaluation.py": "a104a2a9b8b0a7407849f6c86a2634d0a0a5c63f28d34f6fa76245e055f6544a",
+    "tests/test_trr_p11_restore_gate.py": "0302ba440ffcc64cbbb018ddf7520793e73a94b571e0ba836c3a25d2a9098357",
+    "experiments/TRR-P11/evaluation/adapter-contract.md": "9d4a29643acd166f14b398e95d2d32c40e779fedb90cfccffe55d88483a7a2ca",
+    "scripts/trr0012_package.py": "9083926a0c369e3ca4361108bea043fbda79f619ff0fca2ce76b780d11bf0109"
+  },
+  "matrix_and_identity_checks": {
+    "primary_methods": [
+      "new_current_fixed_B0",
+      "new_expanded_fixed_B1"
+    ],
+    "cells": [
+      "pile__public_base",
+      "pile__public_lora_2601",
+      "finance__public_base",
+      "finance__public_lora_2601"
+    ],
+    "primary_records_per_cell": 256,
+    "stored_tokens_per_record": 128,
+    "scored_post_bos_tokens": 127,
+    "comparator": {
+      "method": "a1_a2_k256",
+      "records_per_cell": 128,
+      "required_indices": "[0, ..., 127]",
+      "indices_digest_checked": true
+    },
+    "status": "STATIC_PASS",
+    "evidence": [
+      "evaluation.py:56-77 fixes domain, target, method, cell, row, token, BOS, and vocabulary orders.",
+      "evaluation.py:814-888 requires both primary methods across all four cells and either a READY comparator or preregistered BLOCKED_TECHNICAL comparator.",
+      "evaluation.py:786-799 requires the A1 first-128 subset and P10 indices digest.",
+      "evaluation.py:1052-1105 requires all four 256x128 truth cells, paired public-condition equality, and ordered H128 equality.",
+      "evaluation.py:1321-1381 scores each cell separately, slices post-BOS tokens, and checks the A1 subset indices again."
+    ]
+  },
+  "actual_trr0012_receipt_alignment": {
+    "observation_slots": {
+      "producer": "scripts/trr0012_package.py:644-701 emits record/{index:03d} for standard N-row observations.",
+      "p11": "evaluation.py:322-334 requires capture order length 256 and package order record/000 through record/255 with a matching JSON digest.",
+      "status": "ALIGNED"
+    },
+    "normalized_tensor_digests": {
+      "producer": "scripts/trr0012_package.py:651-653 and 695-701 converts positions to torch.long and masks to torch.bool before prediction; receipt lines 1123-1134 hashes those normalized tensors.",
+      "p11": "evaluation.py:292-310 computes raw hashes, then casts attention_mask to torch.bool and position_ids to torch.int64 for normalized hashes; evaluation.py:726-734 accepts the producer's tensor_sha256 field and compares it to the normalized map.",
+      "status": "ALIGNED"
+    },
+    "prediction_outputs": {
+      "producer": "scripts/trr0012_package.py:1077 and 1115-1162 emits int64 [N,128] predictions, the TRR0012 prediction receipt, output binding, observation binding, readout binding, state bindings, and clean-runtime provenance.",
+      "p11": "evaluation.py:648-783 checks the output file/hash, required current_fixed or expanded_fixed tensor key, 256x128 geometry, BOS/range, tensor digest, receipt schema/status/boundaries, observation hash/digests/order, readout binding, package descriptor hash, state file binding, and runtime dependencies.",
+      "status": "ALIGNED"
+    }
+  },
+  "restore_linkage": {
+    "status": "STATIC_PASS",
+    "evidence": [
+      "evaluation.py:444-527 requires primary/secondary asset equality, B0/B1 bank metadata, model and selected-step agreement, exact state file hashes, and tensor-identity hashes for B0, B1, and public E.",
+      "evaluation.py:529-583 requires the clean consumer to load the bound B0/B1 state files, public readout, loader, decoder, and package CLI by bytes/hash and bundle-relative paths.",
+      "restore_gate.py:1206-1315 validates the actual clean consumer receipt, output file, smoke input bytes/hash, normalized input tensor digests, and input record order.",
+      "restore_gate.py:1318-1374 validates both state bindings, public readout, package CLI, and the actual imported loader/decoder module paths and hashes.",
+      "restore_gate.py:1429-1508 verifies the restored output against the packaged expected smoke tensors and records the output/receipt bindings."
+    ],
+    "actual_method_identity": "The state descriptor requires state_id/model_id/selected_step; restore asset metadata and state bytes are cross-bound. The TRR0012 producer's per-method receipt contains an exact state_file_binding; optional duplicate identity fields are checked when present."
+  },
+  "findings": [
+    {
+      "id": "EVR-001",
+      "severity": "PASS",
+      "status": "STATIC_PASS",
+      "area": "pretruth completeness and mutation resistance",
+      "finding": "The freeze path is fail-closed for the complete primary matrix and explicit A1 state. It rehashes selection, capture, restore, observations, states, predictions, sibling receipts, traces, and costs before writing a create-only truth_opened=false freeze; frozen reload repeats the document validation before truth access.",
+      "evidence": [
+        "evaluation.py:814-906",
+        "evaluation.py:909-972",
+        "evaluation.py:975-1026",
+        "adapter-contract.md:27-36"
+      ],
+      "actual_trr0012_implication": "The four B0/B1 x public-base/public-LoRA cells cannot be silently reduced to a smaller matrix, and a missing A1 comparator must remain an explicit preregistered blocker."
+    },
+    {
+      "id": "EVR-002",
+      "severity": "PASS",
+      "status": "STATIC_PASS",
+      "area": "prediction file and method binding",
+      "finding": "Each primary prediction is bound to its exact safetensors file, required method output key, integer token geometry, BOS/range, tensor digest, sibling TRR0012 receipt, observation digest/order, public-readout file, package descriptor, and method state file. State/model/step identity is independently bound through the restore manifest.",
+      "evidence": [
+        "evaluation.py:648-783",
+        "evaluation.py:444-583",
+        "scripts/trr0012_package.py:1077-1162"
+      ],
+      "actual_trr0012_implication": "The existing producer receipt shape is accepted directly: it uses current_fixed/expanded_fixed keys, int64 [N,128] tensors, tensor_sha256 observation maps, file-bound readout/state entries, and no truth flags."
+    },
+    {
+      "id": "EVR-003",
+      "severity": "PASS",
+      "status": "STATIC_PASS_WITH_BOUNDARY_NOTE",
+      "area": "positional slots and normalized observation digests",
+      "finding": "P11's required generic package slots and normalized bool/int64 digest convention match the TRR0012 producer exactly. Source IDs are separately bound through capture_record_order and its digest, while package record_order is required to be record/000 through record/255.",
+      "evidence": [
+        "evaluation.py:292-361",
+        "evaluation.py:364-399",
+        "scripts/trr0012_package.py:644-701",
+        "scripts/trr0012_package.py:1123-1134"
+      ],
+      "actual_trr0012_implication": "No producer-side adapter or digest rewrite is needed for the standard 256-row public observations."
+    },
+    {
+      "id": "EVR-004",
+      "severity": "PASS",
+      "status": "STATIC_PASS",
+      "area": "truth H128/order and score geometry",
+      "finding": "Truth opening requires one post-freeze descriptor, exact freeze hash, exactly four 256x128 token-ID tensors, BOS/vocabulary checks, public-base/public-LoRA equality per domain, and row-by-row canonical signed-int32 little-endian H128 equality. Scoring is per cell, excludes BOS, uses 127 positions, and applies the A1 comparator only to indices 0..127.",
+      "evidence": [
+        "evaluation.py:1042-1117",
+        "evaluation.py:1321-1408",
+        "adapter-contract.md:16-36"
+      ],
+      "actual_trr0012_implication": "The review found no static omission of the full 256-row panel or the explicit 128-row A1 subset."
+    },
+    {
+      "id": "EVR-005",
+      "severity": "LOW",
+      "status": "STATIC_LIMITATION",
+      "area": "duplicate receipt tensor digest",
+      "finding": "evaluation.py validates the manifest prediction tensor digest against the output tensor and validates the sibling receipt's output/observation/state/readout bindings, but it does not compare receipt.methods[method].tensor_sha256 (or shape/dtype) to the loaded output tensor. A stale duplicate method digest inside an otherwise hash-bound receipt would therefore not be detected by this adapter.",
+      "evidence": [
+        "evaluation.py:672-694 validates the declared prediction binding.",
+        "evaluation.py:721-767 validates receipt output, observation, readout, package descriptor, and state bindings but has no receipt-method tensor digest comparison.",
+        "scripts/trr0012_package.py:1089-1093 emits the duplicate per-method tensor_sha256, shape, and dtype fields."
+      ],
+      "impact": "The authoritative output file and manifest tensor digest remain protected, so this does not alter the actual producer output identity. It is a receipt-internal consistency gap and should be treated as a hardening item if the adapter is revised."
+    },
+    {
+      "id": "EVR-006",
+      "severity": "LOW",
+      "status": "STATIC_LIMITATION",
+      "area": "source-ID to row-level observation linkage",
+      "finding": "The evaluation adapter binds source IDs to one capture_record_order list and binds the complete normalized observation tensors by aggregate file/tensor hashes and generic record slots. It does not require per-row activation/mask/position slice hashes for the 256-row evaluation observations. A separately regenerated observation file could preserve the declared source-ID list while permuting rows and still satisfy the adapter if all aggregate bindings were regenerated consistently.",
+      "evidence": [
+        "evaluation.py:322-361 checks aggregate raw/normalized tensors and generic order.",
+        "evaluation.py:381-398 checks capture_record_order against selection IDs but does not inspect per-row observation slice bindings.",
+        "restore_gate.py:1114-1129 does perform slice checks for the four-row smoke input; that stronger check is not applied to the public 256-row evaluation observations."
+      ],
+      "impact": "This is a static contract limitation, not an observed TRR0012 mismatch: the existing producer emits the expected generic slots and normalized aggregate digests, and the public observation artifact is already frozen by its file/hash binding. Preserve the finding for any future contract strengthening."
+    }
+  ],
+  "pinned_tests": {
+    "inspected": true,
+    "executed": false,
+    "coverage_observed": [
+      "Synthetic evaluation tests cover full matrix acceptance, output-key/extra-key rejection, explicit comparator or blocker, frozen mutation rejection, state identity mismatch, truth-boundary rejection, clean-runtime boundary, and missing observation receipt binding.",
+      "Synthetic restore tests cover metadata gates, tensor identities, secondary-copy restore, clean consumer bindings, imported code, and restored smoke output comparison."
+    ],
+    "limitation": "The pinned tests construct synthetic tensors and bundles; they do not load the actual TRR0012 public observations, B0/B1 states, public E, or evaluation truth."
+  },
+  "validation": {
+    "method": "Read-only git-show source inspection at the pinned P11 commit, line-addressed review, SHA-256 capture, and comparison with the tracked TRR0012 producer source.",
+    "json_written": true,
+    "torch_or_safetensors_execution": false,
+    "gpu_or_model_execution": false,
+    "truth_or_hidden_outcome_inspection": false,
+    "next_action": "No P11 workspace edits or numerical work are required from this review. Actual package construction remains gated on the B1 selection binding and parent lease release."
+  }
+}

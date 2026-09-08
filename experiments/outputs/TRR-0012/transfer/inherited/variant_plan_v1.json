@@ -1,0 +1,89 @@
+{
+  "schema": "token-reconstruction.trr0011-controlled-target-transfer.v1",
+  "task_id": "TRR-0011",
+  "status": "DESIGN_ONLY_NO_SELECTION_NO_TRUTH",
+  "cut_depth": 4,
+  "geometry": {
+    "hidden_size": 2048,
+    "vocabulary_size": 128256,
+    "stored_sequence_tokens": 128,
+    "scored_post_bos_tokens": 127,
+    "bos_token_id": 128000
+  },
+  "panel": {
+    "records_per_domain": 32,
+    "same_record_order_across_targets": true,
+    "source_reservation_status": "PENDING_ROOT_AND_AGENT2_OPAQUE_RESERVATION",
+    "opaque_reservation": {
+      "receipt_sha256": "PENDING_AGENT2_RESERVATION"
+    },
+    "selection_performed": false
+  },
+  "variants": [
+    {
+      "variant_id": "clean_public_base",
+      "role": "clean_public_target",
+      "artificial": false,
+      "update_location": "none",
+      "expected_activation_equivalence": false
+    },
+    {
+      "variant_id": "early_prefix_eps1e3",
+      "role": "early_prefix_perturbation",
+      "artificial": true,
+      "update_location": {
+        "layer_index": 1,
+        "relative_parameter_l2": 0.001,
+        "recipe_seed": 1101,
+        "recipe": "fixed-sign parameter delta, target-side only"
+      },
+      "expected_activation_equivalence": false
+    },
+    {
+      "variant_id": "near_cut_prefix_eps1e3",
+      "role": "near_cut_prefix_perturbation",
+      "artificial": true,
+      "update_location": {
+        "layer_index": 3,
+        "relative_parameter_l2": 0.001,
+        "recipe_seed": 1102,
+        "recipe": "fixed-sign parameter delta, target-side only"
+      },
+      "expected_activation_equivalence": false
+    },
+    {
+      "variant_id": "after_cut_suffix_eps1e3_null",
+      "role": "after_cut_suffix_null_control",
+      "artificial": true,
+      "update_location": {
+        "layer_index": 4,
+        "relative_parameter_l2": 0.001,
+        "recipe_seed": 1103,
+        "recipe": "fixed-sign parameter delta, target-side only"
+      },
+      "expected_activation_equivalence": true
+    },
+    {
+      "variant_id": "independently_adapted_public_lora_2601",
+      "role": "independently_adapted_public_target",
+      "artificial": false,
+      "target_condition": "public_lora_2601",
+      "adaptation_binding": {
+        "config_path": "outputs/TRR-0002/public-calibration/generation.json",
+        "config_bytes": 18824,
+        "config_sha256": "6bed8aca6668bd749bbad03c0c85bbace306085dac3141895dad7685f03d0682",
+        "update_path": "outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors",
+        "update_bytes": 427632,
+        "update_sha256": "eea7bb49f801b61df2e26a8f59af7c3096f6f3a2604404e16e589443bcfba595",
+        "availability": "locally_bound public asset; no download or paid compute required"
+      },
+      "expected_activation_equivalence": false
+    }
+  ],
+  "truth_opened": false,
+  "source_text_loaded": false,
+  "target_labels_loaded": false,
+  "candidate_arrays_persisted": false,
+  "private_or_truth_payload_read": false,
+  "fresh_evaluation_started": false
+}

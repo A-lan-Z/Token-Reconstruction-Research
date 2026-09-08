@@ -1,0 +1,196 @@
+{
+  "capture_source_binding": {
+    "capture_runner": {
+      "bytes": 49274,
+      "path": "scripts/trr0011_capture.py",
+      "readonly": true,
+      "sha256": "19585ce65312b5b824bce99962a9244187f59d31161b4adafd2897d3ae3211e1"
+    }
+  },
+  "frozen_utc": "2026-09-08T03:11:37Z",
+  "geometry": {
+    "activation_dtype": "torch.bfloat16",
+    "attention_mask_dtype": "torch.uint8",
+    "bos_token_id": 128000,
+    "capture_batch_size": 8,
+    "capture_sequence_tokens": 192,
+    "cut_depth": 4,
+    "hidden_size": 2048,
+    "pad_token_id": 128001,
+    "position_ids_dtype": "torch.int64",
+    "retained_sequence_tokens": 128,
+    "scored_post_bos_tokens": 127,
+    "vocabulary_size": 128256
+  },
+  "gpu_run_performed": false,
+  "observations_started": false,
+  "panel_binding": {
+    "domains": [
+      "finance",
+      "pile"
+    ],
+    "opaque_reservation": null,
+    "records_per_domain": 32,
+    "same_record_order_across_variants": true,
+    "selection_performed": false,
+    "status": "PENDING_P10_OPAQUE_RESERVATION"
+  },
+  "resource_policy": {
+    "download_or_paid_compute": false,
+    "host_rss_cap_bytes": 12884901888,
+    "launch_authorized": false,
+    "minimum_disk_free_bytes": 21474836480,
+    "minimum_free_gpu_bytes": 11811160064,
+    "minimum_host_headroom_bytes": 8589934592,
+    "one_variant_per_process": true,
+    "reserved_gpu_ceiling_bytes": 8589934592,
+    "watchdog_seconds_per_variant": 900
+  },
+  "schema": "token-reconstruction.trr0011-controlled-target-capture-plan.v1",
+  "source_selection_performed": false,
+  "status": "FROZEN_CAPTURE_RECIPE_BEFORE_OBSERVATIONS",
+  "target_update_recipe": {
+    "block_elements": 4096,
+    "block_order": "flattened_row_major",
+    "mode": "fixed_sign_contiguous_parameter_block",
+    "mutation": "torch.no_grad in evaluator-side full target model before prefix construction",
+    "parameter_path_template": "model.layers.{layer_index}.self_attn.q_proj.weight",
+    "relative_l2_definition": "requested ||delta||_2 / ||base_parameter||_2; actual ratio is recomputed after BF16 parameter assignment",
+    "seeds_fixed_before_observations": true,
+    "sign_pattern": "sign_i = +1 when (i + recipe_seed) is even, otherwise -1",
+    "update_dtype": "FP32 construction then target parameter dtype assignment"
+  },
+  "task_id": "TRR-0011",
+  "truth_boundary": {
+    "candidate_arrays_persisted": false,
+    "decoder_inputs": [
+      "H",
+      "attention_mask",
+      "position_ids",
+      "opaque_record_ids"
+    ],
+    "fresh_evaluation_started": false,
+    "private_or_truth_payload_read": false,
+    "source_text_loaded": false,
+    "target_full_weights_evaluator_only": true,
+    "target_labels_loaded": false,
+    "tokenized_sources_evaluator_only": true,
+    "truth_opened": false,
+    "truth_sidecar": "separate post-prediction gate; not emitted by capture runner"
+  },
+  "variants": [
+    {
+      "artificial": false,
+      "role": "clean_public_target",
+      "update_location": null,
+      "variant_id": "clean_public"
+    },
+    {
+      "artificial": true,
+      "role": "artificial_fixed_sign_block",
+      "update_location": {
+        "block_elements": 4096,
+        "block_offset": 0,
+        "block_order": "flattened_row_major",
+        "layer_index": 1,
+        "parameter_path": "model.layers.1.self_attn.q_proj.weight",
+        "recipe_seed": 1101,
+        "relative_parameter_l2": 0.001,
+        "sign_pattern": "alternating_seed_phase"
+      },
+      "variant_id": "layer1_block_rel1e-3"
+    },
+    {
+      "artificial": true,
+      "role": "artificial_fixed_sign_block",
+      "update_location": {
+        "block_elements": 4096,
+        "block_offset": 0,
+        "block_order": "flattened_row_major",
+        "layer_index": 1,
+        "parameter_path": "model.layers.1.self_attn.q_proj.weight",
+        "recipe_seed": 1101,
+        "relative_parameter_l2": 0.01,
+        "sign_pattern": "alternating_seed_phase"
+      },
+      "variant_id": "layer1_block_rel1e-2"
+    },
+    {
+      "artificial": true,
+      "role": "artificial_fixed_sign_block",
+      "update_location": {
+        "block_elements": 4096,
+        "block_offset": 0,
+        "block_order": "flattened_row_major",
+        "layer_index": 3,
+        "parameter_path": "model.layers.3.self_attn.q_proj.weight",
+        "recipe_seed": 1301,
+        "relative_parameter_l2": 0.001,
+        "sign_pattern": "alternating_seed_phase"
+      },
+      "variant_id": "layer3_block_rel1e-3"
+    },
+    {
+      "artificial": true,
+      "role": "artificial_fixed_sign_block",
+      "update_location": {
+        "block_elements": 4096,
+        "block_offset": 0,
+        "block_order": "flattened_row_major",
+        "layer_index": 3,
+        "parameter_path": "model.layers.3.self_attn.q_proj.weight",
+        "recipe_seed": 1301,
+        "relative_parameter_l2": 0.01,
+        "sign_pattern": "alternating_seed_phase"
+      },
+      "variant_id": "layer3_block_rel1e-2"
+    },
+    {
+      "artificial": true,
+      "expected_activation_equivalence": true,
+      "role": "after_cut_suffix_null_control",
+      "update_location": {
+        "block_elements": 4096,
+        "block_offset": 0,
+        "block_order": "flattened_row_major",
+        "layer_index": 4,
+        "parameter_path": "model.layers.4.self_attn.q_proj.weight",
+        "recipe_seed": 1401,
+        "relative_parameter_l2": 0.01,
+        "sign_pattern": "alternating_seed_phase"
+      },
+      "variant_id": "layer4_null_block_rel1e-2"
+    },
+    {
+      "artificial": false,
+      "available_for_run": true,
+      "independent_adaptation_claim": false,
+      "optional_heldout_family": true,
+      "role": "historical_trained_benchmark_adaptation",
+      "target_condition": "public_lora_2601",
+      "training_provenance": {
+        "alpha": 4,
+        "domain": "Pile",
+        "generation_receipt": "outputs/TRR-0002/public-calibration/generation.json",
+        "generation_receipt_sha256": "6bed8aca6668bd749bbad03c0c85bbace306085dac3141895dad7685f03d0682",
+        "layers": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "modules": [
+          "q_proj",
+          "v_proj"
+        ],
+        "rank": 4,
+        "records": 32,
+        "status": "HISTORICAL_TRAINED_BENCHMARK_ADAPTATION",
+        "steps": 30,
+        "update_sha256": "eea7bb49f801b61df2e26a8f59af7c3096f6f3a2604404e16e589443bcfba595"
+      },
+      "update_location": null,
+      "variant_id": "historical_public_lora_2601"
+    }
+  ]
+}

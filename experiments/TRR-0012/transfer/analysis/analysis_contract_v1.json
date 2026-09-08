@@ -1,0 +1,133 @@
+{
+  "callback": {
+    "accounting": {
+      "exact_record_correct": "records with all 127 post-BOS positions correct",
+      "exact_record_total": 32,
+      "token_correct": "post-BOS only",
+      "token_total": 4064
+    },
+    "api": "analyze_transfer_matrix(matrix_path, freeze_receipt_path, truth_manifest_path, repository_root, output_path)",
+    "api_behavior": "analyze_transfer_matrix returns an in-memory report and does not write; the CLI writes create-only under the TRR-0012 task root. Agent2 may invoke the API with repository_root bound to this worktree and persist the returned report in its own evaluator custody.",
+    "baseline_wrong_and_improved": "retained in paired inventory and excluded from fixed-AUC risk set",
+    "fixed_auc_score_names": [
+      "raw_activation_l2",
+      "relative_raw_activation_l2",
+      "margin_normalized_feature_shift",
+      "parameter_relative_l2"
+    ],
+    "historical_target": "included as a mandatory condition; parameter_relative_l2 is UNKNOWN because no artificial amplitude is declared",
+    "negative_label": "remaining_correct",
+    "parameter_relative_l2": "Use sanitized producer variant_parameters effective_relative_parameter_l2 plus effective_delta_l2_after_parameter_dtype/base_parameter_l2 when present; retain nominal requested amplitude separately; otherwise UNKNOWN.",
+    "positive_label": "broken",
+    "risk_set": "baseline_correct",
+    "source": "scripts/trr0012_transfer_analysis.py",
+    "source_order_gate": "Truth manifest must repeat panel_sha256 and domain_record_order_sha256; each domain truth binding must repeat record_ids_sha256 before any truth safetensor is opened.",
+    "source_sha256": "aae13b9544ccea140565a0d25b99501d4306bb4414e1e3a2d0ff1293d9af0143",
+    "threshold_fitted": false,
+    "truth_open_order": [
+      "validate complete public matrix",
+      "validate public freeze receipt and matrix hash",
+      "validate exact after-cut H/prediction null for Finance and Pile",
+      "open Agent2 truth manifest and truth tensors"
+    ]
+  },
+  "output": {
+    "content": "Counts, fixed AUC outcomes, public geometry summaries, gate bindings, and truth manifest hashes only; no token arrays or source text.",
+    "create_only": true,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/transfer/analysis/analysis_result_v1.json"
+  },
+  "public_gate": {
+    "after_cut_null": "exact H and full prediction equality required for both domains; failure aborts evaluator callback",
+    "cell_count": 14,
+    "decoder_geometry_shape": [
+      32,
+      127,
+      2048
+    ],
+    "domain_order": [
+      "finance",
+      "pile"
+    ],
+    "domain_record_order_sha256": {
+      "finance": "f72d250f1eb971cf236f95ad4375629c71994acb5e62f2bf4bb240ce42658f66",
+      "pile": "a508c0f3f44690bf16fbc550317740c1523cccb55497a80af82c232eba19a3f4"
+    },
+    "freeze_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/transfer/production_expanded_fixed_coordinator_r1/freeze_receipt.json",
+    "freeze_schema": "token-reconstruction.trr0012-transfer-freeze.v1",
+    "freeze_sha256": "73eea8559208e259759ce64bb21e3f0aaac04fc60995882696b8d99a4be0703c",
+    "freeze_status": "COMPLETE_14_CELL_PREDICTIONS_FROZEN_BEFORE_TRUTH",
+    "matrix_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/transfer/production_expanded_fixed_coordinator_r1/prediction_matrix_expanded_fixed.json",
+    "matrix_schema": "token-reconstruction.trr0011-transfer-public-prediction-matrix.v1",
+    "matrix_sha256": "a69e1371d7264c2229689412df1b79b3a6600a7562a0299f337310c22e08440b",
+    "measured_public_gate_mode": "CPU, one thread, public headers/predictions/geometry only; no truth opened",
+    "measured_public_gate_wall_seconds": 14.7,
+    "method_ids": [
+      "expanded_fixed"
+    ],
+    "panel_sha256": "9968368eef8c8c91b220ef824276aceb5044c0b055545e2b230e66e09b64e47f",
+    "prediction_shape": [
+      32,
+      128
+    ],
+    "records_per_domain": 32,
+    "scored_post_bos_tokens": 127,
+    "scored_rows_per_cell": 4064,
+    "stored_sequence_tokens": 128,
+    "variant_ids": [
+      "clean_public_base",
+      "early_prefix_eps1e3",
+      "early_prefix_eps1e2",
+      "near_cut_prefix_eps1e3",
+      "near_cut_prefix_eps1e2",
+      "after_cut_suffix_eps1e2_null",
+      "historical_trained_benchmark_public_lora_2601"
+    ]
+  },
+  "purpose": "Truth-gated evaluator callback for the frozen expanded_fixed 14-cell transfer matrix; no new source selection, target capture, fitting, calibration, or threshold.",
+  "resource_estimate": {
+    "basis": "Sequentially loads one clean and one changed geometry cell; public gate measured 14.7 seconds and reads approximately 1.4 GB of geometry artifacts. Scoring estimate is unmeasured and must be recorded by the callback.",
+    "estimated_cpu_wall_seconds": 120,
+    "estimated_peak_rss_mib": 1024,
+    "gpu": "not used",
+    "mode": "CPU only, OMP_NUM_THREADS=1, MKL_NUM_THREADS=1, OPENBLAS_NUM_THREADS=1"
+  },
+  "schema": "token-reconstruction.trr0012-transfer-evaluator-analysis-contract.v1",
+  "status": "READY_AFTER_PUBLIC_FREEZE_PENDING_AGENT2_TRUTH",
+  "task_id": "TRR-0012",
+  "truth_boundary": {
+    "candidate_arrays_persisted": false,
+    "fresh_evaluation_started_only_after_public_freeze": true,
+    "source_text_loaded": false,
+    "target_selection_performed": false
+  },
+  "truth_manifest_contract": {
+    "domain_order": [
+      "finance",
+      "pile"
+    ],
+    "domain_record_order_sha256": "must equal public_gate.domain_record_order_sha256",
+    "method_id": "expanded_fixed",
+    "panel_sha256": "must equal public_gate.panel_sha256",
+    "records_per_domain": 32,
+    "required_truth_properties": [
+      "BOS token 128000 in column 0",
+      "integer IDs in [0,128256)",
+      "bytes and SHA-256 must match the manifest",
+      "panel_sha256 and ordered-ID declarations are checked before any truth safetensor payload load"
+    ],
+    "schema": "token-reconstruction.trr0012-transfer-evaluator-truth.v1",
+    "scored_post_bos_tokens": 127,
+    "status": "TRUTH_BINDINGS_READY_AFTER_PUBLIC_FREEZE",
+    "stored_sequence_tokens": 128,
+    "truth_bindings": "one read-only safetensors binding per domain, with exactly one tensor key truth_tokens and shape [32,128]; each binding repeats records=32, stored_sequence_tokens=128, and record_ids_sha256; Agent2 retains custody and invokes the callback",
+    "variant_ids": [
+      "clean_public_base",
+      "early_prefix_eps1e3",
+      "early_prefix_eps1e2",
+      "near_cut_prefix_eps1e3",
+      "near_cut_prefix_eps1e2",
+      "after_cut_suffix_eps1e2_null",
+      "historical_trained_benchmark_public_lora_2601"
+    ]
+  }
+}

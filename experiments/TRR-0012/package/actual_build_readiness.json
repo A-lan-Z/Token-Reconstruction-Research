@@ -1,0 +1,380 @@
+{
+  "schema": "token-reconstruction.trr0012-actual-package-build-readiness.v1",
+  "task_id": "TRR-0012",
+  "prepared_on": "2026-09-08",
+  "status": "READY_FOR_ACTUAL_BUILD_B1_BINDING_PENDING",
+  "scope": {
+    "purpose": "Bind the existing portable package producer to the final selected B0/B1 states and the Agent2 restore gate.",
+    "code_redesign": false,
+    "new_package_builder": false,
+    "executed_for_this_receipt": false,
+    "not_executed": [
+      "model loading",
+      "public E loading",
+      "torch prediction",
+      "GPU execution",
+      "fit execution",
+      "tests"
+    ],
+    "truth_boundary": {
+      "independent_evaluation_truth_opened": false,
+      "source_text_loaded": false,
+      "token_ids_loaded": false,
+      "truth_opened": false
+    }
+  },
+  "producer": {
+    "path": "scripts/trr0012_package.py",
+    "bytes": 59473,
+    "sha256": "9083926a0c369e3ca4361108bea043fbda79f619ff0fca2ce76b780d11bf0109",
+    "available_subcommands": [
+      "identity",
+      "selection-receipt",
+      "predict",
+      "validate",
+      "extract-smoke"
+    ],
+    "assembly_note": "There is no separate build subcommand. The actual package is assembled from the frozen skeleton with the existing metadata/identity/selection/prediction commands below; no producer code change is needed."
+  },
+  "restore_contract": {
+    "task_id": "TRR-P11",
+    "schema": "token-reconstruction.trr-p11-restore-gate.v1",
+    "path": "../TRR-P11/experiments/TRR-P11/restore/restore_contract.md",
+    "commit": "f33742c3b08c30ac5666360b7edfc862a2fce638",
+    "sha256_at_commit": "1f4cee2a2f0f5e7c9379e1dc8094639f1d86575a2335778c98a940094b336c42",
+    "gate_source": "../TRR-P11/scripts/trr_p11/restore_gate.py",
+    "gate_sha256_at_final_synthetic_test": "3c2e7189a7f0ba8cfa469a746c02132c15658ac2cc4da25207ac05c332b3be4b",
+    "read_only_inspection": true,
+    "synthetic_contract_evidence": {
+      "path": "../TRR-P11/experiments/TRR-P11/restore/execution-tests-r11.json",
+      "sha256": "5ee820b3c66164d1f6d45db41f75e5b7cd4e9e98169143370ccbd67d39f274d5",
+      "status": "PASS_SYNTHETIC_RESTORE_E2E",
+      "tests_passed": 12,
+      "tests_failed": 0,
+      "actual_package_restore_status": "PENDING_AGENT1_FROZEN_PACKAGE_AND_SECONDARY_COPY"
+    }
+  },
+  "roots": {
+    "primary_package": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/outputs/TRR-0012/model-package",
+    "secondary_windows_copy": "/mnt/c/Users/alanz/Token-Reconstruction-Backups/TRR-0012",
+    "agent2_clean_runtime": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P11/restore-runtime/TRR-0012",
+    "package_cap_bytes": 2147483648,
+    "secondary_minimum_remaining_free_bytes": 10737418240,
+    "secondary_copy_requires_measured_primary": true,
+    "secondary_copy_requires_equal_bytes_and_sha256": true,
+    "secondary_copy_requires_distinct_persistent_boundary": true
+  },
+  "frozen_public_assets": {
+    "consumer_manifest_template": {
+      "path": "experiments/TRR-0012/package/package_manifest_template_v1.json",
+      "bytes": 2883,
+      "sha256": "f1ed482f2ddeda53b924db0bfe577caad31bf9325e8159a2b0690698e44bab5c"
+    },
+    "external_producer_contract": {
+      "path": "experiments/TRR-0012/package/contract_v1.json",
+      "sha256": "d83df40b5e68907bdceb4468d59545772052e1fb69e027d04519134ba1524c8e"
+    },
+    "frozen_decoder_config_source": {
+      "path": "outputs/TRR-0012/model-package/config/decoder.json",
+      "bytes": 2645,
+      "sha256": "8ecaa2c4d7ec7fe318ed3d38791ad240438f74266be517aaef118d6ac8de4e36"
+    },
+    "frozen_runtime_config_source": {
+      "path": "outputs/TRR-0012/model-package/config/runtime.json",
+      "bytes": 675,
+      "sha256": "8154106b48518d1a6c2312db614f6bad3412695ffc5d2b488681febe83e8c327"
+    },
+    "public_readout": {
+      "source": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+      "package_relative_path": "readout/public_normalized_embeddings.safetensors",
+      "bytes": 1050673488,
+      "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+    },
+    "smoke_fixture": {
+      "package_relative_path": "smoke/public_base_first2.safetensors",
+      "source_path": "experiments/TRR-0012/package/smoke/public_base_first2.safetensors",
+      "bytes": 2102632,
+      "sha256": "652a67744f2dabe2ca53198f1b7fddde6cb36d414280a1a0d95d866d1e5cc840",
+      "extraction_receipt": {
+        "path": "experiments/TRR-0012/package/smoke/extraction_receipt.json",
+        "sha256": "c76eede6cf53c7997c538a011686b05321cd3b570192c04dcc59c608697b6fb5"
+      }
+    },
+    "static_code_closure": {
+      "loader": {
+        "package_relative_path": "code/trr0010_p09_fixed_loader.py",
+        "bytes": 8174,
+        "sha256": "1225ebc9871aadae4a287a8a5c5a80c5d9903fc86ec5f83ae0bfdae8c9e94a94"
+      },
+      "decoder": {
+        "package_relative_path": "code/token_reconstruction/trr0007_positionwise.py",
+        "bytes": 18152,
+        "sha256": "89fcd036a57407c8c49294aa5fd15ccef46f02b6fabcc35435d097f1213de485"
+      },
+      "package_cli": {
+        "package_relative_path": "code/trr0012_package.py",
+        "bytes": 59473,
+        "sha256": "9083926a0c369e3ca4361108bea043fbda79f619ff0fca2ce76b780d11bf0109"
+      }
+    }
+  },
+  "smoke": {
+    "status": "FROZEN_BEFORE_SELECTION",
+    "truth_free": true,
+    "record_count": 4,
+    "record_order": [
+      "finance/public_base/000",
+      "finance/public_base/001",
+      "pile/public_base/000",
+      "pile/public_base/001"
+    ],
+    "methods": [
+      "current_fixed",
+      "expanded_fixed"
+    ],
+    "fixture_package_relative_path": "smoke/public_base_first2.safetensors",
+    "fixture_sha256": "652a67744f2dabe2ca53198f1b7fddde6cb36d414280a1a0d95d866d1e5cc840",
+    "selection_boundary": {
+      "complete_before_smoke": true,
+      "smoke_used_for_selection": false,
+      "checkpoint_reselection_after_smoke": false,
+      "independent_evaluation_truth_opened": false
+    },
+    "expected_output": {
+      "package_relative_path": "smoke/expected_predictions.safetensors",
+      "generated_after_selection": true,
+      "generated_by": "scripts/trr0012_package.py predict",
+      "receipt_package_relative_path": "smoke/expected_predictions.receipt.json"
+    }
+  },
+  "unresolved_inputs": [
+    {
+      "method": "expanded_fixed",
+      "bank": "B1",
+      "selected_state_package_relative_path": "states/expanded_fixed.safetensors",
+      "selected_state_placeholder": "<B1_SELECTED_STATE>",
+      "fit_binding_placeholder": "<B1_FIT_BINDING_JSON>",
+      "required_binding_fields": [
+        "model_id",
+        "selected_step",
+        "state_sha256",
+        "bank_manifest_sha256",
+        "fit_manifest_sha256",
+        "schedule_semantic_sha256",
+        "runner_state_sha256"
+      ]
+    }
+  ],
+  "unresolved_field_names": [
+    "expanded_fixed.selected_weights",
+    "expanded_fixed.fit_receipt"
+  ],
+  "config_template": {
+    "descriptor_shapes": {
+      "package_manifest": "methods.<method>.loader.kwargs",
+      "frozen_config": "methods.<method>.loader_kwargs",
+      "both": "Use package-relative paths and keep immutable_after_selection=true."
+    },
+    "package_manifest_source": "experiments/TRR-0012/package/package_manifest_template_v1.json",
+    "package_manifest_overrides": {
+      "schema": "token-reconstruction.trr0012-consumer-manifest.v1",
+      "task_id": "TRR-0012",
+      "status": "FROZEN_SELECTED_PACKAGE",
+      "package_id": "trr0012-fixed-pair-<immutable-id>",
+      "methods.current_fixed": {
+        "bank": "B0",
+        "selected_step": "<B0_FIT_BINDING_JSON.selected_step>",
+        "model_id": "<B0_FIT_BINDING_JSON.model_id>",
+        "state.path": "states/current_fixed.safetensors",
+        "state.bytes": "<derived from B0_SELECTED_STATE>",
+        "state.sha256": "<derived from B0_SELECTED_STATE>",
+        "loader.path": "code/trr0010_p09_fixed_loader.py",
+        "loader.kwargs": {
+          "hidden_size": 2048,
+          "vocabulary_size": 128256,
+          "context_width": 128,
+          "bottleneck_size": 512,
+          "seed": 4010,
+          "expected_state_sha256": "<derived from B0_SELECTED_STATE>",
+          "expected_selected_step": "<B0_FIT_BINDING_JSON.selected_step>",
+          "expected_bank_manifest_sha256": "<B0_FIT_BINDING_JSON.bank_manifest_sha256>",
+          "expected_fit_manifest_sha256": "<B0_FIT_BINDING_JSON.fit_manifest_sha256>",
+          "expected_schedule_semantic_sha256": "<B0_FIT_BINDING_JSON.schedule_semantic_sha256>",
+          "expected_base_state_sha256": "5cada4a3d04bb5477eaf0be25ed8d8ac25a89283223e9ba14b18fa10416bee14",
+          "expected_embedding_sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+          "expected_runner_state_sha256": "<B0_FIT_BINDING_JSON.runner_state_sha256>",
+          "expected_method_id": "continued_fixed_readout"
+        }
+      },
+      "methods.expanded_fixed": {
+        "bank": "B1",
+        "selected_step": "<B1_FIT_BINDING_JSON.selected_step>",
+        "model_id": "<B1_FIT_BINDING_JSON.model_id>",
+        "state.path": "states/expanded_fixed.safetensors",
+        "state.bytes": "<derived from B1_SELECTED_STATE>",
+        "state.sha256": "<derived from B1_SELECTED_STATE>",
+        "loader.path": "code/trr0010_p09_fixed_loader.py",
+        "loader.kwargs": {
+          "hidden_size": 2048,
+          "vocabulary_size": 128256,
+          "context_width": 128,
+          "bottleneck_size": 512,
+          "seed": 4010,
+          "expected_state_sha256": "<derived from B1_SELECTED_STATE>",
+          "expected_selected_step": "<B1_FIT_BINDING_JSON.selected_step>",
+          "expected_bank_manifest_sha256": "<B1_FIT_BINDING_JSON.bank_manifest_sha256>",
+          "expected_fit_manifest_sha256": "<B1_FIT_BINDING_JSON.fit_manifest_sha256>",
+          "expected_schedule_semantic_sha256": "<B1_FIT_BINDING_JSON.schedule_semantic_sha256>",
+          "expected_base_state_sha256": "5cada4a3d04bb5477eaf0be25ed8d8ac25a89283223e9ba14b18fa10416bee14",
+          "expected_embedding_sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+          "expected_runner_state_sha256": "<B1_FIT_BINDING_JSON.runner_state_sha256>",
+          "expected_method_id": "continued_fixed_readout"
+        }
+      },
+      "readout": {
+        "path": "readout/public_normalized_embeddings.safetensors",
+        "bytes": 1050673488,
+        "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+        "key": "embeddings"
+      },
+      "selection_receipt.path": "receipts/selection_complete_before_smoke.json",
+      "smoke.input_path": "smoke/public_base_first2.safetensors",
+      "smoke.expected_path": "smoke/expected_predictions.safetensors",
+      "smoke.record_order": [
+        "finance/public_base/000",
+        "finance/public_base/001",
+        "pile/public_base/000",
+        "pile/public_base/001"
+      ],
+      "truth_boundary": {
+        "independent_evaluation_truth_opened": false,
+        "smoke_used_for_selection": false,
+        "source_text_loaded": false,
+        "token_ids_loaded": false
+      }
+    },
+    "frozen_config_overrides": {
+      "source": "outputs/TRR-0012/model-package/config/decoder.json",
+      "target": "config/frozen_config.json",
+      "status": "FROZEN_SELECTED_PACKAGE",
+      "methods": "Copy the same selected_step, model_id, state_path, and loader_kwargs values as the package_manifest overrides; retain the fixed decoder/readout geometry and package-relative paths."
+    }
+  },
+  "build_command_template": {
+    "mode": "existing_cli_assembly",
+    "shell_prologue": "set -euo pipefail; P=/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/outputs/TRR-0012/model-package",
+    "shell_environment": [
+      "OMP_NUM_THREADS=1",
+      "MKL_NUM_THREADS=1",
+      "OPENBLAS_NUM_THREADS=1",
+      "NUMEXPR_NUM_THREADS=1",
+      "PYTHONDONTWRITEBYTECODE=1"
+    ],
+    "commands": [
+      {
+        "step": 1,
+        "purpose": "Copy the two selected states and the already verified public E as regular files into the persistent primary package.",
+        "command": "copy_or_verify <B0_SELECTED_STATE> \"$P/states/current_fixed.safetensors\"; copy_or_verify <B1_SELECTED_STATE> \"$P/states/expanded_fixed.safetensors\"; copy_or_verify /home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors \"$P/readout/public_normalized_embeddings.safetensors\"",
+        "precondition": "Define guarded_copy_function in the shell prologue before this step."
+      },
+      {
+        "step": 2,
+        "purpose": "Create canonical tensor-identity sidecars with the existing producer.",
+        "command": "env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 python3 scripts/trr0012_package.py identity --input \"$P/states/current_fixed.safetensors\" --output \"$P/identity/current_fixed.safetensors.json\" && env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 python3 scripts/trr0012_package.py identity --input \"$P/states/expanded_fixed.safetensors\" --output \"$P/identity/expanded_fixed.safetensors.json\" && env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 python3 scripts/trr0012_package.py identity --input \"$P/readout/public_normalized_embeddings.safetensors\" --output \"$P/identity/public_normalized_embeddings.safetensors.json\""
+      },
+      {
+        "step": 3,
+        "purpose": "Create the explicit complete-before-smoke selection receipt from the two fit bindings.",
+        "command": "env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 python3 scripts/trr0012_package.py selection-receipt --b0-state <B0_SELECTED_STATE> --b1-state <B1_SELECTED_STATE> --b0-binding experiments/TRR-0012/package/B0_selection_binding.json --b1-binding <B1_FIT_BINDING_JSON> --output \"$P/receipts/selection_complete_before_smoke.json\" --development-labels-used true"
+      },
+      {
+        "step": 4,
+        "purpose": "Materialize the two create-only final descriptors from config_template; do not add fields or substitute old state metadata.",
+        "command": "test ! -e \"$P/package_manifest.json\" && test ! -L \"$P/package_manifest.json\" || { echo \"package_manifest.json already exists; preserve and inspect the prior attempt\" >&2; exit 1; }; install -m 0444 experiments/TRR-0012/package/package_manifest_template_v1.json \"$P/package_manifest.json\"; test ! -e \"$P/config/frozen_config.json\" && test ! -L \"$P/config/frozen_config.json\" || { echo \"frozen_config.json already exists; preserve and inspect the prior attempt\" >&2; exit 1; }; install -m 0444 \"$P/config/decoder.json\" \"$P/config/frozen_config.json\"; apply the package_manifest_overrides and frozen_config_overrides in this receipt atomically",
+        "precondition": "The two final descriptors must be absent; failed attempts are retained rather than overwritten."
+      },
+      {
+        "step": 5,
+        "purpose": "Generate the two-method expected smoke output and its sibling receipt after ordinary selection.",
+        "command": "env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 python3 \"$P/code/trr0012_package.py\" predict --package-root \"$P\" --observations \"$P/smoke/public_base_first2.safetensors\" --output \"$P/smoke/expected_predictions.safetensors\" --receipt \"$P/smoke/expected_predictions.receipt.json\" --device <qualified-device>"
+      },
+      {
+        "step": 6,
+        "purpose": "Bind actual component bytes/hashes and the four derived smoke prediction records in the external producer contract, then validate metadata/path/hash closure.",
+        "command": "env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 python3 scripts/trr0012_package.py validate --manifest experiments/TRR-0012/package/contract_v1.json --package-root \"$P\""
+      }
+    ],
+    "required_before_step_3": [
+      "B0_SELECTED_STATE",
+      "B1_SELECTED_STATE",
+      "B0_FIT_BINDING_JSON",
+      "B1_FIT_BINDING_JSON"
+    ],
+    "create_only_outputs": [
+      "package_manifest.json",
+      "config/frozen_config.json",
+      "identity/current_fixed.safetensors.json",
+      "identity/expanded_fixed.safetensors.json",
+      "identity/public_normalized_embeddings.safetensors.json",
+      "receipts/selection_complete_before_smoke.json",
+      "smoke/expected_predictions.safetensors",
+      "smoke/expected_predictions.receipt.json"
+    ],
+    "guarded_copy_policy": {
+      "destination_absent": "create with mode 0444",
+      "destination_existing_regular_file": "accept only when its SHA-256 equals the source SHA-256; never replace it",
+      "destination_existing_symlink_or_mismatch": "fail closed and preserve the existing attempt",
+      "source_requirement": "regular non-symlink file"
+    },
+    "guarded_copy_function": "copy_or_verify() { src=\"$1\"; dst=\"$2\"; test -f \"$src\" && test ! -L \"$src\" || { echo \"invalid source: $src\" >&2; return 1; }; if test -e \"$dst\" || test -L \"$dst\"; then test ! -L \"$dst\" || { echo \"destination is symlink: $dst\" >&2; return 1; }; test \"$(sha256sum \"$src\" | awk '{print $1}')\" = \"$(sha256sum \"$dst\" | awk '{print $1}')\" || { echo \"destination hash differs: $dst\" >&2; return 1; }; return 0; fi; install -m 0444 \"$src\" \"$dst\"; }"
+  },
+  "nested_receipt_cli": {
+    "cli": "code/trr0012_package.py predict",
+    "command_template": "python code/trr0012_package.py predict --package-root . --observations <observations> --output <create-only-output> --device <cpu-or-cuda>",
+    "default_receipt_rule": "If --receipt is omitted, output.with_suffix('.receipt.json') is created beside the prediction output.",
+    "restore_output_example": "runtime/smoke_restored.safetensors",
+    "restore_receipt_example": "runtime/smoke_restored.receipt.json",
+    "receipt_schema": "token-reconstruction.trr0012-prediction-receipt.v1",
+    "contract_checks_verified_by_source": [
+      "receipt is a sibling of the output with the required .receipt.json suffix",
+      "selection receipt is required and must record complete_before_smoke=true",
+      "smoke_used_for_selection=false and checkpoint_reselection_after_smoke=false",
+      "state_file_binding is recorded for both current_fixed and expanded_fixed",
+      "readout.file_binding records the loaded public E",
+      "observations records aggregate tensor digests and ordered four-row slots",
+      "runtime records Python, dependency, device, and package-relative imported module bindings",
+      "truth flags explicitly remain closed"
+    ],
+    "agent2_gate_alignment": "P11 restore_gate.py requires the CLI sibling receipt at consumer.receipt_relative_path and verifies its actual loaded paths, file hashes, observations, methods, runtime, and exact smoke predictions."
+  },
+  "post_build_completion": {
+    "derived_after_selection": [
+      "three tensor-identity sidecars",
+      "selection_complete_before_smoke.json",
+      "package_manifest.json and config/frozen_config.json",
+      "expected_predictions.safetensors and its sibling receipt",
+      "final external TRR-P11 restore descriptor"
+    ],
+    "required_sequence": [
+      "ordinary B0/B1 checkpoint selection is complete",
+      "primary package is measured and under the 2 GiB cap",
+      "root copies the complete primary bundle to /mnt/c/Users/alanz/Token-Reconstruction-Backups/TRR-0012",
+      "Agent2 validates the two copies and materializes a clean persistent runtime",
+      "Agent2 runs the real restore gate and exact four-row/two-method smoke comparison"
+    ],
+    "actual_package_completion": "PENDING_REAL_AGENT2_RESTORE",
+    "scientific_evaluation_authorized": false
+  },
+  "resolved_inputs": {
+    "current_fixed": {
+      "bank": "B0",
+      "selected_step": 8000,
+      "model_id": "TRR-0012/current_fixed_replication_1",
+      "selected_state_source": "outputs/TRR-0012/fixed_fits/native_pair_live_r4/current_fixed_replication_1/selected.safetensors",
+      "selected_state_sha256": "73df57a384daab9b58186195dace233d702ed801fb5daee462e8c219fdf2d61a",
+      "normalized_binding": "experiments/TRR-0012/package/B0_selection_binding.json",
+      "normalized_binding_sha256": "998069af4e4b40f0df1eac273f4c448082781a5b643703201e368169e4d1bb67",
+      "header_only_check": "PASS; 1968 prefix bytes read, tensor payload not read"
+    }
+  }
+}

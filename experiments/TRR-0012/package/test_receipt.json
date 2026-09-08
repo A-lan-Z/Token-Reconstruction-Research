@@ -1,0 +1,96 @@
+{
+  "checks": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest -q tests/test_trr0012_package.py",
+      "exit_code": 0,
+      "kind": "focused_pytest",
+      "rerun_for_receipt": false,
+      "result": "8 passed in 0.87s",
+      "scope": "metadata/package guards plus vendored-module provenance import; no E, selected state, full-vocabulary forward, GPU, or truth access",
+      "timing_seconds": null
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 scripts/trr0012_package.py validate --manifest experiments/TRR-0012/package/contract_v1.json --package-root outputs/TRR-0012/model-package",
+      "exit_code": 0,
+      "kind": "producer_contract_validation",
+      "rerun_for_receipt": false,
+      "result": {
+        "manifest_sha256": "d83df40b5e68907bdceb4468d59545772052e1fb69e027d04519134ba1524c8e",
+        "package_status": "DRAFT_PRE_SELECTION",
+        "status": "PASS_PACKAGE_CONTRACT"
+      },
+      "scope": "manifest/path/hash/smoke contract validation without model or tensor loading",
+      "timing_seconds": null
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 outputs/TRR-0012/model-package/code/trr0012_package.py validate --manifest experiments/TRR-0012/package/contract_v1.json --package-root outputs/TRR-0012/model-package",
+      "exit_code": 0,
+      "kind": "bundled_cli_contract_validation",
+      "rerun_for_receipt": false,
+      "result": {
+        "manifest_sha256": "d83df40b5e68907bdceb4468d59545772052e1fb69e027d04519134ba1524c8e",
+        "package_status": "DRAFT_PRE_SELECTION",
+        "status": "PASS_PACKAGE_CONTRACT"
+      },
+      "scope": "same validation through the package-copied CLI; no model or tensor loading",
+      "timing_seconds": null
+    }
+  ],
+  "environment": {
+    "bytecode_disabled": true,
+    "numpy": "1.26.4",
+    "platform_scope": "WSL primary worktree",
+    "pytest": "8.4.2",
+    "python": "3.12.3",
+    "safetensors": "0.7.0",
+    "torch": "2.10.0"
+  },
+  "not_run_here": [
+    "actual B0/B1 selected-state load",
+    "public readout E load",
+    "full prediction forward",
+    "GPU prediction",
+    "secondary Windows copy",
+    "Agent2 clean restore"
+  ],
+  "run_timestamps_utc": {
+    "bundled_validation": null,
+    "focused_tests": null,
+    "note": "The prior command captures retained result text but did not retain wall-clock timestamps; no checks were rerun for this receipt.",
+    "producer_validation": null
+  },
+  "schema": "token-reconstruction.trr0012-package-test-receipt.v1",
+  "source_bindings": {
+    "bundled_cli": {
+      "bytes": 59473,
+      "path": "outputs/TRR-0012/model-package/code/trr0012_package.py",
+      "sha256": "9083926a0c369e3ca4361108bea043fbda79f619ff0fca2ce76b780d11bf0109"
+    },
+    "contract": {
+      "bytes": 34026,
+      "path": "experiments/TRR-0012/package/contract_v1.json",
+      "sha256": "d83df40b5e68907bdceb4468d59545772052e1fb69e027d04519134ba1524c8e"
+    },
+    "frozen_original_extraction_receipt": {
+      "path": "experiments/TRR-0012/package/smoke/extraction_receipt.json",
+      "sha256": "c76eede6cf53c7997c538a011686b05321cd3b570192c04dcc59c608697b6fb5"
+    },
+    "frozen_smoke_fixture": {
+      "bytes": 2102632,
+      "path": "outputs/TRR-0012/model-package/smoke/public_base_first2.safetensors",
+      "sha256": "652a67744f2dabe2ca53198f1b7fddde6cb36d414280a1a0d95d866d1e5cc840"
+    },
+    "producer": {
+      "bytes": 59473,
+      "path": "scripts/trr0012_package.py",
+      "sha256": "9083926a0c369e3ca4361108bea043fbda79f619ff0fca2ce76b780d11bf0109"
+    },
+    "tests": {
+      "bytes": 5255,
+      "path": "tests/test_trr0012_package.py",
+      "sha256": "f411c580206e0f6f46c8181d19947b81163529b54e245d0ae061cf466bf80900"
+    }
+  },
+  "status": "PASS_METADATA_ONLY",
+  "task_id": "TRR-0012"
+}

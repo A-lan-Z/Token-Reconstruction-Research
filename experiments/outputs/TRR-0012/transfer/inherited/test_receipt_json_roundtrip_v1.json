@@ -1,0 +1,63 @@
+{
+  "attempts": [
+    {
+      "command": "python3 -m py_compile scripts/trr0011_transfer.py",
+      "detail": "SyntaxError at line 2114 from malformed literal newline in the matrix block __all__ marker.",
+      "result": "FAIL_BEFORE_REPAIR"
+    },
+    {
+      "command": "timeout 60s env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 python3 -m pytest -q tests/test_trr0011_transfer.py",
+      "detail": "ModuleNotFoundError: trr0011_transfer; no test body ran.",
+      "result": "FAIL_COLLECTION_BEFORE_PYTHONPATH_FIX"
+    },
+    {
+      "command": "python3 -m py_compile scripts/trr0011_transfer.py tests/test_trr0011_transfer_json.py",
+      "result": "PASS"
+    },
+    {
+      "command": "timeout 60s env PYTHONPATH=scripts OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 python3 -m pytest -q tests/test_trr0011_transfer.py tests/test_trr0011_transfer_json.py",
+      "elapsed_seconds": 1.05,
+      "result": "PASS",
+      "tests_passed": 16
+    }
+  ],
+  "code_bindings": {
+    "immutable_package": {
+      "expected_sha256": "a74f687f8287cacfeafa0acc81a97f208672dedf797792c60f88ba93b0318b25",
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0011/experiments/TRR-0011/package/inference_package_v2.json",
+      "sha256": "a74f687f8287cacfeafa0acc81a97f208672dedf797792c60f88ba93b0318b25"
+    },
+    "roundtrip_test": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0011/tests/test_trr0011_transfer_json.py",
+      "sha256": "e043dd86808e8976b418b3c349920190a921f7773b0680b9d8791309cdb8c6ef"
+    },
+    "transfer_bridge": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0011/scripts/trr0011_transfer.py",
+      "sha256": "63663f25510999b29735dd025b16bf3d592f386112fc35aed81aa7b153139c5c"
+    }
+  },
+  "created_utc": "2026-09-08T04:21:51.280734+00:00",
+  "package_metadata_verification": {
+    "method_resource_fields": [
+      "state",
+      "public_embedding_table"
+    ],
+    "methods": [
+      "expanded_fixed",
+      "current_fixed"
+    ],
+    "package_revision": 2,
+    "package_status": "IMMUTABLE_SELECTED_RUNTIME_BINDING_NO_NEW_TRUTH",
+    "schema": "token-reconstruction.trr0011-inference-package.v1",
+    "status": "PASS"
+  },
+  "production_blockers": [
+    "exact B0/B1 state assets unavailable after recovery search",
+    "no truth access permitted in this validation"
+  ],
+  "production_ready": false,
+  "production_status": "UNEXECUTED",
+  "schema": "token-reconstruction.trr0011-transfer-test-receipt.v1",
+  "scope": "synthetic transfer/writer validation only; no model state, target state, truth, or production inference loaded",
+  "task_id": "TRR-0011"
+}

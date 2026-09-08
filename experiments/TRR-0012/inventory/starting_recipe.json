@@ -1,0 +1,597 @@
+{
+  "schema": "token-reconstruction.trr0012-starting-recipe.v1",
+  "task_id": "TRR-0012",
+  "status": "PREREQUISITE_INVENTORY_COMPLETE_NO_FIT",
+  "inventory_scope": "exact documented common start, fixed-readout B0/B1 recipe, persistent artifact availability, and source identity",
+  "evidence_inputs": {
+    "research_charter": {
+      "path": "RESEARCH_CHARTER.md",
+      "sha256": "ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d"
+    },
+    "recovery_request": {
+      "path": "coordination/requests/TRR-0012.md",
+      "sha256": "70a2cf13b2795916749031bcfed3a55205cd52a44926c1d160bd83508706d9b6"
+    },
+    "state_read_only": {
+      "path": "coordination/STATE.json",
+      "sha256": "b77b1190c693cc6348fc3e2ddb5d201a5cb4bc485d72302e96a84eadbfec485c",
+      "edited": false
+    },
+    "qualification_bindings": {
+      "path": "experiments/TRR-0010/setup/p09_largest_cell_qualification_bindings_v2.json",
+      "sha256": "69621b09350676142065780e7d65275680b5d8026d0c10932997e767b89bf474",
+      "role": "historical P09 qualification and exact start/E binding; directional fields were reviewed and excluded from the fixed recipe"
+    },
+    "public_bank_plan": {
+      "path": ".worktrees/TRR-P10/experiments/TRR-P09/planning/stage1-public-bank-plan.json",
+      "sha256": "bca93d6099760791c5ecbf3be8177d250cc672c62b2177a3d72d79b934c3826c"
+    },
+    "b0_binding": {
+      "path": ".worktrees/TRR-P10/experiments/TRR-P09/setup/b0-immutable-loader-binding-r1.json",
+      "sha256": "7e6d7d3ac0ceec77f8b1e961a1a74b0675fd43e6ef3e4e77dcdd368d0c27445d"
+    },
+    "common_schedule_receipt": {
+      "path": ".worktrees/TRR-P10/experiments/TRR-P09/setup/common-schedules-r1.json",
+      "sha256": "3275af36352e4dd15ba639bdd86af439841ed0b19379aba292ad00f07115b86d",
+      "payloads_are_historical_runtime_artifacts": true
+    }
+  },
+  "starting_state": {
+    "role": "sole common initialization for both new fixed-readout arms",
+    "method_id": "trr0007_residual_mlp512",
+    "selected_step": 400,
+    "canonical_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0009/experiments/TRR-0009/training/run_v1/continued_fixed_readout/selected.safetensors",
+    "task_copy": ".worktrees/TRR-0012/experiments/TRR-0009/training/run_v1/continued_fixed_readout/selected.safetensors",
+    "bytes": 29390492,
+    "sha256": "5cada4a3d04bb5477eaf0be25ed8d8ac25a89283223e9ba14b18fa10416bee14",
+    "verified_copies": [
+      ".worktrees/TRR-0009/experiments/TRR-0009/training/run_v1/continued_fixed_readout/selected.safetensors",
+      ".worktrees/TRR-0010/experiments/TRR-0009/training/run_v1/continued_fixed_readout/selected.safetensors",
+      ".worktrees/TRR-0011/experiments/TRR-0009/training/run_v1/continued_fixed_readout/selected.safetensors",
+      ".worktrees/TRR-0012/experiments/TRR-0009/training/run_v1/continued_fixed_readout/selected.safetensors"
+    ],
+    "header_identity": {
+      "schema": "token-reconstruction.trr0007-positionwise.v1",
+      "context_width": 128,
+      "bottleneck_size": 512,
+      "hidden_size": 2048,
+      "vocabulary_size": 128256,
+      "attention_mode": "diagonal",
+      "attention_score_mode": "dot_product",
+      "inference_contract": "current_activation_H_i_only; full_vocabulary_tied_E",
+      "tensor_dtype": "float32",
+      "tensor_keys": [
+        "base.W",
+        "base.b",
+        "base.key.bias",
+        "base.key.weight",
+        "base.output.bias",
+        "base.output.weight",
+        "base.query.bias",
+        "base.query.weight",
+        "base.s",
+        "base.value.bias",
+        "base.value.weight",
+        "down.bias",
+        "down.weight",
+        "up.bias",
+        "up.weight"
+      ]
+    },
+    "metadata_distinction": {
+      "embedded_starting_state_sha256": "2a44a91b01ca1fdc9615eab804872c50c606199704eaf51fa114cc0d7959ddc8",
+      "meaning": "historical TRR-0007 ancestor provenance only",
+      "allowed_as_TRR0012_start": false,
+      "reason": "the exact selected file identity is 5cada4...; the ancestor must not be substituted"
+    },
+    "new_model_ids": [
+      "TRR-0012/current_fixed_replication_1",
+      "TRR-0012/expanded_fixed_replication_1"
+    ],
+    "old_selected_fit_states": {
+      "status": "not_reused",
+      "reason": "old P09 selected B0/B1 fit files are not the new weights and are unavailable; no old-score chasing"
+    }
+  },
+  "public_model_and_readout": {
+    "model": {
+      "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+      "snapshot_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "snapshot_path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+      "weight_bytes": 2471645608,
+      "weight_sha256": "1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f",
+      "loader": {
+        "local_files_only": true,
+        "dtype": "torch.bfloat16",
+        "attn_implementation": "sdpa",
+        "prefix_layers": 4,
+        "forward_entrypoint": "ContiguousPublicPrefix.forward_full"
+      },
+      "availability": "pinned snapshot and model.safetensors symlink are present"
+    },
+    "tokenizer": {
+      "snapshot_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "bos_token_id": 128000,
+      "renderer_caps": {
+        "user_characters": 1200,
+        "output_characters": 1200,
+        "complete_sequence_width": 192
+      }
+    },
+    "public_normalized_embedding": {
+      "role": "fixed_public_E",
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/public_normalized_embeddings.safetensors",
+      "bytes": 1050673488,
+      "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+      "tensor_key": "embeddings",
+      "shape": [
+        128256,
+        2048
+      ],
+      "dtype": "torch.float32",
+      "metadata": {
+        "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+        "cut_depth": "4",
+        "schema": "token-reconstruction.trr0003-public-normalized-embeddings.v1"
+      }
+    }
+  },
+  "banks": {
+    "common_geometry": {
+      "stored_sequence_tokens": 192,
+      "hidden_size": 2048,
+      "activation_dtype": "torch.bfloat16",
+      "mask_dtype": "uint8",
+      "position_dtype": "int64",
+      "token_id_dtype": "int32",
+      "bos_position": 0,
+      "position_draw_domain": "1..191 post-BOS; contiguous active prefix and zero padding"
+    },
+    "B0": {
+      "role": "current/public fit bank",
+      "record_count": 1200,
+      "global_row_range": [
+        0,
+        1200
+      ],
+      "post_bos_positions": 124371,
+      "payload": {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_fit_cut4.safetensors",
+        "bytes": 947176760,
+        "sha256": "a55814759dfa9d2567587935063fc49e44d8bff949c50014793deb982ebdf35d",
+        "keys": [
+          "activations",
+          "attention_mask",
+          "position_ids",
+          "token_ids",
+          "post_bos_selector_large",
+          "post_bos_selector_small"
+        ],
+        "shapes": {
+          "activations": [
+            1200,
+            192,
+            2048
+          ],
+          "attention_mask": [
+            1200,
+            192
+          ],
+          "position_ids": [
+            1200,
+            192
+          ],
+          "token_ids": [
+            1200,
+            192
+          ]
+        },
+        "availability": "persistent read-only artifact; no copy or repack"
+      },
+      "record_metadata": {
+        "path": ".worktrees/TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_fit_records.json",
+        "bytes": 918427,
+        "sha256": "808cfd0f95ea3ee66c1d4094f3c10f1e346ba986a6d77138a61b8f8f13c4a738"
+      },
+      "manifest": {
+        "path": ".worktrees/TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_manifest.json",
+        "bytes": 8156,
+        "sha256": "c7a857e545a2f252ce8b3ab71bb2336e552fd212c7c434e39cef66f233b77a08"
+      },
+      "corpus_plan": {
+        "path": ".worktrees/TRR-0007/experiments/TRR-0007/support/broader_bank_v5/corpus_plan.json",
+        "bytes": 2528630,
+        "sha256": "35d74424df60a1d62f7962850eaa3132fa57dd7001024f915cc4fc470a6d0e76"
+      },
+      "loader_contract": "B0ImmutableLoader; preserve published row order and repeats; hash all payload/sidecars before first read"
+    },
+    "B1": {
+      "role": "expanded/public fit bank",
+      "target_record_count": 12000,
+      "new_record_count": 10800,
+      "required_prefix": "rows 0:1200 byte-equivalent to B0 records and tensors",
+      "target_post_bos_positions": 1243710,
+      "controlled_share": "10 percent of final rows",
+      "historical_runtime_manifest": {
+        "path": "/tmp/trr-p09-runtime/stage1-capture-r2/bank_manifest-qualified-r1.json",
+        "bytes": 145390,
+        "sha256": "0e14dbf74c947cfc6c586e7a5dbf76a27d8f0522fb8e54d2f98c6067bb36d196",
+        "present_now": false
+      },
+      "historical_payload_status": "169 public-model capture shards and P09 runtime sidecars are absent from persistent storage; no B1 activation payload is available in this worktree",
+      "composition": {
+        "alpaca_natural": {
+          "B0": 600,
+          "target": 6000,
+          "additions": 5400,
+          "target_bins": [
+            1390,
+            2260,
+            1610,
+            740
+          ],
+          "addition_bins": [
+            1251,
+            2034,
+            1449,
+            666
+          ]
+        },
+        "pile_natural": {
+          "B0": 300,
+          "target": 3000,
+          "additions": 2700,
+          "target_bins": [
+            620,
+            890,
+            570,
+            920
+          ],
+          "addition_bins": [
+            558,
+            801,
+            513,
+            828
+          ]
+        },
+        "finance_natural": {
+          "B0": 180,
+          "target": 1800,
+          "additions": 1620,
+          "target_bins": [
+            360,
+            570,
+            300,
+            570
+          ],
+          "addition_bins": [
+            324,
+            513,
+            270,
+            513
+          ]
+        },
+        "pile_controlled": {
+          "B0": 60,
+          "target": 600,
+          "additions": 540,
+          "target_bins": [
+            0,
+            0,
+            0,
+            600
+          ],
+          "addition_bins": [
+            0,
+            0,
+            0,
+            540
+          ]
+        },
+        "finance_controlled": {
+          "B0": 60,
+          "target": 600,
+          "additions": 540,
+          "target_bins": [
+            0,
+            0,
+            0,
+            600
+          ],
+          "addition_bins": [
+            0,
+            0,
+            0,
+            540
+          ]
+        }
+      },
+      "length_and_order": {
+        "post_bos_bins": [
+          [
+            40,
+            63
+          ],
+          [
+            64,
+            95
+          ],
+          [
+            96,
+            127
+          ],
+          [
+            128,
+            191
+          ]
+        ],
+        "exact_length_target": "10 * published B0 count at each exact post-BOS length",
+        "B0_contribution": 1,
+        "addition_contribution": 9,
+        "clip": "only after BOS to exact target post-BOS length",
+        "allocation": "descending target length, then slot order; fail closed on unavailable quota",
+        "stable_source_key": "SHA256(TRR-0007|7007|dataset_id|split|revision|row:row_index) ascending",
+        "score_or_answer_sorting": false
+      },
+      "controlled_replacement": {
+        "parent_post_bos_length": [
+          128,
+          191
+        ],
+        "position_quotas_one_based": {
+          "1_15": 3,
+          "16_39": 6,
+          "40_79": 9,
+          "80_127": 12
+        },
+        "occurrences_per_record": 30,
+        "total_occurrences": 36000,
+        "structural_positions_removed": [
+          "BOS",
+          "PAD"
+        ],
+        "assignment": "frozen ordered published 3600-ID list in ten deterministic cycles, preserving B0 first cycle",
+        "support_list_sha256": "0e84f625e24fb4a2038972cf417923dc20a8cc2fd85e55ac6e9b7a846f5ca576"
+      },
+      "source_bindings": {
+        "alpaca": {
+          "dataset": "tatsu-lab/alpaca",
+          "split": "train",
+          "revision": "dce01c9b08f87459cf36a430d809084718273017",
+          "arrow_sha256": "f45103036ed651f4c06d0a3c3e0fb7d53acb3074ed5c8e804a69c1efc1cea794"
+        },
+        "pile": {
+          "dataset": "NeelNanda/pile-10k",
+          "split": "train",
+          "revision": "127bfedcd5047750df5ccf3a12979a47bfa0bafa",
+          "arrow_sha256": "77ddf02e2a69373a944bc8bc8ac8f7b9926f5c62203d727341a24d709bf81113",
+          "addition_scan": [
+            2000,
+            7000
+          ],
+          "reserved": [
+            7000,
+            10000
+          ]
+        },
+        "finance": {
+          "dataset": "Josephgflowers/Finance-Instruct-500k",
+          "split": "train",
+          "revision": "583a98fb0ec14d904e9423b671d9d0fea88891b6",
+          "arrow_sha256": [
+            "b49ca0980a0b02fecbef2220eee0ef5d3c3c893ae42b4e1910edec993c3d164e",
+            "ce4b0786646cd68561da736f145fd5df7ba2f4e754e0caa3ae646d6be9900bd3"
+          ],
+          "addition_scan": [
+            2000,
+            12000
+          ],
+          "reserved": [
+            12000,
+            20000
+          ]
+        }
+      },
+      "exclusions": "apply 384 public-development identities and approved opaque hash-only ledgers before B1 selection; preserve namespace-specific canonicalization"
+    }
+  },
+  "validation_contract": {
+    "domains": [
+      "Finance",
+      "Pile"
+    ],
+    "records_by_domain": {
+      "Finance": 256,
+      "Pile": 128
+    },
+    "record_count": 384,
+    "sequence_tokens_including_bos": 128,
+    "post_bos_rows_by_domain": {
+      "Finance": 32512,
+      "Pile": 16256
+    },
+    "activation_dtype": "torch.bfloat16",
+    "persistent_public_H": {
+      "Finance": {
+        "path": ".worktrees/TRR-0009/experiments/TRR-0009/evaluation/public_observations_v2/observations/finance__public_base.safetensors",
+        "bytes": 134513416,
+        "sha256": "7449bf11fd335ec8d46ca7581378b8e3a3351d7b7852561cac944c723dd643bb",
+        "shape": [
+          256,
+          128,
+          2048
+        ]
+      },
+      "Pile": {
+        "path": ".worktrees/TRR-0009/experiments/TRR-0009/evaluation/public_observations_v2/observations/pile__public_base.safetensors",
+        "bytes": 67257088,
+        "sha256": "5ad0fece58e4247d8fb1a1d8f5d1d5a021eb96cded0be112f0aafa9052dab89a",
+        "shape": [
+          128,
+          128,
+          2048
+        ]
+      }
+    },
+    "metadata": {
+      "manifest_path": "/tmp/trr-p09-runtime/public-validation-r1/validation_manifest.json",
+      "manifest_bytes": 468369,
+      "manifest_sha256": "2ae3c36d62a3219f0df24ef6d87a9c76418b408d946ba52bcedd020b6b403d38",
+      "rows_path": "/tmp/trr-p09-runtime/public-validation-r1/validation_rows.json",
+      "rows_sha256": "3877baf2a8ad894cb7c971aadd1591854852f77091bdbdb218b3617a6971919f",
+      "target_sidecars_present_now": false
+    },
+    "selection_metric": "domain_balanced_token_accuracy",
+    "aggregation": "evaluate Finance and Pile separately, then unweighted mean of their token accuracies",
+    "truth_boundary": "public prepared validation only; no target/evaluation truth"
+  },
+  "training_contract": {
+    "source_commit": "26e08098135c47a5607aff915e8025b57a747e20",
+    "source_commit_role": "authoritative P09 fixed-control implementation; can be reused read-only",
+    "source_files": {
+      "scripts/trr_p09/fixed_control_cli.py": "707848724cff8bdaadbbd287cf61b2eafebf32bd9f40add7645e25bf2800234e",
+      "scripts/trr_p09/fixed_control_caller.py": "13410a03b825467479001fa97112ed05c9784b9ad64dd46880bcd8076de53f6b",
+      "scripts/trr_p09/fixed_control_runner.py": "fde3db3c9655afca1678f3d2d0641fba5d4130a73fdb77cc2287a38b1741a98e",
+      "scripts/trr_p09/b0_immutable_loader.py": "915c53781c24d997eccc7311553c2d80ff0d7e14688d22bb64c41db2f5e43f70",
+      "scripts/trr_p09/prepare_streamed_bank.py": "e76a27f94328648f8fe3da6c6fae48fffd27006b213f9b70b976bcb5f4077c4b",
+      "scripts/trr_p09/public_validation_loader.py": "3705ff2a58d34512c7f30d9eb2657206fca3621eb9f6fb685b82c12ee008cd0f",
+      "src/token_reconstruction/trr_p09_fixed_control_adapter.py": "aa6a8b21fcc03d55583e69940b722bc9a1e4f4caa05e888f7dab8bf02d3e1a41",
+      "src/token_reconstruction/trr0007_positionwise.py": "89fcd036a57407c8c49294aa5fd15ccef46f02b6fabcc35435d097f1213de485"
+    },
+    "budget": {
+      "seed": 4010,
+      "steps": 13000,
+      "record_batch_size": 8,
+      "position_budget": 512,
+      "train_sequence_tokens": 192,
+      "validation_sequence_tokens": 128,
+      "validation_every": 1000,
+      "checkpoint_grid_formula": "N=max(12000,1000*ceil(5*actual_valid_positions/(512*1000))); grid={0,1000,2000,4000,8000,12000,N}",
+      "B0_checkpoint_grid": [
+        0,
+        1000,
+        2000,
+        4000,
+        8000,
+        12000,
+        13000
+      ],
+      "B1_checkpoint_grid": [
+        0,
+        1000,
+        2000,
+        4000,
+        8000,
+        12000,
+        13000
+      ],
+      "validation_every_status": "historical dormant metadata; actual evaluation and selection only at the seven explicit grid checkpoints"
+    },
+    "optimizer": {
+      "class": "torch.optim.AdamW",
+      "foreach": false,
+      "learning_rate": 0.0002,
+      "weight_decay": 0.0,
+      "gradient_clip_norm": 1.0,
+      "scheduler": "torch.optim.lr_scheduler.CosineAnnealingLR(T_max=13000)"
+    },
+    "fixed_readout": {
+      "readout_mode": "fixed_public_E",
+      "trainable_readout_parameters": 0,
+      "optimizer_groups": [
+        "decoder"
+      ],
+      "compute_base_logits": true,
+      "logit_path": "reuse inherited decoder base logits when available; otherwise full-vocabulary public E rows",
+      "loss": "torch.nn.functional.cross_entropy(logits, target_ids); total equals cross_entropy",
+      "target_access": "loss only",
+      "full_vocabulary": true
+    },
+    "schedule": {
+      "factory": "fixed_control_caller.inherited_schedule_steps",
+      "rng": "CPU torch.Generator with randperm/randint",
+      "regeneration_required": true,
+      "historical_B0": {
+        "path": "/tmp/trr-p09-runtime/common-schedules-r1/schedule-b0-seed4010.safetensors",
+        "bytes": 27053864,
+        "sha256": "ba53cd4bad54bc88670f346a7f959eb0ce5278ec28eac8bdf6463cd44936ec6f",
+        "semantic_sha256": "9aaad9c030f2f9b801f91f956c97f858966580edd21229cebb350dcde358f2c3",
+        "valid_mask_semantic_sha256": "1cae0090d1eb80479c0e0e18529efba3de508eba4ad497d680bcb478072ed0a0",
+        "present_now": false
+      },
+      "historical_B1": {
+        "path": "/tmp/trr-p09-runtime/common-schedules-r1/schedule-b1-seed4010.safetensors",
+        "bytes": 27053864,
+        "sha256": "be0745ebb56e0ed39c2cf7e9c05a657209126f4c1c552242d3893c52d6718801",
+        "semantic_sha256": "8acdb2c4f8e5afba546ad01cbe0adae340eb841c8e3322c919e976434d29ede5",
+        "valid_mask_semantic_sha256": "c9f72b4d3733f89171af1712505248a8c050d3220f1c4b43e4b343e94b7b5890",
+        "present_now": false
+      },
+      "historical_exposure": {
+        "B0": {
+          "valid_post_bos_positions": 124371,
+          "unique_pairs": 124371,
+          "repeated_pairs": 124371,
+          "replacement_steps": 8
+        },
+        "B1": {
+          "valid_post_bos_positions": 1243710,
+          "unique_pairs": 1237403,
+          "repeated_pairs": 1205642,
+          "replacement_steps": 4
+        }
+      },
+      "identity_rule": "old payload hashes are historical references; regenerated schedule must be hash-checked against them when the exact ordered bank is recovered"
+    },
+    "selection": {
+      "metric": "domain_balanced_token_accuracy",
+      "checkpoint_evaluation": "step 0 and each grid checkpoint",
+      "rule": "earliest maximum; update only on strict greater-than; step zero eligible",
+      "selection_scores": "not recorded in this prerequisite inventory"
+    }
+  },
+  "recipe_conflicts_and_unknowns": [
+    {
+      "issue": "starting-state metadata embeds ancestor SHA 2a44... while the exact selected file is SHA 5cada...",
+      "resolution": "use only the byte-verified 5cada... file; retain 2a44... as ancestor provenance"
+    },
+    {
+      "issue": "qualification metadata also contains directional settings (compute_base_logits=false, directional learning rate 0.0001, directional_delta optimizer group)",
+      "resolution": "do not inherit them; fixed arm uses compute_base_logits=true, base learning rate 0.0002, and decoder-only optimizer coverage"
+    },
+    {
+      "issue": "CLI default seed is 4005 while final fixed production contract is seed 4010",
+      "resolution": "pass and receipt seed 4010 explicitly for both arms"
+    },
+    {
+      "issue": "P09 schedule and B1 payload files lived under /tmp and are absent now",
+      "resolution": "regenerate B1 public bank under durable outputs and regenerate schedules from its exact valid mask; fail closed on any prefix/order/hash mismatch"
+    },
+    {
+      "issue": "P09 validation target sidecars and runtime manifest are absent, although public H128 observations and metadata hashes survive",
+      "resolution": "restore or deterministically regenerate public validation target sidecars before fit; do not substitute an older validation panel"
+    },
+    {
+      "issue": "the P09 CLI identity is TRR-P09/continued_fixed_readout",
+      "resolution": "reuse the runner and adapters read-only; use a task-owned wrapper/config to bind TRR-0012 model IDs and outputs without changing scientific constants"
+    }
+  ],
+  "implementation_status": {
+    "original_runner_reusable": true,
+    "direct_production_cli_reusable_without_wrapper": false,
+    "reason": "runner/source contract is exact, but task identity, durable output paths, and restored B0/B1/validation assets must be rebound",
+    "wrapper_started": false,
+    "fit_started": false,
+    "gpu_used": false,
+    "private_evaluation_opened": false,
+    "directional_or_teacher_or_context_fit_started": false,
+    "outputs_root": "outputs/TRR-0012"
+  },
+  "truth_boundary": {
+    "source_text_for_recipe": "metadata and public-source bindings only",
+    "public_fit_support": true,
+    "public_validation": "metadata/H observations only; no evaluation truth",
+    "private_evaluation_data_or_outcomes": false,
+    "P03_holdout": "untouched"
+  }
+}

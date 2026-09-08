@@ -1,0 +1,99 @@
+{
+  "accounting": {
+    "exact_record_total": 32,
+    "fixed_auc_risk_set": "baseline_correct",
+    "threshold_fitted": false,
+    "token_scope": "post_bos_scored_tokens",
+    "token_total": 4064
+  },
+  "artifacts": {
+    "commands": "experiments/TRR-0012/transfer/analysis/analysis_commands_v1.json",
+    "commands_sha256": "57543b721a371c9c538fedae017b09796efb82bca92b5f6df7274e6b4c9520d2",
+    "contract": "experiments/TRR-0012/transfer/analysis/analysis_contract_v1.json",
+    "contract_sha256": "818d3c2de42744d777f23eb60a4c6fccdbb329531421f0c1f9c966c288801454",
+    "test": "tests/test_trr0012_transfer_analysis.py",
+    "test_sha256": "e64b38959d2aab6237837908ae339a0d5e20fbec25ee2de09baba4d62a7bc881"
+  },
+  "callback": {
+    "api": "analyze_transfer_matrix(matrix_path, freeze_receipt_path, truth_manifest_path, repository_root, output_path)",
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/scripts/trr0012_transfer_analysis.py",
+    "sha256": "aae13b9544ccea140565a0d25b99501d4306bb4414e1e3a2d0ff1293d9af0143",
+    "truth_open_order": [
+      "complete public matrix gate",
+      "public freeze receipt and matrix hash",
+      "public panel/order binding",
+      "exact after-cut H and prediction null for Finance/Pile",
+      "truth manifest metadata/order binding",
+      "truth safetensors"
+    ]
+  },
+  "freeze_receipt": {
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/transfer/production_expanded_fixed_coordinator_r1/freeze_receipt.json",
+    "schema": "token-reconstruction.trr0012-transfer-freeze.v1",
+    "sha256": "73eea8559208e259759ce64bb21e3f0aaac04fc60995882696b8d99a4be0703c",
+    "status": "COMPLETE_14_CELL_PREDICTIONS_FROZEN_BEFORE_TRUTH"
+  },
+  "parameter_binding": "actual sanitized producer effective BF16 relative L2 and actual delta/base; nominal plan amplitude retained separately; unavailable gives UNKNOWN",
+  "public_matrix": {
+    "cells": 14,
+    "domains": [
+      "finance",
+      "pile"
+    ],
+    "method_ids": [
+      "expanded_fixed"
+    ],
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/transfer/production_expanded_fixed_coordinator_r1/prediction_matrix_expanded_fixed.json",
+    "records_per_domain": 32,
+    "scored_rows_per_cell": 4064,
+    "scored_tokens": 127,
+    "sha256": "a69e1371d7264c2229689412df1b79b3a6600a7562a0299f337310c22e08440b",
+    "stored_tokens": 128,
+    "variants": 7
+  },
+  "public_panel": {
+    "domain_record_order_sha256": {
+      "finance": "f72d250f1eb971cf236f95ad4375629c71994acb5e62f2bf4bb240ce42658f66",
+      "pile": "a508c0f3f44690bf16fbc550317740c1523cccb55497a80af82c232eba19a3f4"
+    },
+    "panel_sha256": "9968368eef8c8c91b220ef824276aceb5044c0b055545e2b230e66e09b64e47f"
+  },
+  "schema": "token-reconstruction.trr0012-transfer-evaluator-analysis-handoff.v2",
+  "status": "READY_AFTER_PUBLIC_FREEZE_PENDING_AGENT2_TRUTH",
+  "task_id": "TRR-0012",
+  "truth_manifest": {
+    "domain_order": [
+      "finance",
+      "pile"
+    ],
+    "method_id": "expanded_fixed",
+    "records_per_domain": 32,
+    "required_order_fields": [
+      "panel_sha256",
+      "domain_record_order_sha256",
+      "truth_bindings.<domain>.record_ids_sha256"
+    ],
+    "schema": "token-reconstruction.trr0012-transfer-evaluator-truth.v1",
+    "scored_post_bos_tokens": 127,
+    "status": "TRUTH_BINDINGS_READY_AFTER_PUBLIC_FREEZE",
+    "stored_sequence_tokens": 128,
+    "tensor": "truth_tokens [32,128], integer IDs, BOS=128000, read-only per-domain safetensors",
+    "variant_ids": [
+      "clean_public_base",
+      "early_prefix_eps1e3",
+      "early_prefix_eps1e2",
+      "near_cut_prefix_eps1e3",
+      "near_cut_prefix_eps1e2",
+      "after_cut_suffix_eps1e2_null",
+      "historical_trained_benchmark_public_lora_2601"
+    ]
+  },
+  "validation": {
+    "estimated_analysis_cpu_wall_seconds": 120,
+    "estimated_analysis_peak_rss_mib": 1024,
+    "measured_public_gate_wall_seconds": 14.7,
+    "public_gate_null": "PASS for Finance and Pile; no truth opened",
+    "resource_mode": "CPU one thread, no GPU",
+    "swapped_order_test": "PASS: tests/test_trr0012_transfer_analysis.py (1 passed)"
+  }
+}
