@@ -60,7 +60,7 @@
       0,
       2000
     ],
-    "selection_status": "NOT_STARTED_PENDING_EXCLUSION_AUDIT_AND_RELEASE"
+    "selection_status": "NOT_STARTED_AUDIT_PARTIAL_NO_SOURCE_SELECTION_RELEASE"
   },
   "truth_boundary": {
     "truth_opened": false,
@@ -79,7 +79,8 @@
   },
   "pending": [
     "root/Agent1 opaque reservation agreement",
-    "count-only exclusion audit over all ledgers including TRR-0009",
+    "final r4 exclusion audit is partial: 48 sources validated; aggregate panel/pointer-link coverage and unverified P04 fingerprint mappings remain unresolved",
+    "rebuild/release selector after the partial audit is resolved",
     "root release for source selection and compute",
     "reverify frozen B0/B1 state assets after runtime recovery; the recorded paths are currently unlocated and no old run receipt is recreated"
   ],
@@ -90,5 +91,33 @@
     "head": "task/TRR-P10",
     "status": "OPEN_DRAFT_UNMERGED",
     "published_head": "7eb5de3"
+  },
+  "final_exclusion_validation": {
+    "audit_path": "experiments/TRR-P10/exclusions/recovery_identity_audit_r4.json",
+    "audit_sha256": "8efd27d30fc2b8898fd6df7cc64174b8a666c0c3cdc430d799c9773ebfa8a0e4",
+    "audit_status": "PARTIAL_METADATA_ONLY_EXCLUSION_AUDIT",
+    "source_count": 48,
+    "coverage_complete": false,
+    "validation_path": "experiments/TRR-P10/exclusions/recovery_validation_r4.json",
+    "validation_sha256": "18cfe79841a8fec6beaf6003723064007af5140c1c175c3c62f9ced79607b9b8",
+    "validation_tests_passed": 13,
+    "validation_tests_elapsed_seconds": 0.75,
+    "remaining_gaps": [
+      "aggregate opened-panel and pointer-link coverage remains unresolved",
+      "unverified P04 fingerprint producer mappings remain unresolved",
+      "the selector has not been rebuilt or released for source selection"
+    ],
+    "superseded_audits": [
+      "experiments/TRR-P10/exclusions/recovery_identity_audit.json",
+      "experiments/TRR-P10/exclusions/recovery_identity_audit_r2.json",
+      "experiments/TRR-P10/exclusions/recovery_identity_audit_r3.json"
+    ]
+  },
+  "execution_validation": {
+    "path": "experiments/TRR-P10/recovery/execution-tests-r2.json",
+    "sha256": "191d08f38c3619978eebc87afa05637d26d05ff68c26230a071b1557da1d25f3",
+    "status": "PASS",
+    "tests_passed": 10,
+    "tests_failed": 0
   }
 }

@@ -84,3 +84,25 @@ targets task/TRR-P09, remains open and unmerged, and records the recovery
 receipt, task-local manifest, result, and state. This publication checkpoint
 does not change the preparation-blocked status or authorize source selection,
 model execution, prediction, or truth access.
+
+## Final preparation validation — 2026-09-08
+
+The latest exclusion audit is
+experiments/TRR-P10/exclusions/recovery_identity_audit_r4.json, SHA-256 8efd27d30fc2b8898fd6df7cc64174b8a666c0c3cdc430d799c9773ebfa8a0e4. Its status remains
+PARTIAL_METADATA_ONLY_EXCLUSION_AUDIT after 48 source bindings. The matching
+validation receipt is experiments/TRR-P10/exclusions/recovery_validation_r4.json, SHA-256 18cfe79841a8fec6beaf6003723064007af5140c1c175c3c62f9ced79607b9b8; its final
+suite reports 13 passing checks in 0.75 seconds. The r4 audit supersedes the
+preserved r1–r3 audit artifacts.
+
+The remaining audit gaps are explicit: aggregate opened-panel and
+pointer-link coverage is unresolved, and P04 fingerprint producer mappings
+remain unverified. The selector has not been rebuilt or released, so this
+audit does not authorize source selection or a zero-overlap claim for the
+future panel.
+
+The recoverable execution guard is
+experiments/TRR-P10/recovery/execution-tests-r2.json, SHA-256 191d08f38c3619978eebc87afa05637d26d05ff68c26230a071b1557da1d25f3. It reports 10 passing checks and no
+failures, including the bound post-freeze scoring artifacts. The exact B0 and
+B1 state files remain unlocated and are the primary readiness blocker. No new
+source selection, observation, prediction, model run, or evaluation truth was
+opened.
