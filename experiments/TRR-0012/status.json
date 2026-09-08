@@ -15,7 +15,7 @@
   "study": "New-weight replication of documented B0/B1 fixed-readout experiment",
   "task_id": "TRR-0012",
   "training_started": true,
-  "updated_utc": "2026-09-08T09:14:59.637627+00:00",
+  "updated_utc": "2026-09-08T10:11:24Z",
   "shared_contract": "experiments/TRR-0012/shared_contract_v1.json",
   "inventory_paths": [
     "experiments/TRR-0012/inventory/starting_recipe.json",
@@ -202,6 +202,111 @@
         ],
         "verified": true
       }
+    }
+  },
+  "transfer_readiness": {
+    "status": "BRIDGE_QUALIFIED_CAPTURE_V3_AGENT2_RELEASE_AND_PREFLIGHT_PENDING",
+    "recorded_utc": "2026-09-08T10:11:24Z",
+    "design": {
+      "method_id": "expanded_fixed",
+      "source_count": 64,
+      "domains": [
+        "finance",
+        "pile"
+      ],
+      "target_conditions": 7,
+      "domain_target_cells": 14
+    },
+    "cuda_bridge_qualification": {
+      "status": "PASS_PRODUCTION_BRIDGE_PACKAGE_CUDA_EQUIVALENCE",
+      "receipt": "experiments/TRR-0012/transfer/qualification_b1_bridge_cuda_v1.json",
+      "sha256": "f7f88f0fe5cbd46dd766e54c6ea1a2a765e0917bb0bdcc527abfec02938f1225",
+      "source_commit": "4c5b4c4",
+      "actual_parent_commit": "28c9e0f",
+      "records": 4,
+      "features_and_full_logits_max_abs_difference": 0.0,
+      "predictions_exact": true,
+      "execution_equivalence_only": true,
+      "truth_opened": false,
+      "accuracy_or_independent_evaluation_complete": false
+    },
+    "capture_v2_preparation": {
+      "status": "HANDOFF_HELD_SEED_METADATA_RESOLUTION",
+      "preparation_manifest": "experiments/outputs/TRR-0012/transfer/preparation_manifest_v2.json",
+      "preparation_manifest_sha256": "f75cd61680af564e7f099f574ffe0c588685a22115f25f96f1137541ed677b06",
+      "handoff": "experiments/outputs/TRR-0012/transfer/capture_handoff_v2.json",
+      "handoff_sha256": "c60467c84c11e8ecf49b2e6fd53422276e26800eafecdc39a8debd1fce079997",
+      "source_selection_performed": false,
+      "gpu_run_performed": false,
+      "hold_owner": "trr12_banks",
+      "hold_reason": "Inherited executable seed metadata requires compatibility resolution against approved variant_plan_v2 before capture.",
+      "actual_transfer_wall_seconds": null,
+      "superseded_by": {
+        "status": "SUPERSEDED_BY_V3_APPROVED_SEED_PARITY",
+        "preparation_manifest": "experiments/outputs/TRR-0012/transfer/preparation_manifest_v3.json",
+        "preparation_manifest_sha256": "6856ddd91f1fd8fa45fdd0774a7c5ab2132a2174178ee057b6449c486a541b7b",
+        "seed_proof": "experiments/outputs/TRR-0012/transfer/seed_compatibility_test_receipt_v2.json",
+        "seed_proof_sha256": "90208d1a0fba3e3dbfbc3f8a02fcdf382c46a04c2c9b7190b7e8aa10cddb0921"
+      }
+    },
+    "independent_confirmation": {
+      "owner": "Agent2",
+      "status": "PENDING_AGENT2_FINAL_RELEASE_SELECTOR_CHECKS_AND_LIVE_PREFLIGHT",
+      "outcomes_embargoed_until": "transfer_predictions_freeze",
+      "truth_opened": false,
+      "exclusion_recovery": "COMPLETE_REPORTED",
+      "final_release_artifact": "PENDING"
+    },
+    "narrow_cpu_smoke_scope": {
+      "receipt_scope": "experiments/TRR-0012/transfer/qualification_b1_smoke_v1_scope.md",
+      "sha256": "a28f5af22aa5d947001908252077eaadc5da54a9df7284eda1c33dc6b1180483",
+      "status": "NARROWER_CPU_ONLY_SCOPE"
+    },
+    "seed_compatibility": {
+      "status": "PASS_SYNTHETIC_CONSTRUCTOR_EQUIVALENCE",
+      "receipt": "experiments/outputs/TRR-0012/transfer/seed_compatibility_test_receipt_v2.json",
+      "sha256": "90208d1a0fba3e3dbfbc3f8a02fcdf382c46a04c2c9b7190b7e8aa10cddb0921",
+      "approved_seed_values": [
+        1101,
+        1111,
+        1113
+      ],
+      "executed_compatibility_seed": 1101,
+      "odd_seed_updates_exactly_equal": true,
+      "even_control_seed": 1100,
+      "even_control_differs": true,
+      "model_loaded": false,
+      "gpu_used": false,
+      "truth_opened": false
+    },
+    "capture_v3_preparation": {
+      "status": "READY_APPROVED_PLAN_PARITY_COMPATIBILITY_PANEL_AND_PREFLIGHT_PENDING",
+      "preparation_manifest": "experiments/outputs/TRR-0012/transfer/preparation_manifest_v3.json",
+      "preparation_manifest_sha256": "6856ddd91f1fd8fa45fdd0774a7c5ab2132a2174178ee057b6449c486a541b7b",
+      "handoff": "experiments/outputs/TRR-0012/transfer/capture_handoff_v3.json",
+      "handoff_sha256": "cbd31c74a1e7a65cfae7372cecd491a5dd494f297f9d6d4ec1cf10f1ff19fdd6",
+      "plan": "experiments/outputs/TRR-0012/transfer/capture_plan_exec_v2.json",
+      "plan_sha256": "8fee73332d66f247f09f7b55430284b53814f3b9dfa892107e8b3aa8535b8966",
+      "commands": "experiments/outputs/TRR-0012/transfer/capture_commands_v3.json",
+      "commands_sha256": "f11baabab088b031ed64c8200e2c3b7582810e5ac2b437a41135fe301364b91f",
+      "config": "experiments/outputs/TRR-0012/transfer/capture_config_v3.json",
+      "config_sha256": "09188e549c618743aba56ccfbd28076cc4bb089b9bcbb3e5f9b547740596c30d",
+      "release": "experiments/outputs/TRR-0012/transfer/root_release_transfer_v2.json",
+      "release_sha256": "ae0d6643df04b065b727f48aaae0d5c4589d2e3789d53a73f0cf03ae6a664391",
+      "agent2_exclusion_recovery": "COMPLETE_REPORTED",
+      "final_release_artifact": "PENDING",
+      "legacy_hash_selector_compatibility": "PENDING",
+      "fresh_live_preflight_required": true,
+      "source_selection_performed": false,
+      "gpu_run_performed": false,
+      "actual_transfer_wall_seconds": null
+    },
+    "prospective_production_guard_binding": {
+      "status": "PROSPECTIVE_GUARD_ONLY",
+      "commit": "a50d1dc",
+      "source_sha256": "594b6a69246ba2a64c7d5ed49e1f55f42a30ab0c893f33dcfa7964bed534f35b",
+      "follows_executed_numerical_qualification_commit": "4c5b4c4",
+      "role": "guard-only production bridge binding; not a numerical qualification or evaluation receipt"
     }
   }
 }
