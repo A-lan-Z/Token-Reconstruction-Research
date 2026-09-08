@@ -1,0 +1,186 @@
+{
+  "schema": "token-reconstruction.trr-p11-public-support-histogram.v1",
+  "task_id": "TRR-P11",
+  "status": "STATIC_CONTRACT_PENDING_COMMON_REFERENCE_RESTORE",
+  "purpose": "Prepare common-reference and bank-local public fitting support diagnostics for the rebuilt fixed-readout pair.",
+  "records": {
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07/records.json",
+    "bytes": 10767794,
+    "sha256": "367cfba0ffe78f59454861a76f23830f480a8745cc6b35e6b4a0d05eca53638b",
+    "row_start": 0,
+    "row_end": 12000,
+    "records": 12000,
+    "role": "ordered B1 metadata; rows 0:1200 are the published B0 prefix"
+  },
+  "banks": {
+    "B0": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_fit_cut4.safetensors",
+      "bytes": 947176760,
+      "sha256": "a55814759dfa9d2567587935063fc49e44d8bff949c50014793deb982ebdf35d",
+      "records": 1200,
+      "width": 192,
+      "post_bos_positions": 124371,
+      "role": "published current-bank public fitting payload",
+      "tensor_access": [
+        "token_ids",
+        "attention_mask",
+        "position_ids"
+      ],
+      "tensor_excluded": [
+        "activations"
+      ]
+    },
+    "B1": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07/inputs.safetensors",
+      "bytes": 29952264,
+      "sha256": "8150184a349bebd31e24b128d23f096702898024a87a405322ee3ba95fa6682e",
+      "records": 12000,
+      "width": 192,
+      "post_bos_positions": 1243710,
+      "role": "single nested expanded-bank input payload; read-only Agent 1 preparation artifact",
+      "tensor_access": [
+        "token_ids",
+        "attention_mask",
+        "position_ids"
+      ],
+      "tensor_excluded": [
+        "hidden_states",
+        "activations"
+      ]
+    }
+  },
+  "nested_bank": {
+    "prefix_rows": 1200,
+    "addition_rows": 10800,
+    "b1_is_one_full_file": true,
+    "prefix_tensor_identity_required": true,
+    "prefix_fields": [
+      "token_ids",
+      "attention_mask",
+      "position_ids"
+    ],
+    "prefix_record_binding": "B1 rows 0:1200 b0_prefix_row=i; B1 rows 1200:12000 capture_local_row=i-1200",
+    "counting_rule": "count B0 full, B1 full, and B1 additions as separate views; never concatenate B0 with all B1 rows",
+    "expected_b1_addition_post_bos_positions": 1119339
+  },
+  "common_frequency_reference": {
+    "path": "/tmp/trr-p09-runtime/public-support-r1/support-b0-seed4010.safetensors",
+    "bytes": 274352,
+    "sha256": "0673f9df86a591342ea931ec21ac30f680b8ab052d5e66555ca7d5011f6414ce",
+    "role": "frozen common P07/P09 public B0 post-BOS frequency map for all bank bin labels",
+    "tensor_keys": [
+      "support_ids",
+      "support_counts"
+    ],
+    "support_count": 17126,
+    "positive_occurrences": 124371,
+    "vocabulary_size": 128256,
+    "support_digest_trr0010": "f554d25681904530bf0f52752b50f92ae5da10b99998d06eb0cc30ed25fccd4d",
+    "support_ids_tensor_sha256": "59ba55bd1e8a9da209b120875a3cf90696dcb2fd38e4e3763e27114b6ad5c4d4",
+    "support_counts_tensor_sha256": "99b212354ed2d3a11efcfc78085f3218edb05ea503d19f50ce9b29bf5c190fb0",
+    "frequency_vector_tensor_sha256": "a284e1ee8e408e05dd5a0c7663553edc226de8474702889165aa54b3b71a52a0",
+    "source_manifest": "experiments/TRR-P09/setup/public-support-binding-r1.json",
+    "missing_payload_is_fatal": true
+  },
+  "bins": {
+    "position_coordinate": "one-based post-BOS position",
+    "position_bins": [
+      {
+        "name": "1-15",
+        "lower": 1,
+        "upper": 15,
+        "evaluation_range": true
+      },
+      {
+        "name": "16-39",
+        "lower": 16,
+        "upper": 39,
+        "evaluation_range": true
+      },
+      {
+        "name": "40-79",
+        "lower": 40,
+        "upper": 79,
+        "evaluation_range": true
+      },
+      {
+        "name": "80-127",
+        "lower": 80,
+        "upper": 127,
+        "evaluation_range": true
+      },
+      {
+        "name": "128-191",
+        "lower": 128,
+        "upper": 191,
+        "evaluation_range": false
+      }
+    ],
+    "frequency_bins": [
+      {
+        "name": "unseen_0",
+        "lower": 0,
+        "upper": 0
+      },
+      {
+        "name": "seen_1",
+        "lower": 1,
+        "upper": 1
+      },
+      {
+        "name": "seen_2_4",
+        "lower": 2,
+        "upper": 4
+      },
+      {
+        "name": "seen_5_16",
+        "lower": 5,
+        "upper": 16
+      },
+      {
+        "name": "seen_17_64",
+        "lower": 17,
+        "upper": 64
+      },
+      {
+        "name": "seen_65_plus",
+        "lower": 65,
+        "upper": null
+      }
+    ],
+    "labels": "token_ids[:, 1:][attention_mask[:, 1:]]",
+    "exclude_bos": true,
+    "exclude_padding": true,
+    "evaluation_width": 128,
+    "support_width": 192,
+    "common_frequency_map_for_bin_assignment": true,
+    "bank_local_frequency_counts_reported_separately": true
+  },
+  "execution": {
+    "requires_explicit_cli_flag": "--execute",
+    "output_must_be_create_only": true,
+    "planned_command": "env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. /usr/bin/python3 scripts/trr_p11/support_histogram.py --config experiments/TRR-P11/support/support-histogram-contract-r1.json --output experiments/TRR-P11/support/support-histogram-r1.json --execute",
+    "defer_until": "common_frequency_reference payload is durably restored and independently hash-verified",
+    "model_opened": false,
+    "truth_opened": false,
+    "source_text_opened": false,
+    "gpu_required": false
+  },
+  "evidence_policy": {
+    "compact_output_contains": [
+      "file hashes",
+      "tensor geometry/dtype identities",
+      "aggregate support counts",
+      "position/frequency/style histograms",
+      "nested-prefix verification"
+    ],
+    "compact_output_excludes": [
+      "source text",
+      "token sequence values",
+      "hidden states",
+      "evaluation answers",
+      "predictions"
+    ],
+    "common_reference_and_bank_local_counts_are_not_interchangeable": true
+  }
+}
