@@ -22,6 +22,10 @@ from typing import Any
 SCHEMA = "token-reconstruction.trr-p11-restore-gate.v1"
 TENSOR_SCHEMA = "token-reconstruction.trr-p11-tensor-identity.v1"
 SELECTION_RECEIPT_SCHEMA = "token-reconstruction.trr-p11-selection-receipt.v1"
+SELECTION_RECEIPT_SCHEMAS = {
+    SELECTION_RECEIPT_SCHEMA,
+    "token-reconstruction.trr0012-selection-receipt.v1",
+}
 TASK_ID = "TRR-P11"
 PRIMARY_KIND = "wsl_persistent"
 SECONDARY_KIND = "windows_persistent"
@@ -696,9 +700,15 @@ def validate_restore_manifest(
             description=f"selection receipt {boundary_name}",
         )
         receipt_payload = selection_payloads[boundary_name]
+        receipt_schema = receipt_payload.get("schema")
+        expected_receipt_task = (
+            TASK_ID
+            if receipt_schema == SELECTION_RECEIPT_SCHEMA
+            else "TRR-0012"
+        )
         if (
-            receipt_payload.get("schema") != SELECTION_RECEIPT_SCHEMA
-            or receipt_payload.get("task_id") != TASK_ID
+            receipt_schema not in SELECTION_RECEIPT_SCHEMAS
+            or receipt_payload.get("task_id") != expected_receipt_task
         ):
             raise RestoreGateError("selection receipt schema or task identity changed")
         if receipt_payload.get("status") != "SELECTION_COMPLETE_BEFORE_SMOKE":
