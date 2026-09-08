@@ -105,6 +105,25 @@ class TransferDiagnosticError(ValueError):
     """Raised when a transfer diagnostic input is incomplete or unsafe."""
 
 
+
+def _selected_transfer_methods(method_ids: Sequence[str] | None) -> tuple[str, ...]:
+    """Return a validated method subset while preserving the historical default."""
+
+    if method_ids is None:
+        return TRANSFER_METHOD_ORDER
+    if isinstance(method_ids, (str, bytes, bytearray)):
+        raise TransferDiagnosticError("transfer method selection must be a sequence")
+    selected = tuple(str(value) for value in method_ids)
+    if not selected:
+        raise TransferDiagnosticError("transfer method selection is empty")
+    if len(set(selected)) != len(selected) or any(value not in TRANSFER_METHOD_ORDER for value in selected):
+        raise TransferDiagnosticError("transfer method selection contains an unknown or duplicate method")
+    expected_order = tuple(value for value in TRANSFER_METHOD_ORDER if value in selected)
+    if selected != expected_order:
+        raise TransferDiagnosticError("transfer method selection order changed")
+    return selected
+
+
 def _as_float_tensor(value: Any, *, label: str) -> torch.Tensor:
     try:
         tensor = torch.as_tensor(value).detach().cpu().float().contiguous()
@@ -1286,11 +1305,12 @@ def _write_transfer_geometry(
     records: int,
     observation_sha256: str | None = None,
     logit_scale: float | None = None,
+    output_task_root: Path | None = None,
 ) -> dict[str, Any]:
     if output_path.exists() or output_path.is_symlink():
         raise TransferDiagnosticError(f"transfer geometry output is not create-only: {output_path}")
     output_path = output_path.expanduser().resolve()
-    task_root = (root / "experiments" / TASK_ID).resolve()
+    task_root = (Path(output_task_root).expanduser().resolve() if output_task_root is not None else (root / "experiments" / TASK_ID).resolve())
     try:
         output_path.relative_to(task_root)
     except ValueError as exc:
@@ -1359,11 +1379,12 @@ def _write_transfer_prediction(
     domain: str,
     records: int,
     observation_sha256: str | None = None,
+    output_task_root: Path | None = None,
 ) -> dict[str, Any]:
     if output_path.exists() or output_path.is_symlink():
         raise TransferDiagnosticError(f"transfer prediction output is not create-only: {output_path}")
     output_path = output_path.expanduser().resolve()
-    task_root = (root / "experiments" / TASK_ID).resolve()
+    task_root = (Path(output_task_root).expanduser().resolve() if output_task_root is not None else (root / "experiments" / TASK_ID).resolve())
     try:
         output_path.relative_to(task_root)
     except ValueError as exc:
@@ -1570,6 +1591,7 @@ def validate_transfer_prediction_matrix(
     matrix: Mapping[str, Any],
     *,
     repository_root: Path,
+    expected_method_ids: Sequence[str] | None = None,
 ) -> dict[str, Any]:
     """Validate the complete TRR-0011 transfer matrix before truth.
 
@@ -1611,7 +1633,8 @@ def validate_transfer_prediction_matrix(
     variant_ids = matrix.get("variant_ids")
     domains = matrix.get("domain_order")
     records = matrix.get("records_per_domain")
-    if list(method_ids or ()) != list(TRANSFER_METHOD_ORDER):
+    selected_methods = _selected_transfer_methods(expected_method_ids)
+    if list(method_ids or ()) != list(selected_methods):
         raise TransferDiagnosticError("transfer prediction method order changed")
     if not isinstance(variant_ids, Sequence) or isinstance(variant_ids, (str, bytes, bytearray)) or not variant_ids:
         raise TransferDiagnosticError("transfer prediction variants are absent")
@@ -1993,6 +2016,7 @@ def run_registered_transfer_matrix(
     device_name: str = "cuda",
     require_current_head: bool = False,
     runner_module: Any | None = None,
+    method_ids: Sequence[str] | None = None,
 ) -> dict[str, Any]:
     """Run both frozen fixed decoders over all seven capture variants.
 
@@ -2008,6 +2032,7 @@ def run_registered_transfer_matrix(
         output_root.relative_to(task_root)
     except ValueError as exc:
         raise TransferDiagnosticError("transfer matrix output root is outside the task root") from exc
+    selected_methods = _selected_transfer_methods(method_ids)
     capture_path = Path(capture_manifest_path).expanduser().resolve()
     capture = _load_transfer_json(capture_path)
     package_binding, package = _package_v2_binding(Path(package_path).expanduser().resolve(), root=root)
@@ -2038,7 +2063,7 @@ def run_registered_transfer_matrix(
     geometries: dict[str, Any] = {}
     method_receipts: dict[str, Any] = {}
     variant_parameters: dict[str, Any] = {}
-    for method_id in TRANSFER_METHOD_ORDER:
+    for method_id in selected_methods:
         method = package["methods"].get(method_id)
         if not isinstance(method, Mapping):
             raise TransferDiagnosticError(f"frozen package method binding is absent: {method_id}")
@@ -2077,12 +2102,12 @@ def run_registered_transfer_matrix(
         "schema": TRANSFER_MATRIX_SCHEMA,
         "task_id": TASK_ID,
         "status": TRANSFER_MATRIX_STATUS,
-        "method_ids": list(TRANSFER_METHOD_ORDER),
+        "method_ids": list(selected_methods),
         "variant_ids": list(TRANSFER_VARIANT_ORDER),
         "domain_order": list(TRANSFER_DOMAIN_ORDER),
         "records_per_domain": TRANSFER_RECORDS_PER_DOMAIN,
         "cell_count": len(predictions),
-        "input_manifest": method_receipts[TRANSFER_METHOD_ORDER[0]]["manifest"],
+        "input_manifest": method_receipts[selected_methods[0]]["manifest"],
         "capture_manifest": capture_binding,
         "inference_package_v2": package_binding,
         "variant_plan": variant_plan_binding,
@@ -2100,7 +2125,9 @@ def run_registered_transfer_matrix(
     }
     matrix_path = output_root / "prediction_matrix.json"
     matrix_record = _write_transfer_json_create(matrix_path, matrix, root=root)
-    checked_matrix = validate_transfer_prediction_matrix(matrix, repository_root=root)
+    checked_matrix = validate_transfer_prediction_matrix(
+        matrix, repository_root=root, expected_method_ids=selected_methods
+    )
     return {
         "status": "PUBLIC_TRANSFER_PREDICTIONS_COMPLETE_BEFORE_TRUTH",
         "matrix": checked_matrix,
