@@ -1,0 +1,64 @@
+{
+  "base_commit_before_fix": "f1eb31fd98704fd30b433dcace45dae45cfe81d0",
+  "binding_coverage": {
+    "public_freeze_binding_required": true,
+    "registration_binding_required": true,
+    "supplied_truth_override_must_match_bound_sidecar": true,
+    "truth_sidecar_binding_required": true
+  },
+  "code_sha256": {
+    "scripts/trr_p10/execution.py": "5d9c9e79b3620ca2a4f3e97da64ed4423c9719d63a40f070f5f6be7effc23ae9",
+    "tests/test_trr_p10_execution.py": "9b03471116de33e615283be03e23afac1ad2a1b08d5056df17eae5e7431eeb2d"
+  },
+  "command": "OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. /usr/bin/python3 -c <process-timed wrapper launching> /usr/bin/timeout 60 /usr/bin/python3 -m pytest -q tests/test_trr_p10_execution.py",
+  "environment": {
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": ".",
+    "hardware": "CPU only",
+    "timeout_seconds": 60
+  },
+  "prior_attempt": {
+    "actual_exception": "truth sidecar path binding changed",
+    "expected_regex": "truth sidecar sha256",
+    "no_production_artifacts_or_scientific_runs": true,
+    "reason": "The first post-fix run passed 9 tests; its new supplied-truth negative test expected a sha256-specific message while the validator correctly reported the earlier path mismatch.",
+    "status": "EXCLUDED_FAILED_ASSERTION_ONLY"
+  },
+  "pytest_argv": [
+    "/usr/bin/timeout",
+    "60",
+    "/usr/bin/python3",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_trr_p10_execution.py"
+  ],
+  "repository_root": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P10",
+  "resource_policy": {
+    "gpu_used": false,
+    "model_loaded": false,
+    "real_source_or_evaluation_truth_opened": false,
+    "sealed_p03_accessed": false,
+    "synthetic_fixture_truth_generated": true
+  },
+  "result": {
+    "exit_code": 0,
+    "stdout_summary": ".......... [100%]; 10 passed in 1.79s",
+    "tests_failed": 0,
+    "tests_passed": 10
+  },
+  "schema": "token-reconstruction.trr-p10-recovery-execution-test.v2",
+  "scope": "CPU-only synthetic execution-boundary tests after mandatory freeze, registration, and truth-sidecar binding fix",
+  "status": "PASS",
+  "task_id": "TRR-P10",
+  "timing": {
+    "end_utc": "2026-09-08T04:30:58Z",
+    "process_wall_seconds": 3.06027822499982,
+    "pytest_reported_seconds": 1.79,
+    "start_utc": "2026-09-08T04:30:55Z"
+  }
+}

@@ -221,6 +221,65 @@ def test_truth_load_requires_matching_postfreeze_descriptor(tmp_path: Path) -> N
         execution.load_truth_after_freeze(frozen, fixture["descriptor_path"], repository_root=fixture["root"])
 
 
+
+def test_truth_load_requires_postfreeze_freeze_binding(tmp_path: Path) -> None:
+    fixture = _make_fixture(tmp_path)
+    frozen = execution.validate_frozen_package(fixture["freeze_path"], repository_root=fixture["root"])
+    descriptor = json.loads(fixture["descriptor_path"].read_text(encoding="utf-8"))
+    descriptor.pop("public_freeze")
+    fixture["descriptor_path"].write_text(json.dumps(descriptor), encoding="utf-8")
+    with pytest.raises(execution.ExecutionError, match="truth descriptor freeze binding is absent"):
+        execution.load_truth_after_freeze(
+            frozen,
+            fixture["descriptor_path"],
+            truth_path=fixture["truth_path"],
+            repository_root=fixture["root"],
+        )
+
+
+def test_truth_load_requires_postfreeze_registration_binding(tmp_path: Path) -> None:
+    fixture = _make_fixture(tmp_path)
+    frozen = execution.validate_frozen_package(fixture["freeze_path"], repository_root=fixture["root"])
+    descriptor = json.loads(fixture["descriptor_path"].read_text(encoding="utf-8"))
+    descriptor.pop("registration")
+    fixture["descriptor_path"].write_text(json.dumps(descriptor), encoding="utf-8")
+    with pytest.raises(execution.ExecutionError, match="truth descriptor registration binding is absent"):
+        execution.load_truth_after_freeze(
+            frozen,
+            fixture["descriptor_path"],
+            truth_path=fixture["truth_path"],
+            repository_root=fixture["root"],
+        )
+
+
+def test_truth_load_requires_postfreeze_truth_sidecar_binding(tmp_path: Path) -> None:
+    fixture = _make_fixture(tmp_path)
+    frozen = execution.validate_frozen_package(fixture["freeze_path"], repository_root=fixture["root"])
+    descriptor = json.loads(fixture["descriptor_path"].read_text(encoding="utf-8"))
+    descriptor.pop("truth_payload")
+    fixture["descriptor_path"].write_text(json.dumps(descriptor), encoding="utf-8")
+    with pytest.raises(execution.ExecutionError, match="truth sidecar binding is absent"):
+        execution.load_truth_after_freeze(
+            frozen,
+            fixture["descriptor_path"],
+            truth_path=fixture["truth_path"],
+            repository_root=fixture["root"],
+        )
+
+
+def test_truth_load_rejects_unbound_supplied_truth_override(tmp_path: Path) -> None:
+    fixture = _make_fixture(tmp_path)
+    frozen = execution.validate_frozen_package(fixture["freeze_path"], repository_root=fixture["root"])
+    alternate = fixture["root"] / "experiments" / "TRR-P10" / "alternate-truth.safetensors"
+    alternate.write_bytes(fixture["truth_path"].read_bytes() + b"tampered")
+    with pytest.raises(execution.ExecutionError, match=r"truth sidecar (?:path|bytes|sha256) binding changed"):
+        execution.load_truth_after_freeze(
+            frozen,
+            fixture["descriptor_path"],
+            truth_path=alternate,
+            repository_root=fixture["root"],
+        )
+
 def test_error_inventory_keeps_pair_categories_and_no_rank_inference(tmp_path: Path) -> None:
     fixture = _make_fixture(tmp_path)
     frozen = execution.validate_frozen_package(fixture["freeze_path"], repository_root=fixture["root"])

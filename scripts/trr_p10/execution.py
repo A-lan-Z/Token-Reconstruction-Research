@@ -747,26 +747,42 @@ def load_truth_after_freeze(
         raise ExecutionError("truth descriptor records preparation before public freeze")
 
     freeze_value = _descriptor_binding(descriptor, ("public_freeze", "freeze", "receipt", "freeze_receipt"))
-    if freeze_value is not None:
-        if not isinstance(freeze_value, Mapping):
-            raise ExecutionError("truth descriptor freeze binding is malformed")
-        actual = file_record(frozen.freeze_path, base=base, description="frozen public receipt")
-        _same_record(actual, freeze_value, description="truth descriptor/freeze")
+    if freeze_value is None:
+        raise ExecutionError("truth descriptor freeze binding is absent")
+    if not isinstance(freeze_value, Mapping):
+        raise ExecutionError("truth descriptor freeze binding is malformed")
+    actual = file_record(frozen.freeze_path, base=base, description="frozen public receipt")
+    _same_record(actual, freeze_value, description="truth descriptor/freeze")
+
     registration_value = descriptor.get("registration")
-    if registration_value is not None:
-        if not isinstance(registration_value, Mapping):
-            raise ExecutionError("truth descriptor registration binding is malformed")
-        actual = file_record(frozen.registration_path, base=base, description="frozen registration")
-        _same_record(actual, registration_value, description="truth descriptor/registration")
+    if registration_value is None:
+        raise ExecutionError("truth descriptor registration binding is absent")
+    if not isinstance(registration_value, Mapping):
+        raise ExecutionError("truth descriptor registration binding is malformed")
+    registration_path, _registration_payload, registration_record = _nested_json_ref(
+        registration_value,
+        base=base,
+        description="truth descriptor registration",
+    )
+    if registration_path is None or registration_record is None:
+        raise ExecutionError("truth descriptor registration binding is not hash-bound")
+    actual_registration = file_record(
+        frozen.registration_path,
+        base=base,
+        description="frozen registration",
+    )
+    _same_record(
+        actual_registration,
+        registration_record,
+        description="truth descriptor/registration",
+    )
 
     declared_truth = _descriptor_binding(descriptor, ("truth_payload", "sidecar", "truth_sidecar"))
-    if declared_truth is None and truth_path is None:
+    if declared_truth is None:
         raise ExecutionError("truth sidecar binding is absent")
-    if declared_truth is not None:
-        truth_file, truth_record = _ref_record(declared_truth, base=base, description="truth sidecar")
-    else:
-        truth_file = _resolve_path(truth_path, base=base, description="truth sidecar")
-        truth_record = file_record(truth_file, base=base, description="truth sidecar")
+    if not isinstance(declared_truth, Mapping):
+        raise ExecutionError("truth sidecar binding is malformed")
+    truth_file, truth_record = _ref_record(declared_truth, base=base, description="truth sidecar")
     if truth_path is not None:
         supplied = file_record(Path(truth_path), base=base, description="supplied truth sidecar")
         _same_record(supplied, truth_record, description="truth sidecar")
