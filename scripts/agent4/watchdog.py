@@ -1,7 +1,7 @@
 """Fail-closed process-group resource guard for the bounded GPU pilot phases."""
 import argparse,subprocess,time,os,signal,json,sys
 from pathlib import Path
-import psutil
+import psutil,resource
 p=argparse.ArgumentParser();p.add_argument('--cpu-only',action='store_true');p.add_argument('--receipt',required=True);p.add_argument('--timeout',type=float,default=1800);p.add_argument('command',nargs=argparse.REMAINDER);args=p.parse_args()
 if Path(args.receipt).exists():raise SystemExit('create-only receipt already exists')
 command=args.command
@@ -26,5 +26,5 @@ except Exception as exc:
     try:proc.wait(timeout=5)
     except subprocess.TimeoutExpired:os.killpg(proc.pid,signal.SIGKILL)
 rc=proc.wait()
-with open(args.receipt,'x') as f:json.dump({'command':command,'start_unix':start,'end_unix':time.time(),'returncode':rc,'failure':failure,'samples':samples,'max_rss_bytes':max((s['rss_bytes'] for s in samples),default=0)},f,indent=2)
+with open(args.receipt,'x') as f:json.dump({'command':command,'start_unix':start,'end_unix':time.time(),'returncode':rc,'failure':failure,'samples':samples,'max_rss_bytes':max((s['rss_bytes'] for s in samples),default=0),'child_peak_rss_bytes':resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss*1024},f,indent=2)
 sys.exit(rc or (1 if failure else 0))
