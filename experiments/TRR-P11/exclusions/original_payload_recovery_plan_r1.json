@@ -1,10 +1,10 @@
 {
   "schema": "token-reconstruction.trr-p11-original-token-payload-recovery-plan.v1",
   "task_id": "TRR-P11",
-  "status": "READY_FOR_CPU_RECOVERY_AFTER_AGENT1_SMOKE",
+  "status": "EXECUTED_PASS_BOTH_OPAQUE_EXPORTS_READY",
   "created_utc": "2026-09-08T00:00:00Z",
   "purpose": "Recover opaque sequence identities for the original 1200-record fitting bank and original 48-record validation bank after the exclusive Agent 1 comparative smoke window. This plan reads token_ids and attention_mask only during the bounded recovery; it does not publish source text, token content, truth, or scores.",
-  "defer_reason": "Agent 1 comparative smoke completed and released the CPU lease. Recovery is authorized with the existing CPU-only RSS watchdog; no VMS/address-space cap is used.",
+  "defer_reason": "Comparative smoke completed; both bounded CPU recoveries passed under the existing RSS watchdog.",
   "scope_boundary": {
     "included": [
       "original TRR4 public fit payload reused by TRR4 affine/adapter, TRR5 original-like bank, and TRR7 original-like bank",
@@ -230,7 +230,7 @@
         "receipt_output": "experiments/TRR-P11/exclusions/validation_48_recovery_r1.json"
       }
     ],
-    "output_status": "NOT_CREATED_READY_TO_EXECUTE",
+    "output_status": "CREATED_AND_VERIFIED",
     "resource_guard": {
       "implementation": {
         "path": "scripts/trr_p09/resource_watchdog.py",
@@ -251,7 +251,50 @@
     "command_templates": [
       "/usr/bin/env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false PYTHONPATH=. python3 scripts/trr_p09/resource_watchdog.py --output-root experiments/TRR-P11/exclusions/watchdog_original_fit_r1 --timeout-seconds 120 --poll-seconds 1 --max-rss-bytes 2147483648 --min-available-bytes 12884901888 --kill-grace-seconds 15 --cwd . --label TRR-P11-original-fit-token-identity -- python3 scripts/trr_p11/recover_public_token_payload.py --payload ../TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_cut4.safetensors --metadata ../TRR-0004/experiments/TRR-0004/fit/affine_fit_records.json --identity-output experiments/TRR-P11/exclusions/original_fit_1200_identity_r1.json --receipt-output experiments/TRR-P11/exclusions/original_fit_1200_recovery_r1.json --source-label trr4_original_fit_1200 --expected-payload-sha256 d1c78fcf1acc91b57d51355ee11f267bf4c12f1bc7d5160164b3b6ea11b45344 --expected-metadata-sha256 3f733212efd62b19e71f60f002f4e9756b4975ebfb4dcabf0ac27935929f94ff",
       "/usr/bin/env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false PYTHONPATH=. python3 scripts/trr_p09/resource_watchdog.py --output-root experiments/TRR-P11/exclusions/watchdog_validation_48_r1 --timeout-seconds 120 --poll-seconds 1 --max-rss-bytes 2147483648 --min-available-bytes 12884901888 --kill-grace-seconds 15 --cwd . --label TRR-P11-validation-48-token-identity -- python3 scripts/trr_p11/recover_public_token_payload.py --payload ../TRR-0004/experiments/TRR-0004/fit/adapter_v2/validation_mixed_cut4.safetensors --metadata ../TRR-0004/experiments/TRR-0004/fit/adapter_v2/affine_validation_records.json --identity-output experiments/TRR-P11/exclusions/validation_48_identity_r1.json --receipt-output experiments/TRR-P11/exclusions/validation_48_recovery_r1.json --source-label trr4_original_validation_48 --expected-payload-sha256 a8e7633ffb369864af33754c5ebb2d9a4ca9d6e7d4550731e8ff26e20c8200cf --expected-metadata-sha256 30b422b681bef5e7af4c26d339e57dfb3571ecef8077bdc4be5d960ef05c9777"
-    ]
+    ],
+    "handoff_receipt": {
+      "path": "experiments/TRR-P11/exclusions/original_payload_recovery_handoff_r1.json",
+      "sha256": "af52b27c503a2e935a7beb0978fd5fe3b07d27bebe0893aa6ecf9c34d91a5986",
+      "bytes": 9584
+    },
+    "actual_outputs": {
+      "original_fit_1200": {
+        "identity": {
+          "path": "experiments/TRR-P11/exclusions/original_fit_1200_identity_r1.json",
+          "bytes": 487363,
+          "sha256": "45700bb02bbb89e7c8006e0bc6cff60b8f3afaeea533e1d9c4c41cc19531a9da"
+        },
+        "receipt": {
+          "path": "experiments/TRR-P11/exclusions/original_fit_1200_recovery_r1.json",
+          "bytes": 1868,
+          "sha256": "3f06a5287beaccb39efc3bf6b0ad2da9dbf09e376eb4d58fb2406152b0bd95a1"
+        },
+        "watchdog_root": "experiments/TRR-P11/exclusions/watchdog_original_fit_r1",
+        "status": "PASS_PUBLIC_TOKEN_IDENTITY_RECOVERY",
+        "rows": 1200,
+        "h128_rows": 350,
+        "h129_rows": 343,
+        "mismatch_count": 0
+      },
+      "validation_48": {
+        "identity": {
+          "path": "experiments/TRR-P11/exclusions/validation_48_identity_r1.json",
+          "bytes": 16614,
+          "sha256": "d68d98aecdfd0cf041be1e508074ffbf4ded24e0bc0a401362f1eb262e5e17ab"
+        },
+        "receipt": {
+          "path": "experiments/TRR-P11/exclusions/validation_48_recovery_r1.json",
+          "bytes": 1878,
+          "sha256": "9473f1b378add851456dc1acf120cb530738ddbb055695c46613fcb0311efc0e"
+        },
+        "watchdog_root": "experiments/TRR-P11/exclusions/watchdog_validation_48_r1",
+        "status": "PASS_PUBLIC_TOKEN_IDENTITY_RECOVERY",
+        "rows": 48,
+        "h128_rows": 6,
+        "h129_rows": 5,
+        "mismatch_count": 0
+      }
+    }
   },
   "handoff_requirements": {
     "before_run": [
@@ -271,6 +314,8 @@
     "released_utc": "2026-09-08T08:47:56Z",
     "no_new_source_selection": true,
     "no_truth_access": true,
-    "no_gpu_or_model": true
+    "no_gpu_or_model": true,
+    "recovery_completed_utc": "2026-09-08T08:52:08Z",
+    "recovery_status": "PASS_BOTH"
   }
 }
