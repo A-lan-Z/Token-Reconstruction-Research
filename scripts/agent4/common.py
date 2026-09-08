@@ -35,7 +35,11 @@ def load_prefix(dtype=torch.float32,device='cuda',asset_root=None):
     del full
     prefix.rotary_emb=LlamaRotaryEmbedding(config=config,device='cpu')
     prefix.load_state_dict(load_file(str(assets/'prefix.safetensors')),strict=True,assign=True)
-    return prefix.to(device=device,dtype=dtype).eval().requires_grad_(False)
+    prefix.to(device=device,dtype=dtype)
+    # The native public loader retains nonpersistent RoPE frequencies in FP32.
+    # Casting the whole module to BF16 must not quantize these public constants.
+    prefix.rotary_emb=LlamaRotaryEmbedding(config=config,device=device)
+    return prefix.eval().requires_grad_(False)
 
 def environment():
     import transformers,platform
