@@ -113,6 +113,40 @@ def test_scorer_settings_are_explicit_and_nondefault() -> None:
     }
 
 
+def _replication_input_fixture() -> dict[str, object]:
+    return {
+        "status": "BOUND_INPUT_BANKS_AND_DEVELOPMENT_SELECTION",
+        "banks": {
+            "B0": {
+                "bank": "B0",
+                "bank_manifest": {
+                    "path": "agent1/banks/b0_manifest.json",
+                    "sha256": "1" * 64,
+                },
+                "ordered_identity": {
+                    "path": "agent1/banks/b0_ordered_identity.json",
+                    "sha256": "2" * 64,
+                },
+            },
+            "B1": {
+                "bank": "B1",
+                "bank_manifest": {
+                    "path": "agent1/banks/b1_manifest.json",
+                    "sha256": "3" * 64,
+                },
+                "ordered_identity": {
+                    "path": "agent1/banks/b1_ordered_identity.json",
+                    "sha256": "4" * 64,
+                },
+            },
+        },
+        "development_selection": {
+            "path": "agent1/development_selection.json",
+            "sha256": "5" * 64,
+        },
+    }
+
+
 def _state_binding_fixture() -> dict[str, dict[str, object]]:
     receipt = "c" * 64
     return {
@@ -140,10 +174,11 @@ def _state_binding_fixture() -> dict[str, dict[str, object]]:
 def _write_bound_manifest(tmp_path: Path) -> tuple[Path, dict[str, dict[str, object]]]:
     payload = json.loads((ROOT / "experiments/TRR-P11/manifest.json").read_text())
     states = _state_binding_fixture()
-    payload["decision"]["new_state_identities"] = "BOUND_AGENT1_FIT_COMPLETE"
+    payload["replication_inputs"] = _replication_input_fixture()
     payload["new_model_states"] = {
-        "status": "BOUND_AGENT1_FIT_COMPLETE",
-        **states,
+        "status": "PENDING_AGENT1_FIT",
+        "current_b0": None,
+        "expanded_b1": None,
     }
     path = tmp_path / "manifest.json"
     path.write_text(json.dumps(payload, sort_keys=True))
@@ -155,6 +190,7 @@ def _write_complete_audit(
     states: dict[str, dict[str, object]] | None = None,
     *,
     fields: dict[str, dict[str, list[object]]] | None = None,
+    replication_inputs: dict[str, object] | None = None,
 ) -> Path:
     union_path = tmp_path / "identity_union.json"
     union_fields = fields or {}
@@ -192,6 +228,8 @@ def _write_complete_audit(
         "identity_union_export": binding,
         "union_identity_counts": counts,
     }
+    if replication_inputs is not None:
+        audit["replication_inputs"] = replication_inputs
     if states is not None:
         audit["agent1_replication_assets"] = {
             "status": "BOUND_AGENT1_FIT_COMPLETE",
@@ -217,8 +255,15 @@ def test_complete_identity_union_roundtrip_and_hash_tamper_rejection(tmp_path: P
 def test_state_binding_requires_exact_b0_b1_bank_and_selection_identities(tmp_path: Path) -> None:
     manifest_path, _states = _write_bound_manifest(tmp_path)
     manifest = json.loads(manifest_path.read_text())
+    bound_states = _state_binding_fixture()
+    assert selector.validate_p11_manifest(manifest, require_replication_inputs=True)["task_id"] == selector.TASK_ID
+    manifest["decision"]["new_state_identities"] = "BOUND_AGENT1_FIT_COMPLETE"
+    manifest["new_model_states"] = {
+        "status": "BOUND_AGENT1_FIT_COMPLETE",
+        **bound_states,
+    }
     assert selector.validate_p11_manifest(manifest, require_state_bindings=True)["task_id"] == selector.TASK_ID
-    bad = json.loads(manifest_path.read_text())
+    bad = json.loads(json.dumps(manifest))
     bad["new_model_states"]["expanded_b1"]["bank"] = "B0"
     with pytest.raises(selector.SelectionError, match="bank/model identity"):
         selector.validate_p11_manifest(bad, require_state_bindings=True)
@@ -232,7 +277,10 @@ def test_select_sources_uses_real_gate_and_renderer_path_with_injected_trusted_c
     import types
 
     manifest_path, states = _write_bound_manifest(tmp_path)
-    audit_path = _write_complete_audit(tmp_path, states)
+    audit_path = _write_complete_audit(
+        tmp_path,
+        replication_inputs=_replication_input_fixture(),
+    )
     tokenizer_dir = tmp_path / "tokenizer"
     tokenizer_dir.mkdir()
     tokenizer_file = tokenizer_dir / "tokenizer.json"

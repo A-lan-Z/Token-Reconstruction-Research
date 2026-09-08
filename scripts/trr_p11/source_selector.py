@@ -285,10 +285,77 @@ def _load_manifest(
     *,
     root: Path,
     require_state_bindings: bool = False,
+    require_replication_inputs: bool = False,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     payload, record = _load_json(manifest_path, root=root, description="P11 replication manifest")
-    validate_p11_manifest(payload, require_state_bindings=require_state_bindings)
+    validate_p11_manifest(
+        payload,
+        require_state_bindings=require_state_bindings,
+        require_replication_inputs=require_replication_inputs,
+    )
     return payload, record
+
+
+def _validate_replication_inputs(
+    manifest: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Validate hash-only B0/B1 bank and development-selection identities."""
+    raw = manifest.get("replication_inputs")
+    if not isinstance(raw, Mapping):
+        raise SelectionError("P11 replication_inputs binding is absent")
+    status = str(raw.get("status", "")).upper()
+    if not status or any(marker in status for marker in ("PENDING", "NOT_BOUND", "UNAVAILABLE")):
+        raise SelectionError("P11 replication input identities are not frozen")
+    banks = raw.get("banks")
+    if not isinstance(banks, Mapping):
+        raise SelectionError("P11 replication input banks are absent")
+    normalized: dict[str, Any] = {"banks": {}}
+    for bank in ("B0", "B1"):
+        item = banks.get(bank)
+        if not isinstance(item, Mapping) or item.get("bank") != bank:
+            raise SelectionError(f"P11 replication input bank binding changed: {bank}")
+        bank_normalized: dict[str, Any] = {}
+        for key in ("bank_manifest", "ordered_identity"):
+            binding = item.get(key)
+            if not isinstance(binding, Mapping):
+                raise SelectionError(f"P11 {bank} {key} binding is absent")
+            path = binding.get("path")
+            if not isinstance(path, str) or not path:
+                raise SelectionError(f"P11 {bank} {key} path is absent")
+            digest = _require_sha(binding.get("sha256"), description=f"P11 {bank} {key}")
+            bank_normalized[key] = {"path": path, "sha256": digest}
+            if "bytes" in binding:
+                try:
+                    declared_bytes = int(binding["bytes"])
+                except (TypeError, ValueError) as exc:
+                    raise SelectionError(f"P11 {bank} {key} byte binding is malformed") from exc
+                if declared_bytes < 0:
+                    raise SelectionError(f"P11 {bank} {key} byte binding is malformed")
+                bank_normalized[key]["bytes"] = declared_bytes
+        normalized["banks"][bank] = bank_normalized
+    development = raw.get("development_selection")
+    if not isinstance(development, Mapping):
+        raise SelectionError("P11 development selection binding is absent")
+    development_path = development.get("path")
+    if not isinstance(development_path, str) or not development_path:
+        raise SelectionError("P11 development selection path is absent")
+    development_digest = _require_sha(
+        development.get("sha256"),
+        description="P11 development selection",
+    )
+    normalized["development_selection"] = {
+        "path": development_path,
+        "sha256": development_digest,
+    }
+    if "bytes" in development:
+        try:
+            declared_bytes = int(development["bytes"])
+        except (TypeError, ValueError) as exc:
+            raise SelectionError("P11 development selection byte binding is malformed") from exc
+        if declared_bytes < 0:
+            raise SelectionError("P11 development selection byte binding is malformed")
+        normalized["development_selection"]["bytes"] = declared_bytes
+    return normalized
 
 
 def _validate_new_state_bindings(manifest: Mapping[str, Any]) -> dict[str, dict[str, Any]]:
@@ -345,28 +412,26 @@ def _validate_new_state_bindings(manifest: Mapping[str, Any]) -> dict[str, dict[
     return bound
 
 
-def _validate_audit_replication_binding(audit: Mapping[str, Any], states: Mapping[str, Mapping[str, Any]]) -> None:
-    """Require the complete exclusion audit to name the same B0/B1 states."""
-    assets = audit.get("agent1_replication_assets")
-    if not isinstance(assets, Mapping):
-        raise SelectionError("complete exclusion audit lacks Agent1 replication-asset binding")
-    status = str(assets.get("status", "")).upper()
-    if not status or any(marker in status for marker in ("PENDING", "NOT_BOUND", "UNAVAILABLE")):
-        raise SelectionError("complete exclusion audit has no frozen Agent1 replication assets")
-    for arm in ("current_b0", "expanded_b1"):
-        audit_item = assets.get(arm)
-        state_item = states.get(arm)
-        if not isinstance(audit_item, Mapping) or not isinstance(state_item, Mapping):
-            raise SelectionError(f"exclusion audit omits Agent1 state binding: {arm}")
-        for key in ("bank", "model_id", "selected_step", "state_sha256", "bank_manifest_sha256", "selection_receipt_sha256"):
-            if audit_item.get(key) != state_item.get(key):
-                raise SelectionError(f"exclusion audit Agent1 binding differs: {arm}/{key}")
+def _validate_audit_replication_binding(
+    audit: Mapping[str, Any],
+    replication_inputs: Mapping[str, Any],
+) -> None:
+    """Require the audit to name the same B0/B1 input-bank identities."""
+    audit_inputs = audit.get("replication_inputs")
+    if not isinstance(audit_inputs, Mapping):
+        raise SelectionError("complete exclusion audit lacks replication_inputs binding")
+    audit_normalized = _validate_replication_inputs(
+        {"replication_inputs": audit_inputs},
+    )
+    if _canonical_bytes(audit_normalized) != _canonical_bytes(dict(replication_inputs)):
+        raise SelectionError("exclusion audit replication_inputs differ from frozen plan")
 
 
 def validate_p11_manifest(
     manifest: Mapping[str, Any],
     *,
     require_state_bindings: bool = False,
+    require_replication_inputs: bool = False,
 ) -> dict[str, Any]:
     """Validate the frozen P11 geometry and boundary without reading assets."""
     if manifest.get("schema") != MANIFEST_SCHEMA or manifest.get("task_id") != TASK_ID:
@@ -406,6 +471,8 @@ def validate_p11_manifest(
         binding = stats.get(key)
         if not isinstance(binding, Mapping) or binding.get("path") != SCORER_RELATIVE_PATH or binding.get("source_commit") != SCORER_SOURCE_COMMIT or binding.get("source_sha256") != SCORER_SHA256:
             raise P11PipelineError(f"P11 scorer binding changed: {key}")
+    if require_replication_inputs:
+        _validate_replication_inputs(manifest)
     if require_state_bindings:
         _validate_new_state_bindings(manifest)
     truth = manifest.get("truth_boundary")
@@ -604,10 +671,14 @@ def select_sources(
 ) -> dict[str, Any]:
     """Select the first 256 eligible rows per domain after all gates pass."""
     root = Path(repository_root).expanduser().resolve()
-    manifest, manifest_record = _load_manifest(Path(manifest_path), root=root, require_state_bindings=True)
-    state_bindings = _validate_new_state_bindings(manifest)
+    manifest, manifest_record = _load_manifest(
+        Path(manifest_path),
+        root=root,
+        require_replication_inputs=True,
+    )
+    replication_inputs = _validate_replication_inputs(manifest)
     exclusions = load_complete_exclusions(Path(audit_path), root=root, pr20_root=pr20_root)
-    _validate_audit_replication_binding(exclusions.audit, state_bindings)
+    _validate_audit_replication_binding(exclusions.audit, replication_inputs)
     inputs = _normalize_source_inputs(source_inputs, root=root)
     output = _task_output(Path(output_path), root=root, phase="selection")
 
