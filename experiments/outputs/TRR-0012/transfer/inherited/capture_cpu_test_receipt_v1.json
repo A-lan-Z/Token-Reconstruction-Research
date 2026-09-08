@@ -1,0 +1,71 @@
+{
+  "branch": "task/TRR-0011",
+  "command": "env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 timeout --kill-after=5s 60s env PYTHONPATH=.:src:scripts pytest -q tests/test_trr0011_capture.py tests/test_trr0011_select_diagnostic.py",
+  "commit_at_test_start": "1d86e0c965c6d96c1c9fd57cdd02830ad21384df",
+  "created_utc": "2026-09-08T04:17:56Z",
+  "execution": {
+    "ended_utc": "2026-09-08T04:17:56Z",
+    "exit_code": 0,
+    "pytest_output": "13 passed in 1.75s",
+    "started_utc": "2026-09-08T04:17:53Z",
+    "tests_failed": 0,
+    "tests_passed": 13,
+    "tests_timed_out": false,
+    "tool_wall_seconds": 2.774457464
+  },
+  "limits": {
+    "kill_after_seconds": 5,
+    "thread_environment": {
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "timeout_seconds": 60
+  },
+  "notes": [
+    "This receipt covers only the two requested focused CPU test files.",
+    "No capture tensor production run, public model load, GPU execution, source selection, decoder inference, or truth opening occurred.",
+    "Passing focused tests do not qualify the recovered production assets or the full seven-variant capture matrix."
+  ],
+  "qualification_flags": {
+    "cpu_only": true,
+    "decoder_predictions_run": false,
+    "gpu_run_performed": false,
+    "model_loaded": false,
+    "production_capture_started": false,
+    "production_qualified": false,
+    "source_selection_performed": false,
+    "synthetic_or_unit_tests_only": true,
+    "truth_opened": false
+  },
+  "schema": "token-reconstruction.trr0011-cpu-focused-tests.v1",
+  "source_bindings": {
+    "capture_runner": {
+      "bytes": 91873,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0011/scripts/trr0011_capture.py",
+      "readonly": true,
+      "sha256": "1d3e1092e43f740e0ecd479414f5e1124a7b4a0106fd0aab02a73d4fbd536612"
+    },
+    "capture_tests": {
+      "bytes": 6434,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0011/tests/test_trr0011_capture.py",
+      "readonly": true,
+      "sha256": "a5e3c9aef4a8a25e8b7d31aa003f661f25d3c5447894e5e6d0e22b16296038af"
+    },
+    "prior_recovery_healthcheck": {
+      "bytes": 2560,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0011/experiments/TRR-0011/transfer/resource_recovery_cpu_healthcheck_v1.json",
+      "readonly": true,
+      "sha256": "3d3459df036054755912cd84d78f958b151cf5480115e65ad0732521d92cfff8"
+    },
+    "selector_tests": {
+      "bytes": 14005,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0011/tests/test_trr0011_select_diagnostic.py",
+      "readonly": true,
+      "sha256": "35daf2080444d7a718f9d941c3313e68f37ab88fe91c45598dbddf5e2cec715b"
+    }
+  },
+  "status": "CPU_FOCUSED_TESTS_PASS_NOT_PRODUCTION_QUALIFIED",
+  "task_id": "TRR-0011"
+}

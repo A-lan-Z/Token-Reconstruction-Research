@@ -1,0 +1,90 @@
+{
+  "design": {
+    "bytes": 7248,
+    "path": "experiments/TRR-0011/transfer/design_v2.md",
+    "sha256": "f6c60d104cc06c4093758dc361892d5e7cf9d4a0e1fbbd702d83611d9f94f95b"
+  },
+  "frozen_decoder_sources": {
+    "scripts/trr0010_eval_capture.py": "d6d6fddc6a8c01dacdf205c528056cf171c33d8ffbb89eb9f41750895ac2ee78",
+    "scripts/trr0010_eval_gate.py": "ac2ce64375690f6f2a743e79f07f5d2941ee4865dcd8d500a8a209540794157d",
+    "scripts/trr0010_eval_runner.py": "77c294c57ef60c9ced5284422047bf4283072632aff976e01e3f12b9181b3920",
+    "scripts/trr0010_p09_fixed_loader.py": "1225ebc9871aadae4a287a8a5c5a80c5d9903fc86ec5f83ae0bfdae8c9e94a94",
+    "src/token_reconstruction/public_prefix.py": "b9dca1d8d56c7c07413015aea4bde79e8ceac827c32ee9bc0d1a236ea1dd35f6",
+    "src/token_reconstruction/trr0005_joint_decoder.py": "9cab3cf5ad664c37d91bcd90fe1852df71da25800ddf37291a57000908d3d38f",
+    "src/token_reconstruction/trr0007_positionwise.py": "89fcd036a57407c8c49294aa5fd15ccef46f02b6fabcc35435d097f1213de485"
+  },
+  "implementation": {
+    "path": "scripts/trr0011_transfer.py",
+    "scope": "truth-free paired observation/header gate, actual TRR0010 runner bridge, direct P09 decoder feature/logit geometry, after-cut null, evaluator-only explicit error inventory",
+    "sha256": "07655bf7e4031606e8ed0d54b71250186b6a98a138b44074cdaf5c1741b85f2f"
+  },
+  "panel_template": {
+    "bytes": 1213,
+    "opaque_reservation_status": "PENDING_ROOT_AND_AGENT2",
+    "path": "experiments/TRR-0011/transfer/panel_descriptor_template_v2.json",
+    "selection_performed": false,
+    "sha256": "5da9cd0eeef3954e0448d789571369849c0ad6fb97615ba07fe892fae7a57ef0"
+  },
+  "resource_bound": {
+    "bf16_bytes_per_variant_at_maximum": 50331648,
+    "capture_tokens": 192,
+    "hidden_size": 2048,
+    "host_rss_cap_gib": 12.0,
+    "launch_authorized": false,
+    "maximum_records_per_domain": 32,
+    "maximum_total_records": 64,
+    "minimum_free_gpu_gib": 11.0,
+    "minimum_host_headroom_gib": 8.0,
+    "outer_watchdog_seconds_per_variant": 900,
+    "process_one_variant_at_a_time": true,
+    "reserved_gpu_ceiling_gib": 8.0,
+    "working_gpu_estimate_gib": 6.0
+  },
+  "schema": "token-reconstruction.trr0011-transfer-manifest.v2",
+  "status": "DESIGN_ONLY_NO_SELECTION_NO_TRUTH",
+  "target_asset_availability": {
+    "artificial_parameter_perturbation": false,
+    "asset_available_in_trr0011_worktree": false,
+    "category": "historical_trained_benchmark_adaptation",
+    "generation_recipe_bytes": 18824,
+    "generation_recipe_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/public-calibration/generation.json",
+    "generation_recipe_sha256": "6bed8aca6668bd749bbad03c0c85bbace306085dac3141895dad7685f03d0682",
+    "historical_condition": "public_lora_2601",
+    "independent_adaptation_available": false,
+    "no_download_or_paid_compute_required": true,
+    "provenance_path": "experiments/TRR-0011/transfer/public_lora_2601_provenance.json",
+    "provenance_status": "HISTORICAL_TRAINED_BENCHMARK_NOT_NEW_INDEPENDENT_TARGET",
+    "update_bytes": 427632,
+    "update_sha256": "eea7bb49f801b61df2e26a8f59af7c3096f6f3a2604404e16e589443bcfba595",
+    "asset_available_readonly": true,
+    "asset_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors",
+    "update_readonly": true
+  },
+  "task_id": "TRR-0011",
+  "tests": {
+    "command": "PYTHONPATH=.:src:scripts python3 -m pytest -q tests/test_trr0011_transfer.py",
+    "model_loaded": false,
+    "path": "tests/test_trr0011_transfer.py",
+    "result": "14 passed",
+    "sha256": "bf0cdcd76f03417d310a587ab5f938587ddd98dd17346f117adc25d5fa9cfff2",
+    "source_selection_performed": false,
+    "truth_opened": false
+  },
+  "truth_boundary": {
+    "candidate_arrays_persisted": false,
+    "complete_matrix_gate": "task-local exact 2 fixed methods x 7 declared target conditions x 2 domains x 32 records; 28 cells with 32x128 predictions and bound decoder geometry; no TRR0010 partial-matrix masquerade",
+    "decoder_geometry_truth_free": true,
+    "fixed_auc_predeclared": true,
+    "private_or_truth_payload_read": false,
+    "runner_bridge_validated_before_decoder": true,
+    "selection_performed": false,
+    "target_labels_loaded": false,
+    "truth_loader_present": false,
+    "truth_opened": false
+  },
+  "variant_plan": {
+    "bytes": 5104,
+    "path": "experiments/TRR-0011/transfer/variant_plan_v2.json",
+    "sha256": "5fae02e308c7d94201953623a0974a2d1aa884b5946c20cfb7ac7ab3641bdf7f"
+  }
+}

@@ -1,0 +1,429 @@
+{
+  "access_boundary": {
+    "bf16_cpu_inference": false,
+    "decoder_fit": false,
+    "decoder_permitted_inputs": [
+      "activations",
+      "attention_mask",
+      "position_ids",
+      "opaque_record_ids"
+    ],
+    "decoder_receives_source_text": false,
+    "decoder_receives_target_weights": false,
+    "decoder_receives_truth": false,
+    "download": false,
+    "new_target_training": false,
+    "target_weights_and_tokenized_batches": "evaluator_process_only",
+    "teacher": false
+  },
+  "capture_authorization": {
+    "launch_gate": "Agent2 panel plus fresh live preflight remain required; no additional root approval after those gates.",
+    "receipt": {
+      "bytes": 3730,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/outputs/TRR-0012/transfer/root_release_transfer_v1.json",
+      "readonly": true,
+      "sha256": "07f2af0b2a35e226cd54ca54429543cebf6f0be293e8011125bc1d4b5d454ff0"
+    }
+  },
+  "correction": {
+    "historical_generation_absolute_path": {
+      "bytes": 18824,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/public-calibration/generation.json",
+      "readonly": true,
+      "sha256": "6bed8aca6668bd749bbad03c0c85bbace306085dac3141895dad7685f03d0682"
+    },
+    "historical_lora_absolute_path": {
+      "bytes": 427632,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors",
+      "readonly": true,
+      "sha256": "eea7bb49f801b61df2e26a8f59af7c3096f6f3a2604404e16e589443bcfba595"
+    },
+    "reason": "Bind historical public_lora_2601 to the persistent main-repository asset rather than a worktree-relative path; bind the delegated transfer root-release receipt required by the existing runner.",
+    "root_release_receipt": {
+      "bytes": 3730,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/outputs/TRR-0012/transfer/root_release_transfer_v1.json",
+      "readonly": true,
+      "sha256": "07f2af0b2a35e226cd54ca54429543cebf6f0be293e8011125bc1d4b5d454ff0"
+    },
+    "schema": "token-reconstruction.trr0012-evaluator-transfer-capture-correction.v1",
+    "supersedes": {
+      "bytes": 16257,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/outputs/TRR-0012/transfer/capture_config_v1.json",
+      "readonly": true,
+      "sha256": "dcb0cb5b45185128619f0480c03eb63bb4faf174b13ae19dcb2cd60815e09cf3"
+    }
+  },
+  "geometry": {
+    "activation_dtype": "torch.bfloat16",
+    "attention_mask_dtype": "torch.uint8",
+    "bos_token_id": 128000,
+    "capture_batch_size": 8,
+    "cut_depth": 4,
+    "full_forward_sequence_tokens": 192,
+    "hidden_size": 2048,
+    "pad_token_id": 128001,
+    "position_ids_dtype": "torch.int64",
+    "resolution_of_192_vs_128": "Run the original B8x192 full forward. Persist and pass only positions 0:128, including BOS at position 0; slice mask and positions to the same retained clip. The old 192-token resource bound remains the launch bound.",
+    "retained_clip_includes_bos": true,
+    "retained_sequence_tokens": 128,
+    "retained_slice": "[0:128]",
+    "scored_post_bos_tokens": 127,
+    "vocabulary_size": 128256
+  },
+  "historical_public_lora_2601": {
+    "bytes": 427632,
+    "generation_bytes": 18824,
+    "generation_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/public-calibration/generation.json",
+    "generation_sha256": "6bed8aca6668bd749bbad03c0c85bbace306085dac3141895dad7685f03d0682",
+    "independent_target": false,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors",
+    "readonly": true,
+    "sha256": "eea7bb49f801b61df2e26a8f59af7c3096f6f3a2604404e16e589443bcfba595",
+    "status": "HISTORICAL_TRAINED_BENCHMARK_CONDITION"
+  },
+  "namespace": "experiments/outputs/TRR-0012/transfer",
+  "old_trr0011_files_preserved": true,
+  "output_contract": {
+    "activation_shape": [
+      32,
+      128,
+      2048
+    ],
+    "full_reference": "clean_public only; evaluator-only full [32,192,2048] BF16 reference required by layer4 null comparison",
+    "keys": [
+      "activations",
+      "attention_mask",
+      "position_ids"
+    ],
+    "mask_shape": [
+      32,
+      128
+    ],
+    "per_variant_domain_artifact": "<output_root>/<variant_id>/<domain>.safetensors",
+    "position_shape": [
+      32,
+      128
+    ],
+    "truth_flags_all_false": true
+  },
+  "panel_contract": {
+    "domains": [
+      "finance",
+      "pile"
+    ],
+    "evaluator_token_batch_input": "AGENT2_EVALUATOR_TOKEN_BATCH_JSON",
+    "opaque_panel_input": "AGENT2_OPAQUE_PANEL_JSON",
+    "record_count": 64,
+    "records_per_domain": 32,
+    "required_panel_validation": "scripts/trr0011_capture.py validate-panel; reserved opaque descriptor with complete panel_sha256",
+    "same_record_order_across_variants": true,
+    "selection_performed": false,
+    "source_ids_or_text_bound": false,
+    "source_text_loaded": false,
+    "status": "PENDING_AGENT2_OPAQUE_RESERVATION",
+    "target_labels_loaded": false,
+    "truth_opened": false
+  },
+  "plan_bindings": {
+    "design_variant_plan_v2": {
+      "bytes": 5401,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0011/transfer/variant_plan_v2.json",
+      "readonly": true,
+      "repository_relative_path": "experiments/TRR-0011/transfer/variant_plan_v2.json",
+      "sha256": "5ee7329a5e369558576c187955c4a4d19688ba3165b789ac1b21466431044e11"
+    },
+    "inherited_capture_recipe_v1": {
+      "bytes": 6440,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0011/transfer/capture_recipe_v1.json",
+      "readonly": true,
+      "repository_relative_path": "experiments/TRR-0011/transfer/capture_recipe_v1.json",
+      "sha256": "0df03774d1245cf2a2ce8db36dd6bc0009a6253061b8e13a53c011d500935d23"
+    },
+    "inherited_execution_receipt_v1": {
+      "bytes": 1384,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0011/transfer/capture_execution_receipt_v1.json",
+      "readonly": true,
+      "repository_relative_path": "experiments/TRR-0011/transfer/capture_execution_receipt_v1.json",
+      "sha256": "fd52a7e291cc77c6383dfe6308cb09fd141fd789271949a3a1b1682d9b4b048a"
+    },
+    "inherited_interface_v1": {
+      "bytes": 2949,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0011/transfer/capture_interface_v1.json",
+      "readonly": true,
+      "repository_relative_path": "experiments/TRR-0011/transfer/capture_interface_v1.json",
+      "sha256": "e70aed6c1938f86c82025934f0bad566c8964a81c22d0e893fd9dc85cb529111"
+    },
+    "inherited_panel_template_v2": {
+      "bytes": 1213,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0011/transfer/panel_descriptor_template_v2.json",
+      "readonly": true,
+      "repository_relative_path": "experiments/TRR-0011/transfer/panel_descriptor_template_v2.json",
+      "sha256": "5da9cd0eeef3954e0448d789571369849c0ad6fb97615ba07fe892fae7a57ef0"
+    },
+    "inherited_readiness_v1": {
+      "bytes": 3470,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0011/transfer/capture_readiness_v1.json",
+      "readonly": true,
+      "repository_relative_path": "experiments/TRR-0011/transfer/capture_readiness_v1.json",
+      "sha256": "a9405a4fdaa15636761d3dba4c01a053d41d34cf965238e5e6bad99a9882dc58"
+    },
+    "new_executable_plan_generated_by_same_runner": {
+      "bytes": 7635,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/outputs/TRR-0012/transfer/capture_plan_exec_v1.json",
+      "readonly": true,
+      "repository_relative_path": "experiments/outputs/TRR-0012/transfer/capture_plan_exec_v1.json",
+      "sha256": "707c0678bc03eb73f5c9fd8a3a8feb9432f3bc65c793e6bacd979eb25dc49fd1"
+    }
+  },
+  "public_model": {
+    "config": {
+      "bytes": 877,
+      "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/3e3aaf51a035cb5092d9f6827a0dc074657ba88c",
+      "readonly": true,
+      "sha256": "2febf68cea25bf4611be02b7536f2488a5ba523bb1134986e3610152abe74fdb"
+    },
+    "generation_config": {
+      "bytes": 189,
+      "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/75ae08310d6d23df373ee2644b497192b3cce6d8",
+      "readonly": true,
+      "sha256": "88effbb63300dbbc7390143fbbdd9d9fa50587b37e8bfd16c8c90d4970a74a36"
+    },
+    "loader": {
+      "attn_implementation": "sdpa",
+      "dtype": "torch.bfloat16",
+      "forward_entrypoint": "ContiguousPublicPrefix.forward_full",
+      "local_files_only": true,
+      "prefix_layers": 4
+    },
+    "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+    "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "snapshot_path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+    "tokenizer": {
+      "bytes": 9085657,
+      "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6/tokenizer.json",
+      "sha256": "79e3e522635f3171300913bb421464a87de6222182a0570b9b2ccba2a964b2b4"
+    },
+    "tokenizer_path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6/tokenizer.json",
+    "weights": {
+      "bytes": 2471645608,
+      "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6/model.safetensors",
+      "sha256": "1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f",
+      "verified_by_existing_qualification": true
+    }
+  },
+  "runner": {
+    "binding": {
+      "bytes": 91873,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/scripts/trr0011_capture.py",
+      "readonly": true,
+      "repository_relative_path": "scripts/trr0011_capture.py",
+      "sha256": "1d3e1092e43f740e0ecd479414f5e1124a7b4a0106fd0aab02a73d4fbd536612"
+    },
+    "entrypoints": {
+      "assemble_manifest": "assemble-manifest",
+      "capture_variant": "capture-variant",
+      "validate_panel": "validate-panel",
+      "validate_plan": "validate-plan"
+    },
+    "no_new_capture_framework": true,
+    "one_variant_per_process": true
+  },
+  "schema": "token-reconstruction.trr0012-evaluator-transfer-capture-config.v1",
+  "scope": "Evaluator-side continuation of the approved TRR-0011 controlled-target capture. No observations started.",
+  "source_selection_performed": false,
+  "status": "READY_V2_ABSOLUTE_ASSET_PATH_PANEL_PENDING",
+  "task_id": "TRR-0012",
+  "test_reuse": {
+    "action": "Reuse existing PASS receipts; no rerun unless source code changes.",
+    "capture_test": {
+      "path": "tests/test_trr0011_capture.py",
+      "sha256": "a5e3c9aef4a8a25e8b7d31aa003f661f25d3c5447894e5e6d0e22b16296038af"
+    },
+    "code_changed": false,
+    "existing_capture_cpu_receipt": {
+      "bytes": 2971,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0011/transfer/capture_cpu_test_receipt_v1.json",
+      "readonly": true,
+      "repository_relative_path": "experiments/TRR-0011/transfer/capture_cpu_test_receipt_v1.json",
+      "sha256": "7ac3988ab28b0652ec479c8a1c26e30cba58ce4cf9e9b0bdb51c65f8ecd4e9ad"
+    },
+    "existing_transfer_test_receipt": {
+      "bytes": 2773,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0011/transfer/test_receipt_json_roundtrip_v1.json",
+      "readonly": true,
+      "repository_relative_path": "experiments/TRR-0011/transfer/test_receipt_json_roundtrip_v1.json",
+      "sha256": "54aa5c592310886796518359f1da929b5f84dd992d793528262975254818ac5a"
+    },
+    "transfer_test": {
+      "path": "tests/test_trr0011_transfer.py",
+      "sha256": "30895847998504d2ea7cc6f9939875a2342703c4e5480ef01f389ba01e08dcac"
+    }
+  },
+  "truth_opened": false,
+  "variant_recipe_resolution": {
+    "decision": "Use capture_plan_exec_v1.json for future runner validation; retain all TRR0011 recipe/design files byte-identical under inherited/.",
+    "inherited_capture_recipe_validation": {
+      "failure": "layer3_block_rel1e-3 layer, amplitude, or seed changed",
+      "old_file_unchanged": true,
+      "status": "FAILED_CLOSED_IN_METADATA_CHECK"
+    },
+    "no_target_condition_added": true,
+    "reason": "The inherited capture_recipe_v1 fails the committed runner validator on layer3 and after-cut seed literals. The create-only executable plan is generated by the committed runner and validates before any model or panel input is opened.",
+    "variants": [
+      {
+        "design_plan_v2_recipe": {
+          "layer_index": null,
+          "recipe_seed": null,
+          "relative_parameter_l2": null
+        },
+        "design_variant_id": "clean_public_base",
+        "executable_runner_recipe": {
+          "layer_index": null,
+          "recipe_seed": null,
+          "relative_parameter_l2": null
+        },
+        "expected_activation_equivalence": false,
+        "inherited_recipe_v1_recipe": {
+          "layer_index": null,
+          "recipe_seed": null,
+          "relative_parameter_l2": null
+        },
+        "role": "clean_public_target",
+        "runner_recipe_accepted_by_current_validator": true,
+        "runner_variant_id": "clean_public"
+      },
+      {
+        "design_plan_v2_recipe": {
+          "layer_index": 1,
+          "recipe_seed": 1101,
+          "relative_parameter_l2": 0.001
+        },
+        "design_variant_id": "early_prefix_eps1e3",
+        "executable_runner_recipe": {
+          "layer_index": 1,
+          "recipe_seed": 1101,
+          "relative_parameter_l2": 0.001
+        },
+        "expected_activation_equivalence": false,
+        "inherited_recipe_v1_recipe": {
+          "layer_index": 1,
+          "recipe_seed": 1101,
+          "relative_parameter_l2": 0.001
+        },
+        "role": "early_prefix_perturbation",
+        "runner_recipe_accepted_by_current_validator": true,
+        "runner_variant_id": "layer1_block_rel1e-3"
+      },
+      {
+        "design_plan_v2_recipe": {
+          "layer_index": 1,
+          "recipe_seed": 1111,
+          "relative_parameter_l2": 0.01
+        },
+        "design_variant_id": "early_prefix_eps1e2",
+        "executable_runner_recipe": {
+          "layer_index": 1,
+          "recipe_seed": 1101,
+          "relative_parameter_l2": 0.01
+        },
+        "expected_activation_equivalence": false,
+        "inherited_recipe_v1_recipe": {
+          "layer_index": 1,
+          "recipe_seed": 1101,
+          "relative_parameter_l2": 0.01
+        },
+        "role": "early_prefix_perturbation",
+        "runner_recipe_accepted_by_current_validator": true,
+        "runner_variant_id": "layer1_block_rel1e-2"
+      },
+      {
+        "design_plan_v2_recipe": {
+          "layer_index": 3,
+          "recipe_seed": 1101,
+          "relative_parameter_l2": 0.001
+        },
+        "design_variant_id": "near_cut_prefix_eps1e3",
+        "executable_runner_recipe": {
+          "layer_index": 3,
+          "recipe_seed": 1101,
+          "relative_parameter_l2": 0.001
+        },
+        "expected_activation_equivalence": false,
+        "inherited_recipe_v1_recipe": {
+          "layer_index": 3,
+          "recipe_seed": 1301,
+          "relative_parameter_l2": 0.001
+        },
+        "role": "near_cut_prefix_perturbation",
+        "runner_recipe_accepted_by_current_validator": true,
+        "runner_variant_id": "layer3_block_rel1e-3"
+      },
+      {
+        "design_plan_v2_recipe": {
+          "layer_index": 3,
+          "recipe_seed": 1111,
+          "relative_parameter_l2": 0.01
+        },
+        "design_variant_id": "near_cut_prefix_eps1e2",
+        "executable_runner_recipe": {
+          "layer_index": 3,
+          "recipe_seed": 1101,
+          "relative_parameter_l2": 0.01
+        },
+        "expected_activation_equivalence": false,
+        "inherited_recipe_v1_recipe": {
+          "layer_index": 3,
+          "recipe_seed": 1301,
+          "relative_parameter_l2": 0.01
+        },
+        "role": "near_cut_prefix_perturbation",
+        "runner_recipe_accepted_by_current_validator": true,
+        "runner_variant_id": "layer3_block_rel1e-2"
+      },
+      {
+        "design_plan_v2_recipe": {
+          "layer_index": 4,
+          "recipe_seed": 1113,
+          "relative_parameter_l2": 0.01
+        },
+        "design_variant_id": "after_cut_suffix_eps1e2_null",
+        "executable_runner_recipe": {
+          "layer_index": 4,
+          "recipe_seed": 1101,
+          "relative_parameter_l2": 0.01
+        },
+        "expected_activation_equivalence": true,
+        "inherited_recipe_v1_recipe": {
+          "layer_index": 4,
+          "recipe_seed": 1401,
+          "relative_parameter_l2": 0.01
+        },
+        "role": "after_cut_suffix_null_control",
+        "runner_recipe_accepted_by_current_validator": true,
+        "runner_variant_id": "layer4_null_block_rel1e-2"
+      },
+      {
+        "design_plan_v2_recipe": {
+          "layer_index": null,
+          "recipe_seed": null,
+          "relative_parameter_l2": null
+        },
+        "design_variant_id": "historical_trained_benchmark_public_lora_2601",
+        "executable_runner_recipe": {
+          "layer_index": null,
+          "recipe_seed": null,
+          "relative_parameter_l2": null
+        },
+        "expected_activation_equivalence": false,
+        "inherited_recipe_v1_recipe": {
+          "layer_index": null,
+          "recipe_seed": null,
+          "relative_parameter_l2": null
+        },
+        "role": "historical_trained_benchmark_adaptation",
+        "runner_recipe_accepted_by_current_validator": true,
+        "runner_variant_id": "historical_public_lora_2601"
+      }
+    ]
+  }
+}

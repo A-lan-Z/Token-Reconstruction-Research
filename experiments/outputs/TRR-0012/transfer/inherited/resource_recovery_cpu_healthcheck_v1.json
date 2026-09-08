@@ -1,0 +1,56 @@
+{
+  "schema": "token-reconstruction.trr0011-cpu-recovery-healthcheck.v1",
+  "task_id": "TRR-0011",
+  "status": "PASS",
+  "created_utc": "2026-09-08T03:49:33Z",
+  "branch": "task/TRR-0011",
+  "commit_at_receipt": "1d86e0c965c6d96c1c9fd57cdd02830ad21384df",
+  "scope": "single bounded CPU healthcheck before capture integration",
+  "command": "env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 timeout --kill-after=5s 30s python3 -c 'import json,platform,time,torch; started=time.time(); torch.set_num_threads(1); torch.set_num_interop_threads(1); a=torch.ones((1024,1024),dtype=torch.float32); b=torch.ones_like(a); c=a+b; d=torch.ones((1024,1024),dtype=torch.bfloat16); e=d+d; print(json.dumps({\"status\":\"PASS\",\"torch\":torch.__version__,\"device\":\"cpu\",\"fp32_shape\":[1024,1024],\"bf16_shape\":[1024,1024],\"max_allocated_bytes_estimate\":16777216,\"fp32_checksum\":float(c.sum()),\"bf16_checksum\":float(e.sum()),\"elapsed_seconds\":time.time()-started},sort_keys=True))'",
+  "limits": {
+    "timeout_seconds": 30,
+    "kill_after_seconds": 5,
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1"
+    },
+    "max_allocated_bytes_estimate": 16777216
+  },
+  "observed": {
+    "exit_code": 0,
+    "torch": "2.10.0+cu128",
+    "device": "cpu",
+    "fp32_shape": [1024, 1024],
+    "bf16_shape": [1024, 1024],
+    "fp32_checksum": 2097152.0,
+    "bf16_checksum": 2097152.0,
+    "python_elapsed_seconds": 0.023378610610961914,
+    "tool_wall_time_seconds": 2.641654828
+  },
+  "host_snapshot_after_check": {
+    "memory_total_bytes": 32411598848,
+    "memory_used_bytes": 1591582720,
+    "memory_free_bytes": 27709775872,
+    "memory_available_bytes": 30820016128,
+    "swap_used_bytes": 0,
+    "gpu_memory_free_mib": 13894,
+    "gpu_temperature_c": 46
+  },
+  "historical_anomaly_report": {
+    "reported_failures": [
+      "prior host crash during CPU BF16 allocation",
+      "OS11 tool-host spawn failures",
+      "historical failed orphan PID 75993 (stopped by root)"
+    ],
+    "causal_claim": false,
+    "note": "These are preserved as prior reported anomalies only; this healthcheck does not establish their cause or relation to the current recovery."
+  },
+  "current_recovery_interpretation": {
+    "healthcheck_passed": true,
+    "anomaly_observed": false,
+    "causal_claim": false,
+    "next_scope": "small focused CPU tests and synthetic integration only; no production panel selection or GPU capture"
+  }
+}
