@@ -191,3 +191,186 @@ def test_a1_binds_candidate_receipt_without_fake_projected_or_forecast(tmp_path:
     bad_path.write_text(json.dumps(bad) + "\n", encoding="utf-8")
     with pytest.raises(EvaluationError, match="candidate receipt"):
         freeze_evaluation(bad_path, tmp_path / "a1-bad-receipt.json", strict_record_counts=False)
+
+
+
+def test_strict_a1_receipt_binds_nested_prediction_trace_and_cost(tmp_path: Path) -> None:
+    from scripts.trr_p12.evaluation import _validate_a1_candidate_receipt
+
+    observation = tmp_path / "observation.json"
+    observation.write_text('{"record_count": 2, "sanitized": true}\n', encoding="utf-8")
+    prediction = tmp_path / "prediction.safetensors"
+    save_file(
+        {"predictions": torch.zeros((2, 128), dtype=torch.int64)},
+        str(prediction),
+        metadata={
+            "schema": "token-reconstruction.trr-p12-a1-prediction.v1",
+            "task_id": "TRR-P12",
+            "method_id": "frozen_a1_a2_k256",
+            "domain": "finance",
+            "stage": "0",
+        },
+    )
+    trace = tmp_path / "trace.safetensors"
+    save_file(
+        {
+            "candidates": torch.zeros((2, 128, 512), dtype=torch.int64),
+            "candidate_scores": torch.zeros((2, 128, 512), dtype=torch.float32),
+        },
+        str(trace),
+        metadata={
+            "schema": "token-reconstruction.trr-p12-a1-candidate-trace.v1",
+            "task_id": "TRR-P12",
+            "method_id": "frozen_a1_a2_k256",
+            "domain": "finance",
+            "stage": "0",
+        },
+    )
+    cost = tmp_path / "cost.json"
+    cost.write_text(
+        json.dumps(
+            {
+                "schema": "token-reconstruction.trr-p12-a1-cost.v1",
+                "task_id": "TRR-P12",
+                "method_id": "frozen_a1_a2_k256",
+                "domain": "finance",
+                "stage": 0,
+                "truth_opened": False,
+                "source_text_loaded": False,
+                "token_ids_loaded": False,
+                "target_labels_loaded": False,
+                "target_weights_loaded": False,
+                "p03_holdout_accessed": False,
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    receipt = tmp_path / "cell-receipt.json"
+    receipt.write_text(
+        json.dumps(
+            {
+                "schema": "token-reconstruction.trr-p12-a1-cell-receipt.v1",
+                "task_id": "TRR-P12",
+                "status": "A1_A2_CELL_COMPLETE_NO_TRUTH",
+                "method_id": "frozen_a1_a2_k256",
+                "domain": "finance",
+                "stage": 0,
+                "records": 2,
+                "prediction": _binding(prediction, key="predictions"),
+                "trace": _binding(trace),
+                "cost": _binding(cost),
+                "input_observation": _binding(observation),
+                "truth_opened": False,
+                "source_text_loaded": False,
+                "token_ids_loaded": False,
+                "target_labels_loaded": False,
+                "target_weights_loaded": False,
+                "p03_holdout_accessed": False,
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    checked = _validate_a1_candidate_receipt(
+        _binding(receipt),
+        method="A1+A2",
+        domain="finance",
+        stage=0,
+        record_count=2,
+        base=tmp_path,
+    )
+    assert checked["nested_artifacts"]["trace"]["shape"] == [2, 128, 512]
+    assert checked["nested_artifacts"]["prediction"]["key"] == "predictions"
+
+    cost.write_text('{"tampered": true}\n', encoding="utf-8")
+    with pytest.raises(EvaluationError, match="sha256 changed"):
+        _validate_a1_candidate_receipt(
+            _binding(receipt),
+            method="A1+A2",
+            domain="finance",
+            stage=0,
+            record_count=2,
+            base=tmp_path,
+        )
+
+
+def test_strict_geometry_binds_private_public_and_pipeline_artifacts(tmp_path: Path) -> None:
+    from scripts.trr_p12.evaluation import _normalise_registrations, _verify_normalized_registrations
+
+    files: dict[str, Path] = {}
+    for name in ("private-boundary.json", "public-aggregates.json", "pipeline-receipt.json", "decoder.py", "package.json", "readout.json"):
+        path = tmp_path / name
+        path.write_text(json.dumps({"name": name}) + "\n", encoding="utf-8")
+        files[name] = path
+
+    def binding(name: str) -> dict[str, object]:
+        return _binding(files[name])
+
+    descriptor = {
+        "registered_geometry": {
+            "stage_pairs": ["0_to_64", "0_to_128", "0_to_256"],
+            "full_vocabulary_required": True,
+            "retrospective_only": True,
+            "artifacts_by_domain": {
+                domain: {
+                    "private_boundary": binding("private-boundary.json"),
+                    "public_aggregates": binding("public-aggregates.json"),
+                    "pipeline_receipt": binding("pipeline-receipt.json"),
+                }
+                for domain in ("finance", "pile")
+            },
+        },
+        "frozen_decoder_binding": {
+            "decoder": binding("decoder.py"),
+            "package": binding("package.json"),
+            "readout": binding("readout.json"),
+        },
+    }
+    normalized = _normalise_registrations(descriptor, base=tmp_path, strict=True)
+    artifacts = normalized["registered_geometry"]["artifacts_by_domain"]
+    assert set(artifacts) == {"finance", "pile"}
+    assert set(artifacts["finance"]) == {"private_boundary", "public_aggregates", "pipeline_receipt"}
+    checked = _verify_normalized_registrations(normalized, base=tmp_path, strict=True)
+    assert checked["registered_geometry"]["artifacts_by_domain"] == artifacts
+
+    files["public-aggregates.json"].write_text('{"changed": true}\n', encoding="utf-8")
+    with pytest.raises(EvaluationError, match="sha256 changed"):
+        _verify_normalized_registrations(normalized, base=tmp_path, strict=True)
+
+
+def test_strict_geometry_rejects_missing_domain_artifact(tmp_path: Path) -> None:
+    from scripts.trr_p12.evaluation import _normalise_registrations
+
+    item = tmp_path / "artifact.json"
+    item.write_text("{}\n", encoding="utf-8")
+    binding = _binding(item)
+    geometry = {
+        "stage_pairs": ["0_to_64", "0_to_128", "0_to_256"],
+        "full_vocabulary_required": True,
+        "retrospective_only": True,
+        "artifacts_by_domain": {
+            "finance": {
+                "private_boundary": binding,
+                "public_aggregates": binding,
+                "pipeline_receipt": binding,
+            },
+            "pile": {
+                "private_boundary": binding,
+                "pipeline_receipt": binding,
+            },
+        },
+    }
+    with pytest.raises(EvaluationError, match="pile.*public_aggregates"):
+        _normalise_registrations(
+            {
+                "registered_geometry": geometry,
+                "frozen_decoder_binding": {
+                    "decoder": binding,
+                    "package": binding,
+                    "readout": binding,
+                },
+            },
+            base=tmp_path,
+            strict=True,
+        )

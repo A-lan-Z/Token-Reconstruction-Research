@@ -71,6 +71,16 @@ A1_STAGES = (0, 256)
 B1_STAGE_ARTIFACTS = ("observation", "prediction", "projected")
 A1_STAGE_ARTIFACTS = ("observation", "prediction", "candidate_receipt")
 A1_ALIASES = frozenset({"A1+A2", "A1_A2", "A1A2", "A1-A2"})
+A1_METHOD_ID = "frozen_a1_a2_k256"
+A1_RECEIPT_SCHEMA = "token-reconstruction.trr-p12-a1-cell-receipt.v1"
+A1_TRACE_SCHEMA = "token-reconstruction.trr-p12-a1-candidate-trace.v1"
+A1_COST_SCHEMA = "token-reconstruction.trr-p12-a1-cost.v1"
+GEOMETRY_DOMAINS = ("finance", "pile")
+GEOMETRY_ARTIFACT_ALIASES = {
+    "private_boundary": ("private_boundary", "private_boundary_rows", "private_rows"),
+    "public_aggregates": ("public_aggregates", "public_aggregate", "public_summary"),
+    "pipeline_receipt": ("pipeline_receipt", "receipt", "geometry_receipt"),
+}
 
 
 class EvaluationError(ValueError):
@@ -299,10 +309,150 @@ def _validate_observation_artifact(binding: Mapping[str, Any], *, method: str, s
     return result
 
 
+def _validate_a1_candidate_receipt(
+    binding: Mapping[str, Any],
+    *,
+    method: str,
+    domain: str,
+    stage: int,
+    record_count: int,
+    base: Path,
+) -> dict[str, Any]:
+    """Validate the A1 cell receipt and every output it names.
+
+    A1 has no projected feature artifact. Its receipt is the lineage root for
+    the prediction, candidate trace, and cost JSON, so strict freeze hashes and
+    inspects those nested files before any evaluator truth is opened.
+    """
+
+    receipt = _file_binding(binding, base=base, label=f"{method}/{domain}/stage{stage}/candidate_receipt")
+    receipt_path = Path(receipt["path"])
+    payload = _json_object(receipt_path, label=f"{method}/{domain}/stage{stage}/candidate_receipt")
+    if payload.get("schema") != A1_RECEIPT_SCHEMA:
+        raise EvaluationError(f"{method}/{domain}/stage{stage}/candidate receipt schema differs")
+    if payload.get("task_id") != TASK_ID:
+        raise EvaluationError(f"{method}/{domain}/stage{stage}/candidate receipt task differs")
+    if payload.get("status") != "A1_A2_CELL_COMPLETE_NO_TRUTH":
+        raise EvaluationError(f"{method}/{domain}/stage{stage}/candidate receipt is not a no-truth cell")
+    if payload.get("method_id") != A1_METHOD_ID:
+        raise EvaluationError(f"{method}/{domain}/stage{stage}/candidate receipt method differs")
+    if str(payload.get("domain")) != domain or int(payload.get("stage", -1)) != int(stage):
+        raise EvaluationError(f"{method}/{domain}/stage{stage}/candidate receipt cell identity differs")
+    if int(payload.get("records", -1)) != int(record_count):
+        raise EvaluationError(f"{method}/{domain}/stage{stage}/candidate receipt record count differs")
+    for flag in (
+        "truth_opened",
+        "source_text_loaded",
+        "token_ids_loaded",
+        "target_labels_loaded",
+        "target_weights_loaded",
+        "p03_holdout_accessed",
+    ):
+        if payload.get(flag) is not False:
+            raise EvaluationError(f"{method}/{domain}/stage{stage}/candidate receipt violates {flag}=false")
+
+    nested: dict[str, Any] = {}
+    for name in ("prediction", "trace", "cost"):
+        raw = payload.get(name)
+        if raw is None:
+            raise EvaluationError(f"{method}/{domain}/stage{stage}/candidate receipt lacks {name} binding")
+        nested[name] = _file_binding(
+            raw,
+            base=receipt_path.parent,
+            label=f"{method}/{domain}/stage{stage}/candidate_receipt/{name}",
+        )
+
+    nested["prediction"] = _validate_public_tensor_artifact(
+        nested["prediction"],
+        method=method,
+        stage=stage,
+        artifact="prediction",
+        record_count=int(record_count),
+    )
+
+    trace_path = Path(nested["trace"]["path"])
+    try:
+        with safe_open(str(trace_path), framework="pt", device="cpu") as handle:
+            metadata = handle.metadata() or {}
+            if metadata.get("schema") != A1_TRACE_SCHEMA:
+                raise EvaluationError(f"{method}/{domain}/stage{stage}/candidate trace schema differs")
+            if metadata.get("task_id") != TASK_ID or metadata.get("method_id") != A1_METHOD_ID:
+                raise EvaluationError(f"{method}/{domain}/stage{stage}/candidate trace method binding differs")
+            if str(metadata.get("domain")) != domain or str(metadata.get("stage")) != str(stage):
+                raise EvaluationError(f"{method}/{domain}/stage{stage}/candidate trace cell identity differs")
+            keys = set(handle.keys())
+            if keys != {"candidates", "candidate_scores"}:
+                raise EvaluationError(
+                    f"{method}/{domain}/stage{stage}/candidate trace keys must be candidates and candidate_scores"
+                )
+            candidate_slice = handle.get_slice("candidates")
+            score_slice = handle.get_slice("candidate_scores")
+            candidate_shape = tuple(int(item) for item in candidate_slice.get_shape())
+            score_shape = tuple(int(item) for item in score_slice.get_shape())
+            candidate_dtype = str(candidate_slice.get_dtype())
+            score_dtype = str(score_slice.get_dtype())
+    except EvaluationError:
+        raise
+    except Exception as exc:
+        raise EvaluationError(f"{method}/{domain}/stage{stage}/candidate trace is not readable safetensors") from exc
+    expected_shape = (int(record_count), 128, 512)
+    if candidate_shape != expected_shape or score_shape != expected_shape:
+        raise EvaluationError(
+            f"{method}/{domain}/stage{stage}/candidate trace geometry must be {list(expected_shape)}"
+        )
+    if candidate_dtype not in {"I8", "I16", "I32", "I64", "U8"}:
+        raise EvaluationError(f"{method}/{domain}/stage{stage}/candidate IDs must be integer")
+    if score_dtype not in {"BF16", "F16", "F32", "F64"}:
+        raise EvaluationError(f"{method}/{domain}/stage{stage}/candidate scores must be floating")
+    nested["trace"]["schema"] = A1_TRACE_SCHEMA
+    nested["trace"]["keys"] = ["candidates", "candidate_scores"]
+    nested["trace"]["shape"] = list(expected_shape)
+    nested["trace"]["tensor_dtypes"] = {
+        "candidates": candidate_dtype,
+        "candidate_scores": score_dtype,
+    }
+
+    cost_path = Path(nested["cost"]["path"])
+    cost_payload = _json_object(cost_path, label=f"{method}/{domain}/stage{stage}/candidate cost")
+    if cost_payload.get("schema") != A1_COST_SCHEMA:
+        raise EvaluationError(f"{method}/{domain}/stage{stage}/candidate cost schema differs")
+    if cost_payload.get("task_id") != TASK_ID or cost_payload.get("method_id") != A1_METHOD_ID:
+        raise EvaluationError(f"{method}/{domain}/stage{stage}/candidate cost method binding differs")
+    if str(cost_payload.get("domain")) != domain or int(cost_payload.get("stage", -1)) != int(stage):
+        raise EvaluationError(f"{method}/{domain}/stage{stage}/candidate cost cell identity differs")
+    for flag in (
+        "truth_opened",
+        "source_text_loaded",
+        "token_ids_loaded",
+        "target_labels_loaded",
+        "target_weights_loaded",
+        "p03_holdout_accessed",
+    ):
+        if cost_payload.get(flag) is not False:
+            raise EvaluationError(f"{method}/{domain}/stage{stage}/candidate cost violates {flag}=false")
+    nested["cost"]["schema"] = A1_COST_SCHEMA
+
+    input_observation = payload.get("input_observation")
+    if input_observation is None:
+        raise EvaluationError(f"{method}/{domain}/stage{stage}/candidate receipt lacks input_observation binding")
+    nested["input_observation"] = _file_binding(
+        input_observation,
+        base=receipt_path.parent,
+        label=f"{method}/{domain}/stage{stage}/candidate_receipt/input_observation",
+    )
+
+    receipt["schema"] = A1_RECEIPT_SCHEMA
+    receipt["status"] = str(payload["status"])
+    receipt["nested_artifacts"] = nested
+    return receipt
+
+
 def _collect_decoder_bindings(value: Any, *, base: Path, label: str, found: list[dict[str, Any]], hash_keys: list[str]) -> None:
     if isinstance(value, Mapping):
         if "path" in value and "sha256" in value:
-            found.append(_file_binding(value, base=base, label=label))
+            binding = _file_binding(value, base=base, label=label)
+            binding["label"] = label
+            found.append(binding)
             return
         if "sha256" in value:
             hash_keys.append(label)
@@ -317,6 +467,39 @@ def _collect_decoder_bindings(value: Any, *, base: Path, label: str, found: list
     elif isinstance(value, str) and (label.endswith("sha256") or label.endswith("_sha256")):
         hash_keys.append(label)
         _hash_string(value, label=label)
+
+
+def _normalise_geometry_artifacts(value: Any, *, base: Path, label: str) -> dict[str, dict[str, Any]]:
+    """Bind the actual per-domain geometry outputs before truth is available."""
+
+    if not isinstance(value, Mapping):
+        raise EvaluationError(f"{label} must bind per-domain geometry artifacts")
+    domains_value = value
+    # Accept one explicit B1 wrapper from assemblers while normalizing to a
+    # single canonical receipt shape.  No recursive search is performed.
+    if set(str(key) for key in value) == {"B1"} and isinstance(value.get("B1"), Mapping):
+        candidate = value["B1"]
+        if isinstance(candidate.get("domains"), Mapping):
+            domains_value = candidate["domains"]
+    if set(str(key) for key in domains_value) != set(GEOMETRY_DOMAINS):
+        raise EvaluationError(f"{label} must contain exactly finance and pile domains")
+    normalized: dict[str, dict[str, Any]] = {}
+    for domain in GEOMETRY_DOMAINS:
+        raw_domain = domains_value.get(domain)
+        if not isinstance(raw_domain, Mapping):
+            raise EvaluationError(f"{label}/{domain} is malformed")
+        artifacts: dict[str, Any] = {}
+        for canonical, aliases in GEOMETRY_ARTIFACT_ALIASES.items():
+            raw_binding = next((raw_domain[name] for name in aliases if name in raw_domain), None)
+            if raw_binding is None:
+                raise EvaluationError(f"{label}/{domain} lacks {canonical} binding")
+            artifacts[canonical] = _file_binding(
+                raw_binding,
+                base=base,
+                label=f"{label}/{domain}/{canonical}",
+            )
+        normalized[domain] = artifacts
+    return normalized
 
 
 def _normalise_registrations(descriptor: Mapping[str, Any], *, base: Path, strict: bool) -> dict[str, Any]:
@@ -334,6 +517,14 @@ def _normalise_registrations(descriptor: Mapping[str, Any], *, base: Path, stric
         raise EvaluationError("registered geometry must require full-vocabulary competitors")
     if geometry.get("retrospective_only") is not True:
         raise EvaluationError("registered actual-boundary geometry must be retrospective-only")
+    raw_artifacts = geometry.get("artifacts_by_domain", geometry.get("geometry_artifacts"))
+    if raw_artifacts is None:
+        raw_artifacts = descriptor.get("geometry_artifacts")
+    geometry_artifacts = _normalise_geometry_artifacts(
+        raw_artifacts,
+        base=base,
+        label="registered_geometry.artifacts_by_domain",
+    )
     decoder = descriptor.get("frozen_decoder_binding", descriptor.get("decoder_bindings"))
     if not isinstance(decoder, Mapping):
         raise EvaluationError("strict freeze requires frozen decoder/package bindings")
@@ -351,6 +542,7 @@ def _normalise_registrations(descriptor: Mapping[str, Any], *, base: Path, stric
             "full_vocabulary_required": True,
             "retrospective_only": True,
             "no_nearest_euclidean_claim_from_runner_up": bool(geometry.get("no_nearest_euclidean_claim_from_runner_up", True)),
+            "artifacts_by_domain": geometry_artifacts,
         },
         "decoder_files": files,
         "decoder_hash_bindings": sorted(hash_keys),
@@ -367,14 +559,25 @@ def _verify_normalized_registrations(value: Any, *, base: Path, strict: bool) ->
         raise EvaluationError("freeze receipt registered geometry differs")
     if geometry.get("full_vocabulary_required") is not True or geometry.get("retrospective_only") is not True:
         raise EvaluationError("freeze receipt geometry flags differ")
+    geometry_artifacts = _normalise_geometry_artifacts(
+        geometry.get("artifacts_by_domain"),
+        base=base,
+        label="freeze receipt registered_geometry.artifacts_by_domain",
+    )
     files = value.get("decoder_files")
     if not isinstance(files, list) or len(files) < 3:
         raise EvaluationError("freeze receipt decoder/package files are incomplete")
-    checked = [_file_binding(item, base=base, label=f"freeze receipt decoder file {index}") for index, item in enumerate(files)]
+    checked: list[dict[str, Any]] = []
+    for index, item in enumerate(files):
+        binding = _file_binding(item, base=base, label=f"freeze receipt decoder file {index}")
+        binding["label"] = str(item.get("label", f"freeze receipt decoder file {index}"))
+        checked.append(binding)
     labels = " ".join(item["label"].lower() for item in checked)
     if "decoder" not in labels or not any(term in labels for term in ("package", "readout", "b1_state")):
         raise EvaluationError("freeze receipt decoder/package evidence is incomplete")
-    return {"registered_geometry": dict(geometry), "decoder_files": checked, "decoder_hash_bindings": list(value.get("decoder_hash_bindings", []))}
+    normalized_geometry = dict(geometry)
+    normalized_geometry["artifacts_by_domain"] = geometry_artifacts
+    return {"registered_geometry": normalized_geometry, "decoder_files": checked, "decoder_hash_bindings": list(value.get("decoder_hash_bindings", []))}
 
 def _canonical_method(name: str) -> str:
     name = str(name)
@@ -496,6 +699,24 @@ def _normalise_methods(
                     artifacts["prediction"] = _validate_public_tensor_artifact(
                         artifacts["prediction"], method=method, stage=stage, artifact="prediction", record_count=int(count)
                     )
+                    if strict_record_counts:
+                        artifacts["candidate_receipt"] = _validate_a1_candidate_receipt(
+                            artifacts["candidate_receipt"],
+                            method=method,
+                            domain=domain,
+                            stage=stage,
+                            record_count=int(count),
+                            base=base,
+                        )
+                        nested = artifacts["candidate_receipt"].get("nested_artifacts", {})
+                        if nested.get("input_observation", {}).get("sha256") != artifacts["observation"]["sha256"]:
+                            raise EvaluationError(
+                                f"{method}/{domain}/stage{stage}/candidate receipt input observation differs"
+                            )
+                        if nested.get("prediction", {}).get("sha256") != artifacts["prediction"]["sha256"]:
+                            raise EvaluationError(
+                                f"{method}/{domain}/stage{stage}/candidate receipt prediction differs"
+                            )
                 stage_order_digest = raw_stage.get("source_order_sha256")
                 if stage_order_digest is not None and str(stage_order_digest).lower() != order["sha256"]:
                     raise EvaluationError(f"{method}/{domain}/stage{stage} source order differs")
