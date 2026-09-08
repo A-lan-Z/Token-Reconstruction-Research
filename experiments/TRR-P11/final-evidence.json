@@ -1,7 +1,7 @@
 {
   "schema": "token-reconstruction.trr-p11-final-evidence.v1",
   "task_id": "TRR-P11",
-  "created_utc": "2026-09-08T12:11:51.969Z",
+  "created_utc": "2026-09-08T12:17:47.247Z",
   "status": "FINAL_EVIDENCE_ASSEMBLED_CONFIRMATION_SCORE_PENDING_CURATOR_MATERIALIZATION",
   "scope": "Frozen P11 evidence handoff; transfer aggregate scoring is complete, confirmation-score curator materialization remains pending.",
   "manifest_binding": {
@@ -132,8 +132,22 @@
       "path": "outputs/TRR-P11/private-evaluation/a1_a2-execution-r1/failure.json",
       "bytes": 400,
       "sha256": "9de1783be5f3e095bf7d74df4909c96f92b346669bfcbdc43d6e6e67fb8e6b9d",
-      "status": "PRESERVED_FAILED_BEFORE_GPU_PEAK_RECEIPT",
-      "reason": "CUDA device discovery failed before a first A1 GPU peak receipt existed."
+      "status": "PRESERVED_R1_FAILED_BEFORE_MODEL_RUN",
+      "reason": "CUDA device discovery failed before a model run; no GPU peak was expected from r1."
+    },
+    {
+      "path": "outputs/TRR-P11/private-evaluation/a1_a2-execution-r2/resource_watchdog_qualification.json",
+      "bytes": 563,
+      "sha256": "728c0b749568baf84407a3e1a88b31a3479f78edf173657e43e729ba4851dc67",
+      "status": "PRESERVED_R2_EXCLUDED_RESOURCE_ATTEMPT",
+      "reason": "Excluded by the mistaken post-load 8 GiB free-memory floor."
+    },
+    {
+      "path": "outputs/TRR-P11/private-evaluation/a1_a2-execution-r3/failure.json",
+      "bytes": 384,
+      "sha256": "2398f51079ca0c9933afde9ab4943b098cea2175a3dbd1a857946affd9418b6f",
+      "status": "PRESERVED_R3_TOP_LEVEL_SUMMARY_FAILURE_AFTER_ARTIFACTS",
+      "reason": "First successful Finance/base qualification saved inference, cost, and trace artifacts before the top-level _git_head NameError."
     },
     {
       "path": "outputs/TRR-P11/private-evaluation/evaluation/freeze-validation-attempts-r1.json",
@@ -152,11 +166,13 @@
   ],
   "statistical_contract": {
     "paired_unit": "source_record",
-    "single_paired_seed": 9009,
     "bootstrap_resamples": 10000,
     "interval": "descriptive central 95 percent percentile",
     "exact_record_interval": "paired_exact_cp",
-    "seed_reliability_claim": false
+    "seed_reliability_claim": false,
+    "fit_seed": 4010,
+    "bootstrap_seed": 9009,
+    "selection_seed": 5011
   },
   "boundaries": {
     "p03_holdout_accessed": false,
@@ -184,12 +200,29 @@
   },
   "coordination_result": {
     "path": "coordination/results/TRR-P11.md",
-    "bytes": 5171,
-    "sha256": "f9a6c93434fd5f6ac94150e9f6ab1205b18a079fee84495232f728a6937858b0",
+    "bytes": 5912,
+    "sha256": "6c6aa1f053210acc7d4c956e627d89a6eaa66e6b349603cac29bdec93cdc309f",
     "status": "PENDING_CONFIRMATION_SCORE_CURATOR_MATERIALIZATION"
   },
   "pending_actions": [
     "Curator materialization and review of the confirmation score.",
     "Update the final result and state with the bound confirmation score receipt."
-  ]
+  ],
+  "a1_peak_accounting": {
+    "first_successful_qualification_cell": "finance__public_base",
+    "status": "GPU_PEAK_UNAVAILABLE_BUT_QUALIFICATION_ARTIFACTS_SAVED",
+    "qualification_receipt": {
+      "path": "outputs/TRR-P11/private-evaluation/a1_a2-execution-r3/qualification.json",
+      "bytes": 175328,
+      "sha256": "de22c936917625ed73be5c949fe4acf33ddde68f0480c9c9e4f4381ab076ec8b",
+      "status": "A1_A2_K256_QUALIFICATION_COMPLETE_NO_TRUTH"
+    },
+    "wrapper_rss_kib": 4808160,
+    "wrapper_wall_seconds": 492.054,
+    "sampled_device_memory_mib": 7478,
+    "sampled_device_memory_is_peak": false,
+    "watchdog_status": "PASS",
+    "subsequent_three_cells_peaks_persisted": true,
+    "r1_model_run": false
+  }
 }
