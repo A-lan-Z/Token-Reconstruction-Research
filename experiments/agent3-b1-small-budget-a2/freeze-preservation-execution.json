@@ -1,0 +1,76 @@
+{
+  "code_commit": "9d897028165833c25c1373a8b53030b069aaa626",
+  "phases": [
+    {
+      "command": [
+        "python3",
+        "-m",
+        "scripts.agent3_shortlists.evaluate",
+        "freeze",
+        "--receipts",
+        "outputs/agent3-b1-small-budget-a2/predictions/pile-0/receipt.json",
+        "outputs/agent3-b1-small-budget-a2/predictions/pile-64/receipt.json",
+        "outputs/agent3-b1-small-budget-a2/predictions/pile-128/receipt.json",
+        "outputs/agent3-b1-small-budget-a2/predictions/pile-256/receipt.json",
+        "outputs/agent3-b1-small-budget-a2/predictions/finance-0/receipt.json",
+        "outputs/agent3-b1-small-budget-a2/predictions/finance-64/receipt.json",
+        "outputs/agent3-b1-small-budget-a2/predictions/finance-128/receipt.json",
+        "outputs/agent3-b1-small-budget-a2/predictions/finance-256/receipt.json",
+        "--output",
+        "experiments/agent3-b1-small-budget-a2/freeze.json"
+      ],
+      "start_utc": "2026-09-08T15:52:10.191458+00:00",
+      "end_utc": "2026-09-08T15:52:11.769790+00:00",
+      "elapsed_seconds": 1.5783510279943584,
+      "returncode": 0
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "scripts.agent3_shortlists.drift",
+        "--contracts",
+        "outputs/agent3-b1-small-budget-a2/inputs/pile-0/contract.json",
+        "outputs/agent3-b1-small-budget-a2/inputs/pile-64/contract.json",
+        "outputs/agent3-b1-small-budget-a2/inputs/pile-128/contract.json",
+        "outputs/agent3-b1-small-budget-a2/inputs/pile-256/contract.json",
+        "outputs/agent3-b1-small-budget-a2/inputs/finance-0/contract.json",
+        "outputs/agent3-b1-small-budget-a2/inputs/finance-64/contract.json",
+        "outputs/agent3-b1-small-budget-a2/inputs/finance-128/contract.json",
+        "outputs/agent3-b1-small-budget-a2/inputs/finance-256/contract.json",
+        "--output",
+        "experiments/agent3-b1-small-budget-a2/boundary-drift.json"
+      ],
+      "start_utc": "2026-09-08T15:52:11.769849+00:00",
+      "end_utc": "2026-09-08T15:52:14.052997+00:00",
+      "elapsed_seconds": 2.283175152995682,
+      "returncode": 0
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "scripts.agent3_shortlists.archive",
+        "--freeze",
+        "experiments/agent3-b1-small-budget-a2/freeze.json",
+        "--output",
+        "experiments/agent3-b1-small-budget-a2/frozen-candidates"
+      ],
+      "start_utc": "2026-09-08T15:52:14.053102+00:00",
+      "end_utc": "2026-09-08T15:52:21.636273+00:00",
+      "elapsed_seconds": 7.583192434998637,
+      "returncode": 0
+    },
+    {
+      "command": [
+        "python3",
+        "experiments/agent3-b1-small-budget-a2/orchestration/preserve.py"
+      ],
+      "start_utc": "2026-09-08T15:52:21.636343+00:00",
+      "end_utc": "2026-09-08T15:52:29.042276+00:00",
+      "elapsed_seconds": 7.405949007996242,
+      "returncode": 0
+    }
+  ],
+  "truth_opened": false
+}
