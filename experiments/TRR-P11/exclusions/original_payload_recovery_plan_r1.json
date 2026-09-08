@@ -1,10 +1,10 @@
 {
   "schema": "token-reconstruction.trr-p11-original-token-payload-recovery-plan.v1",
   "task_id": "TRR-P11",
-  "status": "READY_DEFERRED_AGENT1_COMPARATIVE_SMOKE_ACTIVE",
+  "status": "READY_FOR_CPU_RECOVERY_AFTER_AGENT1_SMOKE",
   "created_utc": "2026-09-08T00:00:00Z",
   "purpose": "Recover opaque sequence identities for the original 1200-record fitting bank and original 48-record validation bank after the exclusive Agent 1 comparative smoke window. This plan reads token_ids and attention_mask only during the bounded recovery; it does not publish source text, token content, truth, or scores.",
-  "defer_reason": "Agent 1 comparative smoke is currently active under the exclusive numerical lease. No recovery script, safetensors tensor payload read, token/mask hash derivation, source selection, model load, prediction, truth access, or GPU work was started in this preparation checkpoint.",
+  "defer_reason": "Agent 1 comparative smoke completed and released the CPU lease. Recovery is authorized with the existing CPU-only RSS watchdog; no VMS/address-space cap is used.",
   "scope_boundary": {
     "included": [
       "original TRR4 public fit payload reused by TRR4 affine/adapter, TRR5 original-like bank, and TRR7 original-like bank",
@@ -230,19 +230,27 @@
         "receipt_output": "experiments/TRR-P11/exclusions/validation_48_recovery_r1.json"
       }
     ],
-    "output_status": "NOT_CREATED_DEFERRED",
+    "output_status": "NOT_CREATED_READY_TO_EXECUTE",
     "resource_guard": {
+      "implementation": {
+        "path": "scripts/trr_p09/resource_watchdog.py",
+        "bytes": 29785,
+        "sha256": "07691ea3d8c86e2bea56a85a304ac6952ad14272a146af9cea5f0e5401a42b22",
+        "role": "existing CPU-only process-group RSS/host-memory watchdog; no GPU guard or address-space ulimit"
+      },
       "threads": 1,
       "omp_num_threads": 1,
-      "address_space_bytes": 2147483648,
-      "cpu_limit_seconds": 120,
-      "wall_limit_seconds": 120,
-      "kill_grace_seconds": 15,
-      "free_space_requirement": "Use existing runtime preflight; no additional large output is planned."
+      "max_rss_bytes": 2147483648,
+      "min_available_bytes": 12884901888,
+      "poll_seconds": 1.0,
+      "wall_limit_seconds": 120.0,
+      "kill_grace_seconds": 15.0,
+      "address_space_limit_bytes": null,
+      "vms_cap_removed_reason": "PyTorch/shared-library mmap compatibility; RSS is the enforced memory bound."
     },
     "command_templates": [
-      "/usr/bin/env OMP_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false /usr/bin/prlimit --cpu=120 --as=2147483648 -- /usr/bin/timeout --signal=TERM --kill-after=15s 120s python3 scripts/trr_p11/recover_public_token_payload.py --payload ../TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_cut4.safetensors --metadata ../TRR-0004/experiments/TRR-0004/fit/affine_fit_records.json --identity-output experiments/TRR-P11/exclusions/original_fit_1200_identity_r1.json --receipt-output experiments/TRR-P11/exclusions/original_fit_1200_recovery_r1.json --source-label trr4_original_fit_1200 --expected-payload-sha256 d1c78fcf1acc91b57d51355ee11f267bf4c12f1bc7d5160164b3b6ea11b45344 --expected-metadata-sha256 3f733212efd62b19e71f60f002f4e9756b4975ebfb4dcabf0ac27935929f94ff",
-      "/usr/bin/env OMP_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false /usr/bin/prlimit --cpu=120 --as=2147483648 -- /usr/bin/timeout --signal=TERM --kill-after=15s 120s python3 scripts/trr_p11/recover_public_token_payload.py --payload ../TRR-0004/experiments/TRR-0004/fit/adapter_v2/validation_mixed_cut4.safetensors --metadata ../TRR-0004/experiments/TRR-0004/fit/adapter_v2/affine_validation_records.json --identity-output experiments/TRR-P11/exclusions/validation_48_identity_r1.json --receipt-output experiments/TRR-P11/exclusions/validation_48_recovery_r1.json --source-label trr4_original_validation_48 --expected-payload-sha256 a8e7633ffb369864af33754c5ebb2d9a4ca9d6e7d4550731e8ff26e20c8200cf --expected-metadata-sha256 30b422b681bef5e7af4c26d339e57dfb3571ecef8077bdc4be5d960ef05c9777"
+      "/usr/bin/env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false PYTHONPATH=. python3 scripts/trr_p09/resource_watchdog.py --output-root experiments/TRR-P11/exclusions/watchdog_original_fit_r1 --timeout-seconds 120 --poll-seconds 1 --max-rss-bytes 2147483648 --min-available-bytes 12884901888 --kill-grace-seconds 15 --cwd . --label TRR-P11-original-fit-token-identity -- python3 scripts/trr_p11/recover_public_token_payload.py --payload ../TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_cut4.safetensors --metadata ../TRR-0004/experiments/TRR-0004/fit/affine_fit_records.json --identity-output experiments/TRR-P11/exclusions/original_fit_1200_identity_r1.json --receipt-output experiments/TRR-P11/exclusions/original_fit_1200_recovery_r1.json --source-label trr4_original_fit_1200 --expected-payload-sha256 d1c78fcf1acc91b57d51355ee11f267bf4c12f1bc7d5160164b3b6ea11b45344 --expected-metadata-sha256 3f733212efd62b19e71f60f002f4e9756b4975ebfb4dcabf0ac27935929f94ff",
+      "/usr/bin/env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false PYTHONPATH=. python3 scripts/trr_p09/resource_watchdog.py --output-root experiments/TRR-P11/exclusions/watchdog_validation_48_r1 --timeout-seconds 120 --poll-seconds 1 --max-rss-bytes 2147483648 --min-available-bytes 12884901888 --kill-grace-seconds 15 --cwd . --label TRR-P11-validation-48-token-identity -- python3 scripts/trr_p11/recover_public_token_payload.py --payload ../TRR-0004/experiments/TRR-0004/fit/adapter_v2/validation_mixed_cut4.safetensors --metadata ../TRR-0004/experiments/TRR-0004/fit/adapter_v2/affine_validation_records.json --identity-output experiments/TRR-P11/exclusions/validation_48_identity_r1.json --receipt-output experiments/TRR-P11/exclusions/validation_48_recovery_r1.json --source-label trr4_original_validation_48 --expected-payload-sha256 a8e7633ffb369864af33754c5ebb2d9a4ca9d6e7d4550731e8ff26e20c8200cf --expected-metadata-sha256 30b422b681bef5e7af4c26d339e57dfb3571ecef8077bdc4be5d960ef05c9777"
     ]
   },
   "handoff_requirements": {
@@ -257,5 +265,12 @@
       "record timeout/resource evidence and preserve missing rendered/public-record fields without invention"
     ],
     "selection_release_dependency": "These recovery receipts are inputs to the complete exclusion audit; they do not themselves authorize source selection."
+  },
+  "execution_release": {
+    "comparative_smoke": "COMPLETE_AGENT1_RELEASED_CPU_LEASE",
+    "released_utc": "2026-09-08T08:47:56Z",
+    "no_new_source_selection": true,
+    "no_truth_access": true,
+    "no_gpu_or_model": true
   }
 }
