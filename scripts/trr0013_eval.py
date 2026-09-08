@@ -15,7 +15,7 @@ METHODS=['frozen_B1','ordinary_continuation','focused_continuation']
 
 def code_bindings():
     # Bind the full small local scientific source tree rather than guessing imported dependencies.
-    files=sorted((ROOT/'src/token_reconstruction').rglob('*.py'))+sorted((ROOT/'scripts').glob('*.py'))
+    files=sorted((ROOT/'src/token_reconstruction').rglob('*.py'))+sorted((ROOT/'scripts').rglob('*.py'))
     return [artifact(p) for p in files]
 
 

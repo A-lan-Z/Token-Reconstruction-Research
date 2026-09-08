@@ -11,7 +11,7 @@ from scripts import trr0013_eval as evaluator
 
 
 def main():
-    torch.set_num_threads(1);out=ROOT/'outputs/TRR-0013/cpu_checks_r1';out.mkdir(exist_ok=False)
+    torch.set_num_threads(1);out=Path(sys.argv[1]) if len(sys.argv)>1 else ROOT/'outputs/TRR-0013/cpu_checks_r1';out.mkdir(parents=True,exist_ok=False)
     prep=json.loads((ROOT/'outputs/TRR-0013/fit_preparation_r1/manifest.json').read_text())
     a=load_file(str(verify(prep['schedules']['ordinary'])));b=load_file(str(verify(prep['schedules']['focused'])));d=load_file(str(verify(prep['difficulty'])))
     assert torch.equal(a['rows'],b['rows']) and torch.equal(a['draws'][:,:256],b['draws'][:,:256])
