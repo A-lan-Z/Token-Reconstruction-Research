@@ -75,3 +75,12 @@ was generated.
 No new source selection, observation, prediction, truth access, model run,
 or final scientific claim occurred during recovery. P03 remains sealed and
 Agent 1’s worktree was not modified.
+
+## Publication checkpoint — 2026-09-08
+
+The recovery handoff is published on branch task/TRR-P10 at commit 7eb5de3.
+Draft PR22 (https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/22)
+targets task/TRR-P09, remains open and unmerged, and records the recovery
+receipt, task-local manifest, result, and state. This publication checkpoint
+does not change the preparation-blocked status or authorize source selection,
+model execution, prediction, or truth access.
