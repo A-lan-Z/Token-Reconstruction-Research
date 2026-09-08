@@ -33,7 +33,8 @@ def package(output):
     shutil.copyfile(ROOT/'scripts/trr0010_p09_fixed_loader.py',code/'trr0010_p09_fixed_loader.py')
     fn=inspect.getsource(_predict_row_package)
     (code/'predict.py').write_text('import torch\nSTORED_SEQUENCE_TOKENS=128\nSCORED_POST_BOS_TOKENS=127\nVOCABULARY_SIZE=128256\nBOS_TOKEN_ID=128000\nPackageError=ValueError\n'+fn)
-    write_json(out/'package.json',{'task_id':'TRR-0013','methods':result,'readout':artifact(p),'code':[artifact(p) for p in sorted(code.rglob('*.py'))],'contract':artifact(ROOT/'experiments/TRR-0013/contract.json'),'created_utc':utc(),'source':artifact(__file__),'provenance':provenance()})
+    shutil.copyfile(ROOT/'scripts/trr0013_restore_smoke.py',out/'restore_smoke.py')
+    write_json(out/'package.json',{'restore_driver':artifact(out/'restore_smoke.py'),'task_id':'TRR-0013','methods':result,'readout':artifact(p),'code':[artifact(p) for p in sorted(code.rglob('*.py'))],'contract':artifact(ROOT/'experiments/TRR-0013/contract.json'),'created_utc':utc(),'source':artifact(__file__),'provenance':provenance()})
     print(json.dumps(artifact(out/'package.json')),flush=True)
 
 
