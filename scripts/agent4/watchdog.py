@@ -2,7 +2,7 @@
 import argparse,subprocess,time,os,signal,json,sys
 from pathlib import Path
 import psutil
-p=argparse.ArgumentParser();p.add_argument('--receipt',required=True);p.add_argument('--timeout',type=float,default=1800);p.add_argument('command',nargs=argparse.REMAINDER);args=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--cpu-only',action='store_true');p.add_argument('--receipt',required=True);p.add_argument('--timeout',type=float,default=1800);p.add_argument('command',nargs=argparse.REMAINDER);args=p.parse_args()
 if Path(args.receipt).exists():raise SystemExit('create-only receipt already exists')
 command=args.command
 if command[0]=='--':command=command[1:]
@@ -17,7 +17,7 @@ try:
         gpu=subprocess.check_output(['nvidia-smi','--query-gpu=memory.free,temperature.gpu','--format=csv,noheader,nounits'],text=True).strip().split(',')
         free,temp=[int(x.strip()) for x in gpu]
         samples.append({'elapsed':time.time()-start,'rss_bytes':rss,'host_available_bytes':available,'gpu_free_mib':free,'temperature_c':temp})
-        if rss>10*2**30 or available<8*2**30 or free<2048 or temp>=80 or time.time()-start>args.timeout:
+        if rss>10*2**30 or available<8*2**30 or (not args.cpu_only and (free<2048 or temp>=80)) or time.time()-start>args.timeout:
             raise RuntimeError('resource or timeout limit exceeded')
         time.sleep(2)
 except Exception as exc:
