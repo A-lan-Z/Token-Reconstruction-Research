@@ -25,7 +25,7 @@ The historical compact common payload is recorded but is not a
 runtime dependency for recovery. `scripts/trr_p11/recover_common_frequency.py`
 can derive the same map directly from the exact B0 payload, opening only
 `token_ids` and `attention_mask`. It verifies the expected support digest and
-the established plain tensor SHA-256 values for the sorted IDs, sorted counts,
+the established P10 canonical tensor SHA-256 values for the sorted IDs, sorted counts,
 and dense vocabulary vector, then writes all three tensors to a new persistent
 P11 safetensors file and records the old path as unused (or missing). A later
 histogram run binds the new file and its recovery receipt; a bank-local map is

@@ -138,7 +138,11 @@ def derive(config_path: Path, output_path: Path, receipt_path: Path) -> dict[str
     b0_path = _resolve(config_path, b0_spec.get("path"), label="B0 payload")
     source = file_record(b0_path, label="B0 payload", expected=b0_spec)
     reference = _expected_reference(config)
-    historical_path = _resolve(config_path, reference.get("path"), label="historical common reference")
+    recovery_spec = config.get("common_frequency_recovery")
+    historical_spec = recovery_spec.get("historical_payload") if isinstance(recovery_spec, Mapping) else None
+    if not isinstance(historical_spec, Mapping):
+        historical_spec = reference
+    historical_path = _resolve(config_path, historical_spec.get("path"), label="historical common reference")
     historical_exists = historical_path.is_file() and not historical_path.is_symlink()
     expected_records = int(b0_spec.get("records", 0))
     expected_width = int(b0_spec.get("width", 0))

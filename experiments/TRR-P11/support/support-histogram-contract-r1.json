@@ -64,11 +64,12 @@
     "expected_b1_addition_post_bos_positions": 1119339
   },
   "common_frequency_reference": {
-    "path": "/tmp/trr-p09-runtime/public-support-r1/support-b0-seed4010.safetensors",
-    "bytes": 274352,
-    "sha256": "0673f9df86a591342ea931ec21ac30f680b8ab052d5e66555ca7d5011f6414ce",
-    "role": "frozen common P07/P09 public B0 post-BOS frequency map for all bank bin labels",
+    "path": "public_common_frequency_b0_seed4010.safetensors",
+    "bytes": 1300320,
+    "sha256": "b2b975f67fc469392c0dc035a3d2666ef90d8a0a306064afbc09f9bb5f0cb2ea",
+    "role": "new persistent common public B0 frequency map derived from exact B0 token/mask payload",
     "tensor_keys": [
+      "frequency_counts",
       "support_ids",
       "support_counts"
     ],
@@ -80,7 +81,14 @@
     "support_counts_tensor_sha256": "99b212354ed2d3a11efcfc78085f3218edb05ea503d19f50ce9b29bf5c190fb0",
     "frequency_vector_tensor_sha256": "a284e1ee8e408e05dd5a0c7663553edc226de8474702889165aa54b3b71a52a0",
     "source_manifest": "experiments/TRR-P09/setup/public-support-binding-r1.json",
-    "missing_payload_is_fatal": true
+    "missing_payload_is_fatal": true,
+    "historical_payload": {
+      "path": "/tmp/trr-p09-runtime/public-support-r1/support-b0-seed4010.safetensors",
+      "bytes": 274352,
+      "sha256": "0673f9df86a591342ea931ec21ac30f680b8ab052d5e66555ca7d5011f6414ce",
+      "role": "historical expected compact artifact; never used as derivation source or fallback",
+      "status": "MISSING_AT_RECOVERY_NOT_USED"
+    }
   },
   "bins": {
     "position_coordinate": "one-based post-BOS position",
@@ -184,15 +192,16 @@
     "common_reference_and_bank_local_counts_are_not_interchangeable": true
   },
   "common_frequency_recovery": {
-    "status": "READY_PUBLIC_B0_DERIVATION_PENDING_AGENT1_SMOKE_LEASE",
+    "status": "PASS_PUBLIC_B0_DERIVED_NEW_PERSISTENT_PAYLOAD",
     "script": "scripts/trr_p11/recover_common_frequency.py",
     "output": "experiments/TRR-P11/support/public_common_frequency_b0_seed4010.safetensors",
-    "receipt": "experiments/TRR-P11/support/public-frequency-recovery-r1.json",
+    "receipt": "public-frequency-recovery-r1.json",
     "historical_payload": {
       "path": "/tmp/trr-p09-runtime/public-support-r1/support-b0-seed4010.safetensors",
       "bytes": 274352,
       "sha256": "0673f9df86a591342ea931ec21ac30f680b8ab052d5e66555ca7d5011f6414ce",
-      "role": "historical expected compact artifact; never used as derivation source or fallback"
+      "role": "historical expected compact artifact; never used as derivation source or fallback",
+      "status": "MISSING_AT_RECOVERY_NOT_USED"
     },
     "derived_tensor_keys": [
       "frequency_counts",
@@ -203,6 +212,7 @@
       "token_ids",
       "attention_mask"
     ],
-    "command": "env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. /usr/bin/python3 scripts/trr_p11/recover_common_frequency.py --config experiments/TRR-P11/support/support-histogram-contract-r1.json --output experiments/TRR-P11/support/public_common_frequency_b0_seed4010.safetensors --receipt experiments/TRR-P11/support/public-frequency-recovery-r1.json --execute"
+    "command": "env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. /usr/bin/python3 scripts/trr_p11/recover_common_frequency.py --config experiments/TRR-P11/support/support-histogram-contract-r1.json --output experiments/TRR-P11/support/public_common_frequency_b0_seed4010.safetensors --receipt experiments/TRR-P11/support/public-frequency-recovery-r1.json --execute",
+    "execution_receipt": "public-frequency-recovery-execution-r1.json"
   }
 }
