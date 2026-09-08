@@ -776,6 +776,58 @@ def qualify_expanded_bridge_smoke(
     return receipt | {"receipt_record": _write_create_only(receipt_path, receipt, task_root=root / "experiments" / TASK_ID)}
 
 
+def _external_readonly_record(path: Path, *, root: Path, description: str) -> dict[str, Any]:
+    """Bind an explicitly supplied sanitized file outside this worktree."""
+
+    path = Path(path).expanduser().resolve()
+    if not path.is_file() or path.is_symlink():
+        raise TransferAdapterError(f"{description} must be a regular file: {path}")
+    return transfer._transfer_file_record(  # noqa: SLF001
+        {
+            "path": str(path),
+            "bytes": path.stat().st_size,
+            "sha256": _sha256(path),
+            "readonly": True,
+        },
+        root=root,
+        description=description,
+    )
+
+
+def _adapt_external_capture_bindings(capture: Mapping[str, Any], *, root: Path) -> dict[str, Any]:
+    """Mark only explicitly bound external sanitized observations read-only.
+
+    The evaluator manifest predates this repository boundary marker.  Adding
+    the marker to an in-memory copy preserves every declared observation path,
+    byte count, and SHA-256 while allowing the existing read-only checker to
+    validate the external files.
+    """
+
+    adapted = json.loads(json.dumps(dict(capture)))
+    observations = adapted.get("observations")
+    if not isinstance(observations, Mapping):
+        raise TransferAdapterError("capture manifest observations are absent")
+    for variant_id, domain_bindings in observations.items():
+        if not isinstance(domain_bindings, Mapping):
+            raise TransferAdapterError(f"capture observation domains are malformed: {variant_id}")
+        for domain, binding in domain_bindings.items():
+            if not isinstance(binding, dict):
+                raise TransferAdapterError(f"capture observation binding is malformed: {variant_id}/{domain}")
+            raw_path = binding.get("path")
+            if not isinstance(raw_path, str) or not raw_path:
+                raise TransferAdapterError(f"capture observation path is absent: {variant_id}/{domain}")
+            path = Path(raw_path).expanduser().resolve()
+            try:
+                path.relative_to(root)
+            except ValueError:
+                if binding.get("readonly") not in (None, True):
+                    raise TransferAdapterError(
+                        f"external capture observation is explicitly non-readonly: {variant_id}/{domain}"
+                    )
+                binding["readonly"] = True
+    return adapted
+
+
 def _build_transfer_manifest(
     *,
     capture_path: Path,
@@ -783,12 +835,12 @@ def _build_transfer_manifest(
     repository_root: Path,
 ) -> dict[str, Any]:
     root = Path(repository_root).resolve()
-    capture = _json(capture_path)
+    capture = _adapt_external_capture_bindings(_json(capture_path), root=root)
     code = _current_runtime_bindings(root)
     code["scripts.trr0011_transfer"] = _record(root / "scripts" / "trr0011_transfer.py", root=root)
     code["scripts.trr0012_transfer"] = _record(Path(__file__).resolve(), root=root)
     code["scripts.trr0012_package"] = dict(package["producer"])
-    return transfer.build_transfer_manifest_from_capture(
+    manifest = transfer.build_transfer_manifest_from_capture(
         capture,
         repository_root=root,
         method_id=EXPANDED_METHOD,
@@ -799,7 +851,13 @@ def _build_transfer_manifest(
             "state": dict(package["state"]),
             "loader": code["scripts.trr0010_p09_fixed_loader"],
         },
-    ) | {
+    )
+    return manifest | {
+        "capture_manifest_source": _external_readonly_record(
+            capture_path,
+            root=root,
+            description="sanitized capture manifest",
+        ),
         "package_actual": package["manifest"],
         "package_producer": package["producer"],
         "method_selection": [EXPANDED_METHOD],
@@ -987,7 +1045,11 @@ def run_expanded_transfer_matrix(
         "records_per_domain": transfer.TRANSFER_RECORDS_PER_DOMAIN,
         "cell_count": len(predictions),
         "input_manifest": manifest_record,
-        "capture_manifest": _record(capture_path, root=root),
+        "capture_manifest": _external_readonly_record(
+            capture_path,
+            root=root,
+            description="sanitized capture manifest",
+        ),
         "actual_package": package["manifest"],
         "variant_plan": _record(plan_path, root=root),
         "panel_descriptor": _record(panel_path, root=root),
