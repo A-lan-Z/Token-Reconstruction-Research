@@ -1,0 +1,165 @@
+{
+  "b1_final_paired_summary": {
+    "finance": {
+      "baseline_errors": 22,
+      "baseline_exact_records": 121,
+      "broken_exact_records": 0,
+      "broken_tokens": 1,
+      "exact_delta": {
+        "lower": -0.03234542472861069,
+        "point": 0.015625,
+        "upper": 0.0619563619523066
+      },
+      "final_errors": 21,
+      "final_exact_records": 123,
+      "improved_exact_records": 2,
+      "improved_tokens": 2,
+      "token_delta": {
+        "lower": -0.00012303149606299212,
+        "point": 6.151574803149606e-05,
+        "upper": 0.0003075787401574803
+      }
+    },
+    "pile": {
+      "baseline_errors": 170,
+      "baseline_exact_records": 78,
+      "broken_exact_records": 6,
+      "broken_tokens": 35,
+      "exact_delta": {
+        "lower": -0.07854532906972563,
+        "point": 0.0234375,
+        "upper": 0.12353475718820266
+      },
+      "final_errors": 171,
+      "final_exact_records": 81,
+      "improved_exact_records": 9,
+      "improved_tokens": 34,
+      "token_delta": {
+        "lower": -0.0009227362204724409,
+        "point": -6.151574803149606e-05,
+        "upper": 0.0008612204724409449
+      }
+    }
+  },
+  "boundary_vs_correctness": {
+    "actual_strict_crossings_by_stage": {
+      "finance": {
+        "128": 2,
+        "256": 3,
+        "64": 3
+      },
+      "pile": {
+        "128": 84,
+        "256": 98,
+        "64": 88
+      }
+    },
+    "broken_plus_improved_tokens_by_stage": {
+      "finance": {
+        "128": 2,
+        "256": 3,
+        "64": 3
+      },
+      "pile": {
+        "128": 59,
+        "256": 69,
+        "64": 64
+      }
+    },
+    "interpretation": "Actual crossings are retrospective decoder diagnostics. Broken tokens are baseline-correct to later-wrong evaluator outcomes; the remaining Pile crossings are wrong-to-different-wrong changes, not new correctness failures.",
+    "ties": 0
+  },
+  "created_utc": "2026-09-08T16:26:51.833020Z",
+  "forecast_descriptive_all_valid": {
+    "finance": {
+      "128": {
+        "eligible_tokens": 8128,
+        "false_negative": 0,
+        "false_positive": 4,
+        "true_negative": 8123,
+        "true_positive": 1
+      },
+      "256": {
+        "eligible_tokens": 8128,
+        "false_negative": 0,
+        "false_positive": 495,
+        "true_negative": 7632,
+        "true_positive": 1
+      }
+    },
+    "interpretation": "This descriptive population includes baseline-error tokens and must not be mixed with the primary second-64 denominators; specifically Finance 128 is 1 TP/4 FP in 8128 all-valid tokens versus 1 TP/3 FP in 8121 primary eligible tokens.",
+    "pile": {
+      "128": {
+        "eligible_tokens": 8128,
+        "false_negative": 4,
+        "false_positive": 104,
+        "true_negative": 8010,
+        "true_positive": 10
+      },
+      "256": {
+        "eligible_tokens": 8128,
+        "false_negative": 3,
+        "false_positive": 276,
+        "true_negative": 7829,
+        "true_positive": 20
+      }
+    }
+  },
+  "forecast_primary_second64_baseline_correct_only": {
+    "finance": {
+      "128": {
+        "eligible_tokens": 8121,
+        "false_negative": 0,
+        "false_positive": 3,
+        "precision": 0.25,
+        "recall": 1.0,
+        "true_negative": 8117,
+        "true_positive": 1
+      },
+      "256": {
+        "eligible_tokens": 8121,
+        "false_negative": 0,
+        "false_positive": 488,
+        "precision": 0.002044989775051125,
+        "recall": 1.0,
+        "true_negative": 7632,
+        "true_positive": 1
+      }
+    },
+    "interpretation": "These are the preregistered second-64/domain scores. They evaluate baseline-correct to later-wrong failures, not all prediction changes.",
+    "pile": {
+      "128": {
+        "eligible_tokens": 8010,
+        "false_negative": 4,
+        "false_positive": 27,
+        "precision": 0.2702702702702703,
+        "recall": 0.7142857142857143,
+        "true_negative": 7969,
+        "true_positive": 10
+      },
+      "256": {
+        "eligible_tokens": 8010,
+        "false_negative": 3,
+        "false_positive": 175,
+        "precision": 0.10256410256410256,
+        "recall": 0.8695652173913043,
+        "true_negative": 7812,
+        "true_positive": 20
+      }
+    }
+  },
+  "limitations": [
+    "One target training trajectory; no generalization or noninferiority claim.",
+    "Finance forecast recall is based on one failure at each scored later stage.",
+    "The limited 32-record/domain A1+A2 comparison is auxiliary and does not complete the canonical dual-benchmark matrix.",
+    "Conditional improvement intervals with rare baseline-error denominators remain UNKNOWN where the released score marks them so."
+  ],
+  "schema": "token-reconstruction.trr-p12-scientific-review.v1",
+  "score_artifact": {
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/experiments/TRR-P12/score-r1.json",
+    "sha256": "f517995d0370501af2ed476882cd272cec40bd0c8a20994d5e4cecab59f9b9f6",
+    "status": "SCORED_AFTER_FREEZE"
+  },
+  "status": "SCIENTIFIC_REVIEW_COMPLETE",
+  "task_id": "TRR-P12"
+}

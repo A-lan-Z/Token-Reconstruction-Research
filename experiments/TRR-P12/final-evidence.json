@@ -1,0 +1,1329 @@
+{
+  "schema": "token-reconstruction.trr-p12-final-evidence.v1",
+  "task_id": "TRR-P12",
+  "status": "COMPLETE_BOUNDED_TRAJECTORY",
+  "created_utc": "2026-09-08T16:36:16.134295+00:00",
+  "base_commit": "81299e07d4213cd75f455496d623a8371516688f",
+  "implementation_history_before_final_metadata_commit": [
+    "f26225a69668f85c0256e81e2f1106477be930c7",
+    "10312787392d88d922523ca4be8bde9fae6364b2",
+    "7f763115e70d50041c5657d33eb245cbf83f4f77",
+    "e0d56a4384822bc2682f55865e2c5f0844dcfe74",
+    "069e21616e4a169c2e6a5c1aa840f5c36fae486e",
+    "675b29da0bed3843ada61f06d85e02d646692b7f",
+    "6de352b61c6c182d60dd0631bcc09af502574b49",
+    "75714ca9d58e7bcf19003ab80accb3e5d872ca00",
+    "11785285995c8b2888e9e09bf92091a7e72cdc44",
+    "cc1d92e67df41089fba0c61a57781bd3f0a04ff9",
+    "43df788df1026f1339374f1706a9cffa95bf1a7e",
+    "0e860a6536e3cb13dbd28114a94811ee1dda2a4b",
+    "78a172e02f3afd053ae20632a529a74d1a9aa202",
+    "94aedbd7aa2ce0e88c1f13b422c22d14dc985c63",
+    "623a88f68a21ecd5f0e72838a04b8f4a3ed18da2",
+    "7375cb165db69a8cefeea0bb8e429fdda1d0e82d",
+    "b5f099ad63f97af91a51d7174aadd72e3f8ae318",
+    "231a8e293def6812034ec35339c34ea401402aa7",
+    "168864cda418fa9b111fb2fa0a6feb948537da0c",
+    "54743a71e33e0a4a745cc1dd2e648a792fd515c0",
+    "435302b9bd19158026ea4b5fbb6e8fc6753b6024",
+    "acb7eddb611bdd5f2d45ed84daba556486bb05ad",
+    "2bd460850459b95eef4e6c9e83d1905947e62de9",
+    "2e16fe57f5954ebdcc6150f0e3ebe21a89cf11f1",
+    "baa70c4a82070e70606265cb916db897228b9073",
+    "2f2352f6fa059c76fd4ffc3c5a803d01c835e3cc",
+    "d21868a0c85793cf8bbc5164d46c537e41bb22ed"
+  ],
+  "conclusion": "Frozen B1 retained nearly unchanged aggregate token accuracy on this one meaningful public prefix-LoRA trajectory, with local newly broken tokens and compensating improvements. Early-direction forecasts found many later failures but produced many false positives. No formal noninferiority or general fine-tuning robustness claim.",
+  "outcomes_final_stage": {
+    "finance": {
+      "baseline": {
+        "correct_tokens": 16234,
+        "exact_rate": 0.9453125,
+        "exact_records": 121,
+        "positions": 128,
+        "records": 128,
+        "scored_tokens": 16256,
+        "token_accuracy": 0.9986466535433071,
+        "token_errors": 22
+      },
+      "final": {
+        "correct_tokens": 16235,
+        "exact_rate": 0.9609375,
+        "exact_records": 123,
+        "positions": 128,
+        "records": 128,
+        "scored_tokens": 16256,
+        "token_accuracy": 0.9987081692913385,
+        "token_errors": 21
+      },
+      "paired": {
+        "baseline_correct_tokens": 16234,
+        "baseline_error_tokens": 22,
+        "broken_exact_records": 0,
+        "broken_tokens": 1,
+        "improved_exact_records": 2,
+        "improved_tokens": 2,
+        "retained_correct_tokens": 16233,
+        "stage_correct_tokens": 16235,
+        "stage_error_tokens": 21,
+        "unchanged_exact_records": 126
+      },
+      "intervals": {
+        "broken_given_baseline_correct": {
+          "draws": 10000,
+          "lower": 0.0,
+          "nonpositive_bootstrap_draws": 0,
+          "observed_denominator": 16234.0,
+          "observed_numerator": 1.0,
+          "one_sided_alpha": 0.025,
+          "percentile_convention": "ascending order statistics: lower index=floor(alpha * draws); upper index=ceil((1-alpha) * draws)-1",
+          "point": 6.159911297277319e-05,
+          "records": 128,
+          "seed": 9012,
+          "status": "COMPUTED",
+          "unit": "source_record",
+          "upper": 0.00018496824711757815
+        },
+        "broken_per_exposed_token": {
+          "draws": 10000,
+          "lower": 0.0,
+          "nonpositive_bootstrap_draws": 0,
+          "observed_denominator": 16256.0,
+          "observed_numerator": 1.0,
+          "one_sided_alpha": 0.025,
+          "percentile_convention": "ascending order statistics: lower index=floor(alpha * draws); upper index=ceil((1-alpha) * draws)-1",
+          "point": 6.151574803149606e-05,
+          "records": 128,
+          "seed": 9012,
+          "status": "COMPUTED",
+          "unit": "source_record",
+          "upper": 0.00018454724409448819
+        },
+        "exact_delta": {
+          "alpha": 0.025,
+          "bootstrap_used": false,
+          "component_alpha": 0.0125,
+          "gains": 2,
+          "losses": 0,
+          "lower": -0.03234542472861069,
+          "method": "paired_discordance_clopper_pearson",
+          "point": 0.015625,
+          "records": 128,
+          "status": "COMPUTED",
+          "ties": 126,
+          "unit": "source_record_exact_outcome",
+          "upper": 0.0619563619523066
+        },
+        "improved_given_baseline_error": {
+          "draws": 10000,
+          "nonpositive_bootstrap_draws": 9,
+          "observed_denominator": 22.0,
+          "observed_numerator": 2.0,
+          "one_sided_alpha": 0.025,
+          "percentile_convention": "ascending order statistics: lower index=floor(alpha * draws); upper index=ceil((1-alpha) * draws)-1",
+          "point": 0.09090909090909091,
+          "reason": "nonpositive_bootstrap_denominator",
+          "records": 128,
+          "seed": 9012,
+          "status": "UNKNOWN",
+          "unit": "source_record"
+        },
+        "improved_per_exposed_token": {
+          "draws": 10000,
+          "lower": 0.0,
+          "nonpositive_bootstrap_draws": 0,
+          "observed_denominator": 16256.0,
+          "observed_numerator": 2.0,
+          "one_sided_alpha": 0.025,
+          "percentile_convention": "ascending order statistics: lower index=floor(alpha * draws); upper index=ceil((1-alpha) * draws)-1",
+          "point": 0.00012303149606299212,
+          "records": 128,
+          "seed": 9012,
+          "status": "COMPUTED",
+          "unit": "source_record",
+          "upper": 0.0003075787401574803
+        },
+        "token_delta": {
+          "candidate_correct": 16235.0,
+          "control_correct": 16234.0,
+          "draws": 10000,
+          "exposed_tokens": 16256.0,
+          "lower": -0.00012303149606299212,
+          "one_sided_alpha": 0.025,
+          "percentile_convention": "ascending order statistics: lower index=floor(alpha * draws); upper index=ceil((1-alpha) * draws)-1",
+          "point": 6.151574803149606e-05,
+          "records": 128,
+          "seed": 9012,
+          "status": "COMPUTED",
+          "unit": "source_record",
+          "upper": 0.0003075787401574803,
+          "zero_variance_unknown": false
+        }
+      },
+      "forecast_primary": {
+        "128": {
+          "baseline_correct_tokens": 8121,
+          "broken_tokens": 1,
+          "eligible_tokens": 8121,
+          "false_negative": 0,
+          "false_positive": 3,
+          "predicted_strict_change_tokens": 4,
+          "true_negative": 8117,
+          "true_positive": 1
+        },
+        "256": {
+          "baseline_correct_tokens": 8121,
+          "broken_tokens": 1,
+          "eligible_tokens": 8121,
+          "false_negative": 0,
+          "false_positive": 488,
+          "predicted_strict_change_tokens": 489,
+          "true_negative": 7632,
+          "true_positive": 1
+        }
+      }
+    },
+    "pile": {
+      "baseline": {
+        "correct_tokens": 16086,
+        "exact_rate": 0.609375,
+        "exact_records": 78,
+        "positions": 128,
+        "records": 128,
+        "scored_tokens": 16256,
+        "token_accuracy": 0.9895423228346457,
+        "token_errors": 170
+      },
+      "final": {
+        "correct_tokens": 16085,
+        "exact_rate": 0.6328125,
+        "exact_records": 81,
+        "positions": 128,
+        "records": 128,
+        "scored_tokens": 16256,
+        "token_accuracy": 0.9894808070866141,
+        "token_errors": 171
+      },
+      "paired": {
+        "baseline_correct_tokens": 16086,
+        "baseline_error_tokens": 170,
+        "broken_exact_records": 6,
+        "broken_tokens": 35,
+        "improved_exact_records": 9,
+        "improved_tokens": 34,
+        "retained_correct_tokens": 16051,
+        "stage_correct_tokens": 16085,
+        "stage_error_tokens": 171,
+        "unchanged_exact_records": 113
+      },
+      "intervals": {
+        "broken_given_baseline_correct": {
+          "draws": 10000,
+          "lower": 0.0011748701459312393,
+          "nonpositive_bootstrap_draws": 0,
+          "observed_denominator": 16086.0,
+          "observed_numerator": 35.0,
+          "one_sided_alpha": 0.025,
+          "percentile_convention": "ascending order statistics: lower index=floor(alpha * draws); upper index=ceil((1-alpha) * draws)-1",
+          "point": 0.002175805047867711,
+          "records": 128,
+          "seed": 9012,
+          "status": "COMPUTED",
+          "unit": "source_record",
+          "upper": 0.003441586884425255
+        },
+        "broken_per_exposed_token": {
+          "draws": 10000,
+          "lower": 0.0011687992125984253,
+          "nonpositive_bootstrap_draws": 0,
+          "observed_denominator": 16256.0,
+          "observed_numerator": 35.0,
+          "one_sided_alpha": 0.025,
+          "percentile_convention": "ascending order statistics: lower index=floor(alpha * draws); upper index=ceil((1-alpha) * draws)-1",
+          "point": 0.0021530511811023623,
+          "records": 128,
+          "seed": 9012,
+          "status": "COMPUTED",
+          "unit": "source_record",
+          "upper": 0.0033833661417322835
+        },
+        "exact_delta": {
+          "alpha": 0.025,
+          "bootstrap_used": false,
+          "component_alpha": 0.0125,
+          "gains": 9,
+          "losses": 6,
+          "lower": -0.07854532906972563,
+          "method": "paired_discordance_clopper_pearson",
+          "point": 0.0234375,
+          "records": 128,
+          "status": "COMPUTED",
+          "ties": 113,
+          "unit": "source_record_exact_outcome",
+          "upper": 0.12353475718820266
+        },
+        "improved_given_baseline_error": {
+          "draws": 10000,
+          "lower": 0.13793103448275862,
+          "nonpositive_bootstrap_draws": 0,
+          "observed_denominator": 170.0,
+          "observed_numerator": 34.0,
+          "one_sided_alpha": 0.025,
+          "percentile_convention": "ascending order statistics: lower index=floor(alpha * draws); upper index=ceil((1-alpha) * draws)-1",
+          "point": 0.2,
+          "records": 128,
+          "seed": 9012,
+          "status": "COMPUTED",
+          "unit": "source_record",
+          "upper": 0.2737430167597765
+        },
+        "improved_per_exposed_token": {
+          "draws": 10000,
+          "lower": 0.000984251968503937,
+          "nonpositive_bootstrap_draws": 0,
+          "observed_denominator": 16256.0,
+          "observed_numerator": 34.0,
+          "one_sided_alpha": 0.025,
+          "percentile_convention": "ascending order statistics: lower index=floor(alpha * draws); upper index=ceil((1-alpha) * draws)-1",
+          "point": 0.0020915354330708663,
+          "records": 128,
+          "seed": 9012,
+          "status": "COMPUTED",
+          "unit": "source_record",
+          "upper": 0.0036294291338582678
+        },
+        "token_delta": {
+          "candidate_correct": 16085.0,
+          "control_correct": 16086.0,
+          "draws": 10000,
+          "exposed_tokens": 16256.0,
+          "lower": -0.0009227362204724409,
+          "one_sided_alpha": 0.025,
+          "percentile_convention": "ascending order statistics: lower index=floor(alpha * draws); upper index=ceil((1-alpha) * draws)-1",
+          "point": -6.151574803149606e-05,
+          "records": 128,
+          "seed": 9012,
+          "status": "COMPUTED",
+          "unit": "source_record",
+          "upper": 0.0008612204724409449,
+          "zero_variance_unknown": false
+        }
+      },
+      "forecast_primary": {
+        "128": {
+          "baseline_correct_tokens": 8010,
+          "broken_tokens": 14,
+          "eligible_tokens": 8010,
+          "false_negative": 4,
+          "false_positive": 27,
+          "predicted_strict_change_tokens": 37,
+          "true_negative": 7969,
+          "true_positive": 10
+        },
+        "256": {
+          "baseline_correct_tokens": 8010,
+          "broken_tokens": 23,
+          "eligible_tokens": 8010,
+          "false_negative": 3,
+          "false_positive": 175,
+          "predicted_strict_change_tokens": 195,
+          "true_negative": 7812,
+          "true_positive": 20
+        }
+      }
+    }
+  },
+  "principal_artifacts": {
+    "TRR-P12.md": {
+      "path": "coordination/results/TRR-P12.md",
+      "bytes": 11790,
+      "sha256": "b7ebc159ae9fd8ec705fbad07a1509547453feb67cf64139e0f780190d4dc947"
+    },
+    "TRR-P12-reproduction.md": {
+      "path": "coordination/results/TRR-P12-reproduction.md",
+      "bytes": 8118,
+      "sha256": "55477342139d3111a654a2310dd3dec96bdc9be5944f6a516a8872fb4f33d244"
+    },
+    "manifest.json": {
+      "path": "experiments/TRR-P12/manifest.json",
+      "bytes": 7797,
+      "sha256": "302cef73349927615e39b116e985f796a9c70b6f9c97932a119c0acb1d3f0a8d"
+    },
+    "plan-amendment-r1.json": {
+      "path": "experiments/TRR-P12/plan-amendment-r1.json",
+      "bytes": 1977,
+      "sha256": "e960951e52922bd65dfeb48d14780f68c3e3c3a79e041f7234af378a3b2fad42"
+    },
+    "capture-profile-clarification-r1.json": {
+      "path": "experiments/TRR-P12/capture-profile-clarification-r1.json",
+      "bytes": 1692,
+      "sha256": "0c16fe368b4f6f9b6d9980b4a6fcabb5625e7c82d9ceb1fc3143736bfa301a99"
+    },
+    "evaluation-freeze-r1.json": {
+      "path": "experiments/TRR-P12/evaluation-freeze-r1.json",
+      "bytes": 1496901,
+      "sha256": "3436de3394c0113d91303a0271d637371362cbe95aafa8638c0746e5920edf7a"
+    },
+    "root-truth-release-r1.json": {
+      "path": "experiments/TRR-P12/root-truth-release-r1.json",
+      "bytes": 1033,
+      "sha256": "b8af63510d19daa7ef189d0f8e110f82bd11f7601c44d7d3f887d989f4336f28"
+    },
+    "score-r1.json": {
+      "path": "experiments/TRR-P12/score-r1.json",
+      "bytes": 96108,
+      "sha256": "f517995d0370501af2ed476882cd272cec40bd0c8a20994d5e4cecab59f9b9f6"
+    },
+    "postfreeze-breakage-r1.json": {
+      "path": "experiments/TRR-P12/postfreeze-breakage-r1.json",
+      "bytes": 289445,
+      "sha256": "5bdbaba1d3604b2f426eda81b4f3a8cb7f99bb642b66d8b81e8e1c618612b8a2"
+    },
+    "root-final-review-r1.json": {
+      "path": "experiments/TRR-P12/root-final-review-r1.json",
+      "bytes": 1942,
+      "sha256": "ac2162d593edccdfe784913f3ff106321551cdec049d620e16d6f37e38ecc9af"
+    },
+    "scientific-review-r1.json": {
+      "path": "experiments/TRR-P12/scientific-review-r1.json",
+      "bytes": 5055,
+      "sha256": "0a6a8106a6da956e81ac197bc91ba7a75800f63c2d7866e9de0d7261b10a02ad"
+    },
+    "artifact-inventory-r1.json": {
+      "path": "experiments/TRR-P12/artifact-inventory-r1.json",
+      "bytes": 40832,
+      "sha256": "4f18e8fd37ece479b010e3ff6c36466d457e5a8b83ebc55a46cc77c064c3dfba"
+    },
+    "execution-audit-r1.json": {
+      "path": "experiments/TRR-P12/execution-audit-r1.json",
+      "bytes": 34631,
+      "sha256": "2612386a2c4a8081215c33ee584d66eb8f6bac381a0fe4da3cd4fe9516f9908e"
+    },
+    "execution-audit-correction-r1.json": {
+      "path": "experiments/TRR-P12/execution-audit-correction-r1.json",
+      "bytes": 1799,
+      "sha256": "77edd76f4550adf366058e593d4eb25cc9c7f560d3b73edbfee373589d018fa3"
+    },
+    "index.json": {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/index.json",
+      "bytes": 25767,
+      "sha256": "fdce5eb10795bb74d8cda5412a52a738c3cb0f7de9b0be7ed5f8dc1012331d7f"
+    }
+  },
+  "geometry_artifacts": {
+    "pile": {
+      "forecast": {
+        "path": "outputs/TRR-P12/geometry-r1/pile/forecast.json",
+        "bytes": 6405717,
+        "sha256": "e1f9eca987385bc8a13dc9687b4b05473d4d71ddec7e64932c727f2239f9ae81"
+      },
+      "private_boundary": {
+        "path": "outputs/TRR-P12/geometry-r1/pile/private_boundary.json",
+        "bytes": 37682174,
+        "sha256": "540c3d7911128a73f262f96e40ba94f8e2fb3a2bcd6ff081d38b635a4edf59de"
+      },
+      "public_aggregates": {
+        "path": "outputs/TRR-P12/geometry-r1/pile/public_aggregates.json",
+        "bytes": 3008,
+        "sha256": "9144f7bd2d34feaf3cf96008903dc699db955111235ad30b96f7e4c71e16ab00"
+      },
+      "receipt": {
+        "path": "outputs/TRR-P12/geometry-r1/pile/receipt.json",
+        "bytes": 9680,
+        "sha256": "35ff2342c48e7c13cb763e1db700adbd78b0e292faff4deb8b5243345613c99e"
+      }
+    },
+    "finance": {
+      "forecast": {
+        "path": "outputs/TRR-P12/geometry-r1/finance/forecast.json",
+        "bytes": 6406474,
+        "sha256": "65b180bc3a63dcfe416cabdc57dd33f5ecf47c3cf7daa14e2375191d59dc97c1"
+      },
+      "private_boundary": {
+        "path": "outputs/TRR-P12/geometry-r1/finance/private_boundary.json",
+        "bytes": 37636402,
+        "sha256": "95d997c685294092c967c532e6cfbcc57dacbe14ac8afb26578db3752c9a0807"
+      },
+      "public_aggregates": {
+        "path": "outputs/TRR-P12/geometry-r1/finance/public_aggregates.json",
+        "bytes": 3002,
+        "sha256": "4df78f9c445cbecb06b4650232f22463f39e7ba64f645deb7301ee523554f2fd"
+      },
+      "receipt": {
+        "path": "outputs/TRR-P12/geometry-r1/finance/receipt.json",
+        "bytes": 9723,
+        "sha256": "7b2b3144e450f2b7ee2c4c13fddebc9f35a76c849b0433225a6f0b4022131e4f"
+      }
+    }
+  },
+  "public_evidence_files": [
+    {
+      "path": "experiments/TRR-P12/a1-cpu-validation-r1.json",
+      "bytes": 3688,
+      "sha256": "6f778006b925bf9caeaecca53126c17e91c6a836f8f0b3cf89526be1e0694260"
+    },
+    {
+      "path": "experiments/TRR-P12/a1-cpu-validation-r2.json",
+      "bytes": 4173,
+      "sha256": "e3aff95a0db04f1db4666dc9c2ad8d33e56591d147047af7f0806fc5d7e17573"
+    },
+    {
+      "path": "experiments/TRR-P12/a1-cpu-validation-r3.json",
+      "bytes": 4049,
+      "sha256": "f01c903cbce71ff4afac6c63847a188ec15725dd5947c9c7b58adfdcb7772a37"
+    },
+    {
+      "path": "experiments/TRR-P12/a1-cpu-validation-r4.json",
+      "bytes": 4049,
+      "sha256": "7276873ff41a5e3521cede354a454642d46cbacfd6ec9a7b10db680eab7b1007"
+    },
+    {
+      "path": "experiments/TRR-P12/a1-cpu-validation-r5.json",
+      "bytes": 4075,
+      "sha256": "caee38e6a8b17fe07fe32b591c322b58f9f8414515bb2932fd0458bf16920e45"
+    },
+    {
+      "path": "experiments/TRR-P12/a1-stage-input-cpu-check-r1.json",
+      "bytes": 8801,
+      "sha256": "d90d5aaefcdae7c5db5dad58abad01dd7137457da97c7413112adbe65b10f191"
+    },
+    {
+      "path": "experiments/TRR-P12/artifact-inventory-r1.json",
+      "bytes": 40832,
+      "sha256": "4f18e8fd37ece479b010e3ff6c36466d457e5a8b83ebc55a46cc77c064c3dfba"
+    },
+    {
+      "path": "experiments/TRR-P12/b1-execution-r1.json",
+      "bytes": 20526,
+      "sha256": "c49148ed8fa3b61a606b607d729794cac74008900a9cca2fa302b822d1a32b84"
+    },
+    {
+      "path": "experiments/TRR-P12/b1-finance-0000-watchdog-r1.json",
+      "bytes": 327,
+      "sha256": "d8ca500ad9c24faaeddca9094fdee48c2ed03d540e52daaaaea390f94f7c9e61"
+    },
+    {
+      "path": "experiments/TRR-P12/b1-finance-0064-watchdog-r1.json",
+      "bytes": 327,
+      "sha256": "f32c7a08522d818935800f2c09ce257aa723ba649f88d7559a5f19581c8ced22"
+    },
+    {
+      "path": "experiments/TRR-P12/b1-finance-0128-watchdog-r1.json",
+      "bytes": 326,
+      "sha256": "1f36fe3507b25dca15bae28f54893574ef19755e568616ce284c87ce26ab81c6"
+    },
+    {
+      "path": "experiments/TRR-P12/b1-finance-0256-watchdog-r1.json",
+      "bytes": 327,
+      "sha256": "8fc85ecafdf9f17c65a450934168a8deb63a7dc788eaa7ac76306c369f8ed623"
+    },
+    {
+      "path": "experiments/TRR-P12/b1-largest-cell-qualification-r1.json",
+      "bytes": 452,
+      "sha256": "b2b12358d5e5e038873425eb679adb9f390dc233c5ac39b1fe07015d2d925ad0"
+    },
+    {
+      "path": "experiments/TRR-P12/b1-pile-0000-watchdog-r1.json",
+      "bytes": 327,
+      "sha256": "1c62d4967b064694a681524712a1d0b8354b27ab7ebcedfb14141f295419f531"
+    },
+    {
+      "path": "experiments/TRR-P12/b1-pile-0064-watchdog-r1.json",
+      "bytes": 327,
+      "sha256": "2ae2859941432b275af2046417600997e3077f8830e12d9fc11963ed55b533b8"
+    },
+    {
+      "path": "experiments/TRR-P12/b1-pile-0128-watchdog-r1.json",
+      "bytes": 327,
+      "sha256": "0298efee33f4aa42faaf0deca512bf80f5293a76ce557976a30faca9516534a1"
+    },
+    {
+      "path": "experiments/TRR-P12/b1-pile-0256-watchdog-r1.json",
+      "bytes": 326,
+      "sha256": "82e2fc1a3edd67a7d7d8d97e2a8a99d1783d1289e916efb2898c70fa3cf57c99"
+    },
+    {
+      "path": "experiments/TRR-P12/b1-preflight-r1.json",
+      "bytes": 1210,
+      "sha256": "9b6bcd4ed6c2cfd0a57f711fc2e9b29cc79449b8b315269c209644fa6189c926"
+    },
+    {
+      "path": "experiments/TRR-P12/b1-smoke-execution-r1.json",
+      "bytes": 1983,
+      "sha256": "5137d52c71cd09950376d52332f414caf6083cc3f15c6b5f3ff7499efd8f9b5d"
+    },
+    {
+      "path": "experiments/TRR-P12/b1-smoke-execution-r2.json",
+      "bytes": 30559,
+      "sha256": "efe16a6f4993f4124a6ecf5dfdaa0f13a79109eb6d1f6a9bc37f8beba9839844"
+    },
+    {
+      "path": "experiments/TRR-P12/boundary-plan-r1.json",
+      "bytes": 9934,
+      "sha256": "03a0b14a356e4623a4d4b8f6a406488a76317546aed8e9ae462fe6fe7be28ccd"
+    },
+    {
+      "path": "experiments/TRR-P12/boundary-plan-r2.json",
+      "bytes": 15832,
+      "sha256": "fbb2bcccdffbd4336ab42dbad9934645ba87a9a2594c87243d713bbcf3f21da8"
+    },
+    {
+      "path": "experiments/TRR-P12/capture-equivalence-review-r1.json",
+      "bytes": 3398,
+      "sha256": "46078f6f07f7aab3c5e5dfaad7fc78e011690c193d67e2546218aae920baa3ec"
+    },
+    {
+      "path": "experiments/TRR-P12/capture-execution-r1.json",
+      "bytes": 21247,
+      "sha256": "2efb78583e47e1a5b8600859d2a0bd4a7c2e216dc2dcb89d211a91ee022fbdd0"
+    },
+    {
+      "path": "experiments/TRR-P12/capture-profile-clarification-r1.json",
+      "bytes": 1692,
+      "sha256": "0c16fe368b4f6f9b6d9980b4a6fcabb5625e7c82d9ceb1fc3143736bfa301a99"
+    },
+    {
+      "path": "experiments/TRR-P12/cpu-fixture-test-r2.receipt.json",
+      "bytes": 5233,
+      "sha256": "cc1f844499c28a477018c55dcb648df63b57ce3ac422059968cea743c090ec61"
+    },
+    {
+      "path": "experiments/TRR-P12/cpu-fixture-test.receipt.json",
+      "bytes": 4477,
+      "sha256": "d7ba3db442ad7b06f457e92443f4dcc0499cbe760e4428cfb4b8273b641b3aa9"
+    },
+    {
+      "path": "experiments/TRR-P12/evaluation-cpu-test-r1.receipt.json",
+      "bytes": 2372,
+      "sha256": "59dcac79a04db232b07e659c9e6566259a13d891911b08cb70ef243940c92e3b"
+    },
+    {
+      "path": "experiments/TRR-P12/evaluation-cpu-test-r2.receipt.json",
+      "bytes": 2286,
+      "sha256": "2e23af7bb26fa78ba13c74f2d00236686ddc2e748bd88cf4e010d551932b94eb"
+    },
+    {
+      "path": "experiments/TRR-P12/evaluation-freeze-descriptor-r1.json",
+      "bytes": 1526277,
+      "sha256": "2e3f26b07178221ca15aae697aee9c5034d373c4a871d6a0c4d78756869f3b1f"
+    },
+    {
+      "path": "experiments/TRR-P12/evaluation-freeze-failure-direct-r1.json",
+      "bytes": 744,
+      "sha256": "226025fca3c1ac434b5d45d9d564839a91753acd48cc444ef630eee5360f685b"
+    },
+    {
+      "path": "experiments/TRR-P12/evaluation-freeze-r1.json",
+      "bytes": 1496901,
+      "sha256": "3436de3394c0113d91303a0271d637371362cbe95aafa8638c0746e5920edf7a"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/experiments/TRR-P12/a1-stage-input-cpu-check-r1.json",
+      "bytes": 8801,
+      "sha256": "d90d5aaefcdae7c5db5dad58abad01dd7137457da97c7413112adbe65b10f191"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/experiments/TRR-P12/b1-execution-r1.json",
+      "bytes": 20526,
+      "sha256": "c49148ed8fa3b61a606b607d729794cac74008900a9cca2fa302b822d1a32b84"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/experiments/TRR-P12/b1-largest-cell-qualification-r1.json",
+      "bytes": 452,
+      "sha256": "b2b12358d5e5e038873425eb679adb9f390dc233c5ac39b1fe07015d2d925ad0"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/experiments/TRR-P12/b1-preflight-r1.json",
+      "bytes": 1210,
+      "sha256": "9b6bcd4ed6c2cfd0a57f711fc2e9b29cc79449b8b315269c209644fa6189c926"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/experiments/TRR-P12/b1-smoke-execution-r1.json",
+      "bytes": 1983,
+      "sha256": "5137d52c71cd09950376d52332f414caf6083cc3f15c6b5f3ff7499efd8f9b5d"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/experiments/TRR-P12/b1-smoke-execution-r2.json",
+      "bytes": 30559,
+      "sha256": "efe16a6f4993f4124a6ecf5dfdaa0f13a79109eb6d1f6a9bc37f8beba9839844"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/experiments/TRR-P12/capture-equivalence-review-r1.json",
+      "bytes": 3398,
+      "sha256": "46078f6f07f7aab3c5e5dfaad7fc78e011690c193d67e2546218aae920baa3ec"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/experiments/TRR-P12/capture-execution-r1.json",
+      "bytes": 21247,
+      "sha256": "2efb78583e47e1a5b8600859d2a0bd4a7c2e216dc2dcb89d211a91ee022fbdd0"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/experiments/TRR-P12/gpu-equivalence-r1.json",
+      "bytes": 2262,
+      "sha256": "9d582a7280708cab0c94f5810991c2b15c599cf474c484236f5c8aba0fbbb84c"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/experiments/TRR-P12/manifest.json",
+      "bytes": 7797,
+      "sha256": "302cef73349927615e39b116e985f796a9c70b6f9c97932a119c0acb1d3f0a8d"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/experiments/TRR-P12/qualification-capture-execution-r1.json",
+      "bytes": 8123,
+      "sha256": "39cff00f41276acab4f5a63b8ae04bcd4f3eb744f0d06333e83e76e2fb2c32bd"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/experiments/TRR-P12/qualification-watchdog-r1.json",
+      "bytes": 327,
+      "sha256": "3c0286da077623913c545d5c5417410b9615fe2a005ba3d7a9772b289048ac24"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/experiments/TRR-P12/source-preparation-execution-r2.json",
+      "bytes": 5512,
+      "sha256": "84d28d9b3841078d0279c952497dfd23da69eca115b239ae7897d2c01ab04f1a"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/experiments/TRR-P12/source-preparation-failure-r1.json",
+      "bytes": 2392,
+      "sha256": "6bf131a5cb5eb650b9eb8a9ce6e60a14ef36f818ce20d1d94b912006e01cf5bc"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/experiments/TRR-P12/target-cpu-validation-r1.json",
+      "bytes": 17461,
+      "sha256": "5f57ef9eaddb25f7805f5f649cb5a6cf7a8f946c9da4e3cbb8c1c8f0052ba8f8"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/experiments/TRR-P12/target-execution-r1.json",
+      "bytes": 2448,
+      "sha256": "bdb15b7969d2d07491c7465d3f79c5b5bd130645c0bf2947a1896d43e33c4d9f"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/experiments/TRR-P12/target-inventory-r1.json",
+      "bytes": 17755,
+      "sha256": "127c663798fa5855211cf5bea4a298cac97df71356e928b5504d6b0578f12a23"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/experiments/TRR-P12/target-preflight-r1.json",
+      "bytes": 1611,
+      "sha256": "24c8fcd5c2deb8ff09571fe39e6502fbe5ae5c2055812f760d27478dd72e2bb2"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/experiments/TRR-P12/target-qualification-r1/qualification.json",
+      "bytes": 9794,
+      "sha256": "6ca971bf823d00a69d6cd34d8f3e8713f7145065df58b4aec7f420bcfb06c76a"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/experiments/TRR-P12/target-source-disjointness-r1.json",
+      "bytes": 2660,
+      "sha256": "4ed381995d8c9b6bfd45fb8efcae29879aa78a674147c3a7228739d36bb91677"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/experiments/TRR-P12/target-source-failure-r1.json",
+      "bytes": 2317,
+      "sha256": "77f40aab4f9bc5ca161d3558b04d3b3c53566bd3211c515cfa9d8cfd676c5fda"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/experiments/TRR-P12/target-watchdog-r1.json",
+      "bytes": 327,
+      "sha256": "25e1d5c43046f3b05901609f657134c293bfa860d2d57d0cb5f8588d505066e2"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/index.json",
+      "bytes": 25767,
+      "sha256": "fdce5eb10795bb74d8cda5412a52a738c3cb0f7de9b0be7ed5f8dc1012331d7f"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/a1-a2-r2/costs/finance_stage0000.json",
+      "bytes": 21143,
+      "sha256": "bf8e68bf721c154284837f9d0046ce7a02cabe358cb5eb961630818420bda1ed"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/a1-a2-r2/costs/finance_stage0256.json",
+      "bytes": 20888,
+      "sha256": "3dcc1cbbf541ea80b4a18433874f09053f42b4f0d1dee32c2a56cfe453777d09"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/a1-a2-r2/costs/pile_stage0000.json",
+      "bytes": 20875,
+      "sha256": "414267d601c18e9a6c8534b3e28e755702d474d19187080c91f2e1e08daf5d29"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/a1-a2-r2/costs/pile_stage0256.json",
+      "bytes": 20891,
+      "sha256": "2a1df0781f6442ba9ba2d88b48e6c3baeb5af8a3a8458ef12f9c0a2bf04629a6"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/a1-a2-r2/receipts/finance_stage0000.json",
+      "bytes": 2042,
+      "sha256": "6a94b7ea9366953bc2a36e87cd20859bd484409fc79c52da026b66ad522e4c3f"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/a1-a2-r2/receipts/finance_stage0256.json",
+      "bytes": 2044,
+      "sha256": "fb7205790c0e374f09e3d5410dfa36b9a5169b5bd2429d48da33c05ed4d1b43f"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/a1-a2-r2/receipts/pile_stage0000.json",
+      "bytes": 2024,
+      "sha256": "ab42baaf92066a544a078395d88309aca5167877b6b11e182ddecdfea10b3b90"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/a1-a2-r2/receipts/pile_stage0256.json",
+      "bytes": 2026,
+      "sha256": "4414cfd103176a7a51b950489b7cfc32ed3f468785af3d0183c7ea131e17f507"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/a1-a2-r2/resource_watchdog_a1_a2_qualification.json",
+      "bytes": 697,
+      "sha256": "f9542c81e57417a0b7555fc4fad4a77271b8cca6d57366b695db06a0e804b246"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/a1-a2-r2/resource_watchdog_a1_a2_resume.json",
+      "bytes": 692,
+      "sha256": "7c1f2f3bc087fa3eb10047d48d844ca040712111b4bb106b107f073efe1cf7fe"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/a1-a2-r2/run.receipt.json",
+      "bytes": 40076,
+      "sha256": "743a5324f996be978ef1ad159c51c8082857d61c6a40949e9f19869cd5578c74"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/a1-a2-r2/run.resume.receipt.json",
+      "bytes": 111104,
+      "sha256": "468424af2829838cc993d6a4c659f6e0277bc767cf35306856827707fb4d8052"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/a1-stage-input-r1.json",
+      "bytes": 6669,
+      "sha256": "9a5b5ee4f416d12ff64ddc7ea3431d7937bb3b1ffefbe63695f8b14c65ce4170"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/b1-r1/finance-stage0000/receipt.json",
+      "bytes": 124587,
+      "sha256": "8fb72be6439cea83bb4b4f02f4d12ef2d00ad999d1498f463af7cb85b805f825"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/b1-r1/finance-stage0064/receipt.json",
+      "bytes": 124587,
+      "sha256": "dd2c1925eb17014e4f4a79d4be4c2362a5ea6aec70ee262429c23e22b3ae2a24"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/b1-r1/finance-stage0128/receipt.json",
+      "bytes": 124589,
+      "sha256": "1095c28ae4eb69d6cc828d623232a4a56c263546e1fc433c7b9c5ceff4f31471"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/b1-r1/finance-stage0256/receipt.json",
+      "bytes": 124581,
+      "sha256": "6e04685e51529d7e0f9b84f0ae5d4a4abd892fc8d6837a2756f94440ce04f919"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/b1-r1/pile-stage0000/receipt.json",
+      "bytes": 124580,
+      "sha256": "f141acc79667648102a880950472b0f15834825a60890a5be02106552f21d280"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/b1-r1/pile-stage0064/receipt.json",
+      "bytes": 124572,
+      "sha256": "361f805e1f83c1be34bf1dd7bfe723e2644310c97dea8c3ce27ac8bf2d5ee7da"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/b1-r1/pile-stage0128/receipt.json",
+      "bytes": 124586,
+      "sha256": "f13b1049e5fd7f0848a0616be28892ba360497466c61936fe0c5d06db28c7ec5"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/b1-r1/pile-stage0256/receipt.json",
+      "bytes": 124584,
+      "sha256": "6fdf3b098ba2f1e661b46b6613d93f64c26f1156b0ad8cd4090385aaaceaa7d5"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/capture-r1/finance-stage0000/capture.json",
+      "bytes": 8782,
+      "sha256": "2e24411a4848eef3cca6b818c87362561c171ee6d990ae4356604657eae6432c"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/capture-r1/finance-stage0064/capture.json",
+      "bytes": 9522,
+      "sha256": "7243ad3c98e87f0459d712e89e2b8b2ee16239999437cba1e3b0225ec9e9944c"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/capture-r1/finance-stage0128/capture.json",
+      "bytes": 9524,
+      "sha256": "390acddc415341492776de26fe4736ff333a721b1d9ffd2147e8954328bd30d7"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/capture-r1/finance-stage0256/capture.json",
+      "bytes": 9524,
+      "sha256": "c483492310cbb6357ba7d1575445b46eb641f7ec7bf9eb355c7b6a0c329b5eae"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/capture-r1/pile-stage0000/capture.json",
+      "bytes": 8767,
+      "sha256": "2890d71d46270761d6d228ac8ce3e330bb2fe98d8f0e79a8bc7bd046672298b4"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/capture-r1/pile-stage0064/capture.json",
+      "bytes": 9505,
+      "sha256": "f8b4ccc8c167bceacd2e2b8b9a883e0c9229e9bf58dd002108fefdc020080abb"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/capture-r1/pile-stage0128/capture.json",
+      "bytes": 9509,
+      "sha256": "e5f62f0c889dff470cc842bdcb4662d6a25e7277633b88bcd20fbff33643c818"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/capture-r1/pile-stage0256/capture.json",
+      "bytes": 9508,
+      "sha256": "99f442ae8c1af04838ae7261ca714091c9be8b71c2fb88150521cfe5ac2b28a7"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/qualification-capture-r1/capture-receipt.json",
+      "bytes": 10155,
+      "sha256": "a6d841c75d707db34cd8ad95b65a57f42fa174a0c495210c3cda86e3b0a96516"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/target-r1/baseline.json",
+      "bytes": 2646,
+      "sha256": "abf233a1c93522f5a5031b7617672e440b5802a55ef3ea83bbe746167f87efeb"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/target-r1/run.json",
+      "bytes": 193902,
+      "sha256": "d0d04c971b438df1bf0580bd181fbf574942e5e4e0dfe2901b0fb535ef84ad66"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/target-r1/stage-0064.json",
+      "bytes": 52541,
+      "sha256": "fa3dad4279de2fba93d1c52a30e94ba2f02163099555b1998c38ee4dd1047ac6"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/target-r1/stage-0128.json",
+      "bytes": 98395,
+      "sha256": "32fe2918485446227ec0462b6365e39941c61e33a3ffef8ae35a2b32c69db1af"
+    },
+    {
+      "path": "experiments/TRR-P12/evidence/runtime-r1/outputs/TRR-P12/target-r1/stage-0256.json",
+      "bytes": 190236,
+      "sha256": "02d03c5c82f7c04908882e0a6f4ad95e390b310482c792fd55e879acd1608378"
+    },
+    {
+      "path": "experiments/TRR-P12/exclusions/agent1_opaque_union_r1.json",
+      "bytes": 1196212,
+      "sha256": "ba1001336895e3bcfa090b7e0a4725941906bc1c1c88ac7f187c94cdb52cfcf1"
+    },
+    {
+      "path": "experiments/TRR-P12/exclusions/identity_union_extension_r1.json",
+      "bytes": 4462,
+      "sha256": "7357c0b3c91e00e51612ad0438f55d587a8107c17986acb9569c4e30284d0595"
+    },
+    {
+      "path": "experiments/TRR-P12/exclusions/identity_union_extension_r2.json",
+      "bytes": 6338870,
+      "sha256": "bd2e641f5f10d249595b89f48aeeba2d97a2b71688190177f4ebe4f4ac022a0b"
+    },
+    {
+      "path": "experiments/TRR-P12/exclusions/p12_outgoing_opaque_ledger_r1.json",
+      "bytes": 335382,
+      "sha256": "49d5179a9d885a00a0cb08fc181326f2a7e8e5e36de0ff8d9f77df2e3b36a6f1"
+    },
+    {
+      "path": "experiments/TRR-P12/exclusions/p12_outgoing_opaque_ledger_r2.json",
+      "bytes": 371829,
+      "sha256": "9b1b08b0037e2734d19693ca9a9f6dfe46b99a0756ae94361ef35ad6f776a130"
+    },
+    {
+      "path": "experiments/TRR-P12/exclusions/root-review-r2.json",
+      "bytes": 723,
+      "sha256": "bc0b8fe4c28e49d17ae639ee3cdcda5efb2332a9446582e85b9fe2ca9d32dd3d"
+    },
+    {
+      "path": "experiments/TRR-P12/execution-audit-correction-r1.json",
+      "bytes": 1799,
+      "sha256": "77edd76f4550adf366058e593d4eb25cc9c7f560d3b73edbfee373589d018fa3"
+    },
+    {
+      "path": "experiments/TRR-P12/execution-audit-r1.json",
+      "bytes": 34631,
+      "sha256": "2612386a2c4a8081215c33ee584d66eb8f6bac381a0fe4da3cd4fe9516f9908e"
+    },
+    {
+      "path": "experiments/TRR-P12/geometry-cpu-test-r1.receipt.json",
+      "bytes": 2602,
+      "sha256": "2ad8210f69cd17e932cbad6ab50d130428dfbc776a7603f1369fc1289e3ff956"
+    },
+    {
+      "path": "experiments/TRR-P12/geometry-cuda-qualification-execution-r1.json",
+      "bytes": 5217,
+      "sha256": "aa18b7d3c3624d5257f68e0a6e1a2112044d6f91c982d1188a671e5385492a72"
+    },
+    {
+      "path": "experiments/TRR-P12/geometry-cuda-qualification-preflight-r1.json",
+      "bytes": 3855,
+      "sha256": "869df390876f4749e3d72735ae273297df45acb40887893a7e63c4d14b24f984"
+    },
+    {
+      "path": "experiments/TRR-P12/geometry-cuda-qualification-r1.json",
+      "bytes": 10899,
+      "sha256": "bfdcda85acd36448f9f1c02ded3b74e0a778bd7c38070c7523f8414a83ac3aa8"
+    },
+    {
+      "path": "experiments/TRR-P12/geometry-finance-execution-r1.json",
+      "bytes": 17146,
+      "sha256": "e8208302aa158726600f51d65df171fef3d99bfb72b4d4f4e9b18531325f4e28"
+    },
+    {
+      "path": "experiments/TRR-P12/geometry-interpretation-r1.json",
+      "bytes": 13749,
+      "sha256": "e0cc15070b101a67b2392d18887e99e9cf0647a6a086e47f6dd251f41dc97ba4"
+    },
+    {
+      "path": "experiments/TRR-P12/geometry-pile-execution-r1.json",
+      "bytes": 17016,
+      "sha256": "8d9a794a5dfdd084410268e636ef45fb3e4cbc0a9ccce00ab00127861d2dab42"
+    },
+    {
+      "path": "experiments/TRR-P12/geometry-production-preflight-r1.json",
+      "bytes": 16967,
+      "sha256": "28f6c0b07e62b57abd20a1bf02a1ea9b712a249bc8d9ddc7f2ad68bef07f0ffc"
+    },
+    {
+      "path": "experiments/TRR-P12/gpu-equivalence-execution-r1.json",
+      "bytes": 1186,
+      "sha256": "e6e4b9f242b06b5a9dabead2504710e3f7457efeb95a56ad7d7015ba80369dc0"
+    },
+    {
+      "path": "experiments/TRR-P12/gpu-equivalence-preflight-r1.json",
+      "bytes": 769,
+      "sha256": "eede753052b4c090cf56f094ad02fea31b49a843b3fb51da02a10d90f1999aed"
+    },
+    {
+      "path": "experiments/TRR-P12/gpu-equivalence-r1.json",
+      "bytes": 2262,
+      "sha256": "9d582a7280708cab0c94f5810991c2b15c599cf474c484236f5c8aba0fbbb84c"
+    },
+    {
+      "path": "experiments/TRR-P12/known-fixture-freeze-descriptor-r1.json",
+      "bytes": 10154,
+      "sha256": "3b844bbbf89181bf6d9857b58c70e696159fc7b1382d33243d35066104d7cd22"
+    },
+    {
+      "path": "experiments/TRR-P12/known-fixture-freeze-r1.json",
+      "bytes": 15145,
+      "sha256": "d1cc8b0c73a589d7ff16ea1d448444081683c57d65b96d01932ad34653267177"
+    },
+    {
+      "path": "experiments/TRR-P12/known-fixture-score-r1.json",
+      "bytes": 26872,
+      "sha256": "6e1b6cd197c0a74e4d14078ad13cbfe11d20338e3f6526e099a34695f98f2b02"
+    },
+    {
+      "path": "experiments/TRR-P12/known-fixture-truth-r1.json",
+      "bytes": 2208,
+      "sha256": "1d03421a8a2c416191e1cc5cb26e9479498a358685fc637746373e160e03c32e"
+    },
+    {
+      "path": "experiments/TRR-P12/manifest.json",
+      "bytes": 7797,
+      "sha256": "302cef73349927615e39b116e985f796a9c70b6f9c97932a119c0acb1d3f0a8d"
+    },
+    {
+      "path": "experiments/TRR-P12/plan-amendment-r1.json",
+      "bytes": 1977,
+      "sha256": "e960951e52922bd65dfeb48d14780f68c3e3c3a79e041f7234af378a3b2fad42"
+    },
+    {
+      "path": "experiments/TRR-P12/postfreeze-breakage-execution-r1.json",
+      "bytes": 2892,
+      "sha256": "6a3e33d24b4ed7359152c237d0dcca5f532a12891766601cb3cf6ebb2b61796b"
+    },
+    {
+      "path": "experiments/TRR-P12/postfreeze-breakage-r1.json",
+      "bytes": 289445,
+      "sha256": "5bdbaba1d3604b2f426eda81b4f3a8cb7f99bb642b66d8b81e8e1c618612b8a2"
+    },
+    {
+      "path": "experiments/TRR-P12/qualification-capture-execution-r1.json",
+      "bytes": 8123,
+      "sha256": "39cff00f41276acab4f5a63b8ae04bcd4f3eb744f0d06333e83e76e2fb2c32bd"
+    },
+    {
+      "path": "experiments/TRR-P12/qualification-watchdog-r1.json",
+      "bytes": 327,
+      "sha256": "3c0286da077623913c545d5c5417410b9615fe2a005ba3d7a9772b289048ac24"
+    },
+    {
+      "path": "experiments/TRR-P12/root-final-review-r1.json",
+      "bytes": 1942,
+      "sha256": "ac2162d593edccdfe784913f3ff106321551cdec049d620e16d6f37e38ecc9af"
+    },
+    {
+      "path": "experiments/TRR-P12/root-truth-release-r1.json",
+      "bytes": 1033,
+      "sha256": "b8af63510d19daa7ef189d0f8e110f82bd11f7601c44d7d3f887d989f4336f28"
+    },
+    {
+      "path": "experiments/TRR-P12/scientific-review-r1.json",
+      "bytes": 5055,
+      "sha256": "0a6a8106a6da956e81ac197bc91ba7a75800f63c2d7866e9de0d7261b10a02ad"
+    },
+    {
+      "path": "experiments/TRR-P12/score-r1.json",
+      "bytes": 96108,
+      "sha256": "f517995d0370501af2ed476882cd272cec40bd0c8a20994d5e4cecab59f9b9f6"
+    },
+    {
+      "path": "experiments/TRR-P12/smoke-freeze-r1.json",
+      "bytes": 6487,
+      "sha256": "2d424e0d73f11e0fd8900a2e82aba33da6850bba120831c56e62f7a08522d3ea"
+    },
+    {
+      "path": "experiments/TRR-P12/smoke-score-r1.json",
+      "bytes": 7378,
+      "sha256": "f6fde8e0fa982deb278302fc5f70a70372adf590dcb8b1f7511b4319ecc46f61"
+    },
+    {
+      "path": "experiments/TRR-P12/source-preparation-execution-r2.json",
+      "bytes": 5512,
+      "sha256": "84d28d9b3841078d0279c952497dfd23da69eca115b239ae7897d2c01ab04f1a"
+    },
+    {
+      "path": "experiments/TRR-P12/source-preparation-failure-r1.json",
+      "bytes": 2392,
+      "sha256": "6bf131a5cb5eb650b9eb8a9ce6e60a14ef36f818ce20d1d94b912006e01cf5bc"
+    },
+    {
+      "path": "experiments/TRR-P12/source-preparation-phase-r1.json",
+      "bytes": 5365,
+      "sha256": "074364bfa6fb41b182bda724772c1d9a9023aacb5890d5b4b55e72ba2ea54f04"
+    },
+    {
+      "path": "experiments/TRR-P12/source-preparation-phase-r2.json",
+      "bytes": 5017,
+      "sha256": "ab3e3df48719da5d1eee98992338a5d1db371188a79fdf247d413b00009f27a1"
+    },
+    {
+      "path": "experiments/TRR-P12/start-r1.json",
+      "bytes": 1549,
+      "sha256": "9012b74f8d6f43d470815fe5489cbc4649af394872f9ed3dbb4c26a30ba5d347"
+    },
+    {
+      "path": "experiments/TRR-P12/target-cpu-validation-r1.json",
+      "bytes": 17461,
+      "sha256": "5f57ef9eaddb25f7805f5f649cb5a6cf7a8f946c9da4e3cbb8c1c8f0052ba8f8"
+    },
+    {
+      "path": "experiments/TRR-P12/target-execution-r1.json",
+      "bytes": 2448,
+      "sha256": "bdb15b7969d2d07491c7465d3f79c5b5bd130645c0bf2947a1896d43e33c4d9f"
+    },
+    {
+      "path": "experiments/TRR-P12/target-inventory-r1.json",
+      "bytes": 17755,
+      "sha256": "127c663798fa5855211cf5bea4a298cac97df71356e928b5504d6b0578f12a23"
+    },
+    {
+      "path": "experiments/TRR-P12/target-preflight-r1.json",
+      "bytes": 1611,
+      "sha256": "24c8fcd5c2deb8ff09571fe39e6502fbe5ae5c2055812f760d27478dd72e2bb2"
+    },
+    {
+      "path": "experiments/TRR-P12/target-qualification-r1/qualification.json",
+      "bytes": 9794,
+      "sha256": "6ca971bf823d00a69d6cd34d8f3e8713f7145065df58b4aec7f420bcfb06c76a"
+    },
+    {
+      "path": "experiments/TRR-P12/target-source-disjointness-r1.json",
+      "bytes": 2660,
+      "sha256": "4ed381995d8c9b6bfd45fb8efcae29879aa78a674147c3a7228739d36bb91677"
+    },
+    {
+      "path": "experiments/TRR-P12/target-source-failure-r1.json",
+      "bytes": 2317,
+      "sha256": "77f40aab4f9bc5ca161d3558b04d3b3c53566bd3211c515cfa9d8cfd676c5fda"
+    },
+    {
+      "path": "experiments/TRR-P12/target-watchdog-r1.json",
+      "bytes": 327,
+      "sha256": "25e1d5c43046f3b05901609f657134c293bfa860d2d57d0cb5f8588d505066e2"
+    },
+    {
+      "path": "experiments/TRR-P12/truth-score-execution-r1.json",
+      "bytes": 6738,
+      "sha256": "fb832bf5aeff98ca54a7ebcbcbefa593e62b900d5ed40e3a40a33aaa54a23732"
+    }
+  ],
+  "implementation_files": [
+    {
+      "path": "scripts/trr_p12/__init__.py",
+      "bytes": 73,
+      "sha256": "c33311016a16d6b56f558a0b2c5aafe6394742c4502af00fb622095740f24781"
+    },
+    {
+      "path": "scripts/trr_p12/a1_runner.py",
+      "bytes": 36110,
+      "sha256": "e1e063b9330adc411b7248b7247c610e3921e396f4c2596433d396af1cb4f328"
+    },
+    {
+      "path": "scripts/trr_p12/adapter.py",
+      "bytes": 22329,
+      "sha256": "95d6da9ac0329e9f3cf274ffeb41db3e0ecb85ee0e352fa7743f38379dba616e"
+    },
+    {
+      "path": "scripts/trr_p12/analysis.py",
+      "bytes": 12210,
+      "sha256": "c965cb2c8aa59538f024505eb2b3b2bac490a1cec98f67dd28e649aae8fd3713"
+    },
+    {
+      "path": "scripts/trr_p12/boundary.py",
+      "bytes": 21638,
+      "sha256": "7b4e34f9a942fd1878741c40cba83552c81079506321c33c89a4d48cd1ade9e4"
+    },
+    {
+      "path": "scripts/trr_p12/build_evaluation_descriptor.py",
+      "bytes": 44926,
+      "sha256": "d5e767dfe854b0c6aff6ecb28667a82817fd7cdc664137cc9fc3f6edf29b8326"
+    },
+    {
+      "path": "scripts/trr_p12/capture.py",
+      "bytes": 29709,
+      "sha256": "2dcf2bec40b9daa3195918cc6e37e710bcd02e9743c360485aa1a235b769622c"
+    },
+    {
+      "path": "scripts/trr_p12/evaluation.py",
+      "bytes": 68778,
+      "sha256": "5a1543dfb0ce64735b6796c31c307249c6c8a5a617fea941d2705196a600a016"
+    },
+    {
+      "path": "scripts/trr_p12/geometry_pipeline.py",
+      "bytes": 35918,
+      "sha256": "6779ad96a5744d5b5ad5a632f7da13c606724ee7f839d94fbc055af4c898da30"
+    },
+    {
+      "path": "scripts/trr_p12/materialize_truth.py",
+      "bytes": 15580,
+      "sha256": "52383e19c3a8f6b3189f45f2987c4517f07cff997ee728af090836b199a3bd13"
+    },
+    {
+      "path": "scripts/trr_p12/postfreeze_breakage.py",
+      "bytes": 21598,
+      "sha256": "6070b5b14ab5b8a854406a596b3a7b8498c29de97f04ac6e317538b34f91d8c5"
+    },
+    {
+      "path": "scripts/trr_p12/predict.py",
+      "bytes": 15001,
+      "sha256": "f20001f0139f94e0bc9375e27d8d4595c754265f7d25d52bacc69335a5a20400"
+    },
+    {
+      "path": "scripts/trr_p12/qualification_fixture.py",
+      "bytes": 20467,
+      "sha256": "d5213cb3ac94f2ad6c9807d325fd79241ab17cdcb581f135003c45b2f3dadb9a"
+    },
+    {
+      "path": "scripts/trr_p12/qualify_capture.py",
+      "bytes": 31105,
+      "sha256": "e6e1edadee9b43b60aba6b3a27d6dbe2423f2a92317efbb8cd4cfd978042ed18"
+    },
+    {
+      "path": "scripts/trr_p12/qualify_geometry_cuda.py",
+      "bytes": 9939,
+      "sha256": "55350cbdf3970fa5b59e93562fc7b1d50cfafd0ab356e1173ae9b61d9c7c204f"
+    },
+    {
+      "path": "scripts/trr_p12/qualify_gpu_equivalence.py",
+      "bytes": 5517,
+      "sha256": "01877e4b01c1c859d427825d7a847df594ae3b9b6b97d3341da79a48b1a67aa3"
+    },
+    {
+      "path": "scripts/trr_p12/review_capture_equivalence.py",
+      "bytes": 4035,
+      "sha256": "a46085a349903fcba897867179bd7bdab6ee6423e66430494460222133dfb7de"
+    },
+    {
+      "path": "scripts/trr_p12/run_b1.py",
+      "bytes": 18195,
+      "sha256": "06da00cf4bd179712061062c1bf06d838c30ddb8f5ffbb3158ee9e9b582068b0"
+    },
+    {
+      "path": "scripts/trr_p12/select_panel.py",
+      "bytes": 28555,
+      "sha256": "a30a2af057270c68be8bcf04a7edb46cbdec1fc3b02aaae341288f7f96345607"
+    },
+    {
+      "path": "scripts/trr_p12/sources.py",
+      "bytes": 19873,
+      "sha256": "fc85db4c59af109154cec80a87ce943061c36840fc50dee2b850af28ba161e61"
+    },
+    {
+      "path": "scripts/trr_p12/target_sources.py",
+      "bytes": 25708,
+      "sha256": "c3a1463494dd36a44142839ddeb1cef786805377bafac255f519e8fd0d714744"
+    },
+    {
+      "path": "scripts/trr_p12/target_train.py",
+      "bytes": 41837,
+      "sha256": "735ce98529bdfdd27030ae904a6925ac1df5c98606aa6c811ace808c02c71550"
+    }
+  ],
+  "test_files": [
+    {
+      "path": "tests/test_trr_p12_boundary.py",
+      "bytes": 8754,
+      "sha256": "431cd48b5c7e54a7a030a95fa82181e33f06770bc13d24ccafc34fffb72a2daf"
+    },
+    {
+      "path": "tests/test_trr_p12_evaluation.py",
+      "bytes": 18210,
+      "sha256": "e10d85699269d36bcba48ee48ab98dc2836ab3fa67d0907c774a0e49c87b51cc"
+    },
+    {
+      "path": "tests/test_trr_p12_geometry_pipeline.py",
+      "bytes": 6606,
+      "sha256": "a706422e6b44f3393e8506a316e19f8b86dd25f32c77c0bebbc9231e5548a19e"
+    }
+  ],
+  "qualification_adapter": {
+    "path": "experiments/TRR-P12/target-qualification-r1/target-lora-qualification-0004.safetensors",
+    "bytes": 853576,
+    "sha256": "12310074073e6b0e5679551d05ca8e82ed7ea34f3d18b8ac116b43306f68130d"
+  },
+  "access_and_scope": {
+    "fresh_reconstruction_truth_opened": true,
+    "truth_opened_only_after_complete_prediction_cost_forecast_boundary_freeze": true,
+    "target_fitting_and_evaluation_sources_disjoint": true,
+    "decoder_adapted": false,
+    "target_trajectory_count": 1,
+    "p03_holdout_accessed": false,
+    "paid_compute": false,
+    "pr_merges": false,
+    "canonical_comparison_complete": false,
+    "a1_comparator": "auxiliary first32 per domain at0/256; public reference prefix only",
+    "additional_target_sweep_started": false
+  },
+  "artifact_preservation": {
+    "raw_outputs_inventory": "experiments/TRR-P12/artifact-inventory-r1.json",
+    "new_adapters_independently_backed_up_before_advancing": true,
+    "public_bundle_contains_metadata_only": true,
+    "model_prediction_trace_observation_and_truth_binaries_not_committed": true,
+    "failed_attempts_preserved": true
+  },
+  "interpretation_limits": [
+    "One prefix-LoRA trajectory, one base architecture/tokenizer and two fixed public domains.",
+    "Near-zero net error change does not mean individual predictions are robust.",
+    "Signed boundary analysis is retrospective and geometrically explanatory, not a prospective causal proof.",
+    "Primary failure-forecast tables condition on baseline-correct tokens; descriptive all-valid tables are separate.",
+    "Unknown bootstrap denominators remain UNKNOWN.",
+    "Canonical dual-benchmark matrix is incomplete; no overall method ranking."
+  ],
+  "unexecuted_or_excluded_utilities": [
+    "qualify_gpu_equivalence.py was prepared but the actual four-record equivalence run called compare_cpu_gpu_fixture directly; exact executed receipt is authoritative.",
+    "Baseline-only known-fixture API smoke and the unused padded qualification fixture are not transfer evidence."
+  ],
+  "internal_planning_note": "coordination/requests/TRR-P12-build-evaluation-descriptor.md is an internal delegation note, not an additional user control packet.",
+  "publication": {
+    "pull_request": "https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/26",
+    "base_branch": "task/TRR-P11",
+    "head_branch": "task/TRR-P12",
+    "disposition": "DRAFT_UNMERGED"
+  }
+}

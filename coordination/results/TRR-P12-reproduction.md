@@ -18,6 +18,7 @@ Recorded pins: Python 3.12.3; torch 2.10.0+cu128; transformers 5.3.0; safetensor
 
 Historical r1 outputs are create-only evidence. For a fresh run, choose new roots and fail closed:
 ~~~bash
+set -euo pipefail
 RUN=outputs/TRR-P12/reproduction-r1
 BACKUP=/mnt/c/Users/alanz/Token-Reconstruction-Backups/TRR-P12/reproduction-r1
 test ! -e "$RUN" && test ! -e "$BACKUP"
@@ -26,6 +27,8 @@ mkdir "$RUN" "$BACKUP"
 df -h /mnt/c/Users/alanz/Token-Reconstruction-Backups
 ~~~
 The external backup must have at least 10 GiB free; copy and independently hash each adapter before advancing stages. The historical target command and backup binding are in [target-execution-r1.json](../../experiments/TRR-P12/target-execution-r1.json).
+
+The commands below are the historical execution record, not a copy-and-paste rerun in the existing namespace. A new reproduction must replace every output path and bind its newly generated paths/hashes in the corresponding manifests and release checks. Do not overwrite retained evidence or relax a hash gate to reuse it. Reusing the preserved artifacts for verification does not authorize a new target sweep.
 
 ## Ordered interfaces
 
