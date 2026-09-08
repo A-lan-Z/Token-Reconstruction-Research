@@ -39,6 +39,9 @@ UNION_STATUS = "IDENTITY_UNION_COMPLETE_NO_PAYLOAD"
 UNION_SHA256 = "bd2e641f5f10d249595b89f48aeeba2d97a2b71688190177f4ebe4f4ac022a0b"
 UNION_BYTES = 6338870
 STUDY_MANIFEST_SHA256 = "302cef73349927615e39b116e985f796a9c70b6f9c97932a119c0acb1d3f0a8d"
+AMENDMENT_SHA256 = "e960951e52922bd65dfeb48d14780f68c3e3c3a79e041f7234af378a3b2fad42"
+AMENDMENT_BYTES = 1977
+AMENDMENT_PATH = Path("experiments/TRR-P12/plan-amendment-r1.json")
 AGENT1_RESERVATION_SHA256 = "dee8b7e1d70342c154a4217c982d47d3917d4e11c9cad33b6ebdc87c79a6cf33"
 AGENT1_RESERVATION_PATH = Path(
     "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/"
@@ -51,7 +54,8 @@ AGENT1_EVAL_RESERVATION_PATH = Path(
 AGENT1_EVAL_RESERVATION_SHA256 = "a6a47eb11731fca900b5a5f91e5512b1193ffcbe812a6e42ec678a10cec8c6a1"
 SOURCE_INPUTS_DEFAULT = Path("experiments/TRR-P11/selector/public_source_inputs_r1.json")
 DOMAIN_ORDER = ("pile", "finance")
-SOURCE_RANGES = {"pile": (8000, 9000), "finance": (50000, 52000)}
+ORIGINAL_SOURCE_RANGES = {"pile": (8000, 9000), "finance": (50000, 52000)}
+SOURCE_RANGES = {"pile": (0, 10000), "finance": (50000, 52000)}
 SELECTION_SEED = 5012
 RECORDS_PER_DOMAIN = 128
 DESIGN_RECORDS = 64
@@ -262,6 +266,24 @@ def _binding_from_value(value: Any, *, root: Path, label: str) -> tuple[Path, di
     raise PanelError(f"{label} binding is malformed")
 
 
+def load_amendment(path: Path = AMENDMENT_PATH, *, root: Path = ROOT) -> tuple[dict[str, Any], dict[str, Any]]:
+    resolved, binding = file_binding(path, root=root, label="P12 plan amendment",
+                                     expected_sha256=AMENDMENT_SHA256, expected_bytes=AMENDMENT_BYTES)
+    payload = load_json(resolved, label="P12 plan amendment")
+    if payload.get("schema") != "token-reconstruction.trr-p12-plan-amendment.v1" or payload.get("task_id") != TASK_ID:
+        raise PanelError("P12 plan amendment schema/task identity changed")
+    original = payload.get("original_manifest")
+    if not isinstance(original, Mapping) or original.get("sha256") != STUDY_MANIFEST_SHA256 or int(original.get("bytes", -1)) != 7797:
+        raise PanelError("P12 plan amendment original-manifest binding changed")
+    changes = payload.get("changes")
+    pile_change = changes.get("evaluation.source_ranges_half_open.pile") if isinstance(changes, Mapping) else None
+    if not isinstance(pile_change, Mapping) or tuple(pile_change.get("before", ())) != ORIGINAL_SOURCE_RANGES["pile"] or tuple(pile_change.get("after", ())) != SOURCE_RANGES["pile"]:
+        raise PanelError("P12 plan amendment Pile range changed")
+    if payload.get("boundary", {}).get("new_panel_written") is not False:
+        raise PanelError("P12 plan amendment records an already-written panel")
+    return payload, binding
+
+
 def validate_release(release_path: Path, *, root: Path = ROOT) -> tuple[dict[str, Any], dict[str, Any]]:
     release_file, release_binding = _binding_from_value(release_path, root=root, label="P12 panel release")
     payload = load_json(release_file, label="P12 panel release")
@@ -296,7 +318,8 @@ def validate_release(release_path: Path, *, root: Path = ROOT) -> tuple[dict[str
     if tuple(evaluation.get("paired_stages", payload.get("paired_stages", PAIRED_STAGES))) != PAIRED_STAGES:
         raise PanelError("P12 panel paired stages changed")
     ranges = evaluation.get("source_ranges_half_open")
-    if not isinstance(ranges, Mapping) or {domain: tuple(ranges.get(domain, ())) for domain in DOMAIN_ORDER} != SOURCE_RANGES:
+    expected_ranges = ORIGINAL_SOURCE_RANGES if is_study_manifest else SOURCE_RANGES
+    if not isinstance(ranges, Mapping) or {domain: tuple(ranges.get(domain, ())) for domain in DOMAIN_ORDER} != expected_ranges:
         raise PanelError("P12 panel source ranges changed")
     union_value = payload.get("union") or payload.get("exclusions")
     if not isinstance(union_value, Mapping) or union_value.get("sha256") != UNION_SHA256 or int(union_value.get("bytes", -1)) != UNION_BYTES:
@@ -337,8 +360,9 @@ def _create_only_json(path: Path, value: Mapping[str, Any]) -> dict[str, Any]:
 def select_panel(*, release_path: Path, union_path: Path, source_inputs_path: Path,
                  output_path: Path, root: Path = ROOT, opaque_reservation_path: Path | None = None,
                  opaque_reservation_sha256: str | None = AGENT1_RESERVATION_SHA256,
-                 opaque_reservation_paths: Sequence[Path] = ()) -> dict[str, Any]:
+                 opaque_reservation_paths: Sequence[Path] = (), amendment_path: Path = AMENDMENT_PATH) -> dict[str, Any]:
     release, release_binding = validate_release(release_path, root=root)
+    amendment, amendment_binding = load_amendment(amendment_path, root=root)
     union, union_binding = load_union(union_path, root=root)
     combined = union
     reservation_paths = list(opaque_reservation_paths)
@@ -421,6 +445,8 @@ def select_panel(*, release_path: Path, union_path: Path, source_inputs_path: Pa
         "created_utc": utc_now(),
         "release": release_binding,
         "release_sha256": release_binding["sha256"],
+        "amendment": amendment_binding,
+        "amendment_sha256": amendment_binding["sha256"],
         "study_manifest": release.get("study_manifest") or {
             "path": str((root / "experiments/TRR-P12/manifest.json").resolve()),
             "bytes": int((root / "experiments/TRR-P12/manifest.json").stat().st_size),
@@ -471,6 +497,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--release", type=Path, default=Path("experiments/TRR-P12/manifest.json"))
     parser.add_argument("--union", type=Path, default=Path("experiments/TRR-P12/exclusions/identity_union_extension_r2.json"))
+    parser.add_argument("--amendment", type=Path, default=AMENDMENT_PATH)
     parser.add_argument("--source-inputs", type=Path, default=SOURCE_INPUTS_DEFAULT)
     parser.add_argument("--opaque-reservation", type=Path, action="append",
                         default=[AGENT1_RESERVATION_PATH, AGENT1_EVAL_RESERVATION_PATH])
@@ -481,18 +508,21 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
     root = args.root.expanduser().resolve()
     release, _ = validate_release(args.release, root=root)
+    amendment, amendment_binding = load_amendment(args.amendment, root=root)
     union_binding = release.get("union") or release.get("exclusions")
     union_path = args.union
     if isinstance(union_binding, Mapping) and isinstance(union_binding.get("path"), str):
         union_path = Path(union_binding["path"])
     if args.dry_run:
         _, binding = load_union(union_path, root=root)
-        print(json.dumps({"status": "PASS_CPU_BINDING_DRY_RUN", "release": release.get("status"), "union": binding}, sort_keys=True))
+        for reservation_path in args.opaque_reservation:
+            load_opaque_reservation(reservation_path, root=root)
+        print(json.dumps({"status": "PASS_CPU_BINDING_DRY_RUN", "release": release.get("status"), "amendment": amendment_binding, "union": binding}, sort_keys=True))
         return 0
     if not args.execute:
         parser.error("pass --dry-run for binding checks or --execute to prepare the panel")
     result = select_panel(release_path=args.release, union_path=union_path, source_inputs_path=args.source_inputs,
-                          output_path=args.output, root=root, opaque_reservation_paths=args.opaque_reservation)
+                          output_path=args.output, root=root, opaque_reservation_paths=args.opaque_reservation, amendment_path=args.amendment)
     print(json.dumps(result, sort_keys=True))
     return 0
 

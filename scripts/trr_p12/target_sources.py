@@ -299,6 +299,7 @@ def prepare_target_bundle(*, release_path: Path, union_path: Path, panel_path: P
                           tokenizer_path: Path, output_manifest: Path, root: Path = ROOT,
                           opaque_reservation_paths: Sequence[Path] = ()) -> dict[str, Any]:
     release, release_binding = validate_release(release_path, root=root)
+    amendment, amendment_binding = select_panel.load_amendment(root=root)
     union, union_binding = select_panel.load_union(union_path, root=root)
     panel, panel_binding = _panel_bundle(panel_path, root=root)
     bundles = [union, panel]
@@ -382,6 +383,8 @@ def prepare_target_bundle(*, release_path: Path, union_path: Path, panel_path: P
         "created_utc": utc_now(),
         "release": release_binding,
         "release_sha256": release_binding["sha256"],
+        "amendment": amendment_binding,
+        "amendment_sha256": amendment_binding["sha256"],
         "study_manifest": release.get("study_manifest") or {
             "path": str((root / "experiments/TRR-P12/manifest.json").resolve()),
             "bytes": int((root / "experiments/TRR-P12/manifest.json").stat().st_size),
@@ -460,12 +463,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         parser.error("pass --dry-run for binding checks or --execute to prepare the evaluator-only bundle")
     root = args.root.expanduser().resolve()
     release, _ = validate_release(args.release, root=root)
+    _, amendment_binding = select_panel.load_amendment(root=root)
     union_value = release.get("union") or release.get("exclusions")
     union_path = Path(union_value["path"]) if isinstance(union_value, Mapping) and isinstance(union_value.get("path"), str) else args.union
     if args.dry_run:
         select_panel.load_union(union_path, root=root)
         _panel_bundle(args.panel, root=root)
-        print(json.dumps({"status": "PASS_CPU_BINDING_DRY_RUN", "release": release["status"]}, sort_keys=True))
+        print(json.dumps({"status": "PASS_CPU_BINDING_DRY_RUN", "release": release["status"], "amendment": amendment_binding}, sort_keys=True))
         return 0
     result = prepare_target_bundle(release_path=args.release, union_path=union_path, panel_path=args.panel,
                                    arrow_path=args.arrow, tokenizer_path=args.tokenizer,
