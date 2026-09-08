@@ -81,6 +81,20 @@ P11_P04_TARGET_RECOVERY_PATH = "experiments/TRR-P11/exclusions/p04_targetfit_rec
 P11_P04_TARGET_RECOVERY_SHA256 = "e83095caf3cc50356b896911dc13e9cd666fbaff7bdb3f6063bcc6feb32dc955"
 P11_P04_TARGET_SCRIPT_SHA256 = "73a2b8cf6caa0e60660a9ab465f3ff5a5956d7cd68070476be90b3a464c33b34"
 
+# TRR-0003's public fit ledger records the exact 40-token Pile geometry but
+# did not retain the producer H40 digest. This bounded, public-only recovery
+# re-rendered the pinned rows and emits opaque H40 identities. Keep it as a
+# separate verified overlay: the recovery receipt has a producer-specific
+# schema and intentionally does not masquerade as an H128/H129 export.
+P11_TRR0003_H40_IDENTITY_PATH = "experiments/TRR-P11/exclusions/trr0003_h40_identity_rows_r1.json"
+P11_TRR0003_H40_IDENTITY_SHA256 = "7889bfd955f1b6202370058b6168cb49a707f62a8a1518f7ab31c568fd5c4b3c"
+P11_TRR0003_H40_RECOVERY_PATH = "experiments/TRR-P11/exclusions/trr0003_h40_recovery_r1.json"
+P11_TRR0003_H40_RECOVERY_SHA256 = "a91165b5f1a73d2557cc7f9645729ad586895b43b05bf9d7dc899c42313bb2e5"
+P11_TRR0003_H40_SCRIPT_PATH = "experiments/TRR-P11/exclusions/recover_trr0003_h40_r1.py"
+P11_TRR0003_H40_SCRIPT_SHA256 = "f1f639f9aa39f2057b44dd4613bb5c961bc848991f795718215f7d4d936fe0fc"
+P11_TRR0003_H40_FAILURE_PATH = "experiments/TRR-P11/exclusions/trr0003_h40_recovery_attempt1_failure.json"
+P11_TRR0003_H40_FAILURE_SHA256 = "fbfa33ca082dbaf00a5c0a725bcdc8d62570164096b6750f37b3ab8a168ce086"
+
 # Agent 1's exact hash-only replication inputs. These are metadata/manifest
 # bindings only; the exclusion audit never opens the B0/B1 activation tensors.
 P11_REPLICATION_INPUTS: dict[str, Any] = {
@@ -548,6 +562,185 @@ def _load_public_identity_export(
             raise ExclusionAuditError(f"{label} row {index} geometry is malformed")
     bundle.metadata_notes.append("Opaque identity export; no source/token/truth payload emitted")
     proof = {"label": label, "role": role, "identity_path": identity_path, "identity_sha256": identity_sha256, "recovery_path": recovery_path, "recovery_sha256": recovery_sha256, "identity_schema": expected_identity_schema, "record_count": len(rows), "identity_counts": bundle.counts(), "h128_rows": h128, "h129_rows": h129, "rendered_rows": rendered, "source_index_rows": source_indices, "binding": dict(binding)}
+    return bundle, proof
+
+
+def _load_trr0003_h40_identity_export(
+    root: Path,
+) -> tuple[p10.IdentityBundle, dict[str, Any]]:
+    """Load the producer-specific TRR-0003 public H40 overlay.
+
+    TRR-0003's fit metadata retained the pinned public rows and their 40-token
+    geometry, while its original receipt did not retain H40 digests.  The
+    companion recovery was rerun from the immutable Pile revision and emits
+    only opaque rendered/H40 identities.  Keep this loader strict and
+    producer-specific: a generic ``truncated_sequence_sha256`` alias must
+    never turn an H129 or unknown-width value into H40.
+    """
+    identity_file = (root / P11_TRR0003_H40_IDENTITY_PATH).resolve()
+    recovery_file = (root / P11_TRR0003_H40_RECOVERY_PATH).resolve()
+    failure_file = (root / P11_TRR0003_H40_FAILURE_PATH).resolve()
+    recipe_file = (root / P11_TRR0003_H40_SCRIPT_PATH).resolve()
+    for path, expected, label in (
+        (identity_file, P11_TRR0003_H40_IDENTITY_SHA256, "TRR-0003 H40 identity export"),
+        (recovery_file, P11_TRR0003_H40_RECOVERY_SHA256, "TRR-0003 H40 recovery receipt"),
+        (failure_file, P11_TRR0003_H40_FAILURE_SHA256, "TRR-0003 H40 failed-attempt receipt"),
+        (recipe_file, P11_TRR0003_H40_SCRIPT_SHA256, "TRR-0003 H40 recovery recipe"),
+    ):
+        if not path.is_file() or path.is_symlink() or p10.sha256_file(path) != expected:
+            raise ExclusionAuditError(f"{label} is unavailable or changed")
+
+    identity = _read_json(identity_file, label="TRR-0003 H40 identity export")
+    recovery = _read_json(recovery_file, label="TRR-0003 H40 recovery receipt")
+    failure = _read_json(failure_file, label="TRR-0003 H40 failed-attempt receipt")
+    if (
+        identity.get("schema") != "token-reconstruction.trr-p11-public-h40-identity-rows.v1"
+        or identity.get("task_id") != TASK_ID
+        or identity.get("status") != "PASS_TRR0003_PUBLIC_H40_RECOVERY"
+    ):
+        raise ExclusionAuditError("TRR-0003 H40 identity export status changed")
+    if (
+        recovery.get("schema") != "token-reconstruction.trr-p11-trr0003-h40-recovery.v1"
+        or recovery.get("task_id") != TASK_ID
+        or recovery.get("status") != "PASS_TRR0003_PUBLIC_H40_RECOVERY"
+    ):
+        raise ExclusionAuditError("TRR-0003 H40 recovery receipt status changed")
+    coverage = recovery.get("coverage")
+    if (
+        not isinstance(coverage, Mapping)
+        or coverage.get("rows_seen") != 128
+        or coverage.get("h40_rows") != 128
+        or coverage.get("h128_rows") != 0
+        or coverage.get("h129_rows") != 0
+        or coverage.get("mismatch_count") != 0
+    ):
+        raise ExclusionAuditError("TRR-0003 H40 recovery coverage changed")
+    output = recovery.get("output")
+    if (
+        not isinstance(output, Mapping)
+        or output.get("sha256") != P11_TRR0003_H40_IDENTITY_SHA256
+        or output.get("bytes") != identity_file.stat().st_size
+        or Path(str(output.get("path", ""))).name != identity_file.name
+    ):
+        raise ExclusionAuditError("TRR-0003 H40 recovery does not bind identity export")
+    access = identity.get("access_boundary")
+    if (
+        not isinstance(access, Mapping)
+        or any(
+            access.get(key) is True
+            for key in (
+                "source_text_serialized",
+                "token_values_emitted",
+                "activations_read",
+                "model_loaded",
+                "gpu_used",
+                "truth_opened",
+                "p03_holdout_accessed",
+                "new_selection_started",
+            )
+        )
+    ):
+        raise ExclusionAuditError("TRR-0003 H40 identity access boundary is unsafe")
+    if (
+        identity.get("contains_source_text") is not False
+        or identity.get("contains_token_ids") is not False
+        or identity.get("contains_truth") is not False
+    ):
+        raise ExclusionAuditError("TRR-0003 H40 identity export contains payload")
+    if (
+        failure.get("schema") != "token-reconstruction.trr-p11-h40-recovery-failure.v1"
+        or failure.get("task_id") != TASK_ID
+        or failure.get("status") != "EXCLUDED_METADATA_SCHEMA_MISMATCH"
+        or failure.get("failure", {}).get("mismatch_count") != 128
+    ):
+        raise ExclusionAuditError("TRR-0003 failed-attempt provenance changed")
+
+    producer = identity.get("producer")
+    if (
+        not isinstance(producer, Mapping)
+        or producer.get("dataset_id") != "NeelNanda/pile-10k"
+        or producer.get("revision") != "127bfedcd5047750df5ccf3a12979a47bfa0bafa"
+        or producer.get("sequence_convention") != "first 40 BOS-inclusive IDs, SHA-256 little-endian signed-int32 bytes"
+        or producer.get("fit_metadata_sha256") != "7aee0f6cb452bb1df401c920ca2a628d32fb204d144d72e4419fc8bd34a3a08e"
+        or producer.get("trr0001_plan_sha256") != "b498a5db5b14ae8dde19f3ae4f519f86fdf0a67572a8f78747f7921e4f9e7269"
+    ):
+        raise ExclusionAuditError("TRR-0003 H40 producer binding changed")
+    rows = identity.get("records")
+    if not isinstance(rows, list) or identity.get("record_count") != len(rows) or len(rows) != 128:
+        raise ExclusionAuditError("TRR-0003 H40 identity row count is malformed")
+
+    bundle = p10.IdentityBundle(
+        "trr0003_fit_records_h40_public_identity",
+        "fitting_bank",
+        identity_file,
+        P11_TRR0003_H40_IDENTITY_SHA256,
+        identity_file.stat().st_size,
+        schema=str(identity["schema"]),
+        status=str(identity["status"]),
+    )
+    for index, row in enumerate(rows):
+        if not isinstance(row, Mapping):
+            raise ExclusionAuditError(f"TRR-0003 H40 row {index} is malformed")
+        record_id = row.get("record_id")
+        rendered = row.get("rendered_sha256")
+        h40 = row.get("trr0002_h40_token_ids_sha256")
+        source_index = row.get("source_index")
+        if (
+            not isinstance(record_id, str)
+            or not record_id
+            or not _is_sha256(rendered)
+            or not _is_sha256(h40)
+            or not isinstance(source_index, int)
+            or isinstance(source_index, bool)
+            or source_index < 0
+            or row.get("full_token_count") != 40
+            or row.get("post_bos_token_count") != 39
+            or row.get("dataset_id") != "NeelNanda/pile-10k"
+            or row.get("split") != "train"
+            or row.get("revision") != "127bfedcd5047750df5ccf3a12979a47bfa0bafa"
+        ):
+            raise ExclusionAuditError(f"TRR-0003 H40 row {index} violates the producer identity contract")
+        namespace = p10.Namespace(
+            "pile",
+            "NeelNanda/pile-10k",
+            "train",
+            "127bfedcd5047750df5ccf3a12979a47bfa0bafa",
+        )
+        bundle.add("record_id", record_id, namespace)
+        bundle.add("rendered_sha256", rendered.casefold(), namespace)
+        bundle.add("trr0002_h40_token_ids_sha256", h40.casefold(), namespace)
+        bundle.add("source_index", source_index, namespace)
+    bundle.metadata_notes.append(
+        "Producer-verified TRR-0003 H40 overlay; public source/token IDs were transiently used for opaque hashing only"
+    )
+    proof = {
+        "label": bundle.label,
+        "role": bundle.role,
+        "identity_path": P11_TRR0003_H40_IDENTITY_PATH,
+        "identity_sha256": P11_TRR0003_H40_IDENTITY_SHA256,
+        "recovery_path": P11_TRR0003_H40_RECOVERY_PATH,
+        "recovery_sha256": P11_TRR0003_H40_RECOVERY_SHA256,
+        "failed_attempt_path": P11_TRR0003_H40_FAILURE_PATH,
+        "failed_attempt_sha256": P11_TRR0003_H40_FAILURE_SHA256,
+        "recipe_path": P11_TRR0003_H40_SCRIPT_PATH,
+        "recipe_sha256": P11_TRR0003_H40_SCRIPT_SHA256,
+        "identity_schema": identity["schema"],
+        "record_count": len(rows),
+        "identity_counts": bundle.counts(),
+        "h40_rows": 128,
+        "h128_rows": 0,
+        "h129_rows": 0,
+        "rendered_rows": 128,
+        "source_index_rows": 128,
+        "producer": dict(producer),
+        "resource": dict(recovery.get("resource", {})) if isinstance(recovery.get("resource"), Mapping) else {},
+        "access_boundary": dict(access),
+        "binding": {
+            "fit_metadata_sha256": producer["fit_metadata_sha256"],
+            "trr0001_plan_sha256": producer["trr0001_plan_sha256"],
+            "dataset_revision": producer["revision"],
+        },
+    }
     return bundle, proof
 
 def _load_p04_recipe_migration(root: Path) -> dict[str, Any]:
@@ -1440,6 +1633,7 @@ def _row_matches_other_bundles(
 _CANONICAL_ROW_SOURCE_LABELS = frozenset({
     "trr0002_public_finance_records",
     "trr0002_public_pile_records",
+    "trr0003_fit_records_h40_public_identity",
     "trr0004_selection_plan",
     "trr0005_selection_plan",
     "trr0005_enriched_fit_public_token_identity",
@@ -1871,7 +2065,7 @@ def _unknown_identity_row_fields(
         aliases = dict(spec_aliases.get(bundle.label, {}))
         if bundle.label in {"trr0005_selection_plan", "trr0006_p04_opaque"} or bundle.label.startswith("trr0006_p04_"):
             aliases.update(special_aliases)
-        elif bundle.label.startswith("trr0005_enriched_fit_public_token_identity"):
+        elif bundle.label.startswith("trr0005_enriched_fit_public_token_identity") or bundle.label == "trr0003_fit_records_h40_public_identity":
             aliases.update(special_aliases)
         visit(raw, label=bundle.label, aliases=aliases)
     return [
@@ -2155,6 +2349,7 @@ def _build_closure_assessment(
     recovered_by_label = {str(item.get("label")): item for item in recovered_identity_proofs}
     p05 = recovered_by_label.get("trr0005_enriched_fit_public_token_identity", {})
     target = recovered_by_label.get("trr0006_p04_targetfit_public_identity", {})
+    trr0003 = recovered_by_label.get("trr0003_fit_records_h40_public_identity", {})
     target_plan = p04.proof.get("targetfit_plan_proof", {})
     p04_recovery = (
         p04.proof.get("producer_source_bytes_available") is True
@@ -2164,11 +2359,15 @@ def _build_closure_assessment(
         and target_plan.get("status") == "PASS_TARGET_RULE_COUNTS_ONLY"
     )
     canonical_recovery = (
-        len(recovered_identity_proofs) == 2
+        len(recovered_identity_proofs) == 3
         and int(p05.get("h128_rows", 0)) == 350
         and int(p05.get("record_count", 0)) == 1200
         and int(target.get("h128_rows", 0)) == 212
         and int(target.get("record_count", 0)) == 256
+        and int(trr0003.get("h40_rows", 0)) == 128
+        and int(trr0003.get("record_count", 0)) == 128
+        and int(trr0003.get("h128_rows", 0)) == 0
+        and int(trr0003.get("h129_rows", 0)) == 0
         and replication_proof.get("tensor_payload_opened") is False
     )
     descriptor_proven = set(descriptor_pointer_proof.get("proven_descriptor_labels", ()))
@@ -2557,8 +2756,9 @@ def build_audit(
             role="evaluator_target_fit",
             binding=binding,
         )
-        recovered_bundles.extend((p05_bundle, target_bundle))
-        recovered_identity_proofs.extend((p05_proof, target_proof))
+        trr0003_bundle, trr0003_proof = _load_trr0003_h40_identity_export(root)
+        recovered_bundles.extend((p05_bundle, target_bundle, trr0003_bundle))
+        recovered_identity_proofs.extend((p05_proof, target_proof, trr0003_proof))
     rehash_bundle: p10.IdentityBundle | None = None
     rehash_receipt: dict[str, Any]
     if public_payload is not None or public_payload_metadata is not None:
@@ -2763,7 +2963,7 @@ def build_audit(
             "p04_targetfit_individual_hashes_available": targetfit_recovered,
             "p04_h128_individual_hashes_available": p04.proof.get("h128_individual_hashes_available") is True,
             "public_payload_h128_rehash_status": rehash_receipt["status"],
-            "recovered_identity_exports_status": "PASS_BOUND_P05_AND_P04_TARGETFIT" if recovered_identity_proofs else "NOT_REQUESTED",
+            "recovered_identity_exports_status": "PASS_BOUND_P05_P04_TARGETFIT_AND_TRR0003_H40" if recovered_identity_proofs else "NOT_REQUESTED",
         },
         "coverage_gaps": (
             [
@@ -2802,13 +3002,15 @@ def build_audit(
         "notes": [
             "This is a prior-identity union and canonical-prefix audit, not source selection or capacity certification.",
             "Descriptor-only pointer/count receipts are not interpreted as zero overlap.",
-            "The P10 receipts and code remain unchanged; r8 is superseded only by the producer-specific TRR-0004 alias correction below.",
+            "The P10 receipts and code remain unchanged; r8 and r10 are superseded by the verified TRR-0004 alias correction and TRR-0003 H40 overlay recorded below.",
         ],
         "superseded_artifacts": [
             {"path": "experiments/TRR-P11/exclusions/recovery_identity_audit_r7.json", "sha256": "b0357082d50082231b0b53e61a77a8e9159e72351689993fbe63502d7a7491e3", "reason": "rejected: unique-key alias collapse could report complete while row-level canonical anchors were absent"},
             {"path": "experiments/TRR-P11/exclusions/identity_union_export_r4.json", "sha256": "449ddfb1f0752be5ebdbc5eba04fff831c28d0bbc1601ad281b21ca1e93e72f3", "reason": "superseded by strong-commitment row-level closure"},
             {"path": "experiments/TRR-P11/exclusions/closure_checkpoint_r3.json", "sha256": "98ace5624574aad6584bf7d297180441ac8c480e478c9afcbc7957c6fea982e9", "reason": "superseded by fail-closed all-row closure"},
             {"path": "experiments/TRR-P11/exclusions/recovery_identity_audit_r8.json", "sha256": "a41d78ce545dbc16b36ca4e169965f8029dfc52340dbbfb72b4df002ad61e791", "reason": "superseded by verified TRR-0004 producer-specific H40/H128 mapping; r8 left 48 rows falsely unresolved"},
+            {"path": "experiments/TRR-P11/exclusions/recovery_identity_audit_r10.json", "sha256": "334f0f08589193203df5a058d581886f4e376c03149d8d2d3838f4aca3425149", "reason": "superseded by the verified TRR-0003 public H40 overlay; r10 retained 72 TRR-0003 rows without their recovered H40 proof"},
+            {"path": "experiments/TRR-P11/exclusions/recovery_identity_audit_r11.json", "sha256": "74b6b6a60bb4247875784a7296a4f4532944f9776f6e8225b19b8288e726deee", "reason": "superseded by the H40 row-field validator fix; r11 reported the verified H40 field as an unknown identity key"},
         ],
     }
     if identity_union_output is not None:

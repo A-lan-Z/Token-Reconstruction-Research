@@ -1,0 +1,37 @@
+{
+  "access_boundary": {
+    "activations_read": false,
+    "gpu_used": false,
+    "model_loaded": false,
+    "new_selection_started": false,
+    "p03_holdout_accessed": false,
+    "source_text_read_transiently": true,
+    "source_text_serialized": false,
+    "token_values_emitted": false,
+    "truth_opened": false
+  },
+  "command": "env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONPATH=. /usr/bin/time -v timeout 120s python3 experiments/TRR-P11/exclusions/recover_trr0003_h40_r1.py",
+  "failure": {
+    "cause": "TRR-0001 plan uses index while TRR-0003 fit ledger uses dataset_index; no renderer or source commitment mismatch",
+    "field_mismatch_counts": {
+      "dataset_index": 128,
+      "record_id": 0,
+      "text_sha256": 0
+    },
+    "mismatch_count": 128
+  },
+  "resource": {
+    "gpu_used": false,
+    "max_rss_bytes": 1245052928,
+    "max_rss_limit_bytes": 2147483648,
+    "model_loaded": false,
+    "new_selection_started": false,
+    "p03_holdout_accessed": false,
+    "threads": 1,
+    "timeout_seconds": 120,
+    "truth_opened": false
+  },
+  "schema": "token-reconstruction.trr-p11-h40-recovery-failure.v1",
+  "status": "EXCLUDED_METADATA_SCHEMA_MISMATCH",
+  "task_id": "TRR-P11"
+}

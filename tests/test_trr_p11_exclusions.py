@@ -21,6 +21,7 @@ from scripts.trr_p11.exclusions import (
     write_identity_union_export,
     load_identity_union_export,
     _canonical_anchor_matches,
+    _load_trr0003_h40_identity_export,
     _row_identity_fields,
 )
 
@@ -74,6 +75,19 @@ def test_h129_helper_key_is_consumed_without_cross_namespace_match() -> None:
         },
         bundle,
     ) == []
+
+
+def test_trr0003_h40_overlay_binds_producer_and_excludes_h128_h129() -> None:
+    bundle, proof = _load_trr0003_h40_identity_export(ROOT)
+    assert proof["record_count"] == 128
+    assert proof["h40_rows"] == 128
+    assert proof["h128_rows"] == 0
+    assert proof["h129_rows"] == 0
+    assert bundle.counts()["trr0002_h40_token_ids_sha256"] == 128
+    assert "h128_sequence_sha256" not in bundle.counts()
+    assert "h129_sequence_sha256" not in bundle.counts()
+    assert proof["producer"]["sequence_convention"].startswith("first 40 BOS-inclusive")
+    assert proof["failed_attempt_sha256"] == "fbfa33ca082dbaf00a5c0a725bcdc8d62570164096b6750f37b3ab8a168ce086"
 
 
 def test_trr0004_truncated_hash_uses_verified_geometry_namespace() -> None:
@@ -341,6 +355,8 @@ def test_recovered_canonical_closure_fails_closed_on_row_residuals(tmp_path: Pat
     by_label = {item["label"]: item for item in audit["canonical_sequence_audit"]["legacy_alias_reconciliation"]["per_source"]}
     assert by_label["trr0005_original_fit"]["eligible_rows_without_verified_canonical_anchor"] == 350
     assert by_label["trr0007_original_fit"]["eligible_rows_without_verified_canonical_anchor"] == 350
+    assert by_label["trr0003_fit_records"]["rows_without_verified_canonical_anchor"] == 0
+    assert by_label["trr0003_fit_records_h40_public_identity"]["verified_h40_rows"] == 128
     assert by_label["trr0002_public_pile_records"]["verified_h40_rows"] == 96
     assert by_label["trr0006_p04_targetfit_public_identity"]["rows_without_verified_canonical_anchor"] == 0
     assert audit["identity_union_export"]["status"] == "PARTIAL_IDENTITY_UNION_NO_SELECTION_RELEASE"
