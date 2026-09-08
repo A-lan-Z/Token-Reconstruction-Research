@@ -1,0 +1,100 @@
+{
+  "schema": "token-reconstruction.trr-p12.opaque-exclusion-union.v1",
+  "task_id": "TRR-P12",
+  "revision": "r1",
+  "created_utc": "2026-09-08T00:00:00Z",
+  "purpose": "Additive, hash-only source exclusion binding for the P12 public target-training study.",
+  "access_boundary": {
+    "representation": "opaque_paths_and_sha256_only",
+    "source_text_opened": false,
+    "source_tokens_opened": false,
+    "activations_opened": false,
+    "target_weights_opened": false,
+    "p03_holdout_accessed": false,
+    "private_ledger_contents_opened": false,
+    "fresh_selection_started": false,
+    "target_training_started": false
+  },
+  "union_semantics": {
+    "operation": "set_union",
+    "base_is_immutable": true,
+    "deduplication_key": "opaque_identity_defined_by_the_bound_source_ledger",
+    "record_values_materialized": false,
+    "scope": [
+      "P12 public source reservations",
+      "P12 target-training fitting sources",
+      "P12 reconstruction-evaluation sources",
+      "Agent1 TRR-0013 reservations supplied before release"
+    ],
+    "append_rule": "Append a new path-and-SHA256 reference layer; never rewrite or subtract from the P11 base union."
+  },
+  "p11_bindings": [
+    {
+      "role": "immutable_base_identity_union",
+      "path": "experiments/TRR-P11/exclusions/identity_union_export_r14.json",
+      "sha256": "125275eab38c66117d45f5e0df4085058dae8a5c939fff1554cab7e608eb1fe1",
+      "binding_source": "TRR-P12 control packet"
+    },
+    {
+      "role": "p11_recovery_identity_audit_r17",
+      "path": "experiments/TRR-P11/exclusions/recovery_identity_audit_r17.json",
+      "sha256": null,
+      "binding_source": "P11 r17 audit path named by TRR-P12 control packet; content is not copied or opened here",
+      "hash_status": "awaiting_hash_from_root_release_record"
+    },
+    {
+      "role": "p11_root_selection_release",
+      "path": "experiments/TRR-P11/exclusions/root_selection_release_r1.json",
+      "sha256": null,
+      "binding_source": "P11 root-release path named by TRR-P12 control packet; content is not copied or opened here",
+      "hash_status": "awaiting_hash_from_root_release_record"
+    }
+  ],
+  "opened_prior_ledger_bindings": [
+    {
+      "role": "p11_confirmation512_source_selection",
+      "path": "../TRR-P11/outputs/TRR-P11/private-evaluation/selection/source_selection.json",
+      "sha256": "fe7129e9d7230100d1900facea98b15b8000f382a0bd7035b2039b4d9429bf68",
+      "binding_source": "TRR-P12 control packet",
+      "contents_represented": "opaque exclusion identity only"
+    },
+    {
+      "role": "p11_transfer64_source_selection",
+      "path": "../TRR-P11/outputs/TRR-P11/private-evaluation/transfer-selection-r2/transfer_selection.json",
+      "sha256": "8674ea5c824c5f3bc4aa10c44439422654572af546684567046f4a5ffb717c0f",
+      "binding_source": "TRR-P12 control packet",
+      "contents_represented": "opaque exclusion identity only"
+    }
+  ],
+  "pending_additive_layers": [
+    {
+      "owner": "Agent1/TRR-0013",
+      "status": "PENDING_RESERVATIONS",
+      "planned_reservation_groups": [
+        "prospective512Pile",
+        "prospective256Finance",
+        "pairedBaseOrHistoricalLoRA",
+        "A1First64PerDomain"
+      ],
+      "release_condition": "Root receives and freezes Agent1's opaque reservation ledger and SHA-256 before any P12 selection."
+    },
+    {
+      "owner": "P12 target-training source selection",
+      "status": "PENDING_PREREGISTRATION_RELEASE",
+      "release_condition": "Root freezes the target-training trajectory, fitting-source ledger, and disjoint reconstruction-evaluation ledger before capture."
+    },
+    {
+      "owner": "P12 fresh public panel",
+      "status": "PENDING_PREREGISTRATION_RELEASE",
+      "release_condition": "Root releases the source panel plan and exclusion union for selection."
+    }
+  ],
+  "release_checks": [
+    "Obtain non-null SHA-256 bindings for the two P11 release receipts from the root release record.",
+    "Append Agent1 and P12 reservation layers without changing the immutable P11 references.",
+    "Validate path existence and SHA-256 equality in a metadata-only audit.",
+    "Check overlap using opaque ledger identities only; do not emit identity values, text, token IDs, weights, or activations.",
+    "Freeze this union and all additive layers before fresh source selection or target capture."
+  ],
+  "status": "BASE_AND_OPENED_LEDGER_BINDINGS_RECORDED_PENDING_ROOT_RESERVATIONS_AND_RECEIPT_HASHES"
+}
