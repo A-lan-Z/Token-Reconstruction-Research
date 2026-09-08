@@ -21,6 +21,7 @@ from scripts.trr_p11.exclusions import (
     write_identity_union_export,
     load_identity_union_export,
     _canonical_anchor_matches,
+    _row_identity_fields,
 )
 
 
@@ -73,6 +74,32 @@ def test_h129_helper_key_is_consumed_without_cross_namespace_match() -> None:
         },
         bundle,
     ) == []
+
+
+def test_trr0004_truncated_hash_uses_verified_geometry_namespace() -> None:
+    common = {
+        "record_id": "pile10k-00000-fixture",
+        "public_record_sha256": "a" * 64,
+        "truncated_sequence_sha256": "b" * 64,
+        "dataset_id": "NeelNanda/pile-10k",
+        "split": "train",
+        "revision": "rev",
+    }
+    _, pile_fields = _row_identity_fields({**common, "valid_tokens": 40}, source_label="trr0004_selection_plan")
+    assert pile_fields["trr0002_h40_token_ids_sha256"] == {"b" * 64}
+    assert "h128_sequence_sha256" not in pile_fields
+    assert "h129_sequence_sha256" not in pile_fields
+
+    _, finance_fields = _row_identity_fields(
+        {**common, "record_id": "finance-public-000001-fixture", "valid_tokens": 128},
+        source_label="trr0004_selection_plan",
+    )
+    assert finance_fields["h128_sequence_sha256"] == {"b" * 64}
+    assert "trr0002_h40_token_ids_sha256" not in finance_fields
+    assert "h129_sequence_sha256" not in finance_fields
+
+    _, legacy_fields = _row_identity_fields(common, source_label="trr0008_selection_exclusions")
+    assert legacy_fields["h129_sequence_sha256"] == {"b" * 64}
 
 
 def test_row_anchor_requires_shared_strong_commitment() -> None:

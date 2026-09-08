@@ -1385,6 +1385,19 @@ def _row_identity_fields(row: Mapping[str, Any], *, source_label: str) -> tuple[
         # TRR-0002 Finance producer field; this is not a global alias.
         "token_ids_sha256": "trr0002_active_token_ids_sha256",
     }
+    # TRR-0004 used one field name for two producer-bound prefix widths:
+    # the Pile selection stores exactly 40 BOS-inclusive IDs, while Finance
+    # stores exactly 128. Do not apply the historical generic H129 alias to
+    # this source; infer the canonical namespace only from the producer's
+    # explicit valid_tokens geometry. Unknown geometry remains unclassified.
+    if source_label == "trr0004_selection_plan" and "truncated_sequence_sha256" in aliases:
+        width = row.get("valid_tokens")
+        if width == 40:
+            aliases["truncated_sequence_sha256"] = "trr0002_h40_token_ids_sha256"
+        elif width == 128:
+            aliases["truncated_sequence_sha256"] = "h128_sequence_sha256"
+        else:
+            aliases.pop("truncated_sequence_sha256", None)
     fields: dict[str, set[str | int]] = {}
     for raw_key, raw_value in row.items():
         canonical = aliases.get(str(raw_key).casefold().replace("-", "_"))
@@ -1427,6 +1440,7 @@ def _row_matches_other_bundles(
 _CANONICAL_ROW_SOURCE_LABELS = frozenset({
     "trr0002_public_finance_records",
     "trr0002_public_pile_records",
+    "trr0004_selection_plan",
     "trr0005_selection_plan",
     "trr0005_enriched_fit_public_token_identity",
     "trr0006_selection",
@@ -2788,12 +2802,13 @@ def build_audit(
         "notes": [
             "This is a prior-identity union and canonical-prefix audit, not source selection or capacity certification.",
             "Descriptor-only pointer/count receipts are not interpreted as zero overlap.",
-            "The P10 receipts and code remain unchanged; this fresh P11 receipt supersedes no prior artifact.",
+            "The P10 receipts and code remain unchanged; r8 is superseded only by the producer-specific TRR-0004 alias correction below.",
         ],
         "superseded_artifacts": [
             {"path": "experiments/TRR-P11/exclusions/recovery_identity_audit_r7.json", "sha256": "b0357082d50082231b0b53e61a77a8e9159e72351689993fbe63502d7a7491e3", "reason": "rejected: unique-key alias collapse could report complete while row-level canonical anchors were absent"},
             {"path": "experiments/TRR-P11/exclusions/identity_union_export_r4.json", "sha256": "449ddfb1f0752be5ebdbc5eba04fff831c28d0bbc1601ad281b21ca1e93e72f3", "reason": "superseded by strong-commitment row-level closure"},
             {"path": "experiments/TRR-P11/exclusions/closure_checkpoint_r3.json", "sha256": "98ace5624574aad6584bf7d297180441ac8c480e478c9afcbc7957c6fea982e9", "reason": "superseded by fail-closed all-row closure"},
+            {"path": "experiments/TRR-P11/exclusions/recovery_identity_audit_r8.json", "sha256": "a41d78ce545dbc16b36ca4e169965f8029dfc52340dbbfb72b4df002ad61e791", "reason": "superseded by verified TRR-0004 producer-specific H40/H128 mapping; r8 left 48 rows falsely unresolved"},
         ],
     }
     if identity_union_output is not None:
