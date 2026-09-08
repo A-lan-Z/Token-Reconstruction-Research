@@ -1424,105 +1424,227 @@ def _row_matches_other_bundles(
     return matches
 
 
+_CANONICAL_ROW_SOURCE_LABELS = frozenset({
+    "trr0002_public_finance_records",
+    "trr0002_public_pile_records",
+    "trr0005_selection_plan",
+    "trr0005_enriched_fit_public_token_identity",
+    "trr0006_selection",
+    "trr0006_p04_targetfit_public_identity",
+    "trr0007_selection",
+    "trr0008_selection",
+    "trr0009_original_selection",
+    "trr0009_selection_v2",
+    "trr_p09_nested_b1",
+    "pr20_source_selection",
+})
+_CANONICAL_SUMMARY_LABELS = frozenset({
+    "trr0006_p04_opaque",
+    "trr0007_p06_opaque",
+    "trr0008_p06_opaque",
+    "trr0008_selection_opaque",
+    "trr0009_opaque_reservation",
+    "trr0009_p08_opaque",
+    "trr0007_prefix_exclusions",
+})
+
+
+def _row_geometry(row: Mapping[str, Any]) -> int | None:
+    """Return an explicit active sequence length, never padded length."""
+    for key in ("valid_tokens", "full_token_count", "active_token_count"):
+        value = row.get(key)
+        if isinstance(value, int) and not isinstance(value, bool) and value >= 0:
+            return value
+    value = row.get("post_bos_token_count")
+    if isinstance(value, int) and not isinstance(value, bool) and value >= 0:
+        return value + 1
+    return None
+
+
+def _iter_identity_rows(bundle: p10.IdentityBundle) -> Iterable[tuple[Mapping[str, Any], p10.Namespace, dict[str, set[str | int]]]]:
+    """Yield scalar row identities; aggregate opaque arrays are not rows."""
+    if bundle.label in _CANONICAL_SUMMARY_LABELS:
+        return
+    try:
+        raw = _read_json(bundle.path, label=bundle.label)
+    except ExclusionAuditError:
+        return
+    for row in _record_rows(raw):
+        if not isinstance(row, Mapping):
+            continue
+        namespace, fields = _row_identity_fields(row, source_label=bundle.label)
+        if fields:
+            yield row, namespace, fields
+
+
+def _row_canonical_proof(
+    bundle: p10.IdentityBundle,
+    row: Mapping[str, Any],
+    fields: Mapping[str, set[str | int]],
+) -> frozenset[str]:
+    """Return proof carried by this canonical row itself.
+
+    This never infers a sequence hash from a record ID, duplicate alias, or
+    H129.  TRR2's loader has verified its active digest, so eligible Finance
+    rows prove H128 while Pile rows retain the producer-bound H40 convention.
+    """
+    proof: set[str] = set()
+    if fields.get("h128_sequence_sha256"):
+        proof.add("h128")
+    if fields.get("trr0002_h40_token_ids_sha256"):
+        proof.add("h40")
+    geometry = _row_geometry(row)
+    if bundle.label == "trr0002_public_finance_records":
+        if fields.get("trr0002_active_token_ids_sha256") and geometry is not None and geometry >= 128:
+            proof.add("h128")
+    if bundle.label == "trr0002_public_pile_records":
+        tokens = row.get("token_ids")
+        if isinstance(tokens, list) and len(tokens) == 40 and all(isinstance(item, int) and not isinstance(item, bool) for item in tokens):
+            proof.add("h40")
+    if geometry is not None and geometry < 128:
+        proof.add("short")
+    return frozenset(proof)
+
+
+def _build_canonical_row_anchor_index(
+    bundles: Sequence[p10.IdentityBundle],
+) -> dict[str, Any]:
+    """Build an index whose entries each carry their own canonical proof."""
+    global_index: dict[str, dict[str, list[tuple[str, tuple[str, ...]]]]] = {}
+    source_index: dict[str, list[tuple[p10.Namespace, tuple[str, tuple[str, ...]]]]] = {}
+    proof_counts: dict[str, Counter[str]] = {}
+    row_counts: Counter[str] = Counter()
+    for bundle in bundles:
+        if bundle.label not in _CANONICAL_ROW_SOURCE_LABELS:
+            continue
+        for row, namespace, fields in _iter_identity_rows(bundle):
+            proof = _row_canonical_proof(bundle, row, fields)
+            if not proof:
+                continue
+            row_counts[bundle.label] += 1
+            counts = proof_counts.setdefault(bundle.label, Counter())
+            for item in proof:
+                counts[item] += 1
+            reference = (bundle.label, tuple(sorted(proof)))
+            for field, values in fields.items():
+                if field == "h129_sequence_sha256":
+                    continue
+                for value in values:
+                    if field == "source_index":
+                        source_index.setdefault(str(value), []).append((namespace, reference))
+                    else:
+                        global_index.setdefault(field, {}).setdefault(str(value), []).append(reference)
+    return {
+        "global": global_index,
+        "source_index": source_index,
+        "proof_counts": {label: dict(sorted(counts.items())) for label, counts in sorted(proof_counts.items())},
+        "row_counts": dict(sorted(row_counts.items())),
+        "source_labels": sorted(_CANONICAL_ROW_SOURCE_LABELS),
+    }
+
+
+def _canonical_anchor_matches(
+    namespace: p10.Namespace,
+    fields: Mapping[str, set[str | int]],
+    index: Mapping[str, Any],
+) -> set[tuple[str, tuple[str, ...]]]:
+    matches: set[tuple[str, tuple[str, ...]]] = set()
+    global_index = index.get("global", {})
+    source_index = index.get("source_index", {})
+    # Record IDs and namespace-scoped indices are useful diagnostics, but do
+    # not prove that an original/control row has the same rendered sequence as
+    # an enriched/replacement row.  Require a shared producer-bound content or
+    # sequence commitment for a canonical join.
+    strong_fields = {
+        "rendered_sha256",
+        "tokenized_record_sha256",
+        "h128_sequence_sha256",
+        "trr0002_active_token_ids_sha256",
+        "trr0002_h40_token_ids_sha256",
+    }
+    for field, values in fields.items():
+        if field not in strong_fields:
+            continue
+        for value in values:
+            matches.update(global_index.get(field, {}).get(str(value), ()))
+    return matches
+
+
 def _reconcile_legacy_aliases(
     bundles: Sequence[p10.IdentityBundle], *, root: Path
 ) -> dict[str, Any]:
-    """Report row-level aliases without reopening payloads or emitting identities."""
+    """Report aliases and fail-closed row-level canonical coverage.
+
+    Historical alias counters remain for provenance, but closure uses only
+    row-level canonical proofs and all eligible/unresolved rows.  A duplicate
+    in two noncanonical ledgers cannot close a row.
+    """
     replication, replication_descriptors = _load_replication_metadata(root)
     all_bundles = [*bundles, *replication]
-    # Only these producer-bound bundles are canonical anchors for a legacy
-    # row.  A duplicate row in two noncanonical ledgers is not evidence of a
-    # usable exclusion identity.
-    canonical_anchor_labels = {
-        "trr0002_public_finance_records", "trr0002_public_pile_records",
-        "trr0004_selection_plan", "trr0005_enriched_fit_public_token_identity",
-        "trr0006_selection", "trr0006_p04_opaque",
-        "trr0006_p04_targetfit_public_identity", "trr0007_selection",
-        "trr0007_p06_opaque", "trr0007_prefix_exclusions",
-        "trr0008_p06_opaque", "trr0008_selection", "trr0008_selection_opaque",
-        "trr0009_original_selection", "trr0009_opaque_reservation",
-        "trr0009_p08_opaque", "trr0009_selection_v2",
-        "trr_p09_nested_b1", "pr20_source_selection",
-    }
-    canonical_anchors = [bundle for bundle in all_bundles if bundle.label in canonical_anchor_labels]
+    anchor_index = _build_canonical_row_anchor_index(all_bundles)
     per_source: list[dict[str, Any]] = []
     unique_uncovered_keys: set[tuple[Any, ...]] = set()
     global_uncovered_keys: set[tuple[Any, ...]] = set()
-    total_rows = 0
-    total_matched = 0
+    total_rows = total_matched = total_canonical = total_without_canonical = 0
+    total_short = total_h40 = total_eligible_without = total_unresolved = 0
     for bundle in all_bundles:
-        if bundle.label.startswith("trr0006_p04"):
-            continue
-        try:
-            value = _read_json(bundle.path, label=bundle.label)
-        except ExclusionAuditError:
-            continue
-        raw_rows = value.get("records") if isinstance(value, Mapping) and isinstance(value.get("records"), list) else value
-        if not isinstance(raw_rows, list):
-            continue
-        row_count = 0
-        matched_count = 0
+        row_count = matched_count = rows_with_canonical_anchor = rows_without_canonical_anchor = 0
         field_matches: Counter[str] = Counter()
+        anchor_source_matches: Counter[str] = Counter()
         uncovered_keys: set[tuple[Any, ...]] = set()
-        uncovered_h128_eligible = 0
-        uncovered_short = 0
-        uncovered_geometry_unknown = 0
-        uncovered_direct_h128 = 0
-        uncovered_with_own_bound_identity = 0
-        uncovered_without_own_bound_identity = 0
-        rows_with_canonical_anchor = 0
-        rows_without_canonical_anchor = 0
-        unique_uncovered_without_canonical_anchor: set[tuple[Any, ...]] = set()
-        for row in raw_rows:
-            if not isinstance(row, Mapping):
-                continue
-            namespace, fields = _row_identity_fields(row, source_label=bundle.label)
-            if not fields:
-                continue
+        verified_short_rows = verified_h40_rows = eligible_without_canonical_anchor = 0
+        unresolved_without_canonical_anchor = short_without_canonical_anchor = 0
+        unknown_without_canonical_anchor = uncovered_h128_eligible = uncovered_short = uncovered_geometry_unknown = 0
+        uncovered_direct_h128 = uncovered_with_own_bound_identity = uncovered_without_own_bound_identity = 0
+        for row, namespace, fields in _iter_identity_rows(bundle):
             row_count += 1
-            anchor_matches = _row_matches_other_bundles(namespace, fields, canonical_anchors)
+            geometry = _row_geometry(row)
+            if geometry is not None and geometry < 128:
+                verified_short_rows += 1
+            own_proof = _row_canonical_proof(bundle, row, fields)
+            if "h40" in own_proof:
+                verified_h40_rows += 1
+            if "h128" in own_proof:
+                uncovered_direct_h128 += 1
+            anchor_matches = _canonical_anchor_matches(namespace, fields, anchor_index)
             if anchor_matches:
                 rows_with_canonical_anchor += 1
+                anchor_source_matches.update(label for label, _proof in anchor_matches)
             else:
                 rows_without_canonical_anchor += 1
-            others = [candidate for candidate in all_bundles if candidate is not bundle]
-            matches = _row_matches_other_bundles(namespace, fields, others)
-            field_matches.update(matches)
-            if matches:
-                matched_count += 1
-            else:
+                if geometry is not None and geometry >= 128:
+                    eligible_without_canonical_anchor += 1
+                    uncovered_h128_eligible += 1
+                elif geometry is not None and geometry < 128:
+                    short_without_canonical_anchor += 1
+                    uncovered_short += 1
+                else:
+                    unknown_without_canonical_anchor += 1
+                    uncovered_geometry_unknown += 1
+                if "h40" not in own_proof and not (geometry is not None and geometry < 128):
+                    unresolved_without_canonical_anchor += 1
                 key = _row_key(namespace, fields)
                 if key is not None:
-                    uncovered_keys.add(key)
                     unique_uncovered_keys.add((bundle.label, *key))
                     global_uncovered_keys.add(key)
-                    if not anchor_matches:
-                        unique_uncovered_without_canonical_anchor.add(key)
-                # A row without a duplicate in another source is still a
-                # complete exclusion when its own verified identity is bound.
-                # Count this separately from duplicate-alias coverage.
-                if _row_matches_other_bundles(namespace, fields, [bundle]):
-                    uncovered_with_own_bound_identity += 1
-                else:
-                    uncovered_without_own_bound_identity += 1
-                geometry = row.get("valid_tokens")
-                if not isinstance(geometry, int):
-                    geometry = row.get("full_token_count")
-                if not isinstance(geometry, int):
-                    geometry = row.get("active_token_count")
-                if not isinstance(geometry, int) and isinstance(row.get("post_bos_token_count"), int):
-                    geometry = int(row["post_bos_token_count"]) + 1
-                if isinstance(geometry, int):
-                    if geometry >= 128:
-                        uncovered_h128_eligible += 1
+                    uncovered_keys.add(key)
+                    if fields:
+                        uncovered_with_own_bound_identity += 1
                     else:
-                        uncovered_short += 1
-                else:
-                    uncovered_geometry_unknown += 1
-                if fields.get("h128_sequence_sha256"):
-                    uncovered_direct_h128 += 1
+                        uncovered_without_own_bound_identity += 1
+            others = [candidate for candidate in all_bundles if candidate is not bundle]
+            matches = _row_matches_other_bundles(namespace, fields, others)
+            if matches:
+                matched_count += 1
+                field_matches.update(matches)
         total_rows += row_count
         total_matched += matched_count
+        total_canonical += rows_with_canonical_anchor
+        total_without_canonical += rows_without_canonical_anchor
+        total_short += verified_short_rows
+        total_h40 += verified_h40_rows
+        total_eligible_without += eligible_without_canonical_anchor
+        total_unresolved += unresolved_without_canonical_anchor
         per_source.append({
             "label": bundle.label,
             "role": bundle.role,
@@ -1538,26 +1660,43 @@ def _reconcile_legacy_aliases(
             "unique_uncovered_rows_without_own_bound_identity": uncovered_without_own_bound_identity,
             "rows_with_verified_canonical_anchor": rows_with_canonical_anchor,
             "rows_without_verified_canonical_anchor": rows_without_canonical_anchor,
-            "unique_uncovered_rows_without_verified_canonical_anchor": len(unique_uncovered_without_canonical_anchor),
-            "canonical_anchor_labels": sorted(canonical_anchor_labels),
+            "verified_short_rows_h128_inapplicable": verified_short_rows,
+            "verified_h40_rows": verified_h40_rows,
+            "eligible_rows_without_verified_canonical_anchor": eligible_without_canonical_anchor,
+            "unresolved_rows_without_verified_canonical_anchor": unresolved_without_canonical_anchor,
+            "short_rows_without_verified_canonical_anchor": short_without_canonical_anchor,
+            "unknown_geometry_rows_without_verified_canonical_anchor": unknown_without_canonical_anchor,
+            "canonical_anchor_labels": sorted(anchor_source_matches),
             "alias_match_fields": dict(sorted(field_matches.items())),
-            "status": "PASS_ALL_ROWS_HAVE_OTHER_ALIAS" if row_count and not uncovered_keys else ("UNIQUE_ROWS_REMAIN" if uncovered_keys else "NO_INDIVIDUAL_ROWS"),
+            "status": (
+                "PASS_ALL_ELIGIBLE_ROWS_ANCHORED"
+                if row_count and eligible_without_canonical_anchor == 0 and unresolved_without_canonical_anchor == 0
+                else ("UNRESOLVED_CANONICAL_ROWS" if unresolved_without_canonical_anchor else ("SHORT_ROWS_UNANCHORED" if row_count else "NO_INDIVIDUAL_ROWS"))
+            ),
         })
     return {
-        "status": "PARTIAL_UNIQUE_ROW_ALIAS_RECONCILIATION",
+        "status": "PASS_ROW_CANONICAL_ANCHOR_RECONCILIATION" if total_unresolved == 0 and total_eligible_without == 0 else "PARTIAL_ROW_CANONICAL_ANCHOR_RECONCILIATION",
         "source_count_including_replication_metadata": len(all_bundles),
         "primary_source_count": len(bundles),
         "rows_with_identity_across_sources": total_rows,
         "rows_with_alias_in_other_bound_source": total_matched,
+        "rows_with_verified_canonical_anchor": total_canonical,
+        "rows_without_verified_canonical_anchor": total_without_canonical,
+        "verified_short_rows_h128_inapplicable": total_short,
+        "verified_h40_rows": total_h40,
+        "eligible_rows_without_verified_canonical_anchor": total_eligible_without,
+        "unresolved_rows_without_verified_canonical_anchor": total_unresolved,
         "unique_uncovered_source_row_keys": len(unique_uncovered_keys),
         "unique_uncovered_identity_keys_across_sources": len(global_uncovered_keys),
-        "unique_uncovered_identity_keys_without_verified_canonical_anchor": sum(
-            int(item.get("unique_uncovered_rows_without_verified_canonical_anchor", 0))
-            for item in per_source
-        ),
+        "unique_uncovered_identity_keys_without_verified_canonical_anchor": len(unique_uncovered_keys),
         "replication_metadata": replication_descriptors,
+        "canonical_row_anchor_index": {
+            "source_labels": anchor_index["source_labels"],
+            "row_counts_by_source": anchor_index["row_counts"],
+            "proof_counts_by_source": anchor_index["proof_counts"],
+        },
         "per_source": per_source,
-        "interpretation": "A row without an alias is still excluded by its own bound identity fields when present; this report only identifies unique rows whose identity is not duplicated in another bound source. It does not infer H128 from record IDs or rendered hashes.",
+        "interpretation": "Only a row-level match to a canonical record carrying its own H128, verified short geometry, or producer-bound H40 counts as an anchor. H129, record-ID membership in a noncanonical bundle, duplicate aliases, and aggregate opaque arrays do not close an eligible row.",
     }
 
 def _sequence_gap_report(
@@ -1746,9 +1885,26 @@ def _descriptor_pointer(root: Path, pointer: Mapping[str, Any], *, label: str) -
     return {"label": label, "status": "PASS", "path": path_value, "sha256": actual_sha, "bytes": actual_bytes}
 
 
+def _pointer_target(root: Path, checked: Mapping[str, Any]) -> Path | None:
+    raw = checked.get("path")
+    if not isinstance(raw, str):
+        return None
+    path = Path(raw)
+    return (path if path.is_absolute() else root / path).resolve()
+
+
 def _load_descriptor_pointer_proof(root: Path) -> dict[str, Any]:
-    """Bind calibration/validation pointers without treating receipts as rows."""
-    proof: dict[str, Any] = {"schema": "token-reconstruction.trr-p11-descriptor-pointer-proof.v1", "sources": []}
+    """Bind descriptor-only sources to concrete producer rules and counts.
+
+    A hash-valid pointer is necessary but insufficient.  The proof records the
+    source rule, expected row counts, and the exact identity ledger covered by
+    that rule.  Unavailable pointers therefore remain failures and are never
+    treated as harmless external assets.
+    """
+    proof: dict[str, Any] = {
+        "schema": "token-reconstruction.trr-p11-descriptor-pointer-proof.v2",
+        "sources": [],
+    }
     frozen_path = root / "experiments/TRR-0002/calibration/frozen_calibration.json"
     frozen = _read_json(frozen_path, label="TRR-0002 frozen calibration")
     frozen_pointers = []
@@ -1756,13 +1912,72 @@ def _load_descriptor_pointer_proof(root: Path) -> dict[str, Any]:
         pointer = frozen.get(key)
         if isinstance(pointer, Mapping):
             frozen_pointers.append(_descriptor_pointer(root, pointer, label=f"trr0002_calibration.{key}"))
+    calibration_rule: dict[str, Any] = {"status": "FAIL"}
+    by_label = {str(item.get("label")): item for item in frozen_pointers}
+    fit_check = by_label.get("trr0002_calibration.fit_result", {})
+    plan_check = by_label.get("trr0002_calibration.plan", {})
+    selector_check = by_label.get("trr0002_calibration.selector_source", {})
+    # The fit-result artifact contains outcomes, not source identity.  Its
+    # absence is recorded but may be nonblocking when the frozen plan,
+    # selector source, and covered source ledger prove the actual rule/counts.
+    calibration_pointer_ok = (
+        plan_check.get("status") == "PASS"
+        and selector_check.get("status") == "PASS"
+        and fit_check.get("status") in {"PASS", "UNAVAILABLE_POINTER"}
+    )
+    if frozen_pointers and calibration_pointer_ok:
+        fit_path = _pointer_target(root, fit_check)
+        plan_path = _pointer_target(root, plan_check)
+        fit_value = _read_json(fit_path, label="TRR-0002 calibration fit") if fit_path else {}
+        plan_value = _read_json(plan_path, label="TRR-0002 calibration plan") if plan_path else {}
+        public = plan_value.get("public_development") if isinstance(plan_value, Mapping) else None
+        source_plan_path = root / "experiments/TRR-0001/plan.json"
+        try:
+            source_plan = _read_json(source_plan_path, label="TRR-0001 public source plan")
+        except ExclusionAuditError:
+            source_plan = {}
+        splits = source_plan.get("data", {}).get("selection", {}).get("splits", {}) if isinstance(source_plan.get("data"), Mapping) else {}
+        development = splits.get("development", {}) if isinstance(splits, Mapping) else {}
+        update = splits.get("target_update_train", {}) if isinstance(splits, Mapping) else {}
+        def split_proof(split: Any, expected_count: int) -> bool:
+            if not isinstance(split, Mapping) or split.get("count") != expected_count or not isinstance(split.get("records"), list):
+                return False
+            ids = [row.get("record_id") for row in split["records"] if isinstance(row, Mapping)]
+            digest = hashlib.sha256("\n".join(ids).encode("utf-8")).hexdigest() if ids else None
+            return len(ids) == expected_count and all(isinstance(item, str) and item for item in ids) and split.get("record_ids_sha256") == digest
+
+        record_commitments_ok = split_proof(development, 32) and split_proof(update, 64)
+        fit_conditions_ok = fit_check.get("status") == "UNAVAILABLE_POINTER" or fit_value.get("fit_conditions") == frozen.get("fit_conditions")
+        source_rule_ok = (
+            isinstance(public, Mapping)
+            and public.get("source") == "the 32 public development records fixed in experiments/TRR-0001/plan.json"
+            and isinstance(public.get("update_training_source"), str)
+            and public.get("update_training_source", "").startswith("the 64 public target_update_train records fixed in experiments/TRR-0001/plan.json")
+            and public.get("sequence_geometry") == "32 records by 40 tokens including BOS"
+            and fit_conditions_ok
+            and record_commitments_ok
+        )
+        calibration_rule = {
+            "status": "PASS" if source_rule_ok else "FAIL",
+            "covered_identity_sources": ["trr0001_plan"] if source_rule_ok else [],
+            "source_plan": {"path": "experiments/TRR-0001/plan.json", "sha256": p10.sha256_file(source_plan_path) if source_plan_path.is_file() else None},
+            "development_count": development.get("count"),
+            "target_update_train_count": update.get("count"),
+            "fit_result_pointer_status": fit_check.get("status"),
+            "fit_conditions": fit_value.get("fit_conditions") if fit_value else frozen.get("fit_conditions"),
+            "record_commitments_ok": record_commitments_ok,
+            "rule": public.get("source") if isinstance(public, Mapping) else None,
+            "update_rule": public.get("update_training_source") if isinstance(public, Mapping) else None,
+        }
     proof["sources"].append({
         "label": "trr0002_calibration",
         "pointer_checks": frozen_pointers,
-        "identity_rows": "none_declared_in_calibration_receipt",
-        "covered_identity_sources": ["trr0002_public_finance_records", "trr0002_public_pile_records"],
-        "status": "PASS_POINTERS_OR_EXTERNAL_ASSET_BOUND" if all(item["status"] in {"PASS", "UNAVAILABLE_POINTER"} for item in frozen_pointers) else "FAIL",
+        "identity_rows": "none_declared; source rule is bound to TRR-0001 plan",
+        "covered_identity_sources": calibration_rule.get("covered_identity_sources", []),
+        "source_rule_proof": calibration_rule,
+        "status": "PASS" if calibration_rule.get("status") == "PASS" else "FAIL",
     })
+
     validation_path = root / "experiments/TRR-0005/public_validation_selection.json"
     validation = _read_json(validation_path, label="TRR-0005 public validation selection")
     validation_pointers = []
@@ -1777,28 +1992,97 @@ def _load_descriptor_pointer_proof(root: Path) -> dict[str, Any]:
             for index, candidate in enumerate(entry.get("candidates", [])):
                 if isinstance(candidate, Mapping) and isinstance(candidate.get("curve_file"), Mapping):
                     validation_pointers.append(_descriptor_pointer(root, candidate["curve_file"], label=f"trr0005_public_validation_selection.{distribution}.curve_{index}"))
+    validation_rule: dict[str, Any] = {"status": "FAIL"}
+    evidence_checked = next((item for item in validation_pointers if item.get("label", "").endswith("fit_evidence")), None)
+    evidence_path = _pointer_target(root, evidence_checked or {})
+    if validation_pointers and all(item.get("status") == "PASS" for item in validation_pointers) and evidence_path:
+        evidence = _read_json(evidence_path, label="TRR-0005 fit evidence")
+        source_paths = {
+            "original": root / "experiments/TRR-0005/public_activation_v1/original_fit_records.json",
+            "enriched": root / "experiments/TRR-0005/public_activation_v1/enriched_fit_records.json",
+            "validation": root / "experiments/TRR-0004/fit/adapter_v2/affine_validation_records.json",
+        }
+        expected_sha = {label: p10.sha256_file(path) if path.is_file() else None for label, path in source_paths.items()}
+        dist_results: dict[str, Any] = {}
+        for distribution in ("original", "enriched"):
+            entry = evidence.get("distributions", {}).get(distribution, {}) if isinstance(evidence.get("distributions"), Mapping) else {}
+            metadata = entry.get("data_metadata", {}) if isinstance(entry, Mapping) else {}
+            payload = metadata.get("fit_payload", {}) if isinstance(metadata, Mapping) else {}
+            resources = payload.get("resources", {}) if isinstance(payload, Mapping) else {}
+            fit_resource = resources.get("fit_records", {}) if isinstance(resources, Mapping) else {}
+            validation_resource = resources.get("validation_records", {}) if isinstance(resources, Mapping) else {}
+            dist_results[distribution] = {
+                "fit_record_count": payload.get("fit_record_count"),
+                "fit_geometry": payload.get("geometry", {}).get("fit") if isinstance(payload.get("geometry"), Mapping) else None,
+                "validation_geometry": payload.get("geometry", {}).get("validation") if isinstance(payload.get("geometry"), Mapping) else None,
+                "fit_records_sha256": fit_resource.get("sha256"),
+                "validation_records_sha256": validation_resource.get("sha256"),
+                "fit_records_match": fit_resource.get("sha256") == expected_sha.get(distribution),
+                "validation_records_match": validation_resource.get("sha256") == expected_sha.get("validation"),
+            }
+        rule_text = validation.get("selection_rule")
+        rule_ok = isinstance(rule_text, str) and "maximum public validation-style accuracy mean" in rule_text and "ties use the earliest" in rule_text
+        selection_ok = all(
+            isinstance(entry, Mapping)
+            and isinstance(entry.get("selected_method_id"), str)
+            and isinstance(entry.get("selected_step"), int)
+            for entry in (distributions or {}).values()
+        ) if isinstance(distributions, Mapping) else False
+        counts_ok = all(
+            result.get("fit_record_count") == 1200
+            and result.get("fit_geometry") == [1200, 192, 2048]
+            and result.get("validation_geometry") == [48, 192, 2048]
+            and result.get("fit_records_match") is True
+            and result.get("validation_records_match") is True
+            for result in dist_results.values()
+        ) and set(dist_results) == {"original", "enriched"}
+        validation_rule = {
+            "status": "PASS" if rule_ok and selection_ok and counts_ok and evidence.get("status") == "JOINT_FIT_COMPLETE_NO_FINAL_EVALUATION" else "FAIL",
+            "covered_identity_sources": ["trr0005_original_fit", "trr0005_enriched_fit", "trr0004_adapter_v2_validation"] if rule_ok and selection_ok and counts_ok else [],
+            "selection_rule": rule_text,
+            "distribution_proof": dist_results,
+        }
     proof["sources"].append({
         "label": "trr0005_public_validation_selection",
         "pointer_checks": validation_pointers,
-        "identity_rows": "none_declared_in_selection_receipt",
-        "covered_identity_sources": ["trr0005_selection_plan", "trr0005_enriched_fit_public_token_identity"],
-        "status": "PASS" if validation_pointers and all(item["status"] == "PASS" for item in validation_pointers) else "FAIL",
+        "identity_rows": "none_declared; fit evidence is bound to both 1200-row ledgers and 48-row validation metadata",
+        "covered_identity_sources": validation_rule.get("covered_identity_sources", []),
+        "source_rule_proof": validation_rule,
+        "status": "PASS" if validation_rule.get("status") == "PASS" else "FAIL",
     })
+
     p09_path = root / "experiments/TRR-P09/setup/public-validation-r1-audit.json"
     p09 = _read_json(p09_path, label="TRR-P09 public validation audit")
     p09_input = p09.get("inputs", {}).get("source_selection") if isinstance(p09.get("inputs"), Mapping) else None
     p09_check = _descriptor_pointer(root, p09_input, label="trr_p09_public_validation_audit.source_selection") if isinstance(p09_input, Mapping) else {"label": "trr_p09_public_validation_audit.source_selection", "status": "MALFORMED_POINTER"}
+    p09_rule: dict[str, Any] = {"status": "FAIL"}
+    p09_target = _pointer_target(root, p09_check)
+    if p09_check.get("status") == "PASS" and p09_target:
+        selection = _read_json(p09_target, label="TRR-0009 selection ledger")
+        record_groups = selection.get("selection_rule", {}).get("records") if isinstance(selection.get("selection_rule"), Mapping) else None
+        rows = [row for group in record_groups.values() for row in group] if isinstance(record_groups, Mapping) and all(isinstance(group, list) for group in record_groups.values()) else []
+        fields_ok = bool(rows) and all(isinstance(row, Mapping) and isinstance(row.get("record_id"), str) and _is_sha256(row.get("public_record_sha256")) and _is_sha256(row.get("final_sequence_sha256")) for row in rows)
+        p09_rule = {
+            "status": "PASS" if fields_ok and len(rows) == 384 else "FAIL",
+            "covered_identity_sources": ["trr0009_selection_v2"] if fields_ok and len(rows) == 384 else [],
+            "record_count": len(rows),
+            "required_fields": ["record_id", "public_record_sha256", "final_sequence_sha256"],
+            "selection_rule_records_present": isinstance(record_groups, Mapping),
+        }
     proof["sources"].append({
         "label": "trr_p09_public_validation_audit",
         "pointer_checks": [p09_check],
-        "identity_rows": "validation output pointers are unavailable; source selection input is the exclusion ledger",
-        "covered_identity_sources": ["trr0009_selection_v2", "trr_p09_nested_b1"],
-        "status": "PASS" if p09_check["status"] == "PASS" else "FAIL",
+        "identity_rows": "selection ledger rows are individually hash-bound",
+        "covered_identity_sources": p09_rule.get("covered_identity_sources", []),
+        "source_rule_proof": p09_rule,
+        "status": "PASS" if p09_rule.get("status") == "PASS" else "FAIL",
     })
-    proof["status"] = "PASS_DESCRIPTOR_POINTER_BINDINGS" if all(item["status"] == "PASS" or item["status"] == "PASS_POINTERS_OR_EXTERNAL_ASSET_BOUND" for item in proof["sources"]) else "PARTIAL_DESCRIPTOR_POINTER_BINDINGS"
+    proof["proven_descriptor_labels"] = sorted(
+        item["label"] for item in proof["sources"] if item.get("status") == "PASS"
+    )
+    proof["status"] = "PASS_DESCRIPTOR_POINTER_BINDINGS" if len(proof["proven_descriptor_labels"]) == len(proof["sources"]) else "PARTIAL_DESCRIPTOR_POINTER_BINDINGS"
     proof["source_identity_pointer_bindings_complete"] = proof["status"] == "PASS_DESCRIPTOR_POINTER_BINDINGS"
     return proof
-
 
 def _build_closure_assessment(
     *,
@@ -1833,17 +2117,24 @@ def _build_closure_assessment(
         }
         for name, source_labels in required_classes.items()
     }
-    alias_rows = list(alias_reconciliation.get("per_source", ()))
-    alias_by_label = {str(item.get("label")): item for item in alias_rows if isinstance(item, Mapping)}
-    residual_rows = sum(int(item.get("unique_uncovered_rows_without_verified_canonical_anchor", 0)) for item in alias_rows)
-    unique_without_bound = [
+    alias_rows = [item for item in alias_reconciliation.get("per_source", ()) if isinstance(item, Mapping)]
+    residual_sources = [
         {
             "label": item.get("label"),
-            "residual_unique_keys": int(item.get("unique_uncovered_rows_without_verified_canonical_anchor", 0)),
+            "rows_with_identity": int(item.get("rows_with_identity", 0)),
+            "rows_with_verified_canonical_anchor": int(item.get("rows_with_verified_canonical_anchor", 0)),
+            "rows_without_verified_canonical_anchor": int(item.get("rows_without_verified_canonical_anchor", 0)),
+            "verified_short_rows_h128_inapplicable": int(item.get("verified_short_rows_h128_inapplicable", 0)),
+            "verified_h40_rows": int(item.get("verified_h40_rows", 0)),
+            "eligible_rows_without_verified_canonical_anchor": int(item.get("eligible_rows_without_verified_canonical_anchor", 0)),
+            "unresolved_rows_without_verified_canonical_anchor": int(item.get("unresolved_rows_without_verified_canonical_anchor", 0)),
         }
         for item in alias_rows
-        if int(item.get("unique_uncovered_rows_without_verified_canonical_anchor", 0))
+        if int(item.get("unresolved_rows_without_verified_canonical_anchor", 0)) or int(item.get("eligible_rows_without_verified_canonical_anchor", 0))
     ]
+    residual_unresolved = int(alias_reconciliation.get("unresolved_rows_without_verified_canonical_anchor", 0))
+    residual_eligible = int(alias_reconciliation.get("eligible_rows_without_verified_canonical_anchor", 0))
+    residual_without_anchor = int(alias_reconciliation.get("rows_without_verified_canonical_anchor", 0))
     unknown_row_fields = _unknown_identity_row_fields([*bundles, *recovered_bundles])
     required_labels = {spec.label for spec in p10.source_specs()}
     explicit_inventory = labels == required_labels and len(bundles) == len(required_labels)
@@ -1866,12 +2157,16 @@ def _build_closure_assessment(
         and int(target.get("record_count", 0)) == 256
         and replication_proof.get("tensor_payload_opened") is False
     )
-    pointer_only_allowed = set(descriptor_only_labels) | {
-        item.get("label") for item in AGGREGATE_BINDINGS if isinstance(item, Mapping)
-    } | {"trr0002_calibration", "trr0005_public_validation_selection", "trr_p09_public_validation_audit"}
+    descriptor_proven = set(descriptor_pointer_proof.get("proven_descriptor_labels", ()))
+    aggregate_allowed = {item.get("label") for item in AGGREGATE_BINDINGS if isinstance(item, Mapping)} if aggregate.get("status") == "PASS_ALL_SIX" else set()
+    if aggregate_allowed:
+        aggregate_allowed.add("pr20_source_selection_binding")
+    pointer_only_allowed = descriptor_proven | aggregate_allowed
     unresolved_identity_gaps = [
         dict(item) for item in identity_gaps if item.get("label") not in pointer_only_allowed
     ]
+    all_eligible_anchored = residual_eligible == 0
+    no_unresolved_identity_rows = residual_unresolved == 0
     tests = {
         "explicit_source_inventory": explicit_inventory,
         "required_source_classes": all(item["status"] == "PASS" for item in class_results.values()),
@@ -1881,14 +2176,24 @@ def _build_closure_assessment(
         "canonical_p05_and_targetfit_recovery": canonical_recovery,
         "replication_inputs_exact": bool(replication_inputs) and replication_proof.get("tensor_payload_opened") is False,
         "descriptor_pointer_bindings": descriptor_pointer_proof.get("source_identity_pointer_bindings_complete") is True,
-        "legacy_unique_rows_have_verified_canonical_anchor": residual_rows == 0,
+        "all_eligible_rows_have_verified_canonical_anchor": all_eligible_anchored,
+        "no_unresolved_identity_rows": no_unresolved_identity_rows,
+        # Kept as an explicit compatibility label, but now uses all row-level
+        # residuals rather than the prior unique-key collapse.
+        "legacy_unique_rows_have_verified_canonical_anchor": all_eligible_anchored and no_unresolved_identity_rows,
         "no_row_level_unknown_identity_keys": not unknown_row_fields,
         "no_unresolved_identity_pointer_gaps": not unresolved_identity_gaps,
         "p03_contract_exclusion": True,
     }
     blockers: list[dict[str, Any]] = []
-    if not tests["legacy_unique_rows_have_verified_canonical_anchor"]:
-        blockers.append({"reason": "legacy rows without any verified canonical H128/H129/H40 anchor", "rows": unique_without_bound})
+    if residual_unresolved or residual_eligible:
+        blockers.append({
+            "reason": "rows without a verified canonical row-level H128/H40/short proof",
+            "rows_without_verified_canonical_anchor": residual_without_anchor,
+            "eligible_rows_without_verified_canonical_anchor": residual_eligible,
+            "unresolved_rows_without_verified_canonical_anchor": residual_unresolved,
+            "per_source": residual_sources,
+        })
     if unknown_row_fields:
         blockers.append({"reason": "row-level unknown identity fields", "fields": unknown_row_fields})
     if unresolved_identity_gaps:
@@ -1903,17 +2208,23 @@ def _build_closure_assessment(
         "legacy_alias_summary": {
             "prior_unique_identity_keys": int(alias_reconciliation.get("unique_uncovered_identity_keys_across_sources", 0)),
             "prior_unique_source_row_keys": int(alias_reconciliation.get("unique_uncovered_source_row_keys", 0)),
+            "rows_with_identity": int(alias_reconciliation.get("rows_with_identity_across_sources", 0)),
+            "rows_without_verified_canonical_anchor": residual_without_anchor,
             "rows_covered_by_own_bound_identity": sum(int(item.get("unique_uncovered_rows_with_own_bound_identity", 0)) for item in alias_rows),
-            "rows_covered_by_verified_canonical_anchor": sum(int(item.get("rows_with_verified_canonical_anchor", 0)) for item in alias_rows),
-            "residual_unique_rows_without_verified_canonical_anchor": residual_rows,
-            "sources_with_residual_rows": unique_without_bound,
+            "rows_covered_by_verified_canonical_anchor": int(alias_reconciliation.get("rows_with_verified_canonical_anchor", 0)),
+            "verified_short_rows_h128_inapplicable": int(alias_reconciliation.get("verified_short_rows_h128_inapplicable", 0)),
+            "verified_h40_rows": int(alias_reconciliation.get("verified_h40_rows", 0)),
+            "eligible_rows_without_verified_canonical_anchor": residual_eligible,
+            "unresolved_rows_without_verified_canonical_anchor": residual_unresolved,
+            "residual_unique_rows_without_verified_canonical_anchor": int(alias_reconciliation.get("unique_uncovered_identity_keys_without_verified_canonical_anchor", 0)),
+            "sources_with_residual_rows": residual_sources,
         },
         "unknown_identity_row_fields": unknown_row_fields,
         "descriptor_pointer_proof": descriptor_pointer_proof,
+        "descriptor_pointer_only_allowed": sorted(pointer_only_allowed),
         "unresolved_identity_gaps": unresolved_identity_gaps,
         "p03": {"status": "INTENTIONALLY_EXCLUDED_AND_UNOPENED", "coverage_complete_definition": "accessible explicit source inventory only"},
     }
-
 
 def _build_closure_table(
     *,
@@ -1938,19 +2249,15 @@ def _build_closure_table(
         direct_rows = int(alias.get("rows_with_verified_canonical_anchor", 0))
         no_anchor_rows = int(alias.get("rows_without_verified_canonical_anchor", 0))
         anchor_labels = alias.get("canonical_anchor_labels", [])
-        # P04's strict opaque loader and the recovered targetfit loader bind
-        # identities outside the generic row walker. Count their direct rows
-        # from the verified identity fields instead of reporting a misleading
-        # zero merely because alias reconciliation skips the opaque payload.
-        if bundle.label.startswith("trr0006_p04") and not alias:
-            direct_rows = max(
-                counts.get("record_id", 0),
-                counts.get("rendered_sha256", 0),
-                counts.get("h128_sequence_sha256", 0),
-                counts.get("h129_sequence_sha256", 0),
-            )
-            no_anchor_rows = 0
-            anchor_labels = [bundle.label]
+        row_totals = {
+            "rows_with_identity": int(alias.get("rows_with_identity", 0)),
+            "rows_with_verified_canonical_anchor": direct_rows,
+            "rows_without_verified_canonical_anchor": no_anchor_rows,
+            "verified_short_rows_h128_inapplicable": int(alias.get("verified_short_rows_h128_inapplicable", 0)),
+            "verified_h40_rows": int(alias.get("verified_h40_rows", 0)),
+            "eligible_rows_without_verified_canonical_anchor": int(alias.get("eligible_rows_without_verified_canonical_anchor", 0)),
+            "unresolved_rows_without_verified_canonical_anchor": int(alias.get("unresolved_rows_without_verified_canonical_anchor", 0)),
+        }
         rows.append({
             "label": bundle.label,
             "role": bundle.role,
@@ -1962,10 +2269,11 @@ def _build_closure_table(
                 "h128_count": counts.get("h128_sequence_sha256", 0),
                 "h129_count": counts.get("h129_sequence_sha256", 0),
                 "verified_canonical_anchor_labels": anchor_labels,
-                "rows_with_verified_canonical_anchor": direct_rows,
-                "rows_without_verified_canonical_anchor": no_anchor_rows,
+                "row_totals": row_totals,
             },
-            "residual_unique_keys": int(alias.get("unique_uncovered_rows_without_verified_canonical_anchor", 0)),
+            "row_totals": row_totals,
+            "residual_unique_keys": int(alias.get("unique_uncovered_row_keys", 0)),
+            "residual_unresolved_rows": row_totals["unresolved_rows_without_verified_canonical_anchor"],
         })
     return {
         "schema": "token-reconstruction.trr-p11-exclusion-closure-checkpoint.v1",
@@ -1976,6 +2284,9 @@ def _build_closure_table(
         "required_source_classes": completion["required_source_classes"],
         "prior_unique_keys": completion["legacy_alias_summary"]["prior_unique_identity_keys"],
         "residual_unique_keys": completion["legacy_alias_summary"]["residual_unique_rows_without_verified_canonical_anchor"],
+        "rows_without_verified_canonical_anchor": completion["legacy_alias_summary"]["rows_without_verified_canonical_anchor"],
+        "eligible_rows_without_verified_canonical_anchor": completion["legacy_alias_summary"]["eligible_rows_without_verified_canonical_anchor"],
+        "unresolved_rows_without_verified_canonical_anchor": completion["legacy_alias_summary"]["unresolved_rows_without_verified_canonical_anchor"],
         "per_source": rows,
         "blockers": completion["blockers"],
         "access_boundary": {"payload_opened": False, "truth_opened": False, "p03_holdout_accessed": False, "new_selection_started": False},
@@ -2448,7 +2759,7 @@ def build_audit(
                 "PR20 final sources are explicitly development/selection-overlapping and cannot be reused as an independent final panel.",
             ]
             + (["P04 targetfit identities are bound by the exact rendered/H129/H128 recovery export; the retained P04 exchange itself remains counts-only for targetfit."] if targetfit_recovered else ["P04 targetfit public_record_sha256 and truncated_sequence_sha256 arrays remain counts-only until an exact per-record recovery is bound."])
-            + (["All prior unique alias keys are anchored to a verified canonical H128/H129/H40 source or a verified short-row observation; residual unique rows without a canonical anchor: 0."] if completion["legacy_alias_summary"]["residual_unique_rows_without_verified_canonical_anchor"] == 0 else ["Residual unique rows without any bound identity are listed in completion_assessment.blockers."])
+            + (["All eligible identity rows are anchored to a verified canonical row proof; residual eligible/unresolved rows: 0."] if completion["coverage_complete"] else [f"Residual row-level canonical proof gaps remain: {completion['legacy_alias_summary']['eligible_rows_without_verified_canonical_anchor']} eligible rows and {completion['legacy_alias_summary']['unresolved_rows_without_verified_canonical_anchor']} unresolved rows; per-source totals are in completion_assessment.blockers and closure_table."])
             + p04_result_gaps
         ),
         "access_boundary": {
@@ -2479,7 +2790,11 @@ def build_audit(
             "Descriptor-only pointer/count receipts are not interpreted as zero overlap.",
             "The P10 receipts and code remain unchanged; this fresh P11 receipt supersedes no prior artifact.",
         ],
-        "superseded_artifacts": [],
+        "superseded_artifacts": [
+            {"path": "experiments/TRR-P11/exclusions/recovery_identity_audit_r7.json", "sha256": "b0357082d50082231b0b53e61a77a8e9159e72351689993fbe63502d7a7491e3", "reason": "rejected: unique-key alias collapse could report complete while row-level canonical anchors were absent"},
+            {"path": "experiments/TRR-P11/exclusions/identity_union_export_r4.json", "sha256": "449ddfb1f0752be5ebdbc5eba04fff831c28d0bbc1601ad281b21ca1e93e72f3", "reason": "superseded by strong-commitment row-level closure"},
+            {"path": "experiments/TRR-P11/exclusions/closure_checkpoint_r3.json", "sha256": "98ace5624574aad6584bf7d297180441ac8c480e478c9afcbc7957c6fea982e9", "reason": "superseded by fail-closed all-row closure"},
+        ],
     }
     if identity_union_output is not None:
         export = write_identity_union_export(

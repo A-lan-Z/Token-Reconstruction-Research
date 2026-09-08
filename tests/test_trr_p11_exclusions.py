@@ -20,6 +20,7 @@ from scripts.trr_p11.exclusions import (
     validate_panel_selection,
     write_identity_union_export,
     load_identity_union_export,
+    _canonical_anchor_matches,
 )
 
 
@@ -72,6 +73,21 @@ def test_h129_helper_key_is_consumed_without_cross_namespace_match() -> None:
         },
         bundle,
     ) == []
+
+
+def test_row_anchor_requires_shared_strong_commitment() -> None:
+    namespace = Namespace("pile", "fixture", "train", "rev")
+    ref = ("canonical", ("h128",))
+    index = {
+        "global": {
+            "record_id": {"same-id": [ref]},
+            "rendered_sha256": {"a" * 64: [ref]},
+        },
+        "source_index": {},
+    }
+    assert _canonical_anchor_matches(namespace, {"record_id": {"same-id"}}, index) == set()
+    assert _canonical_anchor_matches(namespace, {"h129_sequence_sha256": {"b" * 64}}, index) == set()
+    assert _canonical_anchor_matches(namespace, {"rendered_sha256": {"a" * 64}}, index) == {ref}
 
 
 def test_p04_mapping_is_strict_and_targetfit_is_explicitly_unavailable() -> None:
@@ -224,10 +240,12 @@ def test_full_metadata_audit_is_partial_but_binds_all_aggregate_panels() -> None
     assert audit["selection_release"] is False
     aliases = audit["canonical_sequence_audit"]["legacy_alias_reconciliation"]
     assert aliases["source_count_including_replication_metadata"] == 50
-    assert aliases["unique_uncovered_identity_keys_across_sources"] == 142
+    assert aliases["unique_uncovered_identity_keys_across_sources"] > 0
+    assert aliases["rows_without_verified_canonical_anchor"] > 0
     by_label = {item["label"]: item for item in aliases["per_source"]}
-    assert by_label["trr0002_public_finance_records"]["unique_uncovered_row_keys"] == 24
-    assert by_label["trr0005_enriched_fit"]["unique_uncovered_row_keys"] == 118
+    assert by_label["trr0002_public_finance_records"]["rows_without_verified_canonical_anchor"] == 0
+    assert by_label["trr0005_enriched_fit"]["rows_without_verified_canonical_anchor"] > 0
+    assert by_label["trr0005_original_fit"]["eligible_rows_without_verified_canonical_anchor"] == 350
     assert all(item["available"] and item["sha256_match"] for item in aliases["replication_metadata"])
 
 
@@ -271,10 +289,10 @@ def test_sanitized_identity_union_round_trip_is_payload_free_and_create_only(tmp
     assert exported["counts"] == bundle.counts()
 
 
-def test_recovered_canonical_closure_is_complete_but_selection_closed(tmp_path: Path) -> None:
+def test_recovered_canonical_closure_fails_closed_on_row_residuals(tmp_path: Path) -> None:
     if not PR20.exists():
         pytest.skip("TRR-0010 worktree unavailable")
-    union_path = tmp_path / "identity_union_complete.json"
+    union_path = tmp_path / "identity_union_partial.json"
     closure_path = tmp_path / "closure_checkpoint.json"
     audit = build_audit(
         root=ROOT,
@@ -283,24 +301,29 @@ def test_recovered_canonical_closure_is_complete_but_selection_closed(tmp_path: 
         identity_union_output=union_path,
         closure_output=closure_path,
     )
-    assert audit["status"] == "COMPLETE_CANONICAL_SEQUENCE_EXCLUSION_AUDIT"
-    assert audit["coverage_complete"] is True
+    assert audit["status"] == "PARTIAL_CANONICAL_SEQUENCE_EXCLUSION_AUDIT"
+    assert audit["coverage_complete"] is False
     assert audit["selection_release"] is False
-    assert all(audit["completion_assessment"]["tests"].values())
-    assert audit["completion_assessment"]["legacy_alias_summary"]["prior_unique_identity_keys"] == 24
-    assert audit["completion_assessment"]["legacy_alias_summary"]["residual_unique_rows_without_verified_canonical_anchor"] == 0
     assert audit["descriptor_pointer_proof"]["status"] == "PASS_DESCRIPTOR_POINTER_BINDINGS"
-    assert any("exact rendered/H129/H128 recovery" in gap for gap in audit["coverage_gaps"])
-    assert not any("arrays remain counts-only" in gap for gap in audit["coverage_gaps"])
-    assert audit["identity_union_export"]["status"] == "IDENTITY_UNION_COMPLETE_NO_PAYLOAD"
-    assert audit["identity_union_export"]["coverage_complete"] is True
-    assert audit["identity_union_export"]["selection_release"] is False
-    assert audit["closure_checkpoint"]["status"] == "PASS_COMPLETE_ACCESSIBLE_SOURCE_COVERAGE"
+    failed = audit["completion_assessment"]["tests"]
+    assert failed["all_eligible_rows_have_verified_canonical_anchor"] is False
+    assert failed["no_unresolved_identity_rows"] is False
+    aliases = audit["completion_assessment"]["legacy_alias_summary"]
+    assert aliases["rows_without_verified_canonical_anchor"] > 0
+    assert aliases["eligible_rows_without_verified_canonical_anchor"] > 0
+    by_label = {item["label"]: item for item in audit["canonical_sequence_audit"]["legacy_alias_reconciliation"]["per_source"]}
+    assert by_label["trr0005_original_fit"]["eligible_rows_without_verified_canonical_anchor"] == 350
+    assert by_label["trr0007_original_fit"]["eligible_rows_without_verified_canonical_anchor"] == 350
+    assert by_label["trr0002_public_pile_records"]["verified_h40_rows"] == 96
+    assert by_label["trr0006_p04_targetfit_public_identity"]["rows_without_verified_canonical_anchor"] == 0
+    assert audit["identity_union_export"]["status"] == "PARTIAL_IDENTITY_UNION_NO_SELECTION_RELEASE"
+    assert audit["closure_checkpoint"]["status"] == "PARTIAL_EXACT_PREFIX_COVERAGE"
     exported = json.loads(union_path.read_text())
-    assert exported["coverage_complete"] is True
+    assert exported["coverage_complete"] is False
     assert exported["selection_release"] is False
     loaded = load_identity_union_export(union_path, expected_counts=audit["union_identity_counts"])
     assert loaded.counts() == audit["union_identity_counts"]
     closure = json.loads(closure_path.read_text())
-    assert closure["residual_unique_keys"] == 0
+    assert closure["rows_without_verified_canonical_anchor"] > 0
+    assert closure["unresolved_rows_without_verified_canonical_anchor"] > 0
     assert closure["access_boundary"]["p03_holdout_accessed"] is False
