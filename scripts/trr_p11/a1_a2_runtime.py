@@ -409,6 +409,10 @@ def execution_cells(
         raise A1A2RuntimeError(f"unknown qualification cell: {cell}")
     if qualification_only and reuse_qualification:
         raise A1A2RuntimeError("qualification_only cannot reuse an earlier qualification")
+    if (qualification_only or reuse_qualification) and cell != LARGEST_QUALIFICATION_CELL:
+        raise A1A2RuntimeError(
+            f"qualification cell must be the largest representative cell: {LARGEST_QUALIFICATION_CELL}"
+        )
     if qualification_only:
         return (cell,)
     if reuse_qualification:

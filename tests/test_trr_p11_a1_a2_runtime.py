@@ -74,6 +74,10 @@ def test_execution_cells_are_explicit_and_restart_safe() -> None:
     assert remaining == tuple(cell for cell in runtime.CELL_ORDER if cell != "finance__public_base")
     with pytest.raises(runtime.A1A2RuntimeError, match="unknown qualification cell"):
         runtime.execution_cells(qualification_cell="finance__unknown", qualification_only=True)
+    with pytest.raises(runtime.A1A2RuntimeError, match="largest representative cell"):
+        runtime.execution_cells(qualification_cell="pile__public_base", qualification_only=True)
+    with pytest.raises(runtime.A1A2RuntimeError, match="largest representative cell"):
+        runtime.execution_cells(qualification_cell="pile__public_base", reuse_qualification=True)
     with pytest.raises(runtime.A1A2RuntimeError, match="cannot reuse"):
         runtime.execution_cells(qualification_only=True, reuse_qualification=True)
 

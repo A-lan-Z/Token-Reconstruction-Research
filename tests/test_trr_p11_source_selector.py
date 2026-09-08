@@ -104,6 +104,34 @@ def test_incomplete_audit_blocks_before_union_or_source_access(tmp_path: Path) -
         selector.load_complete_exclusions(audit_path, root=tmp_path)
 
 
+def test_select_sources_rejects_unreleased_audit_before_source_input_load(tmp_path: Path) -> None:
+    manifest_path, _states = _write_bound_manifest(tmp_path)
+    audit_path = tmp_path / "incomplete-audit.json"
+    audit_path.write_text(
+        json.dumps(
+            {
+                "schema": selector.EXCLUSION_SCHEMA,
+                "task_id": selector.TASK_ID,
+                "coverage_complete": False,
+                "selection_release": False,
+                "access_boundary": {"p03_holdout_accessed": False},
+                "source_inventory": [],
+            },
+            sort_keys=True,
+        )
+    )
+    # This path deliberately does not exist. The release gate must fail before
+    # source-input normalization or any trusted public loader is reached.
+    with pytest.raises(selector.SelectionError, match="complete exclusion coverage"):
+        selector.select_sources(
+            manifest_path=manifest_path,
+            audit_path=audit_path,
+            source_inputs=tmp_path / "unopened-source-inputs.json",
+            output_path=tmp_path / "selection.json",
+            repository_root=ROOT,
+        )
+
+
 def test_scorer_settings_are_explicit_and_nondefault() -> None:
     assert selector.scorer_contract() == {
         "bootstrap_seed": 9009,
