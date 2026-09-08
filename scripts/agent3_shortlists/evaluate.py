@@ -27,7 +27,7 @@ def freeze(receipt_paths, output):
         if receipt['truth_opened'] or receipt['target_weights_loaded']:
             raise ValueError('invalid reconstruction access')
         for b in receipt['code_files']:verify(b)
-        for key in ('package_manifest','lens','reference'):verify(receipt[key])
+        for asset_key in ('package_manifest','lens','reference'):verify(receipt[asset_key])
         identity={key:receipt[key] for key in ('code_commit','code_files','state_sha256','readout_sha256','package_files_sha256','environment')}
         identity.update({key:receipt[key]['sha256'] for key in ('package_manifest','lens','reference')})
         if common_identity is not None and common_identity!=identity:raise ValueError('method/numerical identity differs across cells')
