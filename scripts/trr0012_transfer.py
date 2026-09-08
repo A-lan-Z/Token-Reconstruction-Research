@@ -22,7 +22,7 @@ import shlex
 import sys
 import time
 from types import ModuleType
-from typing import Any
+from typing import Any, Callable
 
 import torch
 from safetensors import safe_open
@@ -812,6 +812,64 @@ def _build_transfer_manifest(
     }
 
 
+def _matrix_resource_guard(
+    *,
+    runner_module: ModuleType,
+    device: torch.device,
+    output_root: Path,
+    started: float,
+) -> tuple[Callable[[str], None], dict[str, Any]]:
+    """Reuse the reviewed native runner guard for the one-process fixed matrix.
+
+    The capture policy's one-variant-per-process rule applies to public target
+    capture.  The decoder bridge intentionally loads the frozen fixed decoder
+    once and evaluates all seven variants across both domains in one
+    restart-safe process.  The native runner's whole-matrix guard is therefore
+    used at the same record/cell boundaries, with the fixed 8 GiB GPU cap.
+    """
+
+    registered_caps = dict(runner_module.REGISTERED_INFERENCE_CAPS)
+    registered_caps["cuda_reserved_limit_bytes"] = int(
+        registered_caps["fixed_cuda_reserved_limit_bytes"]
+    )
+    state: dict[str, Any] = {
+        "checks": 0,
+        "guard_overhead_seconds": 0.0,
+        "first_snapshot": None,
+        "last_snapshot": None,
+    }
+
+    def check(stage: str) -> None:
+        guard_started = time.perf_counter()
+        try:
+            snapshot = runner_module._resource_snapshot(  # noqa: SLF001
+                device=device,
+                output_root=output_root,
+            )
+            runner_module._enforce_resource_guard(  # noqa: SLF001
+                snapshot,
+                registered_caps,
+                started=started,
+                stage=stage,
+                require_gpu=device.type == "cuda",
+                gpu_peak_field="max_reserved_bytes",
+            )
+            if state["first_snapshot"] is None:
+                state["first_snapshot"] = dict(snapshot)
+            state["last_snapshot"] = dict(snapshot)
+        finally:
+            state["checks"] += 1
+            state["guard_overhead_seconds"] += time.perf_counter() - guard_started
+
+    state["registered_caps"] = registered_caps
+    state["scope"] = (
+        "existing trr0010 live host/GPU/disk checks run outside timed decoder "
+        "intervals; the outer process watchdog owns wall time; one process "
+        "covers expanded_fixed across seven variants and two domains"
+    )
+    return check, state
+
+
 def run_expanded_transfer_matrix(
     *,
     capture_manifest_path: Path,
@@ -846,6 +904,15 @@ def run_expanded_transfer_matrix(
     registration, checked_registration = _local_b1_registration(package, repository_root=root)
     source_check = transfer._validate_historical_runner_sources(registration, repository_root=root, runner_module=runner_module)
     device = torch.device(device_name)
+    output_root = Path(output_root).resolve()
+    matrix_started = time.perf_counter()
+    guard_check, guard_state = _matrix_resource_guard(
+        runner_module=runner_module,
+        device=device,
+        output_root=output_root,
+        started=matrix_started,
+    )
+    guard_check("initial")
     embedding, embedding_evidence = runner_module._load_embedding(registration, root=root, device=device)
     loaded = runner_module._load_method(
         EXPANDED_METHOD,
@@ -857,7 +924,7 @@ def run_expanded_transfer_matrix(
         code_bindings=checked_registration["code_bindings"],
         allow_materialization=False,
     )
-    output_root = Path(output_root).resolve()
+    guard_check("after_expanded_fixed_load")
     predictions: dict[str, Any] = {}
     geometries: dict[str, Any] = {}
     for variant_id in checked["variant_ids"]:
@@ -871,7 +938,9 @@ def run_expanded_transfer_matrix(
                 hidden_size=transfer.HIDDEN_SIZE,
                 device=device,
                 method_id=EXPANDED_METHOD,
-                guard_callback=None,
+                guard_callback=lambda stage, variant_id=variant_id, domain=domain: guard_check(
+                    f"{EXPANDED_METHOD}/{variant_id}/{domain}/{stage}"
+                ),
             )
             base = output_root / EXPANDED_METHOD / variant_id / domain
             prediction_record = transfer._write_transfer_prediction(
@@ -907,6 +976,7 @@ def run_expanded_transfer_matrix(
             key = f"{EXPANDED_METHOD}/{variant_id}/{domain}"
             predictions[key] = {name: prediction_record[name] for name in ("path", "bytes", "sha256", "prediction_sha256")}
             geometries[key] = {name: geometry_record[name] for name in ("path", "bytes", "sha256", "tensor_digests")}
+            guard_check(f"{EXPANDED_METHOD}/{variant_id}/{domain}/after_write")
     matrix = {
         "schema": transfer.TRANSFER_MATRIX_SCHEMA,
         "task_id": transfer.TASK_ID,
@@ -927,6 +997,11 @@ def run_expanded_transfer_matrix(
         "nearest_boundary_claim": False,
         "predictions": predictions,
         "decoder_geometry": geometries,
+        "resource_guard": {
+            key: value
+            for key, value in guard_state.items()
+            if key in {"registered_caps", "checks", "guard_overhead_seconds", "first_snapshot", "last_snapshot", "scope"}
+        },
         "truth_opened": False,
         "source_text_loaded": False,
         "target_labels_loaded": False,
