@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pytest
 
+from scripts.trr_p11 import evaluation as ev
 from scripts.trr_p11 import restore_gate as gate
 
 
@@ -925,6 +926,35 @@ if __name__ == "__main__":
     manifest_path = tmp_path / "e2e-manifest.json"
     manifest_path.write_text(json.dumps(manifest, sort_keys=True), encoding="utf-8")
     return manifest_path, clean
+
+
+def test_production_restore_receipt_binds_to_evaluation_links(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Feed the actual restore receipt into both evaluator restore validators."""
+    manifest_path, clean = _make_end_to_end_bundle(tmp_path, monkeypatch)
+    receipt = gate.restore_and_run_smoke(
+        manifest_path,
+        clean,
+        require_windows_boundary=False,
+        require_distinct_devices=False,
+    )
+    receipt_path = tmp_path / "actual-restore-receipt.json"
+    receipt_path.write_text(json.dumps(receipt, sort_keys=True), encoding="utf-8")
+
+    restore, restore_record = ev._validate_restore(receipt_path, root=tmp_path)
+    states = {}
+    for method, asset_name in ev.RESTORE_STATE_ASSETS.items():
+        asset = restore["assets"][asset_name]
+        metadata = asset["metadata"]
+        states[method] = {
+            "state_id": f"synthetic/{method}",
+            "model_id": metadata["model_id"],
+            "selected_step": metadata["selected_step"],
+            "file": dict(asset["copies"]["primary"]),
+        }
+    links = ev._validate_restore_links(restore, states)
+    assert restore_record["sha256"] == gate.sha256_file(receipt_path)
+    assert links["states"]["new_current_fixed_B0"]["file"]["sha256"] == states["new_current_fixed_B0"]["file"]["sha256"]
+    assert links["consumer"]["loaded_file_bindings"]["package_cli"]["sha256"] == restore["assets"]["package_cli"]["copies"]["primary"]["sha256"]
 
 
 def test_restore_and_run_smoke_end_to_end_synthetic_bundle(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
