@@ -182,5 +182,27 @@
       "predictions"
     ],
     "common_reference_and_bank_local_counts_are_not_interchangeable": true
+  },
+  "common_frequency_recovery": {
+    "status": "READY_PUBLIC_B0_DERIVATION_PENDING_AGENT1_SMOKE_LEASE",
+    "script": "scripts/trr_p11/recover_common_frequency.py",
+    "output": "experiments/TRR-P11/support/public_common_frequency_b0_seed4010.safetensors",
+    "receipt": "experiments/TRR-P11/support/public-frequency-recovery-r1.json",
+    "historical_payload": {
+      "path": "/tmp/trr-p09-runtime/public-support-r1/support-b0-seed4010.safetensors",
+      "bytes": 274352,
+      "sha256": "0673f9df86a591342ea931ec21ac30f680b8ab052d5e66555ca7d5011f6414ce",
+      "role": "historical expected compact artifact; never used as derivation source or fallback"
+    },
+    "derived_tensor_keys": [
+      "frequency_counts",
+      "support_ids",
+      "support_counts"
+    ],
+    "derivation_source_tensors": [
+      "token_ids",
+      "attention_mask"
+    ],
+    "command": "env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. /usr/bin/python3 scripts/trr_p11/recover_common_frequency.py --config experiments/TRR-P11/support/support-histogram-contract-r1.json --output experiments/TRR-P11/support/public_common_frequency_b0_seed4010.safetensors --receipt experiments/TRR-P11/support/public-frequency-recovery-r1.json --execute"
   }
 }

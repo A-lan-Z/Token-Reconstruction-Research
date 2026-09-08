@@ -122,6 +122,16 @@ def _tensor_digest(value: torch.Tensor, *, prefix: bytes) -> str:
     return digest.hexdigest()
 
 
+def _plain_tensor_sha256(value: torch.Tensor) -> str:
+    """Established P09 tensor_sha256: dtype, compact shape, contiguous bytes."""
+    contiguous = value.detach().cpu().contiguous()
+    digest = hashlib.sha256()
+    digest.update(str(contiguous.dtype).encode("ascii"))
+    digest.update(json.dumps(list(contiguous.shape), separators=(",", ":")).encode("ascii"))
+    digest.update(contiguous.reshape(-1).view(torch.uint8).numpy().tobytes(order="C"))
+    return digest.hexdigest()
+
+
 def _support_digest(ids: Sequence[int], counts: Sequence[int]) -> str:
     id_tensor = torch.as_tensor(list(ids), dtype=torch.long, device="cpu").contiguous()
     count_tensor = torch.as_tensor(list(counts), dtype=torch.long, device="cpu").contiguous()
@@ -525,6 +535,11 @@ def _load_common_reference(spec: Mapping[str, Any], *, config_path: Path) -> tup
                 raise SupportHistogramError(f"common frequency reference is missing {missing}")
             ids = handle.get_tensor("support_ids").detach().cpu().contiguous()
             counts = handle.get_tensor("support_counts").detach().cpu().contiguous()
+            frequency_vector = (
+                handle.get_tensor("frequency_counts").detach().cpu().contiguous()
+                if "frequency_counts" in vector_keys
+                else None
+            )
     except SupportHistogramError:
         raise
     except Exception as exc:
@@ -533,6 +548,11 @@ def _load_common_reference(spec: Mapping[str, Any], *, config_path: Path) -> tup
         raise SupportHistogramError("common frequency reference IDs/counts must be int64")
     if ids.ndim != 1 or counts.ndim != 1 or tuple(ids.shape) != tuple(counts.shape):
         raise SupportHistogramError("common frequency reference IDs/counts have incompatible geometry")
+    if frequency_vector is not None:
+        if frequency_vector.dtype != torch.int64 or tuple(frequency_vector.shape) != (VOCAB_SIZE,):
+            raise SupportHistogramError("common frequency reference frequency_counts has incompatible geometry")
+        if frequency_vector.lt(0).any().item():
+            raise SupportHistogramError("common frequency reference frequency_counts contains a negative count")
     ids_list = [int(value) for value in ids.tolist()]
     counts_list = [int(value) for value in counts.tolist()]
     digest = _support_digest(ids_list, counts_list)
@@ -552,6 +572,21 @@ def _load_common_reference(spec: Mapping[str, Any], *, config_path: Path) -> tup
         raise SupportHistogramError(
             f"common frequency reference support digest changed: expected {expected_digest}, got {digest}"
         )
+    ids_sha = _plain_tensor_sha256(ids)
+    counts_sha = _plain_tensor_sha256(counts)
+    for field, actual in (("support_ids_tensor_sha256", ids_sha), ("support_counts_tensor_sha256", counts_sha)):
+        expected = spec.get(field)
+        if expected is not None and actual != expected:
+            raise SupportHistogramError(f"common frequency reference {field} changed")
+    frequency_sha = _plain_tensor_sha256(frequency_vector) if frequency_vector is not None else None
+    expected_frequency_sha = spec.get("frequency_vector_tensor_sha256")
+    if expected_frequency_sha is not None and frequency_sha is not None and frequency_sha != expected_frequency_sha:
+        raise SupportHistogramError("common frequency reference frequency_vector_tensor_sha256 changed")
+    if frequency_vector is not None:
+        dense_ids = torch.nonzero(frequency_vector > 0, as_tuple=False).flatten().to(dtype=torch.int64)
+        dense_counts = frequency_vector.index_select(0, dense_ids)
+        if not torch.equal(dense_ids, ids) or not torch.equal(dense_counts, counts):
+            raise SupportHistogramError("common frequency reference dense/sparse tensors differ")
     return (
         dict(zip(ids_list, counts_list)),
         {
@@ -564,8 +599,9 @@ def _load_common_reference(spec: Mapping[str, Any], *, config_path: Path) -> tup
             "support_count": len(ids_list),
             "positive_occurrences": sum(counts_list),
             "support_digest_trr0010": digest,
-            "support_ids_tensor_sha256": _tensor_digest(ids, prefix=b"trr0010-support-ids\0"),
-            "support_counts_tensor_sha256": _tensor_digest(counts, prefix=b"trr0010-support-counts\0"),
+            "support_ids_tensor_sha256": ids_sha,
+            "support_counts_tensor_sha256": counts_sha,
+            "frequency_vector_tensor_sha256": frequency_sha,
         },
     )
 

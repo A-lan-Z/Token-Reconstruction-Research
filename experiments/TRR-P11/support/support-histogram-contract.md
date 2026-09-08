@@ -21,9 +21,15 @@ expanded bank cannot make a token look newly supported merely by changing the
 frequency reference. Each bank's own sparse frequency counts and TRR-0010
 support digest are reported separately as a diagnostic.
 
-The common payload is currently marked pending restoration. Its missing or
-changed file is a fatal input error; the producer must not silently fall back
-to a bank-local map.
+The historical compact common payload is recorded but is not a
+runtime dependency for recovery. `scripts/trr_p11/recover_common_frequency.py`
+can derive the same map directly from the exact B0 payload, opening only
+`token_ids` and `attention_mask`. It verifies the expected support digest and
+the established plain tensor SHA-256 values for the sorted IDs, sorted counts,
+and dense vocabulary vector, then writes all three tensors to a new persistent
+P11 safetensors file and records the old path as unused (or missing). A later
+histogram run binds the new file and its recovery receipt; a bank-local map is
+never used as a fallback.
 
 ## Counting semantics
 
@@ -49,7 +55,15 @@ registered command is:
 env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. /usr/bin/python3 scripts/trr_p11/support_histogram.py --config experiments/TRR-P11/support/support-histogram-contract-r1.json --output experiments/TRR-P11/support/support-histogram-r1.json --execute
 ```
 
-Run it only after the common support payload has been durably restored and
-its expected bytes, SHA-256, tensor identities, and TRR-0010 support digest
-pass. The output is a compact aggregate receipt and does not replace the
-frozen fitting-bank manifests.
+Before that histogram command, run the bounded recovery command from the
+contract. It is public CPU preparation only and has no model, GPU, truth, or
+source-text access:
+
+```text
+env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. /usr/bin/python3 scripts/trr_p11/recover_common_frequency.py --config experiments/TRR-P11/support/support-histogram-contract-r1.json --output experiments/TRR-P11/support/public_common_frequency_b0_seed4010.safetensors --receipt experiments/TRR-P11/support/public-frequency-recovery-r1.json --execute
+```
+
+The recovery output must pass its own create-only receipt and then be bound in
+this contract by its new file hash. Run the histogram only after that binding
+and its tensor identities pass. The output is a compact aggregate receipt and
+does not replace the frozen fitting-bank manifests.
