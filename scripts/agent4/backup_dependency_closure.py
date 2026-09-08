@@ -1,6 +1,7 @@
 """Archive installed required distributions, then restore without global site-packages."""
 from common import *
-import importlib.metadata as md,tarfile,sys
+import importlib.metadata as md,tarfile,sys,shutil
+assert shutil.disk_usage(OUT).free>40*2**30, "dependency archive/restore requires40GiB free margin"
 from packaging.requirements import Requirement
 roots=['torch','transformers','numpy','safetensors','psutil']
 queue=list(roots);seen={};missing=[]
