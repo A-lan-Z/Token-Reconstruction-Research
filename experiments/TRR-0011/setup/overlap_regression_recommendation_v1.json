@@ -1,0 +1,72 @@
+{
+  "audit": {
+    "path": "experiments/TRR-0011/setup/overlap_audit_v1.json"
+  },
+  "created_utc": "2026-09-08T02:32:51Z",
+  "regression": {
+    "negative_cases": [
+      "Changing the bound TRR-0009 manifest bytes/hash fails closed.",
+      "Omitting the manifest fails closed; no implicit legacy fallback may pass.",
+      "A candidate whose ID/hash/sequence is not in the ledger remains eligible in the synthetic selector fixture."
+    ],
+    "positive_rejection_cases": [
+      "A TRR-0009 Finance row is rejected by exact record_id.",
+      "A TRR-0009 Pile row is rejected by exact record_id.",
+      "The same rows are rejected by public_record_sha256 and final_sequence_sha256 when the other identity is altered in the synthetic candidate.",
+      "A generated exclusion union contains the TRR-0009 selection descriptor with exact path, bytes, and SHA-256."
+    ],
+    "required_input": "Explicit hash-bound experiments/TRR-0009/selection_v2/source_selection.json in the TRR-0010 exclusion input list.",
+    "scope": "Focused identity-only selector regression; no model, activations, truth, prediction, or score access.",
+    "selection_policy": "Because the current TRR-0010 ranges reproduce the TRR-0009 prefix, adding this ledger should make the current attempted panel fail closed or force an explicitly pre-registered disjoint extension; filtering reused records after selection is not sufficient."
+  },
+  "schema": "token-reconstruction.trr0011-overlap-regression-recommendation.v1",
+  "source_defect": {
+    "inherited_path_helper": "scripts/trr0009_select_public.py::_known_exclusion_paths (lines 526-550)",
+    "not_a_registration_repair": "Later registration validates the already-produced TRR-0010 selection and its generated exclusion union; it cannot retroactively make the historical selector disjoint.",
+    "observed_path_list_contains_trr0009_selection_legacy": false,
+    "observed_path_list_contains_trr0009_selection_v2": false,
+    "root_cause": "TRR-0010 reused the inherited explicit prior-ledger path list, which stops at TRR-0008, and added final-B1/opaque inputs; it did not add the frozen TRR-0009 selection_v2 manifest that became checkpoint-selection validation. The recursive scanner would recognize record_id/public_record_sha256/final_sequence_sha256 if this manifest were supplied, but it never scanned that file.",
+    "trr0010_selector_call": "scripts/trr0010_select_public.py::select_public (lines 487-494)",
+    "trr0010_selector_path_helper": "scripts/trr0010_select_public.py::_extra_exclusion_paths (lines 374-385)",
+    "trr0010_union_source_count": 34,
+    "trr0010_union_source_paths": [
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0003/evidence/control/panel.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0003/evidence/control/plan.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0003/footing/panel.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0003/evidence/control/track_b_fit_records.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0004/fit/adapter_v2/affine_fit_records.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0004/fit/adapter_v2/affine_validation_records.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0004/fit/adapter_v2/public_fit_manifest.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0004/fit/affine_fit_records.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0004/fit/affine_validation_records.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0004/fresh_confirmation_v1/selection_plan.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0004/fresh_confirmation_v1/panel_capture/panel.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0004/alpaca_split_plan.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0005/corpus/corpus_plan.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_fit_v2/fit_records.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0003/track_b/public_validation_slice_v2/public_validation_records.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0005/fresh_confirmation_v1/selection_plan.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0005/fresh_confirmation_v1/panel_capture_v2/panel.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0005/fresh_confirmation_v1/panel_capture_v2/observations.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0005/public_activation_v1/capture_manifest_receipt.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0006/source_selection.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0006/duplicate_capture_exclusion.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0006/panel_capture_v1/panel.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0006/panel_capture_v1/observations.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0006/public_observations_v1/panel.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0006/public_observations_v1/observations.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0007/selection/source_exclusions.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0007/selection/source_selection.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0007/support/broader_bank_v5/public_parent_exclusion_manifest.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0007/support/broader_bank_v5/selected_parent_rows.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0007/support/broader_bank_v5/corpus_plan.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0007/support/public_fit_prefix_exclusions_v3.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0008/selection/source_exclusions.json",
+      "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0008/selection/source_selection.json",
+      "/tmp/trr-p09/experiments/TRR-P09/setup/nested-b1-exclusion-ledger-r1.json"
+    ],
+    "trr0010_union_sources_contains_trr0009_selection_v2": false
+  },
+  "status": "RECOMMENDATION_ONLY_NO_SOURCE_EDIT",
+  "task_id": "TRR-0011"
+}
