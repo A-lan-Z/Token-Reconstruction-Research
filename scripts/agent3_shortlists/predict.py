@@ -115,6 +115,7 @@ def run(args):
     device = torch.device(args.device)
     configure(device)
     guard(start, device)
+    observation_started=time.monotonic()
     contract = json.loads(Path(args.contract).read_text())
     # Contract is sanitized: no source payload or target weights accepted.
     if set(contract) != {'schema', 'domain', 'stage', 'record_ids', 'observations'}:
@@ -131,6 +132,7 @@ def run(args):
         raise ValueError('requires full128-position clips')
     if h.dtype != torch.bfloat16 or not torch.isfinite(h).all():
         raise ValueError('BF16 finite observations required')
+    observation_read_validate_seconds=time.monotonic()-observation_started
     load_start = time.monotonic()
     package, model, readout, lens = load_models(args.package, args.lens, args.reference, device)
     sync(device)
@@ -172,7 +174,7 @@ def run(args):
                'lens':binding(args.lens),'reference':binding(args.reference),'methods':receipts,
                'command':sys.argv,'environment':{'numpy':importlib.metadata.version('numpy'),'safetensors':importlib.metadata.version('safetensors'),'python':platform.python_version(),'torch':torch.__version__,'device':str(device),'machine':platform.platform(),'cpu_threads':2,
                               'matmul_precision':torch.get_float32_matmul_precision(),'tf32':False,'deterministic_algorithms':True,'record_batch_size':1},
-               'load_seconds':load_seconds,'total_seconds':time.monotonic()-start,'peak_rss_bytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,
+               'observation_read_validate_seconds':observation_read_validate_seconds,'adaptation_seconds':0,'prefix_maintenance_seconds':0,'load_seconds':load_seconds,'total_seconds':time.monotonic()-start,'peak_rss_bytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,
                'peak_gpu_bytes':torch.cuda.max_memory_allocated() if device.type=='cuda' else 0,
                'candidate_simulations':0,'model_evaluations':{'b1_record_forwards':n,'a1_record_forwards':n},'truth_opened':False,'target_weights_loaded':False}
     write_json(out/'receipt.json',receipt)
