@@ -1,0 +1,60 @@
+{
+  "attempt": "public_capture_watchdog_r2",
+  "cause": "Native TRR9 observation manifest stores the authoritative paired source-order digests under source_pairing.record_ids_sha256 and repeats them on each cell; the TRR10 repackager only read the legacy top-level observation.record_ids_sha256 field.",
+  "created_utc": "2026-09-07T19:39:05Z",
+  "narrow_repair": "Accept native source_pairing.record_ids_sha256 only when same_record_ids_across_targets is true, normalize it to the existing validator variable, and retain cell-level digest equality checks against the frozen TRR10 selection. Do not alter native observations, panel, capture, selected identities, model state, or capture outputs.",
+  "native_artifacts": {
+    "finish.json": {
+      "bytes": 1107,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/public_capture_watchdog_r2/finish.json",
+      "sha256": "d79b563ba68f7677309f938f5c490c7300684630597d7fee247222674e3f25ba"
+    },
+    "producer_capture/capture.json": {
+      "bytes": 24355,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/public_capture_watchdog_r2/producer_capture/capture.json",
+      "sha256": "0ae14e7cbdad84fa71369f6ed468e6b69b4501cc046dac6f47b90dc25056e153"
+    },
+    "producer_capture/observations.json": {
+      "bytes": 5511,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/public_capture_watchdog_r2/producer_capture/observations.json",
+      "sha256": "a9ac09d131f2d887bb42ea4a0768802adc9b5cc5bada7d441ce8040275562c40"
+    },
+    "producer_capture/panel.json": {
+      "bytes": 1267,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/public_capture_watchdog_r2/producer_capture/panel.json",
+      "sha256": "de30e1616126fe40ee9d1ed8c4d89d5b88c3a99ae56c5df2ccab3e430a1f210b"
+    },
+    "stderr.txt": {
+      "bytes": 372,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/public_capture_watchdog_r2/stderr.txt",
+      "sha256": "a70aaed44cc874282ed71bb426d6d7db4e81e303b97926c4954e7187af3d5d68"
+    }
+  },
+  "native_observations_preserved": true,
+  "native_receipt_summary": {
+    "capture_schema": "token-reconstruction.trr0009-public-capture.v1",
+    "cell_count": 4,
+    "cell_record_digest_fields": true,
+    "observations_schema": "token-reconstruction.trr0009-public-observation-manifest.v1",
+    "observations_status": "FROZEN_PUBLIC_OBSERVATIONS_NO_TRUTH",
+    "panel_schema": "token-reconstruction.trr0009-public-source-panel.v1",
+    "records_by_domain": {
+      "finance": 128,
+      "pile": 128
+    },
+    "source_pairing": {
+      "record_ids_sha256": {
+        "finance": "7f394949247231bd269f66a7529ea570e9403bbbc3fc47d85ded855276581cf1",
+        "pile": "1f665eaf7415e66525229470a676aaae2f5483e2b31de811ce7594169a9ed520"
+      },
+      "same_record_ids_across_targets": true
+    },
+    "top_level_observation_record_ids_sha256_present": false
+  },
+  "observed_failure": "TRR9 producer source-order digests are absent",
+  "recapture_required": false,
+  "schema": "token-reconstruction.trr0010-capture-failure-diagnosis.v2",
+  "status": "NATIVE_PRODUCER_COMPLETE_REPACKAGE_SCHEMA_MISMATCH_NO_TRUTH",
+  "task_id": "TRR-0010",
+  "truth_opened": false
+}

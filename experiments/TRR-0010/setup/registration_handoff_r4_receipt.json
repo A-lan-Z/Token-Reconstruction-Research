@@ -1,0 +1,115 @@
+{
+  "candidate_arrays_persisted": false,
+  "created_utc": "2026-09-07T20:03:27Z",
+  "focused_tests": {
+    "code_commit": "e8f8a9414516f5c6cf2dee87dc0a58a56a8bc536",
+    "command": "env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false PYTHONPATH=.:src:scripts python3 -m pytest -q tests/test_trr0009_capture.py tests/test_trr0010_final_adapters.py",
+    "runtime_seconds": null,
+    "status": "PASS",
+    "tests": 17
+  },
+  "gate_validation_attempt": {
+    "command": "python3 -c \"from pathlib import Path; import json; from scripts import trr0010_eval_gate as gate; gate._validate_registration(json.load(open('experiments/TRR-0010/evaluation/registration.json')), root=Path.cwd())\"",
+    "error": "GateError: registration observation metadata changed: pile__public_base/schema",
+    "exact_native_metadata": {
+      "capture_batch_records": "8",
+      "capture_sequence_tokens": "192",
+      "cell_id": "pile__public_base",
+      "schema": "token-reconstruction.trr0009-public-observation.v1",
+      "task_id": "TRR-0009"
+    },
+    "gate_expected_metadata": {
+      "cell_id": "pile__public_base",
+      "record_ids_sha256": "1f665eaf7415e66525229470a676aaae2f5483e2b31de811ce7594169a9ed520",
+      "schema": "token-reconstruction.trr0010-public-observation.v1",
+      "shape": "[128, 128, 2048]",
+      "task_id": "TRR-0010"
+    },
+    "interpretation": "Native producer tensors are complete and truth-free but retain TRR-0009 metadata. The JSON repackager did not rewrite tensor metadata. No predictions were launched.",
+    "status": "BLOCKED"
+  },
+  "metadata_adapters": {
+    "capture_geometry_v1": {
+      "bytes": 1566,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/setup/capture_registration_metadata_adapter_r1.json",
+      "sha256": "e17c0af8c92b926a863423605531de9c3fc560b34d253a52008367f812f69fd0"
+    },
+    "capture_geometry_v2": {
+      "bytes": 2159,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/setup/capture_registration_metadata_adapter_r2.json",
+      "sha256": "7d5da162328f6552dcb045009f46d03fb783b9d07104f3bd414b8896b6176b03"
+    },
+    "registration_output_root_v1": {
+      "bytes": 1565,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/setup/registration_metadata_adapter_r1.json",
+      "sha256": "fb268bc50364b892a892ed34b5359d71a1195dadc91d7b265023b1279a7cc014"
+    }
+  },
+  "next_required_scope": "Timing/source owner must perform a reviewed compatibility repair: accept the explicitly bound native TRR-0009 tensor metadata as a benchmark-compatible producer input or create an exact metadata-only tensor repackage with new full hashes and updated frozen bindings. Preserve original tensor files and require exact key/shape/dtype/record-order checks.",
+  "preserved_native_capture": {
+    "bytes": 2511,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/public_capture_watchdog_r2/observations_v1/capture.json",
+    "sha256": "6beab075d68a492a6afced9802be9f8edfb7bcb8eef2771a6fea88dbd6318f05"
+  },
+  "r4_cpu_repackage_validation": {
+    "bytes": 8306,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/setup/capture_repackage_r4_validation_receipt.json",
+    "sha256": "a1c55ee3b238dba813a97116332df8287324e450844363f00ea2cc1371ec955f"
+  },
+  "r4_scratch_excluded": {
+    "files": [
+      {
+        "bytes": 2511,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/public_capture_watchdog_r4/observations_v1/capture.json",
+        "sha256": "3074434ed7b0cac51b6be12d3ab8f40a54032090d3d763781d8338e1bc591454"
+      },
+      {
+        "bytes": 4628,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/public_capture_watchdog_r4/observations_v1/observations.json",
+        "sha256": "13a7d723329d93a87272cf926530262228b3ee66b1aef0d30b338f612f077a04"
+      },
+      {
+        "bytes": 1809,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/public_capture_watchdog_r4/observations_v1/panel.json",
+        "sha256": "2eb6c576f67383a41a71f7dc0434859c2653bfd7b4137a958c2e39ba8a869c5a"
+      }
+    ],
+    "reason": "preserved scratch repackage metadata; not referenced by r4 design, registration, or prediction inputs",
+    "root": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/public_capture_watchdog_r4/observations_v1"
+  },
+  "registration_builder_command": "env PYTHONPATH=.:src:scripts python3 scripts/trr0010_eval_register.py --payload experiments/TRR-0010/evaluation/registration_payload_r4.json",
+  "registration_builder_exit": 0,
+  "registration_capture_alias_v2": {
+    "bytes": 2594,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/public_capture_watchdog_r2/observations_v1/capture_registration_v2.json",
+    "sha256": "b4f65c01ff84b00356c623b4a008c3fab115a4d7e8a55a9c63bb16f768e6c84e"
+  },
+  "registration_corrected_metadata_successor": {
+    "bytes": 52750,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/registration.json",
+    "sha256": "6732fcdeada602e6e9d420884cc746a22aaa8f6e82f460bdb4442aa969d70a08"
+  },
+  "registration_payload": {
+    "bytes": 17607,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/registration_payload_r4.json",
+    "sha256": "a68753afc575dc16b285f34753039c22442ad490c4c8d0498e38e10824c82a4d"
+  },
+  "registration_raw_builder_output": {
+    "bytes": 52588,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/registration_builder_raw_r1.json",
+    "sha256": "95674ef32bd6828eddbfd57c91ce5558c1244e3b70ca2cba789dc2bbdc61ea51"
+  },
+  "schema": "token-reconstruction.trr0010-registration-handoff-receipt.v1",
+  "source_text_loaded": false,
+  "source_text_written": false,
+  "status": "REGISTRATION_BUILT_GATE_BLOCKED_BEFORE_PREDICTIONS",
+  "target_labels_loaded": false,
+  "task_id": "TRR-0010",
+  "timing_plan": {
+    "bytes": 7343,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/timing_plan.json",
+    "sha256": "4fe961fc6fba3102d6c14d09a747867ccba0a120526bdff562cd40337726496a"
+  },
+  "token_ids_written": false,
+  "truth_opened": false
+}
