@@ -62,6 +62,7 @@ def test_complete_freeze_then_score_and_tamper(tmp_path):
             receipt=tmp_path/f'{d}-{s}.json'
             write_json(receipt,{'domain':d,'stage':s,'record_ids':ids[d],'status':'FROZEN_NO_TRUTH','contract':binding(contract),
                                'truth_opened':False,'target_weights_loaded':False,
+                               'code_commit':'synthetic','code_files':[binding(obs)],'state_sha256':'synthetic','readout_sha256':'synthetic','package_files_sha256':'synthetic','environment':{'fixture':True},'package_manifest':binding(obs),'lens':binding(obs),'reference':binding(obs),
                                'methods':[{'method':m,'artifact':binding(pred)} for m in ('a1','b1')]})
             receipt_paths.append(receipt)
     f=tmp_path/'freeze.json';freeze(receipt_paths,f)

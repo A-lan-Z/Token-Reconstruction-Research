@@ -20,6 +20,7 @@ from scripts.agent3_shortlists.core import binding, rank_scores, sha, verify, wr
 STATE_SHA = '088be6a6b2842d526f3dab39789728d9cfc23f2fb1fb892d107d46ade2382706'
 READOUT_SHA = 'ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1'
 PACKAGE_SHA = '5023a9e7cb19611952c0ce16a440ec9fde6b6444fd74aaf74a7efbb5c671c13b'
+PACKAGE_FILES_SHA = '0003ab30ee60e95fb75d015a1abfd038e76e2e2d117d4b470db195ef2ec35f46'
 LENS_SHA = '33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742'
 REFERENCE_SHA = '10532a746cb8c30eb2caf338e206e1fa9d85e708d4db43a0d8fd4a2ff1a6f8bd'
 
@@ -43,6 +44,11 @@ def check_hash(path, expected):
 
 def load_models(package_root, lens_path, reference_path, device):
     root = Path(package_root).resolve()
+    file_manifest=Path(__file__).resolve().parents[2]/'experiments/agent3-b1-small-budget-a2/package-files.json'
+    check_hash(file_manifest,PACKAGE_FILES_SHA)
+    for rel,b in json.loads(file_manifest.read_text())['files'].items():
+        check_hash(root/rel,b['sha256'])
+        if (root/rel).stat().st_size!=b['bytes']:raise ValueError('package file size changed')
     check_hash(root / 'code/trr0012_package.py', PACKAGE_SHA)
     package = module(root / 'code/trr0012_package.py', '_agent3_preserved_package')
     descriptor, _ = package._load_package_descriptor(root)
@@ -102,6 +108,8 @@ def guard(start, device):
 def run(args):
     start = time.monotonic()
     start_utc = utc()
+    execution_commit=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+    code_bindings=[binding(Path(__file__)),binding(Path(__file__).with_name('core.py'))]
     out = Path(args.output)
     out.mkdir(parents=True, exist_ok=False)
     device = torch.device(args.device)
@@ -153,10 +161,13 @@ def run(args):
                    'predictions':torch.cat([torch.full((n,1),128000,dtype=torch.int64),torch.stack(ids_out)[:,:,0]],1)}, str(p))
         receipts.append({'method':method,'artifact':binding(p),'record_timings':phases,'full_score_tensor_sha256':scores_hash,'output_io_seconds':time.monotonic()-t})
     guard(start, device)
+    if subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()!=execution_commit:
+        raise RuntimeError('code commit changed during cell')
+    for b in code_bindings:verify(b)
     receipt = {'schema':'agent3-shortlist-prediction-v1','status':'FROZEN_NO_TRUTH','start_utc':start_utc,'end_utc':utc(),
                'contract':binding(args.contract),'domain':contract['domain'],'stage':contract['stage'],'record_ids':contract['record_ids'],
-               'code_commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
-               'code_files':[binding(Path(__file__)),binding(Path(__file__).with_name('core.py'))],
+               'code_commit':execution_commit,
+               'code_files':code_bindings,'package_files_sha256':PACKAGE_FILES_SHA,
                'package_manifest':binding(Path(args.package)/'package_manifest.json'),'state_sha256':STATE_SHA,'readout_sha256':READOUT_SHA,
                'lens':binding(args.lens),'reference':binding(args.reference),'methods':receipts,
                'command':sys.argv,'environment':{'numpy':importlib.metadata.version('numpy'),'safetensors':importlib.metadata.version('safetensors'),'python':platform.python_version(),'torch':torch.__version__,'device':str(device),'machine':platform.platform(),'cpu_threads':2,

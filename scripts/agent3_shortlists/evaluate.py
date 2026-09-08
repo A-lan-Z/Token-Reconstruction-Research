@@ -18,6 +18,7 @@ def freeze(receipt_paths, output):
         raise ValueError('all eight domain/stage cells required before truth')
     cells={}
     ids={}
+    common_identity=None
     for path in receipt_paths:
         receipt=json.loads(Path(path).read_text())
         key=(receipt['domain'],receipt['stage'])
@@ -25,6 +26,12 @@ def freeze(receipt_paths, output):
             raise ValueError('duplicate, unexpected, or incomplete cell')
         if receipt['truth_opened'] or receipt['target_weights_loaded']:
             raise ValueError('invalid reconstruction access')
+        for b in receipt['code_files']:verify(b)
+        for key in ('package_manifest','lens','reference'):verify(receipt[key])
+        identity={key:receipt[key] for key in ('code_commit','code_files','state_sha256','readout_sha256','package_files_sha256','environment')}
+        identity.update({key:receipt[key]['sha256'] for key in ('package_manifest','lens','reference')})
+        if common_identity is not None and common_identity!=identity:raise ValueError('method/numerical identity differs across cells')
+        common_identity=identity
         contract_path=verify(receipt['contract'])
         contract=json.loads(contract_path.read_text())
         verify(contract['observations'])
@@ -61,7 +68,7 @@ def freeze(receipt_paths, output):
         raise ValueError('matrix incomplete')
     result={'schema':'agent3-complete-matrix-freeze-v1','frozen_utc':datetime.now(timezone.utc).isoformat(),
             'cells':[cells[k] for k in sorted(cells)],'record_ids':ids,'truth_opened':False,
-            'scope':'paired64 sources,8 conditions,2 proposers; component diagnostic, canonical matrix incomplete'}
+            'common_identity':common_identity,'scope':'paired64 sources,8 conditions,2 proposers; component diagnostic, canonical matrix incomplete'}
     write_json(output,result)
     return result
 

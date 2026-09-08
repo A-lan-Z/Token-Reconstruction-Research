@@ -13,6 +13,8 @@ def main(a):
     t=time.monotonic(); start=utc(); device=torch.device('cpu'); configure(device);guard(t,device)
     package,model,readout,lens=load_models(a.package,a.lens,a.reference,device)
     h,mask,pos,slots=package._observation_batch(Path(a.package)/'smoke/public_base_first2.safetensors')
+    from safetensors.torch import load_file
+    stored=load_file(Path(a.package)/'smoke/expected_predictions.safetensors')['expanded_fixed']
     comparisons=[]
     with torch.inference_mode():
         for i in range(len(h)):
@@ -20,8 +22,9 @@ def main(a):
             ids,_=rank_scores(scores)
             native=package._predict_row_package(model,readout,h[i],mask[i],pos[i],device=device)
             assert torch.equal(ids[:,0],native[1:])
+            assert torch.equal(native,stored[i])
             # Check batched vs prescribed record1; only record1 is used in production.
-            comparisons.append({'slot':slots[i],'package_row_top1_equal':True,'logits_sha256':package.tensor_digest(scores)})
+            comparisons.append({'slot':slots[i],'package_row_top1_equal':True,'stored_package_predictions_equal':True,'logits_sha256':package.tensor_digest(scores)})
         # Full native historical proposal flattens one record and processes chunk256.
         flat=h[0][mask[0].bool()][1:]
         native_a1=lens(flat[:256],readout).float()
