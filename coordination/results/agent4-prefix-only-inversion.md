@@ -1,44 +1,10 @@
-"""Build task-local handoff exclusively from completed, scored receipts."""
-from common import *
-import statistics
-TASK='agent4-prefix-only-inversion'
-matched=json.loads((EVID/'final_cpu_score.json').read_text())['results']
-static=json.loads((EVID/'static_cpu_score.json').read_text())['results']
-p=matched['final_cpu_adam_r2'];a=matched['final_cpu_a1a2'];sp=static['static_cpu_adam'];sa=static['static_cpu_a1a2']
-ratio=p['groups']['all']['total_seconds']/a['groups']['all']['total_seconds']
+# Agent 4 — Prefix-only inversion pilot
 
-def row(label,x):
-    g=x['groups']['all']
-    return f"| {label} | {g['correct']}/{g['denominator']} ({100*g['accuracy']:.1f}%) | {g['exact_records']}/{g['records']} | {g['total_seconds']:.2f} | {g['median_seconds']:.2f} / {g['p95_seconds']:.2f} | {g['candidate_checks']} | {g['gradient_steps']} | {g['vocabulary_scans']} |"
-
-def recordrow(label,r):
-    first='none' if r['first_error'] is None else str(r['first_error'])
-    return f"| {label} / {r['record_id']} | {r['correct']}/{r['denominator']} | {first} | {r['later_wrong_after_first_error']} | {r['seconds']:.2f} |"
-
-def residual_stats(x):
-    result={}
-    for correct in [True,False]:
-        values=[v['residual'] for r in x['records'] for v in r['positions'] if v['correct']==correct]
-        result['correct' if correct else 'wrong']={'n':len(values),'min':min(values) if values else None,'median':statistics.median(values) if values else None,'max':max(values) if values else None}
-    return result
-stopping=json.loads((EVID/'stopping_diagnostic.json').read_text())
-first_errors=json.loads((EVID/'first_error_diagnostic.json').read_text())
-analysis={'stopping_diagnostic':{k:v for k,v in stopping.items() if k!='rows'},'first_error_diagnostic':first_errors['rows'],'matched_runtime_ratio_prefix_to_a1a2':ratio,'matched_residuals':residual_stats(p),'static_residuals':residual_stats(sp)}
-analysis['static_comparability']=json.loads((EVID/'static_comparability.json').read_text())
-analysis['matched_quality_target_met']=p['groups']['all']['accuracy']>=.95 and p['groups']['all']['exact_records']/p['groups']['all']['records']>=.5
-analysis['matched_cpu_cost_target_met']=ratio<=2
-for name,x in {**matched,**static}.items():
-    g=x['groups']['all']
-    analysis[name]={'vocabulary_rows_scored':g['vocabulary_scans']*128256,'candidate_discovery':g['discovered'],'incorrect_selection_after_discovery':g['incorrect_selection_after_discovery'],'first_errors':[r['first_error'] for r in x['records']],'later_wrong_after_first_error':sum(r['later_wrong_after_first_error'] for r in x['records'])}
-write(EVID/'analysis.json',analysis)
-verdict='Advance only as a limited CPU component result' if analysis['matched_quality_target_met'] and analysis['matched_cpu_cost_target_met'] else 'Stop the tested bounded variant'
-text=f'''# Agent 4 — Prefix-only inversion pilot
-
-1. **Can reconstruction remove the fitted token guesser?** It can recover tokens, but the frozen pilot recovered {p['groups']['all']['correct']}/{p['groups']['all']['denominator']} post-BOS tokens and {p['groups']['all']['exact_records']}/{p['groups']['all']['records']} complete matched-model clips. No A1/B0/B1 or external language model entered the primary solver.
-2. **Matching or recovered weights?** Matching public-prefix results are measured below. Static Vikhr mismatch recovered {sp['groups']['all']['correct']}/{sp['groups']['all']['denominator']} tokens. **No legitimately recovered prefix was available or tested.** Static mismatch is not a recovery result.
-3. **Is cost competitive?** Matched CPU reconstruction took {ratio:.2f}× the native-policy A1+A2 comparator on the same inputs. These are two-thread CPU measurements; GPU performance was not measured. The quality/cost target was >=95% tokens, >=50% complete clips, and <=2× comparator wall.
+1. **Can reconstruction remove the fitted token guesser?** It can recover tokens, but the frozen pilot recovered 80/90 post-BOS tokens and 1/6 complete matched-model clips. No A1/B0/B1 or external language model entered the primary solver.
+2. **Matching or recovered weights?** Matching public-prefix results are measured below. Static Vikhr mismatch recovered 29/30 tokens. **No legitimately recovered prefix was available or tested.** Static mismatch is not a recovery result.
+3. **Is cost competitive?** Matched CPU reconstruction took 79.82× the native-policy A1+A2 comparator on the same inputs. These are two-thread CPU measurements; GPU performance was not measured. The quality/cost target was >=95% tokens, >=50% complete clips, and <=2× comparator wall.
 4. **Was cold-start tracking demonstrated?** No. This is independent token search using a supplied public prefix, with no model-prefix recovery updates and no tracking sequence. Historical A1 fitting is a comparator preparation cost not remeasured here.
-5. **Recommendation:** **{verdict}.** One justified optimizer correction was already tested. These results do not show information loss or rule out other inversion algorithms.
+5. **Recommendation:** **Stop the tested bounded variant.** One justified optimizer correction was already tested. These results do not show information loss or rule out other inversion algorithms.
 
 ## Method and scope
 
@@ -56,10 +22,10 @@ Four public-domain ordinary-text clips and two generated identifier clips, each 
 
 | Method / observations | Tokens | Complete clips | Total reconstruction s | Median / p95 clip s | Candidate checks | Gradients | Vocabulary scans |
 |---|---:|---:|---:|---:|---:|---:|---:|
-{row('Prefix-only / matched',p)}
-{row('A1+A2 K256 / matched',a)}
-{row('Prefix-only / static Vikhr',sp)}
-{row('A1+A2 K256 / static Vikhr',sa)}
+| Prefix-only / matched | 80/90 (88.9%) | 1/6 | 1180.69 | 198.92 / 205.49 | 11411 | 11410 | 11410 |
+| A1+A2 K256 / matched | 90/90 (100.0%) | 6/6 | 14.79 | 2.46 / 2.56 | 23040 | 0 | 90 |
+| Prefix-only / static Vikhr | 29/30 (96.7%) | 1/2 | 438.51 | 219.26 / 220.97 | 3840 | 3840 | 3840 |
+| A1+A2 K256 / static Vikhr | 30/30 (100.0%) | 2/2 | 5.16 | 2.58 / 2.59 | 7680 | 0 | 30 |
 
 The two static records are a fixed subset of the six matched records. On that identical subset, the matched primary result is 29/30 tokens and 1/2 clips, versus 30/30 and 2/2 for A1+A2; static accuracy is therefore unchanged for both methods on the common subset. Do not compare 96.7% static with 88.9% full-panel matched as an improvement. Captured boundary drift is measured in `static_comparability.json`.
 
@@ -67,25 +33,37 @@ Tiny empirical p95 values describe this panel only. No records were dropped for 
 
 | Group | Prefix-only matched | A1+A2 matched | Prefix-only static | A1+A2 static |
 |---|---:|---:|---:|---:|
-'''
-for group in ['ordinary','stress']:
-    values=[]
-    for result in [p,a,sp,sa]:
-        g=result['groups'][group];values.append(f"{g['correct']}/{g['denominator']} ({100*g['accuracy']:.1f}%)")
-    text+='| '+group+' | '+' | '.join(values)+' |\n'
-text+='''
+| ordinary | 52/60 (86.7%) | 60/60 (100.0%) | 15/15 (100.0%) | 15/15 (100.0%) |
+| stress | 28/30 (93.3%) | 30/30 (100.0%) | 14/15 (93.3%) | 15/15 (100.0%) |
+
 ## Failure analysis
 
 | Method / record | Correct tokens | First error position | Later wrong tokens | Reconstruction s |
 |---|---:|---:|---:|---:|
-'''
-for label,result in [('prefix matched',p),('A1+A2 matched',a),('prefix static',sp),('A1+A2 static',sa)]:
-    for r in result['records']:text+=recordrow(label,r)+'\n'
-text+='\nFirst-error positions are zero-based with BOS at 0. Later errors are reported after wrong commitments; that ordering alone does not establish their individual causes.\n\n'
-for label,result in [('matched',p),('static mismatch',sp)]:
-    g=result['groups']['all'];rs=residual_stats(result)
-    text+=f"On {label}, the correct token was tried at {g['discovered']}/{g['denominator']} positions; {g['incorrect_selection_after_discovery']} final selections were wrong despite discovery. Budget exhaustion occurred at {g['exhausted_tokens']} positions, token timeout at {g['timed_out_tokens']}, and suffix abstention at {g['abstentions']}. Correct/wrong residual summaries are `{json.dumps(rs,sort_keys=True)}`. Residual magnitude is not a correctness certificate.\n\n"
-text+='''## Numerical checks, resources and costs
+| prefix matched / final_book11_0 | 15/15 | none | 0 | 181.62 |
+| prefix matched / final_book11_1 | 12/15 | 1 | 2 | 192.55 |
+| prefix matched / final_book84_0 | 13/15 | 4 | 1 | 206.63 |
+| prefix matched / final_book84_1 | 12/15 | 6 | 2 | 197.15 |
+| prefix matched / final_stress_0 | 14/15 | 15 | 0 | 200.68 |
+| prefix matched / final_stress_1 | 14/15 | 2 | 0 | 202.07 |
+| A1+A2 matched / final_book11_0 | 15/15 | none | 0 | 2.41 |
+| A1+A2 matched / final_book11_1 | 15/15 | none | 0 | 2.39 |
+| A1+A2 matched / final_book84_0 | 15/15 | none | 0 | 2.58 |
+| A1+A2 matched / final_book84_1 | 15/15 | none | 0 | 2.47 |
+| A1+A2 matched / final_stress_0 | 15/15 | none | 0 | 2.46 |
+| A1+A2 matched / final_stress_1 | 15/15 | none | 0 | 2.47 |
+| prefix static / final_book11_0 | 15/15 | none | 0 | 221.16 |
+| prefix static / final_stress_0 | 14/15 | 15 | 0 | 217.35 |
+| A1+A2 static / final_book11_0 | 15/15 | none | 0 | 2.59 |
+| A1+A2 static / final_stress_0 | 15/15 | none | 0 | 2.58 |
+
+First-error positions are zero-based with BOS at 0. Later errors are reported after wrong commitments; that ordering alone does not establish their individual causes.
+
+On matched, the correct token was tried at 80/90 positions; 0 final selections were wrong despite discovery. Budget exhaustion occurred at 89 positions, token timeout at 0, and suffix abstention at 0. Correct/wrong residual summaries are `{"correct": {"max": 0.002719162032008171, "median": 1.9846846953441855e-05, "min": 0.0, "n": 80}, "wrong": {"max": 0.0069391969591379166, "median": 0.004366067470982671, "min": 0.001683465437963605, "n": 10}}`. Residual magnitude is not a correctness certificate.
+
+On static mismatch, the correct token was tried at 29/30 positions; 0 final selections were wrong despite discovery. Budget exhaustion occurred at 30 positions, token timeout at 0, and suffix abstention at 0. Correct/wrong residual summaries are `{"correct": {"max": 0.000300707237329334, "median": 0.00014792785805184394, "min": 0.00010229412146145478, "n": 29}, "wrong": {"max": 0.007497979328036308, "median": 0.007497979328036308, "min": 0.007497979328036308, "n": 1}}`. Residual magnitude is not a correctness certificate.
+
+## Numerical checks, resources and costs
 
 The early synthetic end-to-end test recovered its sequence and verified nonzero gradients, raw continuous/discrete equality and cache isolation. Actual public-prefix CPU diagnostics passed raw-input equality and finite nonzero gradients in FP32 and BF16. Genuine-match residuals, including sequential versus full and cached execution, are retained in `cpu_public_diagnostic.json` and `cpu_cache_qualification.json`; a high-precision diagnostic is not a claim of FP32 reconstruction performance.
 
@@ -96,6 +74,16 @@ Actual public prefix, tokenizer, comparator lens and Python dependency archives 
 The stopping rule has a material numerical limitation: 37 of 38 correct decisions with an entirely correct preceding prefix exhausted the budget. Their genuine residuals reached MSE 1.31e-6 because BF16 execution changed with sequence length; elementwise allclose(atol=rtol=1e-5) was too strict. At the five first-error positions, evaluator-only genuine-token checks had MSE 0 to 8.28e-7, while the chosen wrong tokens had MSE 0.0033 to 0.00694. Those genuine tokens had never been tried. Thus both an overly strict verification gate and genuine bounded candidate-discovery failures are present. The observed 80× CPU gap describes this implementation; it is not a lower bound on a corrected solver. Any follow-up should first qualify sequence-length-consistent verification or a numerical tolerance on separate public development material, then use new confirmation inputs. No threshold was tuned on these opened answers.
 
 The common warm-up was one public forward pass. Backward/optimizer initialization was not independently warmed and remains charged to the first primary record. Accordingly, these are post-load reconstruction measurements, not a controlled steady-state throughput benchmark. Retained historical lens fitting cost is unavailable as a directly remeasured preparation phase.
+
+
+| Method / observations | Load/setup s | Whole process s | Peak host RSS GiB |
+|---|---:|---:|---:|
+| Prefix-only / matched | 0.06 | 1181.05 | 3.769 |
+| A1+A2 / matched | 0.64 | 15.56 | 3.287 |
+| Prefix-only / static | 0.05 | 438.73 | 3.762 |
+| A1+A2 / static | 0.59 | 5.85 | 3.286 |
+
+Whole-process wall includes loading and JSON I/O. All GPU peak allocations for this task are zero because reconstruction used CPU. No online prefix-maintenance cost was incurred.
 
 ## Stages 2 and 3 limitations
 
@@ -112,24 +100,3 @@ Predictions and traces are create-only and frozen before scoring. Capture, predi
 Retained failures: initial missing-bwrap read attempts; dependency restore missing numpy.libs, then corrected; the stronger isolated restore exposed missing idna in OS package dependency metadata, repaired with an actual-module supplement; test import path failure, then 21 reused tests passed; initial SGD search failure; and a prematurely launched final prediction process terminated before scoring because its explicit 16-position qualification was not yet recorded. The aborted attempt is excluded as an orchestration error; the identical six-record panel was rerun after qualification with no setting changes or dropped records. Its approximately one-minute elapsed cost was not separately instrumented. Four new bounded-search/timeout invariant tests passed. The initial tiny smoke/asset-copy checks occurred before their first implementation commit; later scientific runs record exact full commits in their receipts.
 
 The canonical dual-benchmark matrix is **NOT RUN / COMPARISON INCOMPLETE**. Method registration is task-local under the packet's ban on global-registry changes. No P03 holdout data was accessed, no PR was merged, and no other workspace was modified.
-'''
-report=ROOT/'coordination/results'/f'{TASK}.md';report.parent.mkdir(exist_ok=True)
-report.write_text(text)
-# Manifest indexes compact tracked evidence and the actual local preserved assets.
-artifacts=[]
-for f in sorted((ROOT/'experiments'/TASK).rglob('*')):
-    if f.is_file() and 'upstream/SIPIT/' not in str(f) and f.name!='manifest.json':
-        artifacts.append({'path':str(f.relative_to(ROOT)),'bytes':f.stat().st_size,'sha256':digest(f)})
-large=[]
-for directory in ['backup','restore','evaluator_only/static_backup','evaluator_only/static_restore','final/bfloat16','static/bfloat16']:
-    for f in sorted((OUT/directory).glob('*')):
-        if f.is_file():large.append({'path':str(f),'bytes':f.stat().st_size,'sha256':digest(f)})
-manifest={'task_id':TASK,'status':'COMPLETE_BOUNDED_MATCHED_AND_STATIC_PILOT_NO_RECOVERY','base_commit':'5bbc3bf42a81c814404cf84cb46d55f0d3418667','source_commit':environment()['commit'],'created_utc':environment()['utc'],'result_path':str(report.relative_to(ROOT)),'request_path':f'coordination/requests/{TASK}.md','request_sha256':digest(ROOT/'coordination/requests'/f'{TASK}.md'),'frozen_settings':json.loads((EVID/'final_settings_freeze.json').read_text()),'analysis':analysis,'matched_results':matched,'static_results':static,'artifacts':artifacts,'actual_local_assets':large,'phase_commits':{name:json.loads((EVID/name/'freeze.json').read_text())['environment']['commit'] for name in ['final_cpu_adam_r2','final_cpu_a1a2','static_cpu_adam','static_cpu_a1a2']},'canonical_comparison_complete':False,'recovered_prefix_tested':False,'cold_start_tracking_demonstrated':False,'gpu_used':False,'no_pr_merges':True,'no_global_registry_changes':True,'no_p03_data_access':True}
-write(ROOT/'experiments'/TASK/'manifest.json',manifest)
-state_path=ROOT/'coordination/STATE.json';state=json.loads(state_path.read_text())
-state.update({'status':manifest['status'],'updated_utc':manifest['created_utc'],'frozen_method_id':'agent4_prefix_only_adam128','execution_commit':json.loads((EVID/'final_cpu_adam_r2/freeze.json').read_text())['environment']['commit'],'score_status':'TASK_LOCAL_UNUSED_SOURCES_FROZEN_BEFORE_SCORING','pull_request':{'task_pr_status':'PENDING_PUBLICATION'},'pull_request_url':None})
-state['agent4'].update({'status':manifest['status'],'gpu_lease':'not used; CPU-only pilot','analysis':analysis,'stages2_3':'static public-surrogate component complete; recovered prefix and closed-loop tracking NOT RUN','canonical_matrix':'NOT_RUN_COMPARISON_INCOMPLETE'})
-state={k:state[k] for k in ['active_task','branch','status','updated_utc','frozen_method_id','execution_commit','score_status','pull_request','pull_request_url','last_accepted_task','request_path','result_path','manifest_path','canonical_comparison_complete','canonical_matrix_status','agent4']}
-state.update({'protocol':'TRR-RELAY/1.0','base_commit':manifest['base_commit'],'prior_state_available_at_commit':manifest['base_commit'],'phase_commits':manifest['phase_commits'],'execution_commit_scope':'Final matched prefix-only prediction phase; other phase commits are listed explicitly.','score_receipt_path':'experiments/agent4-prefix-only-inversion/evidence/final_cpu_score.json','static_score_receipt_path':'experiments/agent4-prefix-only-inversion/evidence/static_cpu_score.json','charter_sha256':digest(ROOT/'RESEARCH_CHARTER.md')})
-state_path.write_text(json.dumps(state,indent=2)+'\n')
-print(json.dumps({'report':str(report),'artifacts':len(artifacts),'local_assets':len(large),'ratio':ratio,'verdict':verdict}))
