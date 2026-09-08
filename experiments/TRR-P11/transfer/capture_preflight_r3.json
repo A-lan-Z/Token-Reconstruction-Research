@@ -1,0 +1,375 @@
+{
+  "access_boundary": {
+    "handoff_to_agent1": false,
+    "observations_started": false,
+    "selection_performed": false,
+    "source_text_loaded_by_decoder": false,
+    "target_weights_loaded_by_decoder": false,
+    "token_ids_loaded_by_decoder": false,
+    "truth_opened": false
+  },
+  "capture_runner_custody": "Agent2 evaluator process; raw token batch and target weights remain evaluator-only",
+  "commands": [
+    {
+      "command": [
+        "python3",
+        "../TRR-0012/scripts/trr0011_capture.py",
+        "capture-variant",
+        "--plan",
+        "../TRR-0012/experiments/outputs/TRR-0012/transfer/capture_plan_exec_v2.json",
+        "--panel",
+        "${AGENT2_OPAQUE_PANEL_JSON:?set evaluator-owned opaque panel JSON}",
+        "--source-input",
+        "${AGENT2_EVALUATOR_TOKEN_BATCH_JSON:?set evaluator-owned token batch JSON}",
+        "--model-snapshot",
+        "${MODEL_SNAPSHOT:?set public model snapshot}",
+        "--tokenizer",
+        "${MODEL_SNAPSHOT:?set public model snapshot}/tokenizer.json",
+        "--variant",
+        "clean_public",
+        "--output-root",
+        "outputs/TRR-P11/private-evaluation/transfer-capture",
+        "--receipt",
+        "outputs/TRR-P11/private-evaluation/transfer-capture/clean_public/capture_variant_receipt.json",
+        "--root-release-receipt",
+        "../TRR-0012/experiments/outputs/TRR-0012/transfer/root_release_transfer_v2.json",
+        "--device",
+        "cuda",
+        "--full-reference-output",
+        "outputs/TRR-P11/private-evaluation/transfer-capture/clean_public/full_reference.safetensors"
+      ],
+      "run": false,
+      "step": "capture_clean_public",
+      "watchdog": "timeout --kill-after=30s 900s"
+    },
+    {
+      "command": [
+        "python3",
+        "../TRR-0012/scripts/trr0011_capture.py",
+        "capture-variant",
+        "--plan",
+        "../TRR-0012/experiments/outputs/TRR-0012/transfer/capture_plan_exec_v2.json",
+        "--panel",
+        "${AGENT2_OPAQUE_PANEL_JSON:?set evaluator-owned opaque panel JSON}",
+        "--source-input",
+        "${AGENT2_EVALUATOR_TOKEN_BATCH_JSON:?set evaluator-owned token batch JSON}",
+        "--model-snapshot",
+        "${MODEL_SNAPSHOT:?set public model snapshot}",
+        "--tokenizer",
+        "${MODEL_SNAPSHOT:?set public model snapshot}/tokenizer.json",
+        "--variant",
+        "layer1_block_rel1e-3",
+        "--output-root",
+        "outputs/TRR-P11/private-evaluation/transfer-capture",
+        "--receipt",
+        "outputs/TRR-P11/private-evaluation/transfer-capture/layer1_block_rel1e-3/capture_variant_receipt.json",
+        "--root-release-receipt",
+        "../TRR-0012/experiments/outputs/TRR-0012/transfer/root_release_transfer_v2.json",
+        "--device",
+        "cuda"
+      ],
+      "run": false,
+      "step": "capture_layer1_block_rel1e-3",
+      "watchdog": "timeout --kill-after=30s 900s"
+    },
+    {
+      "command": [
+        "python3",
+        "../TRR-0012/scripts/trr0011_capture.py",
+        "capture-variant",
+        "--plan",
+        "../TRR-0012/experiments/outputs/TRR-0012/transfer/capture_plan_exec_v2.json",
+        "--panel",
+        "${AGENT2_OPAQUE_PANEL_JSON:?set evaluator-owned opaque panel JSON}",
+        "--source-input",
+        "${AGENT2_EVALUATOR_TOKEN_BATCH_JSON:?set evaluator-owned token batch JSON}",
+        "--model-snapshot",
+        "${MODEL_SNAPSHOT:?set public model snapshot}",
+        "--tokenizer",
+        "${MODEL_SNAPSHOT:?set public model snapshot}/tokenizer.json",
+        "--variant",
+        "layer1_block_rel1e-2",
+        "--output-root",
+        "outputs/TRR-P11/private-evaluation/transfer-capture",
+        "--receipt",
+        "outputs/TRR-P11/private-evaluation/transfer-capture/layer1_block_rel1e-2/capture_variant_receipt.json",
+        "--root-release-receipt",
+        "../TRR-0012/experiments/outputs/TRR-0012/transfer/root_release_transfer_v2.json",
+        "--device",
+        "cuda"
+      ],
+      "run": false,
+      "step": "capture_layer1_block_rel1e-2",
+      "watchdog": "timeout --kill-after=30s 900s"
+    },
+    {
+      "command": [
+        "python3",
+        "../TRR-0012/scripts/trr0011_capture.py",
+        "capture-variant",
+        "--plan",
+        "../TRR-0012/experiments/outputs/TRR-0012/transfer/capture_plan_exec_v2.json",
+        "--panel",
+        "${AGENT2_OPAQUE_PANEL_JSON:?set evaluator-owned opaque panel JSON}",
+        "--source-input",
+        "${AGENT2_EVALUATOR_TOKEN_BATCH_JSON:?set evaluator-owned token batch JSON}",
+        "--model-snapshot",
+        "${MODEL_SNAPSHOT:?set public model snapshot}",
+        "--tokenizer",
+        "${MODEL_SNAPSHOT:?set public model snapshot}/tokenizer.json",
+        "--variant",
+        "layer3_block_rel1e-3",
+        "--output-root",
+        "outputs/TRR-P11/private-evaluation/transfer-capture",
+        "--receipt",
+        "outputs/TRR-P11/private-evaluation/transfer-capture/layer3_block_rel1e-3/capture_variant_receipt.json",
+        "--root-release-receipt",
+        "../TRR-0012/experiments/outputs/TRR-0012/transfer/root_release_transfer_v2.json",
+        "--device",
+        "cuda"
+      ],
+      "run": false,
+      "step": "capture_layer3_block_rel1e-3",
+      "watchdog": "timeout --kill-after=30s 900s"
+    },
+    {
+      "command": [
+        "python3",
+        "../TRR-0012/scripts/trr0011_capture.py",
+        "capture-variant",
+        "--plan",
+        "../TRR-0012/experiments/outputs/TRR-0012/transfer/capture_plan_exec_v2.json",
+        "--panel",
+        "${AGENT2_OPAQUE_PANEL_JSON:?set evaluator-owned opaque panel JSON}",
+        "--source-input",
+        "${AGENT2_EVALUATOR_TOKEN_BATCH_JSON:?set evaluator-owned token batch JSON}",
+        "--model-snapshot",
+        "${MODEL_SNAPSHOT:?set public model snapshot}",
+        "--tokenizer",
+        "${MODEL_SNAPSHOT:?set public model snapshot}/tokenizer.json",
+        "--variant",
+        "layer3_block_rel1e-2",
+        "--output-root",
+        "outputs/TRR-P11/private-evaluation/transfer-capture",
+        "--receipt",
+        "outputs/TRR-P11/private-evaluation/transfer-capture/layer3_block_rel1e-2/capture_variant_receipt.json",
+        "--root-release-receipt",
+        "../TRR-0012/experiments/outputs/TRR-0012/transfer/root_release_transfer_v2.json",
+        "--device",
+        "cuda"
+      ],
+      "run": false,
+      "step": "capture_layer3_block_rel1e-2",
+      "watchdog": "timeout --kill-after=30s 900s"
+    },
+    {
+      "command": [
+        "python3",
+        "../TRR-0012/scripts/trr0011_capture.py",
+        "capture-variant",
+        "--plan",
+        "../TRR-0012/experiments/outputs/TRR-0012/transfer/capture_plan_exec_v2.json",
+        "--panel",
+        "${AGENT2_OPAQUE_PANEL_JSON:?set evaluator-owned opaque panel JSON}",
+        "--source-input",
+        "${AGENT2_EVALUATOR_TOKEN_BATCH_JSON:?set evaluator-owned token batch JSON}",
+        "--model-snapshot",
+        "${MODEL_SNAPSHOT:?set public model snapshot}",
+        "--tokenizer",
+        "${MODEL_SNAPSHOT:?set public model snapshot}/tokenizer.json",
+        "--variant",
+        "layer4_null_block_rel1e-2",
+        "--output-root",
+        "outputs/TRR-P11/private-evaluation/transfer-capture",
+        "--receipt",
+        "outputs/TRR-P11/private-evaluation/transfer-capture/layer4_null_block_rel1e-2/capture_variant_receipt.json",
+        "--root-release-receipt",
+        "../TRR-0012/experiments/outputs/TRR-0012/transfer/root_release_transfer_v2.json",
+        "--device",
+        "cuda",
+        "--clean-reference",
+        "outputs/TRR-P11/private-evaluation/transfer-capture/clean_public/full_reference.safetensors"
+      ],
+      "run": false,
+      "step": "capture_layer4_null_block_rel1e-2",
+      "watchdog": "timeout --kill-after=30s 900s"
+    },
+    {
+      "command": [
+        "python3",
+        "../TRR-0012/scripts/trr0011_capture.py",
+        "capture-variant",
+        "--plan",
+        "../TRR-0012/experiments/outputs/TRR-0012/transfer/capture_plan_exec_v2.json",
+        "--panel",
+        "${AGENT2_OPAQUE_PANEL_JSON:?set evaluator-owned opaque panel JSON}",
+        "--source-input",
+        "${AGENT2_EVALUATOR_TOKEN_BATCH_JSON:?set evaluator-owned token batch JSON}",
+        "--model-snapshot",
+        "${MODEL_SNAPSHOT:?set public model snapshot}",
+        "--tokenizer",
+        "${MODEL_SNAPSHOT:?set public model snapshot}/tokenizer.json",
+        "--variant",
+        "historical_public_lora_2601",
+        "--output-root",
+        "outputs/TRR-P11/private-evaluation/transfer-capture",
+        "--receipt",
+        "outputs/TRR-P11/private-evaluation/transfer-capture/historical_public_lora_2601/capture_variant_receipt.json",
+        "--root-release-receipt",
+        "../TRR-0012/experiments/outputs/TRR-0012/transfer/root_release_transfer_v2.json",
+        "--device",
+        "cuda",
+        "--historical-lora",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors"
+      ],
+      "independent_target": false,
+      "run": false,
+      "step": "capture_historical_public_lora_2601",
+      "watchdog": "timeout --kill-after=30s 900s"
+    },
+    {
+      "command": [
+        "python3",
+        "../TRR-0012/scripts/trr0011_capture.py",
+        "assemble-manifest",
+        "--plan",
+        "../TRR-0012/experiments/outputs/TRR-0012/transfer/capture_plan_exec_v2.json",
+        "--panel",
+        "${AGENT2_OPAQUE_PANEL_JSON:?set evaluator-owned opaque panel JSON}",
+        "--capture-root",
+        "outputs/TRR-P11/private-evaluation/transfer-capture",
+        "--output",
+        "outputs/TRR-P11/private-evaluation/transfer-capture/transfer_capture_manifest.json"
+      ],
+      "requires": "all seven truth-free variant receipts",
+      "run": false,
+      "step": "assemble_manifest"
+    }
+  ],
+  "confirmation_binding": {
+    "purpose": "private disjointness check at transfer identity-only selection; no source rows or identity values are exported",
+    "records_by_domain": {
+      "finance": 256,
+      "pile": 256
+    },
+    "selection_path": "outputs/TRR-P11/private-evaluation/selection/source_selection.json",
+    "selection_sha256": "fe7129e9d7230100d1900facea98b15b8000f382a0bd7035b2039b4d9429bf68"
+  },
+  "created_utc": "2026-09-08T10:25:21Z",
+  "geometry": {
+    "activation_dtype": "torch.bfloat16",
+    "attention_mask_dtype": "torch.uint8",
+    "capture_batch_size": 8,
+    "full_forward_sequence_tokens": 192,
+    "hidden_size": 2048,
+    "position_ids_dtype": "torch.int64",
+    "retained_sequence_tokens": 128,
+    "scored_post_bos_tokens": 127
+  },
+  "historical_variant_independent_target": false,
+  "immutable_bindings": {
+    "capture_commands_v3": {
+      "bytes": 18084,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/outputs/TRR-0012/transfer/capture_commands_v3.json",
+      "readonly": true,
+      "sha256": "f11baabab088b031ed64c8200e2c3b7582810e5ac2b437a41135fe301364b91f"
+    },
+    "capture_config_v3": {
+      "bytes": 21104,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/outputs/TRR-0012/transfer/capture_config_v3.json",
+      "readonly": true,
+      "sha256": "09188e549c618743aba56ccfbd28076cc4bb089b9bcbb3e5f9b547740596c30d"
+    },
+    "capture_plan_exec_v2": {
+      "bytes": 10860,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/outputs/TRR-0012/transfer/capture_plan_exec_v2.json",
+      "readonly": true,
+      "sha256": "8fee73332d66f247f09f7b55430284b53814f3b9dfa892107e8b3aa8535b8966"
+    },
+    "capture_runner": {
+      "bytes": 91873,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/scripts/trr0011_capture.py",
+      "readonly": true,
+      "sha256": "1d3e1092e43f740e0ecd479414f5e1124a7b4a0106fd0aab02a73d4fbd536612"
+    },
+    "historical_public_lora_2601": {
+      "bytes": 427632,
+      "path": "outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors",
+      "readonly": true,
+      "sha256": "eea7bb49f801b61df2e26a8f59af7c3096f6f3a2604404e16e589443bcfba595"
+    },
+    "root_release_transfer_v2": {
+      "bytes": 5065,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/outputs/TRR-0012/transfer/root_release_transfer_v2.json",
+      "readonly": true,
+      "sha256": "ae0d6643df04b065b727f48aaae0d5c4589d2e3789d53a73f0cf03ae6a664391"
+    },
+    "seed_compatibility_proof_v2": {
+      "bytes": 3743,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/outputs/TRR-0012/transfer/seed_compatibility_test_receipt_v2.json",
+      "readonly": true,
+      "sha256": "90208d1a0fba3e3dbfbc3f8a02fcdf382c46a04c2c9b7190b7e8aa10cddb0921"
+    }
+  },
+  "no_data_expansion": true,
+  "output_root": "outputs/TRR-P11/private-evaluation/transfer-capture",
+  "p11_exclusion_release": {
+    "audit": {
+      "bytes": 319083,
+      "path": "experiments/TRR-P11/exclusions/recovery_identity_audit_r17.json",
+      "sha256": "43416d0d1945821812278df8dfc3ee7639f872e9c8407abdf245fb281bda9d65"
+    },
+    "identity_union": {
+      "bytes": 5203536,
+      "path": "experiments/TRR-P11/exclusions/identity_union_export_r14.json",
+      "sha256": "125275eab38c66117d45f5e0df4085058dae8a5c939fff1554cab7e608eb1fe1"
+    },
+    "root_release": {
+      "bytes": 1783,
+      "path": "experiments/TRR-P11/exclusions/root_selection_release_r1.json",
+      "sha256": "0e1816711965b0601a2e00ce4c187bded9f0c0fca4493e71ef9478a772659f95"
+    }
+  },
+  "required_before_run": [
+    "private identity-only transfer selection against released P11 audit/union",
+    "evaluator-owned opaque 64-record panel and token batch",
+    "live GPU/host/disk preflight",
+    "Agent1 narrow seed clarification for inherited transfer recipe"
+  ],
+  "reservation": {
+    "path": "experiments/TRR-P11/transfer/opaque64_reservation_r3.json",
+    "record_count": 64,
+    "sha256": "877abff7bd6f6dc2c7a56974902bed0389bd66e3ef84bfbdc4fe8ddaaf8c47fe",
+    "status": "READY_ROOT_RELEASED_PENDING_TRANSFER_SELECTION_NO_CAPTURE"
+  },
+  "resource_policy": {
+    "host_rss_cap_bytes": 12884901888,
+    "launch_authorized": false,
+    "min_disk_free_bytes": 21474836480,
+    "min_free_gpu_bytes": 11811160064,
+    "min_host_headroom_bytes": 8589934592,
+    "one_variant_per_process": true,
+    "watchdog_seconds_per_variant": 900
+  },
+  "root_release_receipt": {
+    "bytes": 5065,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/outputs/TRR-0012/transfer/root_release_transfer_v2.json",
+    "readonly": true,
+    "sha256": "ae0d6643df04b065b727f48aaae0d5c4589d2e3789d53a73f0cf03ae6a664391"
+  },
+  "run_commands": false,
+  "schema": "token-reconstruction.trr-p11-transfer-capture-preflight.v1",
+  "source_selection_required_before_capture": true,
+  "status": "READY_ROOT_RELEASED_PENDING_TRANSFER_SELECTION_AND_LIVE_PREFLIGHT",
+  "task_id": "TRR-P11",
+  "transfer_task_id": "TRR-0011",
+  "variants": [
+    "clean_public",
+    "layer1_block_rel1e-3",
+    "layer1_block_rel1e-2",
+    "layer3_block_rel1e-3",
+    "layer3_block_rel1e-2",
+    "layer4_null_block_rel1e-2",
+    "historical_public_lora_2601"
+  ]
+}
