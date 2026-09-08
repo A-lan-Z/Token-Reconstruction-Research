@@ -58,7 +58,7 @@ PAD_TOKEN_ID = 128001
 VOCAB_SIZE = 128256
 CANDIDATE_RANGE = (20000, 30000)
 DEFAULT_ARROW = Path(
-    "/home/alanz/.cache/huggingface/datasets/tatsu-lab/alpaca/default/0.0.0/"
+    "/home/alanz/.cache/huggingface/datasets/tatsu-lab___alpaca/default/0.0.0/"
     f"{ALPACA_CACHE_REVISION}/alpaca-train.arrow"
 )
 DEFAULT_TOKENIZER = Path(
