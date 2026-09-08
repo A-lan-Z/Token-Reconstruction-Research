@@ -253,13 +253,14 @@ def bank_check(inputs_path, output, limit=12000):
                     losses[target_rows,pos]=ce.cpu();correct[target_rows,pos]=(logits.argmax(1)==Y[chunk[:,0],chunk[:,1]]).cpu()
                 mask_all[origin+j:origin+j+n]=valid.cpu();labels[origin+j:origin+j+n]=Y.cpu()
                 if qualifier is None:
-                    # Same public fixture through the deployed single-record path.
-                    m=M[0,:128].cpu();h=H[0,:128].cpu();positions=torch.arange(128)
-                    if bool(m.all()):
+                    full = M[:, :128].all(1).nonzero().flatten()
+                    if full.numel():
+                        k = int(full[0])
+                        m=M[k,:128].cpu();h=H[k,:128].cpu();positions=torch.arange(128)
                         deployed=_predict_row_package(model,E,h,m,positions,device=torch.device('cuda'))
-                        direct=model.logits_from_rows(z,torch.zeros(127,dtype=torch.long,device='cuda'),torch.arange(1,128,device='cuda'),E).argmax(1).cpu()
+                        direct=model.logits_from_rows(z,torch.full((127,),k,dtype=torch.long,device='cuda'),torch.arange(1,128,device='cuda'),E).argmax(1).cpu()
                         assert torch.equal(deployed[1:],direct),'Batch geometry changes deployed predictions'
-                        qualifier=dict(record=origin+j,deployed_predictions_exact=True,training_batch_geometry=[n,192,2048])
+                        qualifier=dict(record=origin+j+k,deployed_predictions_exact=True,training_batch_geometry=[n,192,2048])
                 rows_seen+=n;guard.check()
                 if rows_seen%512==0:print(json.dumps(dict(records=rows_seen,elapsed=time.perf_counter()-clock)),flush=True)
             del tensors
