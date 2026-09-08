@@ -9,16 +9,24 @@ from __future__ import annotations
 
 import argparse
 from collections.abc import Mapping, Sequence
+from datetime import datetime, timezone
 import hashlib
 import importlib.util
 import json
 from pathlib import Path
+try:
+    import resource as _resource
+except ImportError:  # pragma: no cover - Windows has no resource module.
+    _resource = None
+import shlex
+import sys
 import time
 from types import ModuleType
 from typing import Any
 
 import torch
 from safetensors import safe_open
+from safetensors.torch import save_file
 
 from scripts import trr0011_transfer as transfer
 
@@ -35,6 +43,13 @@ EXPANDED_SCHEDULE_SHA256 = "8acdb2c4f8e5afba546ad01cbe0adae340eb841c8e3322c919e9
 BANK_FIT_SHA256 = "13c7442b481ba6bdaad2db14e3fd0b2a4300efefc48653dc6955e937d091c2d2"
 BASE_STATE_SHA256 = "5cada4a3d04bb5477eaf0be25ed8d8ac25a89283223e9ba14b18fa10416bee14"
 EMBEDDING_SHA256 = "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+CUDA_MIN_FREE_BYTES = 11 * 1024**3
+CUDA_RESERVED_CEILING_BYTES = 8 * 1024**3
+HOST_RSS_CAP_BYTES = 12 * 1024**3
+BRIDGE_FEATURE_RTOL = 1e-5
+BRIDGE_FEATURE_ATOL = 1e-6
+BRIDGE_LOGIT_RTOL = 1e-5
+BRIDGE_LOGIT_ATOL = 1e-6
 
 
 class TransferAdapterError(RuntimeError):
@@ -393,6 +408,374 @@ def qualify_expanded_smoke(
     return receipt | {"receipt_record": _write_create_only(receipt_path, receipt, task_root=root / "experiments" / TASK_ID)}
 
 
+def _utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def _process_memory_snapshot() -> dict[str, int]:
+    result: dict[str, int] = {}
+    try:
+        for line in Path("/proc/self/status").read_text(encoding="utf-8").splitlines():
+            if line.startswith("VmRSS:"):
+                fields = line.split()
+                if len(fields) >= 2:
+                    result["process_rss_bytes"] = int(fields[1]) * 1024
+                break
+    except (OSError, UnicodeError, ValueError, IndexError):
+        pass
+    if _resource is not None:
+        try:
+            usage = _resource.getrusage(_resource.RUSAGE_SELF)
+            unit = 1024 if sys.platform.startswith("linux") else 1
+            result["process_peak_rss_bytes"] = int(usage.ru_maxrss * unit)
+        except (OSError, ValueError):
+            pass
+    return result
+
+
+def _cuda_memory_snapshot(device: torch.device) -> dict[str, int]:
+    if device.type != "cuda" or not torch.cuda.is_available():
+        return {}
+    free_bytes, total_bytes = torch.cuda.mem_get_info(device)
+    return {
+        "free_bytes": int(free_bytes),
+        "total_bytes": int(total_bytes),
+        "allocated_bytes": int(torch.cuda.memory_allocated(device)),
+        "reserved_bytes": int(torch.cuda.memory_reserved(device)),
+        "peak_allocated_bytes": int(torch.cuda.max_memory_allocated(device)),
+        "peak_reserved_bytes": int(torch.cuda.max_memory_reserved(device)),
+    }
+
+
+def _sync_cuda(device: torch.device) -> None:
+    if device.type == "cuda":
+        torch.cuda.synchronize(device)
+
+
+def _cuda_numerical_settings() -> dict[str, Any]:
+    return {
+        "float32_matmul_precision": torch.get_float32_matmul_precision(),
+        "cuda_matmul_allow_tf32": bool(torch.backends.cuda.matmul.allow_tf32),
+        "cudnn_allow_tf32": bool(torch.backends.cudnn.allow_tf32),
+        "deterministic_algorithms": bool(torch.are_deterministic_algorithms_enabled()),
+    }
+
+
+def _materialize_bridge_smoke_input(
+    *,
+    package_module: ModuleType,
+    fixture_path: Path,
+    output_path: Path,
+    repository_root: Path,
+) -> tuple[dict[str, Any], list[str], torch.Tensor, torch.Tensor, torch.Tensor]:
+    if output_path.exists() or output_path.is_symlink():
+        raise TransferAdapterError(f"bridge smoke input is create-only: {output_path}")
+    activations, masks, positions, slots = package_module._observation_batch(fixture_path)
+    if int(activations.shape[0]) != 4 or list(slots) != list(package_module.SMOKE_RECORD_ORDER):
+        raise TransferAdapterError("bridge smoke fixture must contain the four fixed opened rows")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    save_file(
+        {
+            "activations": activations.contiguous(),
+            "attention_mask": masks.to(dtype=torch.bool).contiguous(),
+            "position_ids": positions.to(dtype=torch.int64).contiguous(),
+        },
+        str(output_path),
+        metadata={
+            "schema": "token-reconstruction.trr0012-bridge-qualification-input.v1",
+            "task_id": TASK_ID,
+            "record_order": json.dumps(list(slots), separators=(",", ":")),
+            "truth_opened": "false",
+            "source_text_loaded": "false",
+            "token_ids_loaded": "false",
+        },
+    )
+    return _record(output_path, root=repository_root), list(slots), activations, masks, positions
+
+
+def _model_feature_logit_prediction(
+    model: torch.nn.Module,
+    readout: torch.Tensor,
+    activation: torch.Tensor,
+    mask: torch.Tensor,
+    positions: torch.Tensor,
+    *,
+    device: torch.device,
+    bos_token_id: int,
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    with torch.inference_mode():
+        staged = activation.to(device=device, dtype=torch.float32).unsqueeze(0)
+        staged_mask = mask.to(device=device, dtype=torch.bool).unsqueeze(0)
+        staged_positions = positions.to(device=device, dtype=torch.long)
+        try:
+            projected = model.projected_hidden(staged, staged_mask)
+            rows = torch.zeros_like(staged_positions[1:])
+            logits = model.logits_from_rows(projected, rows, staged_positions[1:], readout)
+        except AttributeError:
+            logits_full = model(staged, staged_mask, readout)
+            logits = logits_full[0, 1:]
+        if tuple(projected.shape) != (1, transfer.STORED_SEQUENCE_TOKENS, transfer.HIDDEN_SIZE):
+            raise TransferAdapterError("changed-path projected feature geometry changed")
+        if tuple(logits.shape) != (transfer.SCORED_POST_BOS_TOKENS, transfer.VOCABULARY_SIZE):
+            raise TransferAdapterError("changed-path logits geometry changed")
+        if not bool(torch.isfinite(projected.float()).all().item()) or not bool(torch.isfinite(logits.float()).all().item()):
+            raise TransferAdapterError("changed-path features or logits are non-finite")
+        features_cpu = projected[0, 1:].detach().cpu().contiguous()
+        logits_cpu = logits.detach().cpu().contiguous()
+        prediction = torch.empty(transfer.STORED_SEQUENCE_TOKENS, dtype=torch.long)
+        prediction[0] = int(bos_token_id)
+        prediction[1:] = logits_cpu.argmax(dim=-1).to(dtype=torch.long)
+    return features_cpu, logits_cpu, prediction
+
+
+def _compare_cuda_tensors(
+    package_value: torch.Tensor,
+    production_value: torch.Tensor,
+    *,
+    label: str,
+    rtol: float,
+    atol: float,
+) -> dict[str, Any]:
+    left = package_value.detach().cpu().float()
+    right = production_value.detach().cpu().float()
+    if tuple(left.shape) != tuple(right.shape):
+        raise TransferAdapterError(f"{label} geometry differs: {tuple(left.shape)} != {tuple(right.shape)}")
+    delta = (left - right).abs()
+    max_abs = float(delta.max().item()) if delta.numel() else 0.0
+    max_rel = float((delta / right.abs().clamp_min(atol)).max().item()) if delta.numel() else 0.0
+    if not torch.allclose(left, right, rtol=rtol, atol=atol, equal_nan=False):
+        raise TransferAdapterError(
+            f"{label} differs between package and production paths: max_abs={max_abs} max_rel={max_rel}"
+        )
+    return {
+        "shape": list(left.shape),
+        "dtype": str(left.dtype),
+        "max_abs_difference": max_abs,
+        "max_relative_difference": max_rel,
+        "rtol": rtol,
+        "atol": atol,
+        "equivalent": True,
+    }
+
+
+def qualify_expanded_bridge_smoke(
+    *,
+    package_root: Path,
+    repository_root: Path,
+    receipt_path: Path,
+    device_name: str = "cuda",
+    command: str | None = None,
+) -> dict[str, Any]:
+    """Compare package and production registration/loader paths on four smoke rows."""
+
+    root = Path(repository_root).resolve()
+    started_utc = _utc_now()
+    started = time.perf_counter()
+    if not str(device_name).startswith("cuda"):
+        raise TransferAdapterError("changed-path qualification requires CUDA; CPU v1 is already preserved separately")
+    if not torch.cuda.is_available():
+        raise TransferAdapterError("changed-path qualification requires an available CUDA device")
+    device = torch.device(device_name)
+    free_before, total_before = torch.cuda.mem_get_info(device)
+    if int(free_before) < CUDA_MIN_FREE_BYTES:
+        raise TransferAdapterError(
+            f"CUDA preflight free memory is below 11 GiB: {int(free_before)} bytes"
+        )
+    torch.cuda.reset_peak_memory_stats(device)
+    numerical_settings = _cuda_numerical_settings()
+    package = bind_actual_package(package_root, repository_root=root)
+    package_module = _import_package_code(Path(package["package_root"]))
+    descriptor, descriptor_path = package_module._load_package_descriptor(Path(package["package_root"]))
+    fixture_path = _package_path(Path(package["package_root"]), descriptor["smoke"]["input_path"], label="smoke fixture")
+    expected_path = _package_path(Path(package["package_root"]), descriptor["smoke"]["expected_path"], label="smoke expected predictions")
+    bridge_input_path = Path(receipt_path).expanduser().resolve().parent / "qualification_b1_bridge_smoke_input.safetensors"
+    input_record, slots, activations, masks, positions = _materialize_bridge_smoke_input(
+        package_module=package_module,
+        fixture_path=fixture_path,
+        output_path=bridge_input_path,
+        repository_root=root,
+    )
+    with safe_open(str(expected_path), framework="pt", device="cpu") as handle:
+        expected_predictions = handle.get_tensor(EXPANDED_METHOD).detach().cpu().contiguous()
+    if tuple(expected_predictions.shape) != (4, transfer.STORED_SEQUENCE_TOKENS):
+        raise TransferAdapterError("frozen expected smoke prediction geometry changed")
+
+    package_started = time.perf_counter()
+    package_readout, package_readout_path = package_module._load_readout(Path(package["package_root"]), descriptor)
+    package_readout_device = package_readout.to(device=device).contiguous()
+    package_model, package_state_sha, package_state_path = package_module._load_package_method(
+        Path(package["package_root"]), descriptor, EXPANDED_METHOD, device=device, readout=package_readout_device
+    )
+    _sync_cuda(device)
+    package_rows: list[dict[str, torch.Tensor]] = []
+    for index, slot in enumerate(slots):
+        features, logits, prediction = _model_feature_logit_prediction(
+            package_model,
+            package_readout_device,
+            activations[index],
+            masks[index],
+            positions[index],
+            device=device,
+            bos_token_id=package_module.BOS_TOKEN_ID,
+        )
+        if not torch.equal(prediction, expected_predictions[index]):
+            raise TransferAdapterError(f"package CUDA prediction differs from frozen smoke output: {slot}")
+        package_rows.append({"features": features, "logits": logits, "prediction": prediction})
+    _sync_cuda(device)
+    package_elapsed = time.perf_counter() - package_started
+    package_memory = _cuda_memory_snapshot(device) | _process_memory_snapshot()
+    del package_model, package_readout_device, package_readout
+    torch.cuda.empty_cache()
+    _sync_cuda(device)
+
+    production_started = time.perf_counter()
+    runner_module = __import__("scripts.trr0010_eval_runner", fromlist=["*"])
+    registration, checked_registration = _local_b1_registration(package, repository_root=root)
+    source_check = transfer._validate_historical_runner_sources(
+        registration, repository_root=root, runner_module=runner_module
+    )
+    production_embedding, embedding_evidence = runner_module._load_embedding(
+        registration, root=root, device=device
+    )
+    loaded = runner_module._load_method(
+        EXPANDED_METHOD,
+        registration["methods"][0],
+        root=root,
+        device=device,
+        embedding=production_embedding,
+        method_factory=None,
+        code_bindings=checked_registration["code_bindings"],
+        allow_materialization=False,
+    )
+    _sync_cuda(device)
+    production_rows: list[dict[str, Any]] = []
+    for index, slot in enumerate(slots):
+        features, logits, prediction = _model_feature_logit_prediction(
+            loaded.adapter.model,
+            loaded.adapter.embedding,
+            activations[index],
+            masks[index],
+            positions[index],
+            device=device,
+            bos_token_id=transfer.BOS_TOKEN_ID,
+        )
+        adapter_prediction = loaded.adapter(activations[index], masks[index], positions[index])
+        adapter_prediction = torch.as_tensor(adapter_prediction).detach().cpu().to(dtype=torch.long).contiguous()
+        if not torch.equal(prediction, adapter_prediction):
+            raise TransferAdapterError(f"production adapter call differs from direct production logits: {slot}")
+        feature_check = _compare_cuda_tensors(
+            package_rows[index]["features"], features,
+            label=f"projected features {slot}", rtol=BRIDGE_FEATURE_RTOL, atol=BRIDGE_FEATURE_ATOL,
+        )
+        logit_check = _compare_cuda_tensors(
+            package_rows[index]["logits"], logits,
+            label=f"full logits {slot}", rtol=BRIDGE_LOGIT_RTOL, atol=BRIDGE_LOGIT_ATOL,
+        )
+        if not torch.equal(package_rows[index]["prediction"], prediction) or not torch.equal(prediction, adapter_prediction):
+            raise TransferAdapterError(f"production prediction differs from package path: {slot}")
+        production_rows.append(
+            {
+                "slot": slot,
+                "features": feature_check,
+                "logits": logit_check,
+                "prediction_shape": list(prediction.shape),
+                "prediction_tensor_sha256": package_module.tensor_digest(prediction),
+                "package_prediction_tensor_sha256": package_module.tensor_digest(package_rows[index]["prediction"]),
+                "adapter_prediction_exact": True,
+                "prediction_equivalent": True,
+            }
+        )
+    _sync_cuda(device)
+    production_elapsed = time.perf_counter() - production_started
+    production_memory = _cuda_memory_snapshot(device) | _process_memory_snapshot()
+    final_memory = _cuda_memory_snapshot(device) | _process_memory_snapshot()
+    peak_reserved = int(final_memory.get("peak_reserved_bytes", 0))
+    peak_rss = int(final_memory.get("process_peak_rss_bytes", 0))
+    if peak_reserved > CUDA_RESERVED_CEILING_BYTES:
+        raise TransferAdapterError(f"CUDA reserved peak exceeded 8 GiB: {peak_reserved} bytes")
+    if peak_rss > HOST_RSS_CAP_BYTES:
+        raise TransferAdapterError(f"process RSS peak exceeded 12 GiB: {peak_rss} bytes")
+    finished_utc = _utc_now()
+    receipt = {
+        "schema": "token-reconstruction.trr0012-expanded-transfer-bridge-cuda-qualification.v1",
+        "task_id": TASK_ID,
+        "status": "PASS_PRODUCTION_BRIDGE_PACKAGE_CUDA_EQUIVALENCE",
+        "method_id": EXPANDED_METHOD,
+        "command": command or shlex.join([sys.executable, *sys.argv]),
+        "scope": "four already-opened package smoke records; no target capture/source selection/truth",
+        "started_utc": started_utc,
+        "finished_utc": finished_utc,
+        "wall_seconds": float(time.perf_counter() - started),
+        "device": {
+            "requested": str(device_name),
+            "resolved": str(device),
+            "name": torch.cuda.get_device_name(device),
+            "index": int(device.index if device.index is not None else torch.cuda.current_device()),
+            "total_memory_bytes": int(total_before),
+            "preflight_free_bytes": int(free_before),
+            "preflight_min_free_bytes": CUDA_MIN_FREE_BYTES,
+        },
+        "numerical_settings": numerical_settings,
+        "source_bindings": {
+            "actual_package_manifest": package["manifest"],
+            "actual_package_producer": package["producer"],
+            "package_descriptor": {"path": str(descriptor_path), "sha256": _sha256(descriptor_path)},
+            "package_loader": {"path": str(_package_path(Path(package["package_root"]), "code/trr0010_p09_fixed_loader.py", label="package loader")), "sha256": _sha256(_package_path(Path(package["package_root"]), "code/trr0010_p09_fixed_loader.py", label="package loader"))},
+            "package_decoder": {"path": str(_package_path(Path(package["package_root"]), "code/token_reconstruction/trr0007_positionwise.py", label="package decoder")), "sha256": _sha256(_package_path(Path(package["package_root"]), "code/token_reconstruction/trr0007_positionwise.py", label="package decoder"))},
+            "production_runner": _record(root / "scripts" / "trr0010_eval_runner.py", root=root),
+            "production_loader": _record(root / "scripts" / "trr0010_p09_fixed_loader.py", root=root),
+            "production_decoder": _record(root / "src" / "token_reconstruction" / "trr0007_positionwise.py", root=root),
+            "transfer_adapter": _record(Path(__file__).resolve(), root=root),
+        },
+        "package_binding": {
+            "state": {"path": str(package_state_path), "sha256": package_state_sha, "selected_step": 13000},
+            "readout": {"path": str(package_readout_path), "sha256": _sha256(package_readout_path)},
+            "loaded_state_sha256": package_state_sha,
+            "production_loader_state_sha256": package["state"]["sha256"],
+        },
+        "observations": {
+            "source_fixture": {"path": str(fixture_path), "sha256": _sha256(fixture_path)},
+            "bridge_input": input_record,
+            "records": len(slots),
+            "record_order": list(slots),
+            "truth_opened": False,
+            "source_text_loaded": False,
+            "token_ids_loaded": False,
+        },
+        "phases": {
+            "package_load_and_four_rows": {"elapsed_seconds": float(package_elapsed), "memory": package_memory},
+            "production_registration_loader_and_four_rows": {"elapsed_seconds": float(production_elapsed), "memory": production_memory, "embedding": embedding_evidence, "source_check": source_check},
+        },
+        "memory": {
+            "peak_gpu_allocated_bytes": int(final_memory.get("peak_allocated_bytes", 0)),
+            "peak_gpu_reserved_bytes": peak_reserved,
+            "process_rss_bytes": int(final_memory.get("process_rss_bytes", 0)),
+            "process_peak_rss_bytes": peak_rss,
+            "reserved_ceiling_bytes": CUDA_RESERVED_CEILING_BYTES,
+            "host_rss_cap_bytes": HOST_RSS_CAP_BYTES,
+        },
+        "equivalence": {
+            "feature_rtol": BRIDGE_FEATURE_RTOL,
+            "feature_atol": BRIDGE_FEATURE_ATOL,
+            "logit_rtol": BRIDGE_LOGIT_RTOL,
+            "logit_atol": BRIDGE_LOGIT_ATOL,
+            "rows": production_rows,
+            "all_features_equivalent": True,
+            "all_full_logits_equivalent": True,
+            "all_predictions_equivalent": True,
+            "production_adapter_call_equivalent": True,
+            "pairwise_top_runner_only": True,
+            "global_nearest_boundary_claim": False,
+            "deployable_confidence_certificate": False,
+        },
+        "truth_opened": False,
+        "source_text_loaded": False,
+        "target_labels_loaded": False,
+        "candidate_arrays_persisted": False,
+    }
+    return receipt | {"receipt_record": _write_create_only(receipt_path, receipt, task_root=root / "experiments" / TASK_ID)}
+
+
 def _build_transfer_manifest(
     *,
     capture_path: Path,
@@ -575,6 +958,11 @@ def _parser() -> argparse.ArgumentParser:
     qualify.add_argument("--package-root", type=Path, required=True)
     qualify.add_argument("--repository-root", type=Path, default=Path("."))
     qualify.add_argument("--receipt", type=Path, required=True)
+    bridge = sub.add_parser("qualify-bridge-smoke")
+    bridge.add_argument("--package-root", type=Path, required=True)
+    bridge.add_argument("--repository-root", type=Path, default=Path("."))
+    bridge.add_argument("--receipt", type=Path, required=True)
+    bridge.add_argument("--device", default="cuda")
     matrix = sub.add_parser("run-matrix")
     matrix.add_argument("--package-root", type=Path, required=True)
     matrix.add_argument("--capture-manifest", type=Path, required=True)
@@ -594,6 +982,14 @@ def main(argv: Sequence[str] | None = None) -> int:
                 package_root=args.package_root,
                 repository_root=args.repository_root,
                 receipt_path=args.receipt,
+            )
+        elif args.command == "qualify-bridge-smoke":
+            result = qualify_expanded_bridge_smoke(
+                package_root=args.package_root,
+                repository_root=args.repository_root,
+                receipt_path=args.receipt,
+                device_name=args.device,
+                command=shlex.join([sys.executable, *sys.argv]),
             )
         else:
             result = run_expanded_transfer_matrix(
@@ -616,6 +1012,7 @@ __all__ = [
     "EXPANDED_METHOD",
     "TransferAdapterError",
     "bind_actual_package",
+    "qualify_expanded_bridge_smoke",
     "qualify_expanded_smoke",
     "run_expanded_transfer_matrix",
 ]
