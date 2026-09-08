@@ -1,0 +1,209 @@
+{
+  "schema": "token-reconstruction.trr-p11-replication-manifest.v1",
+  "task_id": "TRR-P11",
+  "status": "PLANNING_ONLY_NO_FIT_NO_SOURCE_SELECTION_NO_GPU_NO_TRUTH",
+  "created_utc": "2026-09-08T05:09:14Z",
+  "branch": "task/TRR-P11",
+  "base_p10_commit": "cab7d455c305aa01c3d3bfac225fcffa3e66640b",
+  "packet_path": "coordination/requests/TRR-P11.md",
+  "packet_sha256": "70a2cf13b2795916749031bcfed3a55205cd52a44926c1d160bd83508706d9b6",
+  "plan_path": "experiments/TRR-P11/planning/replication_plan.md",
+  "parallel_state_path": "coordination/parallel/TRR-P11.json",
+  "result_path": "coordination/results/TRR-P11.md",
+  "predecessor": {
+    "task_id": "TRR-P10",
+    "head": "cab7d455c305aa01c3d3bfac225fcffa3e66640b",
+    "pull_request": "https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/22",
+    "pull_request_status": "OPEN_DRAFT_UNMERGED",
+    "exact_confirmation_status": "BLOCKED_INCOMPLETE_MISSING_FROZEN_ASSETS",
+    "old_states_reused": false
+  },
+  "decision": {
+    "type": "NEW_WEIGHT_REPLICATION",
+    "current_arm": "current_bank_B0_fixed_public_readout",
+    "expanded_arm": "expanded_bank_B1_fixed_public_readout",
+    "new_state_identities": "NOT_BOUND_AGENT1_FIT_PENDING",
+    "old_p10_selected_steps": "UNAVAILABLE_AND_NOT_REUSED",
+    "directional_readout": false,
+    "architecture_or_loss_change": false,
+    "additional_fit": false
+  },
+  "ownership": {
+    "agent1": "one paired B0/B1 fit and durable deployment package",
+    "agent2": "exclusions, prospective evaluation, restore gate, scoring handoff",
+    "root": "coordination and resource/source/evaluation release"
+  },
+  "evaluation_contract": {
+    "domains": [
+      "pile",
+      "finance"
+    ],
+    "targets": [
+      "public_base",
+      "public_lora_2601"
+    ],
+    "cells": [
+      "pile__public_base",
+      "pile__public_lora_2601",
+      "finance__public_base",
+      "finance__public_lora_2601"
+    ],
+    "records_per_domain": 256,
+    "stored_tokens_including_bos": 128,
+    "scored_post_bos_tokens": 127,
+    "token_positions_per_cell": 32512,
+    "exact_records_per_cell": 256,
+    "a1_a2_subset_records_per_domain": 128,
+    "a1_a2_subset_token_positions_per_cell": 16256,
+    "a1_a2_subset_exact_records_per_cell": 128,
+    "target_resource_binding": {
+      "public_lora_2601": {
+        "path": "outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors",
+        "sha256": "eea7bb49f801b61df2e26a8f59af7c3096f6f3a2604404e16e589443bcfba595",
+        "generation_sha256": "6bed8aca6668bd749bbad03c0c85bbace306085dac3141895dad7685f03d0682",
+        "role": "evaluator_only"
+      }
+    }
+  },
+  "source_reservation": {
+    "seed": 5011,
+    "pile_half_open": [
+      0,
+      2000
+    ],
+    "finance_half_open": [
+      20000,
+      28000
+    ],
+    "status": "NOT_STARTED_PENDING_COMPLETE_EXCLUSION_AUDIT"
+  },
+  "statistical_contract": {
+    "bootstrap_unit": "source_record",
+    "bootstrap_seed": 9009,
+    "bootstrap_resamples": 10000,
+    "shared_schedule_within_domain": true,
+    "token_interval": {
+      "type": "descriptive_central_percentile",
+      "confidence": 0.95,
+      "lower_quantile": 0.025,
+      "upper_quantile": 0.975,
+      "percentile_convention": "ascending order statistics: lower index=floor(alpha * draws); upper index=ceil((1-alpha) * draws)-1"
+    },
+    "exact_record_interval": {
+      "path": "scripts/trr0010_analysis.py",
+      "function": "paired_exact_cp",
+      "source_commit": "70c57db7643913eea97cc606775b3f1f3807967a",
+      "source_sha256": "90078ac78bfcdcfb5f782a598c943b78cb0417f6895906a1e6d61056a3793cef",
+      "route_alpha": 0.025,
+      "component_alpha": 0.0125,
+      "unit": "paired source-record exact outcome; all 127 post-BOS positions",
+      "bootstrap_used": false
+    },
+    "token_contrast_function": {
+      "path": "scripts/trr0010_analysis.py",
+      "function": "bootstrap_token_delta",
+      "source_commit": "70c57db7643913eea97cc606775b3f1f3807967a",
+      "source_sha256": "90078ac78bfcdcfb5f782a598c943b78cb0417f6895906a1e6d61056a3793cef",
+      "one_sided_alpha": 0.025,
+      "central_interval_confidence": 0.95
+    },
+    "automatic_ci_gate": false,
+    "pooling": false,
+    "task_local_hash_required_before_truth": true,
+    "status": "HISTORICAL_HASH_BOUND_TASK_LOCAL_COPY_REQUIRED"
+  },
+  "exclusion_contract": {
+    "required_source_classes": [
+      "gradient_fitting",
+      "inherited_fitting",
+      "checkpoint_selection",
+      "calibration",
+      "previously_opened_development",
+      "previously_opened_evaluation"
+    ],
+    "trr0009_selection_manifest_required": true,
+    "identity_fields": [
+      "dataset_revision_split_row",
+      "record_id",
+      "rendered_record_sha256",
+      "canonical_h128_sequence_sha256",
+      "producer_published_h129_or_truncated_sequence_fingerprint"
+    ],
+    "p04_fingerprint_producers_verified": false,
+    "aggregate_panel_pointer_links_verified": false,
+    "status": "NOT_STARTED_PENDING_COMPLETE_AUDIT",
+    "selection_release": false
+  },
+  "restore_gate": {
+    "status": "NOT_STARTED",
+    "copy_a": "persistent_training_or_output_storage_to_be_bound",
+    "copy_b": "/mnt/c/Users/alanz/Token-Reconstruction-Backups/TRR-0012",
+    "clean_workspace_required": true,
+    "opened_public_smoke_test_required": true,
+    "tensor_identity_required": true,
+    "source_selection_can_precede_restore": true,
+    "prediction_and_truth_blocked_until_pass": true,
+    "opened_public_smoke_test": {
+      "source": "TRR-0010 already-opened public_base fixture",
+      "records_per_domain": 2,
+      "domain_order": [
+        "finance",
+        "pile"
+      ],
+      "methods": [
+        "new_current_fixed_B0",
+        "new_expanded_fixed_B1"
+      ],
+      "identity_hashes_frozen_before_fit": [
+        "record_ids",
+        "order",
+        "H",
+        "mask",
+        "position_ids"
+      ],
+      "after_normal_checkpoint_selection": true,
+      "selection_criterion": false
+    }
+  },
+  "new_model_states": {
+    "current_b0": null,
+    "expanded_b1": null,
+    "status": "NOT_BOUND_AGENT1_FIT_PENDING",
+    "identity_freeze_required_before_restore": true
+  },
+  "truth_boundary": {
+    "source_selection_started": false,
+    "observations_captured": false,
+    "predictions_started": false,
+    "truth_opened": false,
+    "p03_holdout_accessed": false
+  },
+  "pending": [
+    "Agent1 common-input and one-paired-fit inventory",
+    "complete exclusion coverage and producer fingerprint mappings",
+    "frozen task-local statistical implementation copy/hash",
+    "prospective source selection release after exclusions, frozen plan, and bank identities",
+    "new B0/B1 durable state identities frozen before restore",
+    "two-copy restore gate and clean-workspace public smoke test before prediction/truth",
+    "root release for capture, prediction, and truth"
+  ],
+  "publication": {
+    "status": "NOT_CREATED",
+    "base": "task/TRR-P10",
+    "head": "task/TRR-P11"
+  },
+  "fit_contract": {
+    "checkpoint_grid_updates": [
+      0,
+      1000,
+      2000,
+      4000,
+      8000,
+      12000,
+      13000
+    ],
+    "validation_every_1000": "NOT_EXECUTED_NON_GRID",
+    "selection_rule": "earliest maximum on the frozen seven-point grid; final independent outcomes never enter selection",
+    "state_identity_freeze_before_restore": true
+  }
+}

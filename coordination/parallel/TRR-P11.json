@@ -1,0 +1,190 @@
+{
+  "schema": "token-reconstruction.trr-p11-replication-contract.v1",
+  "task_id": "TRR-P11",
+  "status": "PLANNING_ONLY_PENDING_REBUILD_EXCLUSIONS_AND_RESTORE_GATE",
+  "base_p10_commit": "cab7d455c305aa01c3d3bfac225fcffa3e66640b",
+  "packet": {
+    "path": "coordination/requests/TRR-P11.md",
+    "sha256": "70a2cf13b2795916749031bcfed3a55205cd52a44926c1d160bd83508706d9b6"
+  },
+  "predecessor": {
+    "task_id": "TRR-P10",
+    "status": "RECOVERED_PREPARATION_BLOCKED_MISSING_FROZEN_ASSETS",
+    "pr22": "https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/22",
+    "exact_states_reused": false
+  },
+  "scope": {
+    "authorized_now": [
+      "pre-fit inventory and plan registration",
+      "metadata-only exclusion preparation",
+      "statistical contract freeze",
+      "restore-gate design and verification preparation"
+    ],
+    "forbidden_now": [
+      "B0/B1 fitting",
+      "GPU or paid compute",
+      "fresh source selection",
+      "activation capture",
+      "prediction or candidate generation",
+      "evaluation truth or labels",
+      "directional-readout or architecture/loss variants",
+      "P03 holdout access",
+      "Agent1 worktree edits"
+    ],
+    "authorized_after_prerequisites": [
+      "Agent1 exactly one paired current-bank B0 and expanded-bank B1 fixed-readout fit after shared preflight",
+      "metadata-only source selection after complete exclusions, frozen statistics, and bound bank identities",
+      "prediction/scoring/truth only after the two-copy restore gate and root release"
+    ]
+  },
+  "ownership": {
+    "agent1": [
+      "exactly one paired current-bank B0 and expanded-bank B1 fixed-readout fit",
+      "input/preprocessing inventory",
+      "durable selected states and deployment package",
+      "fit and resource evidence"
+    ],
+    "agent2": [
+      "complete identity and sequence exclusion audit",
+      "prospective panel and statistical registration",
+      "independent evaluation preparation",
+      "two-copy restore gate",
+      "post-freeze scoring and interpretation"
+    ],
+    "root": [
+      "Agent1 coordination",
+      "resource release",
+      "source-selection and evaluation release"
+    ]
+  },
+  "evaluation": {
+    "domains": [
+      "pile",
+      "finance"
+    ],
+    "targets": [
+      "public_base",
+      "public_lora_2601"
+    ],
+    "cells": [
+      "pile__public_base",
+      "pile__public_lora_2601",
+      "finance__public_base",
+      "finance__public_lora_2601"
+    ],
+    "records_per_domain": 256,
+    "stored_tokens_including_bos": 128,
+    "scored_post_bos_tokens": 127,
+    "token_positions_per_cell": 32512,
+    "exact_records_per_cell": 256,
+    "a1_a2_subset_records_per_domain": 128,
+    "a1_a2_subset_token_positions_per_cell": 16256,
+    "a1_a2_subset_exact_records_per_cell": 128,
+    "target_resource_binding": {
+      "public_lora_2601": {
+        "path": "outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors",
+        "sha256": "eea7bb49f801b61df2e26a8f59af7c3096f6f3a2604404e16e589443bcfba595",
+        "generation_sha256": "6bed8aca6668bd749bbad03c0c85bbace306085dac3141895dad7685f03d0682",
+        "role": "evaluator_only"
+      }
+    }
+  },
+  "source_reservation": {
+    "seed": 5011,
+    "pile_half_open": [
+      0,
+      2000
+    ],
+    "finance_half_open": [
+      20000,
+      28000
+    ],
+    "status": "NOT_STARTED_PENDING_COMPLETE_EXCLUSION_AUDIT"
+  },
+  "statistics": {
+    "bootstrap_unit": "source_record",
+    "bootstrap_seed": 9009,
+    "bootstrap_resamples": 10000,
+    "shared_schedule_within_domain": true,
+    "token_interval": {
+      "type": "descriptive_central_percentile",
+      "confidence": 0.95,
+      "lower_quantile": 0.025,
+      "upper_quantile": 0.975,
+      "percentile_convention": "ascending order statistics: lower index=floor(alpha * draws); upper index=ceil((1-alpha) * draws)-1"
+    },
+    "exact_record_interval": {
+      "path": "scripts/trr0010_analysis.py",
+      "function": "paired_exact_cp",
+      "source_commit": "70c57db7643913eea97cc606775b3f1f3807967a",
+      "source_sha256": "90078ac78bfcdcfb5f782a598c943b78cb0417f6895906a1e6d61056a3793cef",
+      "route_alpha": 0.025,
+      "component_alpha": 0.0125,
+      "bootstrap_used": false
+    },
+    "token_contrast_function": {
+      "path": "scripts/trr0010_analysis.py",
+      "function": "bootstrap_token_delta",
+      "source_commit": "70c57db7643913eea97cc606775b3f1f3807967a",
+      "source_sha256": "90078ac78bfcdcfb5f782a598c943b78cb0417f6895906a1e6d61056a3793cef",
+      "one_sided_alpha": 0.025,
+      "central_interval_confidence": 0.95
+    },
+    "automatic_ci_gate": false,
+    "pooling": false,
+    "task_local_hash_required_before_truth": true
+  },
+  "restore_gate": {
+    "status": "NOT_STARTED",
+    "copy_a": "persistent_training_or_output_storage_to_be_bound",
+    "copy_b": "/mnt/c/Users/alanz/Token-Reconstruction-Backups/TRR-0012",
+    "clean_workspace_required": true,
+    "opened_public_smoke_test_required": true,
+    "tensor_identity_required": true,
+    "identity_freeze_before_restore": true,
+    "source_selection_can_precede_restore": true,
+    "prediction_and_truth_blocked_until_pass": true,
+    "opened_public_smoke_test": {
+      "source": "TRR-0010 already-opened public_base fixture",
+      "records_per_domain": 2,
+      "domain_order": [
+        "finance",
+        "pile"
+      ],
+      "methods": [
+        "new_current_fixed_B0",
+        "new_expanded_fixed_B1"
+      ],
+      "identity_hashes_frozen_before_fit": [
+        "record_ids",
+        "order",
+        "H",
+        "mask",
+        "position_ids"
+      ],
+      "after_normal_checkpoint_selection": true,
+      "selection_criterion": false
+    }
+  },
+  "truth_boundary": {
+    "source_selection_started": false,
+    "observations_captured": false,
+    "predictions_started": false,
+    "truth_opened": false,
+    "p03_holdout_accessed": false
+  },
+  "fit_contract": {
+    "checkpoint_grid_updates": [
+      0,
+      1000,
+      2000,
+      4000,
+      8000,
+      12000,
+      13000
+    ],
+    "validation_every_1000": "NOT_EXECUTED_NON_GRID",
+    "selection_rule": "earliest maximum on the frozen seven-point grid; final independent outcomes never enter selection",
+    "state_identity_freeze_before_restore": true
+  }
+}
