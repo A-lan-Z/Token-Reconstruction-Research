@@ -77,6 +77,7 @@ def predict(package_path,observation_path,output,a1=False):
             pb=save(out/(cell+'__'+name+'.safetensors'),{'predictions':pred})
             row={'prediction':pb,'timing':timing,'observation':b,'resources':guard.check()}
             if a1:row['candidate_simulations_all_four_calls']=adapter.candidate_simulations
+            write_json(out/(cell+'__'+name+'.receipt.json'),{'cell':cell,'method':name,**row,'package':artifact(package_path),'observations':artifact(observation_path),'source':artifact(__file__),'provenance':provenance()})
             results[cell+'::'+name]=row;print(json.dumps({'cell':cell,'method':name,'records':n,'seconds':timing['total_elapsed_seconds']}),flush=True)
         if a1:del adapter,precut,lens,E
         else:del adapter,model,E
@@ -118,7 +119,12 @@ def validate(path):
 
 def score(path,out):
     f,pred,selection=validate(path) # All methods, observations, source order, code, states, predictions BEFORE truth.
-    truth={d:load_file(str(verify(b)))['token_ids'][:,:128].long() for d,b in selection['curator_payloads'].items()}
+    truth={}
+    for d,b in selection['curator_payloads'].items():
+        t=load_file(str(verify(b)));y=t['token_ids']
+        assert y.dtype in [torch.int32,torch.int64] and list(y.shape)==[len(selection['records'][d]),192] and (y[:,0]==128000).all() and t['attention_mask'][:,:128].all()
+        assert (y[:,:128]>=0).all() and (y[:,:128]<128256).all()
+        truth[d]=y[:,:128].long()
     metrics={};correct={};contrasts={};rng=np.random.default_rng(9013)
     resamples={d:rng.integers(len(y),size=(10000,len(y))) for d,y in truth.items()}
     for key,p in pred.items():
