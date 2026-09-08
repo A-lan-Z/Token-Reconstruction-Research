@@ -123,11 +123,16 @@ def _tensor_digest(value: torch.Tensor, *, prefix: bytes) -> str:
 
 
 def _plain_tensor_sha256(value: torch.Tensor) -> str:
-    """Established P09 tensor_sha256: dtype, compact shape, contiguous bytes."""
+    """Established P10 tensor_digest: canonical shape/dtype header plus bytes."""
     contiguous = value.detach().cpu().contiguous()
     digest = hashlib.sha256()
-    digest.update(str(contiguous.dtype).encode("ascii"))
-    digest.update(json.dumps(list(contiguous.shape), separators=(",", ":")).encode("ascii"))
+    digest.update(
+        json.dumps(
+            {"shape": list(contiguous.shape), "dtype": str(contiguous.dtype)},
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    )
     digest.update(contiguous.reshape(-1).view(torch.uint8).numpy().tobytes(order="C"))
     return digest.hexdigest()
 

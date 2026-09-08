@@ -67,10 +67,16 @@ def file_record(path: Path, *, label: str, expected: Mapping[str, Any] | None = 
 
 
 def tensor_sha256(value: torch.Tensor) -> str:
+    """Established P10 tensor_digest: canonical shape/dtype header plus bytes."""
     value = value.detach().cpu().contiguous()
     digest = hashlib.sha256()
-    digest.update(str(value.dtype).encode("ascii"))
-    digest.update(json.dumps(list(value.shape), separators=(",", ":")).encode("ascii"))
+    digest.update(
+        json.dumps(
+            {"shape": list(value.shape), "dtype": str(value.dtype)},
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    )
     digest.update(value.reshape(-1).view(torch.uint8).numpy().tobytes(order="C"))
     return digest.hexdigest()
 
