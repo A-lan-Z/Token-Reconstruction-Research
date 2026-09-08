@@ -1,0 +1,73 @@
+{
+  "schema": "token-reconstruction.trr-0012-cpu-preparation-resource-plan.v1",
+  "task_id": "TRR-0012",
+  "status": "AUTHORIZED_BOUNDED_CPU_PREPARATION",
+  "scope": "Public token/mask/position preparation for the existing ordered B0 prefix plus documented B1 additions; no model, H, GPU, fit, evaluation, selection, or holdout.",
+  "compiler": {
+    "source_commit": "15be77368dae5129a216c9354975b6347cf28720",
+    "source_path": "scripts/trr_p09/prepare_stage1_inputs.py",
+    "source_bytes": 81533,
+    "source_sha256": "5792ad63c5a542fd81ca805ca86e1affb48cf1d634ed38221bcdb0d9649dc19d",
+    "repository_runtime": "/tmp/trr12-p09-source-15be"
+  },
+  "preflight": {
+    "worktree": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012",
+    "disk_free_bytes": 284200771584,
+    "required_disk_free_bytes": 21474836480,
+    "host_mem_available_bytes": 30382297088,
+    "required_host_mem_available_bytes": 12884901888,
+    "gpu_required": false,
+    "gpu_used": false,
+    "thread_env": {
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "TOKENIZERS_PARALLELISM": "false"
+    }
+  },
+  "limits": {
+    "wall_seconds": 1800,
+    "max_group_rss_bytes": 8589934592,
+    "min_host_available_bytes": 12884901888,
+    "min_disk_free_bytes": 21474836480,
+    "watchdog_poll_seconds": 1,
+    "kill_grace_seconds": 2
+  },
+  "outputs": {
+    "root": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r2",
+    "watchdog": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r2_watchdog",
+    "required_artifacts": [
+      "inputs.safetensors",
+      "records.json",
+      "preparation_manifest.json",
+      "COMPLETE"
+    ],
+    "expected_payload_bytes": 29952264,
+    "expected_records_bytes": 10767794,
+    "expected_manifest_bytes": 43560,
+    "expected_payload_sha256": "8150184a349bebd31e24b128d23f096702898024a87a405322ee3ba95fa6682e",
+    "expected_records_sha256": "367cfba0ffe78f59454861a76f23830f480a8745cc6b35e6b4a0d05eca53638b",
+    "expected_corrected_manifest_sha256": "79bbd55e3c66555501e0abc886e69b5a4ff85bca5301a129f6e5d398524e844f"
+  },
+  "identity_checks_after_run": {
+    "ledger": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P11/experiments/TRR-P09/setup/nested-b1-exclusion-ledger-r1.json",
+    "ledger_sha256": "48b6656845a18428e1fdd54c194928538cd9aa87dfb010b5238f11df3c33fbb0",
+    "ordered_fields": [
+      "record_id",
+      "source_record_id",
+      "source_index",
+      "rendered_sha256",
+      "public_record_sha256",
+      "sequence_h128_sha256"
+    ],
+    "ledger_h128_field": "final_sequence_sha256",
+    "short_row_rule": "no H128 hash for rows marked ineligible_shorter_than_128_active_tokens_no_padding_hash",
+    "must_match": [
+      "all 12000 record IDs/order",
+      "all rendered hashes/order",
+      "all applicable canonical H128 hashes",
+      "B0 prefix row identities"
+    ]
+  },
+  "command_source": "P09 r2 receipt exact command, with thread pools reduced to one and durable TRR-0012 output paths."
+}

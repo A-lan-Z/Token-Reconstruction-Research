@@ -1,0 +1,114 @@
+{
+  "dependency_closure": {
+    "decoder_support_access": {
+      "bytes": 4376,
+      "path": "code/token_reconstruction/access.py",
+      "sha256": "0de2add4aaa9c3e99fe14496c19f9e3797f05536e1638412f2fd0c2b835bc86d"
+    },
+    "decoder_support_io": {
+      "bytes": 4479,
+      "path": "code/token_reconstruction/io.py",
+      "sha256": "a3bd57f17e84b49f94169f77c4b1f51f31431584f9c456f9fc29c33853b79675"
+    },
+    "decoder_support_public_prefix": {
+      "bytes": 8297,
+      "path": "code/token_reconstruction/public_prefix.py",
+      "sha256": "b9dca1d8d56c7c07413015aea4bde79e8ceac827c32ee9bc0d1a236ea1dd35f6"
+    }
+  },
+  "loader_compatibility": {
+    "full_vocabulary_forward": false,
+    "loader": "trr0010_p09_fixed_loader.load_p09_fixed_state",
+    "max_rss_bytes_python": 641753088,
+    "max_rss_bytes_time_kib": 666864,
+    "package_model_ids": [
+      "TRR-0012/current_fixed_replication_1",
+      "TRR-0012/expanded_fixed_replication_1"
+    ],
+    "policy": "Preserve loader-required serialized metadata exactly; bind new model identity in the selection receipt/consumer manifest. Do not rename old metadata to fake a new method.",
+    "public_readout_loaded": false,
+    "receipt_path": "package/loader_compatibility_receipt_final.json",
+    "receipt_sha256": "0d9a04ad74f66ab67d93254ac1ccb61ffcd781612b098d7ad27f391483fd1ca9",
+    "resource_log": "package_loader_compat_resource_usage.txt",
+    "serialized_state_method_id": "continued_fixed_readout",
+    "serialized_state_schema": "token-reconstruction.trr-p09-fixed-state.v1",
+    "synthetic_state_bytes": 29390284,
+    "synthetic_state_load": "PASS_SYNTHETIC_STRICT_LOADER_COMPATIBILITY",
+    "synthetic_state_sha256": "da9e12652f1bf8ed161c9836421a13afd319675c4d567f1081eb32745f10ac9b",
+    "wall_seconds": 1.17
+  },
+  "portable_cli": {
+    "accepted_bundled_input": "finance__activations/attention_mask/position_ids and pile__activations/attention_mask/position_ids",
+    "bytes": 59473,
+    "command": "python code/trr0012_package.py predict --package-root . --observations <observations> --output <output> --device <cpu-or-cuda>",
+    "compute_profile": "qualified FP32 decoder; one record at a time for bounded memory",
+    "input_keys": [
+      "activations",
+      "attention_mask",
+      "position_ids"
+    ],
+    "input_shapes": [
+      "[N,128,2048]",
+      "[N,128]",
+      "[N,128]"
+    ],
+    "output_dtype": "torch.int64",
+    "output_format": "safetensors",
+    "output_keys": [
+      "current_fixed",
+      "expanded_fixed"
+    ],
+    "output_receipt": "create-only .receipt.json with observation/output hashes, actual readout/state loaded paths and bindings, local vendored module paths, runtime dependency versions, tensor/per-record hashes, and truth flags",
+    "output_shape": "[N,128] per key",
+    "path": "code/trr0012_package.py",
+    "selection_prerequisite": "receipts/selection_complete_before_smoke.json with complete_before_smoke=true and smoke_used_for_selection=false",
+    "sha256": "9083926a0c369e3ca4361108bea043fbda79f619ff0fca2ce76b780d11bf0109",
+    "source": "scripts/trr0012_package.py"
+  },
+  "primary_package_root": "outputs/TRR-0012/model-package",
+  "producer_helpers": {
+    "identity_command": "python code/trr0012_package.py identity --input <state-or-E> --output <sidecar>",
+    "selection_receipt_command": "python code/trr0012_package.py selection-receipt --b0-state <state> --b1-state <state> --b0-binding <json> --b1-binding <json> --output receipts/selection_complete_before_smoke.json --development-labels-used true",
+    "selection_receipt_schema": "token-reconstruction.trr0012-selection-receipt.v1",
+    "tensor_identity_schema": "token-reconstruction.trr-p11-tensor-identity.v1"
+  },
+  "remaining_prerequisites": [
+    "actual B0/B1 selected states persisted during training and copied into primary package",
+    "actual E copy and tensor sidecar",
+    "new fit/bank/schedule/runner hashes in strict loader kwargs",
+    "loader compatibility synthetic CPU check with an actual new wrapper state",
+    "expected smoke output and final deployment manifest",
+    "root Windows copy and Agent2 clean restore/tensor/output verification"
+  ],
+  "restore_descriptor": {
+    "owner": "Agent2/TRR-P11",
+    "package_manifest_role": "deployment manifest asset; its own SHA is bound by the external restore descriptor, never embedded recursively",
+    "schema": "token-reconstruction.trr-p11-restore-gate.v1",
+    "status": "EXTERNAL_DUAL_COPY_DESCRIPTOR"
+  },
+  "schema": "token-reconstruction.trr0012-package-progress.v1",
+  "scientific_evaluation_authorized": false,
+  "secondary_copy": {
+    "minimum_remaining_free_bytes": 10737418240,
+    "owner": "root",
+    "root": "/mnt/c/Users/alanz/Token-Reconstruction-Backups/TRR-0012",
+    "status": "NOT_WRITTEN_BY_THIS_TASK"
+  },
+  "smoke": {
+    "expected_outputs": "generated only after ordinary new checkpoint selection",
+    "fixture": "smoke/public_base_first2.safetensors",
+    "fixture_sha256": "652a67744f2dabe2ca53198f1b7fddde6cb36d414280a1a0d95d866d1e5cc840",
+    "methods": [
+      "current_fixed",
+      "expanded_fixed"
+    ],
+    "order": [
+      "finance/public_base/000",
+      "finance/public_base/001",
+      "pile/public_base/000",
+      "pile/public_base/001"
+    ]
+  },
+  "status": "DRAFT_PRE_SELECTION_PORTABLE_API_READY",
+  "task_id": "TRR-0012"
+}

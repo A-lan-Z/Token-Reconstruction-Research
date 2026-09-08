@@ -1,0 +1,99 @@
+{
+  "consumer_paths_package_relative": true,
+  "decoder": {
+    "bottleneck_size": 512,
+    "builder": "build_residual_mlp512",
+    "class": "ResidualMLPPositionwiseDecoder",
+    "context_width": 128,
+    "hidden_size": 2048,
+    "module": "token_reconstruction.trr0007_positionwise",
+    "path": "code/token_reconstruction/trr0007_positionwise.py",
+    "seed": 4005,
+    "vocabulary_size": 128256
+  },
+  "immutable_after_selection": true,
+  "loader": {
+    "function": "load_p09_fixed_state",
+    "path": "code/trr0010_p09_fixed_loader.py",
+    "serialized_method_id": "continued_fixed_readout"
+  },
+  "methods": {
+    "current_fixed": {
+      "bank": "B0",
+      "loader": {
+        "kwargs": null,
+        "path": "code/trr0010_p09_fixed_loader.py"
+      },
+      "model_id": null,
+      "public_readout": {
+        "path": "readout/public_normalized_embeddings.safetensors"
+      },
+      "selected_step": null,
+      "state": {
+        "bytes": null,
+        "path": "states/current_fixed.safetensors",
+        "sha256": null
+      },
+      "state_path": "states/current_fixed.safetensors"
+    },
+    "expanded_fixed": {
+      "bank": "B1",
+      "loader": {
+        "kwargs": null,
+        "path": "code/trr0010_p09_fixed_loader.py"
+      },
+      "model_id": null,
+      "public_readout": {
+        "path": "readout/public_normalized_embeddings.safetensors"
+      },
+      "selected_step": null,
+      "state": {
+        "bytes": null,
+        "path": "states/expanded_fixed.safetensors",
+        "sha256": null
+      },
+      "state_path": "states/expanded_fixed.safetensors"
+    }
+  },
+  "package_id": null,
+  "readout": {
+    "bytes": 1050673488,
+    "key": "embeddings",
+    "path": "readout/public_normalized_embeddings.safetensors",
+    "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+  },
+  "runtime": {
+    "code_root": "code",
+    "entrypoint": "python code/trr0012_package.py predict --package-root . --observations <observations> --output <output> --device <cpu-or-cuda>",
+    "numpy": "1.26.4",
+    "python": "3.12.3",
+    "safetensors": "0.7.0",
+    "torch": "2.10.0"
+  },
+  "schema": "token-reconstruction.trr0012-consumer-manifest.v1",
+  "selection_receipt": {
+    "path": "receipts/selection_complete_before_smoke.json"
+  },
+  "smoke": {
+    "expected_path": "smoke/expected_predictions.safetensors",
+    "input_path": "smoke/public_base_first2.safetensors",
+    "methods": [
+      "current_fixed",
+      "expanded_fixed"
+    ],
+    "record_order": [
+      "finance/public_base/000",
+      "finance/public_base/001",
+      "pile/public_base/000",
+      "pile/public_base/001"
+    ]
+  },
+  "status": "FROZEN_SELECTED_PACKAGE",
+  "task_id": "TRR-0012",
+  "truth_boundary": {
+    "independent_evaluation_truth_opened": false,
+    "smoke_used_for_selection": false,
+    "source_text_loaded": false,
+    "token_ids_loaded": false
+  }
+}
