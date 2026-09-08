@@ -503,3 +503,123 @@ def test_recovered_public_support_binding_reports_frozen_strata(tmp_path: Path) 
         assert cell_report["denominator_by_position"]["128-191"] == 0
         assert cell_report["methods"]["new_current_fixed_B0"]["total_tokens"] == cell_report["denominator_tokens"]
         assert cell_report["methods"][ev.COMPARATOR_METHOD]["records"] == ev.COMPARATOR_RECORDS_PER_DOMAIN
+
+
+def test_actual_a1_trace_receipt_binds_tensor_identity_and_reaches_p10_inventory(tmp_path: Path) -> None:
+    """Exercise the native A1 receipt/trace shape and P10 diagnostic handoff."""
+    fixture = _fixture(tmp_path)
+    cell = ev.CELL_ORDER[0]
+    selection_sha256 = fixture["manifest_payload"]["selection"]["sha256"]
+    candidates = torch.zeros((ev.COMPARATOR_RECORDS_PER_DOMAIN, ev.STORED_SEQUENCE_TOKENS, 512), dtype=torch.int64)
+    candidate_scores = torch.zeros_like(candidates, dtype=torch.float32)
+    trace_path = tmp_path / "a1" / "traces" / f"{cell}.safetensors"
+    trace_record = _save(
+        trace_path,
+        {"candidates": candidates, "candidate_scores": candidate_scores},
+        metadata={
+            "schema": ev.A1_TRACE_SCHEMA,
+            "task_id": ev.TASK_ID,
+            "method_id": ev.COMPARATOR_METHOD,
+            "cell_id": cell,
+            "records": str(ev.COMPARATOR_RECORDS_PER_DOMAIN),
+            "stored_sequence_tokens": str(ev.STORED_SEQUENCE_TOKENS),
+            "proposal_budget": str(ev.A1_TRACE_PROPOSAL_BUDGET),
+            "candidate_budget": str(ev.A1_TRACE_CANDIDATE_BUDGET),
+            "selection_sha256": str(selection_sha256),
+            "truth_opened": "false",
+        },
+    )
+    cost_record = _write_json(
+        tmp_path / "a1" / "costs" / f"{cell}.json",
+        {"schema": "token-reconstruction.trr-p11-a1-a2-cost.v1", "task_id": ev.TASK_ID, "truth_opened": False, "p03_holdout_accessed": False},
+    )
+    prediction = _prediction(ev.COMPARATOR_RECORDS_PER_DOMAIN, 3)
+    output_record = _save(
+        tmp_path / "a1" / "predictions" / f"{cell}.safetensors",
+        {"predictions": prediction},
+        metadata={
+            "schema": "token-reconstruction.trr-p11-a1-a2-prediction.v1",
+            "task_id": ev.TASK_ID,
+            "method_id": ev.COMPARATOR_METHOD,
+            "cell_id": cell,
+            "prediction_tensor_sha256": ev.p10.tensor_digest(prediction),
+        },
+    )
+    receipt_record = _write_json(
+        tmp_path / "a1" / "predictions" / f"{cell}.receipt.json",
+        {
+            "schema": ev.A1_PREDICTION_RECEIPT_SCHEMA,
+            "task_id": ev.TASK_ID,
+            "status": "A1_A2_K256_PREDICTIONS_COMPLETE_NO_TRUTH",
+            "selection_sha256": selection_sha256,
+            "output": output_record,
+            "observations": fixture["observations"][cell],
+            "methods": {
+                "a1_a2_k256": {
+                    "state_file_binding": fixture["states"][ev.COMPARATOR_METHOD]["file"],
+                    "tensor_sha256": ev.p10.tensor_digest(prediction),
+                    "shape": list(prediction.shape),
+                    "dtype": str(prediction.dtype),
+                }
+            },
+            "trace": trace_record,
+            "cost": cost_record,
+            "tensor_sha256": ev.p10.tensor_digest(prediction),
+            "candidate_arrays_persisted": True,
+            "source_text_loaded": False,
+            "token_ids_loaded": False,
+            "target_labels_loaded": False,
+            "truth_opened": False,
+            "p03_holdout_accessed": False,
+        },
+    )
+    binding = {
+        "file": output_record,
+        "tensor_key": "predictions",
+        "tensor_sha256": ev.p10.tensor_digest(prediction),
+        "records": ev.COMPARATOR_RECORDS_PER_DOMAIN,
+        "trace": trace_record,
+        "cost": cost_record,
+        "receipt": receipt_record,
+    }
+    normalized, tensor = ev._validate_prediction(
+        ev.COMPARATOR_METHOD,
+        cell,
+        binding,
+        root=tmp_path,
+        state=fixture["states"][ev.COMPARATOR_METHOD],
+        observation=fixture["observations"][cell],
+        restore_links={},
+        selection_sha256=selection_sha256,
+    )
+    assert tuple(normalized["trace"]["tensor_shapes"]["candidates"]) == (128, 128, 512)
+    assert normalized["trace"]["tensor_dtypes"]["candidate_scores"] == "torch.float32"
+    assert torch.equal(tensor, prediction)
+
+    predictions: dict[str, torch.Tensor] = {}
+    prediction_bindings: dict[str, dict[str, object]] = {}
+    subsets: dict[str, tuple[int, ...] | None] = {}
+    for method in ("new_expanded_fixed_B1", "new_current_fixed_B0", ev.COMPARATOR_METHOD):
+        rows = ev.COMPARATOR_RECORDS_PER_DOMAIN if method == ev.COMPARATOR_METHOD else ev.RECORDS_PER_DOMAIN
+        for item in ev.CELL_ORDER:
+            key = f"{method}::{item}"
+            predictions[key] = _prediction(rows, 0)
+            prediction_bindings[key] = {"file": output_record}
+            subsets[key] = tuple(range(rows)) if method == ev.COMPARATOR_METHOD else None
+    prediction_bindings[f"{ev.COMPARATOR_METHOD}::{cell}"] = normalized
+    frozen = ev.FrozenEvaluation(
+        freeze_path=tmp_path / "freeze.json",
+        freeze_record={},
+        payload={"trace_files": []},
+        predictions=predictions,
+        prediction_bindings=prediction_bindings,
+        states={},
+        records_by_cell={item: ev.RECORDS_PER_DOMAIN for item in ev.CELL_ORDER},
+        subsets=subsets,
+    )
+    p10_frozen = ev._as_p10_frozen(frozen)
+    assert any(key.endswith("::candidate_trace") for key in p10_frozen.trace_records)
+    truth = {item: _prediction(ev.RECORDS_PER_DOMAIN, 0) for item in ev.CELL_ORDER}
+    inventory = ev.p10.build_error_inventory(p10_frozen, truth)
+    diagnostics = inventory["cells"][cell]["rank_and_proposal_diagnostics"]["a1_proposal"]
+    assert diagnostics["status"] == "AVAILABLE_BOUND_TRACE_OPAQUE"

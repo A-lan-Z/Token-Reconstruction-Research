@@ -34,6 +34,10 @@ FREEZE_SCHEMA = "token-reconstruction.trr-p11-evaluation-freeze.v1"
 TRUTH_SCHEMA = "token-reconstruction.trr-p11-evaluation-truth.v1"
 SCORE_SCHEMA = "token-reconstruction.trr-p11-evaluation-score.v1"
 PREDICTION_RECEIPT_SCHEMA = "token-reconstruction.trr0012-prediction-receipt.v1"
+A1_PREDICTION_RECEIPT_SCHEMA = "token-reconstruction.trr-p11-a1-a2-prediction.v1"
+A1_TRACE_SCHEMA = "token-reconstruction.trr-p11-a1-a2-candidate-trace.v1"
+A1_TRACE_PROPOSAL_BUDGET = 512
+A1_TRACE_CANDIDATE_BUDGET = 256
 RESTORE_STATUS = "PASS_RESTORED_SMOKE"
 RESTORE_STATE_ASSETS = {
     "new_current_fixed_B0": "current_fixed",
@@ -882,9 +886,114 @@ def _receipt_method_key(binding: Mapping[str, Any], method: str) -> str:
     key = binding.get("receipt_method_key")
     if key is None:
         key = METHOD_OUTPUT_KEYS.get(method)
+    if key is None and method == COMPARATOR_METHOD:
+        key = COMPARATOR_METHOD
     if not isinstance(key, str) or not key:
         raise EvaluationError(f"receipt output key is absent: {method}")
     return key
+
+
+
+def _validate_receipt_tensor_binding(
+    value: Any,
+    *,
+    tensor: torch.Tensor,
+    tensor_digest: str,
+    description: str,
+) -> None:
+    """Cross-check optional receipt geometry and digest fields against bytes."""
+    if not isinstance(value, Mapping):
+        return
+    for key in ("tensor_sha256", "prediction_tensor_sha256", "prediction_sha256"):
+        declared = value.get(key)
+        if declared is None:
+            continue
+        if isinstance(declared, Mapping):
+            declared = declared.get("predictions", declared.get("tensor"))
+        if declared is not None and declared != tensor_digest:
+            raise EvaluationError(f"{description} {key} differs from output tensor")
+    if "shape" in value:
+        shape = value.get("shape")
+        if not isinstance(shape, (list, tuple)) or list(shape) != list(tensor.shape):
+            raise EvaluationError(f"{description} shape differs from output tensor")
+    if "dtype" in value and str(value.get("dtype")) != str(tensor.dtype):
+        raise EvaluationError(f"{description} dtype differs from output tensor")
+
+
+def _validate_a1_trace(
+    value: Any,
+    *,
+    root: Path,
+    cell: str,
+    selection_sha256: str | None,
+) -> dict[str, Any]:
+    """Validate the native A1 candidate IDs/scores trace before truth."""
+    if not isinstance(value, Mapping):
+        raise EvaluationError(f"A1 candidate trace binding is absent: {cell}")
+    record = _record(value, root=root, description=f"A1 candidate trace {cell}", declared=value)
+    if not record["path"].lower().endswith(".safetensors"):
+        raise EvaluationError(f"A1 candidate trace is not safetensors: {cell}")
+    try:
+        with safe_open(record["path"], framework="pt", device="cpu") as handle:
+            keys = set(handle.keys())
+            if keys != {"candidates", "candidate_scores"}:
+                raise EvaluationError(f"A1 candidate trace tensor keys changed: {cell}")
+            candidates = handle.get_tensor("candidates").detach().cpu().contiguous()
+            scores = handle.get_tensor("candidate_scores").detach().cpu().contiguous()
+            metadata = dict(handle.metadata() or {})
+    except EvaluationError:
+        raise
+    except Exception as exc:
+        raise EvaluationError(f"A1 candidate trace is unreadable: {cell}") from exc
+    p10._assert_truth_free(metadata, description=f"A1 candidate trace {cell}", allow_trace=True)
+    if metadata.get("p03_holdout_accessed") is not None and metadata.get("p03_holdout_accessed") is not False:
+        raise EvaluationError(f"A1 candidate trace crosses the P03 boundary: {cell}")
+    expected_metadata = {
+        "schema": A1_TRACE_SCHEMA,
+        "task_id": TASK_ID,
+        "method_id": COMPARATOR_METHOD,
+        "cell_id": cell,
+        "records": COMPARATOR_RECORDS_PER_DOMAIN,
+        "stored_sequence_tokens": STORED_SEQUENCE_TOKENS,
+        "proposal_budget": A1_TRACE_PROPOSAL_BUDGET,
+        "candidate_budget": A1_TRACE_CANDIDATE_BUDGET,
+    }
+    for key, expected in expected_metadata.items():
+        if str(metadata.get(key)) != str(expected):
+            raise EvaluationError(f"A1 candidate trace metadata changed: {cell}/{key}")
+    if selection_sha256 is not None and metadata.get("selection_sha256") != selection_sha256:
+        raise EvaluationError(f"A1 candidate trace selection binding changed: {cell}")
+    expected_shape = (COMPARATOR_RECORDS_PER_DOMAIN, STORED_SEQUENCE_TOKENS, A1_TRACE_PROPOSAL_BUDGET)
+    if tuple(candidates.shape) != expected_shape or tuple(scores.shape) != expected_shape:
+        raise EvaluationError(f"A1 candidate trace geometry changed: {cell}")
+    if candidates.dtype != torch.int64:
+        raise EvaluationError(f"A1 candidate trace candidate dtype changed: {cell}")
+    if scores.dtype != torch.float32:
+        raise EvaluationError(f"A1 candidate trace score dtype changed: {cell}")
+    if candidates.lt(0).any().item() or candidates.ge(VOCABULARY_SIZE).any().item():
+        raise EvaluationError(f"A1 candidate trace token range changed: {cell}")
+    if scores.isnan().any().item():
+        raise EvaluationError(f"A1 candidate trace contains NaN scores: {cell}")
+    return {
+        **record,
+        "label": "candidate_trace",
+        "method_id": COMPARATOR_METHOD,
+        "cell_id": cell,
+        "tensor_keys": ["candidates", "candidate_scores"],
+        "tensor_sha256": {
+            "candidates": p10.tensor_digest(candidates),
+            "candidate_scores": p10.tensor_digest(scores),
+        },
+        "tensor_shapes": {
+            "candidates": list(candidates.shape),
+            "candidate_scores": list(scores.shape),
+        },
+        "tensor_dtypes": {
+            "candidates": str(candidates.dtype),
+            "candidate_scores": str(scores.dtype),
+        },
+        "metadata": {str(key): str(value) for key, value in metadata.items()},
+    }
 
 
 def _validate_prediction(
@@ -896,6 +1005,7 @@ def _validate_prediction(
     state: Mapping[str, Any],
     observation: Mapping[str, Any],
     restore_links: Mapping[str, Any],
+    selection_sha256: str | None = None,
 ) -> tuple[dict[str, Any], torch.Tensor]:
     if not isinstance(value, Mapping):
         raise EvaluationError(f"prediction binding is absent: {method}/{cell}")
@@ -912,7 +1022,7 @@ def _validate_prediction(
     if expected_key is not None and tensor_key != expected_key:
         raise EvaluationError(f"Agent1 output key changed: {method}/{cell}")
     tensor_digest_declared = value.get("tensor_sha256") or value.get("prediction_sha256")
-    _require_sha(tensor_digest_declared, description=f"prediction tensor {method}/{cell}")
+    tensor_digest_declared = _require_sha(tensor_digest_declared, description=f"prediction tensor {method}/{cell}")
     try:
         with safe_open(output["path"], framework="pt", device="cpu") as handle:
             available_keys = set(handle.keys())
@@ -934,6 +1044,9 @@ def _validate_prediction(
         raise EvaluationError(f"prediction token range changed: {method}/{cell}")
     if p10.tensor_digest(tensor) != tensor_digest_declared:
         raise EvaluationError(f"prediction tensor digest changed: {method}/{cell}")
+    for digest_key in ("tensor_sha256", "prediction_tensor_sha256", "prediction_sha256"):
+        if digest_key in metadata and metadata[digest_key] != tensor_digest_declared:
+            raise EvaluationError(f"prediction metadata tensor digest changed: {method}/{cell}")
     if str(metadata.get("method_id", method)) != method or str(metadata.get("cell_id", cell)) != cell:
         raise EvaluationError(f"prediction metadata identity changed: {method}/{cell}")
     for flag in _FORBIDDEN_TRUE:
@@ -960,6 +1073,10 @@ def _validate_prediction(
         for flag, expected in (("complete_before_smoke", True), ("smoke_used_for_selection", False), ("independent_evaluation_truth_opened", False), ("truth_opened", False), ("source_text_loaded", False), ("token_ids_loaded", False)):
             if receipt.get(flag) is not expected:
                 raise EvaluationError(f"prediction receipt boundary changed: {method}/{cell}/{flag}")
+    if selection_sha256 is not None:
+        for selection_key in ("selection_sha256", "selection_receipt_sha256", "selection_plan_sha256"):
+            if selection_key in receipt and receipt.get(selection_key) != selection_sha256:
+                raise EvaluationError(f"prediction receipt selection binding changed: {method}/{cell}")
     output_receipt = receipt.get("output")
     if isinstance(output_receipt, Mapping):
         _same_content(output, output_receipt, description=f"prediction receipt output {method}/{cell}")
@@ -1002,6 +1119,30 @@ def _validate_prediction(
         method_receipt = receipt.get("method") or receipt.get("state")
     if not isinstance(method_receipt, Mapping):
         raise EvaluationError(f"prediction receipt method binding is absent: {method}/{cell}/{key}")
+    _validate_receipt_tensor_binding(receipt, tensor=tensor, tensor_digest=tensor_digest_declared, description=f"prediction receipt {method}/{cell}")
+    _validate_receipt_tensor_binding(method_receipt, tensor=tensor, tensor_digest=tensor_digest_declared, description=f"prediction receipt method {method}/{cell}")
+    trace_record: dict[str, Any] | None = None
+    cost_record: dict[str, Any] | None = None
+    trace_value = value.get("trace")
+    if trace_value is not None:
+        trace_record = _validate_a1_trace(trace_value, root=root, cell=cell, selection_sha256=selection_sha256)
+        receipt_trace = receipt.get("trace")
+        if not isinstance(receipt_trace, Mapping):
+            raise EvaluationError(f"prediction receipt candidate trace binding is absent: {method}/{cell}")
+        _same_content(trace_record, receipt_trace, description=f"prediction receipt candidate trace {method}/{cell}")
+        cost_value = value.get("cost")
+        if not isinstance(cost_value, Mapping):
+            raise EvaluationError(f"prediction cost receipt is absent: {method}/{cell}")
+        cost_record = _record(cost_value, root=root, description=f"prediction cost {method}/{cell}", declared=cost_value)
+        if cost_record["path"].lower().endswith(".json"):
+            cost_payload, _ = _load_json_binding(cost_record, root=root, description=f"prediction cost {method}/{cell}")
+            _assert_pretruth(cost_payload, description=f"prediction cost {method}/{cell}")
+        receipt_cost = receipt.get("cost")
+        if not isinstance(receipt_cost, Mapping):
+            raise EvaluationError(f"prediction receipt cost binding is absent: {method}/{cell}")
+        _same_content(cost_record, receipt_cost, description=f"prediction receipt cost {method}/{cell}")
+    elif method == COMPARATOR_METHOD and receipt.get("schema") == A1_PREDICTION_RECEIPT_SCHEMA:
+        raise EvaluationError(f"native A1 receipt has no candidate trace: {method}/{cell}")
     state_receipt = method_receipt.get("state_file_binding") or method_receipt.get("state")
     if isinstance(state_receipt, Mapping):
         _same_content(state["file"], state_receipt, description=f"prediction receipt state {method}/{cell}")
@@ -1017,11 +1158,17 @@ def _validate_prediction(
         "file": output,
         "tensor_key": tensor_key,
         "tensor_sha256": tensor_digest_declared,
+        "shape": list(tensor.shape),
+        "dtype": str(tensor.dtype),
         "records": records,
         "receipt": receipt_record,
         "receipt_method_key": key,
         "metadata": {str(k): str(v) for k, v in metadata.items()},
     }
+    if trace_record is not None:
+        normalized["trace"] = trace_record
+    if cost_record is not None:
+        normalized["cost"] = cost_record
     return normalized, tensor.to(dtype=torch.long)
 
 
@@ -1108,7 +1255,7 @@ def _validate_document(document: Mapping[str, Any], *, root: Path, allow_freeze:
             raise EvaluationError(f"prediction cells are absent: {method}")
         for cell in CELL_ORDER:
             key = f"{method}::{cell}"
-            normalized, tensor = _validate_prediction(method, cell, cells.get(cell), root=root, state=states[method], observation=observations[cell], restore_links=restore_links)
+            normalized, tensor = _validate_prediction(method, cell, cells.get(cell), root=root, state=states[method], observation=observations[cell], restore_links=restore_links, selection_sha256=selection_record["sha256"])
             prediction_bindings[key] = normalized
             predictions[key] = tensor
             subsets[key] = None
@@ -1124,10 +1271,21 @@ def _validate_document(document: Mapping[str, Any], *, root: Path, allow_freeze:
             else:
                 subset_value = None
             subset, indices = _validate_subset(COMPARATOR_METHOD, subset_value)
-            normalized, tensor = _validate_prediction(COMPARATOR_METHOD, cell, cells.get(cell), root=root, state=states[COMPARATOR_METHOD], observation=observations[cell], restore_links=restore_links)
+            normalized, tensor = _validate_prediction(COMPARATOR_METHOD, cell, cells.get(cell), root=root, state=states[COMPARATOR_METHOD], observation=observations[cell], restore_links=restore_links, selection_sha256=selection_record["sha256"])
             prediction_bindings[key] = {**normalized, "source_subset": subset}
             predictions[key] = tensor
             subsets[key] = indices
+    bound_trace_files = [
+        binding["trace"]
+        for binding in prediction_bindings.values()
+        if isinstance(binding.get("trace"), Mapping)
+    ]
+    if bound_trace_files:
+        merged_trace_files = list(trace_files)
+        for trace in bound_trace_files:
+            if not any(int(item.get("bytes", -1)) == int(trace.get("bytes", -2)) and item.get("sha256") == trace.get("sha256") for item in merged_trace_files):
+                merged_trace_files.append(dict(trace))
+        trace_files = merged_trace_files
     matrix_status = "P11_PREDICTIONS_FROZEN_BEFORE_TRUTH" if comparator_status == "READY" else "QUALIFIED_PARTIAL_A1_BLOCKER"
     if allow_freeze:
         declared_restore_links = document.get("restore_asset_bindings")
@@ -1384,6 +1542,17 @@ def _as_p10_frozen(frozen: FrozenEvaluation) -> p10.FrozenPackage:
             prediction_metadata[target_key] = {"method_id": p10_method, "cell_id": cell, "records": str(predictions[target_key].shape[0])}
             records_by_method_cell[target_key] = int(predictions[target_key].shape[0])
             subsets[target_key] = frozen.subsets[source_key]
+    trace_records: dict[str, dict[str, Any]] = {}
+    for prediction_key, binding in frozen.prediction_bindings.items():
+        trace = binding.get("trace")
+        if isinstance(trace, Mapping):
+            trace_records[f"{prediction_key}::candidate_trace"] = {
+                **dict(trace),
+                "label": "candidate_trace",
+                "prediction": prediction_key,
+            }
+    if not trace_records:
+        trace_records = {str(index): dict(item) for index, item in enumerate(frozen.payload.get("trace_files", []))}
     return p10.FrozenPackage(
         freeze_path=frozen.freeze_path,
         freeze_record=frozen.freeze_record,
@@ -1392,7 +1561,7 @@ def _as_p10_frozen(frozen: FrozenEvaluation) -> p10.FrozenPackage:
         registration_record=frozen.freeze_record,
         registration_payload=frozen.payload,
         run_manifest_record=None,
-        trace_records={str(index): dict(item) for index, item in enumerate(frozen.payload.get("trace_files", []))},
+        trace_records=trace_records,
         cells=tuple(p10.CELL_ORDER),
         methods=tuple(active_method_map),
         records_by_cell=dict(frozen.records_by_cell),
