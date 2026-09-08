@@ -39,6 +39,9 @@ IDENTITY_UNION_FIELDS = frozenset({
     "tokenized_record_sha256",
     "h128_sequence_sha256",
     "h129_sequence_sha256",
+    # TRR-0001's public 40-token rows use raw signed-int32 H40.  This is a
+    # distinct namespace from TRR-0002's tensor-header/signed-int64 H40.
+    "h40_sequence_sha256",
     "trr0002_active_token_ids_sha256",
     "trr0002_h40_token_ids_sha256",
     "source_index",
@@ -94,6 +97,63 @@ P11_TRR0003_H40_SCRIPT_PATH = "experiments/TRR-P11/exclusions/recover_trr0003_h4
 P11_TRR0003_H40_SCRIPT_SHA256 = "f1f639f9aa39f2057b44dd4613bb5c961bc848991f795718215f7d4d936fe0fc"
 P11_TRR0003_H40_FAILURE_PATH = "experiments/TRR-P11/exclusions/trr0003_h40_recovery_attempt1_failure.json"
 P11_TRR0003_H40_FAILURE_SHA256 = "fbfa33ca082dbaf00a5c0a725bcdc8d62570164096b6750f37b3ab8a168ce086"
+
+# Gitworker's already-completed public token/mask-only recoveries. The single
+# original-fit export is producer-bound to the byte-identical TRR-0004 fit
+# ledgers and to the exact record lineage reused by TRR-0005/TRR-0007.
+P11_ORIGINAL_RECOVERY_HANDOFF_PATH = "experiments/TRR-P11/exclusions/original_payload_recovery_handoff_r1.json"
+P11_ORIGINAL_RECOVERY_HANDOFF_SHA256 = "1b14607df868bd9c98ca86eb233833d7e739679c89f78dd62bbd32d482841b11"
+P11_ORIGINAL_RECOVERY_HANDOFF_HISTORICAL_SHA256 = "af52b27c503a2e935a7beb0978fd5fe3b07d27bebe0893aa6ecf9c34d91a5986"
+P11_ORIGINAL_FIT_IDENTITY_PATH = "experiments/TRR-P11/exclusions/original_fit_1200_identity_r1.json"
+P11_ORIGINAL_FIT_IDENTITY_SHA256 = "45700bb02bbb89e7c8006e0bc6cff60b8f3afaeea533e1d9c4c41cc19531a9da"
+P11_ORIGINAL_FIT_RECOVERY_PATH = "experiments/TRR-P11/exclusions/original_fit_1200_recovery_r1.json"
+P11_ORIGINAL_FIT_RECOVERY_SHA256 = "3f06a5287beaccb39efc3bf6b0ad2da9dbf09e376eb4d58fb2406152b0bd95a1"
+P11_VALIDATION_IDENTITY_PATH = "experiments/TRR-P11/exclusions/validation_48_identity_r1.json"
+P11_VALIDATION_IDENTITY_SHA256 = "d68d98aecdfd0cf041be1e508074ffbf4ded24e0bc0a401362f1eb262e5e17ab"
+P11_VALIDATION_RECOVERY_PATH = "experiments/TRR-P11/exclusions/validation_48_recovery_r1.json"
+P11_VALIDATION_RECOVERY_SHA256 = "9473f1b378add851456dc1acf120cb530738ddbb055695c46613fcb0311efc0e"
+P11_ORIGINAL_FIT_METADATA_SHA256 = "3f733212efd62b19e71f60f002f4e9756b4975ebfb4dcabf0ac27935929f94ff"
+P11_ORIGINAL_FIT_METADATA_BYTES = 463510
+P11_ORIGINAL_ALPACA_METADATA_SHA256 = "9c577f4ecb54ccb61e114aa741859e1bc045a4fd9d302479b2a49d17050dcf81"
+P11_ORIGINAL_ALPACA_METADATA_BYTES = 754638
+P11_VALIDATION_METADATA_SHA256 = "30b422b681bef5e7af4c26d339e57dfb3571ecef8077bdc4be5d960ef05c9777"
+P11_VALIDATION_METADATA_BYTES = 16456
+P11_ORIGINAL_FIT_PAYLOAD_SHA256 = "d1c78fcf1acc91b57d51355ee11f267bf4c12f1bc7d5160164b3b6ea11b45344"
+P11_VALIDATION_PAYLOAD_SHA256 = "a8e7633ffb369864af33754c5ebb2d9a4ca9d6e7d4550731e8ff26e20c8200cf"
+P11_ORIGINAL_LINEAGE_METADATA = {
+    "trr0004_affine_fit": ("experiments/TRR-0004/fit/affine_fit_records.json", P11_ORIGINAL_FIT_METADATA_SHA256),
+    "trr0004_adapter_v2_fit": ("experiments/TRR-0004/fit/adapter_v2/affine_fit_records.json", P11_ORIGINAL_FIT_METADATA_SHA256),
+    "trr0005_original_fit": ("experiments/TRR-0005/public_activation_v1/original_fit_records.json", P11_ORIGINAL_ALPACA_METADATA_SHA256),
+    "trr0007_original_fit": ("experiments/TRR-0007/support/broader_capture_v2/original_fit_records.json", P11_ORIGINAL_ALPACA_METADATA_SHA256),
+}
+
+# Gitworker's completed TRR-0001/TRR-0002 public H40 recovery.  TRR-0001 is
+# raw signed-int32 H40; TRR-0002 is the historical tensor-header plus
+# signed-int64 H40.  Keep their identity fields separate in the union.
+P11_H40_RECOVERY_HANDOFF_PATH = "experiments/TRR-P11/exclusions/trr0001_trr0002_h40_recovery_handoff_r1.json"
+P11_H40_RECOVERY_HANDOFF_SHA256 = "9ab88d1abadeebb22038936b26672a7ecca337c7c93f206e5708c00ef0f2f1aa"
+P11_H40_RECOVERY_HANDOFF_BYTES = 3860
+P11_H40_RECOVERY_ATTEMPTS_PATH = "experiments/TRR-P11/exclusions/trr0001_trr0002_h40_attempts_r1.json"
+P11_H40_RECOVERY_ATTEMPTS_SHA256 = "cf5cb6474c90a540a13687dad08e606aae546e0f9afc217a642e8d8bbe75053d"
+P11_H40_RECOVERY_ATTEMPTS_BYTES = 4696
+P11_H40_RECOVERY_SCRIPT_PATH = "experiments/TRR-P11/exclusions/recover_trr0001_trr0002_h40_r1.py"
+P11_H40_RECOVERY_SCRIPT_SHA256 = "3d43b2a93950be035c6889182139d696165c0fa8b62e2634a85ff13b643c0c04"
+P11_TRR0001_H40_IDENTITY_PATH = "experiments/TRR-P11/exclusions/trr0001_h40_identity_rows_r1.json"
+P11_TRR0001_H40_IDENTITY_SHA256 = "4268eefa65fc36c94255cb7a8b4b8fc8993eb38985081c5b115c969454c3bab3"
+P11_TRR0001_H40_IDENTITY_BYTES = 150792
+P11_TRR0001_H40_RECOVERY_PATH = "experiments/TRR-P11/exclusions/trr0001_h40_recovery_r1.json"
+P11_TRR0001_H40_RECOVERY_SHA256 = "b26e1e984fd975a2b158081515c205fd4d410c5e649f756a4912738f9763e83c"
+P11_TRR0001_H40_RECOVERY_BYTES = 6656
+P11_TRR0002_H40_IDENTITY_PATH = "experiments/TRR-P11/exclusions/trr0002_h40_identity_rows_r1.json"
+P11_TRR0002_H40_IDENTITY_SHA256 = "e938f89f3acc00cf13a096c911de9a94083b56f2821e8984860a656a8d3ecc11"
+P11_TRR0002_H40_IDENTITY_BYTES = 42509
+P11_TRR0002_H40_RECOVERY_PATH = "experiments/TRR-P11/exclusions/trr0002_h40_recovery_r1.json"
+P11_TRR0002_H40_RECOVERY_SHA256 = "d3416cdc3aa76e4081bccc7ecb40a1d9c919556bb39e93dead355edd5b58589a"
+P11_TRR0002_H40_RECOVERY_BYTES = 6576
+P11_VALIDATION_LINEAGE_METADATA = {
+    "trr0004_affine_validation": ("experiments/TRR-0004/fit/affine_validation_records.json", P11_VALIDATION_METADATA_SHA256),
+    "trr0004_adapter_v2_validation": ("experiments/TRR-0004/fit/adapter_v2/affine_validation_records.json", P11_VALIDATION_METADATA_SHA256),
+}
 
 # Agent 1's exact hash-only replication inputs. These are metadata/manifest
 # bindings only; the exclusion audit never opens the B0/B1 activation tensors.
@@ -742,6 +802,804 @@ def _load_trr0003_h40_identity_export(
         },
     }
     return bundle, proof
+
+
+def _verified_file_value(
+    root: Path,
+    relative_path: str,
+    expected_sha256: str,
+    expected_bytes: int,
+    *,
+    label: str,
+) -> tuple[Path, dict[str, Any]]:
+    """Read a hash-bound JSON metadata file for lineage validation."""
+    path = (root / relative_path).resolve()
+    if (
+        not path.is_file()
+        or path.is_symlink()
+        or p10.sha256_file(path) != expected_sha256
+        or path.stat().st_size != expected_bytes
+    ):
+        raise ExclusionAuditError(f"{label} is unavailable or changed")
+    value = _read_json(path, label=label)
+    return path, value
+
+
+def _load_original_recovery_lineage(
+    root: Path,
+) -> tuple[list[p10.IdentityBundle], list[dict[str, Any]], dict[str, dict[str, set[tuple[str, tuple[str, ...]]]]]]:
+    """Bind the completed original-fit/validation exports to all consumers.
+
+    Gitworker's exports are derived from public ``token_ids``/masks and carry
+    exact H128/H129 commitments.  The TRR-0004 fit ledgers are byte-identical
+    to each other; TRR-0005 and TRR-0007 preserve the same ordered original
+    record IDs, geometry, source lineage, and non-synthetic markers.  This
+    function verifies those producer facts before allowing record-ID joins for
+    those four ledgers.  The join is deliberately local to this verified
+    lineage; ordinary record-ID aliases remain insufficient elsewhere.
+    """
+    handoff_path, handoff = _verified_file_value(
+        root,
+        P11_ORIGINAL_RECOVERY_HANDOFF_PATH,
+        P11_ORIGINAL_RECOVERY_HANDOFF_SHA256,
+        9830,
+        label="original payload recovery handoff",
+    )
+    if (
+        handoff.get("schema") != "token-reconstruction.trr-p11-original-payload-recovery-handoff.v1"
+        or handoff.get("task_id") != TASK_ID
+        or handoff.get("status") != "PASS_OPAQUE_EXPORTS_READY_FOR_EXCLUSION_WORKER"
+    ):
+        raise ExclusionAuditError("original payload recovery handoff status changed")
+    handoff_access = handoff.get("access_boundary")
+    if (
+        not isinstance(handoff_access, Mapping)
+        or any(
+            handoff_access.get(key) is True
+            for key in (
+                "source_text_serialized",
+                "source_tokens_serialized",
+                "token_values_emitted",
+                "activations_read",
+                "model_loaded",
+                "gpu_used",
+                "evaluation_truth_opened",
+                "p03_holdout_accessed",
+                "new_selection_started",
+            )
+        )
+    ):
+        raise ExclusionAuditError("original payload recovery access boundary is unsafe")
+    recovery_program = handoff.get("recovery_program")
+    if (
+        not isinstance(recovery_program, Mapping)
+        or recovery_program.get("path") != "scripts/trr_p11/recover_public_token_payload.py"
+        or recovery_program.get("sha256") != P11_P05_SCRIPT_SHA256
+    ):
+        raise ExclusionAuditError("original payload recovery program binding changed")
+
+    expected_jobs = {
+        "trr4_original_fit_1200": {
+            "identity_path": P11_ORIGINAL_FIT_IDENTITY_PATH,
+            "identity_sha256": P11_ORIGINAL_FIT_IDENTITY_SHA256,
+            "identity_bytes": 487363,
+            "recovery_path": P11_ORIGINAL_FIT_RECOVERY_PATH,
+            "recovery_sha256": P11_ORIGINAL_FIT_RECOVERY_SHA256,
+            "metadata_suffix": "experiments/TRR-0004/fit/affine_fit_records.json",
+            "metadata_sha256": P11_ORIGINAL_FIT_METADATA_SHA256,
+            "metadata_bytes": P11_ORIGINAL_FIT_METADATA_BYTES,
+            "payload_suffix": "outputs/TRR-0004/public_activation_v2/train_large_cut4.safetensors",
+            "payload_sha256": P11_ORIGINAL_FIT_PAYLOAD_SHA256,
+            "payload_bytes": 947176648,
+            "rows": 1200,
+            "h128_rows": 350,
+            "h129_rows": 343,
+            "short_rows": 850,
+        },
+        "trr4_original_validation_48": {
+            "identity_path": P11_VALIDATION_IDENTITY_PATH,
+            "identity_sha256": P11_VALIDATION_IDENTITY_SHA256,
+            "identity_bytes": 16614,
+            "recovery_path": P11_VALIDATION_RECOVERY_PATH,
+            "recovery_sha256": P11_VALIDATION_RECOVERY_SHA256,
+            "metadata_suffix": "experiments/TRR-0004/fit/adapter_v2/affine_validation_records.json",
+            "metadata_sha256": P11_VALIDATION_METADATA_SHA256,
+            "metadata_bytes": P11_VALIDATION_METADATA_BYTES,
+            "payload_suffix": "experiments/TRR-0004/fit/adapter_v2/validation_mixed_cut4.safetensors",
+            "payload_sha256": P11_VALIDATION_PAYLOAD_SHA256,
+            "payload_bytes": 37795064,
+            "rows": 48,
+            "h128_rows": 6,
+            "h129_rows": 5,
+            "short_rows": 42,
+        },
+    }
+    jobs = handoff.get("jobs")
+    if not isinstance(jobs, list):
+        raise ExclusionAuditError("original payload recovery handoff has no jobs")
+    jobs_by_label = {job.get("label"): job for job in jobs if isinstance(job, Mapping)}
+    if set(jobs_by_label) != set(expected_jobs):
+        raise ExclusionAuditError("original payload recovery job set changed")
+
+    job_proofs: dict[str, dict[str, Any]] = {}
+    for job_label, expected in expected_jobs.items():
+        job = jobs_by_label[job_label]
+        identity = job.get("identity_export")
+        recovery = job.get("recovery_receipt")
+        metadata = job.get("metadata")
+        payload = job.get("payload")
+        coverage = job.get("coverage")
+        if not all(isinstance(item, Mapping) for item in (identity, recovery, metadata, payload, coverage)):
+            raise ExclusionAuditError(f"{job_label} handoff binding is malformed")
+        if (
+            identity.get("path") != expected["identity_path"]
+            or identity.get("sha256") != expected["identity_sha256"]
+            or identity.get("bytes") != expected["identity_bytes"]
+            or recovery.get("path") != expected["recovery_path"]
+            or recovery.get("sha256") != expected["recovery_sha256"]
+            or metadata.get("sha256") != expected["metadata_sha256"]
+            or metadata.get("bytes") != expected["metadata_bytes"]
+            or not str(metadata.get("path", "")).endswith(expected["metadata_suffix"])
+            or payload.get("sha256") != expected["payload_sha256"]
+            or payload.get("bytes") != expected["payload_bytes"]
+            or not str(payload.get("path", "")).endswith(expected["payload_suffix"])
+            or coverage.get("rows_seen") != expected["rows"]
+            or coverage.get("h128_rows") != expected["h128_rows"]
+            or coverage.get("h129_rows") != expected["h129_rows"]
+            or coverage.get("short_rows_h128_inapplicable") != expected["short_rows"]
+            or job.get("mismatch_count") != 0
+        ):
+            raise ExclusionAuditError(f"{job_label} handoff evidence changed")
+        job_proofs[job_label] = {
+            "label": job_label,
+            "identity_export": dict(identity),
+            "recovery_receipt": dict(recovery),
+            "metadata": dict(metadata),
+            "payload": dict(payload),
+            "coverage": dict(coverage),
+            "mismatch_count": job.get("mismatch_count"),
+            "ordered_record_ids_newline_sha256": job.get("ordered_record_ids_newline_sha256"),
+            "ordered_record_ids_canonical_sha256": job.get("ordered_record_ids_canonical_sha256"),
+            "guard": dict(job.get("guard", {})) if isinstance(job.get("guard"), Mapping) else {},
+        }
+
+    fit_bundle, fit_proof = _load_public_identity_export(
+        root,
+        identity_path=P11_ORIGINAL_FIT_IDENTITY_PATH,
+        identity_sha256=P11_ORIGINAL_FIT_IDENTITY_SHA256,
+        recovery_path=P11_ORIGINAL_FIT_RECOVERY_PATH,
+        recovery_sha256=P11_ORIGINAL_FIT_RECOVERY_SHA256,
+        expected_identity_schema="token-reconstruction.trr-p11-public-token-identity-rows.v1",
+        expected_recovery_schema="token-reconstruction.trr-p11-public-token-identity-recovery.v1",
+        expected_identity_status="PASS_PUBLIC_TOKEN_IDENTITY_RECOVERY",
+        label="trr0004_original_fit_public_token_identity",
+        role="fitting_bank",
+        binding={"handoff_path": P11_ORIGINAL_RECOVERY_HANDOFF_PATH, "handoff_sha256": P11_ORIGINAL_RECOVERY_HANDOFF_SHA256, "job": job_proofs["trr4_original_fit_1200"]},
+    )
+    validation_bundle, validation_proof = _load_public_identity_export(
+        root,
+        identity_path=P11_VALIDATION_IDENTITY_PATH,
+        identity_sha256=P11_VALIDATION_IDENTITY_SHA256,
+        recovery_path=P11_VALIDATION_RECOVERY_PATH,
+        recovery_sha256=P11_VALIDATION_RECOVERY_SHA256,
+        expected_identity_schema="token-reconstruction.trr-p11-public-token-identity-rows.v1",
+        expected_recovery_schema="token-reconstruction.trr-p11-public-token-identity-recovery.v1",
+        expected_identity_status="PASS_PUBLIC_TOKEN_IDENTITY_RECOVERY",
+        label="trr0004_original_validation_public_token_identity",
+        role="calibration",
+        binding={"handoff_path": P11_ORIGINAL_RECOVERY_HANDOFF_PATH, "handoff_sha256": P11_ORIGINAL_RECOVERY_HANDOFF_SHA256, "job": job_proofs["trr4_original_validation_48"]},
+    )
+
+    fit_identity = _read_json((root / P11_ORIGINAL_FIT_IDENTITY_PATH).resolve(), label="original fit identity export")
+    validation_identity = _read_json((root / P11_VALIDATION_IDENTITY_PATH).resolve(), label="validation identity export")
+    if (
+        fit_identity.get("source_label") != "trr4_original_fit_1200"
+        or fit_identity.get("metadata_sha256") != P11_ORIGINAL_FIT_METADATA_SHA256
+        or fit_identity.get("payload_sha256") != P11_ORIGINAL_FIT_PAYLOAD_SHA256
+        or validation_identity.get("source_label") != "trr4_original_validation_48"
+        or validation_identity.get("metadata_sha256") != P11_VALIDATION_METADATA_SHA256
+        or validation_identity.get("payload_sha256") != P11_VALIDATION_PAYLOAD_SHA256
+    ):
+        raise ExclusionAuditError("original identity export producer bindings changed")
+    fit_rows = fit_identity.get("records")
+    validation_rows = validation_identity.get("records")
+    if not isinstance(fit_rows, list) or not isinstance(validation_rows, list):
+        raise ExclusionAuditError("original identity exports lack records")
+
+    def source_records(relative_path: str, expected_sha: str, expected_bytes: int, label: str) -> list[Mapping[str, Any]]:
+        _path, value = _verified_file_value(root, relative_path, expected_sha, expected_bytes, label=label)
+        rows = value.get("records")
+        if not isinstance(rows, list) or not all(isinstance(row, Mapping) for row in rows):
+            raise ExclusionAuditError(f"{label} lacks a records list")
+        return list(rows)
+
+    fit_targets = {
+        **P11_ORIGINAL_LINEAGE_METADATA,
+    }
+    fit_source_rows = {
+        label: source_records(path, expected_sha, P11_ORIGINAL_FIT_METADATA_BYTES if expected_sha == P11_ORIGINAL_FIT_METADATA_SHA256 else P11_ORIGINAL_ALPACA_METADATA_BYTES, f"{label} metadata")
+        for label, (path, expected_sha) in fit_targets.items()
+    }
+    validation_source_rows = {
+        label: source_records(path, expected_sha, P11_VALIDATION_METADATA_BYTES, f"{label} metadata")
+        for label, (path, expected_sha) in P11_VALIDATION_LINEAGE_METADATA.items()
+    }
+
+    def geometry(row: Mapping[str, Any]) -> tuple[int | None, int | None]:
+        full = row.get("full_token_count")
+        post = row.get("post_bos_token_count")
+        if not isinstance(full, int) or not isinstance(post, int) or full != post + 1:
+            raise ExclusionAuditError("recovered/source row geometry is malformed")
+        return full, post
+
+    def compare_order(
+        exported: list[Mapping[str, Any]],
+        source_rows: list[Mapping[str, Any]],
+        *,
+        label: str,
+        alpaca_lineage: bool,
+        compare_rendered: bool,
+    ) -> dict[str, Any]:
+        if len(exported) != len(source_rows):
+            raise ExclusionAuditError(f"{label} row count differs from recovery export")
+        ids_match = geometry_match = rendered_match = source_index_match = True
+        synthetic_ok = target_geometry_ok = slot_order_ok = True
+        for index, (export_row, source_row) in enumerate(zip(exported, source_rows)):
+            if export_row.get("record_id") != source_row.get("record_id"):
+                ids_match = False
+            if geometry(export_row) != geometry(source_row):
+                geometry_match = False
+            if compare_rendered and export_row.get("rendered_sha256") != source_row.get("rendered_sha256"):
+                rendered_match = False
+            source_index = export_row.get("source_index")
+            if source_index is not None and source_row.get("row_index") is not None and source_index != source_row.get("row_index"):
+                source_index_match = False
+            if alpaca_lineage:
+                synthetic_ok = synthetic_ok and source_row.get("synthetic") is False and source_row.get("source_record_id") == source_row.get("record_id")
+                target_geometry_ok = target_geometry_ok and source_row.get("target_full_token_count") == source_row.get("full_token_count") and source_row.get("target_post_bos_token_count") == source_row.get("post_bos_token_count")
+                slot_order_ok = slot_order_ok and source_row.get("slot") == index
+        if not (ids_match and geometry_match and rendered_match and source_index_match and synthetic_ok and target_geometry_ok and slot_order_ok):
+            raise ExclusionAuditError(f"{label} producer lineage does not match recovery export")
+        return {
+            "label": label,
+            "rows": len(exported),
+            "record_id_order_match": ids_match,
+            "geometry_match": geometry_match,
+            "rendered_commitment_match": rendered_match,
+            "source_index_match": source_index_match,
+            "non_synthetic_source_lineage": synthetic_ok,
+            "target_geometry_match": target_geometry_ok,
+            "slot_order_match": slot_order_ok,
+            "canonical_join": "exact ordered record_id + geometry + producer lineage; sequence proof comes from the recovered row itself",
+        }
+
+    lineage_checks = []
+    for label, rows in fit_source_rows.items():
+        lineage_checks.append(compare_order(fit_rows, rows, label=label, alpaca_lineage=label in {"trr0005_original_fit", "trr0007_original_fit"}, compare_rendered=label.startswith("trr0004_")))
+    for label, rows in validation_source_rows.items():
+        lineage_checks.append(compare_order(validation_rows, rows, label=label, alpaca_lineage=False, compare_rendered=True))
+
+    def lineage_for(exported: list[Mapping[str, Any]], canonical_label: str) -> dict[str, set[tuple[str, tuple[str, ...]]]]:
+        result: dict[str, set[tuple[str, tuple[str, ...]]]] = {}
+        for index, row in enumerate(exported):
+            record_id = row.get("record_id")
+            if not isinstance(record_id, str) or record_id in result:
+                raise ExclusionAuditError(f"{canonical_label} recovery record IDs are not unique")
+            full, _post = geometry(row)
+            h128 = row.get("h128_sequence_sha256")
+            if full >= 128:
+                if not _is_sha256(h128):
+                    raise ExclusionAuditError(f"{canonical_label} eligible row lacks H128 proof")
+                proof = ("h128",)
+            else:
+                proof = ("short",)
+            result[record_id] = {(canonical_label, proof)}
+        return result
+
+    lineage: dict[str, dict[str, set[tuple[str, tuple[str, ...]]]]] = {}
+    for label in P11_ORIGINAL_LINEAGE_METADATA:
+        lineage[label] = lineage_for(fit_rows, fit_bundle.label)
+    for label in P11_VALIDATION_LINEAGE_METADATA:
+        lineage[label] = lineage_for(validation_rows, validation_bundle.label)
+
+    fit_proof.update({
+        "handoff_path": P11_ORIGINAL_RECOVERY_HANDOFF_PATH,
+        "handoff_sha256": P11_ORIGINAL_RECOVERY_HANDOFF_SHA256,
+        "pre_amendment_handoff_sha256": P11_ORIGINAL_RECOVERY_HANDOFF_HISTORICAL_SHA256,
+        "job": job_proofs["trr4_original_fit_1200"],
+        "lineage_checks": [item for item in lineage_checks if item["label"] in fit_targets],
+        "covered_source_labels": sorted(fit_targets),
+        "canonical_lineage_join": "verified ordered record IDs, geometry, and source producer invariants",
+    })
+    validation_proof.update({
+        "handoff_path": P11_ORIGINAL_RECOVERY_HANDOFF_PATH,
+        "handoff_sha256": P11_ORIGINAL_RECOVERY_HANDOFF_SHA256,
+        "pre_amendment_handoff_sha256": P11_ORIGINAL_RECOVERY_HANDOFF_HISTORICAL_SHA256,
+        "job": job_proofs["trr4_original_validation_48"],
+        "lineage_checks": [item for item in lineage_checks if item["label"] in P11_VALIDATION_LINEAGE_METADATA],
+        "covered_source_labels": sorted(P11_VALIDATION_LINEAGE_METADATA),
+        "canonical_lineage_join": "verified ordered record IDs and geometry; rendered commitment where present",
+    })
+    return [fit_bundle, validation_bundle], [fit_proof, validation_proof], lineage
+
+def _load_h40_recovery_exports(
+    root: Path,
+) -> tuple[
+    list[p10.IdentityBundle],
+    list[dict[str, Any]],
+    dict[str, dict[str, set[tuple[str, tuple[str, ...]]]]],
+    list[dict[str, Any]],
+]:
+    """Load the completed TRR-0001/TRR-0002 public H40 overlays.
+
+    The two producers are intentionally separate.  TRR-0001 hashes the first
+    40 BOS-inclusive IDs as little-endian signed-int32 bytes.  TRR-0002's
+    historical Pile receipt hashes a tensor header followed by signed-int64
+    bytes.  Neither value is treated as H128/H129, and the opaque exports do
+    not retain source text or token values.
+    """
+    handoff_path, handoff = _verified_file_value(
+        root,
+        P11_H40_RECOVERY_HANDOFF_PATH,
+        P11_H40_RECOVERY_HANDOFF_SHA256,
+        P11_H40_RECOVERY_HANDOFF_BYTES,
+        label="TRR-0001/TRR-0002 H40 recovery handoff",
+    )
+    if (
+        handoff.get("schema") != "token-reconstruction.trr-p11-h40-recovery-handoff.v1"
+        or handoff.get("task_id") != TASK_ID
+        or handoff.get("status") != "PASS_TRR0001_AND_TRR0002_PUBLIC_H40_RECOVERY"
+    ):
+        raise ExclusionAuditError("TRR-0001/TRR-0002 H40 handoff status changed")
+    access = handoff.get("access_boundary")
+    if (
+        not isinstance(access, Mapping)
+        or access.get("source_text_read_transiently") is not True
+        or any(
+            access.get(key) is True
+            for key in (
+                "activations_read",
+                "gpu_used",
+                "model_loaded",
+                "new_selection_started",
+                "p03_holdout_accessed",
+                "source_text_serialized",
+                "source_tokens_serialized",
+                "token_values_emitted",
+                "truth_opened",
+            )
+        )
+    ):
+        raise ExclusionAuditError("H40 recovery handoff access boundary is unsafe")
+
+    attempts_path, attempts = _verified_file_value(
+        root,
+        P11_H40_RECOVERY_ATTEMPTS_PATH,
+        P11_H40_RECOVERY_ATTEMPTS_SHA256,
+        P11_H40_RECOVERY_ATTEMPTS_BYTES,
+        label="H40 recovery attempts receipt",
+    )
+    if (
+        attempts.get("schema") != "token-reconstruction.trr-p11-h40-recovery-attempts.v1"
+        or attempts.get("task_id") != TASK_ID
+        or attempts.get("status") != "PASS_FINAL_ATTEMPT_R2_WITH_PRIOR_FAIL_PRESERVED"
+    ):
+        raise ExclusionAuditError("H40 recovery attempts provenance changed")
+    attempt_rows = attempts.get("attempts")
+    if (
+        not isinstance(attempt_rows, list)
+        or len(attempt_rows) != 2
+        or attempt_rows[0].get("attempt") != "r1"
+        or attempt_rows[0].get("status") != "CHILD_EXITED_NONZERO"
+        or attempt_rows[1].get("attempt") != "r2"
+        or attempt_rows[1].get("status") != "PASS"
+    ):
+        raise ExclusionAuditError("H40 prior failed attempt was not preserved")
+    recipe_path = (root / P11_H40_RECOVERY_SCRIPT_PATH).resolve()
+    if (
+        not recipe_path.is_file()
+        or recipe_path.is_symlink()
+        or p10.sha256_file(recipe_path) != P11_H40_RECOVERY_SCRIPT_SHA256
+    ):
+        raise ExclusionAuditError("H40 recovery recipe is unavailable or changed")
+
+    expected_sources = {
+        "trr0001_manifest": ("experiments/TRR-0001/manifest.json", "80b6e7bae818729e06685b329f7270524623cb365817f8f318a3dac2bdac4dc0", 245971),
+        "trr0001_plan": ("experiments/TRR-0001/plan.json", "b498a5db5b14ae8dde19f3ae4f519f86fdf0a67572a8f78747f7921e4f9e7269", 104718),
+        "trr0001_revision_r1_manifest": ("experiments/TRR-0001/revision-r1/manifest.json", "1abdfe97ca9066f00ae30bfe3519da612bb288bb0358a904663c0518e3808c72", 99882),
+        "trr0001_revision_r1_plan": ("experiments/TRR-0001/revision-r1/plan.json", "59944cb1e01ec2e88e04109e46db0088eece74500fe599eb6a62ead038b6fe14", 18970),
+        "trr0001_revision_r1_reveal": ("experiments/TRR-0001/revision-r1/selection_reveal.json", "d96cae6d6c9beb29d99be34ecb597f4986f9e107212657f4ad98268676251b41", 10971),
+        "trr0002_configuration_winner": ("experiments/TRR-0002/configuration-search/causal-selection/winner.json", "a75a5220647b0dea019cabb09be7c99a82f0d8142bf5476ffff6be5099fcb4f3", 18525),
+        "trr0002_fresh_observation_index": ("experiments/TRR-0002/configuration-search/fresh-blind/observation-index.json", "df7248f4d6f6566bc9d9b687c8da10a84ca08cb94bc4f23a9449b5e83ee103d2", 3523),
+        "trr0002_public_pile_records": ("experiments/TRR-0002/configuration-search/public-pile/records.json", "37be9bb6d621873047a05544e4e2d8ed7c07f1160ab878093ad912306ae1dd7f", 73510),
+    }
+    provenance = handoff.get("provenance_bindings")
+    if not isinstance(provenance, Mapping) or set(provenance) != set(expected_sources):
+        raise ExclusionAuditError("H40 source provenance binding set changed")
+    source_values: dict[str, dict[str, Any]] = {}
+    for label, (relative, expected_sha, expected_bytes) in expected_sources.items():
+        declared = provenance.get(label)
+        if not isinstance(declared, Mapping):
+            raise ExclusionAuditError(f"H40 source provenance for {label} is malformed")
+        declared_path = Path(str(declared.get("path", ""))).resolve()
+        expected_path = (root / relative).resolve()
+        if declared_path != expected_path:
+            raise ExclusionAuditError(f"H40 source provenance path changed for {label}")
+        if declared.get("sha256") != expected_sha or declared.get("bytes") != expected_bytes:
+            raise ExclusionAuditError(f"H40 source provenance digest changed for {label}")
+        _path, source_values[label] = _verified_file_value(
+            root,
+            relative,
+            expected_sha,
+            expected_bytes,
+            label=f"H40 source {label}",
+        )
+
+    expected_receipts = {
+        "trr0001": (P11_TRR0001_H40_RECOVERY_PATH, P11_TRR0001_H40_RECOVERY_SHA256, P11_TRR0001_H40_RECOVERY_BYTES, "token-reconstruction.trr-p11-trr0001-h40-recovery.v1", "PASS_TRR0001_PUBLIC_H40_RECOVERY"),
+        "trr0002": (P11_TRR0002_H40_RECOVERY_PATH, P11_TRR0002_H40_RECOVERY_SHA256, P11_TRR0002_H40_RECOVERY_BYTES, "token-reconstruction.trr-p11-trr0002-h40-recovery.v1", "PASS_TRR0002_PUBLIC_PILE_H40_RECOVERY"),
+    }
+    handoff_receipts = handoff.get("receipts")
+    handoff_records = handoff.get("records")
+    if not isinstance(handoff_receipts, Mapping) or not isinstance(handoff_records, Mapping):
+        raise ExclusionAuditError("H40 handoff lacks receipt/output bindings")
+    identity_specs = {
+        "trr0001": (P11_TRR0001_H40_IDENTITY_PATH, P11_TRR0001_H40_IDENTITY_SHA256, P11_TRR0001_H40_IDENTITY_BYTES, "token-reconstruction.trr-p11-trr0001-h40-identity-rows.v1", "PASS_TRR0001_PUBLIC_H40_RECOVERY", "trr0001_plan_and_revision_r1"),
+        "trr0002": (P11_TRR0002_H40_IDENTITY_PATH, P11_TRR0002_H40_IDENTITY_SHA256, P11_TRR0002_H40_IDENTITY_BYTES, "token-reconstruction.trr-p11-trr0002-h40-identity-rows.v1", "PASS_TRR0002_PUBLIC_PILE_H40_RECOVERY", "trr0002_public_pile"),
+    }
+    identity_values: dict[str, dict[str, Any]] = {}
+    recovery_values: dict[str, dict[str, Any]] = {}
+    for key, (recovery_rel, recovery_sha, recovery_bytes, schema, status) in expected_receipts.items():
+        receipt_binding = handoff_receipts.get(key)
+        if not isinstance(receipt_binding, Mapping):
+            raise ExclusionAuditError(f"H40 {key} receipt binding is missing")
+        receipt_path = Path(str(receipt_binding.get("path", ""))).resolve()
+        if receipt_path != (root / recovery_rel).resolve() or receipt_binding.get("sha256") != recovery_sha or receipt_binding.get("bytes") != recovery_bytes:
+            raise ExclusionAuditError(f"H40 {key} receipt binding changed")
+        _receipt_path, recovery = _verified_file_value(root, recovery_rel, recovery_sha, recovery_bytes, label=f"H40 {key} recovery receipt")
+        if recovery.get("schema") != schema or recovery.get("task_id") != TASK_ID or recovery.get("status") != status:
+            raise ExclusionAuditError(f"H40 {key} recovery status changed")
+        coverage = recovery.get("coverage")
+        if not isinstance(coverage, Mapping) or coverage.get("mismatch_count") != 0:
+            raise ExclusionAuditError(f"H40 {key} recovery mismatch evidence changed")
+        identity_rel, identity_sha, identity_bytes, identity_schema, identity_status, record_key = identity_specs[key]
+        record_binding = handoff_records.get(record_key)
+        record_path = Path(str(record_binding.get("path", ""))).resolve() if isinstance(record_binding, Mapping) else Path("/")
+        if (
+            not isinstance(record_binding, Mapping)
+            or record_path != (root / identity_rel).resolve()
+            or record_binding.get("sha256") != identity_sha
+            or record_binding.get("bytes") != identity_bytes
+        ):
+            raise ExclusionAuditError(f"H40 {key} identity output binding changed")
+        output = recovery.get("output")
+        if not isinstance(output, Mapping) or output.get("sha256") != identity_sha or output.get("bytes") != identity_bytes or Path(str(output.get("path", ""))).name != Path(identity_rel).name:
+            raise ExclusionAuditError(f"H40 {key} recovery output does not bind identity export")
+        _identity_path, identity = _verified_file_value(root, identity_rel, identity_sha, identity_bytes, label=f"H40 {key} identity export")
+        if identity.get("schema") != identity_schema or identity.get("task_id") != TASK_ID or identity.get("status") != identity_status:
+            raise ExclusionAuditError(f"H40 {key} identity status changed")
+        identity_access = identity.get("access_boundary")
+        if (
+            not isinstance(identity_access, Mapping)
+            or any(identity_access.get(field) is True for field in ("source_text_serialized", "source_tokens_serialized", "token_values_emitted", "activations_read", "model_loaded", "gpu_used", "truth_opened", "p03_holdout_accessed", "new_selection_started"))
+            or identity.get("contains_source_text") is not False
+            or identity.get("contains_token_ids") is not False
+            or identity.get("contains_truth") is not False
+        ):
+            raise ExclusionAuditError(f"H40 {key} identity access boundary is unsafe")
+        identity_values[key] = identity
+        recovery_values[key] = recovery
+
+    producer_expectations = {
+        "trr0001": {
+            "source_label": "trr0001_plan_and_revision_r1_reveal_public_rerender",
+            "dataset_id": "NeelNanda/pile-10k",
+            "revision": "127bfedcd5047750df5ccf3a12979a47bfa0bafa",
+            "split": "train",
+            "bos_token_id": 128000,
+            "sequence_convention": "first 40 BOS-inclusive IDs, SHA-256 of little-endian signed-int32 bytes",
+            "rows": 352,
+            "groups": {"blind_evaluation": 64, "development": 32, "inverse_train": 128, "revision_r1_blind_evaluation": 64, "target_update_train": 64},
+        },
+        "trr0002": {
+            "source_label": "trr0002_public_pile",
+            "dataset_id": "NeelNanda/pile-10k",
+            "revision": "127bfedcd5047750df5ccf3a12979a47bfa0bafa",
+            "split": "train",
+            "bos_token_id": 128000,
+            "sequence_convention": "first 40 BOS-inclusive IDs; SHA-256 of canonical JSON tensor header {dtype: torch.int64, shape: [40]} followed by little-endian signed-int64 bytes",
+            "rows": 96,
+            "groups": {"development": 32, "update_train": 64},
+        },
+    }
+    bundles: list[p10.IdentityBundle] = []
+    proofs: list[dict[str, Any]] = []
+    parsed_rows: dict[str, list[Mapping[str, Any]]] = {}
+    for key, expected in producer_expectations.items():
+        identity = identity_values[key]
+        producer = identity.get("producer")
+        if not isinstance(producer, Mapping) or any(producer.get(field) != value for field, value in expected.items() if field in {"dataset_id", "revision", "split", "bos_token_id", "sequence_convention"}) or producer.get("source_text_transient_only") is not True or producer.get("source_tokenization") != "pinned tokenizer, add_special_tokens=False":
+            raise ExclusionAuditError(f"H40 {key} producer convention changed")
+        rows = identity.get("records")
+        if not isinstance(rows, list) or len(rows) != expected["rows"] or identity.get("record_count") != expected["rows"]:
+            raise ExclusionAuditError(f"H40 {key} row count changed")
+        groups = identity.get("groups")
+        if groups != expected["groups"]:
+            raise ExclusionAuditError(f"H40 {key} group counts changed")
+        parsed_rows[key] = rows
+        label = "trr0001_public_h40_identity" if key == "trr0001" else "trr0002_public_pile_h40_recovery_identity"
+        bundle = p10.IdentityBundle(
+            label,
+            "inherited_fitting",
+            (root / identity_specs[key][0]).resolve(),
+            identity_specs[key][1],
+            identity_specs[key][2],
+            schema=str(identity["schema"]),
+            status=str(identity["status"]),
+        )
+        namespace = p10.Namespace("pile", expected["dataset_id"], expected["split"], expected["revision"])
+        seen_ids: set[str] = set()
+        for index, row in enumerate(rows):
+            if not isinstance(row, Mapping):
+                raise ExclusionAuditError(f"H40 {key} row {index} is malformed")
+            record_id = row.get("record_id")
+            rendered = row.get("rendered_sha256")
+            source_index = row.get("source_index")
+            h40_key = "h40_sequence_sha256" if key == "trr0001" else "trr0002_h40_token_ids_sha256"
+            h40 = row.get(h40_key)
+            if (
+                not isinstance(record_id, str)
+                or not record_id
+                or record_id in seen_ids
+                or not _is_sha256(rendered)
+                or not _is_sha256(h40)
+                or not isinstance(source_index, int)
+                or isinstance(source_index, bool)
+                or source_index < 0
+                or row.get("dataset_id") != expected["dataset_id"]
+                or row.get("revision") != expected["revision"]
+                or row.get("split") != expected["split"]
+                or row.get("full_token_count") != 40
+                or row.get("post_bos_token_count") != 39
+            ):
+                raise ExclusionAuditError(f"H40 {key} row {index} violates the producer identity contract")
+            if "h128_sequence_sha256" in row or "h129_sequence_sha256" in row:
+                raise ExclusionAuditError(f"H40 {key} row {index} is mislabelled as H128/H129")
+            seen_ids.add(record_id)
+            bundle.add("record_id", record_id, namespace)
+            bundle.add("rendered_sha256", rendered.casefold(), namespace)
+            bundle.add(h40_key, h40.casefold(), namespace)
+            bundle.add("source_index", source_index, namespace)
+        bundle.metadata_notes.append(
+            "Producer-verified public H40 overlay; source text/token IDs were transiently used for opaque hashing only"
+        )
+        bundles.append(bundle)
+        coverage = recovery_values[key].get("coverage", {})
+        proofs.append({
+            "label": label,
+            "role": bundle.role,
+            "identity_path": identity_specs[key][0],
+            "identity_sha256": identity_specs[key][1],
+            "recovery_path": expected_receipts[key][0],
+            "recovery_sha256": expected_receipts[key][1],
+            "identity_schema": identity["schema"],
+            "record_count": len(rows),
+            "identity_counts": bundle.counts(),
+            "h40_rows": len(rows),
+            "h128_rows": 0,
+            "h129_rows": 0,
+            "groups": dict(groups),
+            "producer": dict(producer),
+            "coverage": dict(coverage),
+            "handoff_path": P11_H40_RECOVERY_HANDOFF_PATH,
+            "handoff_sha256": P11_H40_RECOVERY_HANDOFF_SHA256,
+            "attempts_path": P11_H40_RECOVERY_ATTEMPTS_PATH,
+            "attempts_sha256": P11_H40_RECOVERY_ATTEMPTS_SHA256,
+            "recipe_path": P11_H40_RECOVERY_SCRIPT_PATH,
+            "recipe_sha256": P11_H40_RECOVERY_SCRIPT_SHA256,
+            "access_boundary": dict(identity.get("access_boundary", {})),
+        })
+
+    # Exact row-level producer checks against the source ledgers bound by the
+    # handoff.  The checks compare only IDs, rendered commitments, indices and
+    # counts; no source text or token value is emitted.
+    trr1_plan = source_values["trr0001_plan"]
+    plan_splits = trr1_plan.get("data", {}).get("selection", {}).get("splits", {})
+    if not isinstance(plan_splits, Mapping):
+        raise ExclusionAuditError("TRR-0001 plan selection splits are unavailable")
+    trr1_reveal = source_values["trr0001_revision_r1_reveal"]
+    reveal_rows = trr1_reveal.get("records")
+    if not isinstance(reveal_rows, list):
+        raise ExclusionAuditError("TRR-0001 revision reveal rows are unavailable")
+    trr1_by_id = {row.get("record_id"): row for row in parsed_rows["trr0001"]}
+    if len(trr1_by_id) != 352:
+        raise ExclusionAuditError("TRR-0001 H40 record IDs are not unique")
+    group_sources = {
+        "blind_evaluation": (plan_splits.get("blind_evaluation"), "index"),
+        "development": (plan_splits.get("development"), "index"),
+        "inverse_train": (plan_splits.get("inverse_train"), "index"),
+        "target_update_train": (plan_splits.get("target_update_train"), "index"),
+    }
+    lineage_checks: list[dict[str, Any]] = []
+    for group, (source_split, index_key) in group_sources.items():
+        source_rows = source_split.get("records") if isinstance(source_split, Mapping) else None
+        if not isinstance(source_rows, list):
+            raise ExclusionAuditError(f"TRR-0001 plan split {group} is unavailable")
+        matched = 0
+        for source_row in source_rows:
+            row = trr1_by_id.get(source_row.get("record_id"))
+            if row is None or row.get("rendered_sha256") != source_row.get("text_sha256") or row.get("source_index") != source_row.get(index_key):
+                raise ExclusionAuditError(f"TRR-0001 H40 row does not match plan split {group}")
+            if row.get("source_group") != group:
+                raise ExclusionAuditError(f"TRR-0001 H40 group label changed for {group}")
+            matched += 1
+        lineage_checks.append({"source": "trr0001_plan", "group": group, "rows": matched, "ids_rendered_and_indices_match": True})
+    matched = 0
+    for source_row in reveal_rows:
+        row = trr1_by_id.get(source_row.get("record_id"))
+        if row is None or row.get("rendered_sha256") != source_row.get("text_sha256") or row.get("source_index") != source_row.get("dataset_index") or row.get("source_group") != "revision_r1_blind_evaluation":
+            raise ExclusionAuditError("TRR-0001 H40 row does not match revision-r1 reveal")
+        matched += 1
+    lineage_checks.append({"source": "trr0001_revision_r1_reveal", "group": "revision_r1_blind_evaluation", "rows": matched, "ids_rendered_and_indices_match": True})
+
+    trr2_public = source_values["trr0002_public_pile_records"]
+    trr2_by_group = {group: trr2_public.get(group) for group in ("development", "update_train")}
+    trr2_by_id = {row.get("record_id"): row for rows in trr2_by_group.values() if isinstance(rows, list) for row in rows if isinstance(row, Mapping)}
+    trr2_identity_by_id = {row.get("record_id"): row for row in parsed_rows["trr0002"]}
+    if len(trr2_by_id) != 96 or len(trr2_identity_by_id) != 96:
+        raise ExclusionAuditError("TRR-0002 public Pile row count changed")
+    for group, source_rows in trr2_by_group.items():
+        if not isinstance(source_rows, list):
+            raise ExclusionAuditError(f"TRR-0002 public Pile group {group} is unavailable")
+        matched = 0
+        for source_row in source_rows:
+            row = trr2_identity_by_id.get(source_row.get("record_id"))
+            if row is None or row.get("rendered_sha256") != source_row.get("text_sha256") or row.get("source_index") != source_row.get("dataset_index") or row.get("source_group") != group:
+                raise ExclusionAuditError(f"TRR-0002 H40 row does not match public Pile group {group}")
+            matched += 1
+        lineage_checks.append({"source": "trr0002_public_pile_records", "group": group, "rows": matched, "ids_rendered_and_indices_match": True})
+
+    # TRR-0002's fresh observation index is an opaque view of the same ordered
+    # revision-r1 blind IDs.  The exact ordered-ID equality plus the recovered
+    # TRR-0001 rendered/H40 commitments is the producer proof; an arbitrary
+    # record-ID collision would not pass this check.
+    observation = source_values["trr0002_fresh_observation_index"]
+    observation_rows = observation.get("records")
+    reveal_ids = [row.get("record_id") for row in reveal_rows]
+    observation_ids = [row.get("record_id") for row in observation_rows] if isinstance(observation_rows, list) else []
+    revision_rows = [row for row in parsed_rows["trr0001"] if row.get("source_group") == "revision_r1_blind_evaluation"]
+    revision_ids = [row.get("record_id") for row in revision_rows]
+    if observation.get("source_material_included") is not False or observation_ids != reveal_ids or set(observation_ids) != set(revision_ids):
+        raise ExclusionAuditError("TRR-0002 fresh observation index is not exactly bound to the recovered revision-r1 blind rows")
+    fresh_bundle = bundles[0]
+    verified_lineage: dict[str, dict[str, set[tuple[str, tuple[str, ...]]]]] = {
+        "trr0002_fresh_observation_index": {
+            record_id: {(fresh_bundle.label, ("h40",))}
+            for record_id in observation_ids
+            if isinstance(record_id, str)
+        }
+    }
+    lineage_proofs = [{
+        "label": "trr0002_fresh_observation_index",
+        "status": "PASS_EXACT_ORDERED_ID_AND_RECOVERED_H40_LINEAGE",
+        "source_path": "experiments/TRR-0002/configuration-search/fresh-blind/observation-index.json",
+        "source_sha256": expected_sources["trr0002_fresh_observation_index"][1],
+        "covered_identity_source": P11_TRR0001_H40_IDENTITY_PATH,
+        "rows": len(observation_ids),
+        "ordered_ids_match_revision_r1_reveal": True,
+        "ordered_ids_match_recovered_trr0001_h40": True,
+        "source_material_included": False,
+    }]
+    proofs[0]["lineage_checks"] = lineage_checks
+    proofs[0]["fresh_observation_lineage"] = lineage_proofs[0]
+    return bundles, proofs, verified_lineage, lineage_proofs
+
+
+def _load_trr0002_winner_lineage(
+    root: Path,
+    bundles: Sequence[p10.IdentityBundle],
+    h40_bundles: Sequence[p10.IdentityBundle],
+) -> tuple[dict[str, dict[str, set[tuple[str, tuple[str, ...]]]]], dict[str, Any]]:
+    """Bind method-prefixed winner IDs to their own canonical public rows.
+
+    TRR-0002's frozen winner uses ``public_lora_2602:<public-record-id>``.
+    The prefix is accepted only after the immutable preregistration rule and
+    the exact records 16--31 in each public domain are checked.  The target
+    row must itself carry a verified H128 (Finance) or producer-bound H40
+    (Pile) proof.
+    """
+    winner_path = (root / "experiments/TRR-0002/configuration-search/causal-selection/winner.json").resolve()
+    winner = _read_json(winner_path, label="TRR-0002 frozen winner")
+    plan_binding = winner.get("plan")
+    if not isinstance(plan_binding, Mapping):
+        raise ExclusionAuditError("TRR-0002 winner plan binding is missing")
+    plan_rel = str(plan_binding.get("path", ""))
+    if plan_rel != "experiments/TRR-0002/configuration-search/preregistration/plan.json" or not _is_sha256(plan_binding.get("sha256")):
+        raise ExclusionAuditError("TRR-0002 winner plan binding changed")
+    plan_path = (root / plan_rel).resolve()
+    if not plan_path.is_file() or plan_path.is_symlink() or p10.sha256_file(plan_path) != plan_binding.get("sha256") or plan_path.stat().st_size != plan_binding.get("bytes"):
+        raise ExclusionAuditError("TRR-0002 winner plan is unavailable or changed")
+    plan = _read_json(plan_path, label="TRR-0002 preregistration plan")
+    public = plan.get("public_data")
+    roles = public.get("roles") if isinstance(public, Mapping) else None
+    finance = public.get("finance") if isinstance(public, Mapping) else None
+    pile = public.get("pile") if isinstance(public, Mapping) else None
+    if (
+        winner.get("selection_condition") != "public_lora_2602"
+        or winner.get("selection_records") != [16, 32]
+        or not isinstance(roles, Mapping)
+        or roles.get("causal_selection") != "records 16-31 in both domains under public_lora_2602"
+        or not isinstance(finance, Mapping)
+        or finance.get("raw_cursor_start") != 38978
+        or finance.get("selection") != "take the first 32 nonempty user/assistant rows at or after raw cursor 38978, use the historical 06 Aug 2026 Llama chat template, truncate/right-pad to 128, and record every raw index and content/token hash"
+        or not isinstance(pile, Mapping)
+        or pile.get("geometry") != "32 records x 40 tokens including BOS"
+    ):
+        raise ExclusionAuditError("TRR-0002 winner selection rule changed")
+
+    by_label = {bundle.label: bundle for bundle in bundles}
+    finance_bundle = by_label.get("trr0002_public_finance_records")
+    pile_bundle = next((bundle for bundle in h40_bundles if bundle.label == "trr0002_public_pile_h40_recovery_identity"), None)
+    if finance_bundle is None or pile_bundle is None:
+        raise ExclusionAuditError("TRR-0002 winner canonical source bundles are unavailable")
+    finance_value = _read_json(finance_bundle.path, label="TRR-0002 Finance public rows")
+    pile_value = _read_json((root / "experiments/TRR-0002/configuration-search/public-pile/records.json").resolve(), label="TRR-0002 Pile public rows")
+    finance_rows = finance_value.get("records")
+    pile_rows = pile_value.get("development")
+    if not isinstance(finance_rows, list) or len(finance_rows) != 32 or not isinstance(pile_rows, list) or len(pile_rows) != 32:
+        raise ExclusionAuditError("TRR-0002 winner public source row counts changed")
+    metric_ids: dict[str, list[str]] = {}
+    selection_metrics = winner.get("selection_metrics")
+    if not isinstance(selection_metrics, Mapping):
+        raise ExclusionAuditError("TRR-0002 winner selection metrics are missing")
+    for domain in ("finance", "pile"):
+        metrics = selection_metrics.get(domain)
+        rows = metrics.get("per_record") if isinstance(metrics, Mapping) else None
+        ids = [row.get("record_id") for row in rows] if isinstance(rows, list) else []
+        if len(ids) != 16 or not all(isinstance(item, str) and item.startswith("public_lora_2602:") for item in ids) or len(set(ids)) != 16:
+            raise ExclusionAuditError(f"TRR-0002 winner {domain} rows changed")
+        metric_ids[domain] = ids
+    canonical_finance = {row.get("record_id"): row for row in finance_rows if isinstance(row, Mapping)}
+    canonical_pile = {row.get("record_id"): row for row in pile_rows if isinstance(row, Mapping)}
+    pile_identity_rows = {row.get("record_id"): row for row in _record_rows(_read_json(pile_bundle.path, label="TRR-0002 H40 identity export"))}
+    lineage: dict[str, dict[str, set[tuple[str, tuple[str, ...]]]]] = {"trr0002_configuration_winner": {}}
+    source_counts = Counter()
+    for domain, ids in metric_ids.items():
+        canonical = canonical_finance if domain == "finance" else canonical_pile
+        for winner_id in ids:
+            suffix = winner_id.split(":", 1)[1]
+            row = canonical.get(suffix)
+            if row is None:
+                raise ExclusionAuditError(f"TRR-0002 winner ID lacks canonical public source row: {domain}")
+            if domain == "pile":
+                identity_row = pile_identity_rows.get(suffix)
+                if identity_row is None or identity_row.get("rendered_sha256") != row.get("text_sha256") or identity_row.get("source_index") != row.get("dataset_index"):
+                    raise ExclusionAuditError("TRR-0002 Pile winner row does not match recovered H40 identity")
+                reference = (pile_bundle.label, ("h40",))
+            else:
+                _namespace, fields = _row_identity_fields(row, source_label=finance_bundle.label)
+                proof = _row_canonical_proof(finance_bundle, row, fields)
+                if not ({"h128", "short"} & set(proof)):
+                    raise ExclusionAuditError("TRR-0002 Finance winner row lacks own H128 or verified-short proof")
+                reference = (finance_bundle.label, tuple(sorted(proof)))
+            lineage["trr0002_configuration_winner"][winner_id] = {reference}
+            source_counts[domain] += 1
+    proof = {
+        "label": "trr0002_configuration_winner",
+        "status": "PASS_EXACT_METHOD_PREFIX_LINEAGE",
+        "winner_path": "experiments/TRR-0002/configuration-search/causal-selection/winner.json",
+        "winner_sha256": p10.sha256_file(winner_path),
+        "plan_path": plan_rel,
+        "plan_sha256": plan_binding.get("sha256"),
+        "prefix": "public_lora_2602:",
+        "selection_rule": "exact frozen records 16-31 in each 32-row public domain",
+        "rows": sum(source_counts.values()),
+        "finance_rows": source_counts["finance"],
+        "pile_rows": source_counts["pile"],
+        "canonical_sources": [finance_bundle.label, pile_bundle.label],
+        "canonical_sequence_proof": {"finance": "own H128 or verified short geometry", "pile": "recovered producer-bound TRR2 H40"},
+    }
+    return lineage, proof
 
 def _load_p04_recipe_migration(root: Path) -> dict[str, Any]:
     """Verify the persistent entrypoint migration without rerunning P04."""
@@ -1573,6 +2431,11 @@ def _row_identity_fields(row: Mapping[str, Any], *, source_label: str) -> tuple[
         "truncated_sequence_sha256": "h129_sequence_sha256",
         "h129_sequence_sha256": "h129_sequence_sha256",
         "sequence_h129_sha256": "h129_sequence_sha256",
+        # TRR-0001's raw signed-int32 H40 is distinct from TRR-0002's
+        # tensor-header/signed-int64 H40 field below.
+        "h40_sequence_sha256": "h40_sequence_sha256",
+        "sequence_h40_sha256": "h40_sequence_sha256",
+        "trr0001_h40_sequence_sha256": "h40_sequence_sha256",
         "trr0002_active_token_ids_sha256": "trr0002_active_token_ids_sha256",
         "trr0002_h40_token_ids_sha256": "trr0002_h40_token_ids_sha256",
         # TRR-0002 Finance producer field; this is not a global alias.
@@ -1604,7 +2467,7 @@ def _row_identity_fields(row: Mapping[str, Any], *, source_label: str) -> tuple[
 
 
 def _row_key(namespace: p10.Namespace, fields: Mapping[str, set[str | int]]) -> tuple[Any, ...] | None:
-    for field in ("record_id", "rendered_sha256", "h128_sequence_sha256", "h129_sequence_sha256", "trr0002_active_token_ids_sha256", "trr0002_h40_token_ids_sha256"):
+    for field in ("record_id", "rendered_sha256", "h128_sequence_sha256", "h129_sequence_sha256", "h40_sequence_sha256", "trr0002_active_token_ids_sha256", "trr0002_h40_token_ids_sha256"):
         values = fields.get(field)
         if values:
             return (field, sorted(str(value) for value in values)[0])
@@ -1634,6 +2497,10 @@ _CANONICAL_ROW_SOURCE_LABELS = frozenset({
     "trr0002_public_finance_records",
     "trr0002_public_pile_records",
     "trr0003_fit_records_h40_public_identity",
+    "trr0001_public_h40_identity",
+    "trr0002_public_pile_h40_recovery_identity",
+    "trr0004_original_fit_public_token_identity",
+    "trr0004_original_validation_public_token_identity",
     "trr0004_selection_plan",
     "trr0005_selection_plan",
     "trr0005_enriched_fit_public_token_identity",
@@ -1699,7 +2566,7 @@ def _row_canonical_proof(
     proof: set[str] = set()
     if fields.get("h128_sequence_sha256"):
         proof.add("h128")
-    if fields.get("trr0002_h40_token_ids_sha256"):
+    if fields.get("h40_sequence_sha256") or fields.get("trr0002_h40_token_ids_sha256"):
         proof.add("h40")
     geometry = _row_geometry(row)
     if bundle.label == "trr0002_public_finance_records":
@@ -1767,6 +2634,7 @@ def _canonical_anchor_matches(
         "rendered_sha256",
         "tokenized_record_sha256",
         "h128_sequence_sha256",
+        "h40_sequence_sha256",
         "trr0002_active_token_ids_sha256",
         "trr0002_h40_token_ids_sha256",
     }
@@ -1778,8 +2646,25 @@ def _canonical_anchor_matches(
     return matches
 
 
+def _verified_lineage_anchor_matches(
+    bundle_label: str,
+    fields: Mapping[str, set[str | int]],
+    verified_lineage: Mapping[str, Mapping[str, set[tuple[str, tuple[str, ...]]]]],
+) -> set[tuple[str, tuple[str, ...]]]:
+    """Return joins backed by an explicitly verified producer lineage proof."""
+    rows = verified_lineage.get(bundle_label, {})
+    matches: set[tuple[str, tuple[str, ...]]] = set()
+    for record_id in fields.get("record_id", set()):
+        if isinstance(record_id, str):
+            matches.update(rows.get(record_id, set()))
+    return matches
+
+
 def _reconcile_legacy_aliases(
-    bundles: Sequence[p10.IdentityBundle], *, root: Path
+    bundles: Sequence[p10.IdentityBundle],
+    *,
+    root: Path,
+    verified_lineage: Mapping[str, Mapping[str, set[tuple[str, tuple[str, ...]]]]] | None = None,
 ) -> dict[str, Any]:
     """Report aliases and fail-closed row-level canonical coverage.
 
@@ -1789,6 +2674,7 @@ def _reconcile_legacy_aliases(
     """
     replication, replication_descriptors = _load_replication_metadata(root)
     all_bundles = [*bundles, *replication]
+    verified_lineage = verified_lineage or {}
     anchor_index = _build_canonical_row_anchor_index(all_bundles)
     per_source: list[dict[str, Any]] = []
     unique_uncovered_keys: set[tuple[Any, ...]] = set()
@@ -1815,6 +2701,10 @@ def _reconcile_legacy_aliases(
             if "h128" in own_proof:
                 uncovered_direct_h128 += 1
             anchor_matches = _canonical_anchor_matches(namespace, fields, anchor_index)
+            lineage_matches = _verified_lineage_anchor_matches(bundle.label, fields, verified_lineage)
+            if lineage_matches:
+                anchor_matches.update(lineage_matches)
+                field_matches["verified_producer_lineage"] += 1
             if anchor_matches:
                 rows_with_canonical_anchor += 1
                 anchor_source_matches.update(label for label, _proof in anchor_matches)
@@ -1903,8 +2793,12 @@ def _reconcile_legacy_aliases(
             "row_counts_by_source": anchor_index["row_counts"],
             "proof_counts_by_source": anchor_index["proof_counts"],
         },
+        "verified_producer_lineage": {
+            label: {"rows": len(rows), "canonical_labels": sorted({ref[0] for refs in rows.values() for ref in refs})}
+            for label, rows in sorted(verified_lineage.items())
+        },
         "per_source": per_source,
-        "interpretation": "Only a row-level match to a canonical record carrying its own H128, verified short geometry, or producer-bound H40 counts as an anchor. H129, record-ID membership in a noncanonical bundle, duplicate aliases, and aggregate opaque arrays do not close an eligible row.",
+        "interpretation": "Only a row-level match to a canonical record carrying its own H128, verified short geometry, or producer-bound H40 counts as an anchor. H129, record-ID membership in a noncanonical bundle, duplicate aliases, and aggregate opaque arrays do not close an eligible row. The six original-ledger joins are admitted only through the separately recorded exact producer-lineage proof.",
     }
 
 def _sequence_gap_report(
@@ -2065,7 +2959,16 @@ def _unknown_identity_row_fields(
         aliases = dict(spec_aliases.get(bundle.label, {}))
         if bundle.label in {"trr0005_selection_plan", "trr0006_p04_opaque"} or bundle.label.startswith("trr0006_p04_"):
             aliases.update(special_aliases)
-        elif bundle.label.startswith("trr0005_enriched_fit_public_token_identity") or bundle.label == "trr0003_fit_records_h40_public_identity":
+        elif (
+            bundle.label.startswith("trr0005_enriched_fit_public_token_identity")
+            or bundle.label in {
+                "trr0003_fit_records_h40_public_identity",
+                "trr0001_public_h40_identity",
+                "trr0002_public_pile_h40_recovery_identity",
+                "trr0004_original_fit_public_token_identity",
+                "trr0004_original_validation_public_token_identity",
+            }
+        ):
             aliases.update(special_aliases)
         visit(raw, label=bundle.label, aliases=aliases)
     return [
@@ -2101,6 +3004,167 @@ def _pointer_target(root: Path, checked: Mapping[str, Any]) -> Path | None:
     return (path if path.is_absolute() else root / path).resolve()
 
 
+
+def _load_selection_exclusion_descriptor_proof(root: Path) -> list[dict[str, Any]]:
+    """Verify TRR7/8/9 aggregate exclusion receipts against used ledgers.
+
+    These files are producer receipts for exclusions applied while constructing
+    later banks.  They contain aggregate counts and hash-bound sidecar
+    pointers, not an additional row list.  The proof therefore binds each
+    receipt to its already-loaded selection ledger and records explicitly that
+    no new used-record identities are introduced by the descriptor itself.
+    """
+    specs = (
+        {
+            "label": "trr0007_selection_exclusions",
+            "path": "experiments/TRR-0007/selection/source_exclusions.json",
+            "sha256": "7547ac0b85052955d355b58ab83bdf5ba24f9d621f514da480a336b01858760e",
+            "bytes": 22555,
+            "schema": "token-reconstruction.trr0007-source-exclusions.v1",
+            "task_id": "TRR-0007",
+            "selection_label": "trr0006_selection",
+            "selection_suffix": "experiments/TRR-0006/source_selection.json",
+            "selection_path": "experiments/TRR-0006/source_selection.json",
+            "selection_sha256": "75909aaf0f9e40176c197d86c09651097010a11519855f1db3dc50fe5e754f43",
+            "selection_bytes": 2135542,
+            "selection_counts": {"finance": 1536, "pile": 1536},
+        },
+        {
+            "label": "trr0008_selection_exclusions",
+            "path": "experiments/TRR-0008/selection/source_exclusions.json",
+            "sha256": "acdbabb1a923ed9acccc17076f615201baca0a2d0fb6a40177bf41bb96bd09c4",
+            "bytes": 18344,
+            "schema": "token-reconstruction.trr0008-source-exclusions.v1",
+            "task_id": "TRR-0008",
+            "selection_label": "trr0007_selection",
+            "selection_suffix": "experiments/TRR-0007/selection/source_selection.json",
+            "selection_path": "experiments/TRR-0007/selection/source_selection.json",
+            "selection_sha256": "0adf45078ee017ab1877e5d8b905261583d9916cf59c9237591166d0b39c431c",
+            "selection_bytes": 198090,
+            "selection_counts": {"finance": 128, "pile": 128},
+        },
+        {
+            "label": "trr0009_selection_v2_exclusions",
+            "path": "experiments/TRR-0009/selection_v2/source_exclusions.json",
+            "sha256": "bba988428e6e1d13c2916b5e9c001acd86aa37d838bda553744eecd0f88d806f",
+            "bytes": 20664,
+            "schema": "token-reconstruction.trr0009-source-exclusions.v1",
+            "task_id": "TRR-0009",
+            "selection_label": "trr0008_selection",
+            "selection_suffix": "experiments/TRR-0008/selection/source_selection.json",
+            "selection_path": "experiments/TRR-0008/selection/source_selection.json",
+            "selection_sha256": "ea9a7bf2edcc22eee1a8e791a331d423ccd940e0fcab3079b6b43cc456ee8e57",
+            "selection_bytes": 997800,
+            "selection_counts": {"finance": 1024, "pile": 384},
+        },
+    )
+    results: list[dict[str, Any]] = []
+    for spec in specs:
+        descriptor_path, descriptor = _verified_file_value(
+            root,
+            spec["path"],
+            spec["sha256"],
+            spec["bytes"],
+            label=f"{spec['label']} descriptor",
+        )
+        if (
+            descriptor.get("schema") != spec["schema"]
+            or descriptor.get("task_id") != spec["task_id"]
+            or descriptor.get("status") != "PUBLIC_IDENTITY_EXCLUSIONS_COMPLETE_NO_TRUTH"
+            or descriptor.get("private_or_truth_payload_read") is not False
+            or descriptor.get("source_text_or_token_ids_written") is not False
+            or descriptor.get("truth_opened") is not False
+        ):
+            raise ExclusionAuditError(f"{spec['label']} descriptor status or access boundary changed")
+        sources = descriptor.get("sources")
+        if not isinstance(sources, list) or not sources or any(
+            not isinstance(item, Mapping)
+            or item.get("available") is not True
+            or not isinstance(item.get("path"), str)
+            or not _is_sha256(item.get("sha256"))
+            or not isinstance(item.get("new_identity_count"), int)
+            or item.get("new_identity_count") < 0
+            for item in sources
+        ):
+            raise ExclusionAuditError(f"{spec['label']} source-pointer inventory changed")
+        selection_pointer = next(
+            (
+                item
+                for item in sources
+                if str(item.get("path", "")).replace("\\", "/").endswith(spec["selection_suffix"])
+                and item.get("sha256") == spec["selection_sha256"]
+            ),
+            None,
+        )
+        if selection_pointer is None:
+            raise ExclusionAuditError(f"{spec['label']} does not bind its required selection ledger")
+        selection_path, selection = _verified_file_value(
+            root,
+            spec["selection_path"],
+            spec["selection_sha256"],
+            spec["selection_bytes"],
+            label=f"{spec['label']} selection ledger",
+        )
+        record_groups = selection.get("selection_rule", {}).get("records") if isinstance(selection.get("selection_rule"), Mapping) else None
+        if not isinstance(record_groups, Mapping):
+            raise ExclusionAuditError(f"{spec['label']} selection ledger lacks row groups")
+        counts = {domain: len(rows) for domain, rows in record_groups.items() if isinstance(rows, list)}
+        if counts != spec["selection_counts"]:
+            raise ExclusionAuditError(f"{spec['label']} selection ledger counts changed")
+        if any(
+            key in descriptor
+            for key in ("records", "rows", "record_ids", "final_sequence_sha256", "public_record_sha256")
+        ):
+            raise ExclusionAuditError(f"{spec['label']} unexpectedly contains an individual used-record list")
+
+        sidecar_checks: list[dict[str, Any]] = []
+        if isinstance(descriptor.get("final_bank_ledgers"), Mapping):
+            ledger = descriptor["final_bank_ledgers"]
+            if ledger.get("source_and_sequence_ledgers_verified") is not True or not isinstance(ledger.get("selected_parent_rows"), Mapping) or ledger["selected_parent_rows"].get("rows") != 120:
+                raise ExclusionAuditError(f"{spec['label']} final-bank producer proof changed")
+            for key, pointer in ledger.get("files", {}).items():
+                checked = _descriptor_pointer(root, pointer, label=f"{spec['label']}.final_bank_ledgers.{key}") if isinstance(pointer, Mapping) else {"status": "MALFORMED_POINTER"}
+                sidecar_checks.append({"key": key, **checked})
+                if checked.get("status") != "PASS":
+                    raise ExclusionAuditError(f"{spec['label']} final-bank pointer is unavailable")
+        for key in ("decision_contract", "identity_inventory"):
+            pointer = descriptor.get(key)
+            if isinstance(pointer, Mapping):
+                checked = _descriptor_pointer(root, pointer, label=f"{spec['label']}.{key}")
+                sidecar_checks.append({"key": key, **checked})
+                if checked.get("status") != "PASS":
+                    raise ExclusionAuditError(f"{spec['label']} {key} pointer is unavailable")
+        opaque_checks: list[dict[str, Any]] = []
+        for key in ("p06_opaque_reservation", "p08_opaque_reservation"):
+            opaque = descriptor.get(key)
+            if not isinstance(opaque, Mapping):
+                continue
+            privacy = opaque.get("privacy")
+            if not isinstance(privacy, Mapping):
+                raise ExclusionAuditError(f"{spec['label']} opaque privacy block changed")
+            if key == "p06_opaque_reservation":
+                if opaque.get("status") != "OPAQUE_HASH_RESERVATION_FOR_FUTURE_EXCLUSION" or any(privacy.get(field) is True for field in ("labels_or_answers_present", "record_ids_present", "row_indices_present", "source_text_present", "token_ids_present")):
+                    raise ExclusionAuditError(f"{spec['label']} P06 opaque reservation is unsafe")
+            else:
+                if opaque.get("status") != "READY_FOR_HASH_ONLY_EXCHANGE" or any(privacy.get(field) is True for field in ("contains_record_ids", "contains_source_indices", "contains_source_text", "contains_token_ids", "contains_target_labels", "contains_truth")):
+                    raise ExclusionAuditError(f"{spec['label']} P08 opaque reservation is unsafe")
+            opaque_checks.append({"label": key, "status": opaque.get("status"), "hash_only": True})
+        results.append({
+            "label": spec["label"],
+            "status": "PASS",
+            "descriptor": {"path": spec["path"], "sha256": spec["sha256"], "bytes": spec["bytes"], "schema": spec["schema"]},
+            "selection_ledger": {"label": spec["selection_label"], "path": spec["selection_path"], "sha256": spec["selection_sha256"], "bytes": selection_path.stat().st_size, "record_counts": counts, "pointer_new_identity_count": selection_pointer["new_identity_count"]},
+            "source_pointers_declared": len(sources),
+            "source_pointers_marked_available": sum(item.get("available") is True for item in sources),
+            "aggregate_identity_counts": descriptor.get("identity_counts"),
+            "individual_used_record_rows_in_descriptor": False,
+            "new_used_record_rows": False,
+            "producer_rule": "aggregate source-exclusion receipt; used records are exactly the hash-bound selection ledger rows",
+            "sidecar_checks": sidecar_checks,
+            "opaque_reservation_checks": opaque_checks,
+        })
+    return results
+
 def _load_descriptor_pointer_proof(root: Path) -> dict[str, Any]:
     """Bind descriptor-only sources to concrete producer rules and counts.
 
@@ -2113,6 +3177,7 @@ def _load_descriptor_pointer_proof(root: Path) -> dict[str, Any]:
         "schema": "token-reconstruction.trr-p11-descriptor-pointer-proof.v2",
         "sources": [],
     }
+    selection_exclusion_proofs = _load_selection_exclusion_descriptor_proof(root)
     frozen_path = root / "experiments/TRR-0002/calibration/frozen_calibration.json"
     frozen = _read_json(frozen_path, label="TRR-0002 frozen calibration")
     frozen_pointers = []
@@ -2285,6 +3350,15 @@ def _load_descriptor_pointer_proof(root: Path) -> dict[str, Any]:
         "source_rule_proof": p09_rule,
         "status": "PASS" if p09_rule.get("status") == "PASS" else "FAIL",
     })
+    for descriptor_proof in selection_exclusion_proofs:
+        proof["sources"].append({
+            "label": descriptor_proof["label"],
+            "pointer_checks": descriptor_proof["sidecar_checks"],
+            "identity_rows": "aggregate descriptor only; no individual used-record rows",
+            "covered_identity_sources": [descriptor_proof["selection_ledger"]["label"]],
+            "source_rule_proof": descriptor_proof,
+            "status": descriptor_proof["status"],
+        })
     proof["proven_descriptor_labels"] = sorted(
         item["label"] for item in proof["sources"] if item.get("status") == "PASS"
     )
@@ -2350,6 +3424,10 @@ def _build_closure_assessment(
     p05 = recovered_by_label.get("trr0005_enriched_fit_public_token_identity", {})
     target = recovered_by_label.get("trr0006_p04_targetfit_public_identity", {})
     trr0003 = recovered_by_label.get("trr0003_fit_records_h40_public_identity", {})
+    original_fit = recovered_by_label.get("trr0004_original_fit_public_token_identity", {})
+    original_validation = recovered_by_label.get("trr0004_original_validation_public_token_identity", {})
+    trr0001_h40 = recovered_by_label.get("trr0001_public_h40_identity", {})
+    trr0002_h40 = recovered_by_label.get("trr0002_public_pile_h40_recovery_identity", {})
     target_plan = p04.proof.get("targetfit_plan_proof", {})
     p04_recovery = (
         p04.proof.get("producer_source_bytes_available") is True
@@ -2359,7 +3437,7 @@ def _build_closure_assessment(
         and target_plan.get("status") == "PASS_TARGET_RULE_COUNTS_ONLY"
     )
     canonical_recovery = (
-        len(recovered_identity_proofs) == 3
+        len(recovered_identity_proofs) == 7
         and int(p05.get("h128_rows", 0)) == 350
         and int(p05.get("record_count", 0)) == 1200
         and int(target.get("h128_rows", 0)) == 212
@@ -2368,6 +3446,22 @@ def _build_closure_assessment(
         and int(trr0003.get("record_count", 0)) == 128
         and int(trr0003.get("h128_rows", 0)) == 0
         and int(trr0003.get("h129_rows", 0)) == 0
+        and int(original_fit.get("h128_rows", 0)) == 350
+        and int(original_fit.get("h129_rows", 0)) == 343
+        and int(original_fit.get("record_count", 0)) == 1200
+        and len(original_fit.get("covered_source_labels", ())) == 4
+        and int(original_validation.get("h128_rows", 0)) == 6
+        and int(original_validation.get("h129_rows", 0)) == 5
+        and int(original_validation.get("record_count", 0)) == 48
+        and len(original_validation.get("covered_source_labels", ())) == 2
+        and int(trr0001_h40.get("h40_rows", 0)) == 352
+        and int(trr0001_h40.get("record_count", 0)) == 352
+        and int(trr0001_h40.get("h128_rows", 0)) == 0
+        and int(trr0001_h40.get("h129_rows", 0)) == 0
+        and int(trr0002_h40.get("h40_rows", 0)) == 96
+        and int(trr0002_h40.get("record_count", 0)) == 96
+        and int(trr0002_h40.get("h128_rows", 0)) == 0
+        and int(trr0002_h40.get("h129_rows", 0)) == 0
         and replication_proof.get("tensor_payload_opened") is False
     )
     descriptor_proven = set(descriptor_pointer_proof.get("proven_descriptor_labels", ()))
@@ -2728,6 +3822,8 @@ def build_audit(
     descriptor_pointer_proof = _load_descriptor_pointer_proof(root)
     recovered_bundles: list[p10.IdentityBundle] = []
     recovered_identity_proofs: list[dict[str, Any]] = []
+    producer_lineage_proofs: list[dict[str, Any]] = []
+    verified_lineage: dict[str, dict[str, set[tuple[str, tuple[str, ...]]]]] = {}
     if include_recovered_identity_exports:
         binding = _load_canonical_pass_binding(root)
         p05_bundle, p05_proof = _load_public_identity_export(
@@ -2757,8 +3853,15 @@ def build_audit(
             binding=binding,
         )
         trr0003_bundle, trr0003_proof = _load_trr0003_h40_identity_export(root)
-        recovered_bundles.extend((p05_bundle, target_bundle, trr0003_bundle))
-        recovered_identity_proofs.extend((p05_proof, target_proof, trr0003_proof))
+        original_bundles, original_proofs, original_lineage = _load_original_recovery_lineage(root)
+        h40_bundles, h40_proofs, h40_lineage, h40_lineage_proofs = _load_h40_recovery_exports(root)
+        winner_lineage, winner_lineage_proof = _load_trr0002_winner_lineage(root, bundles, h40_bundles)
+        recovered_bundles.extend((p05_bundle, target_bundle, trr0003_bundle, *original_bundles, *h40_bundles))
+        recovered_identity_proofs.extend((p05_proof, target_proof, trr0003_proof, *original_proofs, *h40_proofs))
+        verified_lineage.update(original_lineage)
+        verified_lineage.update(h40_lineage)
+        verified_lineage.update(winner_lineage)
+        producer_lineage_proofs.extend((*h40_lineage_proofs, winner_lineage_proof))
     rehash_bundle: p10.IdentityBundle | None = None
     rehash_receipt: dict[str, Any]
     if public_payload is not None or public_payload_metadata is not None:
@@ -2792,7 +3895,7 @@ def build_audit(
     by_label = {bundle.label: bundle for bundle in bundles}
     aggregate = validate_aggregate_bindings(root=root, pr20_root=pr20_root)
     sequence_report = _sequence_gap_report([*bundles, *recovered_bundles], root=root, p04=p04)
-    alias_reconciliation = _reconcile_legacy_aliases([*bundles, *recovered_bundles], root=root)
+    alias_reconciliation = _reconcile_legacy_aliases([*bundles, *recovered_bundles], root=root, verified_lineage=verified_lineage)
     unknown = [
         {
             "label": bundle.label,
@@ -2937,6 +4040,7 @@ def build_audit(
         "replication_inputs": replication_inputs,
         "replication_input_proof": replication_input_proof,
         "descriptor_pointer_proof": descriptor_pointer_proof,
+        "producer_lineage_proofs": producer_lineage_proofs,
         "completion_assessment": completion,
         "closure_table": closure_table,
         "trr0009_selection_manifest_required_and_loaded": "trr0009_selection_v2" in by_label,
@@ -2974,6 +4078,7 @@ def build_audit(
             ]
             + (["P04 targetfit identities are bound by the exact rendered/H129/H128 recovery export; the retained P04 exchange itself remains counts-only for targetfit."] if targetfit_recovered else ["P04 targetfit public_record_sha256 and truncated_sequence_sha256 arrays remain counts-only until an exact per-record recovery is bound."])
             + (["All eligible identity rows are anchored to a verified canonical row proof; residual eligible/unresolved rows: 0."] if completion["coverage_complete"] else [f"Residual row-level canonical proof gaps remain: {completion['legacy_alias_summary']['eligible_rows_without_verified_canonical_anchor']} eligible rows and {completion['legacy_alias_summary']['unresolved_rows_without_verified_canonical_anchor']} unresolved rows; per-source totals are in completion_assessment.blockers and closure_table."])
+            + ([f"{completion['legacy_alias_summary']['rows_without_verified_canonical_anchor']} rows have no cross-row anchor but are verified short (<128 active tokens), so H128 is inapplicable; they are excluded from eligible/unresolved residuals."] if completion['legacy_alias_summary']['rows_without_verified_canonical_anchor'] else [])
             + p04_result_gaps
         ),
         "access_boundary": {
@@ -2994,6 +4099,7 @@ def build_audit(
             "rendered_sha256": "global only when producer field is explicitly bound to rendered/public record bytes",
             "h128_sequence_sha256": "global SHA-256 of exactly first 128 active BOS-inclusive IDs as little-endian signed-int32 bytes",
             "h129_sequence_sha256": "separate SHA-256 of first 129 active BOS-inclusive IDs; never compared with H128",
+            "h40_sequence_sha256": "TRR-0001 raw H40: SHA-256 of first 40 BOS-inclusive IDs as little-endian signed-int32 bytes; distinct from TRR2 H40",
             "source_index": "dataset/style/split/revision namespace scoped",
             "trr0002_active_token_ids_sha256": "TRR2 Finance active IDs, little-endian signed int32 bytes; exact active rows of length at least 128 additionally prove canonical H128",
             "trr0002_h40_token_ids_sha256": "TRR2 Pile H40 tensor-header plus little-endian int64 bytes; H128 is inapplicable to its exact 40-token opened rows",
@@ -3011,6 +4117,7 @@ def build_audit(
             {"path": "experiments/TRR-P11/exclusions/recovery_identity_audit_r8.json", "sha256": "a41d78ce545dbc16b36ca4e169965f8029dfc52340dbbfb72b4df002ad61e791", "reason": "superseded by verified TRR-0004 producer-specific H40/H128 mapping; r8 left 48 rows falsely unresolved"},
             {"path": "experiments/TRR-P11/exclusions/recovery_identity_audit_r10.json", "sha256": "334f0f08589193203df5a058d581886f4e376c03149d8d2d3838f4aca3425149", "reason": "superseded by the verified TRR-0003 public H40 overlay; r10 retained 72 TRR-0003 rows without their recovered H40 proof"},
             {"path": "experiments/TRR-P11/exclusions/recovery_identity_audit_r11.json", "sha256": "74b6b6a60bb4247875784a7296a4f4532944f9776f6e8225b19b8288e726deee", "reason": "superseded by the H40 row-field validator fix; r11 reported the verified H40 field as an unknown identity key"},
+            {"path": "experiments/TRR-P11/exclusions/recovery_identity_audit_r13.json", "sha256": "b9f0b990f434f3eb41cc5860a898df1d238514a90e04e44dd11f35a0b6b2d214", "reason": "superseded by integration of the completed original-fit/validation identities and TRR7/8/9 descriptor-ledger proofs; r13 retained 1,412 already-recovered eligible rows as unresolved"},
         ],
     }
     if identity_union_output is not None:

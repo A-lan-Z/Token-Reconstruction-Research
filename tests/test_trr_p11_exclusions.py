@@ -21,6 +21,10 @@ from scripts.trr_p11.exclusions import (
     write_identity_union_export,
     load_identity_union_export,
     _canonical_anchor_matches,
+    _load_original_recovery_lineage,
+    _load_h40_recovery_exports,
+    _load_trr0002_winner_lineage,
+    _load_selection_exclusion_descriptor_proof,
     _load_trr0003_h40_identity_export,
     _row_identity_fields,
 )
@@ -88,6 +92,67 @@ def test_trr0003_h40_overlay_binds_producer_and_excludes_h128_h129() -> None:
     assert "h129_sequence_sha256" not in bundle.counts()
     assert proof["producer"]["sequence_convention"].startswith("first 40 BOS-inclusive")
     assert proof["failed_attempt_sha256"] == "fbfa33ca082dbaf00a5c0a725bcdc8d62570164096b6750f37b3ab8a168ce086"
+
+
+def test_trr0001_trr0002_h40_recoveries_keep_distinct_namespaces() -> None:
+    bundles, proofs, lineage, lineage_proofs = _load_h40_recovery_exports(ROOT)
+    by_label = {bundle.label: bundle for bundle in bundles}
+    assert by_label["trr0001_public_h40_identity"].counts() == {
+        "h40_sequence_sha256": 352,
+        "record_id": 352,
+        "rendered_sha256": 352,
+        "source_index": 352,
+    }
+    assert by_label["trr0002_public_pile_h40_recovery_identity"].counts()["trr0002_h40_token_ids_sha256"] == 96
+    assert "h40_sequence_sha256" not in by_label["trr0002_public_pile_h40_recovery_identity"].counts()
+    assert {item["h40_rows"] for item in proofs} == {96, 352}
+    assert len(lineage["trr0002_fresh_observation_index"]) == 64
+    assert lineage_proofs[0]["status"] == "PASS_EXACT_ORDERED_ID_AND_RECOVERED_H40_LINEAGE"
+
+
+def test_trr0002_winner_prefix_maps_only_to_own_canonical_rows() -> None:
+    base_bundles, _ = __import__("scripts.trr_p11.exclusions", fromlist=["_load_specs"])._load_specs(ROOT, PR20)
+    h40_bundles, _proofs, _lineage, _lineage_proofs = _load_h40_recovery_exports(ROOT)
+    lineage, proof = _load_trr0002_winner_lineage(ROOT, base_bundles, h40_bundles)
+    assert proof["status"] == "PASS_EXACT_METHOD_PREFIX_LINEAGE"
+    assert proof["finance_rows"] == 16 and proof["pile_rows"] == 16
+    assert len(lineage["trr0002_configuration_winner"]) == 32
+
+
+def test_original_recoveries_bind_all_consuming_ledgers() -> None:
+    bundles, proofs, lineage = _load_original_recovery_lineage(ROOT)
+    assert {bundle.label for bundle in bundles} == {
+        "trr0004_original_fit_public_token_identity",
+        "trr0004_original_validation_public_token_identity",
+    }
+    fit = next(item for item in proofs if item["label"] == "trr0004_original_fit_public_token_identity")
+    validation = next(item for item in proofs if item["label"] == "trr0004_original_validation_public_token_identity")
+    assert fit["h128_rows"] == 350 and fit["h129_rows"] == 343 and fit["record_count"] == 1200
+    assert validation["h128_rows"] == 6 and validation["h129_rows"] == 5 and validation["record_count"] == 48
+    assert set(fit["covered_source_labels"]) == {
+        "trr0004_affine_fit",
+        "trr0004_adapter_v2_fit",
+        "trr0005_original_fit",
+        "trr0007_original_fit",
+    }
+    assert set(validation["covered_source_labels"]) == {
+        "trr0004_affine_validation",
+        "trr0004_adapter_v2_validation",
+    }
+    assert all(len(rows) in {48, 1200} for rows in lineage.values())
+
+
+def test_selection_exclusion_descriptors_bind_existing_ledgers_without_new_rows() -> None:
+    proofs = _load_selection_exclusion_descriptor_proof(ROOT)
+    assert {item["label"] for item in proofs} == {
+        "trr0007_selection_exclusions",
+        "trr0008_selection_exclusions",
+        "trr0009_selection_v2_exclusions",
+    }
+    assert all(item["status"] == "PASS" for item in proofs)
+    assert all(item["new_used_record_rows"] is False for item in proofs)
+    assert all(item["individual_used_record_rows_in_descriptor"] is False for item in proofs)
+    assert all(item["selection_ledger"]["record_counts"] for item in proofs)
 
 
 def test_trr0004_truncated_hash_uses_verified_geometry_namespace() -> None:
@@ -342,31 +407,36 @@ def test_recovered_canonical_closure_fails_closed_on_row_residuals(tmp_path: Pat
         identity_union_output=union_path,
         closure_output=closure_path,
     )
-    assert audit["status"] == "PARTIAL_CANONICAL_SEQUENCE_EXCLUSION_AUDIT"
-    assert audit["coverage_complete"] is False
+    assert audit["status"] == "COMPLETE_CANONICAL_SEQUENCE_EXCLUSION_AUDIT"
+    assert audit["coverage_complete"] is True
     assert audit["selection_release"] is False
     assert audit["descriptor_pointer_proof"]["status"] == "PASS_DESCRIPTOR_POINTER_BINDINGS"
     failed = audit["completion_assessment"]["tests"]
-    assert failed["all_eligible_rows_have_verified_canonical_anchor"] is False
-    assert failed["no_unresolved_identity_rows"] is False
+    assert failed["all_eligible_rows_have_verified_canonical_anchor"] is True
+    assert failed["no_unresolved_identity_rows"] is True
+    assert failed["descriptor_pointer_bindings"] is True
+    assert failed["no_unresolved_identity_pointer_gaps"] is True
     aliases = audit["completion_assessment"]["legacy_alias_summary"]
-    assert aliases["rows_without_verified_canonical_anchor"] > 0
-    assert aliases["eligible_rows_without_verified_canonical_anchor"] > 0
+    assert aliases["rows_without_verified_canonical_anchor"] == 24
+    assert aliases["eligible_rows_without_verified_canonical_anchor"] == 0
+    assert aliases["unresolved_rows_without_verified_canonical_anchor"] == 0
     by_label = {item["label"]: item for item in audit["canonical_sequence_audit"]["legacy_alias_reconciliation"]["per_source"]}
-    assert by_label["trr0005_original_fit"]["eligible_rows_without_verified_canonical_anchor"] == 350
-    assert by_label["trr0007_original_fit"]["eligible_rows_without_verified_canonical_anchor"] == 350
+    assert by_label["trr0004_affine_fit"]["eligible_rows_without_verified_canonical_anchor"] == 0
+    assert by_label["trr0004_adapter_v2_fit"]["eligible_rows_without_verified_canonical_anchor"] == 0
+    assert by_label["trr0005_original_fit"]["eligible_rows_without_verified_canonical_anchor"] == 0
+    assert by_label["trr0007_original_fit"]["eligible_rows_without_verified_canonical_anchor"] == 0
+    assert by_label["trr0004_affine_validation"]["eligible_rows_without_verified_canonical_anchor"] == 0
     assert by_label["trr0003_fit_records"]["rows_without_verified_canonical_anchor"] == 0
     assert by_label["trr0003_fit_records_h40_public_identity"]["verified_h40_rows"] == 128
     assert by_label["trr0002_public_pile_records"]["verified_h40_rows"] == 96
     assert by_label["trr0006_p04_targetfit_public_identity"]["rows_without_verified_canonical_anchor"] == 0
-    assert audit["identity_union_export"]["status"] == "PARTIAL_IDENTITY_UNION_NO_SELECTION_RELEASE"
-    assert audit["closure_checkpoint"]["status"] == "PARTIAL_EXACT_PREFIX_COVERAGE"
+    assert audit["identity_union_export"]["status"] == "IDENTITY_UNION_COMPLETE_NO_PAYLOAD"
     exported = json.loads(union_path.read_text())
-    assert exported["coverage_complete"] is False
+    assert exported["coverage_complete"] is True
     assert exported["selection_release"] is False
     loaded = load_identity_union_export(union_path, expected_counts=audit["union_identity_counts"])
     assert loaded.counts() == audit["union_identity_counts"]
     closure = json.loads(closure_path.read_text())
-    assert closure["rows_without_verified_canonical_anchor"] > 0
-    assert closure["unresolved_rows_without_verified_canonical_anchor"] > 0
+    assert closure["rows_without_verified_canonical_anchor"] == 24
+    assert closure["unresolved_rows_without_verified_canonical_anchor"] == 0
     assert closure["access_boundary"]["p03_holdout_accessed"] is False
