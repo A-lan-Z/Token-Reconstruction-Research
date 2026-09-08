@@ -60,3 +60,5 @@ truth boundary is unopened.
 
 The machine-readable contract is coordination/parallel/TRR-P11.json and the
 full prospective plan is experiments/TRR-P11/planning/replication_plan.md.
+
+The successor branch is published as draft PR24 against task/TRR-P10 and remains unmerged. The task-local Agent2 scorer source is scripts/trr_p11/scorer/trr0010_analysis.py; it is byte-identical to the registered TRR-0010 source (SHA-256 90078ac78bfcdcfb5f782a598c943b78cb0417f6895906a1e6d61056a3793cef).
