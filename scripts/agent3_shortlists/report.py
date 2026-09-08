@@ -14,7 +14,7 @@ def main(a):
     r=json.loads(Path(a.results).read_text());d=json.loads(Path(a.drift).read_text());f=json.loads(Path(a.freeze).read_text())
     cells={(c['domain'],c['stage'],c['method']):{m['k']:m for m in c['budgets']} for c in r['cells']}
     lines=['# Frozen B1 shortlists for small-budget A2 under target drift','',
-           'The table below answers how often the correct token remained in B1’s top8/16/32 at every tested snapshot. Clip coverage is the fraction of32 clips containing every correct post-BOS token in its fixed lists; it is a perfect-selector upper bound, not achieved A2 reconstruction.','',
+           'The table below answers how often the correct token remained in B1’s top 8/16/32 at every tested snapshot. Clip coverage is the fraction of 32 clips containing every correct post-BOS token in its fixed lists; it is a perfect-selector upper bound, not achieved A2 reconstruction.','',
            '| Domain | Target stage | Token recall@8 / @16 / @32 | Whole-clip coverage@8 / @16 / @32 |',
            '|---|---:|---|---|']
     for domain in ('pile','finance'):
@@ -23,11 +23,11 @@ def main(a):
             token=' / '.join(percent(c[k]['token_recall']['estimate']) for k in (8,16,32))
             clip=' / '.join(f"{c[k]['complete_clips']}/32 ({percent(c[k]['clip_coverage']['estimate'])})" for k in (8,16,32))
             lines.append(f'| {domain} | {stage} | {token} | {clip} |')
-    lines+=['','Stage0 is the unchanged public base; stage64 is the first fitted compatible LoRA descendant; stages128 and256 continue that same prefix-changing trajectory. This tests one bounded adaptation from the public base, not an independently released full-SFT descendant.','',
+    lines+=['','Stage 0 is the unchanged public base; stage 64 is the first fitted compatible LoRA descendant; stages 128 and 256 continue that same prefix-changing trajectory. This tests one bounded adaptation from the public base, not an independently released full-SFT descendant.','',
             '**Hybrid status:** no small-budget B1+A2 hybrid was tested. The validated available A2 implementation uses untouched public model-prefix weights plus its own reconstructed-token cache. No validated maintained recovered-model-prefix path was available in the inspected/reused assets. Therefore equally accurate faster hybrid recovery and end-to-end target tracking remain untested.','',
-            'The smallest empirically promising budget must lose no more than0.1 percentage points of token recall and2 percentage points of whole-clip coverage versus both B1/K256 and A1/K256 in every domain/stage. These limits were committed before outcomes. Passing an empirical limit does not establish equivalence.','',
+            'The smallest empirically promising budget must lose no more than 0.1 percentage points of token recall and 2 percentage points of whole-clip coverage versus both B1/K256 and A1/K256 in every domain/stage. These limits were committed before outcomes. Passing an empirical limit does not establish equivalence.','',
             '| Domain | Stage | Smallest budget meeting both empirical loss limits |','|---|---:|---:|']
-    for c in r['stage1_decision']:lines.append(f"| {c['domain']} | {c['stage']} | {c['smallest'] if c['smallest'] is not None else 'none among8/16/32'} |")
+    for c in r['stage1_decision']:lines.append(f"| {c['domain']} | {c['stage']} | {c['smallest'] if c['smallest'] is not None else 'none among 8/16/32'} |")
     lines+=['',f"Budgets meeting the empirical limits throughout the matrix: {r['globally_empirically_promising_budgets'] or 'none'}. No confidence fallback, retraining, recalibration, or selective stage omission was used."]
     for domain in ('pile','finance'):
         ordered=[next(x for x in r['stage1_decision'] if x['domain']==domain and x['stage']==s)['smallest'] for s in (0,64,128,256)]
@@ -54,9 +54,9 @@ def main(a):
                 clips=' / '.join(str(c[k]['complete_clips']) for k in BUDGETS)
                 lines.append(f"| {domain} | {stage} | {method} | {recalls} | {clips} |")
     lines+=['','## Source-level uncertainty and paired effects','',
-            'The structured result retains every per-record rank (right-censored beyond256), omission count, paired B1-minus-A1 comparison, and change from stages0 and64. Intervals resample source records jointly with10,000 draws and seed9013. Each domain/stage is reported separately.','',
-            'With32 records, even zero records losing candidate inclusion gives a one-sided95% exact upper bound of approximately8.94% on the population probability of any loss in a record. A zero-width bootstrap interval at zero observed losses is not evidence of equivalence. This modest pilot can identify clear omissions; it cannot establish very tight whole-clip noninferiority.','',
-            '| Domain | Stage | B1 K32−A1 K256 token recall (pp;95% paired interval) | B1 K32−B1 K256 clip coverage (pp;95% paired interval) |',
+            'The structured result retains every per-record rank (right-censored beyond 256), omission count, paired B1-minus-A1 comparison, and change from stages 0 and 64. Intervals resample source records jointly with 10,000 draws and seed 9013. Each domain/stage is reported separately.','',
+            'With 32 records, even zero records losing candidate inclusion gives a one-sided 95% exact upper bound of approximately 8.94% on the population probability of any loss in a record. A zero-width bootstrap interval at zero observed losses is not evidence of equivalence. This modest pilot can identify clear omissions; it cannot establish very tight whole-clip noninferiority.','',
+            '| Domain | Stage | B1 K32−A1 K256 token recall (pp; 95% paired interval) | B1 K32−B1 K256 clip coverage (pp; 95% paired interval) |',
             '|---|---:|---|---|']
     for domain in ('pile','finance'):
         for stage in (0,64,128,256):
@@ -65,12 +65,12 @@ def main(a):
             def fmt(v):return f"{100*v['estimate']:+.3f} [{100*v['paired_source_bootstrap_95'][0]:+.3f}, {100*v['paired_source_bootstrap_95'][1]:+.3f}]"
             lines.append(f'| {domain} | {stage} | {fmt(x)} | {fmt(y)} |')
     lines+=['','## Actual boundary change','',
-            'Relative L2 is computed per record over all127 post-BOS activation vectors and averaged over records. Cosine distance averages post-BOS positions. Values are measured from paired BF16 observations cast toFP64 for this diagnostic.','',
+            'Relative L2 is computed per record over all 127 post-BOS activation vectors and averaged over records. Cosine distance averages post-BOS positions. Values are measured from paired BF16 observations cast to FP64 for this diagnostic.','',
             '| Domain | Stage | Reference stage | Mean relative L2 | Mean cosine distance |','|---|---:|---:|---:|---:|']
     for c in d['comparisons']:
         lines.append(f"| {c['domain']} | {c['stage']} | {c['reference_stage']} | {c['relative_l2_mean']:.6g} | {c['cosine_distance_mean']:.6g} |")
     lines+=['','## Execution costs and reproducibility','',
-            'The measured cost below is shortlist production, including deterministic full-vocabulary ranking. It is not A2 reconstruction time. No candidate simulations or prefix-maintenance operations were executed. Scientific rows use the same CPU FP32 record1 path with2threads; TF32 is disabled. Cells may overlap other tasks on the host, so these timings do not establish uncontended cross-system acceleration.','',
+            'The measured cost below is shortlist production, including deterministic full-vocabulary ranking. It is not A2 reconstruction time. No candidate simulations or prefix-maintenance operations were executed. Scientific rows use the same CPU FP32 record1 path with 2 threads; TF32 is disabled. Cells may overlap other tasks on the host, so these timings do not establish uncontended cross-system acceleration.','',
             '| Domain | Stage | Proposer | Score seconds | Rank seconds | Transfer/hash seconds | Output I/O seconds |','|---|---:|---|---:|---:|---:|---:|']
     receipts=[]
     for c in f['cells']:
@@ -79,11 +79,11 @@ def main(a):
             sums={key:sum(x[key] for x in m['record_timings']) for key in ('scoring_seconds','ranking_seconds','transfer_hash_seconds')}
             lines.append(f"| {c['domain']} | {c['stage']} | {m['method']} | {sums['scoring_seconds']:.3f} | {sums['ranking_seconds']:.3f} | {sums['transfer_hash_seconds']:.3f} | {m['output_io_seconds']:.3f} |")
     lines+=['',f"Total cell wall (including loading): {sum(c['total_seconds'] for c in receipts):.3f}s. Sum of package loading: {sum(c['load_seconds'] for c in receipts):.3f}s. Observation reading/validation: {sum(c['observation_read_validate_seconds'] for c in receipts):.3f}s. Maximum process peak RSS: {max(c['peak_rss_bytes'] for c in receipts)/2**30:.3f}GiB. B1 record forwards:256; A1 record forwards:256; A2 candidate simulations:0.",'',
-            'B1 fitting was not repeated. The preserved B1 native fit previously cost2,445.086s externally; that historical fit and its public-data preparation remain required offline resources. Shared target training/capture and backup costs are recorded by TRR-P12 and linked from this task manifest, separately from reconstruction.','',
-            'Actual B1 state, readout and package code were copied and hash-verified locally; the independent Windows backup bytes were verified. All package dependencies and all16 candidate outputs are bound. Original candidates/scores/predictions and compressed tracked copies are retained, alongside raw watchdog logs and commands. Truth is evaluator-only and first opened here after the complete matrix freeze.','',
-            'B1 state: `088be6a6b2842d526f3dab39789728d9cfc23f2fb1fb892d107d46ade2382706`; selected step13000; fixed public readout: `ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1`. Historical A1 uses the pinned public Alpaca affine lens, not an untouched-checkpoint proposer. Its one-record full scores and stable top256 order matched the native path on the preserved fixture.','',
-            '## Scope and limitations','',
-            'This is a paired shortlist component study on one target trajectory and64 unique source clips shared with Agent2. It is not an independent replication of Agent2. Sources exclude known decoder fitting/selection, prior opened panels, Agent1 reservations, and this trajectory’s target fitting/validation sources through the bound evaluator ledger. Unknown overlap with a public model’s original pretraining corpus is not ruled out.','',
+            'B1 fitting was not repeated. The preserved B1 native fit previously cost 2,445.086s externally; that historical fit and its public-data preparation remain required offline resources. Shared target training/capture and backup costs are recorded by TRR-P12 and linked from this task manifest, separately from reconstruction.','',
+            'Actual B1 state, readout and package code were copied and hash-verified locally; the independent Windows backup bytes were verified. All package dependencies and all 16 candidate outputs are bound. Original candidates/scores/predictions and compressed tracked copies are retained, alongside raw watchdog logs and commands. Truth is evaluator-only and first opened here after the complete matrix freeze.','',
+            'B1 state: `088be6a6b2842d526f3dab39789728d9cfc23f2fb1fb892d107d46ade2382706`; selected step 13000; fixed public readout: `ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1`. Historical A1 uses the pinned public Alpaca affine lens, not an untouched-checkpoint proposer. Its one-record full scores and stable top256 order matched the native path on the preserved fixture.','',
+            '## Scope and limitations','', 'Production observations used the inherited P11 full-sequence cut-4 prefix executor (BF16, B8 × 192 with 128 active positions). Before release, its first 128 hidden states exactly matched the full 16-layer backbone on both base and adapted smoke fixtures. Production did not execute all 16 layers; the capture-profile clarification and independent equivalence receipt are preserved.','',
+            'This is a paired shortlist component study on one target trajectory and 64 unique source clips shared with Agent 2. It is not an independent replication of Agent 2. Sources exclude known decoder fitting/selection, prior opened panels, Agent 1 reservations, and this trajectory’s target fitting/validation sources through the bound evaluator ledger. Unknown overlap with a public model’s original pretraining corpus is not ruled out.','',
             'The complete dual-canonical reconstruction matrix was not run, and no new active reconstruction replacement is registered. No result here is an overall-best, canonical-replacement, equally accurate hybrid, or end-to-end tracking claim. A negative shortlist budget is a completed Stage1 finding. A positive shortlist budget would only justify a separate maintained-prefix integration study with reserved confirmation sources.','',
             'Reproduction: `experiments/agent3-b1-small-budget-a2/README.md`. Structured evidence: `experiments/agent3-b1-small-budget-a2/manifest.json`. Prospective decisions: `experiments/agent3-b1-small-budget-a2/plan.md`. Failures and repairs are retained in validation receipts; no scientific output was selected from an excluded attempt.']
     Path(a.output).write_text('\n'.join(lines)+'\n')

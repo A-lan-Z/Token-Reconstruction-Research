@@ -1,0 +1,140 @@
+{
+  "status": "SHARED_TARGET_AND_CAPTURE_VERIFIED",
+  "created_utc": "2026-09-08T15:46:52.399585+00:00",
+  "trajectory_receipt": {
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/outputs/TRR-P12/target-r1/run.json",
+    "bytes": 193902,
+    "sha256": "d0d04c971b438df1bf0580bd181fbf574942e5e4e0dfe2901b0fb535ef84ad66"
+  },
+  "trajectory_configuration": {
+    "alpha": 16.0,
+    "batch_size": 2,
+    "gradient_clip_norm": 1.0,
+    "layers": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "learning_rate": 0.0005,
+    "modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "optimizer": "AdamW",
+    "rank": 8,
+    "seed": 6012,
+    "sequence_length": 128,
+    "stage_policy": "retain baseline and every fixed update checkpoint; no checkpoint selection or early stopping",
+    "stages": [
+      64,
+      128,
+      256
+    ],
+    "target_scope": "layers 0-3 q_proj/v_proj LoRA; evaluator-only target prefix",
+    "train_rows": 256,
+    "validation_policy": "post-run meaningfulness assessment only; never used for checkpoint selection",
+    "validation_rows": 64,
+    "weight_decay": 0.0
+  },
+  "stage_artifacts": [
+    {
+      "stage_updates": 64,
+      "adapter": {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/outputs/TRR-P12/target-r1/target-lora-stage-0064.safetensors",
+        "bytes": 853576,
+        "sha256": "8759505770f2b17578457803103639317fc1506ddad6ec49ef7fc5a6000f4ead"
+      },
+      "backup": {
+        "path": "/mnt/c/Users/alanz/Token-Reconstruction-Backups/TRR-P12/target-r1/target-lora-stage-0064.safetensors",
+        "bytes": 853576,
+        "sha256": "8759505770f2b17578457803103639317fc1506ddad6ec49ef7fc5a6000f4ead"
+      },
+      "actual_backup_verified": true,
+      "effective_delta": {
+        "delta_l2": 2.2541097176609126,
+        "nonzero_effective_delta": true
+      },
+      "frozen_parameter_checks": {
+        "adapter_parameter_count": 16,
+        "frozen_base_all_gradients_none": true,
+        "frozen_base_all_unchanged": true,
+        "frozen_base_digest_mismatches": [],
+        "frozen_base_gradients_present": [],
+        "frozen_base_parameter_count": 146,
+        "non_adapter_trainable_count": 0,
+        "optimizer_scope_check": true
+      }
+    },
+    {
+      "stage_updates": 128,
+      "adapter": {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/outputs/TRR-P12/target-r1/target-lora-stage-0128.safetensors",
+        "bytes": 853576,
+        "sha256": "47e68a6179c3c46382ec459e79b87ab777834201d18d8e2e72ee1c92226ae64b"
+      },
+      "backup": {
+        "path": "/mnt/c/Users/alanz/Token-Reconstruction-Backups/TRR-P12/target-r1/target-lora-stage-0128.safetensors",
+        "bytes": 853576,
+        "sha256": "47e68a6179c3c46382ec459e79b87ab777834201d18d8e2e72ee1c92226ae64b"
+      },
+      "actual_backup_verified": true,
+      "effective_delta": {
+        "delta_l2": 2.7560727729771948,
+        "nonzero_effective_delta": true
+      },
+      "frozen_parameter_checks": {
+        "adapter_parameter_count": 16,
+        "frozen_base_all_gradients_none": true,
+        "frozen_base_all_unchanged": true,
+        "frozen_base_digest_mismatches": [],
+        "frozen_base_gradients_present": [],
+        "frozen_base_parameter_count": 146,
+        "non_adapter_trainable_count": 0,
+        "optimizer_scope_check": true
+      }
+    },
+    {
+      "stage_updates": 256,
+      "adapter": {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/outputs/TRR-P12/target-r1/target-lora-stage-0256.safetensors",
+        "bytes": 853576,
+        "sha256": "a6f13af1835743556ca80c8fed133832fb010bea2957014499740e4b0fe58b0a"
+      },
+      "backup": {
+        "path": "/mnt/c/Users/alanz/Token-Reconstruction-Backups/TRR-P12/target-r1/target-lora-stage-0256.safetensors",
+        "bytes": 853576,
+        "sha256": "a6f13af1835743556ca80c8fed133832fb010bea2957014499740e4b0fe58b0a"
+      },
+      "actual_backup_verified": true,
+      "effective_delta": {
+        "delta_l2": 4.326658345153864,
+        "nonzero_effective_delta": true
+      },
+      "frozen_parameter_checks": {
+        "adapter_parameter_count": 16,
+        "frozen_base_all_gradients_none": true,
+        "frozen_base_all_unchanged": true,
+        "frozen_base_digest_mismatches": [],
+        "frozen_base_gradients_present": [],
+        "frozen_base_parameter_count": 146,
+        "non_adapter_trainable_count": 0,
+        "optimizer_scope_check": true
+      }
+    }
+  ],
+  "capture_profile": "Inherited P11 full-sequence cut4 prefix execution; not all16 production layers. Base and four-step adapted smoke H128 exactly matched independently executed full16-layer backbone.",
+  "capture_profile_receipt": {
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/experiments/TRR-P12/capture-profile-clarification-r1.json",
+    "bytes": 1692,
+    "sha256": "0c16fe368b4f6f9b6d9980b4a6fcabb5625e7c82d9ceb1fc3143736bfa301a99"
+  },
+  "capture_equivalence_receipt": {
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/experiments/TRR-P12/capture-equivalence-review-r1.json",
+    "bytes": 3398,
+    "sha256": "46078f6f07f7aab3c5e5dfaad7fc78e011690c193d67e2546218aae920baa3ec"
+  },
+  "target_model_instantiated_by_agent3": false,
+  "target_weights_loaded_into_reconstructor": false,
+  "source_labels_opened": false
+}
