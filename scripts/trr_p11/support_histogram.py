@@ -281,7 +281,7 @@ def _validate_bank(
         if token_ids[index, 1:active].eq(PAD_TOKEN_ID).any().item():
             invalid_rows += 1
             continue
-        if not torch.equal(position_ids[index], expected_positions):
+        if not torch.equal(position_ids[index, :active], expected_positions[:active]):
             invalid_rows += 1
             continue
         declared = row.get("post_bos_token_count", row.get("target_post_bos_token_count"))

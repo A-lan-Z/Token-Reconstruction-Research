@@ -34,8 +34,10 @@ never used as a fallback.
 ## Counting semantics
 
 For each row, labels are `token_ids[:, 1:][attention_mask[:, 1:]]`. BOS and
-padding are excluded. Positions are one-based offsets after BOS, with the
-frozen bins `1-15`, `16-39`, `40-79`, `80-127`, and `128-191`. The producer
+padding are excluded. Active position IDs are checked against their zero-based tensor columns;
+padded position IDs are ignored after the mask boundary. Positions are
+reported as one-based offsets after BOS, with the frozen bins `1-15`, `16-39`,
+`40-79`, `80-127`, and `128-191`. The producer
 keeps all positions through 191 for fitting-support diagnostics. The first
 four bins are the 128-token evaluation range; `128-191` is retained as a
 post-evaluation diagnostic and is empty from the evaluation adapter's
