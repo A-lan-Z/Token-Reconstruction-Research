@@ -277,4 +277,11 @@ def test_capture_public_injected_path_uses_p11_descriptors_and_trr6_keyword(tmp_
     observation_manifest = json.loads(Path(result["observation_manifest"]["path"]).read_text(encoding="utf-8"))
     assert capture_record["truth_opened"] is False
     assert capture_record["execution"]["model_loaded_by_producer"] is True
+    assert {item["cell_id"] for item in capture_record["cells"]} == set(capture.CELL_ORDER)
     assert all("tensor_sha256" in item["observation"] and "record_order" in item["observation"] for item in observation_manifest["cells"])
+    first = observation_manifest["cells"][0]["observation"]
+    assert first["record_order"][:2] == ["record/000", "record/001"]
+    assert first["capture_record_order"][:2] == ["pile-0", "pile-1"]
+    assert first["record_order_sha256"] == capture._canonical_digest(first["record_order"])
+    assert first["capture_record_order_sha256"] == capture._canonical_digest(first["capture_record_order"])
+    assert capture_record["cells"][0]["observation"]["record_order"] == first["record_order"]

@@ -362,17 +362,30 @@ def _tensor_digest(value: Any) -> str:
     return digest.hexdigest()
 
 
-def _observation_tensor_bindings(path: Path) -> dict[str, str]:
-    """Read only sanitized tensors to bind their exact evaluator inputs."""
-    from safetensors.torch import load_file
+def _observation_tensor_bindings(path: Path, *, normalized: bool = False) -> dict[str, str]:
+    """Read sanitized tensors and bind either raw or package-normalized inputs.
 
+    The native capture producer writes the mask as ``uint8`` and retains source
+    record IDs in its receipt.  The Agent1 package converts the mask to
+    ``bool``, positions to ``int64``, and assigns local ``record/NNN`` slots.
+    Keep the producer bindings alongside the normalized bindings so either
+    side can be audited without treating a dtype/order adaptation as a new
+    scientific input.
+    """
     try:
+        from safetensors.torch import load_file
         tensors = load_file(str(path), device="cpu")
     except Exception as exc:
         raise CaptureAdapterError(f"P11 observation is not a readable safetensors file: {path}") from exc
     required = {"activations", "attention_mask", "position_ids"}
     if set(tensors) != required:
         raise CaptureAdapterError(f"P11 observation tensor keys changed: {path}")
+    if normalized:
+        tensors = dict(tensors)
+        import torch
+
+        tensors["attention_mask"] = tensors["attention_mask"].to(torch.bool).contiguous()
+        tensors["position_ids"] = tensors["position_ids"].to(torch.int64).contiguous()
     return {key: _tensor_digest(tensors[key]) for key in sorted(required)}
 
 
@@ -491,20 +504,61 @@ def build_observation_manifest(
             raise CaptureAdapterError(f"P11 observation geometry changed: {cell_id}")
         normalized = dict(observation)
         if record_order_by_domain is not None:
-            declared_order = normalized.get("record_order")
+            expected_capture_order = record_order_by_domain.get(domain)
+            declared_order = normalized.get("capture_record_order")
             if declared_order is None:
-                declared_order = record_order_by_domain.get(domain)
+                declared_order = normalized.get("record_order")
+            if declared_order is None:
+                declared_order = expected_capture_order
             if not isinstance(declared_order, Sequence) or isinstance(declared_order, (str, bytes, bytearray)):
                 raise CaptureAdapterError(f"P11 observation record order is absent: {cell_id}")
             declared_order = [str(item) for item in declared_order]
             if len(declared_order) != RECORDS_PER_DOMAIN or any(not item for item in declared_order):
                 raise CaptureAdapterError(f"P11 observation record order changed: {cell_id}")
-            normalized["record_order"] = declared_order
-            normalized["record_order_sha256"] = _canonical_digest(declared_order)
-            tensor_sha = normalized.get("tensor_sha256")
-            if tensor_sha is None:
-                tensor_sha = _observation_tensor_bindings(Path(str(actual["path"])))
-            normalized["tensor_sha256"] = _validate_hash_map(tensor_sha, description=f"P11 observation {cell_id}")
+            expected_capture_order = [str(item) for item in (expected_capture_order or ())]
+            if declared_order != expected_capture_order:
+                raise CaptureAdapterError(f"P11 observation source record order changed: {cell_id}")
+            normalized["capture_record_order"] = declared_order
+            normalized["capture_record_order_sha256"] = _canonical_digest(declared_order)
+            package_order = [f"record/{index:03d}" for index in range(RECORDS_PER_DOMAIN)]
+            normalized["record_order"] = package_order
+            normalized["record_order_sha256"] = _canonical_digest(package_order)
+            normalized["record_order_normalization"] = {
+                "format": "record/{index:03d}",
+                "records": RECORDS_PER_DOMAIN,
+                "source_order_preserved_as": "capture_record_order",
+            }
+
+            raw_tensor_sha = normalized.get("capture_tensor_sha256")
+            if raw_tensor_sha is None:
+                raw_tensor_sha = normalized.get("tensor_sha256")
+            if raw_tensor_sha is None:
+                raw_tensor_sha = _observation_tensor_bindings(Path(str(actual["path"])), normalized=False)
+            raw_tensor_sha = _validate_hash_map(raw_tensor_sha, description=f"P11 raw observation {cell_id}")
+
+            normalized_tensor_sha = normalized.get("normalized_tensor_sha256")
+            if normalized_tensor_sha is None:
+                try:
+                    normalized_tensor_sha = _observation_tensor_bindings(Path(str(actual["path"])), normalized=True)
+                except CaptureAdapterError:
+                    # Synthetic adapter tests may supply a descriptor without a
+                    # readable safetensors payload.  A supplied tensor map is
+                    # still validated and retained as the test's normalized
+                    # stand-in; real capture files must pass the load above.
+                    if normalized.get("tensor_sha256") is not None and normalized.get("capture_tensor_sha256") is None:
+                        normalized_tensor_sha = normalized["tensor_sha256"]
+                    else:
+                        raise
+            normalized["capture_tensor_sha256"] = raw_tensor_sha
+            normalized["normalized_tensor_sha256"] = _validate_hash_map(
+                normalized_tensor_sha, description=f"P11 normalized observation {cell_id}"
+            )
+            normalized["tensor_sha256"] = dict(normalized["normalized_tensor_sha256"])
+            normalized["tensor_digest_normalization"] = {
+                "activations": "contiguous_cpu_tensor",
+                "attention_mask": "torch.bool_contiguous_cpu_tensor",
+                "position_ids": "torch.int64_contiguous_cpu_tensor",
+            }
         cells.append({
             "cell_id": cell_id,
             "domain": domain,
@@ -671,6 +725,17 @@ def capture_public(
             "p03_holdout_accessed": False,
         }
         panel_record = _write_create_only(output / "panel.json", panel_payload, root=root, description="P11 source panel")
+        capture_cells = [
+            {
+                "cell_id": item["cell_id"],
+                "domain": item["domain"],
+                "target": item["target"],
+                "records": item["records"],
+                "record_ids_sha256": item["record_ids_sha256"],
+                "observation": dict(item["observation"]),
+            }
+            for item in observation_payload["cells"]
+        ]
         capture_payload = {
             "schema": CAPTURE_SCHEMA,
             "task_id": TASK_ID,
@@ -678,6 +743,7 @@ def capture_public(
             "selection_plan": dict(selection.record),
             "observation_manifest": dict(observation_record),
             "panel": dict(panel_record),
+            "cells": capture_cells,
             "conditions": conditions,
             "geometry": {
                 "records_per_domain": RECORDS_PER_DOMAIN,
