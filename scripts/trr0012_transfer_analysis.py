@@ -452,6 +452,92 @@ def _row_scores(clean: Mapping[str, Any], changed: Mapping[str, Any], *, paramet
     }
 
 
+def _summarize_loaded_cell_geometry(
+    clean: Mapping[str, Any],
+    changed: Mapping[str, Any],
+    *,
+    method_id: str,
+    variant_id: str,
+    domain: str,
+    parameter_binding: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Adapt already-loaded bound geometry to the frozen summary primitive.
+
+    The production geometry files retain record and token axes on their
+    readout, ``[records, positions, 2, hidden]``.  The frozen
+    ``summarize_transfer`` primitive deliberately accepts only paired rows,
+    so flatten that one boundary in memory.  All arrays here have already
+    passed the public matrix and bound-file checks in ``_load_cell``; this
+    helper does not reopen or replace any artifact.
+    """
+
+    expected_activation_shape = (RECORDS_PER_DOMAIN, SCORED_POST_BOS_TOKENS, HIDDEN_SIZE)
+    expected_logits_shape = (RECORDS_PER_DOMAIN, SCORED_POST_BOS_TOKENS, 2)
+    expected_readout_shape = (
+        RECORDS_PER_DOMAIN,
+        SCORED_POST_BOS_TOKENS,
+        2,
+        HIDDEN_SIZE,
+    )
+    for label, cell in (("clean", clean), ("changed", changed)):
+        try:
+            activation = cell["activation"]
+            geometry = cell["geometry"]
+            projected = geometry["projected_features"]
+            logits = geometry["top_runner_logits"]
+            readout = geometry["top_runner_readout"]
+        except (KeyError, TypeError) as exc:
+            raise TransferAnalysisError(f"loaded bound geometry is incomplete: {label}") from exc
+        if tuple(activation.shape) != expected_activation_shape:
+            raise TransferAnalysisError(f"bound {label} activations must be [records, 127, 2048] after BOS masking")
+        if tuple(projected.shape) != expected_activation_shape:
+            raise TransferAnalysisError(f"bound {label} projected feature geometry changed")
+        if tuple(logits.shape) != expected_logits_shape:
+            raise TransferAnalysisError(f"bound {label} top/runner geometry changed")
+        if tuple(readout.shape) != expected_readout_shape:
+            raise TransferAnalysisError(f"bound {label} readout geometry changed")
+
+    clean_geometry = clean["geometry"]
+    changed_geometry = changed["geometry"]
+    clean_readout = clean_geometry["top_runner_readout"]
+    readout_pairs = clean_readout.reshape(-1, 2, HIDDEN_SIZE).contiguous()
+    try:
+        result = transfer.summarize_transfer(
+            clean["activation"],
+            changed["activation"],
+            clean_geometry["projected_features"],
+            changed_geometry["projected_features"],
+            clean_geometry["top_runner_logits"][..., 0],
+            clean_geometry["top_runner_logits"][..., 1],
+            readout_pairs,
+            logit_scale=float(clean_geometry["logit_scale"].item()),
+            clean_top_ids=clean_geometry["top_runner_ids"][..., 0],
+            changed_top_ids=changed_geometry["top_runner_ids"][..., 0],
+            parameter_delta_l2=parameter_binding.get("actual_delta_l2"),
+            parameter_base_l2=parameter_binding.get("actual_base_l2"),
+            validate_readout_equation=True,
+        )
+    except transfer.TransferDiagnosticError as exc:
+        raise TransferAnalysisError(f"public geometry summary failed: {variant_id}/{domain}: {exc}") from exc
+
+    result["geometry_provenance"] = {
+        "status": "BOUND_FROZEN_DECODER_ARTIFACTS",
+        "method_id": method_id,
+        "variant_id": variant_id,
+        "domain": domain,
+        "clean_observation_sha256": clean["observation"]["sha256"],
+        "changed_observation_sha256": changed["observation"]["sha256"],
+        "clean_geometry_sha256": clean["geometry_binding"]["sha256"],
+        "changed_geometry_sha256": changed["geometry_binding"]["sha256"],
+        "decoder_loader": transfer.P09_LOADER_MODULE,
+        "decoder_state_tensor_key_count": transfer.P09_TENSOR_KEY_COUNT,
+        "readout_shape_before_adapter": list(expected_readout_shape),
+        "readout_shape_after_adapter": list(readout_pairs.shape),
+        "readout_adapter": "reshape_records_positions_to_rows",
+    }
+    return result
+
+
 def _unknown_auc(score_name: str, *, reason: str, rows: int, invalid_rows: int = 0) -> dict[str, Any]:
     return {
         "status": "UNKNOWN",
@@ -657,22 +743,14 @@ def analyze_transfer_matrix(
                     except transfer.TransferDiagnosticError as exc:
                         raise TransferAnalysisError(f"fixed AUC failed: {variant_id}/{domain}/{score_name}: {exc}") from exc
                     aucs[score_name]["invalid_score_rows"] = 0
-            try:
-                geometry = transfer.summarize_bound_transfer_geometry(
-                    clean["geometry_binding"],
-                    changed["geometry_binding"],
-                    clean_observation_binding=clean["observation"],
-                    changed_observation_binding=changed["observation"],
-                    repository_root=root,
-                    method_id=METHOD_ID,
-                    variant_id=variant_id,
-                    domain=domain,
-                    records=RECORDS_PER_DOMAIN,
-                    parameter_delta_l2=parameter_binding["actual_delta_l2"],
-                    parameter_base_l2=parameter_binding["actual_base_l2"],
-                )
-            except transfer.TransferDiagnosticError as exc:
-                raise TransferAnalysisError(f"public geometry summary failed: {variant_id}/{domain}: {exc}") from exc
+            geometry = _summarize_loaded_cell_geometry(
+                clean,
+                changed,
+                method_id=METHOD_ID,
+                variant_id=variant_id,
+                domain=domain,
+                parameter_binding=parameter_binding,
+            )
             results[f"{variant_id}/{domain}"] = {
                 "method_id": METHOD_ID,
                 "variant_id": variant_id,
