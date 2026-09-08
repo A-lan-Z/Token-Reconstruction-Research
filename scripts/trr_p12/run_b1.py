@@ -62,7 +62,9 @@ def tensor_digest(value: torch.Tensor) -> str:
     digest = hashlib.sha256()
     digest.update(str(tensor.dtype).encode("utf-8"))
     digest.update(json.dumps(list(tensor.shape), separators=(",", ":")).encode("ascii"))
-    digest.update(tensor.numpy().tobytes(order="C"))
+    # NumPy has no bfloat16 dtype on this runtime; hashing the contiguous
+    # storage bytes preserves exact bits for every torch dtype.
+    digest.update(tensor.view(torch.uint8).numpy().tobytes(order="C"))
     return digest.hexdigest()
 
 
@@ -99,6 +101,17 @@ def peak_rss_bytes() -> int | None:
     if sys.platform == "darwin":
         return value
     return value * 1024
+
+
+def initialize_device(device: torch.device) -> None:
+    """Initialize CUDA context before querying or resetting allocator peaks."""
+
+    if device.type == "cuda":
+        if not torch.cuda.is_available():
+            raise AdapterError("requested CUDA device is unavailable")
+        torch.cuda.init()
+        torch.cuda.set_device(device)
+        torch.cuda.synchronize(device)
 
 
 def synchronize(device: torch.device) -> None:
@@ -220,6 +233,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     if not package_root.is_dir() or package_root.is_symlink():
         raise AdapterError(f"package root is unavailable: {package_root}")
     device = torch.device(args.device)
+    initialize_device(device)
     wall_started_utc = utc_now()
     wall_started = time.perf_counter()
     if device.type == "cuda":
