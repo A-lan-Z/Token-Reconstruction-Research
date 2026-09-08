@@ -78,7 +78,13 @@
       "public_base",
       "public_lora_2601"
     ],
-    "token_positions_per_cell": 32512
+    "token_positions_per_cell": 32512,
+    "freeze_receipt": {
+      "path": "outputs/TRR-P11/private-evaluation/evaluation/freeze-r1.json",
+      "sha256": "1b27af8ca3c395187a68ce548cd60e3b812a5b3353c7c5d38795c36b318d481b",
+      "status": "P11_PREDICTIONS_FROZEN_BEFORE_TRUTH"
+    },
+    "confirmation_score_status": "PENDING_CURATOR_MATERIALIZATION"
   },
   "evidence": {
     "exclusion_audit": {
@@ -178,8 +184,9 @@
     },
     "prediction_started": true,
     "source_selection_started": true,
-    "status": "PRIMARY_B0_B1_PREDICTIONS_COMPLETE_TRANSFER_CAPTURE_PENDING",
-    "truth_opened": false
+    "status": "PRIMARY_B0_B1_AND_TRANSFER_CAPTURE_COMPLETE_CONFIRMATION_SCORE_PENDING",
+    "truth_opened": false,
+    "truth_scope": "Public capture remained truth-free; transfer analysis opened truth after freeze."
   },
   "original_payload_recovery": {
     "coverage": {
@@ -516,7 +523,7 @@
       "upper_quantile": 0.975
     }
   },
-  "status": "EVALUATION_IN_PROGRESS_PRIMARY_B0_B1_PREDICTIONS_COMPLETE_TRANSFER_SELECTION_COMPLETE_A1_QUALIFICATION_ONGOING",
+  "status": "FINAL_EVIDENCE_ASSEMBLED_CONFIRMATION_SCORE_PENDING_CURATOR_MATERIALIZATION",
   "task_id": "TRR-P11",
   "transfer_preparation": {
     "capture_preflight": {
@@ -529,12 +536,18 @@
       "path": "experiments/TRR-P11/transfer/opaque64_reservation_r5.json",
       "sha256": "afedbd2e05370bdb1cb5ac8cc81bc68b284befa607a449644a1cf78d2de3d0e6"
     },
-    "status": "SELECTION_COMPLETE_PENDING_GPU_CAPTURE",
+    "status": "CAPTURE_AND_ANALYSIS_COMPLETE_CONFIRMATION_SCORE_PENDING",
     "selection": {
       "path": "outputs/TRR-P11/private-evaluation/transfer-selection-r2/transfer_selection.json",
       "sha256": "8674ea5c824c5f3bc4aa10c44439422654572af546684567046f4a5ffb717c0f",
       "opaque_panel_sha256": "9968368eef8c8c91b220ef824276aceb5044c0b055545e2b230e66e09b64e47f",
       "truth_opened": false
+    },
+    "analysis_summary": {
+      "path": "experiments/TRR-P11/transfer/analysis_summary_r3.json",
+      "sha256": "8ca868aa5665d9bef5f0b9aee21c2dd9b4a3c25357ba558f8b3eb669f7deadc2",
+      "supersedes": "experiments/TRR-P11/transfer/analysis_summary_r2.json",
+      "superseded_sha256": "5068e26d1e789657336dbe0e08df2ad2bc43823951e0831d6d65dd0a8a3220d0"
     }
   },
   "truth_boundary": {
@@ -542,11 +555,13 @@
     "p03_holdout_accessed": false,
     "predictions_started": true,
     "source_selection_started": true,
-    "truth_opened": false
+    "truth_opened": true,
+    "truth_scope": "TRANSFER_ANALYSIS_ONLY; CONFIRMATION_SCORE_PENDING_CURATOR_MATERIALIZATION"
   },
   "phase_status_receipt": {
     "path": "experiments/TRR-P11/phase-status-r2.json",
-    "sha256": "08a55f8c07d21f38fbd46bea1b03cf96911c701350906bee84261db5955c526f"
+    "sha256": "08a55f8c07d21f38fbd46bea1b03cf96911c701350906bee84261db5955c526f",
+    "superseded_by_final_evidence": "experiments/TRR-P11/final-evidence.json"
   },
   "manifest_binding": {
     "path": "experiments/TRR-P11/manifest.json",
@@ -559,7 +574,7 @@
     "structured_path": "experiments/TRR-P11/replication-provenance-r1.json",
     "structured_sha256": "280ff8fa5e59f3ac778033955f2c6f12abf19b0426468710587cf0cdc582d3a4",
     "result_path": "coordination/results/TRR-P11-replication-provenance.md",
-    "result_sha256": "7d7befb3ffaaa84da43916e54ca45e29c9a87f2747b99a40c2ca12be6a8a0caf"
+    "result_sha256": "374c8ca3a22d8ea3e04232812f67d4bf5ecece7fa742b69ac843785ad157e015"
   },
   "primary_evaluation": {
     "status": "PASS_B0_B1_PREDICTIONS_FOUR_CELLS",
@@ -572,7 +587,8 @@
       "expanded_fixed_replication_1"
     ],
     "truth_opened": false,
-    "scores_reproduced": false
+    "scores_reproduced": false,
+    "score_status": "CONFIRMATION_SCORE_PENDING_CURATOR_MATERIALIZATION"
   },
   "model_states": {
     "B0": {
@@ -588,10 +604,22 @@
     "restore_status": "PASS_RESTORED_SMOKE"
   },
   "old_exact_state_confirmation": "BLOCKED_INCOMPLETE_MISSING_SELECTED_ARTIFACTS",
-  "transfer_status": "TRANSFER_SELECTION_COMPLETE_CAPTURE_PENDING_GPU",
+  "transfer_status": "TRANSFER_CAPTURE_AND_ANALYSIS_COMPLETE_CONFIRMATION_SCORE_PENDING",
   "a1_qualification": {
-    "status": "ONGOING",
+    "status": "COMPLETE_PREDICTIONS_FROZEN_NO_TRUTH",
+    "receipt_path": "outputs/TRR-P11/private-evaluation/a1_a2-execution-r3/qualification.json",
+    "receipt_sha256": "de22c936917625ed73be5c949fe4acf33ddde68f0480c9c9e4f4381ab076ec8b",
     "truth_opened": false,
     "p03_holdout_accessed": false
+  },
+  "final_evidence": {
+    "path": "experiments/TRR-P11/final-evidence.json",
+    "sha256": "c4c7e4ecb2cca91c2eda96355b9554118b9b6b86f793cd5538a440772f882f31",
+    "status": "FINAL_EVIDENCE_ASSEMBLED_CONFIRMATION_SCORE_PENDING_CURATOR_MATERIALIZATION"
+  },
+  "result": {
+    "path": "coordination/results/TRR-P11.md",
+    "sha256": "f9a6c93434fd5f6ac94150e9f6ab1205b18a079fee84495232f728a6937858b0",
+    "status": "FINAL_EVIDENCE_ASSEMBLED_CONFIRMATION_SCORE_PENDING_CURATOR_MATERIALIZATION"
   }
 }

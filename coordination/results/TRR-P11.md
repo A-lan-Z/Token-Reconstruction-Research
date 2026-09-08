@@ -1,99 +1,40 @@
-# TRR-P11 — primary predictions and transfer capture handoff
+# TRR-P11 — final evidence handoff
 
-Status: `EVALUATION_IN_PROGRESS_PRIMARY_B0_B1_PREDICTIONS_COMPLETE_TRANSFER_SELECTION_COMPLETE_A1_QUALIFICATION_ONGOING`.
+Status: `FINAL_EVIDENCE_ASSEMBLED_CONFIRMATION_SCORE_PENDING_CURATOR_MATERIALIZATION`.
 
-TRR-P11 remains the independent successor to the blocked TRR-P10 exact-state
-confirmation. The P10 exact states remain unavailable and were not reused.
-PR24 remains open, draft, and unmerged against `task/TRR-P10`.
+The public prediction freeze, transfer capture, and transfer analysis are complete. The confirmation score is still awaiting curator materialization, so this record is a bounded handoff and does not claim comparison completion.
 
-The current phase record is `experiments/TRR-P11/phase-status-r2.json`
-(SHA-256 `08a55f8c07d21f38fbd46bea1b03cf96911c701350906bee84261db5955c526f`).
-The selector-bound manifest remains the exact 32,973-byte snapshot
-`experiments/TRR-P11/manifest.json` (SHA-256
-`22e3b51e4835e85ccaf84c52248bb53c02e702c586f6d36116422e0fd5670f3a`). The
-later phase metadata is kept in separate receipts so the frozen selector input
-is unchanged.
+The selector input remains the immutable 32,973-byte
+`experiments/TRR-P11/manifest.json` snapshot (SHA-256
+`22e3b51e4835e85ccaf84c52248bb53c02e702c586f6d36116422e0fd5670f3a`). The released canonical-sequence exclusion audit is `recovery_identity_audit_r17.json` (SHA-256 `43416d0d1945821812278df8dfc3ee7639f872e9c8407abdf245fb281bda9d65`), with identity union `identity_union_export_r14.json` (SHA-256 `125275eab38c66117d45f5e0df4085058dae8a5c939fff1554cab7e608eb1fe1`) and root release `root_selection_release_r1.json` (SHA-256 `0e1816711965b0601a2e00ce4c187bded9f0c0fca4493e71ef9478a772659f95`). P03 remains sealed and outside the audit inventory.
 
-The complete accessible exclusion release is bound by:
+The restored fixed pair passed the smoke gate in
+`experiments/TRR-P11/restore/restore_receipt_actual_r2.json` (SHA-256
+`311ed83312c620eef81a8401901876cd55d5c93ea6860955aa4c6f44df4bd7f8`). B0 is `current_fixed_replication_1` at step 8000 and B1 is `expanded_fixed_replication_1` at step 13000. The replication provenance record is
+`experiments/TRR-P11/replication-provenance-r1.json` (SHA-256
+`280ff8fa5e59f3ac778033955f2c6f12abf19b0426468710587cf0cdc582d3a4`). The original exact-state confirmation remains blocked by unavailable selected artifacts; those states were not reused.
 
-- `experiments/TRR-P11/exclusions/recovery_identity_audit_r17.json` — SHA-256
-  `43416d0d1945821812278df8dfc3ee7639f872e9c8407abdf245fb281bda9d65`;
-- `experiments/TRR-P11/exclusions/identity_union_export_r14.json` — SHA-256
-  `125275eab38c66117d45f5e0df4085058dae8a5c939fff1554cab7e608eb1fe1`; and
-- `experiments/TRR-P11/exclusions/root_selection_release_r1.json` — SHA-256
-  `0e1816711965b0601a2e00ce4c187bded9f0c0fca4493e71ef9478a772659f95`.
+The prediction freeze passed before truth in
+`outputs/TRR-P11/private-evaluation/evaluation/freeze-r1.json` (SHA-256
+`1b27af8ca3c395187a68ce548cd60e3b812a5b3353c7c5d38795c36b318d481b`). B0/B1 primary integrity passed in
+`outputs/TRR-P11/private-evaluation/primary/post-run-integrity-r2.json` (SHA-256
+`469c2ae652cc1774fc05a37d6011d108c18bfb34cc61adf6bc5e836235d790aa`). A1/A2 qualification and predictions were completed without truth in the private r3 receipts; the comparator score is held for the pending confirmation-score materialization.
 
-The released audit reports complete coverage over the explicit accessible
-inventory and zero eligible or unresolved residual rows. P03 remains sealed
-and outside that inventory. Historical r1–r16 audit artifacts remain
-preserved; r17 is the only current selection release.
+The transfer analysis is represented by the r3 successor
+`experiments/TRR-P11/transfer/analysis_summary_r3.json` (SHA-256
+`8ca868aa5665d9bef5f0b9aee21c2dd9b4a3c25357ba558f8b3eb669f7deadc2`). It supersedes, without modifying, r2 (SHA-256
+`5068e26d1e789657336dbe0e08df2ad2bc43823951e0831d6d65dd0a8a3220d0`) and copies only aggregate geometry fields from the completed sanitized result
+`outputs/TRR-P11/private-evaluation/transfer-analysis/analysis_result_r2.json` (SHA-256
+`880c9b934292d285e656256fed92e8eb76d82eb4359715268ddbcd1c5db1d83e`). The transfer result covers the clean public baseline, five artificial variants consisting of four controlled prefix perturbations and the after-cut null, and the separate historical public-LoRA benchmark. The five artificial variants have zero broken rows in both domains; the after-cut null passed exact activation and prediction equality. The historical benchmark has one broken Finance token and four broken Pile tokens. Those are token counts, not exact-record inventories. The fixed AUCs are descriptive bounded outputs; no AUC reliability, threshold, deployment, or overall canonical claim is made.
 
-The frozen source selector executed with seed 5011 and the registered Pile
-`[0,2000)` and Finance `[20000,28000)` ranges. Its private output contains 256
-records per domain and remains under ignored task-local storage:
+The first transfer-analysis callback failure is preserved in
+`outputs/TRR-P11/private-evaluation/transfer-analysis/analysis_failure_r1.json`
+(SHA-256 `2f20ea799669f6af23c8cc403cc51bc00692f2b9c14ad9ec1aeaab1d5112b2d9`) and records the incompatible `[rows, 2, hidden]` geometry shape. It was superseded by the completed sanitized result without substituting a P11-side scorer. The first A1/A2 attempt failed during CUDA-device discovery before a GPU resource peak receipt existed (`a1_a2-execution-r1/failure.json`, SHA-256 `9de1783be5f3e095bf7d74df4909c96f92b346669bfcbdc43d6e6e67fb8e6b9d`); its first GPU peak is therefore unavailable. Freeze-validation failures before output creation and the earlier capture guard failure remain preserved as excluded attempts.
 
-`outputs/TRR-P11/private-evaluation/selection/source_selection.json`
-(SHA-256 `fe7129e9d7230100d1900facea98b15b8000f382a0bd7035b2039b4d9429bf68`).
-The executed release command and code bindings are recorded in
-`experiments/TRR-P11/selector/command-r3.json` (SHA-256
-`050ec7276e705fa0197bdc8309a81eea25750aa90358d92b565bf7d53203f45f1`).
-Selection read public source text for trusted rerender/tokenization, wrote no
-source text or token IDs to these records, loaded no model, and opened no
-truth.
+The statistical contract uses one paired source-record seed, 9009, with the registered 10,000 bootstrap draws and `paired_exact_cp` implementation. No seed-reliability claim is made. PR24 remains open, draft, and unmerged; no result is presented as a merged or published canonical benchmark. The P03 holdout remains unopened.
 
-The actual two-copy restore gate passed before model evaluation. The package
-is `trr0012-fixed-pair-f2b133f96f77c128`; the actual receipt, restore manifest,
-and execution receipt are bound in the task metadata. The new B0 state is
-`current_fixed_replication_1` at selected step 8000 and the new B1 state is
-`expanded_fixed_replication_1` at selected step 13000. The old exact-state
-confirmation remains blocked and is still not claimed.
+The hash-only packaging audit is
+`experiments/TRR-P11/evidence-packaging-inventory-r1.json` (SHA-256
+`e1f290597e3ff9decdb77b6c1448d874834dd72abe0800c9e1b41618c53d784a`). It records 129 artifacts without copying or publishing raw source, prediction, tensor, or truth values. Its optional private backup estimate is 2.756 GiB against a 19.306 GiB Windows-free-space snapshot; no backup copy was performed. Bulky evaluator arrays and truth payloads remain task-local, while sanitized aggregate results and opaque hash bindings are suitable for the later publication review.
 
-The current truth-free public capture used by the prediction pipeline is
-`outputs/TRR-P11/private-evaluation/capture/public-r1/capture.json` (SHA-256
-`c6f6ba0c63ba758af653c261934147909dc93f03694ef1e51b7e58fc27a8a5e3`) with
-observation manifest
-`outputs/TRR-P11/private-evaluation/capture/public-r1/observations.json`
-(SHA-256 `ee14dd3d39ea061ce0bc64d1fa09ee66563e4233fbb7026909de78ca6ae2c541`)
-and panel metadata SHA-256
-`50114382a2f6b980b7caa3aa84174642f077a4b2ad332d155d7b5873368afb9d`. It has
-four cells and 256 records per domain; truth and P03 remain unopened.
-
-The earlier confirmation-r2 capture is preserved as an unused prior attempt:
-its capture, observation, and panel hashes are respectively
-`387669ee84828041513cb12c441671da9352f654e0a4b0a43707cd76e6d456ab`,
-`a2d3ea127412bd660512591ba1703850e6667bc20ff50f09d225550f149e9320`, and
-`f350dccf69247b396c99f3eecba98b93cef57fa891831489ba759f10036c2497`.
-Its recorded costs remain retained. Metadata-only comparison found all four
-capture tensor-digest entries and all four observation-manifest tensor-digest
-entries equal to public-r1; no raw tensors were read for that comparison.
-
-B0 and B1 primary predictions are complete for all four cells. The private
-integrity receipt is
-`outputs/TRR-P11/private-evaluation/primary/post-run-integrity-r2.json`
-(SHA-256 `469c2ae652cc1774fc05a37d6011d108c18bfb34cc61adf6bc5e836235d790aa`)
-and reports PASS. The cell receipts remain private; this record reproduces no
-source IDs, predictions, or scores. A1 comparator qualification remains
-ongoing, so its prediction and score are not asserted here.
-
-Transfer selection is complete and truth-free. The selected transfer receipt
-is `outputs/TRR-P11/private-evaluation/transfer-selection-r2/transfer_selection.json`
-(SHA-256 `8674ea5c824c5f3bc4aa10c44439422654572af546684567046f4a5ffb717c0f`)
-for 32 records per domain. Its opaque panel file is
-`outputs/TRR-P11/private-evaluation/transfer-selection-r2/opaque_panel.json`
-(file SHA-256 `bee22ad90f4411118ce3388b4c3e8b96956160550c7f1da7ae75a615aecaebd4`,
-panel binding SHA-256
-`9968368eef8c8c91b220ef824276aceb5044c0b055545e2b230e66e09b64e47f`). Root
-has shared the opaque panel with Agent1. The reservation is
-`experiments/TRR-P11/transfer/opaque64_reservation_r5.json` (SHA-256
-`afedbd2e05370bdb1cb5ac8cc81bc68b284befa607a449644a1cf78d2de3d0e6`), and
-the capture preflight is
-`experiments/TRR-P11/transfer/capture_preflight_r4.json` (SHA-256
-`9dd71ef824314a62565bfd066c2295a73abaaf920f497f67a6b2530fd72400a3`). GPU
-capture is still pending; no transfer truth has been opened.
-
-The remaining gates are A1 qualification and prediction freeze, GPU capture of
-the selected transfer panel, final prediction-hash freeze, private truth
-opening, and coordinated scoring/publication. The statistical contract
-remains frozen: paired source-record bootstrap seed 9009 with 10,000 draws,
-descriptive central 95% percentile intervals, and the registered
-`paired_exact_cp` implementation.
+The remaining action is curator materialization and review of the confirmation score against this frozen evidence set. This handoff does not start another experiment, reopen P03, change the selector-bound manifest, or merge PR24.
