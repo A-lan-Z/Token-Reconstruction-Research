@@ -1,0 +1,355 @@
+{
+  "agent2_recovery_handoff": "experiments/TRR-0011/setup/agent2_recovery_handoff_v1.json",
+  "base_published_trr0010_head": "63a5a4b994eae90ebe94f8fa670d078e37e4e4e8",
+  "created_utc": "2026-09-08T02:43:34Z",
+  "frozen_state_recovery": {
+    "candidate_summary": {
+      "archive_container_candidates": 0,
+      "compatible_candidates": 0,
+      "exact_published_size_matches": 0,
+      "expected_filename_safetensors_candidates": 4
+    },
+    "directional_reference_check": {
+      "conclusion": "Larger directional checkpoints are distinct trained decoder states and cannot substitute for either exact P09 B0/B1 binary.",
+      "evidence": [
+        "fixed_control_cli.py:1015 loads the starting decoder from the external --state path, :1034 passes base_state_sha256 as a provenance binding, and :1052 records starting_state metadata.",
+        "fixed_control_caller.py:606-609 says the callback serializes only the fixed decoder state; :638-655 writes decoder.state_dict() plus base_state_sha256 and optimizer_state_external metadata, without a reference tensor copy."
+      ],
+      "source_only": true,
+      "sources": [
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P10/scripts/trr_p09/fixed_control_cli.py",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P10/scripts/trr_p09/fixed_control_caller.py"
+      ],
+      "status": "NO_EMBEDDED_UNMODIFIED_P09_REFERENCE"
+    },
+    "durable_restoration_requirement": "Provide exact published bytes for both files with the recorded full SHA-256 values; do not retrain, substitute directional checkpoints, or alter frozen-state identity.",
+    "expected_states": [
+      {
+        "bytes": 29390260,
+        "filename": "checkpoint_step_008000.safetensors",
+        "missing_path": "/tmp/trr-p09-runtime/fixed-control-b0-r3/states/checkpoint_step_008000.safetensors",
+        "name": "current_fixed_step_8000",
+        "sha256": "d2477cdf11422cb2d028196d72775825246f65f7e07394952375b3929627475a",
+        "status": "MISSING"
+      },
+      {
+        "bytes": 29390268,
+        "filename": "checkpoint_step_013000.safetensors",
+        "missing_path": "/tmp/trr-p09-runtime/fixed-control-b1-r3/states/checkpoint_step_013000.safetensors",
+        "name": "expanded_fixed_step_13000",
+        "sha256": "5757506003f0a4b82cb1cd6de2a82f11345f2dbcbce13c8cf18c4f515de3ec3a",
+        "status": "MISSING"
+      }
+    ],
+    "missing_runtime_root": "/tmp/trr-p09-runtime",
+    "new_experiments": {
+      "new_capture": false,
+      "new_fit_or_retraining": false,
+      "new_predictions": false,
+      "new_scores": false,
+      "new_source_selection": false,
+      "reason": "Exact state restoration and subsequent Agent2/root release gates are unresolved; no production diagnostic work was started.",
+      "status": "UNFINISHED_BLOCKED",
+      "truth_opened": false
+    },
+    "package_v2_recovery": {
+      "cpu_validation": "PASS; 3 passed in 0.94s",
+      "historical_replay": "8 isolated CUDA replays, exact matches, 24.456871 s total; replay evidence is preserved.",
+      "interpretation": "Package v2 preserves immutable metadata/replay history but has no redundant binary copy of either missing frozen state.",
+      "status": "METADATA_REPLAY_ONLY_NOT_CURRENTLY_RUNNABLE",
+      "validation_receipt": "experiments/TRR-0011/package/package_v2_validation_r1.json"
+    },
+    "receipt": {
+      "bytes": 4693,
+      "path": "experiments/TRR-0011/setup/frozen_state_recovery_search_v1.json",
+      "sha256": "a9df40b1d4232162cb2788b0f32f9cf6078a885307596758c65bcfe4f6d6418f"
+    },
+    "status": "BLOCKED_EXACT_ARTIFACTS_MISSING"
+  },
+  "milestones": {
+    "agent2_p10_confirmation": {
+      "note": "No Agent2 confirmation result is asserted here.",
+      "status": "PENDING_INDEPENDENT_CONFIRMATION"
+    },
+    "controlled_transfer": {
+      "elapsed_seconds": 1.05,
+      "production_qualified": false,
+      "py_compile": "PASS",
+      "review": {
+        "bytes": 8045,
+        "path": "experiments/TRR-0011/setup/transfer_review_v1.json",
+        "sha256": "cb0a0d6cff4849f8cb1efe26fd66874cfd16ad241cbec67914dce8ea984542ad"
+      },
+      "review_note": "transfer_review_v1 is the initial review receipt. Its generic gain/bias concern is resolved for the actual P09 fixed class (no per-token gain/bias tensors); remaining blockers are the real producer/decoder binding, reservation/provenance, exact geometry, rank/equation/conditioning, held-out-family binding, and duplicate A1+A2 ownership.",
+      "scope": "synthetic transfer/writer and JSON round-trip validation only; no model state, target state, truth, or production inference loaded",
+      "source": {
+        "bytes": 114257,
+        "path": "scripts/trr0011_transfer.py",
+        "sha256": "63663f25510999b29735dd025b16bf3d592f386112fc35aed81aa7b153139c5c"
+      },
+      "status": "CPU_VALIDATED_PARTIAL_NOT_PRODUCTION_QUALIFIED",
+      "test_receipt": {
+        "bytes": 2773,
+        "path": "experiments/TRR-0011/transfer/test_receipt_json_roundtrip_v1.json",
+        "sha256": "54aa5c592310886796518359f1da929b5f84dd992d793528262975254818ac5a"
+      },
+      "tests_passed": 16
+    },
+    "cpu_focused_validation": {
+      "elapsed_seconds": 1.75,
+      "receipt": {
+        "bytes": 2971,
+        "path": "experiments/TRR-0011/transfer/capture_cpu_test_receipt_v1.json",
+        "sha256": "7ac3988ab28b0652ec479c8a1c26e30cba58ce4cf9e9b0bdb51c65f8ecd4e9ad"
+      },
+      "scope": "focused capture and diagnostic-selector tests only; no model load, GPU run, source selection, decoder inference, target state, or truth access",
+      "source_bindings": {
+        "capture_runner": {
+          "bytes": 91873,
+          "path": "scripts/trr0011_capture.py",
+          "sha256": "1d3e1092e43f740e0ecd479414f5e1124a7b4a0106fd0aab02a73d4fbd536612"
+        },
+        "capture_tests": {
+          "bytes": 6434,
+          "path": "tests/test_trr0011_capture.py",
+          "sha256": "a5e3c9aef4a8a25e8b7d31aa003f661f25d3c5447894e5e6d0e22b16296038af"
+        },
+        "selector_source": {
+          "bytes": 34441,
+          "path": "scripts/trr0011_select_diagnostic.py",
+          "sha256": "242ffafd198c7275dc95e60a6fa0e62f9a613ecdb3f840c960dc3b52eb84eb58"
+        },
+        "selector_tests": {
+          "bytes": 14005,
+          "path": "tests/test_trr0011_select_diagnostic.py",
+          "sha256": "35daf2080444d7a718f9d941c3313e68f37ab88fe91c45598dbddf5e2cec715b"
+        }
+      },
+      "status": "PASS_CPU_FOCUSED_NOT_PRODUCTION_QUALIFIED",
+      "tests": 13
+    },
+    "diagnostic_selector": {
+      "cpu_receipt": {
+        "bytes": 2971,
+        "path": "experiments/TRR-0011/transfer/capture_cpu_test_receipt_v1.json",
+        "sha256": "7ac3988ab28b0652ec479c8a1c26e30cba58ce4cf9e9b0bdb51c65f8ecd4e9ad"
+      },
+      "note": "Validates exact Finance/Pile ranges, immutable P10 identity handoff, four namespaced exclusion ledgers, zero overlap, and explicit root authorization before an injected trusted selector. No sampler, renderer, public rows, or source text is opened by this adapter.",
+      "receipt": {
+        "bytes": 2586,
+        "path": "experiments/TRR-0011/setup/diagnostic_selector_synthetic_v1.json",
+        "sha256": "a5fd6f4a0ffaa724359f4640814b7232104f6b5d20c9e71c23fd7ce72a78384b"
+      },
+      "selection_performed": false,
+      "source": {
+        "bytes": 34441,
+        "path": "scripts/trr0011_select_diagnostic.py",
+        "sha256": "242ffafd198c7275dc95e60a6fa0e62f9a613ecdb3f840c960dc3b52eb84eb58"
+      },
+      "status": "SYNTHETIC_ONLY_READY_PENDING_P10_HANDOFF",
+      "test_result": "7 selector-only tests; included in 13-test capture+selector CPU receipt",
+      "tests": {
+        "bytes": 14005,
+        "path": "tests/test_trr0011_select_diagnostic.py",
+        "sha256": "35daf2080444d7a718f9d941c3313e68f37ab88fe91c45598dbddf5e2cec715b"
+      },
+      "truth_opened": false
+    },
+    "frozen_state_recovery": {
+      "candidate_summary": {
+        "archive_container_candidates": 0,
+        "compatible_candidates": 0,
+        "exact_published_size_matches": 0,
+        "expected_filename_safetensors_candidates": 4
+      },
+      "directional_reference_check": {
+        "conclusion": "Larger directional checkpoints are distinct trained decoder states and cannot substitute for either exact P09 B0/B1 binary.",
+        "evidence": [
+          "fixed_control_cli.py:1015 loads the starting decoder from the external --state path, :1034 passes base_state_sha256 as a provenance binding, and :1052 records starting_state metadata.",
+          "fixed_control_caller.py:606-609 says the callback serializes only the fixed decoder state; :638-655 writes decoder.state_dict() plus base_state_sha256 and optimizer_state_external metadata, without a reference tensor copy."
+        ],
+        "source_only": true,
+        "sources": [
+          "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P10/scripts/trr_p09/fixed_control_cli.py",
+          "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P10/scripts/trr_p09/fixed_control_caller.py"
+        ],
+        "status": "NO_EMBEDDED_UNMODIFIED_P09_REFERENCE"
+      },
+      "durable_restoration_requirement": "Provide exact published bytes for both files with the recorded full SHA-256 values; do not retrain, substitute directional checkpoints, or alter frozen-state identity.",
+      "expected_states": [
+        {
+          "bytes": 29390260,
+          "filename": "checkpoint_step_008000.safetensors",
+          "missing_path": "/tmp/trr-p09-runtime/fixed-control-b0-r3/states/checkpoint_step_008000.safetensors",
+          "name": "current_fixed_step_8000",
+          "sha256": "d2477cdf11422cb2d028196d72775825246f65f7e07394952375b3929627475a",
+          "status": "MISSING"
+        },
+        {
+          "bytes": 29390268,
+          "filename": "checkpoint_step_013000.safetensors",
+          "missing_path": "/tmp/trr-p09-runtime/fixed-control-b1-r3/states/checkpoint_step_013000.safetensors",
+          "name": "expanded_fixed_step_13000",
+          "sha256": "5757506003f0a4b82cb1cd6de2a82f11345f2dbcbce13c8cf18c4f515de3ec3a",
+          "status": "MISSING"
+        }
+      ],
+      "missing_runtime_root": "/tmp/trr-p09-runtime",
+      "new_experiments": {
+        "new_capture": false,
+        "new_fit_or_retraining": false,
+        "new_predictions": false,
+        "new_scores": false,
+        "new_source_selection": false,
+        "reason": "Exact state restoration and subsequent Agent2/root release gates are unresolved; no production diagnostic work was started.",
+        "status": "UNFINISHED_BLOCKED",
+        "truth_opened": false
+      },
+      "package_v2_recovery": {
+        "cpu_validation": "PASS; 3 passed in 0.94s",
+        "historical_replay": "8 isolated CUDA replays, exact matches, 24.456871 s total; replay evidence is preserved.",
+        "interpretation": "Package v2 preserves immutable metadata/replay history but has no redundant binary copy of either missing frozen state.",
+        "status": "METADATA_REPLAY_ONLY_NOT_CURRENTLY_RUNNABLE",
+        "validation_receipt": "experiments/TRR-0011/package/package_v2_validation_r1.json"
+      },
+      "receipt": {
+        "bytes": 4693,
+        "path": "experiments/TRR-0011/setup/frozen_state_recovery_search_v1.json",
+        "sha256": "a9df40b1d4232162cb2788b0f32f9cf6078a885307596758c65bcfe4f6d6418f"
+      },
+      "status": "BLOCKED_EXACT_ARTIFACTS_MISSING"
+    },
+    "inference_package": {
+      "gpu_preflight_receipt": {
+        "bytes": 1097,
+        "path": "experiments/TRR-0011/package/gpu_replay_preflight_v1.json",
+        "sha256": "0320c43099d35a1514fa04315a36f79d5f84b7e518423141775c0bfbbc0ed1fa"
+      },
+      "manifest": {
+        "bytes": 17660,
+        "path": "experiments/TRR-0011/package/inference_package_v2.json",
+        "sha256": "a74f687f8287cacfeafa0acc81a97f208672dedf797792c60f88ba93b0318b25"
+      },
+      "note": "Package v2 validation and the bounded CUDA replay matrix were accepted as metadata/replay evidence. The replay used already-opened public observations; it is not a new source selection, capture, training fit, truth access, or score.",
+      "replay_cost_receipt": {
+        "bytes": 2019,
+        "path": "experiments/TRR-0011/package/cuda_replay_cost_r1.json",
+        "sha256": "7d1c4e6d030995f363736470f54bd3d6e9153ff75337a66332fde76b0777556f"
+      },
+      "replay_matrix_receipt": {
+        "bytes": 51442,
+        "path": "experiments/TRR-0011/package/cuda_replay_matrix_r1.json",
+        "sha256": "79fda7559f0e4e426227d5af0046dd35f6b6b1db721d2d25b87895947c9cb234"
+      },
+      "status": "COMPLETE_TRUTH_FREE_REPLAY",
+      "summary": {
+        "cells": 4,
+        "exact_matches": true,
+        "gpu_min_memory_free_mib_min": 10537.0,
+        "gpu_peak_memory_used_mib_max": 5441.0,
+        "interpretation": "Replay-only inference cost with validation/load; not a warm benchmark and excludes training, capture, truth materialization, and scoring.",
+        "methods": [
+          "current_fixed",
+          "expanded_fixed"
+        ],
+        "public_lora_independence": "Not established by this package; those cells remain inherited replay inputs, not an independent-adaptation claim.",
+        "records_per_cell": 2,
+        "records_verified": 16,
+        "replays": 8,
+        "status": "PASS_TRUTH_FREE_CUDA_REPLAY_COST",
+        "wall_seconds_sum": 24.45687110905419
+      },
+      "tests": "3 passed in 0.94s",
+      "validation_receipt": {
+        "bytes": 1317,
+        "path": "experiments/TRR-0011/package/package_v2_validation_r1.json",
+        "sha256": "97facf7c0ea61f31c02f624d885adb6ddb5ea27849ef368071609b23f1ad567e"
+      }
+    },
+    "overlap_audit": {
+      "audit": {
+        "bytes": 19631,
+        "path": "experiments/TRR-0011/setup/overlap_audit_v1.json",
+        "sha256": "9ed1a413fbf35432a2eb0ef5abda49775ba04a3452c76eef649933426d1b4f7e"
+      },
+      "interpretation_correction": {
+        "bytes": 4445,
+        "path": "coordination/results/TRR-0010-interpretation-correction.md",
+        "sha256": "c17a2be43696b13207ce9b1bd6dddacf76565d16bff77e4c75e8e32dc24551fd"
+      },
+      "regression_recommendation": {
+        "bytes": 7723,
+        "path": "experiments/TRR-0011/setup/overlap_regression_recommendation_v1.json",
+        "sha256": "fd04ef83af77fcd188bc40c5e99982ceb8b313035b108ceb0871d19246715801"
+      },
+      "status": "COMPLETE"
+    },
+    "publication_correction": {
+      "body": {
+        "bytes": 4683,
+        "path": "experiments/TRR-0011/setup/pr20_correction_body.md",
+        "sha256": "3437df9ff03f0838e3a81a73607e743acb537ec121bd7934ab9b3613469ea2dc"
+      },
+      "publication_receipt": {
+        "bytes": 408,
+        "path": "experiments/TRR-0011/setup/pr20_correction_publication.json",
+        "sha256": "64f9bc8da59cdc4bd25e4ed87ec0fb6aebddc05ae529e74aaec55638a9666601"
+      },
+      "status": "RECORDED"
+    }
+  },
+  "next_gate": "Restore the exact B0/B1 state bytes, then obtain the shared Agent2/root exclusion union and opaque reservation, complete the common source/producer gate, and only then run the frozen study.",
+  "packet": {
+    "bytes": 5385,
+    "path": "coordination/requests/TRR-0011-AMENDMENT.md",
+    "sha256": "83478d646948f22416cb97a86d33a0d039eca538e78ec66f4f7e3cea02505eba"
+  },
+  "partial_implementation": {
+    "cpu_health": {
+      "capture_selector_tests": "13 passed in 1.75s",
+      "py_compile": "PASS",
+      "transfer_tests": "16 passed in 1.05s"
+    },
+    "fresh_scientific_matrix": false,
+    "full_integration": false,
+    "note": "Focused CPU checks validate interfaces and serializers; exact frozen assets and release gates remain unresolved.",
+    "production_capture": false,
+    "scorer_cli_created": false,
+    "source_selection": false,
+    "status": "PARTIAL_NOT_PRODUCTION_QUALIFIED",
+    "truth_opened": false
+  },
+  "pull_request": {
+    "number": 21,
+    "status": "DRAFT_OPEN_UNMERGED",
+    "url": "https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/21"
+  },
+  "recovery_source_commit": "c711b85c1ee571f3b1640a5057c5f6b37288f723",
+  "recovery_source_snapshot": "experiments/TRR-0011/setup/recovery_source_snapshot_v1.json",
+  "repository_head": "ed714466dfacdb434a68e20f7d0a4e2f4ea35007",
+  "schema": "token-reconstruction.trr0011-manifest.v1",
+  "scope": {
+    "diagnostic_selection_performed": false,
+    "diagnostic_selector_synthetic": true,
+    "final_prediction_matrix": false,
+    "fit_or_retraining": false,
+    "global_state_or_registry_modified": false,
+    "new_capture": false,
+    "new_source_selection": false,
+    "overlap_audit_only_completed": true,
+    "predictions": false,
+    "replay_predictions": true,
+    "scores": false,
+    "source_selection": false,
+    "target_capture": false,
+    "truth": false,
+    "truth_free_package_replay": true
+  },
+  "status": "BLOCKED_EXACT_CHECKPOINT_RESTORATION",
+  "task_id": "TRR-0011",
+  "updated_utc": "2026-09-08T04:25:54Z",
+  "worktree": {
+    "branch": "task/TRR-0011",
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0011"
+  }
+}
