@@ -1,0 +1,68 @@
+{
+  "schema": "token-reconstruction.trr-p10-planning-manifest.v1",
+  "task_id": "TRR-P10",
+  "status": "PLANNING_ONLY_NO_GPU_NO_SOURCE_SELECTION_NO_TRUTH",
+  "branch": "task/TRR-P10",
+  "packet_path": "coordination/requests/TRR-P10.md",
+  "plan_path": "experiments/TRR-P10/planning/confirmation_plan.md",
+  "parallel_state_path": "coordination/parallel/TRR-P10.json",
+  "amendment_scope": "independent frozen-model confirmation of expanded-fixed versus current-fixed, with a common A1+A2 subset",
+  "prior_overlap": {
+    "trr0009_selection": {
+      "path": "experiments/TRR-0009/selection_v2/source_selection.json",
+      "sha256": "c2e996514f7f45e55d7bfadc27fc8048bdb07a2c979b208de8716972d8d1def2"
+    },
+    "trr0010_selection": {
+      "path": "experiments/TRR-0010/evaluation/source_selection.json",
+      "sha256": "7b6ae489a65615eeefcb2ac7a53b6d915b62675341fcedb51783b346c8bf3283"
+    },
+    "finance_intersection": 128,
+    "pile_intersection": 128,
+    "all_record_id_intersection": 256
+  },
+  "frozen_states": {
+    "current_fixed_step_8000": "d2477cdf11422cb2d028196d72775825246f65f7e07394952375b3929627475a",
+    "expanded_fixed_step_13000": "5757506003f0a4b82cb1cd6de2a82f11345f2dbcbce13c8cf18c4f515de3ec3a"
+  },
+  "primary": {
+    "domains": ["pile", "finance"],
+    "targets": ["public_base", "public_lora_2601"],
+    "records_per_domain": 256,
+    "post_bos_positions_per_record": 127,
+    "token_denominator_per_cell": 32512,
+    "exact_record_denominator": 256
+  },
+  "a1_a2_common_subset": {
+    "records_per_domain": 128,
+    "token_denominator_per_cell": 16256,
+    "exact_record_denominator": 128,
+    "method": "frozen_a1_a2_k256"
+  },
+  "source_extensions": {
+    "selection_seed": 5011,
+    "finance": [20000, 28000],
+    "pile": [0, 2000],
+    "selection_status": "NOT_STARTED_PENDING_EXCLUSION_AUDIT_AND_RELEASE"
+  },
+  "truth_boundary": {
+    "truth_opened": false,
+    "source_selection_started": false,
+    "observations_captured": false,
+    "predictions_started": false,
+    "labels_exposed_to_prediction_workers": false,
+    "p03_holdout_accessed": false
+  },
+  "resource_basis": {
+    "primary_warmed_ms_per_source": 4.2,
+    "a1_a2_warmed_seconds_per_source": 0.88,
+    "a1_a2_two_target_subset_projected_seconds": 450,
+    "primary_historical_cuda_peak_gib": 1.260,
+    "a1_a2_historical_cuda_peak_gib": 3.303
+  },
+  "pending": [
+    "Agent1 immutable package/replay receipt",
+    "root/Agent1 opaque reservation agreement",
+    "count-only exclusion audit over all ledgers including TRR-0009",
+    "root release for source selection and compute"
+  ]
+}

@@ -1,0 +1,162 @@
+{
+  "schema": "token-reconstruction.trr-p10-confirmation-plan.v1",
+  "task_id": "TRR-P10",
+  "status": "PLANNING_ONLY_PENDING_ROOT_AND_AGENT1_RELEASE",
+  "scope": {
+    "authorized": [
+      "metadata-only overlap and source-partition planning",
+      "static experiment assembly",
+      "CPU-only contract and regression checks"
+    ],
+    "forbidden_before_release": [
+      "GPU or paid compute",
+      "fresh source selection or source-text/token loading",
+      "new observations or predictions",
+      "truth or labels",
+      "retraining, checkpoint reselection, or broad variants",
+      "P03 holdout access",
+      "Agent1 worktree edits"
+    ],
+    "canonical_matrix_status": "INCOMPLETE_TARGETED_AMENDMENT_SCOPE"
+  },
+  "prior_pr20_overlap": {
+    "pr20_task": "TRR-0010",
+    "trr0009_selection_path": "experiments/TRR-0009/selection_v2/source_selection.json",
+    "trr0009_selection_sha256": "c2e996514f7f45e55d7bfadc27fc8048bdb07a2c979b208de8716972d8d1def2",
+    "trr0010_selection_path": "experiments/TRR-0010/evaluation/source_selection.json",
+    "trr0010_selection_sha256": "7b6ae489a65615eeefcb2ac7a53b6d915b62675341fcedb51783b346c8bf3283",
+    "intersection_counts": {
+      "finance": {
+        "record_id": 128,
+        "public_record_sha256": 128,
+        "final_sequence_sha256": 128,
+        "row_index": 128,
+        "ordered_prefix_matches": 128,
+        "trr0009_records": 256,
+        "trr0010_records": 128
+      },
+      "pile": {
+        "record_id": 128,
+        "public_record_sha256": 128,
+        "final_sequence_sha256": 128,
+        "row_index": 128,
+        "ordered_prefix_matches": 128,
+        "trr0009_records": 128,
+        "trr0010_records": 128
+      }
+    },
+    "interpretation": "TRR-0010/PR20 is selection-overlapping development evidence; preserve its predictions, scores, and receipts, but do not call it an independent text-generalization estimate."
+  },
+  "frozen_primary": {
+    "comparison": "expanded_fixed_step_13000_vs_current_fixed_step_8000",
+    "state_sha256": {
+      "current_fixed_step_8000": "d2477cdf11422cb2d028196d72775825246f65f7e07394952375b3929627475a",
+      "expanded_fixed_step_13000": "5757506003f0a4b82cb1cd6de2a82f11345f2dbcbce13c8cf18c4f515de3ec3a"
+    },
+    "domains": ["pile", "finance"],
+    "targets": ["public_base", "public_lora_2601"],
+    "records_per_domain": 256,
+    "post_bos_positions_per_record": 127,
+    "token_denominator_per_cell": 32512,
+    "exact_record_denominator": 256,
+    "cells": 4,
+    "paired_target_conditions": true,
+    "reporting": "report each domain-target cell separately; do not pool domains or targets"
+  },
+  "common_a1_a2_subset": {
+    "method": "frozen_a1_a2_k256",
+    "records_per_domain": 128,
+    "post_bos_positions_per_record": 127,
+    "token_denominator_per_cell": 16256,
+    "exact_record_denominator": 128,
+    "selection": "first 128 records in the frozen confirmation order, fixed before observations/predictions/truth; no truth- or prediction-driven subsampling",
+    "paired_with_primary": true
+  },
+  "prospective_source_extension": {
+    "selection_seed": 5011,
+    "source_order": "deterministic row order under the registered seed, then first 256 eligible unique records per domain",
+    "finance": {
+      "dataset": "Josephgflowers/Finance-Instruct-500k",
+      "revision": "583a98fb0ec14d904e9423b671d9d0fea88891b6",
+      "split": "train",
+      "range_half_open": [20000, 28000],
+      "reason": "deliberate new reservation outside the prior selected-panel range; prior-range exhaustion is not assumed"
+    },
+    "pile": {
+      "dataset": "NeelNanda/pile-10k",
+      "revision": "127bfedcd5047750df5ccf3a12979a47bfa0bafa",
+      "split": "train",
+      "range_half_open": [0, 2000],
+      "reason": "deliberate new reservation outside the prior selected-panel range; prior-range exhaustion is not assumed; capacity must be checked after all exclusions"
+    },
+    "capacity_rule": "If a registered extension cannot yield 256 eligible records after all exclusions, stop and register a compatible extension before selecting replacements; do not recycle prior validation records or silently shrink the primary panel."
+  },
+  "exclusion_protocol": {
+    "identity_fields": [
+      "dataset_id/revision/split/row_index",
+      "record_id",
+      "public_record_sha256",
+      "final_sequence_sha256 including BOS",
+      "legacy H129/truncated sequence fingerprint where that is the published convention"
+    ],
+    "must_include": [
+      "TRR-0009 selection_v2/source_selection.json as checkpoint-selection validation",
+      "all TRR-0003 through TRR-0008 identity ledgers and opaque reservations",
+      "TRR-0002 configuration-search and calibration identity ledgers",
+      "all accessible TRR-P09/TRR-0010 fitting-bank and public-validation ledgers",
+      "P03 sealed holdout via root-owned opaque exclusion only"
+    ],
+    "expected_intersections": "zero on every available matching field before capture; record unavailable fields explicitly rather than implying zero",
+    "opaque_handoff": "exchange only canonical public-record and sequence hashes with Agent1; no source labels, predictions, scores, or truth",
+    "reused_validation_regression": "a synthetic candidate copied from TRR-0009 selection_v2 must be rejected before any observation capture; retain rejection reason and no-payload-open receipt"
+  },
+  "curator_boundary": {
+    "trusted_producer": "may inspect public source rows only to compute identity metadata and capture target observations",
+    "prediction_workers_receive": [
+      "sanitized H tensors",
+      "attention masks",
+      "position IDs",
+      "frozen model states",
+      "approved public resources"
+    ],
+    "prediction_workers_do_not_receive": [
+      "source payload or source IDs",
+      "target-prefix weights/callable state",
+      "truth labels or target answers"
+    ],
+    "truth_sidecar": "materialize and keep separate; open once only after all registered predictions and diagnostics are frozen",
+    "no_ci_gate_retrofit": true,
+    "no_test_driven_hyperparameter_change": true
+  },
+  "postscore_error_inventory": {
+    "per_cell": true,
+    "categories": [
+      "both_correct",
+      "only_expanded_fixed_correct",
+      "only_a1_a2_correct",
+      "both_wrong"
+    ],
+    "diagnostics": [
+      "true-token rank where persisted",
+      "A1 proposal failure: true token absent from top-256 proposal",
+      "A1+A2 direct-ranking failure: true token proposed but wrong K256 winner",
+      "direct B0/B1 ranking failure where the full-vocabulary rank is available",
+      "public fitting support bucket and post-BOS position"
+    ],
+    "unavailable_diagnostics": "report unavailable if the immutable package did not persist the needed candidate or score trace; do not rerun selectively after truth"
+  },
+  "resource_basis": {
+    "historical_primary_warmed_ms_per_source": "approximately 4.2 ms",
+    "historical_a1_a2_k256_warmed_seconds_per_source": "approximately 0.88 s",
+    "projected_a1_a2_two_target_subset_seconds": "approximately 450 s for 2 domains x 128 records x 2 targets, excluding setup",
+    "historical_cuda_peak_primary": "1.260 GiB",
+    "historical_cuda_peak_a1_a2": "3.303 GiB",
+    "release_preflight": "qualify the largest A1+A2 cell with a fail-closed guard and safety margin; do not use batching as a semantic workaround without output-equivalence evidence"
+  },
+  "pending_release_dependencies": [
+    "Agent1 immutable inference package and replay receipt",
+    "root/Agent1 agreement on the exact extension and opaque reservation handoff",
+    "exclusion worker count-only audit across all listed ledgers",
+    "root authorization to begin source selection, capture, prediction, and truth boundary"
+  ]
+}
