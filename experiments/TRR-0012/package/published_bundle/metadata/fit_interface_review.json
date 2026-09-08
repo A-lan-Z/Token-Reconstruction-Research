@@ -1,0 +1,190 @@
+{
+  "blockers": [
+    {
+      "evidence": {
+        "original_callback": "../TRR-P10/scripts/trr_p09/fixed_control_caller.py:602,625-628 requires hook.method_id to equal the callback method_id; line 644 serializes that method_id.",
+        "strict_loader": "scripts/trr0010_p09_fixed_loader.py:26,117-118,143-144 requires method_id=continued_fixed_readout.",
+        "wrapper": "scripts/trr0012/fixed_control_wrapper.py:348-350 sets FixedPublicReadoutHook.method_id to the new TRR-0012 model ID."
+      },
+      "failure_modes": [
+        "Using the original callback default continued_fixed_readout rejects the wrapper hook before the first checkpoint because the hook carries TRR-0012/... .",
+        "Overriding the callback to TRR-0012/... writes a state metadata method_id that the strict package loader rejects."
+      ],
+      "id": "serialized_method_identity_conflict",
+      "required_before_fit": "Keep the serialized loader identity continued_fixed_readout and bind TRR-0012/current_fixed_replication_1 or TRR-0012/expanded_fixed_replication_1 externally in the fit/selection/package receipts; if desired, add a separate model_id metadata field without changing loader-required fields. The task wrapper or an explicit serializer bridge must make this identity split executable before fit.",
+      "severity": "BLOCKER",
+      "status": "OPEN"
+    },
+    {
+      "evidence": {
+        "original_durability": "../TRR-P10/scripts/trr_p09/fixed_control_caller.py:595-677 writes create-only fsynced grid checkpoints; ../TRR-P10/scripts/trr_p09/fixed_control_cli.py:1034-1054 installs the callback and writes the fit receipt.",
+        "original_root_guard": "../TRR-P10/scripts/trr_p09/fixed_control_cli.py:920-922 rejects an existing production output root.",
+        "wrapper": "scripts/trr0012/fixed_control_wrapper.py:316 makes checkpoint_callback optional, :390 passes it through unchanged, and :394 returns only the runner result."
+      },
+      "id": "durable_checkpoint_and_selected_state_not_enforced",
+      "required_before_fit": "Fail closed when no checkpoint serializer is supplied; require all seven checkpoint files at 0/1000/2000/4000/8000/12000/13000 under the arm output root with regular-file hashes; record selected_step plus matching selected checkpoint hash; create a durable selected-state copy for package assembly and a create-only fit receipt. Enforce a fresh per-arm output root instead of mkdir(exist_ok=True).",
+      "severity": "BLOCKER",
+      "status": "OPEN"
+    },
+    {
+      "evidence": {
+        "original_gates": "../TRR-P10/scripts/trr_p09/fixed_control_cli.py:932-1034 binds bank manifests, row geometry, schedule file/hash/semantic and mask digest, validation files, public E, and starting state before constructing the runner.",
+        "wrapper": "scripts/trr0012/fixed_control_wrapper.py:331-334 verifies descriptor files, but :309-314 accepts arbitrary decoder/embedding/fit_source/schedule_steps objects and :346-347 only regex-checks the supplied schedule semantic hash."
+      },
+      "id": "runtime_objects_are_not_bound_to_verified_assets",
+      "required_before_fit": "Use the original P09 production CLI gates or provide an equivalent pre-fit receipt proving the decoder was loaded from the bound starting-state file, embedding from the bound E file, fit_source from the bound bank manifest, schedule_steps from the bound schedule file/semantic digest, and validation callback from the bound validation assets. Recheck source/artifact hashes at the actual fit boundary, not only when a plan was created.",
+      "severity": "BLOCKER",
+      "status": "OPEN"
+    },
+    {
+      "evidence": {
+        "progress": "fit_progress.runner records task_adapter as a path without a SHA-256 and records only the P09 source commit/files.",
+        "wrapper": "scripts/trr0012/fixed_control_wrapper.py:282-303 source_provenance binds only the frozen P09 source files and returns the historical P09 commit; it does not bind the task wrapper or planner bytes."
+      },
+      "id": "task_wrapper_provenance_not_in_fit_binding",
+      "required_before_fit": "Add the actual fixed_control_wrapper.py and fit launcher/planner path+bytes+SHA (and the task commit or immutable source snapshot) to the pre-fit/run receipt, and revalidate them immediately before model load.",
+      "severity": "HIGH",
+      "status": "OPEN"
+    }
+  ],
+  "checked_files": {
+    "fit_progress": {
+      "bytes": 34326,
+      "path": "experiments/TRR-0012/inventory/fit_progress.json",
+      "sha256": "e7994177e9a5976674d68d4118fe528cf255ee492498be8ee5de9855f508acaf"
+    },
+    "original_p09_source": {
+      "commit_bound_by_wrapper": "26e08098135c47a5607aff915e8025b57a747e20",
+      "commit_exists_and_is_ancestor_of_current_p10_head": true,
+      "current_p10_head_observed": "cab7d455c305aa01c3d3bfac225fcffa3e66640b",
+      "files": {
+        "scripts/trr_p09/b0_immutable_loader.py": {
+          "bytes": 19974,
+          "sha256": "915c53781c24d997eccc7311553c2d80ff0d7e14688d22bb64c41db2f5e43f70"
+        },
+        "scripts/trr_p09/fixed_control_caller.py": {
+          "bytes": 43629,
+          "sha256": "13410a03b825467479001fa97112ed05c9784b9ad64dd46880bcd8076de53f6b"
+        },
+        "scripts/trr_p09/fixed_control_cli.py": {
+          "bytes": 60492,
+          "sha256": "707848724cff8bdaadbbd287cf61b2eafebf32bd9f40add7645e25bf2800234e"
+        },
+        "scripts/trr_p09/fixed_control_runner.py": {
+          "bytes": 41553,
+          "sha256": "fde3db3c9655afca1678f3d2d0641fba5d4130a73fdb77cc2287a38b1741a98e"
+        },
+        "scripts/trr_p09/prepare_streamed_bank.py": {
+          "bytes": 67303,
+          "sha256": "e76a27f94328648f8fe3da6c6fae48fffd27006b213f9b70b976bcb5f4077c4b"
+        },
+        "scripts/trr_p09/public_validation_loader.py": {
+          "bytes": 14230,
+          "sha256": "3705ff2a58d34512c7f30d9eb2657206fca3621eb9f6fb685b82c12ee008cd0f"
+        },
+        "src/token_reconstruction/trr0007_positionwise.py": {
+          "bytes": 18152,
+          "sha256": "89fcd036a57407c8c49294aa5fd15ccef46f02b6fabcc35435d097f1213de485"
+        },
+        "src/token_reconstruction/trr_p09_fixed_control_adapter.py": {
+          "bytes": 13376,
+          "sha256": "aa6a8b21fcc03d55583e69940b722bc9a1e4f4caa05e888f7dab8bf02d3e1a41"
+        }
+      },
+      "worktree": "../TRR-P10"
+    },
+    "strict_package_loader": {
+      "bytes": 8174,
+      "path": "scripts/trr0010_p09_fixed_loader.py",
+      "sha256": "1225ebc9871aadae4a287a8a5c5a80c5d9903fc86ec5f83ae0bfdae8c9e94a94"
+    },
+    "task_planner": {
+      "bytes": 1522,
+      "path": "scripts/trr0012/plan_fixed_control.py",
+      "sha256": "dfd63ffa30b3ff0a9c62061547ab383e89baa6977fa0b8f2f0409759a3c8751b"
+    },
+    "task_wrapper": {
+      "bytes": 16854,
+      "path": "scripts/trr0012/fixed_control_wrapper.py",
+      "sha256": "c74823a11fbfafae0cce68ceeba461023b5daf824541cc4e422254281f173d09"
+    }
+  },
+  "fit_progress_disposition": {
+    "positive_bindings": [
+      "B0/B1 valid-position counts and seven-point grid are recorded.",
+      "B0/B1 schedule file hashes and semantic hashes are recorded separately per bank.",
+      "Public E, common starting state, validation files, output roots, and original P09 source hashes are recorded."
+    ],
+    "status": "PRE_FIT_BLOCKED_AS_EXPECTED",
+    "still_placeholders_or_missing": [
+      "B1 qualified fit-addition manifest",
+      "stage3/agreement, largest-cell qualification, and armed watchdog receipts",
+      "root exclusive resource lease",
+      "new selected checkpoints, selected copies, tensor identities, and fit receipts"
+    ]
+  },
+  "passes": {
+    "common_b1_derived_budget_and_grid": {
+      "evidence": {
+        "B0_valid_positions": 124371,
+        "B1_valid_positions": 1243710,
+        "both_checkpoint_grid": [
+          0,
+          1000,
+          2000,
+          4000,
+          8000,
+          12000,
+          13000
+        ],
+        "both_steps": 13000,
+        "original_formula_lines": "../TRR-P10/scripts/trr_p09/fixed_control_caller.py:239-255",
+        "position_budget": 512,
+        "wrapper_lines": "scripts/trr0012/fixed_control_wrapper.py:60-66,214-226"
+      },
+      "interpretation": "The wrapper adds the common terminal 13000 update to the signed bank-derived grid; B0 and B1 therefore use the same seven validation/checkpoint positions. The serialized schedules may retain bank-specific rows and semantic hashes.",
+      "status": "PASS_STATIC"
+    },
+    "fit_not_started": {
+      "evidence": "fit_progress authorization_boundary.fit_started=false, model_loaded=false, public_E_loaded=false, gpu_used=false, and remaining blockers are explicit.",
+      "status": "PASS_STATIC"
+    },
+    "frozen_p09_file_hashes": {
+      "evidence": "All eight SOURCE_FILE_SHA256 values in the task wrapper match the actual ../TRR-P10 files; source_provenance also checks the imported caller and runner paths.",
+      "status": "PASS_STATIC"
+    },
+    "original_optimizer_and_selection": {
+      "evidence": {
+        "compute_base_logits": true,
+        "gradient_clip_norm": 1.0,
+        "learning_rate": 0.0002,
+        "optimizer": "AdamW(foreach=False)",
+        "original_cli_lines": "../TRR-P10/scripts/trr_p09/fixed_control_cli.py:1018-1050",
+        "position_budget": 512,
+        "record_batch_size": 8,
+        "scheduler": "CosineAnnealingLR(T_max=13000)",
+        "seed": 4010,
+        "selection_metric": "domain_balanced_token_accuracy",
+        "selection_rule": "earliest strict maximum; step zero eligible",
+        "train_sequence_tokens": 192,
+        "validation_sequence_tokens": 128,
+        "weight_decay": 0.0,
+        "wrapper_lines": "scripts/trr0012/fixed_control_wrapper.py:352-390"
+      },
+      "status": "PASS_STATIC"
+    }
+  },
+  "review_constraints": {
+    "gpu_used": false,
+    "model_or_tensor_loaded": false,
+    "numerical_fit_run": false,
+    "scripts_edited": false,
+    "truth_opened": false
+  },
+  "reviewed_utc": "2026-09-08",
+  "schema": "token-reconstruction.trr0012-fit-interface-review.v1",
+  "scope": "Read-only static review of the task wrapper/planner and fit progress against the frozen P09 fixed-control CLI/source recipe. No model, tensor, public E, GPU, truth, or numerical fit access occurred.",
+  "status": "BLOCKED_BEFORE_FIT",
+  "task_id": "TRR-0012",
+  "timestamp_precision": "date_only"
+}
