@@ -42,7 +42,8 @@ DEFAULT_A2_K = 256
 DEFAULT_A2_PROPOSAL_K = 512
 DEFAULT_RECORD_BATCH_SIZE = 1
 DEFAULT_MINIMUM_FREE_GIB = 8.0
-DEFAULT_MAXIMUM_RESERVED_GIB = 6.0
+DEFAULT_RUNTIME_MINIMUM_FREE_GIB = 2.0
+DEFAULT_MAXIMUM_RESERVED_GIB = 8.0
 DEFAULT_MAXIMUM_RSS_GIB = 16.0
 DEFAULT_MAX_SECONDS: float | None = None
 DEFAULT_WATCHDOG_POLL_SECONDS = 1.0
@@ -73,6 +74,16 @@ class A1A2RuntimeError(RuntimeError):
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="microseconds").replace("+00:00", "Z")
+
+
+def _git_head(root: Path) -> str:
+    try:
+        value = subprocess.check_output(["git", "-C", str(root), "rev-parse", "HEAD"], text=True, stderr=subprocess.STDOUT).strip()
+    except (OSError, subprocess.CalledProcessError) as exc:
+        raise A1A2RuntimeError("cannot resolve current code commit") from exc
+    if len(value) != 40 or any(char not in "0123456789abcdef" for char in value):
+        raise A1A2RuntimeError("current code commit is malformed")
+    return value
 
 
 def _sha256_file(path: Path) -> str:
@@ -571,11 +582,13 @@ def run_native_a1_a2(
     if not output.is_absolute():
         output = root / output
     output = output.resolve()
-    allowed = (root / "experiments" / TASK_ID / "evaluation").resolve()
-    try:
-        output.relative_to(allowed)
-    except ValueError as exc:
-        raise A1A2RuntimeError(f"A1+A2 output must be below {allowed}") from exc
+    allowed_roots = (
+        (root / "experiments" / TASK_ID / "evaluation").resolve(),
+        (root / selector.PRIVATE_EVALUATION_ROOT_RELATIVE).resolve(),
+    )
+    if not any(output == allowed or allowed in output.parents for allowed in allowed_roots):
+        rendered = ", ".join(str(value) for value in allowed_roots)
+        raise A1A2RuntimeError(f"A1+A2 output must be below one of: {rendered}")
     if output.exists() or output.is_symlink():
         if qualification_only or qualification_receipt_path is None or not output.is_dir():
             raise A1A2RuntimeError(f"A1+A2 output is create-only: {output}")
@@ -641,9 +654,15 @@ def run_native_a1_a2(
         if torch_device.type != "cuda" or not torch.cuda.is_available():
             raise A1A2RuntimeError("native A1+A2 K256 requires CUDA")
         guard_args = type("GuardArgs", (), {
-            "minimum_free_gib": 8.0,
-            "maximum_reserved_gib": 6.0,
-            "maximum_rss_gib": 16.0,
+            "minimum_free_gib": DEFAULT_MINIMUM_FREE_GIB,
+            "maximum_reserved_gib": DEFAULT_MAXIMUM_RESERVED_GIB,
+            "maximum_rss_gib": DEFAULT_MAXIMUM_RSS_GIB,
+            "max_seconds": float(max_seconds) if max_seconds is not None else float("inf"),
+        })()
+        runtime_guard_args = type("RuntimeGuardArgs", (), {
+            "minimum_free_gib": DEFAULT_RUNTIME_MINIMUM_FREE_GIB,
+            "maximum_reserved_gib": DEFAULT_MAXIMUM_RESERVED_GIB,
+            "maximum_rss_gib": DEFAULT_MAXIMUM_RSS_GIB,
             "max_seconds": float(max_seconds) if max_seconds is not None else float("inf"),
         })()
         watchdog_phase = "qualification" if qualification_only else "matrix"
@@ -652,7 +671,7 @@ def run_native_a1_a2(
             output=output,
             device=torch_device,
             maximum_rss_gib=float(guard_args.maximum_rss_gib),
-            minimum_free_gpu_gib=float(guard_args.minimum_free_gib),
+            minimum_free_gpu_gib=float(runtime_guard_args.minimum_free_gib),
             maximum_seconds=max_seconds,
             phase=watchdog_phase,
         )
@@ -697,7 +716,9 @@ def run_native_a1_a2(
             if tuple(activation.shape) != (selector.RECORDS_PER_DOMAIN, STORED_SEQUENCE_TOKENS, HIDDEN_SIZE) or tuple(mask.shape) != (selector.RECORDS_PER_DOMAIN, STORED_SEQUENCE_TOKENS) or tuple(positions.shape) != (selector.RECORDS_PER_DOMAIN, STORED_SEQUENCE_TOKENS) or str(activation.dtype) not in {"torch.bfloat16", "bfloat16"} or str(mask.dtype) not in {"torch.uint8", "uint8", "torch.bool", "bool"} or str(positions.dtype) not in {"torch.int64", "int64", "torch.long", "long"}:
                 raise A1A2RuntimeError(f"P11 observation geometry or dtype changed: {cell}")
             cell_start = len(preflight_events)
-            preflight_events.append(legacy._resource_preflight(guard_args, torch_device, stage=f"before_{cell}_a1_a2", started=started_clock))
+            preflight_events.append(legacy._resource_preflight(runtime_guard_args, torch_device, stage=f"before_{cell}_a1_a2", started=started_clock))
+            if torch_device.type == "cuda":
+                torch.cuda.reset_peak_memory_stats(torch_device)
             adapter.begin_cell()
             # Preserve the exact native warmup plus three measured calls.  The
             # first measured output is the accuracy output and the next two
@@ -773,6 +794,7 @@ def run_native_a1_a2(
             trace_record = _record(trace_path, description=f"A1+A2 candidate trace {cell}")
             cell_preflight = preflight_events[cell_start:]
             adapter_evidence = adapter.evidence()
+            cell_peak_memory = legacy._peak_memory(torch_device)
             cost_payload = {
                 "schema": "token-reconstruction.trr-p11-a1-a2-cost.v1",
                 "task_id": TASK_ID,
@@ -780,6 +802,7 @@ def run_native_a1_a2(
                 "cell_id": cell,
                 "timing": timing,
                 "adapter": adapter_evidence,
+                "peak_memory": cell_peak_memory,
                 "resource_preflight": cell_preflight,
                 "truth_opened": False,
                 "p03_holdout_accessed": False,
@@ -811,6 +834,7 @@ def run_native_a1_a2(
                 },
                 "trace": trace_record,
                 "cost": cost_record,
+                "peak_memory": cell_peak_memory,
                 "tensor_sha256": prediction_sha256,
                 "candidate_arrays_persisted": True,
                 "source_text_loaded": False,
@@ -825,7 +849,7 @@ def run_native_a1_a2(
                 root=root,
                 description=f"A1+A2 prediction receipt {cell}",
             )
-            preflight_events.append(legacy._resource_preflight(guard_args, torch_device, stage=f"after_{cell}_a1_a2", started=started_clock))
+            preflight_events.append(legacy._resource_preflight(runtime_guard_args, torch_device, stage=f"after_{cell}_a1_a2", started=started_clock))
             cells[cell] = {
                 "cell_id": cell,
                 "records": A1_A2_RECORDS_PER_DOMAIN,
@@ -846,6 +870,7 @@ def run_native_a1_a2(
                 "cost": cost_record,
                 "timing": timing,
                 "adapter": adapter_evidence,
+                "peak_memory": cell_peak_memory,
                 "candidate_arrays_persisted": True,
                 "truth_opened": False,
             }
@@ -879,6 +904,11 @@ def run_native_a1_a2(
             "trace_files": [cells[cell]["trace"] for cell in CELL_ORDER if cell in cells],
             "cost_files": [cells[cell]["cost"] for cell in CELL_ORDER if cell in cells],
             "candidate_arrays_persisted": True,
+            "source_text_loaded": False,
+            "token_ids_loaded": False,
+            "target_labels_loaded": False,
+            "truth_opened": False,
+            "p03_holdout_accessed": False,
             "resource_preflight": preflight_events,
             "resource_watchdog": watchdog_record,
             "public_prefix": public_evidence,
@@ -960,6 +990,8 @@ def resource_plan() -> dict[str, Any]:
         "proposal_chunk": DEFAULT_A1_CHUNK,
         "record_batch_size": DEFAULT_RECORD_BATCH_SIZE,
         "minimum_free_gpu_gib": DEFAULT_MINIMUM_FREE_GIB,
+        "minimum_free_gpu_gib_prelaunch": DEFAULT_MINIMUM_FREE_GIB,
+        "minimum_free_gpu_gib_runtime": DEFAULT_RUNTIME_MINIMUM_FREE_GIB,
         "maximum_reserved_gpu_gib": DEFAULT_MAXIMUM_RESERVED_GIB,
         "maximum_host_rss_gib": DEFAULT_MAXIMUM_RSS_GIB,
         "maximum_wall_seconds": DEFAULT_MAX_SECONDS,
@@ -971,6 +1003,7 @@ def resource_plan() -> dict[str, Any]:
         "truth_opened": False,
         "preflight_basis": {
             "basis": "geometry-only upper bound; no P11 runtime has executed",
+            "free_memory_policy": "prelaunch free floor 8 GiB; post-load runtime free floor 2 GiB; reservation cap 8 GiB",
             "observation_elements": observation_elements,
             "observation_bytes_bfloat16": observation_bytes,
             "candidate_elements": candidate_elements,
