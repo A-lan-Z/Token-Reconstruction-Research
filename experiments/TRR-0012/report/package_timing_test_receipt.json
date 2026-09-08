@@ -1,0 +1,54 @@
+{
+  "$schema": "token-reconstruction.trr-0012-package-timing-test-receipt.v1",
+  "task_id": "TRR-0012",
+  "status": "PASS_WITH_EXPLICIT_SMOKE_SKIP",
+  "command": "env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 TRR0012_RUN_PACKAGE_SMOKE=0 /usr/bin/time -v timeout 55s pytest -q tests/test_trr0012_package.py",
+  "environment": {
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "TRR0012_RUN_PACKAGE_SMOKE": "0"
+  },
+  "result": {
+    "pytest_exit_code": 0,
+    "passed": 9,
+    "skipped": 1,
+    "failed": 0,
+    "pytest_reported_wall_seconds": 1.24,
+    "external_wall_seconds": 1.99,
+    "maximum_resident_set_size_kb": 676848,
+    "maximum_resident_set_size_bytes": 692068352
+  },
+  "stdout_exact": ".........s                                                               [100%]\n9 passed, 1 skipped in 1.24s\n",
+  "time_v_stderr_exact": "\tCommand being timed: \"timeout 55s pytest -q tests/test_trr0012_package.py\"\n\tUser time (seconds): 1.53\n\tSystem time (seconds): 0.36\n\tPercent of CPU this job got: 94%\n\tElapsed (wall clock) time (h:mm:ss or m:ss): 0:01.99\n\tAverage shared text size (kbytes): 0\n\tAverage unshared data size (kbytes): 0\n\tAverage stack size (kbytes): 0\n\tAverage total size (kbytes): 0\n\tMaximum resident set size (kbytes): 676848\n\tAverage resident set size (kbytes): 0\n\tMajor (requiring I/O) page faults: 2\n\tMinor (reclaiming a frame) page faults: 85860\n\tVoluntary context switches: 507\n\tInvoluntary context switches: 30\n\tSwaps: 0\n\tFile system inputs: 5392\n\tFile system outputs: 4880\n\tSocket messages sent: 0\n\tSocket messages received: 0\n\tSignals delivered: 0\n\tExit status: 0\n",
+  "utc_timestamps": {
+    "status": "NOT_CAPTURED",
+    "note": "The /usr/bin/time wrapper did not emit UTC start/end timestamps; no values are inferred."
+  },
+  "smoke_inference": {
+    "status": "NOT_RUN",
+    "reason": "TRR0012_RUN_PACKAGE_SMOKE=0; no E/state/model inference was performed. The one skip is the post-fit package smoke gate."
+  },
+  "source": {
+    "test_file": {
+      "bytes": 10447,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/tests/test_trr0012_package.py",
+      "sha256": "0a5523a81ef26f00041828ca2cfcd81adb69d806d382212fa35c9c0fe54bde9e",
+      "label": "focused package timing and call-order test source"
+    },
+    "instrumented_package": {
+      "bytes": 67707,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/scripts/trr0012_package.py",
+      "sha256": "5023a9e7cb19611952c0ce16a440ec9fde6b6444fd74aaf74a7efbb5c671c13b",
+      "label": "additive timing-instrumented package source"
+    },
+    "original_package_reference": {
+      "bytes": 59473,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/package/reference_code/trr0012_package_original_908392.py",
+      "sha256": "9083926a0c369e3ca4361108bea043fbda79f619ff0fca2ce76b780d11bf0109",
+      "label": "byte-preserved pre-instrumentation package source"
+    }
+  }
+}
