@@ -1,0 +1,35 @@
+{
+  "command": [
+    "nvidia-smi",
+    "--query-gpu=index,name,memory.total,memory.used,memory.free,utilization.gpu",
+    "--format=csv,noheader,nounits"
+  ],
+  "compute_process_query": [
+    "nvidia-smi",
+    "--query-compute-apps=pid,process_name,used_memory",
+    "--format=csv,noheader,nounits"
+  ],
+  "compute_processes_stderr": "",
+  "compute_processes_stdout": "",
+  "created_utc": "2026-09-08T02:44:07Z",
+  "decision": "PROCEED_ONLY_IF_NO_COMPETING_COMPUTE_PROCESS_AND_GPU_MEMORY_MARGIN_REMAINS",
+  "host": "PC",
+  "nvidia_smi_stderr": "",
+  "nvidia_smi_stdout": "0, NVIDIA GeForce RTX 5080, 16303, 3769, 12209, 9",
+  "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "resource_policy": {
+    "cells_per_method": 4,
+    "device": "cuda",
+    "dtype": "float32",
+    "methods": [
+      "current_fixed",
+      "expanded_fixed"
+    ],
+    "records_per_cell": 2,
+    "target_additional_gpu_memory_bytes": 5368709120,
+    "wall_seconds": 300
+  },
+  "schema": "token-reconstruction.trr0011-gpu-replay-preflight.v1",
+  "task_id": "TRR-0011",
+  "truth_opened": false
+}

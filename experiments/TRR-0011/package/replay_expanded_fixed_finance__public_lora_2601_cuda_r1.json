@@ -1,0 +1,68 @@
+{
+  "capture_geometry": {
+    "activation_dtype": "torch.bfloat16",
+    "activation_keys": [
+      "activations",
+      "attention_mask",
+      "position_ids"
+    ],
+    "activation_shape_per_cell": [
+      128,
+      128,
+      2048
+    ],
+    "bos_token_id": 128000,
+    "decoder_activation_dtype": "torch.float32",
+    "decoder_context_width": 128,
+    "decoder_geometry": "per-record retained H[128,2048] cast to FP32 before the decoder; full-vocabulary FP32 logits/argmax",
+    "decoder_hidden_size": 2048,
+    "decoder_input": "H at cut 4, first 128 positions only",
+    "decoder_readout_dtype": "torch.float32",
+    "output_dtype": "torch.int64 token IDs",
+    "output_shape_per_cell": [
+      128,
+      128
+    ],
+    "producer": "TRR-0009/TRR-0010 inherited public capture",
+    "producer_activation_dtype": "torch.bfloat16",
+    "producer_geometry": "B8x192 public SDPA capture: BF16 H rows plus attention mask/position IDs",
+    "retained_first_tokens": 128,
+    "scored_post_bos_tokens": 127,
+    "sequence_tokens_captured": 192,
+    "sidecar_dtype": "mask bool/uint8/int64; position_ids int64-compatible",
+    "truth_free": true,
+    "vocabulary_size": 128256
+  },
+  "cell_id": "finance__public_lora_2601",
+  "device": "cuda",
+  "expected_prediction_file": {
+    "bytes": 131640,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/public_prediction_watchdog_r5/predictions/finance/public_lora_2601/expanded_fixed.safetensors",
+    "prediction_sha256": "3ea95c410128c75216c0fe7750e3091535ea7686c62372f6f65baafddd6e319e",
+    "sha256": "b6f8c87bdafef31f7de7d41abf702160d9e7525892e49b01a6329984c99d531c"
+  },
+  "manifest_sha256": "a74f687f8287cacfeafa0acc81a97f208672dedf797792c60f88ba93b0318b25",
+  "method_id": "expanded_fixed",
+  "package_runtime_head": "ed714466dfacdb434a68e20f7d0a4e2f4ea35007",
+  "records_available": 128,
+  "records_verified": 2,
+  "rows": [
+    {
+      "exact_match": true,
+      "prediction_sha256": "c601f8f606b76ea4c47ccde4ff7582bed57e965b56def6283de0c092fb7f56a2",
+      "row": 0
+    },
+    {
+      "exact_match": true,
+      "prediction_sha256": "a20ab1a12c729a4bfd05a8033b353e3aa889e4c1e0e7bff66a23a142e7db6b44",
+      "row": 1
+    }
+  ],
+  "schema": "token-reconstruction.trr0011-package-replay.v1",
+  "source_code_commit": "d493e16ac8237ad835b4459c419c4ae55b00f534",
+  "source_text_loaded": false,
+  "status": "PASS_TRUTH_FREE_REPLAY",
+  "target_labels_loaded": false,
+  "task_id": "TRR-0011",
+  "truth_opened": false
+}

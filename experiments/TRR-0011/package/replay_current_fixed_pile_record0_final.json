@@ -1,0 +1,63 @@
+{
+  "capture_geometry": {
+    "activation_dtype": "torch.bfloat16",
+    "activation_keys": [
+      "activations",
+      "attention_mask",
+      "position_ids"
+    ],
+    "activation_shape_per_cell": [
+      128,
+      128,
+      2048
+    ],
+    "bos_token_id": 128000,
+    "decoder_activation_dtype": "torch.float32",
+    "decoder_context_width": 128,
+    "decoder_geometry": "per-record retained H[128,2048] cast to FP32 before the decoder; full-vocabulary FP32 logits/argmax",
+    "decoder_hidden_size": 2048,
+    "decoder_input": "H at cut 4, first 128 positions only",
+    "decoder_readout_dtype": "torch.float32",
+    "output_dtype": "torch.int64 token IDs",
+    "output_shape_per_cell": [
+      128,
+      128
+    ],
+    "producer": "TRR-0009/TRR-0010 inherited public capture",
+    "producer_activation_dtype": "torch.bfloat16",
+    "producer_geometry": "B8x192 public SDPA capture: BF16 H rows plus attention mask/position IDs",
+    "retained_first_tokens": 128,
+    "scored_post_bos_tokens": 127,
+    "sequence_tokens_captured": 192,
+    "sidecar_dtype": "mask bool/uint8/int64; position_ids int64-compatible",
+    "truth_free": true,
+    "vocabulary_size": 128256
+  },
+  "cell_id": "pile__public_base",
+  "device": "cpu",
+  "expected_prediction_file": {
+    "bytes": 131632,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0010/experiments/TRR-0010/evaluation/public_prediction_watchdog_r5/predictions/pile/public_base/current_fixed.safetensors",
+    "prediction_sha256": "6c4a6a24172f1619d39ef1df83f75295e7f82940428fdac4420e87060d0ffab9",
+    "sha256": "24576a16440c55a767162f38ea40ffd274c342cc55016537347bb72d1573a0f2"
+  },
+  "manifest_sha256": "1ed091115159319c87a9ae7545850b450ac066912fba9fa1e720e245bc04dc32",
+  "method_id": "current_fixed",
+  "package_runtime_head": "ed714466dfacdb434a68e20f7d0a4e2f4ea35007",
+  "records_available": 128,
+  "records_verified": 1,
+  "rows": [
+    {
+      "exact_match": true,
+      "prediction_sha256": "4c2a465473687401760e98d0584452e6d4fe3b3b2c821518dc8cd3f28dfd494c",
+      "row": 0
+    }
+  ],
+  "schema": "token-reconstruction.trr0011-package-replay.v1",
+  "source_code_commit": "d493e16ac8237ad835b4459c419c4ae55b00f534",
+  "source_text_loaded": false,
+  "status": "PASS_TRUTH_FREE_REPLAY",
+  "target_labels_loaded": false,
+  "task_id": "TRR-0011",
+  "truth_opened": false
+}

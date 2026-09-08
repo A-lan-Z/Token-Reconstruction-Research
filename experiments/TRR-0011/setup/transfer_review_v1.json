@@ -1,0 +1,111 @@
+{
+  "blocking_findings": [
+    {
+      "evidence": "validate_panel_descriptor at scripts/trr0011_transfer.py:225-248 only checks that opaque_reservation.receipt_sha256 is truthy. The actual panel template value PENDING_AGENT2_RESERVATION therefore validates successfully.",
+      "id": "TRR0011-T1",
+      "probe": "validate_panel_descriptor(panel_descriptor_template_v1.json) returned paired_targets=true and the literal pending receipt.",
+      "required_fix": "Require a full lowercase 64-hex receipt SHA, non-pending reservation status, and an exact hash-bound reservation/selection descriptor before any target producer or panel is admitted.",
+      "severity": "BLOCKING",
+      "title": "Pending opaque reservation is accepted as valid"
+    },
+    {
+      "evidence": "validate_variant_plan at scripts/trr0011_transfer.py:151-222 checks roles and layer ranges but does not require relative_parameter_l2, recipe_seed, fixed recipe, target resource/code hashes, or adaptation_binding. Removing the adapted target binding and changing its artificial delta strength still validates.",
+      "id": "TRR0011-T2",
+      "probe": "An in-memory plan with early relative_parameter_l2 changed from 0.001 to 0.5 and recipe_seed removed validated; an in-memory adapted row with adaptation_binding removed also validated.",
+      "required_fix": "Require explicit fixed recipe, layer, seed, and relative norm for each artificial arm; require hash-bound target/config/code provenance. Keep public_lora_2601 unavailable or label it historical comparator until independent source/selection/calibration disjointness is proven; it must not be called independently adapted by declaration alone.",
+      "severity": "BLOCKING",
+      "title": "Artificial perturbation and adapted-target bindings are underconstrained"
+    },
+    {
+      "evidence": "_flatten_features accepts [records, positions, hidden] and summarize_transfer flattens each input independently before checking only total row count (scripts/trr0011_transfer.py:74-84 and 274-290).",
+      "id": "TRR0011-T3",
+      "probe": "clean_activation [2,2,2] and changed_activation [1,4,2] were accepted as four paired rows.",
+      "required_fix": "Require equal original rank and exact [records, positions] geometry for clean/changed H and projected features, or carry an explicit immutable row/position index digest through the caller.",
+      "severity": "BLOCKING",
+      "title": "Flattening can silently change record/position pairing"
+    },
+    {
+      "evidence": "summarize_transfer accepts arbitrary clean_feature/changed_feature values and computes the normalized tied-E hyperplane formula without checking that features are the actual post-decoder normalized projected_hidden output. The deployed decoder applies W/b and any positionwise residual path before F.normalize; the helper has no state/loader binding or unit-norm check.",
+      "id": "TRR0011-T4",
+      "probe": "Non-unit feature rows were accepted and returned COMPUTED.",
+      "required_fix": "Bind the exact selected loader/state/readout/code identities and either compute effective projected features through that loader or verify unit norm and the logit equation for every supplied row. Do not substitute raw H or a manually normalized H that bypasses gain/bias/residual parameters.",
+      "severity": "BLOCKING",
+      "title": "Effective decoder normalization and gain/bias path are not enforced"
+    },
+    {
+      "evidence": "The helper accepts clean_top_logits, clean_runner_logits, and readout_pairs independently; it does not verify that the runner is the true second-best class or that the supplied logits equal exp(s) times the supplied readout dot products. Any small positive margin is marked valid (scripts/trr0011_transfer.py:291-315).",
+      "id": "TRR0011-T5",
+      "probe": "A 1e-12 positive margin was reported valid_margin_rows=1 and COMPUTED hyperplane distance 7.07e-13 with no near-zero/conditioning flag.",
+      "required_fix": "Require top/runner IDs and a rank/equation consistency receipt from the full-vocabulary scorer, and predeclare a near-zero margin tolerance that reports the ratio as UNKNOWN/ill-conditioned rather than a stable explanatory statistic. Preserve the exact 1e-3 and 1e-2 perturbation strengths as separate predeclared arms if both are retained.",
+      "severity": "BLOCKING",
+      "title": "Margin geometry lacks nearest-runner and conditioning checks"
+    },
+    {
+      "evidence": "validate_predictor_split accepts arbitrary nonempty string sets and returns threshold_fit_allowed=true (scripts/trr0011_transfer.py:409-428). It does not bind the family IDs to the variant plan, source reservation, or target update receipts.",
+      "id": "TRR0011-T6",
+      "required_fix": "Supply a hash-bound update-family manifest, require every development/held-out ID to be declared exactly once, and verify source/target recipe disjointness before any threshold fitting. Keep the module’s no-threshold behavior explicit.",
+      "severity": "BLOCKING",
+      "title": "Held-out family validator is not tied to declared update families"
+    },
+    {
+      "evidence": "design_v1 proposes running A1+A2 on the new 32-per-domain subset, while the amendment assigns Agent2 the genuine frozen-model confirmation including the prospective A1+A2 common subset.",
+      "id": "TRR0011-T7",
+      "required_fix": "Remove the duplicate execution from the transfer run or consume one immutable Agent2-produced comparator artifact with an explicit shared denominator; do not run a second A1+A2 evaluation under a separate panel/decision path.",
+      "severity": "BLOCKING",
+      "title": "A1+A2 transfer comparator duplicates Agent2 confirmation ownership"
+    }
+  ],
+  "created_utc": "2026-09-08T02:43:34Z",
+  "positive_checks": [
+    "After-cut null requires exact activation equality and, when supplied, exact prediction equality.",
+    "Truth-dependent paired error inventory is marked non-deployable and separate from truth-free transfer summaries.",
+    "Synthetic suite passed all 8 current tests on CPU."
+  ],
+  "recommendation": "Do not launch target capture or a transfer matrix until T1-T7 are resolved in the shared contract and the source/target/resource bindings are revalidated. The current module is a useful geometry prototype, not an execution-ready scorer.",
+  "repository_head": "ed714466dfacdb434a68e20f7d0a4e2f4ea35007",
+  "reviewed_bindings": {
+    "design": {
+      "bytes": 9686,
+      "path": "experiments/TRR-0011/transfer/design_v1.md",
+      "sha256": "bb6c839bfe800985a013b8fbd31b2628ea58d11e4daeab1c17b706400f24f460"
+    },
+    "panel_template": {
+      "bytes": 840,
+      "path": "experiments/TRR-0011/transfer/panel_descriptor_template_v1.json",
+      "sha256": "3f046092d8c08783506a4ed8aa728bf8e99b72857b3114db9b41ac5f50603b36"
+    },
+    "variant_plan": {
+      "bytes": 2988,
+      "path": "experiments/TRR-0011/transfer/variant_plan_v1.json",
+      "sha256": "07e8a8e2c6e50df024853ed944e145c714e04d7bd48a8603b31a9ee6a7c97e78"
+    }
+  },
+  "schema": "token-reconstruction.trr0011-transfer-review.v1",
+  "scope": {
+    "fit_or_retraining_performed": false,
+    "predictions_or_scores_read": false,
+    "read_only_review": true,
+    "source_selection_performed": false,
+    "synthetic_cpu_only": true,
+    "target_capture_performed": false,
+    "truth_opened": false
+  },
+  "status": "REVIEW_COMPLETE_BLOCKERS_FOUND",
+  "task_id": "TRR-0011",
+  "test_receipt": {
+    "command": "env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=.:src:scripts python3 -m pytest -q tests/test_trr0011_transfer.py",
+    "elapsed_seconds": 0.77,
+    "source": {
+      "bytes": 23394,
+      "path": "scripts/trr0011_transfer.py",
+      "sha256": "d6e621c6c6e73d42874af87f6fd26ec0aafc5cde6b37278d797d6204eeb94b5c"
+    },
+    "status": "PASS",
+    "tests": 8,
+    "tests_file": {
+      "bytes": 7117,
+      "path": "tests/test_trr0011_transfer.py",
+      "sha256": "9953205650938f2b0095d17da40baf30e5f3be9c30714ab12adb1c7def7e2965"
+    }
+  }
+}

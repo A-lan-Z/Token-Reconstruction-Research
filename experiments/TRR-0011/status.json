@@ -1,0 +1,113 @@
+{
+  "agent2_p10_confirmation": {
+    "status": "PENDING_INDEPENDENT_CONFIRMATION"
+  },
+  "controlled_transfer": {
+    "blocking_review": {
+      "bytes": 8045,
+      "path": "experiments/TRR-0011/setup/transfer_review_v1.json",
+      "sha256": "cb0a0d6cff4849f8cb1efe26fd66874cfd16ad241cbec67914dce8ea984542ad"
+    },
+    "status": "PENDING_REVIEW_FIXES",
+    "synthetic_tests": {
+      "status": "PASS",
+      "tests": 8
+    },
+    "latest_snapshot_check": {
+      "command": "env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=.:src:scripts python3 -m pytest -q tests/test_trr0011_transfer.py",
+      "source": {
+        "bytes": 23496,
+        "path": "scripts/trr0011_transfer.py",
+        "sha256": "90c7406a6b57dd15d9e229a6eeef8d761026416bfcf8d0b43b43b62c6cecb4d9"
+      },
+      "tests_file": {
+        "bytes": 7117,
+        "path": "tests/test_trr0011_transfer.py",
+        "sha256": "9953205650938f2b0095d17da40baf30e5f3be9c30714ab12adb1c7def7e2965"
+      },
+      "result": "6 passed, 2 failed",
+      "reason": "Current validator now requires both preregistered amplitudes for each prefix role, while the synthetic fixture still supplies one amplitude and the plan/fixture still uses the old adapted-role schema; this is source/fixture drift pending remediation.",
+      "historical_review_receipt": {
+        "bytes": 8045,
+        "path": "experiments/TRR-0011/setup/transfer_review_v1.json",
+        "sha256": "cb0a0d6cff4849f8cb1efe26fd66874cfd16ad241cbec67914dce8ea984542ad"
+      }
+    },
+    "review_resolution": "Initial generic gain/bias concern resolved for actual P09 fixed class: no per-token gain/bias tensors. Remaining requirement is source-bound normalized decoder/equation evidence through a real producer path."
+  },
+  "execution_flags": {
+    "capture_performed": false,
+    "fit_performed": false,
+    "predictions_created": false,
+    "scores_created": false,
+    "selection_performed": false,
+    "truth_opened": false,
+    "package_replay_created": true,
+    "new_source_selection": false,
+    "new_capture": false,
+    "replay_predictions_created": true,
+    "final_prediction_matrix_created": false
+  },
+  "inference_package": {
+    "status": "COMPLETE_TRUTH_FREE_REPLAY",
+    "truth_free": true,
+    "validation": {
+      "bytes": 1317,
+      "path": "experiments/TRR-0011/package/package_v2_validation_r1.json",
+      "sha256": "97facf7c0ea61f31c02f624d885adb6ddb5ea27849ef368071609b23f1ad567e"
+    },
+    "manifest": {
+      "bytes": 17660,
+      "path": "experiments/TRR-0011/package/inference_package_v2.json",
+      "sha256": "a74f687f8287cacfeafa0acc81a97f208672dedf797792c60f88ba93b0318b25"
+    },
+    "replay_cost": {
+      "bytes": 2019,
+      "path": "experiments/TRR-0011/package/cuda_replay_cost_r1.json",
+      "sha256": "7d1c4e6d030995f363736470f54bd3d6e9153ff75337a66332fde76b0777556f"
+    },
+    "replay_matrix": {
+      "bytes": 51442,
+      "path": "experiments/TRR-0011/package/cuda_replay_matrix_r1.json",
+      "sha256": "79fda7559f0e4e426227d5af0046dd35f6b6b1db721d2d25b87895947c9cb234"
+    },
+    "summary": "8 isolated CUDA replays (2 methods x 4 cells x 2 records), exact matches, 24.456871 s total, 5441 MiB maximum sampled GPU used and 10537 MiB minimum sampled free GPU; replay cost includes validation/load and is not a warm benchmark.",
+    "public_lora_independence": "UNKNOWN; inherited replay cell only, no independent-adaptation claim."
+  },
+  "interpretation_correction": {
+    "receipt": {
+      "bytes": 4445,
+      "path": "coordination/results/TRR-0010-interpretation-correction.md",
+      "sha256": "c17a2be43696b13207ce9b1bd6dddacf76565d16bff77e4c75e8e32dc24551fd"
+    },
+    "status": "WRITTEN"
+  },
+  "overlap": {
+    "all_pr20_final_records_overlap_trr0009_validation": true,
+    "final_sequence_intersection_total": 256,
+    "receipt": {
+      "bytes": 19631,
+      "path": "experiments/TRR-0011/setup/overlap_audit_v1.json",
+      "sha256": "9ed1a413fbf35432a2eb0ef5abda49775ba04a3452c76eef649933426d1b4f7e"
+    },
+    "source_id_intersection_total": 256,
+    "status": "COMPLETE"
+  },
+  "repository_head": "ed714466dfacdb434a68e20f7d0a4e2f4ea35007",
+  "schema": "token-reconstruction.trr0011-status.v1",
+  "status": "PREPARATION_ONLY",
+  "task_id": "TRR-0011",
+  "updated_utc": "2026-09-08T02:49:31Z",
+  "pr20_correction_publication": {
+    "body": {
+      "bytes": 4683,
+      "path": "experiments/TRR-0011/setup/pr20_correction_body.md",
+      "sha256": "3437df9ff03f0838e3a81a73607e743acb537ec121bd7934ab9b3613469ea2dc"
+    },
+    "publication_receipt": {
+      "bytes": 408,
+      "path": "experiments/TRR-0011/setup/pr20_correction_publication.json",
+      "sha256": "64f9bc8da59cdc4bd25e4ed87ec0fb6aebddc05ae529e74aaec55638a9666601"
+    }
+  }
+}
