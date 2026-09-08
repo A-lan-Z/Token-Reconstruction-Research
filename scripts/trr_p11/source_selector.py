@@ -1,24 +1,10 @@
 """Fail-closed trusted-curator source selector for TRR-P11.
 
-The module separates four phases that are easy to confuse in a research
-run:
-
-* ``select_sources`` is the trusted-curator public rerender/tokenization
-  phase.  It consumes a completed P11 exclusion union and emits only identity
-  metadata; source text and token IDs exist only transiently.
-* ``capture_public_targets`` delegates model loading and public-prefix capture
-  to the previously qualified TRR5/TRR6 helpers.  It requires ``execute=True``
-  and writes sanitized activation tensors only.
-* ``register_predictions`` and ``freeze_predictions`` consume Agent1's
-  restored loader outputs and bind them before truth.  They never load a
-  model or prediction tensor values.
-* ``prepare_truth_after_freeze`` and ``score_after_truth`` are the only
-  post-freeze truth stages.  They are callable APIs, rather than implicit
-  side effects of registration.
-
-Every output is create-only.  The module is intentionally not invoked by the
-P11 planning task; the current worktree therefore performs no candidate scan,
-selection, capture, model load, prediction, or truth access.
+The selector validates the frozen replication contract, the complete opaque
+identity-union export, and the exact Agent1 B0/B1 state bindings before it
+reads public rows.  Trusted rerender/tokenization is transient: outputs carry
+only approved identity metadata and opaque hashes.  Capture, prediction,
+truth, and scoring are separate later phases and are not invoked here.
 """
 from __future__ import annotations
 
@@ -76,7 +62,8 @@ HIDDEN_SIZE = 2048
 VOCAB_SIZE = 128256
 BOS_TOKEN_ID = 128000
 PADDING_TOKEN_ID = 128001
-SCORER_RELATIVE_PATH = "scripts/trr_p11/scorer/trr0010_analysis.py"
+SCORER_RELATIVE_PATH = "scripts/trr0010_analysis.py"
+SCORER_LOCAL_RELATIVE_PATH = "scripts/trr_p11/scorer/trr0010_analysis.py"
 SCORER_SHA256 = "90078ac78bfcdcfb5f782a598c943b78cb0417f6895906a1e6d61056a3793cef"
 SCORER_SOURCE_COMMIT = "70c57db7643913eea97cc606775b3f1f3807967a"
 BOOTSTRAP_SEED = 9009
@@ -230,10 +217,11 @@ def _record_declared(value: Any, *, root: Path, description: str) -> dict[str, A
     actual = _record(Path(str(value.get("path", ""))), root=root, description=description)
     if "bytes" in value:
         try:
-            if int(value["bytes"]) != actual["bytes"]:
-                raise P11PipelineError(f"{description} byte binding changed")
+            declared_bytes = int(value["bytes"])
         except (TypeError, ValueError) as exc:
             raise P11PipelineError(f"{description} byte binding is malformed") from exc
+        if declared_bytes != actual["bytes"]:
+            raise P11PipelineError(f"{description} byte binding changed")
     if "sha256" in value and value.get("sha256") != actual["sha256"]:
         raise P11PipelineError(f"{description} hash binding changed")
     return actual
@@ -292,13 +280,94 @@ def _git_head(root: Path) -> str:
     return value
 
 
-def _load_manifest(manifest_path: Path, *, root: Path) -> tuple[dict[str, Any], dict[str, Any]]:
+def _load_manifest(
+    manifest_path: Path,
+    *,
+    root: Path,
+    require_state_bindings: bool = False,
+) -> tuple[dict[str, Any], dict[str, Any]]:
     payload, record = _load_json(manifest_path, root=root, description="P11 replication manifest")
-    validate_p11_manifest(payload)
+    validate_p11_manifest(payload, require_state_bindings=require_state_bindings)
     return payload, record
 
 
-def validate_p11_manifest(manifest: Mapping[str, Any]) -> dict[str, Any]:
+def _validate_new_state_bindings(manifest: Mapping[str, Any]) -> dict[str, dict[str, Any]]:
+    """Require exact Agent1 B0/B1 bank, state, and selection identities."""
+    decision = manifest.get("decision")
+    if not isinstance(decision, Mapping):
+        raise SelectionError("P11 decision binding is absent")
+    decision_status = str(decision.get("new_state_identities", "")).upper()
+    if not decision_status or any(marker in decision_status for marker in ("PENDING", "NOT_BOUND", "UNAVAILABLE")):
+        raise SelectionError("P11 B0/B1 state identities are not bound")
+    states = manifest.get("new_model_states")
+    if not isinstance(states, Mapping):
+        raise SelectionError("P11 new_model_states binding is absent")
+    states_status = str(states.get("status", "")).upper()
+    if not states_status or any(marker in states_status for marker in ("PENDING", "NOT_BOUND", "UNAVAILABLE")):
+        raise SelectionError("P11 new_model_states are not frozen")
+    expected = {
+        "current_b0": ("B0", "new-b0"),
+        "expanded_b1": ("B1", "new-b1"),
+    }
+    required = (
+        "bank",
+        "model_id",
+        "selected_step",
+        "state_id",
+        "state_sha256",
+        "bank_manifest_sha256",
+        "selection_receipt_sha256",
+    )
+    bound: dict[str, dict[str, Any]] = {}
+    receipt_hashes: set[str] = set()
+    for arm, (bank, model_id) in expected.items():
+        value = states.get(arm)
+        if not isinstance(value, Mapping):
+            raise SelectionError(f"P11 state identity is absent: {arm}")
+        item = dict(value)
+        if item.get("bank") != bank or item.get("model_id") != model_id:
+            raise SelectionError(f"P11 {arm} bank/model identity changed")
+        try:
+            selected_step = int(item.get("selected_step", -1))
+        except (TypeError, ValueError) as exc:
+            raise SelectionError(f"P11 {arm} selected_step is malformed") from exc
+        if selected_step < 0 or isinstance(item.get("selected_step"), bool):
+            raise SelectionError(f"P11 {arm} selected_step is malformed")
+        if not isinstance(item.get("state_id"), str) or not item["state_id"]:
+            raise SelectionError(f"P11 {arm} state_id is absent")
+        for key in ("state_sha256", "bank_manifest_sha256", "selection_receipt_sha256"):
+            _require_sha(item.get(key), description=f"P11 {arm}/{key}")
+        item["selected_step"] = selected_step
+        bound[arm] = item
+        receipt_hashes.add(item["selection_receipt_sha256"])
+    if len(receipt_hashes) != 1:
+        raise SelectionError("P11 B0/B1 selection receipts are not paired")
+    return bound
+
+
+def _validate_audit_replication_binding(audit: Mapping[str, Any], states: Mapping[str, Mapping[str, Any]]) -> None:
+    """Require the complete exclusion audit to name the same B0/B1 states."""
+    assets = audit.get("agent1_replication_assets")
+    if not isinstance(assets, Mapping):
+        raise SelectionError("complete exclusion audit lacks Agent1 replication-asset binding")
+    status = str(assets.get("status", "")).upper()
+    if not status or any(marker in status for marker in ("PENDING", "NOT_BOUND", "UNAVAILABLE")):
+        raise SelectionError("complete exclusion audit has no frozen Agent1 replication assets")
+    for arm in ("current_b0", "expanded_b1"):
+        audit_item = assets.get(arm)
+        state_item = states.get(arm)
+        if not isinstance(audit_item, Mapping) or not isinstance(state_item, Mapping):
+            raise SelectionError(f"exclusion audit omits Agent1 state binding: {arm}")
+        for key in ("bank", "model_id", "selected_step", "state_sha256", "bank_manifest_sha256", "selection_receipt_sha256"):
+            if audit_item.get(key) != state_item.get(key):
+                raise SelectionError(f"exclusion audit Agent1 binding differs: {arm}/{key}")
+
+
+def validate_p11_manifest(
+    manifest: Mapping[str, Any],
+    *,
+    require_state_bindings: bool = False,
+) -> dict[str, Any]:
     """Validate the frozen P11 geometry and boundary without reading assets."""
     if manifest.get("schema") != MANIFEST_SCHEMA or manifest.get("task_id") != TASK_ID:
         raise P11PipelineError("P11 manifest schema or task identity changed")
@@ -337,6 +406,8 @@ def validate_p11_manifest(manifest: Mapping[str, Any]) -> dict[str, Any]:
         binding = stats.get(key)
         if not isinstance(binding, Mapping) or binding.get("path") != SCORER_RELATIVE_PATH or binding.get("source_commit") != SCORER_SOURCE_COMMIT or binding.get("source_sha256") != SCORER_SHA256:
             raise P11PipelineError(f"P11 scorer binding changed: {key}")
+    if require_state_bindings:
+        _validate_new_state_bindings(manifest)
     truth = manifest.get("truth_boundary")
     if isinstance(truth, Mapping) and any(_is_true(truth.get(key)) for key in ("source_selection_started", "observations_captured", "predictions_started", "truth_opened", "p03_holdout_accessed")):
         raise P11PipelineError("P11 manifest records an already-opened phase")
@@ -400,7 +471,10 @@ def _load_identity_union(audit: Mapping[str, Any], *, root: Path) -> tuple[Any, 
     if not isinstance(binding, Mapping):
         raise SelectionError("complete audit must bind identity_union_export")
     path = _resolve(binding.get("path"), root=root, description="identity-union export")
-    record = _record_declared(binding, root=root, description="identity-union export")
+    try:
+        record = _record_declared(binding, root=root, description="identity-union export")
+    except P11PipelineError as exc:
+        raise SelectionError("identity-union export binding changed") from exc
     if record["bytes"] != int(binding.get("bytes", -1)) or record["sha256"] != binding.get("sha256"):
         raise SelectionError("identity-union export binding changed")
     payload, _ = _load_json(path, root=root, description="identity-union export")
@@ -530,8 +604,10 @@ def select_sources(
 ) -> dict[str, Any]:
     """Select the first 256 eligible rows per domain after all gates pass."""
     root = Path(repository_root).expanduser().resolve()
-    manifest, manifest_record = _load_manifest(Path(manifest_path), root=root)
+    manifest, manifest_record = _load_manifest(Path(manifest_path), root=root, require_state_bindings=True)
+    state_bindings = _validate_new_state_bindings(manifest)
     exclusions = load_complete_exclusions(Path(audit_path), root=root, pr20_root=pr20_root)
+    _validate_audit_replication_binding(exclusions.audit, state_bindings)
     inputs = _normalize_source_inputs(source_inputs, root=root)
     output = _task_output(Path(output_path), root=root, phase="selection")
 

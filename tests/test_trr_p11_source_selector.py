@@ -111,3 +111,209 @@ def test_scorer_settings_are_explicit_and_nondefault() -> None:
         "one_sided_alpha": 0.025,
         "exact_route_alpha": 0.025,
     }
+
+
+def _state_binding_fixture() -> dict[str, dict[str, object]]:
+    receipt = "c" * 64
+    return {
+        "current_b0": {
+            "bank": "B0",
+            "model_id": "new-b0",
+            "selected_step": 8000,
+            "state_id": "new-b0-state",
+            "state_sha256": "a" * 64,
+            "bank_manifest_sha256": "b" * 64,
+            "selection_receipt_sha256": receipt,
+        },
+        "expanded_b1": {
+            "bank": "B1",
+            "model_id": "new-b1",
+            "selected_step": 13000,
+            "state_id": "new-b1-state",
+            "state_sha256": "d" * 64,
+            "bank_manifest_sha256": "e" * 64,
+            "selection_receipt_sha256": receipt,
+        },
+    }
+
+
+def _write_bound_manifest(tmp_path: Path) -> tuple[Path, dict[str, dict[str, object]]]:
+    payload = json.loads((ROOT / "experiments/TRR-P11/manifest.json").read_text())
+    states = _state_binding_fixture()
+    payload["decision"]["new_state_identities"] = "BOUND_AGENT1_FIT_COMPLETE"
+    payload["new_model_states"] = {
+        "status": "BOUND_AGENT1_FIT_COMPLETE",
+        **states,
+    }
+    path = tmp_path / "manifest.json"
+    path.write_text(json.dumps(payload, sort_keys=True))
+    return path, states
+
+
+def _write_complete_audit(
+    tmp_path: Path,
+    states: dict[str, dict[str, object]] | None = None,
+    *,
+    fields: dict[str, dict[str, list[object]]] | None = None,
+) -> Path:
+    union_path = tmp_path / "identity_union.json"
+    union_fields = fields or {}
+    counts = {field: sum(len(values) for values in namespaces.values()) for field, namespaces in union_fields.items()}
+    union = {
+        "schema": "token-reconstruction.trr-p11-identity-union.v1",
+        "task_id": selector.TASK_ID,
+        "status": "IDENTITY_UNION_COMPLETE_NO_PAYLOAD",
+        "fields": union_fields,
+        "identity_counts": counts,
+        "source_text_or_token_ids_written": False,
+        "truth_opened": False,
+        "p03_holdout_accessed": False,
+    }
+    union_path.write_text(json.dumps(union, sort_keys=True))
+    union_bytes = union_path.read_bytes()
+    binding = {
+        "path": str(union_path),
+        "bytes": len(union_bytes),
+        "sha256": hashlib.sha256(union_bytes).hexdigest(),
+    }
+    audit = {
+        "schema": selector.EXCLUSION_SCHEMA,
+        "task_id": selector.TASK_ID,
+        "coverage_complete": True,
+        "selection_release": True,
+        "access_boundary": {
+            "p03_holdout_accessed": False,
+            "source_or_token_payload_emitted": False,
+            "truth_or_scores_read": False,
+            "model_loaded": False,
+            "new_panel_selected": False,
+        },
+        "source_inventory": [],
+        "identity_union_export": binding,
+        "union_identity_counts": counts,
+    }
+    if states is not None:
+        audit["agent1_replication_assets"] = {
+            "status": "BOUND_AGENT1_FIT_COMPLETE",
+            **states,
+        }
+    path = tmp_path / "audit.json"
+    path.write_text(json.dumps(audit, sort_keys=True))
+    return path
+
+
+def test_complete_identity_union_roundtrip_and_hash_tamper_rejection(tmp_path: Path) -> None:
+    namespace = "pile|NeelNanda/pile-10k|train|127bfedcd5047750df5ccf3a12979a47bfa0bafa"
+    fields = {"trr0002_h40_token_ids_sha256": {namespace: ["f" * 64]}}
+    audit_path = _write_complete_audit(tmp_path, fields=fields)
+    context = selector.load_complete_exclusions(audit_path, root=tmp_path)
+    assert context.union.counts() == {"trr0002_h40_token_ids_sha256": 1}
+    union_path = tmp_path / "identity_union.json"
+    union_path.write_text(union_path.read_text() + "\n")
+    with pytest.raises(selector.SelectionError, match="binding changed"):
+        selector.load_complete_exclusions(audit_path, root=tmp_path)
+
+
+def test_state_binding_requires_exact_b0_b1_bank_and_selection_identities(tmp_path: Path) -> None:
+    manifest_path, _states = _write_bound_manifest(tmp_path)
+    manifest = json.loads(manifest_path.read_text())
+    assert selector.validate_p11_manifest(manifest, require_state_bindings=True)["task_id"] == selector.TASK_ID
+    bad = json.loads(manifest_path.read_text())
+    bad["new_model_states"]["expanded_b1"]["bank"] = "B0"
+    with pytest.raises(selector.SelectionError, match="bank/model identity"):
+        selector.validate_p11_manifest(bad, require_state_bindings=True)
+
+
+def test_select_sources_uses_real_gate_and_renderer_path_with_injected_trusted_components(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import sys
+    import types
+
+    manifest_path, states = _write_bound_manifest(tmp_path)
+    audit_path = _write_complete_audit(tmp_path, states)
+    tokenizer_dir = tmp_path / "tokenizer"
+    tokenizer_dir.mkdir()
+    tokenizer_file = tokenizer_dir / "tokenizer.json"
+    tokenizer_file.write_bytes(b"fake-tokenizer")
+    pile_arrow = tmp_path / "pile.arrow"
+    finance_arrow = tmp_path / "finance.arrow"
+    pile_arrow.write_bytes(b"fake-pile")
+    finance_arrow.write_bytes(b"fake-finance")
+
+    class _Dataset:
+        def __init__(self, size: int) -> None:
+            self.size = size
+
+        def __len__(self) -> int:
+            return self.size
+
+        def __getitem__(self, index: int) -> dict[str, int]:
+            return {"index": index}
+
+    trusted = types.ModuleType("scripts.trr0005_produce_confirmation")
+    trusted.ProducerError = type("ProducerError", (Exception,), {})
+    trusted._load_tokenizer = lambda path: object()
+    trusted._load_arrow_dataset = lambda paths: _Dataset(2000 if Path(paths[0]).name == "pile.arrow" else 28000)
+
+    def render(domain: str, row: dict[str, int], index: int, tokenizer: object) -> _Candidate:
+        base = 1000 if domain == "pile" else 1000000
+        token_ids = [128000] + [base + index * 256 + value for value in range(1, 128)]
+        return _Candidate(
+            token_ids,
+            {
+                "record_id": f"{domain}/row-{index}",
+                "public_record_sha256": hashlib.sha256(f"rendered:{domain}:{index}".encode()).hexdigest(),
+                "dataset_key": domain,
+                "dataset_id": selector._DATASET_META[domain]["dataset_id"],
+                "split": "train",
+                "revision": selector._DATASET_META[domain]["revision"],
+                "row_index": index,
+                "source_index": index,
+                "full_token_count": 128,
+                "post_bos_token_count": 127,
+                "valid_tokens": selector.STORED_SEQUENCE_TOKENS,
+            },
+        )
+
+    trusted._render_row = render
+    corpus = types.ModuleType("token_reconstruction.trr0005_public_corpus")
+    corpus.deterministic_row_order = lambda values, *, dataset_key, seed: list(values)
+    monkeypatch.setitem(sys.modules, "scripts.trr0005_produce_confirmation", trusted)
+    monkeypatch.setitem(sys.modules, "token_reconstruction.trr0005_public_corpus", corpus)
+    monkeypatch.setattr(selector, "_task_output", lambda path, *, root, phase: tmp_path / "selection.json")
+
+    def record(path: Path) -> dict[str, object]:
+        value = path.read_bytes()
+        return {"path": str(path), "bytes": len(value), "sha256": hashlib.sha256(value).hexdigest()}
+
+    source_inputs = {
+        "pile": {
+            **selector._DATASET_META["pile"],
+            "arrow_files": [record(pile_arrow)],
+        },
+        "finance": {
+            **selector._DATASET_META["finance"],
+            "arrow_files": [record(finance_arrow)],
+        },
+        "tokenizer": {
+            "path": str(tokenizer_dir),
+            "files": {"tokenizer.json": record(tokenizer_file)},
+        },
+    }
+    result = selector.select_sources(
+        manifest_path=manifest_path,
+        audit_path=audit_path,
+        source_inputs=source_inputs,
+        output_path=ROOT / "experiments/TRR-P11/selection/synthetic.json",
+        repository_root=ROOT,
+    )
+    assert result["status"] == selector.SELECTION_STATUS
+    payload = json.loads((tmp_path / "selection.json").read_text())
+    assert {domain: len(rows) for domain, rows in payload["selection_rule"]["records"].items()} == {
+        "pile": selector.RECORDS_PER_DOMAIN,
+        "finance": selector.RECORDS_PER_DOMAIN,
+    }
+    assert payload["truth_opened"] is False
+    assert payload["selection_release"] is True
