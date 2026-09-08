@@ -1,0 +1,141 @@
+{
+  "schema": "token-reconstruction.trr0012-shared-contract.v1",
+  "task_id": "TRR-0012",
+  "status": "DESIGN_AGREED_INPUT_REBUILD_PENDING_NOT_FIT_RELEASE",
+  "created_utc": "2026-09-08T05:31:01.319803+00:00",
+  "ownership": {
+    "Agent1": "one B0/B1 fixed-readout paired fit and durable deployment package",
+    "Agent2_TRR_P11": "exclusions, common independent evaluation, independent restore",
+    "compute": "coordinated exclusive numerical jobs; no paid compute"
+  },
+  "scientific_scope": {
+    "new_weight_replication": true,
+    "original_TRR0011_confirmation": "blocked/incomplete from missing original selected artifacts; unchanged",
+    "repeat_fit_to_match_old_scores": false,
+    "directional_fits": false,
+    "architecture_or_loss_changes": false,
+    "further_data_expansion": false
+  },
+  "inputs": {
+    "inventory": [
+      "inventory/starting_recipe.json",
+      "inventory/banks.json",
+      "inventory/resources.json"
+    ],
+    "starting_state_sha256": "5cada4a3d04bb5477eaf0be25ed8d8ac25a89283223e9ba14b18fa10416bee14",
+    "public_E_sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+    "B0_records": 1200,
+    "B1_records": 12000,
+    "B1_prefix": "exact surviving ordered B0",
+    "B1_ordered_ledger_sha256": "48b6656845a18428e1fdd54c194928538cd9aa87dfb010b5238f11df3c33fbb0",
+    "preparation_identity_rule": "Rebuild only documented ordered public inputs; verify source/rendered/canonical sequence and schedule semantic commitments before fit. Record execution/path deviations, fail on unexplained scientific mismatch."
+  },
+  "fitting": {
+    "seed": 4010,
+    "updates_per_arm": 13000,
+    "record_batch": 8,
+    "position_draws_per_update": 512,
+    "draws_per_arm": 6656000,
+    "stored_tokens": 192,
+    "checkpoint_selection_grid": [
+      0,
+      1000,
+      2000,
+      4000,
+      8000,
+      12000,
+      13000
+    ],
+    "validation_every_1000": "dormant historical metadata, not an additional checkpoint eligibility rule",
+    "selection": "earliest strict maximum of equal-domain token accuracy, step0 eligible",
+    "development_validation_records": {
+      "Finance": 256,
+      "Pile": 128
+    },
+    "development_labels_used": true,
+    "independent_evaluation_truth_opened": false,
+    "optimizer": "original fixed runner AdamW foreach=false, lr0.0002, weight_decay0, gradient_clip1, cosine T_max13000",
+    "new_model_ids": [
+      "TRR-0012/current_fixed_replication_1",
+      "TRR-0012/expanded_fixed_replication_1"
+    ]
+  },
+  "evaluation": {
+    "owner_plan": "TRR-P11/experiments/TRR-P11/planning/replication_plan.md",
+    "plan_commit_binding": "pending Agent2 finalized handoff",
+    "sources_per_domain": 256,
+    "domains": [
+      "Finance",
+      "Pile"
+    ],
+    "paired_target_conditions": [
+      "public_base",
+      "public_lora_2601"
+    ],
+    "clip_tokens_including_BOS": 128,
+    "scored_post_BOS_tokens": 127,
+    "A1_A2_K256_subset": "first128 per domain in common frozen source order, separate denominator; no retraining",
+    "source_selection_seed": 5011,
+    "bootstrap_seed": 9009,
+    "source_bootstrap_replicates": 10000,
+    "paired_dependence": "same source resamples across targets and methods within each domain",
+    "decision": "report magnitudes and descriptive uncertainty; no automatic promotion, no seed reliability claim",
+    "release_requires": [
+      "complete inherited/fitting/validation/calibration/opened source and sequence exclusions",
+      "frozen selected new states",
+      "mandatory independent clean restore from Windows secondary",
+      "complete immutable predictions and diagnostics before opening truth"
+    ]
+  },
+  "durability": {
+    "plan": "storage_plan_v1.json",
+    "checkpoint_writes": "persistent task-owned outputs during training",
+    "primary": "outputs/TRR-0012/model-package",
+    "secondary": "/mnt/c/Users/alanz/Token-Reconstruction-Backups/TRR-0012",
+    "secondary_post_copy_free_min_GiB": 10,
+    "failure_boundary": "Windows copy survives WSL reset loss; not protection against whole-host failure",
+    "restore_owner": "Agent2",
+    "smoke_fixture_receipt": "package/smoke/extraction_receipt.json",
+    "smoke_fixture_sha256": "652a67744f2dabe2ca53198f1b7fddde6cb36d414280a1a0d95d866d1e5cc840",
+    "smoke_used_for_selection": false,
+    "expected_smoke_predictions": "generate after normal new checkpoint selection; exact4sources x2methods"
+  },
+  "cost_accounting": {
+    "prior_fit_reference": "../TRR-0010/report/fixed_fit_learning_curve_cost_table_v2.json",
+    "historical_B0_wall_seconds": 574.7391980069806,
+    "historical_B1_wall_seconds": 1762.8824152240122,
+    "historical_peak_GPU_reserved_bytes": 2959081472,
+    "historical_host_RSS_bytes": 3652083712,
+    "prior_cost_excludes": [
+      "preparation",
+      "ancestor training",
+      "cold load separately unmeasured"
+    ],
+    "new_accounting": [
+      "public preparation",
+      "incremental fit including nonselected checkpoints",
+      "validation and diagnostics",
+      "persistent I/O",
+      "package preparation and duplicate copy",
+      "independent restore",
+      "cold start",
+      "steady reconstruction",
+      "synchronization",
+      "peak CPU/GPU memory",
+      "failed attempts"
+    ],
+    "timing": "do not add nested phase timings to wall; isolate comparative timing"
+  },
+  "release_state": {
+    "public_preparation": "pending bounded worker command/resource plan",
+    "GPU_capture": "pending largest representative qualification",
+    "substantive_fitting": "pending regenerated input verification, committed execution code and bounded resource plan",
+    "scientific_evaluation": "pending complete exclusions, selected package freeze, mandatory restore"
+  },
+  "preservation": {
+    "global_STATE_or_registry_changes": false,
+    "PR_merges": false,
+    "P03_sealed_holdout_access": false,
+    "original_loss_evidence_modified": false
+  }
+}
