@@ -60,3 +60,15 @@ The final resource guards record exact child commands, wall timestamps, host
 RSS, host available memory, device status and failures. Prefix snapshots stay
 fixed. The static capture script is evaluator-only and creates actual target
 backup copies; neither reconstructor receives its target asset path.
+
+For the stronger required-distribution restore used by the final handoff:
+
+```sh
+python3 scripts/agent4/backup_dependency_closure.py  # first isolated import exposed missing OS metadata
+python3 scripts/agent4/restore_dependency_supplement.py
+```
+
+The initial closure archive remains intact. The supplement includes the actual
+installed runtime module omitted from OS dependency metadata; the final child
+uses Python `-S` and only restored package paths, then reproduces a prefix output.
+Both actual archives and their failed-attempt history are retained.
