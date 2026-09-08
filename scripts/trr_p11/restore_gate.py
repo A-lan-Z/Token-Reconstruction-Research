@@ -1349,7 +1349,15 @@ def _verify_consumer_receipt(
     imported_modules = runtime.get("imported_modules")
     if not isinstance(imported_modules, list) or not imported_modules:
         raise RestoreGateError("consumer receipt imported module bindings are absent")
-    loaded_code: set[str] = {str(_clean_runtime_file(report, clean_root, "package_cli"))}
+    package_cli_path = _clean_runtime_file(report, clean_root, "package_cli")
+    package_cli_binding = {
+        "path": str(package_cli_path),
+        "bytes": report["assets"]["package_cli"]["copies"]["primary"]["bytes"],
+        "sha256": report["assets"]["package_cli"]["copies"]["primary"]["sha256"],
+    }
+    checked = check_binding(package_cli_binding, package_cli_path, description="package CLI", must_be_bundle=True)
+    loaded_code: set[str] = {str(package_cli_path)}
+    checked_bindings[str(package_cli_path)] = {**checked, "role": "package_cli"}
     for index, module in enumerate(imported_modules):
         if not isinstance(module, Mapping):
             raise RestoreGateError(f"consumer receipt imported module is malformed: {index}")
@@ -1469,6 +1477,14 @@ def run_restored_smoke(
         "cwd": str(destination),
         "device": report["consumer"]["device"],
         "dependency_id": report["consumer"]["dependency_id"],
+        "package_id": report.get("package_id"),
+        "boundaries": report["boundaries"],
+        "assets": report["assets"],
+        "restore_manifest": _binding_record(
+            Path(manifest_path).expanduser().resolve(),
+            {"bytes": Path(manifest_path).expanduser().resolve().stat().st_size, "sha256": _sha256_file(Path(manifest_path).expanduser().resolve())},
+            description="restore manifest receipt",
+        ),
         "observations": str(observations),
         "output": _binding_record(
             output,
@@ -1519,6 +1535,7 @@ def restore_and_run_smoke(
         require_distinct_devices=require_distinct_devices,
     )
     smoke["retrieval"] = retrieval
+    smoke["source_boundary"] = retrieval["source_boundary"]
     return smoke
 
 

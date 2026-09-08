@@ -1,0 +1,44 @@
+{
+  "code_hashes_at_failed_attempt": {
+    "scripts/trr_p11/evaluation.py": "96dc17a45b56717f3664e846df7583c7aaee5e9899d6f36c83b2e2ed8392a0bf",
+    "tests/test_trr_p11_evaluation.py": "4197d2ad88eed94f9c8b479b0d621bcd99b5238d86d141398470432dda7765cf"
+  },
+  "command": "env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. timeout 120 /usr/bin/python3 -m pytest -q tests/test_trr_p11_evaluation.py",
+  "exit_code": 1,
+  "failure": {
+    "cause": "freeze normalization stores comparator subset under source_subset while revalidator only accepted input-form subset",
+    "exception": "scripts.trr_p11.evaluation.EvaluationError",
+    "message": "A1 comparator subset binding is absent",
+    "test": "test_score_uses_p10_inventory_and_registered_scorer_on_synthetic_truth"
+  },
+  "peak_rss_kb": 684768,
+  "preflight": {
+    "gpu_used": false,
+    "memory_limit_intent": "under 2 GiB peak RSS",
+    "model_loaded": false,
+    "real_source_or_truth_loaded": false,
+    "thread_env": {
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    }
+  },
+  "process_ended_utc": "2026-09-08T06:44:08.057993821Z",
+  "process_started_utc": "2026-09-08T06:44:06.461547974Z",
+  "pytest_elapsed_seconds": 0.95,
+  "schema": "token-reconstruction.trr-p11-evaluation-test.v1",
+  "scope": "synthetic output files/receipts, complete matrix, explicit partial blocker, pretruth hash revalidation, and synthetic truth/scoring; no real source/model/public E/GPU",
+  "status": "FAILED_SYNTHETIC_FREEZE_REVALIDATION_SUBSET_FIELD",
+  "stdout_stderr_log": {
+    "ephemeral": true,
+    "path": "/tmp/trr_p11_evaluation_synthetic_r1.out",
+    "sha256": "b4b892f8294c59505ef694bd44acebf80e4150e67c0b6394e19c781c6cc08559"
+  },
+  "task_id": "TRR-P11",
+  "tests_collected": 5,
+  "tests_failed": 1,
+  "tests_passed": 4,
+  "timeout_seconds": 120,
+  "wrapper_elapsed_seconds": 1.596445847
+}

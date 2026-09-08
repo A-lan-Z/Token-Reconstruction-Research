@@ -936,7 +936,10 @@ def test_restore_and_run_smoke_end_to_end_synthetic_bundle(tmp_path: Path, monke
         require_distinct_devices=False,
     )
     assert receipt["status"] == "PASS_RESTORED_SMOKE"
+    assert receipt["source_boundary"] == "secondary"
     assert receipt["retrieval"]["source_boundary"] == "secondary"
+    assert receipt["assets"]["current_fixed"]["copies"]["primary"]["sha256"]
+    assert receipt["restore_manifest"]["sha256"]
     assert receipt["tensor_identity"]["current_fixed"]["verified"] is True
     assert receipt["smoke_input"]["key_layout"] == "domain_prefixed"
     assert receipt["smoke_comparison"]["verified"] is True

@@ -253,3 +253,12 @@ computing the aggregate digest and per-record slices. It hashes the UTF-8 bytes 
 followed immediately by the tensor flattened as a contiguous uint8 view in C
 order. The same digest is required in tensor-identity sidecars and smoke
 prediction receipts. The helper is intentionally lazy about importing torch.
+
+`restore_and_run_smoke` returns the same hash-bound metadata needed by the P11
+evaluation adapter: `source_boundary="secondary"`, the validated `assets`
+object with primary/secondary copies, `boundaries`, `restore_manifest`
+(bytes/hash), verified `tensor_identity`, and the normalized
+`consumer_receipt`. The consumer receipt includes actual loaded state/readout
+file bindings and bundled code paths and records no training-worktree import or
+temporary dependency. A downstream evaluation receipt must preserve these
+fields rather than replacing them with self-assigned asset IDs.
