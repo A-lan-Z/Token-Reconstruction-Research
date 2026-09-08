@@ -23,7 +23,8 @@ def binding(path):
 
 
 def verify(b):
-    if binding(b['path']) != b:
+    actual=binding(b['path'])
+    if any(actual[k]!=b[k] for k in ('path','bytes','sha256')):
         raise ValueError(f"binding changed: {b['path']}")
     return Path(b['path'])
 

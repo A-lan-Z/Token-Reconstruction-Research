@@ -65,7 +65,11 @@ def test_complete_freeze_then_score_and_tamper(tmp_path):
                                'code_commit':'synthetic','code_files':[binding(obs)],'state_sha256':'synthetic','readout_sha256':'synthetic','package_files_sha256':'synthetic','environment':{'fixture':True},'package_manifest':binding(obs),'lens':binding(obs),'reference':binding(obs),
                                'methods':[{'method':m,'artifact':binding(pred)} for m in ('a1','b1')]})
             receipt_paths.append(receipt)
-    f=tmp_path/'freeze.json';freeze(receipt_paths,f)
+    import hashlib
+    expected=np.full(128,3,dtype='<i4');expected[0]=128000
+    order_path=tmp_path/'order.json'
+    write_json(order_path,{'order_first32_by_domain':{d:[{'record_id':r,'h128_sequence_sha256':hashlib.sha256(expected.tobytes()).hexdigest()} for r in ids[d]] for d in ids}})
+    f=tmp_path/'freeze.json';freeze(receipt_paths,f,order_path)
     assert not (tmp_path/'truth.json').exists()
     # Only now construct a synthetic evaluator truth artifact.
     labels=predictions.clone();labels[:,1:]=3

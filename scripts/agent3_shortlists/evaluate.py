@@ -1,6 +1,7 @@
 """Complete-matrix freeze, then separate evaluator-only truth scoring."""
 from __future__ import annotations
 import argparse
+import hashlib
 from datetime import datetime, timezone
 import json
 from pathlib import Path
@@ -13,9 +14,10 @@ DOMAINS=('pile','finance')
 STAGES=(0,64,128,256)
 
 
-def freeze(receipt_paths, output):
+def freeze(receipt_paths, output, source_order_path='experiments/agent3-b1-small-budget-a2/source-order-binding.json'):
     if len(receipt_paths)!=8:
         raise ValueError('all eight domain/stage cells required before truth')
+    source_order=json.loads(Path(source_order_path).read_text())['order_first32_by_domain']
     cells={}
     ids={}
     common_identity=None
@@ -38,6 +40,7 @@ def freeze(receipt_paths, output):
         if (contract['domain'],contract['stage'])!=key or contract['record_ids']!=receipt['record_ids']:
             raise ValueError('contract/receipt identity mismatch')
         order=receipt['record_ids']
+        if order!=[r['record_id'] for r in source_order[key[0]]]:raise ValueError('source order differs from prospective ledger')
         if len(order)!=32 or len(set(order))!=32:
             raise ValueError('exact32 distinct sources/domain required')
         if key[0] in ids and ids[key[0]]!=order:
@@ -67,7 +70,7 @@ def freeze(receipt_paths, output):
     if set(cells)!=expected:
         raise ValueError('matrix incomplete')
     result={'schema':'agent3-complete-matrix-freeze-v1','frozen_utc':datetime.now(timezone.utc).isoformat(),
-            'cells':[cells[k] for k in sorted(cells)],'record_ids':ids,'truth_opened':False,
+            'source_order':binding(source_order_path),'cells':[cells[k] for k in sorted(cells)],'record_ids':ids,'truth_opened':False,
             'common_identity':common_identity,'scope':'paired64 sources,8 conditions,2 proposers; component diagnostic, canonical matrix incomplete'}
     write_json(output,result)
     return result
@@ -80,7 +83,7 @@ def load_frozen(freeze_path):
     # Re-validate all cells/artifacts BEFORE even opening a truth manifest.
     import tempfile
     with tempfile.TemporaryDirectory() as td:
-        rebuilt=freeze([verify(c['receipt']) for c in f['cells']],Path(td)/'check.json')
+        rebuilt=freeze([verify(c['receipt']) for c in f['cells']],Path(td)/'check.json',verify(f['source_order']))
     if rebuilt['record_ids']!=f['record_ids']:
         raise ValueError('freeze identity changed')
     return f
@@ -91,6 +94,7 @@ def score(freeze_path, truth_manifest, output):
     truth_meta=json.loads(Path(truth_manifest).read_text())
     if set(truth_meta['domains'])!=set(DOMAINS):
         raise ValueError('truth domains mismatch')
+    order=json.loads(verify(frozen['source_order']).read_text())['order_first32_by_domain']
     truth={}
     for domain in DOMAINS:
         d=truth_meta['domains'][domain]
@@ -102,6 +106,9 @@ def score(freeze_path, truth_manifest, output):
         labels=t['token_ids']
         if not (labels[:,0]==128000).all() or (labels<0).any() or (labels>=128256).any():
             raise ValueError('invalid truth IDs')
+        for i,row in enumerate(order[domain]):
+            actual=hashlib.sha256(labels[i].numpy().astype('<i4').tobytes()).hexdigest()
+            if actual!=row['h128_sequence_sha256']:raise ValueError('truth canonical128 hash differs from frozen source ledger')
         truth[domain]=labels[:,1:]
     ranks={}
     result={'schema':'agent3-shortlist-results-v1','freeze':binding(freeze_path),'truth_manifest':binding(truth_manifest),
@@ -147,8 +154,8 @@ def score(freeze_path, truth_manifest, output):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(); sub=p.add_subparsers(dest='command',required=True)
-    f=sub.add_parser('freeze'); f.add_argument('--receipts',nargs='+',required=True);f.add_argument('--output',required=True)
+    f=sub.add_parser('freeze'); f.add_argument('--receipts',nargs='+',required=True);f.add_argument('--output',required=True);f.add_argument('--source-order',default='experiments/agent3-b1-small-budget-a2/source-order-binding.json')
     s=sub.add_parser('score');s.add_argument('--freeze',required=True);s.add_argument('--truth-manifest',required=True);s.add_argument('--output',required=True)
     a=p.parse_args()
-    if a.command=='freeze':freeze(a.receipts,a.output)
+    if a.command=='freeze':freeze(a.receipts,a.output,a.source_order)
     else:score(a.freeze,a.truth_manifest,a.output)

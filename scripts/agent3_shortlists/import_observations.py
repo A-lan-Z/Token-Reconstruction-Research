@@ -18,6 +18,8 @@ def main(a):
     with safe_open(verify(manifest['observations']),framework='pt',device='cpu') as f:
         if set(f.keys())!={'activations','attention_mask','position_ids'}:raise ValueError('only sanitized H/mask/positions accepted')
         tensors={k:f.get_tensor(k) for k in f.keys()}
+    order=json.loads(Path(a.source_order).read_text())['order_first32_by_domain'][manifest['domain']]
+    if manifest['record_ids'][:32]!=[r['record_id'] for r in order]:raise ValueError('released order differs from bound first32')
     n=len(manifest['record_ids'])
     if n<32 or any(len(t)!=n for t in tensors.values()):raise ValueError('release source order/shape mismatch')
     out=Path(a.output);out.mkdir(parents=True,exist_ok=False)
@@ -31,4 +33,4 @@ def main(a):
                 'contract':binding(out/'contract.json'),'tensor_values_changed':False,'truth_opened':False})
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--release',required=True);p.add_argument('--output',required=True);main(p.parse_args())
+    p=argparse.ArgumentParser();p.add_argument('--release',required=True);p.add_argument('--output',required=True);p.add_argument('--source-order',default='experiments/agent3-b1-small-budget-a2/source-order-binding.json');main(p.parse_args())
