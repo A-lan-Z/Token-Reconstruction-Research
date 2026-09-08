@@ -150,7 +150,11 @@ hashes.
           "smoke_used_for_selection": false,
           "independent_evaluation_truth_opened": false
         },
-        "input_tensor_digests": {"activations": "..."},
+        "input_tensor_digests": {
+          "activations": "...",
+          "attention_mask": "...",
+          "position_ids": "..."
+        },
         "prediction_tensor_digests": {
           "current_fixed": "...",
           "expanded_fixed": "..."

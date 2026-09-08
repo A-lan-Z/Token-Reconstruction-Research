@@ -196,7 +196,11 @@ def _make_fixture(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple[Path
                 "smoke_used_for_selection": False,
                 "independent_evaluation_truth_opened": False,
             },
-            "input_tensor_digests": {"activations": "1" * 64},
+            "input_tensor_digests": {
+                "activations": "1" * 64,
+                "attention_mask": "4" * 64,
+                "position_ids": "5" * 64,
+            },
             "prediction_tensor_digests": {
                 "current_fixed": "2" * 64,
                 "expanded_fixed": "3" * 64,

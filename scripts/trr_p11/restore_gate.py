@@ -19,6 +19,7 @@ from typing import Any
 
 SCHEMA = "token-reconstruction.trr-p11-restore-gate.v1"
 TENSOR_SCHEMA = "token-reconstruction.trr-p11-tensor-identity.v1"
+SELECTION_RECEIPT_SCHEMA = "token-reconstruction.trr-p11-selection-receipt.v1"
 TASK_ID = "TRR-P11"
 PRIMARY_KIND = "wsl_persistent"
 SECONDARY_KIND = "windows_persistent"
@@ -365,6 +366,10 @@ def _validate_smoke(manifest: Mapping[str, Any], assets: Mapping[str, Mapping[st
         digests = smoke.get(name)
         if not isinstance(digests, Mapping) or not digests:
             raise RestoreGateError(f"smoke {name} are absent")
+        if name == "prediction_tensor_digests" and set(digests) != set(SMOKE_METHODS):
+            raise RestoreGateError("smoke prediction digest methods changed")
+        if name == "input_tensor_digests" and not {"activations", "attention_mask", "position_ids"}.issubset(digests):
+            raise RestoreGateError("smoke input geometry digests are incomplete")
         for key, digest in digests.items():
             if not isinstance(key, str) or _SHA256.fullmatch(str(digest)) is None:
                 raise RestoreGateError(f"smoke {name} contains malformed digest: {key}")
@@ -517,6 +522,11 @@ def validate_restore_manifest(
             description=f"selection receipt {boundary_name}",
         )
         receipt_payload = selection_payloads[boundary_name]
+        if (
+            receipt_payload.get("schema") != SELECTION_RECEIPT_SCHEMA
+            or receipt_payload.get("task_id") != TASK_ID
+        ):
+            raise RestoreGateError("selection receipt schema or task identity changed")
         if receipt_payload.get("status") != "SELECTION_COMPLETE_BEFORE_SMOKE":
             raise RestoreGateError("selection receipt status is not complete-before-smoke")
         if receipt_payload.get("smoke_used_for_selection") is not False:
@@ -525,6 +535,8 @@ def validate_restore_manifest(
             raise RestoreGateError("selection receipt records opened evaluation truth")
         if not isinstance(receipt_payload.get("development_labels_used"), bool):
             raise RestoreGateError("selection receipt development_labels_used is absent")
+        if receipt_payload["development_labels_used"] != selection["development_labels_used"]:
+            raise RestoreGateError("selection development-label provenance differs")
         selected_methods = receipt_payload.get("selected_methods")
         if not isinstance(selected_methods, Mapping):
             raise RestoreGateError("selection receipt selected methods are absent")
@@ -534,6 +546,10 @@ def validate_restore_manifest(
                 raise RestoreGateError(f"selection receipt omits {method_name}")
             if selected.get("state_sha256") != assets[method_name]["copies"][boundary_name]["sha256"]:
                 raise RestoreGateError(f"selection receipt state hash differs: {method_name}")
+            if selected.get("bank") != assets[method_name]["metadata"].get("bank"):
+                raise RestoreGateError(f"selection receipt bank differs: {method_name}")
+            if selected.get("model_id") != assets[method_name]["metadata"].get("model_id"):
+                raise RestoreGateError(f"selection receipt model differs: {method_name}")
     if selection_payloads["primary"] != selection_payloads["secondary"]:
         raise RestoreGateError("selection receipt differs across copies")
     tensor_reports: dict[str, Any] = {}
