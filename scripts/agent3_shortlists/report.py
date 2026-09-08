@@ -27,7 +27,14 @@ def main(a):
             'The smallest empirically promising budget must lose no more than0.1 percentage points of token recall and2 percentage points of whole-clip coverage versus both B1/K256 and A1/K256 in every domain/stage. These limits were committed before outcomes. Passing an empirical limit does not establish equivalence.','',
             '| Domain | Stage | Smallest budget meeting both empirical loss limits |','|---|---:|---:|']
     for c in r['stage1_decision']:lines.append(f"| {c['domain']} | {c['stage']} | {c['smallest'] if c['smallest'] is not None else 'none among8/16/32'} |")
-    lines+=['',f"Budgets meeting the empirical limits throughout the matrix: {r['globally_empirically_promising_budgets'] or 'none'}. No confidence fallback, retraining, recalibration, or selective stage omission was used.",'',
+    lines+=['',f"Budgets meeting the empirical limits throughout the matrix: {r['globally_empirically_promising_budgets'] or 'none'}. No confidence fallback, retraining, recalibration, or selective stage omission was used."]
+    for domain in ('pile','finance'):
+        ordered=[next(x for x in r['stage1_decision'] if x['domain']==domain and x['stage']==s)['smallest'] for s in (0,64,128,256)]
+        lines.append(f"For {domain}, the smallest empirically viable list at stages 0 → 64 → 128 → 256 was: "+' → '.join(str(x) if x else 'none ≤32' for x in ordered)+'.')
+    comparable=[c for c in r['contrasts'] if c['method']=='b1' and c['k'] in (8,16,32) and c['reference']==f"a1_stage{c['stage']}_k{c['k']}"]
+    deltas=[c['token_delta']['estimate']*100 for c in comparable]
+    lines.append(f"Across the named cells and small budgets, B1 minus historical A1 token recall ranged from {min(deltas):+.3f} to {max(deltas):+.3f} percentage points. The complete separate comparisons are in the structured result; no cross-snapshot pooled score is used.")
+    lines+=['',
             '## Complete shortlist matrix','',
             'Each domain has32 unique paired records and4,064 scored positions per snapshot. Repeated target observations are not additional independent sources. K64/K256 are diagnostics; each budget is a nested slice of the same full-vocabulary ranking.','',
             '| Domain | Stage | Proposer | K | Included / scored | Omitted | Complete clips | Recall on top1-wrong positions |',
