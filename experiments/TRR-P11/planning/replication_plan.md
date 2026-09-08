@@ -130,7 +130,15 @@ published H129/truncated-sequence convention where available. Opaque
 hash-only reservations remain wildcard namespaces until their producer
 mapping is verified. The unresolved P10 aggregate opened-panel/pointer-link
 coverage and unverified P04 fingerprint producer mappings must be resolved or
-reported as unavailable before a source-selection release. A field that is unavailable is recorded as unavailable, never silently as zero.
+reported as unavailable before a source-selection release. A field that is
+unavailable is recorded as unavailable, never silently as zero.
+
+Final eligibility is a trusted-curator operation over public rows: the curator
+may public-rerender and retokenize an eligible candidate to verify its
+record, rendered, and canonical-sequence identities. That public rerender /
+tokenization step is source preparation and is not described as a
+metadata-only exclusion audit. Agent 2 receives only the resulting approved
+identity metadata and opaque hashes.
 
 Once the exclusion audit, frozen statistical contract, and B0/B1 bank
 identities are complete, root may release metadata-only prospective source
@@ -168,12 +176,13 @@ The statistical implementation binding is the byte-identified historical
 TRR-0010 source `scripts/trr0010_analysis.py` from commit
 `70c57db7643913eea97cc606775b3f1f3807967a`, SHA-256
 `90078ac78bfcdcfb5f782a598c943b78cb0417f6895906a1e6d61056a3793cef`.
-Agent 1/root must carry that file byte-identically into the task-local
-execution package, or bind an equivalent implementation with a new hash,
-before truth is opened. The P11 result will record the final task-local code
-hash. Domains, target conditions, methods, and the A1+A2 subset are never
-pooled. Intervals describe uncertainty only; no automatic CI or promotion
-rule changes the method, source panel, fit, or submitted output.
+Agent 2 owns this scorer dependency and must carry that file byte-identically
+into the task-local evaluation package, or bind an equivalent implementation
+with a new hash, before truth is opened. It is outside Agent 1's decoder and
+model-deployment package. The P11 result will record the final task-local
+scorer hash. Domains, target conditions, methods, and the A1+A2 subset are
+never pooled. Intervals describe uncertainty only; no automatic CI or
+promotion rule changes the method, source panel, fit, or submitted output.
 
 ## Curator, prediction, and truth boundary
 
@@ -191,6 +200,8 @@ diagnostic artifact is immutable. P03's sealed holdout remains untouched.
 After scoring, report per cell and per method:
 
 - token accuracy and complete-record accuracy;
+- for the primary new-B1-versus-new-B0 contrast, the paired exact-record
+  gains, losses, and ties, with the corresponding source-record inventory;
 - both-correct, only-B1-correct, only-A1+A2-correct, and both-wrong
   inventories where the comparator is available;
 - position and fitting-support strata;
@@ -208,9 +219,10 @@ Before evaluation release, Agent 1 must store the selected state and complete
 deployment package in two durable copies on independent failure boundaries.
 The proposed second boundary is the Windows backup directory
 /mnt/c/Users/alanz/Token-Reconstruction-Backups/TRR-0012, with approximately
-1.2 GB minimum package space and at least 10 GB free before copying. The first
-copy must be a persistent training/output location; temporary directories and
-symlinks do not qualify.
+1.2 GB minimum package space and at least 10 GiB free after the copy. This
+boundary protects against WSL reset and temporary-runtime loss; it is not a
+whole-host physical-failure backup. The first copy must be a persistent
+training/output location; temporary directories and symlinks do not qualify.
 
 The gate is closed until all of the following pass:
 

@@ -63,6 +63,17 @@
         "generation_sha256": "6bed8aca6668bd749bbad03c0c85bbace306085dac3141895dad7685f03d0682",
         "role": "evaluator_only"
       }
+    },
+    "primary_contrast": {
+      "candidate": "new_expanded_fixed_B1",
+      "control": "new_current_fixed_B0",
+      "paired_unit": "source_record",
+      "exact_record_inventory": [
+        "gains",
+        "losses",
+        "ties"
+      ],
+      "reported_separately_per_cell": true
     }
   },
   "source_reservation": {
@@ -110,7 +121,9 @@
     "automatic_ci_gate": false,
     "pooling": false,
     "task_local_hash_required_before_truth": true,
-    "status": "HISTORICAL_HASH_BOUND_TASK_LOCAL_COPY_REQUIRED"
+    "status": "HISTORICAL_HASH_BOUND_TASK_LOCAL_COPY_REQUIRED",
+    "owner": "Agent2",
+    "separate_from_agent1_decoder_package": true
   },
   "exclusion_contract": {
     "required_source_classes": [
@@ -132,7 +145,10 @@
     "p04_fingerprint_producers_verified": false,
     "aggregate_panel_pointer_links_verified": false,
     "status": "NOT_STARTED_PENDING_COMPLETE_AUDIT",
-    "selection_release": false
+    "selection_release": false,
+    "public_rerender_and_tokenization_owner": "trusted_curator",
+    "public_rerender_and_tokenization_is_metadata_only": false,
+    "agent2_receives": "approved_identity_metadata_and_opaque_hashes_only"
   },
   "restore_gate": {
     "status": "NOT_STARTED",
@@ -163,7 +179,9 @@
       ],
       "after_normal_checkpoint_selection": true,
       "selection_criterion": false
-    }
+    },
+    "minimum_free_gib_after_copy": 10,
+    "failure_boundary_note": "Protects against WSL reset and temporary-runtime loss; does not provide whole-host physical-failure backup."
   },
   "new_model_states": {
     "current_b0": null,
