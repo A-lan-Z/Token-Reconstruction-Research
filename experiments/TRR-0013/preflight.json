@@ -1,0 +1,36 @@
+{
+  "task_id": "TRR-0013",
+  "status": "PUBLIC_BANK_DIAGNOSTIC_PREFLIGHT",
+  "created_utc": "2026-09-08T13:35:45.802150+00:00",
+  "initial_bank_check": {
+    "records": 12000,
+    "post_bos_positions_expected": 1243710,
+    "batch_records": 8,
+    "tokens": 192,
+    "hidden": 2048,
+    "logit_chunk": 256,
+    "logit_bytes": 131334144,
+    "frozen_E_bytes": 1050673488,
+    "expected_gpu_peak_gib": 3,
+    "gpu_cap_gib": 8,
+    "rss_cap_gib": 20,
+    "minimum_gpu_free_gib": 2,
+    "wall_cap_seconds": 900,
+    "qualifier_records": 8,
+    "purpose": "Original fitting bank residual errors and loss variation; no evaluation truth."
+  },
+  "pool_branch_rule": {
+    "effectively_memorized_if": "token error <=0.001 AND 99th-percentile full-vocabulary CE <=0.1",
+    "if_memorized": "One modest shared public correction pool, defined/reserved before capture and independent of opened evaluation errors; both continuations receive identical pool.",
+    "otherwise": "Continue on existing B1 bank only."
+  },
+  "live_resources": {
+    "gpu": "RTX5080 16GiB",
+    "gpu_used_mib": 4084,
+    "host_available_mib": 28013,
+    "workspace_free_gib": 245,
+    "secondary_free_gib": 19
+  },
+  "ownership": "Single task owner; separate curator/predictor/scorer processes; no implementation-agent campaign.",
+  "preservation": "Task-local outputs; no changes to global STATE/registry or other worktrees."
+}
