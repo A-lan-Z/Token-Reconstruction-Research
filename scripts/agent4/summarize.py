@@ -24,6 +24,7 @@ def residual_stats(x):
 stopping=json.loads((EVID/'stopping_diagnostic.json').read_text())
 first_errors=json.loads((EVID/'first_error_diagnostic.json').read_text())
 analysis={'stopping_diagnostic':{k:v for k,v in stopping.items() if k!='rows'},'first_error_diagnostic':first_errors['rows'],'matched_runtime_ratio_prefix_to_a1a2':ratio,'matched_residuals':residual_stats(p),'static_residuals':residual_stats(sp)}
+analysis['static_comparability']=json.loads((EVID/'static_comparability.json').read_text())
 analysis['matched_quality_target_met']=p['groups']['all']['accuracy']>=.95 and p['groups']['all']['exact_records']/p['groups']['all']['records']>=.5
 analysis['matched_cpu_cost_target_met']=ratio<=2
 for name,x in {**matched,**static}.items():
@@ -60,6 +61,8 @@ Four public-domain ordinary-text clips and two generated identifier clips, each1
 {row('Prefix-only / static Vikhr',sp)}
 {row('A1+A2 K256 / static Vikhr',sa)}
 
+The two static records are a fixed subset of the six matched records. On that identical subset, the matched primary result is29/30tokens and1/2clips, versus30/30 and2/2 for A1+A2; static accuracy is therefore unchanged for both methods on the common subset. Do not compare96.7% static with88.9% full-panel matched as an improvement. Captured boundary drift is measured in `static_comparability.json`.
+
 Tiny empirical p95 values describe this panel only. No records were dropped for exhaustion or timeout.
 
 | Group | Prefix-only matched | A1+A2 matched | Prefix-only static | A1+A2 static |
@@ -88,7 +91,7 @@ The early synthetic end-to-end test recovered its sequence and verified nonzero 
 
 The16-position backward and full-vocabulary scoring qualification measured2,939,879,424bytes peak CPU RSS with a10GiB cap and >=8GiB required available host memory. Each final phase has a fail-closed process-group watchdog; primary lifetime kernel VmHWM is separately recorded. Exact commands, start/end times, peak memory and input/output hashes are in the manifest and guard receipts. Vocabulary setup, backward passes, candidate checking and prefix/cache construction are included in reconstruction wall. Per-process wall includes loading and prediction JSON I/O. No prefix-maintenance computation was performed. One-off backup/restore costs and the old comparator-fitting provenance must not be confused with warmed reconstruction.
 
-Actual public prefix, tokenizer, comparator lens and Python dependency archives were backed up, not merely hashed. Independent prefix copies reproduce outputs exactly, and restored dependency imports passed after adding NumPy's sibling shared-library directory. External interpreter/system libraries/driver remain runtime requirements. Large assets remain in this task's `outputs` directory; the manifest hashes and locates them.
+Actual public prefix, tokenizer, comparator lens and Python dependency archives were backed up, not merely hashed. Independent prefix copies reproduce outputs exactly, and restored dependency imports passed after adding NumPy's sibling shared-library directory. A complete required-distribution archive was additionally restored with Python `-S`, without global site-packages, and reproduced an actual prefix output; see `required_dependency_restore.json`. External interpreter/stdlib, system libraries and OS driver remain runtime requirements. Large assets remain in this task's `outputs` directory; the manifest hashes and locates them.
 
 The stopping rule has a material numerical limitation:37 of38 correct decisions with an entirely correct preceding prefix exhausted the budget. Their genuine residuals reached MSE1.31e-6 because BF16 execution changed with sequence length; elementwise allclose(atol=rtol=1e-5) was too strict. At the five first-error positions, evaluator-only genuine-token checks had MSE0 to8.28e-7, while the chosen wrong tokens had MSE0.0033 to0.00694. Those genuine tokens had never been tried. Thus both an overly strict verification gate and genuine bounded candidate-discovery failures are present. The observed80× CPU gap describes this implementation; it is not a lower bound on a corrected solver. Any follow-up should first qualify sequence-length-consistent verification or a numerical tolerance on separate public development material, then use new confirmation inputs. No threshold was tuned on these opened answers.
 
