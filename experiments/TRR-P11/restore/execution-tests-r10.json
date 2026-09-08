@@ -1,0 +1,47 @@
+{
+  "actual_package_restore": "PENDING_AGENT1_FROZEN_PACKAGE_AND_SECONDARY_COPY",
+  "code_hashes_at_failed_attempt": {
+    "scripts/trr_p11/restore_gate.py": "16dec01e08707e36e1389287914e45d31b0604dd282d720295ac509c761b2ee2",
+    "tests/test_trr_p11_restore_gate.py": "7c59d8d2a455516fcb51850af619f9e5d07ed13d51c232530fb9526a1513e409"
+  },
+  "command": "env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. timeout 120 /usr/bin/python3 -m pytest -q tests/test_trr_p11_restore_gate.py",
+  "exit_code": 1,
+  "failure": {
+    "cause": "consumer environment set PYTHONNOUSERSITE=1 while approved torch/safetensors dependencies are installed in the pinned interpreter user site; subprocess failed before package CLI execution",
+    "exception": "ModuleNotFoundError",
+    "message": "No module named torch",
+    "test": "test_restore_and_run_smoke_end_to_end_synthetic_bundle"
+  },
+  "peak_rss_kb": 682484,
+  "preflight": {
+    "gpu_used": false,
+    "memory_limit_intent": "under 2 GiB peak RSS",
+    "model_loaded": false,
+    "real_source_or_truth_loaded": false,
+    "safetensors": "0.7.0",
+    "thread_env": {
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "torch": "2.10.0+cu128"
+  },
+  "process_ended_utc": "2026-09-08T06:26:02.234491988Z",
+  "process_started_utc": "2026-09-08T06:26:00.649873065Z",
+  "pytest_elapsed_seconds": 0.99,
+  "schema": "token-reconstruction.trr-p11-execution-test.v1",
+  "scope": "synthetic tensors, prefixed smoke identity, prediction identity, sibling receipt provenance, and end-to-end secondary-copy subprocess; no model/GPU/source/truth",
+  "status": "FAILED_SYNTHETIC_E2E_DEPENDENCY_ENVIRONMENT",
+  "stdout_stderr_log": {
+    "ephemeral": true,
+    "path": "/tmp/trr_p11_synthetic_r10.out",
+    "sha256": "25e1e83c04fb0c1b7705f2bf48e3a0d98b366338ac88fec24bcc6dc9b7713959"
+  },
+  "task_id": "TRR-P11",
+  "tests_collected": 12,
+  "tests_failed": 1,
+  "tests_passed": 11,
+  "timeout_seconds": 120,
+  "wrapper_elapsed_seconds": 1.584618923
+}

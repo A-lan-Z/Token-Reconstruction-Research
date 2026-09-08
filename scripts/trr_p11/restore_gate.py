@@ -15,6 +15,8 @@ from pathlib import Path, PurePosixPath
 import re
 import shutil
 import os
+import subprocess
+import time
 from typing import Any
 
 SCHEMA = "token-reconstruction.trr-p11-restore-gate.v1"
@@ -31,12 +33,16 @@ REQUIRED_ASSETS = (
     "public_readout",
     "loader_code",
     "decoder_code",
+    "package_cli",
     "package_manifest",
     "frozen_config",
     "selection_receipt",
     "smoke_input",
     "smoke_expected",
 )
+CONSUMER_PYTHON = "/usr/bin/python3"
+CONSUMER_RECEIPT_SCHEMA = "token-reconstruction.trr0012-prediction-receipt.v1"
+CONSUMER_TASK_ID = "TRR-0012"
 TENSOR_ASSETS = ("current_fixed", "expanded_fixed", "public_readout")
 SMOKE_RECORD_ORDER = (
     "finance/public_base/000",
@@ -54,6 +60,19 @@ _FORBIDDEN_TRUE_KEYS = {
 }
 _TEMP_PARTS = {"tmp", "temp", "temporary"}
 _TRAINING_WORKTREE_PARTS = {"TRR-0011", "TRR-0012", "TRR-0013"}
+_SMOKE_INPUT_KEYS = ("activations", "attention_mask", "position_ids")
+_SMOKE_INPUT_LAYOUTS = {
+    "standard": {
+        "activations": ("activations",),
+        "attention_mask": ("attention_mask",),
+        "position_ids": ("position_ids",),
+    },
+    "domain_prefixed": {
+        "activations": ("finance__activations", "pile__activations"),
+        "attention_mask": ("finance__attention_mask", "pile__attention_mask"),
+        "position_ids": ("finance__position_ids", "pile__position_ids"),
+    },
+}
 
 
 class RestoreGateError(ValueError):
@@ -362,13 +381,46 @@ def _validate_smoke(manifest: Mapping[str, Any], assets: Mapping[str, Mapping[st
         raise RestoreGateError("smoke selection leakage is not explicitly false")
     if receipt.get("independent_evaluation_truth_opened") is not False:
         raise RestoreGateError("smoke evaluation truth boundary is not explicitly closed")
+    record_bindings = smoke.get("record_bindings")
+    if not isinstance(record_bindings, list) or len(record_bindings) != len(SMOKE_RECORD_ORDER):
+        raise RestoreGateError("smoke record identity bindings are absent")
+    if [item.get("record_id") if isinstance(item, Mapping) else None for item in record_bindings] != list(SMOKE_RECORD_ORDER):
+        raise RestoreGateError("smoke record identity order changed")
+    for index, binding in enumerate(record_bindings):
+        if not isinstance(binding, Mapping):
+            raise RestoreGateError(f"smoke record identity is malformed: {index}")
+        for key in (
+            "record_id",
+            "source_identity_sha256",
+            "activation_slice_sha256",
+            "attention_mask_slice_sha256",
+            "position_ids_slice_sha256",
+        ):
+            if key != "record_id" and _SHA256.fullmatch(str(binding.get(key))) is None:
+                raise RestoreGateError(f"smoke record identity digest is malformed: {index}/{key}")
+    input_key_layout = smoke.get("input_key_layout")
+    input_tensor_keys = smoke.get("input_tensor_keys")
+    if not isinstance(input_key_layout, str) or input_key_layout not in _SMOKE_INPUT_LAYOUTS:
+        raise RestoreGateError("smoke input key layout is absent or unsupported")
+    expected_key_layout = _SMOKE_INPUT_LAYOUTS[input_key_layout]
+    if not isinstance(input_tensor_keys, Mapping):
+        raise RestoreGateError("smoke input tensor-key mapping is absent")
+    normalized_input_keys: dict[str, list[str]] = {}
+    for canonical in _SMOKE_INPUT_KEYS:
+        values = input_tensor_keys.get(canonical)
+        if not isinstance(values, list) or tuple(values) != expected_key_layout[canonical]:
+            raise RestoreGateError(f"smoke input tensor-key mapping changed: {canonical}")
+        normalized_input_keys[canonical] = list(values)
+    flattened_keys = [key for canonical in _SMOKE_INPUT_KEYS for key in normalized_input_keys[canonical]]
+    if len(set(flattened_keys)) != len(flattened_keys):
+        raise RestoreGateError("smoke input tensor-key mapping is ambiguous")
     for name in ("input_tensor_digests", "prediction_tensor_digests"):
         digests = smoke.get(name)
         if not isinstance(digests, Mapping) or not digests:
             raise RestoreGateError(f"smoke {name} are absent")
         if name == "prediction_tensor_digests" and set(digests) != set(SMOKE_METHODS):
             raise RestoreGateError("smoke prediction digest methods changed")
-        if name == "input_tensor_digests" and not {"activations", "attention_mask", "position_ids"}.issubset(digests):
+        if name == "input_tensor_digests" and set(digests) != set(_SMOKE_INPUT_KEYS):
             raise RestoreGateError("smoke input geometry digests are incomplete")
         for key, digest in digests.items():
             if not isinstance(key, str) or _SHA256.fullmatch(str(digest)) is None:
@@ -380,12 +432,130 @@ def _validate_smoke(manifest: Mapping[str, Any], assets: Mapping[str, Mapping[st
         "truth_free": True,
         "record_order": list(SMOKE_RECORD_ORDER),
         "methods": list(SMOKE_METHODS),
+        "record_bindings": [dict(item) for item in record_bindings],
         "input_asset": "smoke_input",
         "expected_asset": "smoke_expected",
+        "input_key_layout": input_key_layout,
+        "input_tensor_keys": normalized_input_keys,
         "input_tensor_digests": dict(smoke["input_tensor_digests"]),
         "prediction_tensor_digests": dict(smoke["prediction_tensor_digests"]),
     }
 
+
+
+def _canonical_json(value: Any) -> bytes:
+    try:
+        return json.dumps(
+            value,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        ).encode("utf-8")
+    except (TypeError, ValueError) as exc:
+        raise RestoreGateError("canonical JSON value is not serializable") from exc
+
+
+def _validate_consumer(
+    manifest: Mapping[str, Any],
+    assets: Mapping[str, Mapping[str, Any]],
+) -> dict[str, Any]:
+    consumer = manifest.get("consumer")
+    if not isinstance(consumer, Mapping):
+        raise RestoreGateError("consumer descriptor is absent")
+    entrypoint_asset = consumer.get("entrypoint_asset")
+    if entrypoint_asset != "package_cli" or entrypoint_asset not in assets:
+        raise RestoreGateError("consumer package CLI asset is not bound")
+    if consumer.get("python") != CONSUMER_PYTHON:
+        raise RestoreGateError("consumer Python executable is not the pinned interpreter")
+    if consumer.get("receipt_schema") != CONSUMER_RECEIPT_SCHEMA:
+        raise RestoreGateError("consumer receipt schema is not the pinned package schema")
+    if consumer.get("receipt_task_id") != CONSUMER_TASK_ID:
+        raise RestoreGateError("consumer receipt task identity is not the pinned package task")
+    if consumer.get("observation_asset") != "smoke_input":
+        raise RestoreGateError("consumer observation asset is not the fixed smoke input")
+    output_relative = _safe_relative(
+        consumer.get("output_relative_path"),
+        description="consumer output",
+    )
+    receipt_relative = _safe_relative(
+        consumer.get("receipt_relative_path"),
+        description="consumer receipt",
+    )
+    if not str(output_relative).startswith("runtime/"):
+        raise RestoreGateError("consumer output must be under runtime/")
+    if not str(receipt_relative).startswith("runtime/"):
+        raise RestoreGateError("consumer receipt must be under runtime/")
+    expected_receipt_relative = output_relative.with_suffix(".receipt.json")
+    if receipt_relative != expected_receipt_relative:
+        raise RestoreGateError("consumer receipt is not the CLI sibling receipt")
+    all_bundle_paths = {
+        str(_safe_relative(asset["relative_path"], description=f"asset {name}"))
+        for name, asset in assets.items()
+    }
+    for name, asset in assets.items():
+        if "tensor_identity" in asset:
+            identity = asset["tensor_identity"]
+            if isinstance(identity, Mapping):
+                all_bundle_paths.add(
+                    str(_safe_relative(identity["relative_path"], description=f"asset {name} tensor identity"))
+                )
+    if str(output_relative) in all_bundle_paths or str(receipt_relative) in all_bundle_paths:
+        raise RestoreGateError("consumer runtime output collides with a bundle asset")
+    for key, expected in {
+        "package_root_arg": "--package-root",
+        "observations_arg": "--observations",
+        "output_arg": "--output",
+        "device_arg": "--device",
+    }.items():
+        if consumer.get(key) != expected:
+            raise RestoreGateError(f"consumer argument binding changed: {key}")
+    device = consumer.get("device")
+    if not isinstance(device, str) or not device or device.startswith("-"):
+        raise RestoreGateError("consumer device binding is malformed")
+    settings = consumer.get("numerical_settings")
+    if not isinstance(settings, Mapping) or settings.get("device") != device:
+        raise RestoreGateError("consumer numerical device settings are absent or changed")
+    settings_sha = consumer.get("numerical_settings_sha256")
+    if _SHA256.fullmatch(str(settings_sha)) is None:
+        raise RestoreGateError("consumer numerical settings hash is malformed")
+    if hashlib.sha256(_canonical_json(dict(settings))).hexdigest() != settings_sha:
+        raise RestoreGateError("consumer numerical settings hash changed")
+    code_roots = consumer.get("code_relative_roots", ["code"])
+    if not isinstance(code_roots, list) or not code_roots:
+        raise RestoreGateError("consumer code roots are absent")
+    normalized_roots = [
+        str(_safe_relative(item, description="consumer code root"))
+        for item in code_roots
+    ]
+    try:
+        timeout_seconds = int(consumer["timeout_seconds"])
+    except (KeyError, TypeError, ValueError) as exc:
+        raise RestoreGateError("consumer timeout is malformed") from exc
+    if timeout_seconds <= 0 or timeout_seconds > 3600:
+        raise RestoreGateError("consumer timeout is outside the bounded range")
+    dependency_id = consumer.get("dependency_id")
+    if not isinstance(dependency_id, str) or not dependency_id:
+        raise RestoreGateError("consumer dependency identity is absent")
+    return {
+        "entrypoint_asset": entrypoint_asset,
+        "python": CONSUMER_PYTHON,
+        "receipt_schema": CONSUMER_RECEIPT_SCHEMA,
+        "receipt_task_id": CONSUMER_TASK_ID,
+        "observation_asset": "smoke_input",
+        "output_relative_path": str(output_relative),
+        "receipt_relative_path": str(receipt_relative),
+        "package_root_arg": "--package-root",
+        "observations_arg": "--observations",
+        "output_arg": "--output",
+        "device_arg": "--device",
+        "device": device,
+        "numerical_settings": dict(settings),
+        "numerical_settings_sha256": settings_sha,
+        "code_relative_roots": normalized_roots,
+        "timeout_seconds": timeout_seconds,
+        "dependency_id": dependency_id,
+    }
 
 def _validate_clean_root(value: Any) -> dict[str, Any]:
     if not isinstance(value, Mapping):
@@ -462,8 +632,11 @@ def validate_restore_manifest(
     if missing:
         raise RestoreGateError(f"required assets are absent: {', '.join(missing)}")
     assets: dict[str, Any] = {}
-    for name in REQUIRED_ASSETS:
-        asset = assets_payload[name]
+    # Every declared asset is copied and verified. Required roles establish the
+    # minimum package; extra bundled helper/config files cannot bypass hashing.
+    for name, asset in assets_payload.items():
+        if not isinstance(name, str) or not name:
+            raise RestoreGateError("asset name is malformed")
         if not isinstance(asset, Mapping):
             raise RestoreGateError(f"asset {name} is malformed")
         if not isinstance(asset.get("copies"), Mapping):
@@ -485,7 +658,8 @@ def validate_restore_manifest(
             if asset.get("bank") != METHOD_BANKS[name]:
                 raise RestoreGateError(f"asset {name} bank binding changed")
             try:
-                if int(asset["selected_step"]) < 0:
+                selected_step = int(asset["selected_step"])
+                if selected_step < 0:
                     raise ValueError
             except (KeyError, TypeError, ValueError) as exc:
                 raise RestoreGateError(f"asset {name} selected_step is malformed") from exc
@@ -550,17 +724,31 @@ def validate_restore_manifest(
                 raise RestoreGateError(f"selection receipt bank differs: {method_name}")
             if selected.get("model_id") != assets[method_name]["metadata"].get("model_id"):
                 raise RestoreGateError(f"selection receipt model differs: {method_name}")
+            try:
+                receipt_step = int(selected.get("selected_step", -1))
+            except (TypeError, ValueError) as exc:
+                raise RestoreGateError(f"selection receipt step is malformed: {method_name}") from exc
+            if receipt_step != assets[method_name]["metadata"].get("selected_step"):
+                raise RestoreGateError(f"selection receipt step differs: {method_name}")
     if selection_payloads["primary"] != selection_payloads["secondary"]:
         raise RestoreGateError("selection receipt differs across copies")
     tensor_reports: dict[str, Any] = {}
     for name in TENSOR_ASSETS:
-        tensor_reports[name] = _validate_tensor_identity_sidecar(
-            name,
-            assets_payload[name],
-            boundaries=boundaries,
-            state_records=assets[name]["copies"],
-        )
+        if not isinstance(assets_payload.get(name), Mapping):
+            raise RestoreGateError(f"tensor asset is absent: {name}")
+    for name, asset in assets_payload.items():
+        if "tensor_identity" in asset:
+            tensor_reports[name] = _validate_tensor_identity_sidecar(
+                name,
+                asset,
+                boundaries=boundaries,
+                state_records=assets[name]["copies"],
+            )
+    for name in TENSOR_ASSETS:
+        if name not in tensor_reports:
+            raise RestoreGateError(f"tensor identity is absent: {name}")
     smoke_report = _validate_smoke(manifest, assets_payload)
+    consumer_report = _validate_consumer(manifest, assets_payload)
     clean_report = _validate_clean_root(manifest.get("clean_runtime")) if require_clean_root else None
     return {
         "schema": SCHEMA,
@@ -576,6 +764,7 @@ def validate_restore_manifest(
             "payload": selection_payloads["primary"],
         },
         "smoke": smoke_report,
+        "consumer": consumer_report,
         "clean_runtime": clean_report,
         "tensor_files_opened": False,
         "smoke_files_opened": False,
@@ -743,8 +932,8 @@ def materialize_clean_runtime(
         require_clean_root=False,
         require_distinct_devices=require_distinct_devices,
     )
-    if source_boundary not in BOUNDARY_NAMES:
-        raise RestoreGateError(f"unknown source boundary: {source_boundary}")
+    if source_boundary != "secondary":
+        raise RestoreGateError("clean retrieval must use the verified secondary boundary")
     source_root = Path(report["boundaries"][source_boundary]["root"])
     destination = _ensure_clean_destination(
         Path(clean_root),
@@ -807,6 +996,530 @@ def consumer_environment(
     if dependency_id is not None:
         env["TRR_P11_DEPENDENCY_ID"] = str(dependency_id)
     return env
+
+
+def _clean_runtime_file(report: Mapping[str, Any], clean_root: Path, asset_name: str) -> Path:
+    asset = report["assets"].get(asset_name)
+    if not isinstance(asset, Mapping):
+        raise RestoreGateError(f"clean asset is absent: {asset_name}")
+    return _resolved_path(
+        clean_root / Path(str(asset["relative_path"])),
+        description=f"clean asset {asset_name}",
+        directory=False,
+    )
+
+
+def _verify_clean_tensor_inventories(
+    report: Mapping[str, Any],
+    clean_root: Path,
+) -> dict[str, Any]:
+    receipts: dict[str, Any] = {}
+    for name, identity in report["tensor_identity"].items():
+        tensor_path = _clean_runtime_file(report, clean_root, name)
+        identity_path = _resolved_path(
+            clean_root / Path(str(identity["relative_path"])),
+            description=f"clean tensor identity {name}",
+            directory=False,
+        )
+        receipts[name] = verify_tensor_identity(
+            tensor_path,
+            identity_path,
+            expected_file_sha256=report["assets"][name]["copies"]["primary"]["sha256"],
+        )
+    return receipts
+
+
+def verify_smoke_input_identity(
+    observations_path: Path,
+    smoke: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Verify the bound smoke tensors and each opaque row/slice digest."""
+    observations_path = _resolved_path(
+        observations_path,
+        description="smoke input",
+        directory=False,
+    )
+    expected = smoke.get("input_tensor_digests")
+    record_bindings = smoke.get("record_bindings")
+    layout_name = smoke.get("input_key_layout")
+    input_tensor_keys = smoke.get("input_tensor_keys")
+    if (
+        not isinstance(expected, Mapping)
+        or set(expected) != set(_SMOKE_INPUT_KEYS)
+        or not isinstance(record_bindings, list)
+        or len(record_bindings) != len(SMOKE_RECORD_ORDER)
+        or not isinstance(layout_name, str)
+        or layout_name not in _SMOKE_INPUT_LAYOUTS
+        or not isinstance(input_tensor_keys, Mapping)
+    ):
+        raise RestoreGateError("smoke input digest or key bindings are absent")
+    expected_layout = _SMOKE_INPUT_LAYOUTS[layout_name]
+    normalized_keys: dict[str, list[str]] = {}
+    for canonical in _SMOKE_INPUT_KEYS:
+        values = input_tensor_keys.get(canonical)
+        if not isinstance(values, list) or tuple(values) != expected_layout[canonical]:
+            raise RestoreGateError(f"smoke input tensor-key mapping changed: {canonical}")
+        normalized_keys[canonical] = list(values)
+    flattened_keys = [key for canonical in _SMOKE_INPUT_KEYS for key in normalized_keys[canonical]]
+    if len(set(flattened_keys)) != len(flattened_keys):
+        raise RestoreGateError("smoke input tensor-key mapping is ambiguous")
+    try:
+        from safetensors import safe_open
+        import torch
+    except ImportError as exc:
+        raise RestoreGateError("safetensors/torch are unavailable for smoke input verification") from exc
+    forbidden_fragments = ("token", "label", "truth", "source", "answer")
+    actual_digests: dict[str, str] = {}
+    slice_digests: list[dict[str, str]] = []
+    with safe_open(str(observations_path), framework="pt", device="cpu") as handle:
+        keys = set(handle.keys())
+        expected_keys = set(flattened_keys)
+        if keys != expected_keys:
+            raise RestoreGateError(
+                f"smoke input tensor keys differ: expected {sorted(expected_keys)}, got {sorted(keys)}"
+            )
+        if any(any(fragment in key.lower() for fragment in forbidden_fragments) for key in keys):
+            raise RestoreGateError("smoke input exposes a forbidden truth/source tensor")
+        pieces: dict[str, list[Any]] = {
+            canonical: [handle.get_tensor(key) for key in normalized_keys[canonical]]
+            for canonical in _SMOKE_INPUT_KEYS
+        }
+        values: dict[str, Any] = {}
+        for canonical in _SMOKE_INPUT_KEYS:
+            try:
+                values[canonical] = (
+                    pieces[canonical][0]
+                    if len(pieces[canonical]) == 1
+                    else torch.cat(pieces[canonical], dim=0).contiguous()
+                )
+            except (RuntimeError, TypeError) as exc:
+                raise RestoreGateError(f"smoke input tensor groups cannot be concatenated: {canonical}") from exc
+            if values[canonical].ndim < 1 or int(values[canonical].shape[0]) != len(record_bindings):
+                raise RestoreGateError(f"smoke input row geometry differs: {canonical}")
+        if layout_name == "domain_prefixed":
+            offset = 0
+            for domain, activation_piece in zip(("finance", "pile"), pieces["activations"]):
+                count = int(activation_piece.shape[0])
+                for binding in record_bindings[offset : offset + count]:
+                    if not isinstance(binding, Mapping) or not str(binding.get("record_id", "")).startswith(f"{domain}/"):
+                        raise RestoreGateError("smoke input domain/key order differs from record bindings")
+                offset += count
+            if offset != len(record_bindings):
+                raise RestoreGateError("smoke input domain row count differs from record bindings")
+        for key in _SMOKE_INPUT_KEYS:
+            actual = tensor_digest(values[key])
+            if actual != expected[key]:
+                raise RestoreGateError(f"smoke input tensor digest differs: {key}")
+            actual_digests[key] = actual
+        for index, binding in enumerate(record_bindings):
+            if not isinstance(binding, Mapping):
+                raise RestoreGateError(f"smoke input record binding is malformed: {index}")
+            row_values: dict[str, str] = {}
+            for tensor_key, binding_key in (
+                ("activations", "activation_slice_sha256"),
+                ("attention_mask", "attention_mask_slice_sha256"),
+                ("position_ids", "position_ids_slice_sha256"),
+            ):
+                actual = tensor_digest(values[tensor_key][index])
+                if actual != binding.get(binding_key):
+                    raise RestoreGateError(
+                        f"smoke input row digest differs: {index}/{tensor_key}"
+                    )
+                row_values[binding_key] = actual
+            slice_digests.append(row_values)
+    return {
+        "verified": True,
+        "key_layout": layout_name,
+        "tensor_keys": normalized_keys,
+        "tensor_digests": actual_digests,
+        "record_count": len(slice_digests),
+        "slice_digests": slice_digests,
+    }
+
+def _consumer_command(
+    report: Mapping[str, Any],
+    clean_root: Path,
+) -> tuple[list[str], Path, Path, Path]:
+    consumer = report["consumer"]
+    entrypoint_asset = str(consumer["entrypoint_asset"])
+    entrypoint = _clean_runtime_file(report, clean_root, entrypoint_asset)
+    observations = _clean_runtime_file(report, clean_root, str(consumer["observation_asset"]))
+    output_relative = _safe_relative(
+        consumer["output_relative_path"],
+        description="consumer output",
+    )
+    output = (clean_root / output_relative).resolve(strict=False)
+    receipt = (
+        clean_root
+        / _safe_relative(consumer["receipt_relative_path"], description="consumer receipt")
+    ).resolve(strict=False)
+    _under(entrypoint, clean_root, description="consumer entrypoint")
+    _under(observations, clean_root, description="consumer observations")
+    _under(output, clean_root, description="consumer output")
+    _under(receipt, clean_root, description="consumer receipt")
+    if output.exists() or output.is_symlink() or receipt.exists() or receipt.is_symlink():
+        raise RestoreGateError("consumer output or sibling receipt already exists; runtime is create-only")
+    if output.parent.exists() and any(output.parent.iterdir()):
+        raise RestoreGateError("consumer runtime output directory is not empty")
+    if receipt.parent.exists() and any(receipt.parent.iterdir()):
+        raise RestoreGateError("consumer receipt directory is not empty")
+    command = [
+        str(consumer["python"]),
+        str(entrypoint),
+        "predict",
+        str(consumer["package_root_arg"]),
+        str(clean_root),
+        str(consumer["observations_arg"]),
+        str(observations),
+        str(consumer["output_arg"]),
+        str(output),
+        str(consumer["device_arg"]),
+        str(consumer["device"]),
+    ]
+    return command, output, observations, receipt
+
+def _subprocess_environment(report: Mapping[str, Any], clean_root: Path) -> dict[str, str]:
+    consumer = report["consumer"]
+    blocked = {
+        "PYTHONPATH",
+        "PYTHONHOME",
+        "HF_HOME",
+        "HF_HUB_CACHE",
+        "HF_DATASETS_CACHE",
+        "TRANSFORMERS_CACHE",
+        "HF_ENDPOINT",
+    }
+    env = {key: value for key, value in os.environ.items() if key not in blocked}
+    env.update(
+        consumer_environment(
+            clean_root,
+            code_relative_roots=consumer["code_relative_roots"],
+            dependency_id=consumer["dependency_id"],
+        )
+    )
+    # Keep the interpreter's explicitly pinned installed dependencies available.
+    # PYTHONPATH remains controlled to clean bundled code above; provenance checks
+    # below reject any task code imported outside the hash-bound runtime.
+    return env
+
+
+def _verify_consumer_receipt(
+    receipt_path: Path,
+    report: Mapping[str, Any],
+    clean_root: Path,
+    output_path: Path,
+) -> dict[str, Any]:
+    """Verify Agent1's sibling prediction receipt and actual load provenance."""
+    receipt_path = _resolved_path(
+        receipt_path,
+        description="consumer receipt",
+        directory=False,
+    )
+    output_path = _resolved_path(output_path, description="consumer output", directory=False)
+    payload = _read_json(receipt_path, description="consumer receipt")
+    if payload.get("schema") != CONSUMER_RECEIPT_SCHEMA or payload.get("task_id") != CONSUMER_TASK_ID:
+        raise RestoreGateError("consumer receipt schema or task identity changed")
+    if payload.get("status") != "PREDICTIONS_GENERATED_AFTER_SELECTION":
+        raise RestoreGateError("consumer receipt status is not post-selection prediction")
+    for key in ("complete_before_smoke", "smoke_used_for_selection", "independent_evaluation_truth_opened"):
+        expected = True if key == "complete_before_smoke" else False
+        if payload.get(key) is not expected:
+            raise RestoreGateError(f"consumer receipt selection boundary changed: {key}")
+    for key in ("truth_opened", "source_text_loaded", "token_ids_loaded"):
+        if payload.get(key) is not False:
+            raise RestoreGateError(f"consumer receipt truth boundary is not explicitly closed: {key}")
+    runtime = payload.get("runtime")
+    if not isinstance(runtime, Mapping):
+        raise RestoreGateError("consumer receipt runtime provenance is absent")
+    if runtime.get("device") != report["consumer"]["device"]:
+        raise RestoreGateError("consumer receipt device differs")
+    if runtime.get("numeric_profile") != "qualified FP32 decoder":
+        raise RestoreGateError("consumer receipt numeric profile changed")
+    dependencies = runtime.get("dependencies")
+    if not isinstance(dependencies, Mapping) or not dependencies:
+        raise RestoreGateError("consumer receipt dependency versions are absent")
+    if any(not isinstance(key, str) or not key or not isinstance(value, str) or not value for key, value in dependencies.items()):
+        raise RestoreGateError("consumer receipt dependency versions are malformed")
+    executable = runtime.get("python_executable")
+    if not isinstance(executable, str) or not executable:
+        raise RestoreGateError("consumer receipt Python executable is absent")
+    actual_executable = Path(executable).expanduser().resolve(strict=False)
+    expected_executable = Path(report["consumer"]["python"]).expanduser().resolve(strict=False)
+    if not actual_executable.is_file() or actual_executable != expected_executable:
+        raise RestoreGateError("consumer receipt Python executable differs")
+
+    declared_bundle: dict[str, str] = {}
+    for name, asset in report["assets"].items():
+        declared_bundle[
+            str(_resolved_path(clean_root / Path(str(asset["relative_path"])), description=f"clean asset {name}", directory=False))
+        ] = name
+    for name, identity in report["tensor_identity"].items():
+        declared_bundle[
+            str(_resolved_path(clean_root / Path(str(identity["relative_path"])), description=f"clean tensor identity {name}", directory=False))
+        ] = f"{name}.tensor_identity"
+
+    def resolve_value(value: Any, *, description: str, must_be_bundle: bool) -> Path:
+        if not isinstance(value, str) or not value:
+            raise RestoreGateError(f"consumer receipt {description} path is malformed")
+        path = Path(value)
+        if not path.is_absolute():
+            path = clean_root / path
+        resolved = _resolved_path(path, description=f"consumer receipt {description}", directory=False)
+        _under(resolved, clean_root, description=f"consumer receipt {description}")
+        if any(part in _TRAINING_WORKTREE_PARTS for part in resolved.parts):
+            raise RestoreGateError("consumer receipt references a training worktree")
+        if any(part.lower() in _TEMP_PARTS for part in resolved.parts):
+            raise RestoreGateError("consumer receipt references a temporary path")
+        if must_be_bundle and str(resolved) not in declared_bundle:
+            raise RestoreGateError(f"consumer receipt {description} is not a bound bundle asset")
+        return resolved
+
+    def check_binding(binding: Any, expected_path: Path, *, description: str, must_be_bundle: bool) -> dict[str, Any]:
+        if not isinstance(binding, Mapping):
+            raise RestoreGateError(f"consumer receipt {description} file binding is absent")
+        expected_path = _resolved_path(expected_path, description=description, directory=False)
+        if must_be_bundle and str(expected_path) not in declared_bundle:
+            raise RestoreGateError(f"consumer receipt {description} is not a bound bundle asset")
+        path_value = binding.get("loaded_path", binding.get("path"))
+        if path_value is not None:
+            loaded_path = resolve_value(path_value, description=description, must_be_bundle=must_be_bundle)
+            if loaded_path != expected_path:
+                raise RestoreGateError(f"consumer receipt {description} path differs")
+        relative_value = binding.get("relative_path")
+        if relative_value is not None:
+            relative = _safe_relative(relative_value, description=f"consumer receipt {description}")
+            if _resolved_path(clean_root / relative, description=f"consumer receipt {description}", directory=False) != expected_path:
+                raise RestoreGateError(f"consumer receipt {description} relative path differs")
+        try:
+            expected_bytes = int(binding["bytes"])
+        except (KeyError, TypeError, ValueError) as exc:
+            raise RestoreGateError(f"consumer receipt {description} byte binding is malformed") from exc
+        expected_sha = binding.get("sha256")
+        if _SHA256.fullmatch(str(expected_sha)) is None:
+            raise RestoreGateError(f"consumer receipt {description} hash binding is malformed")
+        return _binding_record(
+            expected_path,
+            {"bytes": expected_bytes, "sha256": expected_sha},
+            description=f"consumer receipt {description}",
+        )
+
+    output_binding = payload.get("output")
+    if not isinstance(output_binding, Mapping):
+        raise RestoreGateError("consumer receipt output binding is absent")
+    check_binding(output_binding, output_path, description="output", must_be_bundle=False)
+    observations_binding = payload.get("observations")
+    observation_path = _clean_runtime_file(report, clean_root, "smoke_input")
+    check_binding(observations_binding, observation_path, description="observations", must_be_bundle=True)
+    if observations_binding.get("tensor_sha256") != report["smoke"]["input_tensor_digests"]:
+        raise RestoreGateError("consumer receipt observation tensor digests differ")
+    if observations_binding.get("record_order") != report["smoke"]["record_order"]:
+        raise RestoreGateError("consumer receipt observation order differs")
+
+    methods = payload.get("methods")
+    if not isinstance(methods, Mapping) or set(methods) != set(SMOKE_METHODS):
+        raise RestoreGateError("consumer receipt method bindings are incomplete")
+    loaded_resources: set[str] = {str(observation_path)}
+    checked_bindings: dict[str, dict[str, Any]] = {
+        str(observation_path): {
+            "path": str(observation_path),
+            "bytes": observation_path.stat().st_size,
+            "sha256": _sha256_file(observation_path),
+            "role": "smoke_input",
+        }
+    }
+    for method_name in SMOKE_METHODS:
+        method = methods[method_name]
+        state_path = _clean_runtime_file(report, clean_root, method_name)
+        checked = check_binding(
+            method.get("state_file_binding"),
+            state_path,
+            description=f"{method_name} state",
+            must_be_bundle=True,
+        )
+        loaded_resources.add(str(state_path))
+        checked_bindings[str(state_path)] = {**checked, "role": method_name}
+    readout_path = _clean_runtime_file(report, clean_root, "public_readout")
+    readout = payload.get("readout")
+    if not isinstance(readout, Mapping):
+        raise RestoreGateError("consumer receipt readout binding is absent")
+    checked = check_binding(readout.get("file_binding"), readout_path, description="public readout", must_be_bundle=True)
+    loaded_resources.add(str(readout_path))
+    checked_bindings[str(readout_path)] = {**checked, "role": "public_readout"}
+
+    imported_modules = runtime.get("imported_modules")
+    if not isinstance(imported_modules, list) or not imported_modules:
+        raise RestoreGateError("consumer receipt imported module bindings are absent")
+    loaded_code: set[str] = {str(_clean_runtime_file(report, clean_root, "package_cli"))}
+    for index, module in enumerate(imported_modules):
+        if not isinstance(module, Mapping):
+            raise RestoreGateError(f"consumer receipt imported module is malformed: {index}")
+        module_name = module.get("module")
+        if not isinstance(module_name, str) or not module_name:
+            raise RestoreGateError(f"consumer receipt imported module name is absent: {index}")
+        module_path = resolve_value(module.get("loaded_path"), description=f"imported module {module_name}", must_be_bundle=True)
+        checked = check_binding(module, module_path, description=f"imported module {module_name}", must_be_bundle=True)
+        loaded_code.add(str(module_path))
+        checked_bindings[str(module_path)] = {**checked, "role": f"module:{module_name}"}
+    for name in ("loader_code", "decoder_code"):
+        expected = _clean_runtime_file(report, clean_root, name)
+        if str(expected) not in loaded_code:
+            raise RestoreGateError(f"consumer receipt omits imported code: {name}")
+    runtime_descriptor = runtime.get("runtime_descriptor")
+    if runtime_descriptor is not None:
+        descriptor_path_value = runtime_descriptor.get("loaded_path") if isinstance(runtime_descriptor, Mapping) else None
+        if descriptor_path_value is None:
+            descriptor_path_value = runtime_descriptor.get("relative_path") if isinstance(runtime_descriptor, Mapping) else None
+        if descriptor_path_value is not None:
+            descriptor_path = resolve_value(descriptor_path_value, description="runtime descriptor", must_be_bundle=True)
+            checked = check_binding(runtime_descriptor, descriptor_path, description="runtime descriptor", must_be_bundle=True)
+            loaded_resources.add(str(descriptor_path))
+            checked_bindings[str(descriptor_path)] = {**checked, "role": "runtime_descriptor"}
+    return {
+        "verified": True,
+        "schema": payload["schema"],
+        "package_root": str(clean_root),
+        "loaded_code_paths": sorted(loaded_code),
+        "loaded_resource_paths": sorted(loaded_resources),
+        "loaded_file_bindings": [checked_bindings[key] for key in sorted(checked_bindings)],
+        "dependency_id": report["consumer"]["dependency_id"],
+        "dependency_versions": dict(dependencies),
+        "device": runtime["device"],
+        "numeric_profile": runtime["numeric_profile"],
+        "training_worktree_import": False,
+        "temporary_dependency": False,
+    }
+
+def run_restored_smoke(
+    manifest_path: Path,
+    clean_root: Path,
+    *,
+    verify_tensors: bool = True,
+    require_windows_boundary: bool = True,
+    require_distinct_devices: bool = True,
+) -> dict[str, Any]:
+    """Restore from a verified clean bundle and run the bound smoke CLI.
+
+    The caller must grant the model execution window explicitly. This function
+    retrieves no files and uses no training checkout; it only runs the pinned
+    bundled entrypoint against the copied smoke fixture.
+    """
+    report = validate_restore_manifest(
+        manifest_path,
+        require_windows_boundary=require_windows_boundary,
+        require_clean_root=False,
+        require_distinct_devices=require_distinct_devices,
+    )
+    clean = verify_clean_runtime(
+        manifest_path,
+        clean_root,
+        require_windows_boundary=require_windows_boundary,
+        require_distinct_devices=require_distinct_devices,
+    )
+    destination = Path(clean["clean_root"])
+    if not verify_tensors:
+        raise RestoreGateError("full tensor verification is mandatory for restored smoke")
+    tensor_receipts = _verify_clean_tensor_inventories(report, destination)
+    command, output, observations, receipt = _consumer_command(report, destination)
+    smoke_input_receipt = verify_smoke_input_identity(observations, report["smoke"])
+    env = _subprocess_environment(report, destination)
+    start_wall = time.time()
+    start_monotonic = time.monotonic()
+    try:
+        completed = subprocess.run(
+            command,
+            cwd=destination,
+            env=env,
+            shell=False,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=int(report["consumer"]["timeout_seconds"]),
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise RestoreGateError("consumer smoke timed out") from exc
+    elapsed = time.monotonic() - start_monotonic
+    if completed.returncode != 0:
+        raise RestoreGateError(
+            f"consumer smoke failed with exit {completed.returncode}: "
+            f"{completed.stderr[-500:]}"
+        )
+    if not output.exists() or output.is_symlink() or not output.is_file():
+        raise RestoreGateError("consumer smoke output is missing or symlinked")
+    if not receipt.exists() or receipt.is_symlink() or not receipt.is_file():
+        raise RestoreGateError("consumer sibling receipt is missing or symlinked")
+    consumer_receipt = _verify_consumer_receipt(receipt, report, destination, output)
+    post_execution_clean = verify_clean_runtime(
+        manifest_path,
+        destination,
+        require_windows_boundary=require_windows_boundary,
+        require_distinct_devices=require_distinct_devices,
+    )
+    expected = _clean_runtime_file(report, destination, "smoke_expected")
+    comparison = compare_smoke_prediction_files(
+        expected,
+        output,
+        expected_tensor_digests=report["smoke"]["prediction_tensor_digests"],
+    )
+    return {
+        "schema": SCHEMA,
+        "task_id": TASK_ID,
+        "status": "PASS_RESTORED_SMOKE",
+        "clean_runtime": str(destination),
+        "command": command,
+        "cwd": str(destination),
+        "device": report["consumer"]["device"],
+        "dependency_id": report["consumer"]["dependency_id"],
+        "observations": str(observations),
+        "output": _binding_record(
+            output,
+            {"bytes": output.stat().st_size, "sha256": _sha256_file(output)},
+            description="restored smoke output",
+        ),
+        "packaged_expected": _binding_record(
+            expected,
+            {"bytes": expected.stat().st_size, "sha256": _sha256_file(expected)},
+            description="packaged smoke output",
+        ),
+        "tensor_identity": tensor_receipts,
+        "smoke_input": smoke_input_receipt,
+        "consumer_receipt": consumer_receipt,
+        "post_execution_clean_runtime": post_execution_clean,
+        "smoke_comparison": comparison,
+        "started_unix": start_wall,
+        "elapsed_seconds": elapsed,
+        "stdout_sha256": hashlib.sha256(completed.stdout.encode()).hexdigest(),
+        "stderr_sha256": hashlib.sha256(completed.stderr.encode()).hexdigest(),
+        "return_code": completed.returncode,
+        "offline": True,
+        "training_worktree_import": consumer_receipt["training_worktree_import"],
+        "independent_evaluation_truth_opened": False,
+    }
+
+
+def restore_and_run_smoke(
+    manifest_path: Path,
+    clean_root: Path,
+    *,
+    require_windows_boundary: bool = True,
+    require_distinct_devices: bool = True,
+) -> dict[str, Any]:
+    """Copy from the secondary boundary, verify tensors, and run exact smoke."""
+    retrieval = materialize_clean_runtime(
+        manifest_path,
+        clean_root,
+        source_boundary="secondary",
+        require_windows_boundary=require_windows_boundary,
+        require_distinct_devices=require_distinct_devices,
+    )
+    smoke = run_restored_smoke(
+        manifest_path,
+        clean_root,
+        verify_tensors=True,
+        require_windows_boundary=require_windows_boundary,
+        require_distinct_devices=require_distinct_devices,
+    )
+    smoke["retrieval"] = retrieval
+    return smoke
 
 
 def tensor_digest(value: Any) -> str:
@@ -917,21 +1630,49 @@ def compare_smoke_prediction_files(
 
 
 def _cli() -> int:
-    parser = argparse.ArgumentParser(description="Validate a TRR-P11 persistent restore package")
+    parser = argparse.ArgumentParser(description="Validate or restore a TRR-P11 persistent package")
     parser.add_argument("manifest", type=Path)
+    parser.add_argument("--restore-smoke", action="store_true")
+    parser.add_argument("--clean-root", type=Path)
+    parser.add_argument("--receipt", type=Path)
     parser.add_argument("--allow-test-boundaries", action="store_true")
     parser.add_argument("--no-clean-root", action="store_true")
     args = parser.parse_args()
     try:
-        report = validate_restore_manifest(
-            args.manifest,
-            require_windows_boundary=not args.allow_test_boundaries,
-            require_clean_root=not args.no_clean_root,
-        )
+        require_windows = not args.allow_test_boundaries
+        require_devices = not args.allow_test_boundaries
+        if args.restore_smoke:
+            if args.clean_root is None:
+                raise RestoreGateError("--clean-root is required with --restore-smoke")
+            if args.no_clean_root:
+                raise RestoreGateError("--no-clean-root cannot be used with --restore-smoke")
+            report = restore_and_run_smoke(
+                args.manifest,
+                args.clean_root,
+                require_windows_boundary=require_windows,
+                require_distinct_devices=require_devices,
+            )
+        else:
+            report = validate_restore_manifest(
+                args.manifest,
+                require_windows_boundary=require_windows,
+                require_clean_root=not args.no_clean_root,
+                require_distinct_devices=require_devices,
+            )
+        encoded = json.dumps(report, indent=2, sort_keys=True) + "\n"
+        if args.receipt is not None:
+            receipt = Path(args.receipt).expanduser()
+            if not receipt.is_absolute():
+                raise RestoreGateError("--receipt must be absolute")
+            if receipt.exists() or receipt.is_symlink():
+                raise RestoreGateError("receipt path already exists; receipts are create-only")
+            receipt.parent.mkdir(parents=True, exist_ok=True)
+            receipt.write_text(encoded, encoding="utf-8")
+        print(encoded, end="")
+        return 0
     except RestoreGateError as exc:
         parser.error(str(exc))
-    print(json.dumps(report, indent=2, sort_keys=True))
-    return 0
+    return 2
 
 
 if __name__ == "__main__":

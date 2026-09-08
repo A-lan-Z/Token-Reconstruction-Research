@@ -2,7 +2,8 @@
 
 The bundle is bounded to the two selected state files, the shared public E table,
 hash-bound loader/decoder/configuration files, tensor identity sidecars, the
-four-row public smoke input, and the two-method smoke output. It does not copy
+four-row public smoke input (Finance/Pile-prefixed keys), its two-method smoke
+output, and the sibling prediction receipt. It does not copy
 the training prefix, a tokenizer/source cache, private truth, or the old
 temporary P09 states.
 
@@ -39,11 +40,16 @@ The planned sequence is:
    each restored state and public E sidecar and checks every tensor key, shape,
    dtype, and canonical digest. The bundled fixed-readout adapter then runs
    the four agreed public_base rows for both methods and compare_smoke_prediction_files
-   checks exact ordered IDs against the packager receipt.
-6. Only after the restore gate passes may a separately frozen evaluation panel
-   be considered. This plan itself opens no model tensors, source text, labels,
-   or truth.
+   checks exact ordered IDs against the packager receipt. The runner first verifies
+   the declared standard or Finance/Pile-prefixed input-key groups and their
+   aggregate/per-record digests; it then validates the CLI sibling receipt
+   against actual loaded bundle paths, dependency versions, and file hashes.
+6. Source eligibility/selection may proceed in parallel after exclusion
+   coverage is complete, the evaluation plan is frozen, and the bank identities
+   are bound. Scientific prediction and scoring wait for the restore gate.
+   This plan itself opens no model tensors, source text, labels, or truth.
 
 The old P09 hashes, pointers, and historical predictions are provenance only.
-They do not qualify a new package unless the actual file and tensor identities
-are independently restored and verified.
+They do not qualify a new package by themselves. If actual original state bytes
+are recovered, complete file and tensor identities may qualify them after
+independent verification under the amendment.

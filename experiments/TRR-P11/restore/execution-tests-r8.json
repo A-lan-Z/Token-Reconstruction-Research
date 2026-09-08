@@ -1,0 +1,47 @@
+{
+  "actual_package_restore": "PENDING_AGENT1_FROZEN_PACKAGE_AND_SECONDARY_COPY",
+  "code_hashes_at_failed_attempt": {
+    "scripts/trr_p11/restore_gate.py": "d8819159fbf9f538af9983d87cd48f209eec60168d0ef325b5005ba402c2de25",
+    "tests/test_trr_p11_restore_gate.py": "bd0cd1d9f9d51ee850d1739a9aa0085adc75d36a492c07231330e5d28ce71dc0"
+  },
+  "command": "env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. timeout 120 /usr/bin/python3 -m pytest -q tests/test_trr_p11_restore_gate.py",
+  "exit_code": 1,
+  "failure": {
+    "cause": "synthetic _smoke_descriptor_for_tensors omitted the required selection_receipt binding; production gate correctly rejected the incomplete smoke descriptor",
+    "exception": "scripts.trr_p11.restore_gate.RestoreGateError",
+    "message": "smoke was not bound after complete checkpoint selection",
+    "test": "test_restore_and_run_smoke_end_to_end_synthetic_bundle"
+  },
+  "peak_rss_kb": 672760,
+  "preflight": {
+    "gpu_used": false,
+    "memory_limit_intent": "under 2 GiB peak RSS",
+    "model_loaded": false,
+    "real_source_or_truth_loaded": false,
+    "safetensors": "0.7.0",
+    "thread_env": {
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "torch": "2.10.0+cu128"
+  },
+  "process_ended_utc": "2026-09-08T06:23:04.866452414Z",
+  "process_started_utc": "2026-09-08T06:23:01.868859340Z",
+  "pytest_elapsed_seconds": 1.95,
+  "schema": "token-reconstruction.trr-p11-execution-test.v1",
+  "scope": "synthetic tensors, prefixed smoke identity, prediction identity, sibling receipt provenance, and end-to-end secondary-copy subprocess; no model/GPU/source/truth",
+  "status": "FAILED_SYNTHETIC_E2E_SMOKE_DESCRIPTOR_BINDING",
+  "stdout_stderr_log": {
+    "ephemeral": true,
+    "path": "/tmp/trr_p11_synthetic_r8.out",
+    "sha256": "f875d2314085147411db37c8b52e1c8e99dd777f3ac7ef8799bd7ff1fc4d8141"
+  },
+  "task_id": "TRR-P11",
+  "tests_collected": 12,
+  "tests_failed": 1,
+  "tests_passed": 11,
+  "timeout_seconds": 120,
+  "wrapper_elapsed_seconds": 2.997593074
+}
