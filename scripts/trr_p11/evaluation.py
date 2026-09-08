@@ -959,7 +959,12 @@ def _validate_a1_trace(
         "candidate_budget": A1_TRACE_CANDIDATE_BUDGET,
     }
     for key, expected in expected_metadata.items():
-        if str(metadata.get(key)) != str(expected):
+        actual = str(metadata.get(key))
+        if key == "method_id" and actual == "frozen_a1_a2_k256":
+            # Preserve the native producer's registered method ID while the
+            # P11 matrix exposes the shorter comparator key.
+            continue
+        if actual != str(expected):
             raise EvaluationError(f"A1 candidate trace metadata changed: {cell}/{key}")
     if selection_sha256 is not None and metadata.get("selection_sha256") != selection_sha256:
         raise EvaluationError(f"A1 candidate trace selection binding changed: {cell}")
@@ -970,10 +975,20 @@ def _validate_a1_trace(
         raise EvaluationError(f"A1 candidate trace candidate dtype changed: {cell}")
     if scores.dtype != torch.float32:
         raise EvaluationError(f"A1 candidate trace score dtype changed: {cell}")
-    if candidates.lt(0).any().item() or candidates.ge(VOCABULARY_SIZE).any().item():
+    # The native A1+A2 producer keeps the BOS row in the fixed-width trace
+    # for geometry, but does not score it.  It serializes that row as the
+    # exact (-1, -inf) sentinel pair.  Bind that convention narrowly and
+    # retain strict vocabulary and finite-score checks for every scored row.
+    bos_candidates = candidates[:, :1, :]
+    bos_scores = scores[:, :1, :]
+    if not bos_candidates.eq(-1).all().item() or not bos_scores.eq(float("-inf")).all().item():
+        raise EvaluationError(f"A1 candidate trace BOS padding changed: {cell}")
+    scored_candidates = candidates[:, 1:, :]
+    scored_scores = scores[:, 1:, :]
+    if scored_candidates.lt(0).any().item() or scored_candidates.ge(VOCABULARY_SIZE).any().item():
         raise EvaluationError(f"A1 candidate trace token range changed: {cell}")
-    if scores.isnan().any().item():
-        raise EvaluationError(f"A1 candidate trace contains NaN scores: {cell}")
+    if not torch.isfinite(scored_scores).all().item():
+        raise EvaluationError(f"A1 candidate trace contains nonfinite scored values: {cell}")
     return {
         **record,
         "label": "candidate_trace",
@@ -1047,7 +1062,14 @@ def _validate_prediction(
     for digest_key in ("tensor_sha256", "prediction_tensor_sha256", "prediction_sha256"):
         if digest_key in metadata and metadata[digest_key] != tensor_digest_declared:
             raise EvaluationError(f"prediction metadata tensor digest changed: {method}/{cell}")
-    if str(metadata.get("method_id", method)) != method or str(metadata.get("cell_id", cell)) != cell:
+    declared_method = str(metadata.get("method_id", method))
+    allowed_method_ids = {method}
+    if method == COMPARATOR_METHOD:
+        # The native producer keeps its registered historical method ID in
+        # the tensor metadata while the P11 adapter uses the shorter matrix
+        # key.  Both names are bound to the same receipt/method contract.
+        allowed_method_ids.add("frozen_a1_a2_k256")
+    if declared_method not in allowed_method_ids or str(metadata.get("cell_id", cell)) != cell:
         raise EvaluationError(f"prediction metadata identity changed: {method}/{cell}")
     for flag in _FORBIDDEN_TRUE:
         if _is_true(metadata.get(flag)):
@@ -1074,9 +1096,24 @@ def _validate_prediction(
             if receipt.get(flag) is not expected:
                 raise EvaluationError(f"prediction receipt boundary changed: {method}/{cell}/{flag}")
     if selection_sha256 is not None:
-        for selection_key in ("selection_sha256", "selection_receipt_sha256", "selection_plan_sha256"):
+        # The restored primary package has two deliberate selection bindings:
+        # the P11 source-selection plan and the package-local pre-smoke
+        # selection receipt.  They are distinct immutable records.  Bind each
+        # field to its own record rather than comparing both hashes to the
+        # P11 plan hash.
+        for selection_key in ("selection_sha256", "selection_plan_sha256"):
             if selection_key in receipt and receipt.get(selection_key) != selection_sha256:
                 raise EvaluationError(f"prediction receipt selection binding changed: {method}/{cell}")
+        package_selection_sha = (
+            restore_links.get("assets", {})
+            .get("selection_receipt", {})
+            .get("primary", {})
+            .get("sha256")
+            if isinstance(restore_links, Mapping)
+            else None
+        )
+        if "selection_receipt_sha256" in receipt and receipt.get("selection_receipt_sha256") != package_selection_sha:
+            raise EvaluationError(f"prediction receipt package selection binding changed: {method}/{cell}")
     output_receipt = receipt.get("output")
     if isinstance(output_receipt, Mapping):
         _same_content(output, output_receipt, description=f"prediction receipt output {method}/{cell}")
