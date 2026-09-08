@@ -42,7 +42,11 @@ PUBLIC_SCHEMA = "token-reconstruction.trr-p12-public-geometry-aggregates.v1"
 STAGE_GEOMETRY_SCHEMA = "token-reconstruction.trr-p12-b1-compact-geometry.v1"
 PREDICTION_KEY = "expanded_fixed"
 PROJECTED_KEY = "projected_hidden"
-DEFAULT_LOGIT_SCALE = 71.91000599857597
+# B1 stores base.s as FP32.  Keep the exact package scalar operation for
+# score margins and signed-distance reconstruction; the positive scale does
+# not change argmax, but its rounding matters to reported margins.
+B1_BASE_S = 4.275415420532227
+DEFAULT_LOGIT_SCALE = float(torch.exp(torch.tensor(B1_BASE_S, dtype=torch.float32)).item())
 VOCABULARY_SIZE = 128256
 HIDDEN_SIZE = 2048
 STORED_SEQUENCE_TOKENS = 128
@@ -623,7 +627,9 @@ def run_pipeline(
             "stored_sequence_tokens": config.stored_sequence_tokens,
             "scored_positions": config.scored_positions,
             "bos_token_id": config.bos_token_id,
+            "base_s": B1_BASE_S,
             "logit_scale": config.logit_scale,
+            "logit_scale_source": "torch.float32 exp(base.s)",
         },
         "embedding": embedding_binding,
         "score_backend": scorer.metadata(),

@@ -31,6 +31,7 @@ if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
 from scripts.trr_p12.geometry_pipeline import (  # noqa: E402
+    B1_BASE_S,
     DEFAULT_LOGIT_SCALE,
     DEFAULT_MIN_FREE_GPU_BYTES,
     GeometryPipelineError,
@@ -191,7 +192,9 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             "hidden_size": config.hidden_size,
             "stored_sequence_tokens": config.stored_sequence_tokens,
             "scored_positions": config.scored_positions,
+            "base_s": B1_BASE_S,
             "logit_scale": config.logit_scale,
+            "logit_scale_source": "torch.float32 exp(base.s)",
         },
         "fixture": {
             "stage": stage.bindings(),
