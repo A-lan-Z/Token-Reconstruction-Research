@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 import platform
+import importlib.metadata
 import resource
 import subprocess
 import sys
@@ -158,7 +159,7 @@ def run(args):
                'code_files':[binding(Path(__file__)),binding(Path(__file__).with_name('core.py'))],
                'package_manifest':binding(Path(args.package)/'package_manifest.json'),'state_sha256':STATE_SHA,'readout_sha256':READOUT_SHA,
                'lens':binding(args.lens),'reference':binding(args.reference),'methods':receipts,
-               'environment':{'python':platform.python_version(),'torch':torch.__version__,'device':str(device),'machine':platform.platform(),'cpu_threads':2,
+               'command':sys.argv,'environment':{'numpy':importlib.metadata.version('numpy'),'safetensors':importlib.metadata.version('safetensors'),'python':platform.python_version(),'torch':torch.__version__,'device':str(device),'machine':platform.platform(),'cpu_threads':2,
                               'matmul_precision':torch.get_float32_matmul_precision(),'tf32':False,'deterministic_algorithms':True,'record_batch_size':1},
                'load_seconds':load_seconds,'total_seconds':time.monotonic()-start,'peak_rss_bytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,
                'peak_gpu_bytes':torch.cuda.max_memory_allocated() if device.type=='cuda' else 0,

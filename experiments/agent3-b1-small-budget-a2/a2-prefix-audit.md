@@ -1,0 +1,7 @@
+# A2 integration audit
+
+The available validated P11 runtime binds the untouched public model snapshot and invokes `trr0004_predict_confirmation._load_public_prefix` (line568; call from P11 a1_a2_runtime.py lines684–690). That loader instantiates the public BF16 model locally, disables gradients, retains embedding and layers0–3, loads the fitted public A1 lens, and verifies the public embedding table. It accepts no recovered model-prefix state or update trajectory.
+
+The `_A2Adapter` uses the direct-cosine K256 winner and its own causal committed-token cache. The cache describes previously selected tokens and their execution state. Maintaining this cache does not update model-prefix weights. The `target_update.py` low-rank code is explicitly evaluator-only target generation; it cannot be relabelled as permitted recovered-prefix maintenance. Other historical rank8 online A1 adapters adapt the proposer, not A2 model-prefix weights.
+
+No validated recovery/update path for maintained recovered A2 model-prefix snapshots was found in the pinned implementation or P11 runtime. Stage2's intended moving-target hybrid is therefore not currently executable. Finish the complete Stage1 shortlist study. No unrelated recovery framework or static-public-prefix hybrid is being added. This gap is independent of whether shortlist recall is positive. No hybrid quality, acceleration, or end-to-end tracking claim is supported by Stage1.

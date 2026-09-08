@@ -27,7 +27,11 @@ def main(a):
         native_a1=lens(flat[:256],readout).float()
         port_a1=lens(h[0,1:],readout).float()
         assert torch.equal(native_a1,port_a1)
-        expected_a1=torch.topk(native_a1,512,dim=-1,sorted=True).indices[:,:256]
+        native_scores,native_ids=torch.topk(native_a1,512,dim=-1,sorted=True)
+        by_id=torch.argsort(native_ids,dim=1,stable=True)
+        native_ids=native_ids.gather(1,by_id);native_scores=native_scores.gather(1,by_id)
+        by_score=torch.argsort(native_scores,dim=1,descending=True,stable=True)
+        expected_a1=native_ids.gather(1,by_score)[:,:256]
         ranked_a1,_=rank_scores(port_a1)
         # Ties may differ from topk; report rather than silently substitute.
         a1_rank_diffs=int((expected_a1!=ranked_a1).sum())
@@ -45,7 +49,7 @@ def main(a):
         del batched,row_scores,repeat,scores,native_a1,port_a1
     guard(t,device)
     result={'status':'PASS_PRESERVED_RECORD1_PATH','start_utc':start,'end_utc':utc(),'seconds':time.monotonic()-t,
-            'records':comparisons,'a1_native_one_record_scores_equal':True,'a1_top256_order_differences_from_topk512':a1_rank_diffs,
+            'records':comparisons,'a1_native_one_record_scores_equal':True,'a1_top256_order_differences_from_native_stable_topk512':a1_rank_diffs,
             'record2_vs_record1':{'full_scores_equal':batched_equal,'top1_equal':top1_equal,'top256_equal':rank_equal,
                                   'production_uses':'preserved one-record path regardless; batch2 probe not used as scientific output'},
             'repeat_scores_exact':True,'peak_rss_bytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,
