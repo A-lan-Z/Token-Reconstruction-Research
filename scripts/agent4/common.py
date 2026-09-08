@@ -29,7 +29,7 @@ def guard():
 def load_prefix(dtype=torch.float32,device='cuda',asset_root=None):
     assets=Path(asset_root or OUT/'backup')
     config=LlamaConfig.from_json_file(str(assets/'config.json'))
-    config._attn_implementation='eager'
+    config._attn_implementation='sdpa'
     with torch.device('meta'): full=LlamaForCausalLM(config)
     prefix=ContiguousPublicPrefix(full,4)
     del full

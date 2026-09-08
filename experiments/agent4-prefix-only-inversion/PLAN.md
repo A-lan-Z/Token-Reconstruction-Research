@@ -48,3 +48,7 @@ lens comparator and source dependency archive, verify independent restore.
 
 Stages2/3 require qualified target/recovered assets from Agent2. Locate and
 verify metadata; no target adapter copying, no invented recovery framework.
+
+Implementation clarification before GPU qualification: use SDPA, matching the
+historical public teacher. Comparator reuses native _candidate_hidden cache
+cloning/batching helper, with one short record at a time; no scalar slowdown.
