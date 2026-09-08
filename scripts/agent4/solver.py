@@ -38,12 +38,12 @@ def reconstruct(prefix, observation, settings=Settings(), bos=128000, guard=None
         raise ValueError('expected finite [tokens, hidden] observations')
     table = prefix.embed_tokens.weight.detach()
     device = table.device
+    sync(device); start = time.perf_counter()
     # FP32 scoring preserves raw magnitudes. No normalization of forward inputs.
     scoring = table.float()
     norms = scoring.square().sum(-1)
     generator = torch.Generator(device='cpu').manual_seed(settings.seed)
     tokens, traces = [bos], []
-    sync(device); start = time.perf_counter()
     for pos in range(1, len(observation)):
         if time.perf_counter()-start > settings.record_seconds:
             tokens.extend([-1]*(len(observation)-pos)); break
