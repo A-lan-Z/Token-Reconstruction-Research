@@ -35,13 +35,13 @@ TASK_EXPERIMENT = TASK_ROOT / "experiments" / "TRR-0012"
 TASK_OUTPUT = TASK_ROOT / "outputs" / "TRR-0012"
 P10_ROOT = TASK_ROOT.parent / "TRR-P10"
 P09_GUARD = P10_ROOT / "scripts" / "trr_p09" / "fixed_control_guarded_launch.py"
-QUALIFICATION_ROOT = TASK_EXPERIMENT / "execution" / "qualification_fixed_b1_v1"
+QUALIFICATION_ROOT = TASK_EXPERIMENT / "execution" / "qualification_fixed_b1_v2"
 CONFIG_PATH = QUALIFICATION_ROOT / "qualification_config.json"
 INPUT_BINDING_PATH = QUALIFICATION_ROOT / "qualification_input_binding.json"
 PREFLIGHT_PATH = QUALIFICATION_ROOT / "qualification_preflight.json"
 LAUNCH_PATH = QUALIFICATION_ROOT / "qualification_launch.json"
 WATCHDOG_ROOT = QUALIFICATION_ROOT / "watchdog"
-OUTPUT_ROOT = TASK_OUTPUT / "qualification_fixed_b1_v1"
+OUTPUT_ROOT = TASK_OUTPUT / "qualification_fixed_b1_v2"
 
 B0_BINDING = P10_ROOT / "experiments" / "TRR-P09" / "setup" / "b0-immutable-loader-binding-r1.json"
 B1_MANIFEST = TASK_EXPERIMENT / "capture" / "b1_activation_date07" / "bank_manifest.json"
@@ -559,6 +559,8 @@ def run_guarded(config_path: Path) -> int:
         str(config_path.resolve()),
     ]
     guard = [
+        "env",
+        f"PYTHONPATH={P10_ROOT}:{P10_ROOT / 'src'}",
         sys.executable,
         str(P09_GUARD),
         "--output-root",
