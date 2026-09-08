@@ -1,0 +1,34 @@
+{
+  "$schema": "token-reconstruction.trr0012-qualification-preflight-attempts.v1",
+  "task_id": "TRR-0012",
+  "status": "PRESERVED_FAILED_METADATA_ONLY_ATTEMPTS_FOLLOWED_BY_R2_PASS",
+  "truth_opened": false,
+  "gpu_used": false,
+  "model_loaded": false,
+  "attempts": [
+    {
+      "attempt": "r1_import_path",
+      "status": "EXCLUDED_METADATA_PREFLIGHT_FAILURE",
+      "dry_run_metadata": "experiments/TRR-0012/capture/qualification_dry_run_v1.json",
+      "authorization_receipt": "experiments/TRR-0012/capture/qualification_authorization_v1.json",
+      "watchdog_receipt": "experiments/TRR-0012/capture/qualification_watchdog_v1.json",
+      "reason": "Trusted public loader import omitted the historical source scripts root; stopped before input validation and before any model or CUDA use.",
+      "repair": "Added the exact source snapshot scripts root to the metadata-only import path."
+    },
+    {
+      "attempt": "r1_manifest_absolute_path",
+      "status": "EXCLUDED_METADATA_PREFLIGHT_FAILURE",
+      "reason": "The hash-bound preparation manifest retains an absolute /tmp source-root dependency; running from the durable archive made the signed relative addendum resolve to a different path.",
+      "repair": "Restored the exact 24a launcher, capture, and watchdog files into the already-preserved signed manifest source root /tmp/trr12-p09-source-15be-date07; no manifest bytes or signed metadata were changed.",
+      "exception": "STAGE1 correction manifest points at a different addendum"
+    },
+    {
+      "attempt": "r2_scratch_source_closure",
+      "status": "PASS",
+      "source_closure": "experiments/TRR-0012/capture/source_closure_r2.json",
+      "dry_run_metadata": "experiments/TRR-0012/capture/qualification_dry_run_r2.json",
+      "qualification_receipt": "experiments/TRR-0012/capture/qualification_date07_r2/qualification-receipt.json",
+      "reason": "Exact 24a files and all signed dependencies hash-match the durable snapshot; metadata-only plan, input, model, watchdog, and authorization validation passed before guarded execution."
+    }
+  ]
+}

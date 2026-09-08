@@ -1,10 +1,31 @@
 {
   "$schema": "token-reconstruction.trr-0012-bank-progress.v1",
   "active_process_or_lease": null,
+  "capture_completion": {
+    "bank_manifest_sha256": "8265df60998fd23a11db560de661e65d972aa8823df09101303f4bab44732c7c",
+    "capture_receipt_sha256": "2980d5115b6cf2a1d1c910fdf37da47e8f237d31f2b643af9fad526462532766",
+    "child_elapsed_seconds": 51.255044389999966,
+    "completion_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/capture/capture_completion_v1.json",
+    "completion_sha256": "ef870fd2c2382dbab05c291e8ce5af86a820e809ffbab7ac3348cc0a09d0a77e",
+    "min_host_available_bytes": 28971618304,
+    "peak_group_rss_bytes": 1847615488,
+    "status": "PASS_PUBLIC_B1_CAPTURE_COMPLETE_NO_TRUTH",
+    "watchdog_elapsed_seconds": 58.365058,
+    "watchdog_finish_sha256": "523a3a367019cf4f64abe12a81fb359ea53e2cf55f30a0418413cbf84d3e11bf",
+    "watchdog_guard_sha256": "d8cb894d275494b25010c439c13440324fdd66dc65f99ca9a316c70548a0fb6c"
+  },
+  "capture_progress": {
+    "integrity_receipt_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/capture/capture_integrity_v1.json",
+    "integrity_receipt_sha256": "b69732780208140f7246f07edff38637b9912b680e57d70ab6624a8ea508eb96",
+    "records": 10800,
+    "retained_bytes": 8545446344,
+    "shards": 169,
+    "status": "PASS"
+  },
   "capture_resource_plan": {
     "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/inventory/capture_resource_plan.json",
     "sha256": "97489f414d0b65e9b51f9ddca4ae1f5f1e510c033142169843bd7eca14fba139",
-    "status": "PERSISTED_ROOT_REVIEW_ONLY_NO_GPU_STARTED"
+    "status": "FULL_CAPTURE_PASS_PUBLIC_B1_COMPLETE"
   },
   "frozen_bank": {
     "b0_ordered_record_id_sha256": "5c66dbb7095bf5c0aac020351cfafbf25bedff127aa619686d590e4e5f9dd013",
@@ -18,16 +39,70 @@
     "records": 12000
   },
   "next_exact_action": {
-    "action": "Root review then bounded public activation capture using the repaired payload only; preserve B0 prefix and consume new rows 1200:12000.",
-    "capture_not_started": true,
-    "capture_resource_plan_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/inventory/capture_resource_plan.json",
-    "capture_resource_plan_sha256": "97489f414d0b65e9b51f9ddca4ae1f5f1e510c033142169843bd7eca14fba139",
-    "identity_gate": "PASS ordered IDs/rendered/public/H128 applicable; short rows explicit N/A",
-    "inputs_sha256": "8150184a349bebd31e24b128d23f096702898024a87a405322ee3ba95fa6682e",
-    "prep_root": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/preparation/b1_cpu_r4_date07",
-    "records_sha256": "367cfba0ffe78f59454861a76f23830f480a8745cc6b35e6b4a0d05eca53638b"
+    "action": "Public B1 bank complete; root may bind the 169-shard manifest for later fixed-readout fitting after schedule/decoder gates. No evaluation or truth access occurred.",
+    "capture_complete": true,
+    "capture_completion_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/capture/capture_completion_v1.json",
+    "capture_completion_sha256": "ef870fd2c2382dbab05c291e8ce5af86a820e809ffbab7ac3348cc0a09d0a77e",
+    "capture_not_started": false,
+    "records": 10800,
+    "shards": 169
   },
   "owner": "banks",
+  "qualification_pass": {
+    "amendment": {
+      "bytes": 8194,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/capture/qualification_pass_amendment_v1.json",
+      "sha256": "88bc9ac9d9e8cfe7a4fdcdbbd0cd7c00431e4dcd189e2ce6e56ad1acb3220ffa"
+    },
+    "ended_utc": "2026-09-08T06:22:20.449210Z",
+    "leader_pid": 237627,
+    "metrics": {
+      "activation_capture_started": false,
+      "child_return_code": 0,
+      "evaluation_started": false,
+      "external_min_host_mem_available_bytes": 29146730496,
+      "external_peak_group_rss_bytes": 2444636160,
+      "external_sample_count": 17,
+      "fit_started": false,
+      "forward_call_count": 5,
+      "future_padding_active_torch_equal_all": true,
+      "future_padding_tested_batches": 1,
+      "inner_resource_highwater": {
+        "gpu_peak_allocated_bytes": 2472678400,
+        "gpu_peak_reserved_bytes": 2474639360,
+        "gpu_reserved_bytes": 2474639360,
+        "process_rss_bytes": 1745350656,
+        "retained_bytes": 0
+      },
+      "inner_resource_lowwater": {
+        "disk_free_bytes": 280718114816,
+        "gpu_free_bytes": 13127122944,
+        "host_available_bytes": 29118763008
+      },
+      "model_loaded": true,
+      "public_base_only": true,
+      "qualification_elapsed_seconds": 0.6824640840004577,
+      "repeat_torch_equal_all": true,
+      "representative_batch_count": 2,
+      "source_rows_persisted": false,
+      "status": "QUALIFICATION_PASS",
+      "truth_opened": false,
+      "watchdog_status": "PASS",
+      "watchdog_wrapper_exit_code": 0
+    },
+    "receipt": {
+      "bytes": 7420,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/capture/qualification_date07_r2/qualification-receipt.json",
+      "sha256": "1e897a0eee1ec6e51368bc01e783586b3e29ceab0c6b597ad64d1444c3494bf5"
+    },
+    "started_utc": "2026-09-08T06:22:12.358519Z",
+    "termination_reason": null,
+    "watchdog_finish": {
+      "bytes": 1088,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/capture/qualification_date07_r2_watchdog/finish.json",
+      "sha256": "1bf4895e1d725f6ceba700a3a1fc0b48e1cd8e2d8f2c2fb3d1ea8efb25806493"
+    }
+  },
   "r2_attempt": {
     "compiler_sha256": "5792ad63c5a542fd81ca805ca86e1affb48cf1d634ed38221bcdb0d9649dc19d",
     "guard": {
@@ -136,7 +211,7 @@
   },
   "remaining_blocker": "No bank identity blocker remains after historical-date compatibility repair. Activation capture and fits remain gated by root resource/contract release; the date-compat receipt binds the exact public input payload.",
   "scope": "ordered public B0/B1 bank identity and CPU-only stage-1 input preparation; no model, GPU, capture, fit, evaluation, truth, or source expansion",
-  "status": "PASS_HISTORICAL_DATE_COMPAT_PUBLIC_BANK_READY_FOR_ROOT_CAPTURE_GATE",
+  "status": "PASS_PUBLIC_B1_CAPTURE_COMPLETE_NO_TRUTH",
   "survivors": {
     "b0_activation_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0007/experiments/TRR-0007/support/broader_capture_v2/enriched_fit_cut4.safetensors",
     "b0_activation_sha256": "a55814759dfa9d2567587935063fc49e44d8bff949c50014793deb982ebdf35d",
