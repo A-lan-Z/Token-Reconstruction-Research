@@ -8,32 +8,68 @@
       "path": "experiments/TRR-0011/setup/transfer_review_v1.json",
       "sha256": "cb0a0d6cff4849f8cb1efe26fd66874cfd16ad241cbec67914dce8ea984542ad"
     },
-    "status": "PENDING_REVIEW_FIXES",
+    "status": "CPU_VALIDATED_PARTIAL_NOT_PRODUCTION_QUALIFIED",
     "synthetic_tests": {
       "status": "PASS",
-      "tests": 8
+      "tests": 16,
+      "elapsed_seconds": 1.05,
+      "receipt": {
+        "path": "experiments/TRR-0011/transfer/test_receipt_json_roundtrip_v1.json",
+        "bytes": 2773,
+        "sha256": "54aa5c592310886796518359f1da929b5f84dd992d793528262975254818ac5a"
+      },
+      "source": {
+        "path": "scripts/trr0011_transfer.py",
+        "bytes": 114257,
+        "sha256": "63663f25510999b29735dd025b16bf3d592f386112fc35aed81aa7b153139c5c"
+      },
+      "test_files": [
+        {
+          "path": "tests/test_trr0011_transfer.py",
+          "bytes": 18047,
+          "sha256": "30895847998504d2ea7cc6f9939875a2342703c4e5480ef01f389ba01e08dcac"
+        },
+        {
+          "path": "tests/test_trr0011_transfer_json.py",
+          "bytes": 956,
+          "sha256": "e043dd86808e8976b418b3c349920190a921f7773b0680b9d8791309cdb8c6ef"
+        }
+      ],
+      "py_compile": "PASS",
+      "production_qualified": false,
+      "scope": "synthetic transfer/writer and JSON round-trip validation only; no model state, target state, truth, or production inference loaded"
     },
     "latest_snapshot_check": {
-      "command": "env OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=.:src:scripts python3 -m pytest -q tests/test_trr0011_transfer.py",
+      "status": "PASS",
+      "tests": 16,
+      "elapsed_seconds": 1.05,
+      "receipt": {
+        "path": "experiments/TRR-0011/transfer/test_receipt_json_roundtrip_v1.json",
+        "bytes": 2773,
+        "sha256": "54aa5c592310886796518359f1da929b5f84dd992d793528262975254818ac5a"
+      },
       "source": {
-        "bytes": 23496,
         "path": "scripts/trr0011_transfer.py",
-        "sha256": "90c7406a6b57dd15d9e229a6eeef8d761026416bfcf8d0b43b43b62c6cecb4d9"
+        "bytes": 114257,
+        "sha256": "63663f25510999b29735dd025b16bf3d592f386112fc35aed81aa7b153139c5c"
       },
-      "tests_file": {
-        "bytes": 7117,
-        "path": "tests/test_trr0011_transfer.py",
-        "sha256": "9953205650938f2b0095d17da40baf30e5f3be9c30714ab12adb1c7def7e2965"
-      },
-      "result": "6 passed, 2 failed",
-      "reason": "Current validator now requires both preregistered amplitudes for each prefix role, while the synthetic fixture still supplies one amplitude and the plan/fixture still uses the old adapted-role schema; this is source/fixture drift pending remediation.",
-      "historical_review_receipt": {
-        "bytes": 8045,
-        "path": "experiments/TRR-0011/setup/transfer_review_v1.json",
-        "sha256": "cb0a0d6cff4849f8cb1efe26fd66874cfd16ad241cbec67914dce8ea984542ad"
-      }
+      "test_files": [
+        {
+          "path": "tests/test_trr0011_transfer.py",
+          "bytes": 18047,
+          "sha256": "30895847998504d2ea7cc6f9939875a2342703c4e5480ef01f389ba01e08dcac"
+        },
+        {
+          "path": "tests/test_trr0011_transfer_json.py",
+          "bytes": 956,
+          "sha256": "e043dd86808e8976b418b3c349920190a921f7773b0680b9d8791309cdb8c6ef"
+        }
+      ],
+      "py_compile": "PASS",
+      "production_qualified": false,
+      "scope": "synthetic transfer/writer and JSON round-trip validation only; no model state, target state, truth, or production inference loaded"
     },
-    "review_resolution": "Initial generic gain/bias concern resolved for actual P09 fixed class: no per-token gain/bias tensors. Remaining requirement is source-bound normalized decoder/equation evidence through a real producer path."
+    "review_resolution": "Initial geometry/source review remains a production gate. The final bounded bridge passed its CPU compile and JSON/bridge tests; no production scorer, model state, truth, or matrix was run."
   },
   "execution_flags": {
     "capture_performed": false,
@@ -46,7 +82,12 @@
     "new_source_selection": false,
     "new_capture": false,
     "replay_predictions_created": true,
-    "final_prediction_matrix_created": false
+    "final_prediction_matrix_created": false,
+    "diagnostic_selector_synthetic_tests": true,
+    "diagnostic_source_selection_performed": false,
+    "exact_frozen_states_available": false,
+    "new_experiments_unfinished": true,
+    "new_predictions_created": false
   },
   "inference_package": {
     "status": "COMPLETE_TRUTH_FREE_REPLAY",
@@ -95,9 +136,9 @@
   },
   "repository_head": "ed714466dfacdb434a68e20f7d0a4e2f4ea35007",
   "schema": "token-reconstruction.trr0011-status.v1",
-  "status": "PREPARATION_ONLY",
+  "status": "BLOCKED_EXACT_CHECKPOINT_RESTORATION",
   "task_id": "TRR-0011",
-  "updated_utc": "2026-09-08T02:49:31Z",
+  "updated_utc": "2026-09-08T04:25:54Z",
   "pr20_correction_publication": {
     "body": {
       "bytes": 4683,
@@ -109,5 +150,145 @@
       "path": "experiments/TRR-0011/setup/pr20_correction_publication.json",
       "sha256": "64f9bc8da59cdc4bd25e4ed87ec0fb6aebddc05ae529e74aaec55638a9666601"
     }
-  }
+  },
+  "diagnostic_selector": {
+    "status": "SYNTHETIC_ONLY_READY_PENDING_P10_HANDOFF",
+    "receipt": {
+      "path": "experiments/TRR-0011/setup/diagnostic_selector_synthetic_v1.json",
+      "bytes": 2586,
+      "sha256": "a5fd6f4a0ffaa724359f4640814b7232104f6b5d20c9e71c23fd7ce72a78384b"
+    },
+    "source": {
+      "path": "scripts/trr0011_select_diagnostic.py",
+      "bytes": 34441,
+      "sha256": "242ffafd198c7275dc95e60a6fa0e62f9a613ecdb3f840c960dc3b52eb84eb58"
+    },
+    "tests": {
+      "path": "tests/test_trr0011_select_diagnostic.py",
+      "bytes": 14005,
+      "sha256": "35daf2080444d7a718f9d941c3313e68f37ab88fe91c45598dbddf5e2cec715b"
+    },
+    "test_result": "7 selector-only tests; included in the 13-test capture+selector CPU receipt",
+    "pending": "Exact Agent2 P10 reservation/exclusion schema and root selection authorization; no actual source selection.",
+    "cpu_receipt": {
+      "path": "experiments/TRR-0011/transfer/capture_cpu_test_receipt_v1.json",
+      "bytes": 2971,
+      "sha256": "7ac3988ab28b0652ec479c8a1c26e30cba58ce4cf9e9b0bdb51c65f8ecd4e9ad"
+    },
+    "selection_performed": false,
+    "truth_opened": false
+  },
+  "frozen_state_recovery": {
+    "status": "BLOCKED_EXACT_ARTIFACTS_MISSING",
+    "receipt": {
+      "path": "experiments/TRR-0011/setup/frozen_state_recovery_search_v1.json",
+      "bytes": 4693,
+      "sha256": "a9df40b1d4232162cb2788b0f32f9cf6078a885307596758c65bcfe4f6d6418f"
+    },
+    "expected_states": [
+      {
+        "name": "current_fixed_step_8000",
+        "missing_path": "/tmp/trr-p09-runtime/fixed-control-b0-r3/states/checkpoint_step_008000.safetensors",
+        "filename": "checkpoint_step_008000.safetensors",
+        "bytes": 29390260,
+        "sha256": "d2477cdf11422cb2d028196d72775825246f65f7e07394952375b3929627475a",
+        "status": "MISSING"
+      },
+      {
+        "name": "expanded_fixed_step_13000",
+        "missing_path": "/tmp/trr-p09-runtime/fixed-control-b1-r3/states/checkpoint_step_013000.safetensors",
+        "filename": "checkpoint_step_013000.safetensors",
+        "bytes": 29390268,
+        "sha256": "5757506003f0a4b82cb1cd6de2a82f11345f2dbcbce13c8cf18c4f515de3ec3a",
+        "status": "MISSING"
+      }
+    ],
+    "missing_runtime_root": "/tmp/trr-p09-runtime",
+    "candidate_summary": {
+      "expected_filename_safetensors_candidates": 4,
+      "compatible_candidates": 0,
+      "archive_container_candidates": 0,
+      "exact_published_size_matches": 0
+    },
+    "directional_reference_check": {
+      "status": "NO_EMBEDDED_UNMODIFIED_P09_REFERENCE",
+      "source_only": true,
+      "sources": [
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P10/scripts/trr_p09/fixed_control_cli.py",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P10/scripts/trr_p09/fixed_control_caller.py"
+      ],
+      "evidence": [
+        "fixed_control_cli.py:1015 loads the starting decoder from the external --state path, :1034 passes base_state_sha256 as a provenance binding, and :1052 records starting_state metadata.",
+        "fixed_control_caller.py:606-609 says the callback serializes only the fixed decoder state; :638-655 writes decoder.state_dict() plus base_state_sha256 and optimizer_state_external metadata, without a reference tensor copy."
+      ],
+      "conclusion": "Larger directional checkpoints are distinct trained decoder states and cannot substitute for either exact P09 B0/B1 binary."
+    },
+    "package_v2_recovery": {
+      "status": "METADATA_REPLAY_ONLY_NOT_CURRENTLY_RUNNABLE",
+      "cpu_validation": "PASS; 3 passed in 0.94s",
+      "validation_receipt": "experiments/TRR-0011/package/package_v2_validation_r1.json",
+      "historical_replay": "8 isolated CUDA replays, exact matches, 24.456871 s total; replay evidence is preserved.",
+      "interpretation": "Package v2 preserves immutable metadata/replay history but has no redundant binary copy of either missing frozen state."
+    },
+    "new_experiments": {
+      "status": "UNFINISHED_BLOCKED",
+      "new_source_selection": false,
+      "new_capture": false,
+      "new_predictions": false,
+      "new_scores": false,
+      "new_fit_or_retraining": false,
+      "truth_opened": false,
+      "reason": "Exact state restoration and subsequent Agent2/root release gates are unresolved; no production diagnostic work was started."
+    },
+    "durable_restoration_requirement": "Provide exact published bytes for both files with the recorded full SHA-256 values; do not retrain, substitute directional checkpoints, or alter frozen-state identity."
+  },
+  "cpu_focused_validation": {
+    "status": "PASS_CPU_FOCUSED_NOT_PRODUCTION_QUALIFIED",
+    "tests": 13,
+    "elapsed_seconds": 1.75,
+    "receipt": {
+      "path": "experiments/TRR-0011/transfer/capture_cpu_test_receipt_v1.json",
+      "bytes": 2971,
+      "sha256": "7ac3988ab28b0652ec479c8a1c26e30cba58ce4cf9e9b0bdb51c65f8ecd4e9ad"
+    },
+    "source_bindings": {
+      "capture_runner": {
+        "path": "scripts/trr0011_capture.py",
+        "bytes": 91873,
+        "sha256": "1d3e1092e43f740e0ecd479414f5e1124a7b4a0106fd0aab02a73d4fbd536612"
+      },
+      "capture_tests": {
+        "path": "tests/test_trr0011_capture.py",
+        "bytes": 6434,
+        "sha256": "a5e3c9aef4a8a25e8b7d31aa003f661f25d3c5447894e5e6d0e22b16296038af"
+      },
+      "selector_source": {
+        "path": "scripts/trr0011_select_diagnostic.py",
+        "bytes": 34441,
+        "sha256": "242ffafd198c7275dc95e60a6fa0e62f9a613ecdb3f840c960dc3b52eb84eb58"
+      },
+      "selector_tests": {
+        "path": "tests/test_trr0011_select_diagnostic.py",
+        "bytes": 14005,
+        "sha256": "35daf2080444d7a718f9d941c3313e68f37ab88fe91c45598dbddf5e2cec715b"
+      }
+    },
+    "scope": "focused capture and diagnostic-selector tests only; no model load, GPU run, source selection, decoder inference, target state, or truth access"
+  },
+  "partial_implementation": {
+    "status": "PARTIAL_NOT_PRODUCTION_QUALIFIED",
+    "cpu_health": {
+      "capture_selector_tests": "13 passed in 1.75s",
+      "transfer_tests": "16 passed in 1.05s",
+      "py_compile": "PASS"
+    },
+    "scorer_cli_created": false,
+    "full_integration": false,
+    "production_capture": false,
+    "fresh_scientific_matrix": false,
+    "source_selection": false,
+    "truth_opened": false,
+    "note": "Focused CPU checks validate interfaces and serializers; exact frozen assets and release gates remain unresolved."
+  },
+  "next_gate": "Restore the exact B0/B1 state bytes, then obtain the shared Agent2/root exclusion union and opaque reservation, complete the common source/producer gate, and only then run the frozen study."
 }

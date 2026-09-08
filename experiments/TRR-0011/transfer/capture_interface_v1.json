@@ -1,0 +1,80 @@
+{
+  "caller_obligations": {
+    "batches": "evaluator-owned validated PaddedTokenBatch for Finance and Pile, exactly 32 rows/domain, 192 tokens, BOS/PAD contract",
+    "code_bindings": "actual runner and loaded public-prefix sources with SHA-256 values",
+    "model_factory": "fresh evaluator-owned full target model per variant; historical public_lora_2601 may be loaded only from its bound historical asset",
+    "panel": "reserved opaque descriptor with complete panel_sha256; source IDs/text/tokens/answers are never passed to decoder output",
+    "resource_receipt": "actual preflight/peak/timing binding; one variant per process and external watchdog"
+  },
+  "created_utc": "2026-09-08T03:11:37Z",
+  "entrypoints": {
+    "artifact_validation": "trr0011_capture.validate_observation_artifact(path, expected_variant_id, expected_domain, expected_panel_sha256, expected_opaque_record_ids_sha256)",
+    "full_forward": "trr0011_capture.capture_full_forward(model, batch, device, batch_size=8)",
+    "panel_validation": "trr0011_capture.validate_opaque_panel_descriptor(panel, require_reserved=True)",
+    "variant_capture": "trr0011_capture.run_capture_variants(plan, panel, batches, model_factory, output_root, device, command, code_bindings, target_resource_bindings, resource_receipt)"
+  },
+  "geometry": {
+    "capture_batch_size": 8,
+    "capture_sequence_tokens": 192,
+    "cut_depth": 4,
+    "hidden_size": 2048,
+    "retained_sequence_tokens": 128
+  },
+  "non_goals": [
+    "source selection",
+    "tokenization/source export",
+    "training",
+    "download",
+    "paid compute",
+    "truth opening",
+    "production launch before root/P10 panel approval"
+  ],
+  "output_contract": {
+    "activation_dtype_shape": [
+      "torch.bfloat16",
+      [
+        32,
+        128,
+        2048
+      ]
+    ],
+    "manifest_schema": "token-reconstruction.trr0011-controlled-target-capture-manifest.v1",
+    "mask_dtype_shape": [
+      "torch.uint8",
+      [
+        32,
+        128
+      ]
+    ],
+    "opaque_binding": "ordered domain/order/opaque_id digest plus complete panel SHA",
+    "per_variant_domain_file": ".../<variant_id>/<domain>.safetensors",
+    "position_dtype_shape": [
+      "torch.int64",
+      [
+        32,
+        128
+      ]
+    ],
+    "tensor_keys_exact": [
+      "activations",
+      "attention_mask",
+      "position_ids"
+    ],
+    "truth_flags_all_false": true
+  },
+  "recipe_binding": {
+    "bytes": 6440,
+    "path": "experiments/TRR-0011/transfer/capture_recipe_v1.json",
+    "readonly": true,
+    "sha256": "0df03774d1245cf2a2ce8db36dd6bc0009a6253061b8e13a53c011d500935d23"
+  },
+  "runner_binding": {
+    "bytes": 49274,
+    "path": "scripts/trr0011_capture.py",
+    "readonly": true,
+    "sha256": "19585ce65312b5b824bce99962a9244187f59d31161b4adafd2897d3ae3211e1"
+  },
+  "schema": "token-reconstruction.trr0011-controlled-target-capture-interface.v1",
+  "status": "INTERFACE_ONLY_NO_RUN",
+  "task_id": "TRR-0011"
+}

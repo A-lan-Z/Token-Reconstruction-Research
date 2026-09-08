@@ -1,0 +1,79 @@
+{
+  "schema": "token-reconstruction.trr0011-diagnostic-selector-synthetic.v1",
+  "task_id": "TRR-0011",
+  "status": "SYNTHETIC_ONLY_READY_PENDING_P10_HANDOFF",
+  "created_utc": "2026-09-08T03:08:20Z",
+  "scope": {
+    "source_selection_performed": false,
+    "source_text_loaded": false,
+    "truth_opened": false,
+    "public_rows_read": false,
+    "gpu_used": false,
+    "fit_performed": false,
+    "selector_callable_injected": false,
+    "root_selection_authorization": false
+  },
+  "proposal": {
+    "source_ranges_half_open": {
+      "finance": [
+        28000,
+        30000
+      ],
+      "pile": [
+        9000,
+        10000
+      ]
+    },
+    "selection_seed": 5011,
+    "records_by_domain": {
+      "finance": 32,
+      "pile": 32
+    },
+    "sequence_tokens_including_bos": 128,
+    "scored_post_bos_tokens": 127,
+    "target_variants": [
+      "clean_public_base",
+      "early_prefix_eps1e3",
+      "early_prefix_eps1e2",
+      "near_cut_prefix_eps1e3",
+      "near_cut_prefix_eps1e2",
+      "after_cut_suffix_eps1e2_null"
+    ],
+    "required_exclusion_scopes": [
+      "fit_bank",
+      "checkpoint_selection",
+      "opened_evaluation",
+      "cross_range"
+    ]
+  },
+  "implementation": {
+    "path": "scripts/trr0011_select_diagnostic.py",
+    "bytes": 25564,
+    "sha256": "3a11fbc11863f4e8518f78b89dddc283a2b3379f9c5346d1151c8622c9d74ead",
+    "design": "Injected trusted selector only after explicit root authorization; no duplicate sampler or renderer."
+  },
+  "tests": {
+    "path": "tests/test_trr0011_select_diagnostic.py",
+    "bytes": 10019,
+    "sha256": "0a8ad9fe9d7e5b23f4da2c734cbd561113de912c52a0fd10e8b4ce3c623f39bd",
+    "command": "PYTHONPATH=.:src:scripts python3 -m pytest -q tests/test_trr0011_select_diagnostic.py",
+    "status": "PASS",
+    "tests": 7,
+    "elapsed_seconds": 0.05,
+    "coverage": [
+      "exact panel ranges and target variants",
+      "pending reservation rejection",
+      "all four namespaced exclusion ledgers",
+      "cross-domain duplicate sequence rejection",
+      "missing namespace rejection",
+      "identity-only create-only binding",
+      "matching root authorization before injected selector call"
+    ]
+  },
+  "handoff_requirements": [
+    "immutable Agent2 P10 reservation path/schema/status with ordered record IDs and final-sequence hashes",
+    "hash-bound fit-bank, checkpoint-selection, opened-evaluation, and cross-range ledgers",
+    "explicit root authorization binding the readiness receipt",
+    "reviewed trusted selector callable using natural public rows and the frozen 128-token renderer"
+  ]
+}
