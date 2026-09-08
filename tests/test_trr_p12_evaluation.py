@@ -163,6 +163,50 @@ def test_freeze_rejects_public_prediction_wrong_record_count(tmp_path: Path) -> 
         freeze_evaluation(wrong_descriptor, tmp_path / "wrong-count-receipt.json", strict_record_counts=False)
 
 
+def test_a1_first32_view_preserves_parent_binding_and_is_accepted(tmp_path: Path) -> None:
+    from scripts.trr_p12.evaluation import _file_binding, _validate_observation_artifact
+
+    observation = tmp_path / "parent-observation.safetensors"
+    save_file({"activations": torch.zeros((128, 4, 3), dtype=torch.float32)}, str(observation))
+    raw = _binding(observation, key="activations")
+    raw["record_slice"] = [0, 32]
+    bound = _file_binding(raw, base=tmp_path, label="A1 observation")
+    checked = _validate_observation_artifact(bound, method="A1+A2", stage=0, record_count=32)
+    assert checked["path"] == str(observation.resolve())
+    assert checked["sha256"] == raw["sha256"]
+    assert checked["key"] == "activations"
+    assert checked["shape"] == [128, 4, 3]
+    assert checked["parent_record_count"] == 128
+    assert checked["record_slice"] == [0, 32]
+
+
+@pytest.mark.parametrize(
+    ("parent_rows", "method", "record_slice", "record_count"),
+    [
+        (32, "A1+A2", [0, 32], 32),
+        (129, "A1+A2", [0, 32], 32),
+        (128, "A1+A2", None, 32),
+        (128, "A1+A2", [1, 33], 32),
+        (128, "A1+A2", [0, 31], 32),
+        (128, "A1+A2", [0, 128], 32),
+        (128, "B1", [0, 32], 128),
+    ],
+)
+def test_a1_first32_view_rejects_other_shapes_and_slices(
+    tmp_path: Path, parent_rows: int, method: str, record_slice: list[int] | None, record_count: int
+) -> None:
+    from scripts.trr_p12.evaluation import _file_binding, _validate_observation_artifact
+
+    observation = tmp_path / "parent-observation.safetensors"
+    save_file({"activations": torch.zeros((parent_rows, 4, 3), dtype=torch.float32)}, str(observation))
+    raw = _binding(observation, key="activations")
+    if record_slice is not None:
+        raw["record_slice"] = record_slice
+    bound = _file_binding(raw, base=tmp_path, label=f"{method} observation")
+    with pytest.raises(EvaluationError, match="record_slice|first32|record count"):
+        _validate_observation_artifact(bound, method=method, stage=0, record_count=record_count)
+
+
 def test_a1_binds_candidate_receipt_without_fake_projected_or_forecast(tmp_path: Path) -> None:
     descriptor_path, descriptor, _ = _fixture(tmp_path)
     candidate_receipt = tmp_path / "candidate-receipt.json"

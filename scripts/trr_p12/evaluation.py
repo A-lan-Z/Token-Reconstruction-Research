@@ -143,6 +143,17 @@ def _json_safe(value: Any) -> Any:
     return value
 
 
+def _normalise_record_slice(value: Any, *, label: str) -> list[int]:
+    if not isinstance(value, (list, tuple)) or len(value) != 2:
+        raise EvaluationError(f"{label}.record_slice must be [start, end]")
+    if any(isinstance(item, bool) or not isinstance(item, int) for item in value):
+        raise EvaluationError(f"{label}.record_slice must contain integer bounds")
+    start, end = int(value[0]), int(value[1])
+    if start < 0 or end <= start:
+        raise EvaluationError(f"{label}.record_slice bounds are invalid")
+    return [start, end]
+
+
 def _file_binding(
     value: Any,
     *,
@@ -174,6 +185,8 @@ def _file_binding(
     for key in ("key", "format", "role"):
         if key in value:
             result[key] = str(value[key])
+    if "record_slice" in value:
+        result["record_slice"] = _normalise_record_slice(value["record_slice"], label=label)
     return result
 
 
@@ -277,11 +290,14 @@ def _validate_public_tensor_artifact(
 
 
 def _validate_observation_artifact(binding: Mapping[str, Any], *, method: str, stage: int, record_count: int) -> dict[str, Any]:
-    """Validate count metadata for a sanitized observation artifact if available."""
+    """Validate a sanitized observation, including the explicit A1 first-32 view."""
 
     path = _regular_path(binding["path"], label=f"{method}/stage{stage}/observation")
     result = dict(binding)
+    requested_view = binding.get("record_slice")
+    record_slice = None if requested_view is None else _normalise_record_slice(requested_view, label=f"{method}/stage{stage}/observation")
     suffix = path.suffix.lower()
+    shape: tuple[int, ...] | None = None
     if suffix in {".safetensors", ".safetensor"}:
         key = str(binding.get("key", "observations"))
         try:
@@ -295,17 +311,39 @@ def _validate_observation_artifact(binding: Mapping[str, Any], *, method: str, s
             raise
         except Exception as exc:
             raise EvaluationError(f"{method}/stage{stage}/observation is not readable safetensors") from exc
-        if not shape or shape[0] != int(record_count):
+        if not shape:
+            raise EvaluationError(f"{method}/stage{stage}/observation has no leading record dimension")
+        if method == "A1+A2":
+            if record_slice != [0, 32] or int(record_count) != 32:
+                raise EvaluationError(
+                    f"A1+A2/stage{stage}/observation record_slice must be [0, 32] for the 32-row comparator"
+                )
+            if shape[0] != 128:
+                raise EvaluationError(
+                    f"A1+A2/stage{stage}/observation first32 view requires a 128-row parent, got {shape[0]}"
+                )
+        elif record_slice is not None:
+            raise EvaluationError(f"{method}/stage{stage}/observation record_slice is only permitted for A1+A2")
+        elif shape[0] != int(record_count):
             raise EvaluationError(f"{method}/stage{stage}/observation record count differs from source order")
         result["key"] = key
         result["shape"] = list(shape)
+        if record_slice is not None:
+            if record_slice[1] > shape[0] or record_slice[1] - record_slice[0] != int(record_count):
+                raise EvaluationError(f"A1+A2/stage{stage}/observation record_slice does not describe record_count")
+            result["record_slice"] = record_slice
+            result["parent_record_count"] = int(shape[0])
     elif suffix == ".json":
+        if record_slice is not None:
+            raise EvaluationError(f"{method}/stage{stage}/observation record_slice requires a safetensors parent")
         try:
             payload = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, UnicodeError, json.JSONDecodeError) as exc:
             raise EvaluationError(f"{method}/stage{stage}/observation is not valid JSON") from exc
         if isinstance(payload, Mapping) and "record_count" in payload and int(payload["record_count"]) != int(record_count):
             raise EvaluationError(f"{method}/stage{stage}/observation record count differs from source order")
+    elif record_slice is not None:
+        raise EvaluationError(f"{method}/stage{stage}/observation record_slice requires a safetensors parent")
     return result
 
 
