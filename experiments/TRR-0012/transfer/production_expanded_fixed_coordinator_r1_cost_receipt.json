@@ -1,0 +1,129 @@
+{
+  "task_id": "TRR-0012",
+  "schema": "token-reconstruction.trr0012-transfer-execution-cost.v1",
+  "status": "COMPLETE_14_CELL_PREDICTIONS_FROZEN_BEFORE_TRUTH",
+  "scope": "Coordinator launch, freeze, matrix, console, and per-cell metadata only; no truth or private payload was opened.",
+  "execution": {
+    "code_commit": "9d3c739756ef96033b6721263fe293f2c9bb798d",
+    "executed_bridge_sha256": "ccd4938175e15fd5cc3f6ea9fa426336f782509b727bcbeb0f66feacd95ee512",
+    "started_utc": "2026-09-08T11:16:03.510991+00:00",
+    "finished_utc": "2026-09-08T11:16:24.443656+00:00",
+    "freeze_utc": "2026-09-08T11:17:56.918245+00:00",
+    "exit_code": 0,
+    "external_wall_seconds": 20.932524225001544,
+    "process_scope": "one process, expanded_fixed across seven variants and two domains",
+    "cells": 14,
+    "variants": 7,
+    "domains": 2,
+    "records_per_cell": 32,
+    "record_cell_evaluations": 448,
+    "independent_sources": 64,
+    "scored_positions_per_record": 127,
+    "scored_positions_total": 56896,
+    "truth_opened": false,
+    "source_text_loaded": false,
+    "target_labels_loaded": false,
+    "gpu_released": true
+  },
+  "measured_timing_seconds": {
+    "external_process_wall": 20.932524225001544,
+    "shared_embedding_cold_load": 1.0641428380004072,
+    "resource_guard_overhead": 0.6273742289668007,
+    "per_record_inference": "unknown",
+    "per_cell_inference": "unknown",
+    "decoder_state_load": "unknown",
+    "observation_load": "unknown",
+    "artifact_io": "unknown",
+    "phase_accounting": "Subphases are not added to external wall; the guard receipt states that checks run outside timed decoder intervals and the outer process owns wall time."
+  },
+  "resource_peaks": {
+    "peak_gpu_reserved_bytes": 1352663040,
+    "peak_gpu_allocated_bytes": 1338564096,
+    "peak_native_host_rss_bytes": 3587915776,
+    "guard_checks": 954,
+    "initial_launch_gpu_free_bytes": 12912164864,
+    "initial_guard_gpu_free_bytes": 15679356928,
+    "initial_launch_host_available_bytes": 29303111680,
+    "initial_guard_host_available_bytes": 28993077248
+  },
+  "command": [
+    "timeout",
+    "--signal=TERM",
+    "--kill-after=30s",
+    "3600s",
+    "python3",
+    "scripts/trr0012_transfer.py",
+    "run-matrix",
+    "--package-root",
+    "outputs/TRR-0012/model-package-actual-r2",
+    "--capture-manifest",
+    "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P11/outputs/TRR-P11/private-evaluation/transfer-capture/transfer_capture_manifest.json",
+    "--variant-plan",
+    "experiments/TRR-0011/transfer/variant_plan_v2.json",
+    "--panel",
+    "experiments/TRR-0012/transfer/opaque_panel_binding_r2.json",
+    "--repository-root",
+    ".",
+    "--output-root",
+    "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0012/experiments/TRR-0012/transfer/production_expanded_fixed_coordinator_r1",
+    "--device",
+    "cuda"
+  ],
+  "artifact_bindings": {
+    "launch": {
+      "path": "experiments/TRR-0012/transfer/production_expanded_fixed_coordinator_r1_launch.json",
+      "bytes": 1859,
+      "sha256": "907f9a47990413e5fa8063f6ebd787308d2453da0160d39eba63e92bb04c9d0f"
+    },
+    "freeze": {
+      "path": "experiments/TRR-0012/transfer/production_expanded_fixed_coordinator_r1/freeze_receipt.json",
+      "bytes": 4252,
+      "sha256": "73eea8559208e259759ce64bb21e3f0aaac04fc60995882696b8d99a4be0703c"
+    },
+    "matrix": {
+      "path": "experiments/TRR-0012/transfer/production_expanded_fixed_coordinator_r1/prediction_matrix_expanded_fixed.json",
+      "bytes": 24137,
+      "sha256": "a69e1371d7264c2229689412df1b79b3a6600a7562a0299f337310c22e08440b"
+    },
+    "input_manifest": {
+      "path": "experiments/TRR-0012/transfer/production_expanded_fixed_coordinator_r1/transfer_input_expanded_fixed.json",
+      "bytes": 21925,
+      "sha256": "6bc7d7a0290071980920ae1c62930f965a2a8e62e95b17efd70bc727dd146ef1"
+    },
+    "console_log": {
+      "path": "experiments/TRR-0012/transfer/production_expanded_fixed_coordinator_r1_console.log",
+      "bytes": 52011,
+      "sha256": "e388d294a09a8e5b7192097126b6812424c2de3c71127ae2449daa859c84b4b9"
+    },
+    "opaque_panel_binding": {
+      "path": "experiments/TRR-0012/transfer/opaque_panel_binding_r2.json",
+      "bytes": 11156,
+      "sha256": "19c68c3a649d7f0d661c6dc92f9b07afcb0f5d1056bda869c3955c9181ccdb22"
+    },
+    "decoder_state": {
+      "path": "outputs/TRR-0012/model-package-actual-r2/states/expanded_fixed.safetensors",
+      "bytes": 29390268,
+      "sha256": "088be6a6b2842d526f3dab39789728d9cfc23f2fb1fb892d107d46ade2382706"
+    },
+    "embedding": {
+      "path": "outputs/TRR-0012/model-package-actual-r2/readout/public_normalized_embeddings.safetensors",
+      "bytes": 1050673488,
+      "sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1"
+    }
+  },
+  "preserved_failed_attempts": [
+    {
+      "path": "experiments/TRR-0012/transfer/production_expanded_fixed_r1_attempt_r1_failure.json",
+      "sha256": "e1cfc70d37a4db8e6ab747486aaf7b6eabc64f71d4fbde9a7fb63abc016a359a",
+      "status": "FAILED_BEFORE_MODEL_EXTERNAL_SANITIZED_OBSERVATION_BINDING",
+      "reason": "external sanitized observation binding lacked readonly metadata"
+    },
+    {
+      "path": "experiments/TRR-0012/transfer/production_expanded_fixed_r1_attempt_r2_failure.json",
+      "sha256": "aa24de54ffefb8e121d76c010e3f350de122286f53b84add3b6f0e6159a6cdfc",
+      "status": "FAILED_BEFORE_MODEL_RUNTIME_SOURCE_IMPORT",
+      "reason": "frozen TRR-0010 runtime source modules unavailable under PYTHONPATH=."
+    }
+  ],
+  "operational_note": "Preparation/readiness is separate from execution. The bridge smoke loaded the reference package first, which populated imports; a fresh production process with PYTHONPATH=. then exposed the frozen runtime source-path defect. The completed cold invocation used PYTHONPATH=.:src:scripts. This was an invocation/dependency defect, not a numerical or scientific failure. Binding failures were retained, reported, repaired narrowly, and the GPU was released during repair; no prediction bytes or decision rules were changed."
+}
