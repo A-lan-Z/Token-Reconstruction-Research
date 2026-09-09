@@ -122,4 +122,6 @@ The canonical dual-benchmark matrix is **NOT RUN / COMPARISON INCOMPLETE**. Meth
 
 ## Publication status
 
-The study is complete locally and committed on `task/agent4-prefix-only-inversion`. The push was rejected twice by automatic approval review, including after a task-scope/credential audit. The reviewer requires explicit approval to expose the full report/code/traces and coordination metadata to the public repository. No push or PR creation succeeded. See `publication_audit.json` and `publication_status.json`.
+Published as [draft PR #29](https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/29) on `task/agent4-prefix-only-inversion`, targeting `task/TRR-0012`. The PR remains unmerged. Research commit: `76c30972aec91aa4aa9c22b2b68135e033fc3642`.
+
+The earlier two automatic approval rejections are preserved in `publication_status.json`. The user explicitly approved public publication on September 9, 2026; the branch push and PR creation then succeeded. WSL had no configured Git credential helper, so publication used the existing Windows Git credential manager without exposing credentials. Large model assets and evaluator truth remain local.
