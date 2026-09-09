@@ -1,0 +1,69 @@
+"""Render the fixed pilot's scored evidence; never changes reconstruction outputs."""
+import argparse,csv,json
+from pathlib import Path
+import numpy as np
+from scripts.agent3_hybrid.common import *
+LABEL={'a1_k256':'A1+A2 /256','b1_k256':'B1+A2 /256','b1_k16':'B1+A2 /16','a1_k16':'A1+A2 /16','b1_alone':'B1 alone'}
+
+def pct(x):return f'{100*x:.3f}%'
+def interval(x):return f"{100*x['estimate']:+.3f} [{100*x['paired_source_bootstrap_95'][0]:+.3f}, {100*x['paired_source_bootstrap_95'][1]:+.3f}]"
+
+def main(a):
+    r=json.loads(Path(a.results).read_text());cells={(c['domain'],c['stage'],c['method']):c for c in r['cells']}
+    def comparison(d,s,reference):return next(c for c in r['contrasts'] if (c['domain'],c['stage'],c['method'],c['reference'])==(d,s,'b1_k16',reference))
+    decision='met' if r['retain_static_prefix_candidate'] else 'did not meet'
+    lines=['# Static-public-prefix B1+A2 hybrid pilot','',f'B1+A2 K16 **{decision}** the predeclared combined quality and acceleration criteria throughout this paired pilot. All results below use a static public model prefix. No active prefix recovery or cold-start tracking was tested.','',
+           '| Domain | Updates | B1+A2 K16 token accuracy | Exact clips | Warmed seconds | Time / A1 K256 | Time / B1 K256 | Quality / acceleration criteria |',
+           '|---|---:|---:|---:|---:|---:|---:|---|']
+    for d in DOMAINS:
+        for s in STAGES:
+            c=cells[d,s,'b1_k16'];x=comparison(d,s,'a1_k256');y=comparison(d,s,'b1_k256');v=next(x for x in r['decision_cells'] if x['domain']==d and x['stage']==s)
+            lines.append(f"| {d} | {s} | {pct(c['token_accuracy']['estimate'])} | {c['exact_clips']}/32 | {c['warmed_total_seconds']:.3f} | {x['warmed_time_ratio']:.3f} | {y['warmed_time_ratio']:.3f} | {v['quality_met']} / {v['acceleration_met']} |")
+    lines+=['','PR25 remains preserved development evidence: its CPU B1 top-16 and top-32 contained every correct token in all 32 clips per domain and snapshot. Top-8 covered 30/32 complete Pile clips throughout, 31/32 Finance base clips, and 32/32 Finance clips after adaptation. That shortlist study selected K16 and did not test hybrid accuracy or acceleration. Its coverage is not fresh confirmation of this selected hybrid.','','Each condition contains the same 32 unique natural clips/domain, BOS plus 127 scored positions (4,064 tokens). Update 0 is the public base, 64 is the first fitted descendant, 128/256 continue the same existing prefix-changing LoRA trajectory. This panel excludes all 128 P12 sources/domain, including PR25 development. Selection used seed 5103 and the bound historical/fitting/reservation exclusions.','',
+            'The thresholds were committed before development outcomes: at most 0.1 percentage points token-accuracy loss and 2 points exact-clip loss versus **both** A1+A2 K256 and B1+A2 K256, plus at least 20% reduction in warmed runtime versus both, in every domain/snapshot. With 4,064 scored tokens and 32 clips, these limits allow at most four fewer correct tokens and no net decrease in exact clips per reference. The results are empirical pilot comparisons; nonsignificance or identical observed counts do not establish population equivalence.','',
+            '## All five arms, by domain and snapshot','',
+            '| Domain | Updates | Arm | Token accuracy | Exact clips | Decoded-text exact clips | Shortlist omissions | Wrong despite inclusion | Wrong after earlier error | Warmed seconds |',
+            '|---|---:|---|---:|---:|---:|---:|---:|---:|---:|']
+    metrics=[];costs=[]
+    for d in DOMAINS:
+        for s in STAGES:
+            for method in METHODS:
+                c=cells[d,s,method]
+                lines.append(f"| {d} | {s} | {LABEL[method]} | {pct(c['token_accuracy']['estimate'])} | {c['exact_clips']}/32 | {c['decoded_token_text_exact_clips']}/32 | {c['shortlist_omissions']} | {c['wrong_despite_inclusion']} | {c['wrong_after_earlier_wrong_commitment']} | {c['warmed_total_seconds']:.3f} |")
+                metrics.append({k:c[k] for k in ('domain','stage','method','scored_tokens','correct_tokens','exact_clips','decoded_token_text_exact_clips','shortlist_omissions','wrong_despite_inclusion','wrong_with_omission','wrong_after_earlier_wrong_commitment','included_but_wrong_after_earlier_wrong','omitted_and_wrong_after_earlier_wrong','included_but_wrong_before_any_wrong','omitted_and_wrong_before_any_wrong','correct_after_earlier_wrong','warmed_total_seconds')})
+                phase_keys=('proposal_seconds','candidate_branch_simulation_seconds','direct_scoring_seconds','cache_commit_seconds','decode_seconds','adapter_total_seconds')
+                phases={key:sum(float(np.median([run[key] for run in record[1:]])) for record in c['phase_records']) for key in phase_keys}
+                phases.update({'all_invocation_'+key:sum(run[key] for record in c['phase_records'] for run in record) for key in phase_keys})
+                designated=sum(record[1]['candidate_simulations'] for record in c['phase_records']);all_calls=sum(run['candidate_simulations'] for record in c['phase_records'] for run in record)
+                costs.append({'domain':d,'stage':s,'method':method,**phases,'warmed_total_seconds':c['warmed_total_seconds'],'designated_candidate_simulations':designated,'all_warmup_measured_candidate_simulations':all_calls,'designated_committed_cache_tokens':sum(record[1]['prefix_commit_tokens'] for record in c['phase_records']),**c['peak_resources']})
+    for name,rows in (('metrics.csv',metrics),('costs.csv',costs)):
+        with (Path(a.results).parent/name).open('x',newline='') as stream:
+            w=csv.DictWriter(stream,fieldnames=list(rows[0]));w.writeheader();w.writerows(rows)
+    lines+=['','Shortlist omission and incorrect selection despite inclusion are separate error categories. The latter cannot be repaired by merely increasing proposal recall. “After an earlier error” uses each method’s own committed prefix; it is temporal association, not a counterfactual proof that the earlier error caused the later one. B1 alone has no selector or autoregressive commitment cache, so its earlier-error counts describe output order only. Exact decoded text refers to the 128-token clip, not recovery of a possibly longer original source string. Per-record first-error positions and complete attribution splits are in the structured result.','',
+            '## Paired uncertainty for the selected K16 hybrid','',
+            '| Domain | Updates | Reference | Token delta, pp [95%] | Exact-clip delta, pp [95%] | Time ratio [95%] |','|---|---:|---|---|---|---|']
+    for d in DOMAINS:
+        for s in STAGES:
+            for ref in ('a1_k256','b1_k256'):
+                c=comparison(d,s,ref);lo,hi=c['warmed_ratio_paired_source_bootstrap95']
+                lines.append(f"| {d} | {s} | {LABEL[ref]} | {interval(c['token_delta'])} | {interval(c['exact_clip_delta'])} | {c['warmed_time_ratio']:.3f} [{lo:.3f}, {hi:.3f}] |")
+    lines+=['','Intervals resample the 32 source records jointly (10,000 draws; quality seed 9103, timing seed 9113). Repeated target snapshots and three timing repeats are not independent sources. Even zero lost records leaves a one-sided 95% exact upper bound near 8.94% for the population probability of a record losing any previously correct token. All per-cell loss bounds are retained.','',
+            '## Runtime and implementation scope','',
+            'Timing hardware was one NVIDIA GeForce RTX 5080 (16,303 MiB reported) with an AMD Ryzen 9 9950X3D host under WSL Ubuntu. PyTorch 2.10.0+cu128 and transformers 5.3.0 were used with two CPU threads. Warmed time is the sum of each record’s median of three full reconstructions after one warmup. Each invocation recomputes its proposer and starts a separate native cache from BOS. Arm order rotates by record. Timed work includes input/output staging, proposal, native candidate-cache branching/simulation, direct scoring, own-cache commitment and common diagnostic instrumentation. The first measured output is frozen only after later predictions, candidates, scores and commits agree exactly. No other method’s reconstruction or true prefix is supplied.','',
+            'The candidate/scoring/cache timing wrappers are identical across hybrid arms and were qualified against the untouched native selector. Their overhead is included in whole reconstruction time, so this measures the implemented instrumented pilot, not a production-optimized upper bound. Phase sums, actual simulation counts, cold model loading, output serialization plus final hash verification, and sampled/allocator memory are in costs.csv and execution receipts. Candidate-count ratios are never substituted for elapsed-time speedup. GPU application monitoring and the shared-host baseline are preserved. During Finance 128, NVML stopped listing the active predictor despite normal CUDA execution. A Windows GPU-engine check showed the virtual-machine workload plus desktop compositor, wallpaper and app graphics activity. Thus these are measured shared-desktop timings, not a verified exclusive-GPU benchmark; no separate scientific compute workload was observed. NVIDIA documents limited active-process queries under WSL (https://docs.nvidia.com/cuda/wsl-user-guide/). Per-arm CUDA peaks are reset for each call group but include the common resident model set; host RSS peaks are process-lifetime maxima. B1-alone memory therefore is not an isolated minimum deployment footprint. The receipt field output_io_seconds includes final implementation hashing as well as artifact serialization.','',
+            'Public model: meta-llama/Llama-3.2-1B-Instruct revision 9213176726f574b556790deb65791e0c5aa438b6, static embedding and layers 0–3, BF16 SDPA. Historical A1 uses the fitted public Alpaca affine lens. B1 is the unchanged PR25 step 13000 expanded_fixed_replication_1 state 088be6a6b2842d526f3dab39789728d9cfc23f2fb1fb892d107d46ade2382706 and readout ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1. Both proposers use CUDA FP32, TF32 disabled. No model fitting, calibration, centering, fallback, budget adaptation or prefix recovery was added.','',
+            'CUDA B1 is explicitly a numerical port of PR25 CPU inference: qualification found 1/508 differing top1 positions and some ranked-candidate differences. The weights and readout are identical. This pilot consistently uses the qualified CUDA path for all B1 arms; it does not silently mix earlier CPU predictions into the comparison.','',
+            'The first qualification attempt failed during package import before inference because the preserved B1 and native A2 modules shared a namespace. The repaired import isolation preserved all original package/native bytes. Qualification r2 passed all four already-opened clips, native A1 K256 anchor checks, instrumentation/native comparisons and own-cache/repeat checks. These development clips were excluded from confirmation.','',
+            '## Preservation and limits','',
+            'All 40 predictions, fixed candidates, proposal/direct scores and committed-token traces were frozen before new truth scoring, preserved locally and in verified independent byte backups. Compressed Git artifacts are checked by roundtrip hashes. Actual public-model bytes have an independent backup; exact B1 package/readout/lens backups are retained. Replay commands and phase boundaries are in README.md.','',
+            'This is one bounded trajectory with 32 fresh records/domain. It does not complete the dual-canonical matrix, establish population equivalence, demonstrate active prefix recovery, or demonstrate cold-start tracking. A high-recall shortlist with persistent wrong selections under drift is evidence to investigate verifier/public-prefix mismatch; it does not authorize a recovery framework here. No further variants were launched. No P03 access, paid compute, global STATE change or PR merge occurred.','',
+            'Structured evidence: experiments/agent3-static-prefix-hybrid/manifest.json. Full results: experiments/agent3-static-prefix-hybrid/results.json. Exact commands: experiments/agent3-static-prefix-hybrid/README.md.']
+    drift=json.loads((EV/'boundary-drift.json').read_text())
+    rows=drift['comparisons']
+    lines+=['','## Observed boundary change relative to the public base','','| Domain | Updates | Mean relative L2 | Mean cosine distance |','|---|---:|---:|---:|']
+    for c in rows:
+        if c['reference_stage']==0:lines.append(f"| {c['domain']} | {c['stage']} | {c['relative_l2_mean']:.4f} | {c['cosine_distance_mean']:.4f} |")
+    Path(a.output).write_text('\n'.join(lines)+'\n')
+
+if __name__=='__main__':
+    p=argparse.ArgumentParser();p.add_argument('--results',required=True);p.add_argument('--output',required=True);main(p.parse_args())
