@@ -1,0 +1,74 @@
+{
+  "loss_scaling_check": {
+    "definition": "identity forward map, coordinate-mean squared loss, SGD lr=1",
+    "dimension": 2048,
+    "error_multiplier_per_step": 0.9990234375,
+    "error_fraction_after_50_steps": 0.9523220797036269,
+    "error_fraction_after_256_steps": 0.7787056584873919,
+    "error_fraction_after_1000_steps": 0.37642379805672405,
+    "steps_for_100fold_error_norm_reduction": 4714,
+    "curvature_scaled_identity_step_lr": 1024.0,
+    "curvature_scaled_steps_for_exact_solution_in_exact_arithmetic": 1
+  },
+  "embedding_distance_check": {
+    "synthetic_vocabulary": 257,
+    "max_float64_distance_difference": 2.842170943040401e-14,
+    "full_ranking_equal": true,
+    "real_geometry_vocabulary": 128256,
+    "real_geometry_width": 2048,
+    "one_fp32_vocabulary_matrix_bytes": 1050673152,
+    "one_fp32_vocabulary_matrix_gib": 0.978515625,
+    "one_fp32_score_vector_bytes": 513024,
+    "one_bool_visited_vector_bytes": 128256,
+    "qualification": "matrix-vector form still reads the full table; it avoids its V-by-d difference temporary and clone, not its FLOPs or bandwidth"
+  },
+  "local_geometry_check": {
+    "definition": "deliberately anisotropic two-dimensional linear counterexample, not language-model evidence",
+    "embedding_distance_gold_wrong": [
+      0.9932270636667125,
+      0.29
+    ],
+    "linearized_boundary_distance_gold_wrong": [
+      0.0,
+      8.030566605165541
+    ],
+    "nearest_embedding_is_wrong": true,
+    "local_boundary_ranking_is_correct": true,
+    "gauss_newton_solution": [
+      0.0,
+      1.0
+    ]
+  },
+  "discrete_surrogate_check": {
+    "definition": "first-order discrete loss surrogate plus quadratic distance penalty",
+    "max_centered_difference": 2.842170943040401e-14,
+    "full_ranking_equal": true,
+    "qualification": "same surrogate ranking in exact arithmetic; not a guarantee the nonlinear real loss follows that ranking"
+  },
+  "cached_gradient_check": {
+    "definition": "synthetic two-block causal attention prefix, fixed weights, float64, no rotary or grouped-query attention",
+    "prefix_lengths": [
+      1,
+      4,
+      16
+    ],
+    "max_output_absolute_error": 4.440892098500626e-16,
+    "max_input_gradient_absolute_error": 8.881784197001252e-16,
+    "prefix_cache_unchanged": true,
+    "qualification": "does not validate Agent 4 or Llama cache/rotary/precision integration"
+  },
+  "mismatch_check": {
+    "definition": "two-token public identity map with small target discrepancy",
+    "candidate_residuals": [
+      0.01,
+      0.99
+    ],
+    "strict_verifier_accepts": [
+      false,
+      false
+    ],
+    "best_candidate_is_true": true,
+    "sufficient_margin_check": true,
+    "qualification": "rejecting a strict equality match does not justify discarding the best token under mismatch"
+  }
+}
