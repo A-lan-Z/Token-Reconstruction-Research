@@ -1,0 +1,389 @@
+{
+  "task_id": "agent4-holistic-reassessment",
+  "status": "CURRENT_CONFIGURATION_STOPPED_NO_FURTHER_INTERVENTION_JUSTIFIED",
+  "base_commit": "ce04a8dfb11452407df94468964723c6294b8933",
+  "diagnostic_code_commit": "1fe9ad462198fbac4f659048898ab4a0dff34fe7",
+  "request_path": "coordination/requests/agent4-holistic-reassessment.md",
+  "request_sha256": "0ec7b6de61581d126f16243480b2501a7e93126823fc8200970362c01458f026",
+  "result_path": "coordination/results/agent4-holistic-reassessment.md",
+  "result_sha256": "555199c591031777e9f58a78b01aaf3b6782309664ced6d996f2d881494fe2bd",
+  "decision": {
+    "status": "CURRENT_CONFIGURATION_STOPPED_NO_FURTHER_INTERVENTION_JUSTIFIED",
+    "root_errors": 2,
+    "downstream_errors": 5,
+    "correct_prefix_root_true_candidates_available": 0,
+    "downstream_recovered_with_privileged_context": 5,
+    "required_total_time_reduction": 0.7722137544011625,
+    "optimistic_seconds_if_all_wrong_positions_free": 21.27805821200309,
+    "optimistic_seconds_if_seven_slowest_positions_free": 21.011314520004817,
+    "parts": {
+      "table_setup": {
+        "profile_seconds": 0.093873869998788,
+        "pooled_fraction": 0.007993727238492851,
+        "two_record_fraction_range": [
+          0.0029804367551170908,
+          0.012289281776973802
+        ],
+        "conditional_floor_if_component_free": 22.657090873373537,
+        "required_component_speedup_to_tie": null
+      },
+      "initial_cache_commit": {
+        "profile_seconds": 0.4131169339962071,
+        "pooled_fraction": 0.03517852292667566,
+        "two_record_fraction_range": [
+          0.00039355334057755205,
+          0.06498344535675821
+        ],
+        "conditional_floor_if_component_free": 22.036199248800788,
+        "required_component_speedup_to_tie": null
+      },
+      "candidate_forwards_verification_bookkeeping": {
+        "profile_seconds": 6.954081746967859,
+        "pooled_fraction": 0.592167263160245,
+        "two_record_fraction_range": [
+          0.5589455541345646,
+          0.6309399236416597
+        ],
+        "conditional_floor_if_component_free": 9.31476305486676,
+        "required_component_speedup_to_tie": null
+      },
+      "input_forward_and_gradient": {
+        "profile_seconds": 1.9911214150488377,
+        "pooled_fraction": 0.16955177719665568,
+        "two_record_fraction_range": [
+          0.16322965868010764,
+          0.17693024633489
+        ],
+        "conditional_floor_if_component_free": 18.96715914639227,
+        "required_component_speedup_to_tie": null
+      },
+      "vocabulary_ranking_and_shortlist": {
+        "profile_seconds": 0.8163101270474726,
+        "pooled_fraction": 0.06951200049301462,
+        "two_record_fraction_range": [
+          0.05998066893752924,
+          0.07767876335199879
+        ],
+        "conditional_floor_if_component_free": 21.25203412547551,
+        "required_component_speedup_to_tie": null
+      },
+      "token_cache_commit": {
+        "profile_seconds": 0.09154268100246554,
+        "pooled_fraction": 0.007795217376502308,
+        "two_record_fraction_range": [
+          0.007209492392820022,
+          0.008478810021005952
+        ],
+        "conditional_floor_if_component_free": 22.66162477210571,
+        "required_component_speedup_to_tie": null
+      },
+      "unattributed_optimizer_guard_scalar_and_loop": {
+        "profile_seconds": 1.3833949519394082,
+        "pooled_fraction": 0.11780149160841384,
+        "two_record_fraction_range": [
+          0.1156638043067769,
+          0.12029636096922039
+        ],
+        "conditional_floor_if_component_free": 20.149118329000906,
+        "required_component_speedup_to_tie": null
+      }
+    },
+    "block_gate": "FAIL: both root true tokens absent from saved/identical correct-prefix candidate sets; selecting/branching these sets cannot recover the root. New joint proposal generation lacks a measured quality/cost case.",
+    "curvature_gate": "FAIL: already implemented, derivative-qualified and executed;0/45 development,23.131s; no evidence invalidates the prior rejection.",
+    "repair_disposition": "No best-return or mutable-cache defect. BF16 tolerance incompatibility is real and already documented; relaxing it does not create omitted root candidates and needs separately qualified stopping calibration. No threshold tuned on these opened errors.",
+    "new_solver_experiment": false,
+    "canonical_comparison_complete": false,
+    "new_publication_authorized": false
+  },
+  "runtime": {
+    "commit": "1fe9ad462198fbac4f659048898ab4a0dff34fe7",
+    "torch": "2.10.0+cu128",
+    "transformers": "5.3.0",
+    "python": "3.12.3",
+    "gpu": "name, memory.total [MiB], memory.free [MiB], temperature.gpu\nNVIDIA GeForce RTX 5080, 16303 MiB, 7965 MiB, 40\n",
+    "utc": "2026-09-09T13:58:54Z"
+  },
+  "diagnostic_guard": {
+    "command": [
+      "env",
+      "PYTHONPATH=/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/agent4-prefix-only-rescue/outputs/agent4-prefix-only-rescue/restored-dependencies:src",
+      "python3",
+      "-S",
+      "scripts/agent4_reassessment/diagnose.py"
+    ],
+    "start_unix": 1788962315.8507512,
+    "end_unix": 1788962336.219373,
+    "returncode": 0,
+    "failure": null,
+    "samples": [
+      {
+        "elapsed": 0.06954693794250488,
+        "rss_bytes": 2621440,
+        "host_available_bytes": 23198384128,
+        "gpu_free_mib": 12279,
+        "temperature_c": 34
+      },
+      {
+        "elapsed": 2.141484022140503,
+        "rss_bytes": 540450816,
+        "host_available_bytes": 22913609728,
+        "gpu_free_mib": 12283,
+        "temperature_c": 34
+      },
+      {
+        "elapsed": 4.179083347320557,
+        "rss_bytes": 779714560,
+        "host_available_bytes": 22734807040,
+        "gpu_free_mib": 12262,
+        "temperature_c": 34
+      },
+      {
+        "elapsed": 6.204291343688965,
+        "rss_bytes": 1982337024,
+        "host_available_bytes": 21609123840,
+        "gpu_free_mib": 8966,
+        "temperature_c": 38
+      },
+      {
+        "elapsed": 8.231508016586304,
+        "rss_bytes": 1982337024,
+        "host_available_bytes": 21605797888,
+        "gpu_free_mib": 8966,
+        "temperature_c": 39
+      },
+      {
+        "elapsed": 10.26142692565918,
+        "rss_bytes": 1982337024,
+        "host_available_bytes": 21599236096,
+        "gpu_free_mib": 8966,
+        "temperature_c": 39
+      },
+      {
+        "elapsed": 12.288681268692017,
+        "rss_bytes": 1982861312,
+        "host_available_bytes": 21606313984,
+        "gpu_free_mib": 7964,
+        "temperature_c": 39
+      },
+      {
+        "elapsed": 14.314767599105835,
+        "rss_bytes": 1982861312,
+        "host_available_bytes": 21611548672,
+        "gpu_free_mib": 7977,
+        "temperature_c": 39
+      },
+      {
+        "elapsed": 16.34087061882019,
+        "rss_bytes": 1982861312,
+        "host_available_bytes": 21608271872,
+        "gpu_free_mib": 7965,
+        "temperature_c": 39
+      },
+      {
+        "elapsed": 18.368321180343628,
+        "rss_bytes": 1983123456,
+        "host_available_bytes": 21603889152,
+        "gpu_free_mib": 7965,
+        "temperature_c": 40
+      }
+    ],
+    "max_rss_bytes": 1983123456,
+    "child_peak_rss_bytes": 2110398464
+  },
+  "backup_and_preflight": {
+    "source_commit": "1fe9ad462198fbac4f659048898ab4a0dff34fe7",
+    "verified_actual_existing_backups": [
+      {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/agent4-prefix-only-rescue/outputs/agent4-prefix-only-rescue/backup/tokenizer.json",
+        "sha256": "79e3e522635f3171300913bb421464a87de6222182a0570b9b2ccba2a964b2b4",
+        "bytes": 9085657
+      },
+      {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/agent4-prefix-only-rescue/outputs/agent4-prefix-only-rescue/restore/tokenizer.json",
+        "sha256": "79e3e522635f3171300913bb421464a87de6222182a0570b9b2ccba2a964b2b4",
+        "bytes": 9085657
+      },
+      {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/agent4-prefix-only-rescue/outputs/agent4-prefix-only-rescue/backup/prefix.safetensors",
+        "sha256": "10fd7e98719037954a51299eb9cb680544a659400ee2431e8aac333626f5e61c",
+        "bytes": 1011912576
+      },
+      {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/agent4-prefix-only-rescue/outputs/agent4-prefix-only-rescue/restore/prefix.safetensors",
+        "sha256": "10fd7e98719037954a51299eb9cb680544a659400ee2431e8aac333626f5e61c",
+        "bytes": 1011912576
+      },
+      {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/agent4-prefix-only-rescue/outputs/agent4-prefix-only-rescue/backup/lens_alpaca.pt",
+        "sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742",
+        "bytes": 16787653
+      },
+      {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/agent4-prefix-only-rescue/outputs/agent4-prefix-only-rescue/restore/lens_alpaca.pt",
+        "sha256": "33b825dff8eb13cfe877a55bb14e3404c4e3f66355e271fb29004b2d49f4a742",
+        "bytes": 16787653
+      },
+      {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/agent4-prefix-only-rescue/outputs/agent4-prefix-only-rescue/backup/config.json",
+        "sha256": "2febf68cea25bf4611be02b7536f2488a5ba523bb1134986e3610152abe74fdb",
+        "bytes": 877
+      },
+      {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/agent4-prefix-only-rescue/outputs/agent4-prefix-only-rescue/restore/config.json",
+        "sha256": "2febf68cea25bf4611be02b7536f2488a5ba523bb1134986e3610152abe74fdb",
+        "bytes": 877
+      },
+      {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/agent4-prefix-only-rescue/outputs/agent4-prefix-only-rescue/backup/tokenizer_config.json",
+        "sha256": "9823dcfdc1121869029da45192238e85cf44f0b232a6d9dc20e4fe6f4242a14e",
+        "bytes": 54528
+      },
+      {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/agent4-prefix-only-rescue/outputs/agent4-prefix-only-rescue/restore/tokenizer_config.json",
+        "sha256": "9823dcfdc1121869029da45192238e85cf44f0b232a6d9dc20e4fe6f4242a14e",
+        "bytes": 54528
+      },
+      {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/agent4-prefix-only-rescue/outputs/agent4-prefix-only-rescue/backup/special_tokens_map.json",
+        "sha256": "6f38c73729248f6c127296386e3cdde96e254636cc58b4169d3fd32328d9a8ec",
+        "bytes": 296
+      },
+      {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/agent4-prefix-only-rescue/outputs/agent4-prefix-only-rescue/restore/special_tokens_map.json",
+        "sha256": "6f38c73729248f6c127296386e3cdde96e254636cc58b4169d3fd32328d9a8ec",
+        "bytes": 296
+      },
+      {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/agent4-prefix-only-inversion/outputs/agent4-prefix-only-inversion/backup/required-distributions.tar",
+        "sha256": "0080faa037678086ed298ce366752b68dbe43841372331a3571b582d3dedb9aa",
+        "bytes": 7346821120
+      },
+      {
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/agent4-prefix-only-inversion/outputs/agent4-prefix-only-inversion/backup/runtime-dependency-supplement.tar",
+        "sha256": "de594d77de5aa04c59ea2ef9acf8a20f4df23c8beaf3b420cca2499f17a48da5",
+        "bytes": 1720320
+      }
+    ],
+    "new_source_archive": {
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/agent4-holistic-reassessment/outputs/agent4-holistic-reassessment/source_backup.tar",
+      "sha256": "57ba2395525f00113b4318cbdfdb5cbb96b1f94926bb214692c83b08a9ea40e9",
+      "bytes": 6430720
+    },
+    "restore": "Diagnostic uses prior freshly extracted required-dependencies under Python -S and independent restored model copy; every candidate score/order must reproduce prior evidence.",
+    "preflight": {
+      "prior_largest_qualification": "127 positions plus full FP32 vocabulary and Jacobian products at3183476736 reserved bytes",
+      "planned_largest": "24 positions, singleton candidates, ordinary first gradients only",
+      "estimated_reserved_upper_bytes": 4294967296,
+      "hard_reserved_cap_bytes": 6442450944,
+      "live_free_gpu_mib": 12279,
+      "live_host_available_gib": 21,
+      "timeout_seconds": 600,
+      "source_trials": "two opened24position records plus seven single-position true-prefix diagnostics"
+    },
+    "utc": "2026-09-09T13:58:35Z"
+  },
+  "artifacts": [
+    {
+      "path": "experiments/agent4-holistic-reassessment/PLAN.md",
+      "bytes": 1456,
+      "sha256": "95eea5ccb4836ad975d7604cbb1e1dd4b0f037612daa0c0d82cab395eef4ce2b"
+    },
+    {
+      "path": "experiments/agent4-holistic-reassessment/evidence/analytical_recheck.json",
+      "bytes": 3867,
+      "sha256": "4627aa383a6f0a9192c13284f68b2b7e58008d60bb099fd89a2b36a6c22f6d92"
+    },
+    {
+      "path": "experiments/agent4-holistic-reassessment/evidence/backup_and_preflight.json",
+      "bytes": 5304,
+      "sha256": "61e081e32a8e01387aae9424b89d71331d3522cc7c04f900df7dec8bd5eda36b"
+    },
+    {
+      "path": "experiments/agent4-holistic-reassessment/evidence/bounded_diagnostics.json",
+      "bytes": 8430,
+      "sha256": "d7a3f5bc220db3745ebc701e5baa36d4e36395e3a9bc70116ccf7b0c72a98088"
+    },
+    {
+      "path": "experiments/agent4-holistic-reassessment/evidence/completion_checks.json",
+      "bytes": 390,
+      "sha256": "93196a1d6ab77318c174c0fdacb541d7191ce12dbff3fa5aca76c9d0c473aa21"
+    },
+    {
+      "path": "experiments/agent4-holistic-reassessment/evidence/decision.json",
+      "bytes": 3688,
+      "sha256": "0730858c49146981371bf9ed1de724fd44cbbf5fbf6e112b169aefa925092773"
+    },
+    {
+      "path": "experiments/agent4-holistic-reassessment/evidence/diagnostic_guard.json",
+      "bytes": 2247,
+      "sha256": "e8a4931b122bb8ba7773aa9e261fb7dad109710532c96cea83335ad168bde3f7"
+    },
+    {
+      "path": "experiments/agent4-holistic-reassessment/evidence/existing_trace_analysis.json",
+      "bytes": 45342,
+      "sha256": "ccb2f825671ba31203e4412c5bddc9a68b9b8e857a40bd04dcff3d25785ee378"
+    },
+    {
+      "path": "experiments/agent4-holistic-reassessment/evidence/natural_11_1_9_privileged_trace.json",
+      "bytes": 6422,
+      "sha256": "cbe8b04f3815ec2abc31eb682b363c54b667e47000a4d5d7bc70645d7b2cd4c2"
+    },
+    {
+      "path": "experiments/agent4-holistic-reassessment/evidence/natural_84_1_18_privileged_trace.json",
+      "bytes": 6516,
+      "sha256": "484fb8c2548b227a374bcbea2223240d04c6ebc7b60f59e66ae7d155d01dca6d"
+    },
+    {
+      "path": "experiments/agent4-holistic-reassessment/evidence/natural_84_1_19_privileged_trace.json",
+      "bytes": 6555,
+      "sha256": "1ccc99def1999d2ee4a9f5690838156d073d6d275b7e802233c0e75bb6d1c49e"
+    },
+    {
+      "path": "experiments/agent4-holistic-reassessment/evidence/natural_84_1_20_privileged_trace.json",
+      "bytes": 6513,
+      "sha256": "1a0f6e324205edc14007dd43ae9ec2a769947ed9353b3b0fc05cfa00f7f58e22"
+    },
+    {
+      "path": "experiments/agent4-holistic-reassessment/evidence/natural_84_1_21_privileged_trace.json",
+      "bytes": 6631,
+      "sha256": "1a3842eec50974467224816000d756fe0ff2a6c68c7fd2c12f8911ae4f150ade"
+    },
+    {
+      "path": "experiments/agent4-holistic-reassessment/evidence/natural_84_1_22_privileged_trace.json",
+      "bytes": 6614,
+      "sha256": "f4d2b8464376d8699fbfe51b81101a265b15624198b4ee3a86480b9cf6d93480"
+    },
+    {
+      "path": "experiments/agent4-holistic-reassessment/evidence/natural_84_1_23_privileged_trace.json",
+      "bytes": 6658,
+      "sha256": "4346594c471bd77f6f4847ab11ac9b7376b07c75532ee65147e5c02df37c49de"
+    },
+    {
+      "path": "experiments/agent4-holistic-reassessment/incoming/AGENT4_DECISION_BRIEF.md",
+      "bytes": 6450,
+      "sha256": "0ec7b6de61581d126f16243480b2501a7e93126823fc8200970362c01458f026"
+    },
+    {
+      "path": "experiments/agent4-holistic-reassessment/incoming/README.md",
+      "bytes": 1056,
+      "sha256": "8348624a9ad15187d8ffe31853e3321384f3173373475a2dc8d0c3920da9121a"
+    },
+    {
+      "path": "experiments/agent4-holistic-reassessment/incoming/RESEARCH_REPORT.md",
+      "bytes": 28442,
+      "sha256": "80346e9f793b0ab45b383698bcb20b30b59b1374e99ce447660030384c53b6cc"
+    },
+    {
+      "path": "experiments/agent4-holistic-reassessment/incoming/analytical_checks.py",
+      "bytes": 5852,
+      "sha256": "1ce534efef3d1d189ec596ce36f08a69d1da7e0cb078bcf9728c6ae10d915c98"
+    },
+    {
+      "path": "experiments/agent4-holistic-reassessment/incoming/analytical_results.json",
+      "bytes": 3867,
+      "sha256": "4627aa383a6f0a9192c13284f68b2b7e58008d60bb099fd89a2b36a6c22f6d92"
+    }
+  ],
+  "new_publication_authorized": false,
+  "new_solver_experiment": false
+}
