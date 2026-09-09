@@ -1,0 +1,37 @@
+Traceback (most recent call last):
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/agent3-b1-small-budget-a2/outputs/agent3-b1-small-budget-a2/assets/package/code/trr0012_package.py", line 795, in _package_loader
+    Path(existing_file).resolve().relative_to(code_root)
+  File "/usr/lib/python3.12/pathlib.py", line 682, in relative_to
+    raise ValueError(f"{str(self)!r} is not in the subpath of {str(other)!r}")
+ValueError: '/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/agent3-static-prefix-hybrid/src/token_reconstruction/__init__.py' is not in the subpath of '/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/agent3-b1-small-budget-a2/outputs/agent3-b1-small-budget-a2/assets/package/code'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/agent3-b1-small-budget-a2/outputs/agent3-b1-small-budget-a2/assets/package/code/trr0012_package.py", line 859, in _load_package_method
+    model = _package_loader(package_root)(state_path, **loader_kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/agent3-b1-small-budget-a2/outputs/agent3-b1-small-budget-a2/assets/package/code/trr0012_package.py", line 797, in _package_loader
+    raise PackageError("decoder namespace is shadowed by a non-package import") from exc
+_agent3_preserved_package.PackageError: decoder namespace is shadowed by a non-package import
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/agent3-static-prefix-hybrid/scripts/agent3_hybrid/qualify.py", line 41, in <module>
+    p=argparse.ArgumentParser();p.add_argument('--output',required=True);main(p.parse_args())
+                                                                         ^^^^^^^^^^^^^^^^^^^^
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/agent3-static-prefix-hybrid/scripts/agent3_hybrid/qualify.py", line 12, in main
+    r=Resources();old=ROOT.parent/'agent3-b1-small-budget-a2/outputs/agent3-b1-small-budget-a2'
+      ^^^^^^^^^^^
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/agent3-static-prefix-hybrid/scripts/agent3_hybrid/runtime.py", line 53, in __init__
+    self.package,self.b1,readout,_=load_models(ASSETS/'package',ASSETS/'public_a1_lens.pt',ROOT/'reference/strict_bos/round001_teacher.py',self.device)
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/agent3-static-prefix-hybrid/scripts/agent3_shortlists/predict.py", line 62, in load_models
+    model, state_sha, _ = package._load_package_method(root, descriptor, 'expanded_fixed', device=device, readout=readout)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/agent3-b1-small-budget-a2/outputs/agent3-b1-small-budget-a2/assets/package/code/trr0012_package.py", line 861, in _load_package_method
+    raise PackageError(f"strict package load failed: {method_id}") from exc
+_agent3_preserved_package.PackageError: strict package load failed: expanded_fixed
