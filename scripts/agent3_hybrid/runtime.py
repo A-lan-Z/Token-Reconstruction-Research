@@ -50,7 +50,19 @@ class Resources:
         start=time.perf_counter();self.device=torch.device('cuda');guard()
         for p,s in CODE_SHA.items():
             if sha(ROOT/p)!=s:raise ValueError('native implementation hash changed: '+p)
-        self.package,self.b1,readout,_=load_models(ASSETS/'package',ASSETS/'public_a1_lens.pt',ROOT/'reference/strict_bos/round001_teacher.py',self.device)
+        # The strict preserved package owns a module namespace also used by the native selector.
+        # Load it in an isolated import context, retaining its exact class/module objects on B1.
+        saved={k:v for k,v in sys.modules.items() if k=='token_reconstruction' or k.startswith('token_reconstruction.')}
+        old_path=list(sys.path)
+        for k in saved:del sys.modules[k]
+        try:
+            self.package,self.b1,readout,_=load_models(ASSETS/'package',ASSETS/'public_a1_lens.pt',ROOT/'reference/strict_bos/round001_teacher.py',self.device)
+            self.package_modules={k:binding(v.__file__) for k,v in sys.modules.items() if (k=='token_reconstruction' or k.startswith('token_reconstruction.')) and getattr(v,'__file__',None)}
+            for b in self.package_modules.values():Path(b['path']).relative_to(ASSETS/'package/code')
+        finally:
+            for k in list(sys.modules):
+                if k=='token_reconstruction' or k.startswith('token_reconstruction.'):del sys.modules[k]
+            sys.modules.update(saved);sys.path[:]=old_path
         self.prefix,self.lens,self.readout,self.native_evidence=legacy._load_public_prefix(snapshot=SNAPSHOT,reference_path=ROOT/'reference/strict_bos/round001_teacher.py',lens_path=ASSETS/'public_a1_lens.pt',embedding_path=ASSETS/'package/readout/public_normalized_embeddings.safetensors',device=self.device)
         if not torch.equal(readout,self.readout):raise ValueError('B1 and A1 readouts differ')
         del readout;gc.collect();torch.cuda.empty_cache();sync()
