@@ -40,15 +40,23 @@ def main():
     batching={}
     if a.qualify:
         raw=intrinsic_table(prefix,256);sync();start=time.perf_counter();fast=intrinsic_table(prefix,4096);sync()
-        batching={'fast_seconds':time.perf_counter()-start,'bitwise_equal':torch.equal(raw,fast),'different_values':int((raw!=fast).sum()),'max_abs_difference':float((raw.float()-fast.float()).abs().max())}
+        fast_seconds=time.perf_counter()-start;different=0;max_difference=0.0
+        for lo in range(0,len(raw),4096):
+            x,y=raw[lo:lo+4096],fast[lo:lo+4096]
+            different+=int((x!=y).sum());max_difference=max(max_difference,float((x.float()-y.float()).abs().max()))
+        batching={'fast_seconds':fast_seconds,'bitwise_equal':different==0,'different_values':different,'max_abs_difference':max_difference}
+        write(X/'fragment_cache_geometry.json',{'environment':env,'batching':batching,'peak_allocated':torch.cuda.max_memory_allocated(),'peak_reserved':torch.cuda.max_memory_reserved()})
         native_chunk=4096 if batching['bitwise_equal'] else 256
-        del raw,fast
+        del raw,fast,x,y
+        torch.cuda.empty_cache()
     else:
         native_chunk=json.loads((X/'fragment_qualification.json').read_text())['native_chunk']
     build_times=[];stats=None
     for repeat in range(3):
         sync();start=time.perf_counter();proposer=PrefixFragmentProposer(prefix,suffix_cache);stats=proposer.build(native_chunk);sync();build_times.append(time.perf_counter()-start)
-        if repeat<2:del proposer
+        if repeat<2:
+            del proposer
+            torch.cuda.empty_cache()
     sync();start=time.perf_counter();lens,emb=prepare(prefix);sync();a1_prepare=time.perf_counter()-start;guard()
     setup={'environment':env,'prefix_load_seconds':load_seconds,'tokenizer_suffix_cache_seconds':suffix_seconds,'tokenizer_cache_sha256':digest(cache_path),'prefix_rebuild_seconds':build_times,'native_chunk':native_chunk,'cache':stats,'a1_setup_seconds':a1_prepare,'a1_prior_fit_cost':'not remeasured','prefix_sha256':digest(ASSETS/'backup/prefix.safetensors')}
     fixture=torch.tensor([[128000]+list(range(1000,1127))],device='cuda');h=prefix.forward_full(fixture)[0].cpu();largest={}
