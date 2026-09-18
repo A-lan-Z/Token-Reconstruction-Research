@@ -1,0 +1,82 @@
+{
+  "utc": "2026-09-18T15:06:50.015841+00:00",
+  "audited_commit": "f11a7d3ef552ce9357ad527b81411c2b070e81bf",
+  "previous_goal_turn_classification": "progress: fresh confirmation, evidence packaging, completed local handoff, and one public push attempt rejected by automatic approval review",
+  "requirements": [
+    {
+      "requirement": "Materially different prefix-only candidate mechanism",
+      "status": "PROVED_FOR_PROMISING_COMPONENT_DIRECTION",
+      "evidence": [
+        "src/token_reconstruction/prefix_fragments.py",
+        "experiments/TRR-0014/FRAGMENT_CONFIRMATION_PLAN.md"
+      ],
+      "scope": "algebraic prefix geometry, intrinsic MLP response cache, tokenizer suffix expansion; no per-token gradient solver"
+    },
+    {
+      "requirement": "No separate trained token predictor in selected method",
+      "status": "PROVED",
+      "evidence": [
+        "src/token_reconstruction/prefix_fragments.py",
+        "scripts/trr0014/fragment_predict.py",
+        "experiments/TRR-0014/ACCESS_AND_COST.md"
+      ],
+      "scope": "selected-method dataflow uses the supplied prefix and tokenizer; fitted A1 is confined to the comparator arm"
+    },
+    {
+      "requirement": "Promising direction supported by disjoint evidence and costs",
+      "status": "PROVED_WITH_DECLARED_LIMITS",
+      "evidence": [
+        "experiments/TRR-0014/fresh_r2_score.json",
+        "experiments/TRR-0014/cost_summary.json",
+        "experiments/TRR-0014/fresh_r2_truth_gate.json"
+      ],
+      "scope": "all240 cells frozen before truth; baseline-level quality on this small panel; slower inference and rebuild costs explicitly included"
+    },
+    {
+      "requirement": "Same prefix interface and parameter-update handling",
+      "status": "COMPONENT_PROVED_INTEGRATION_NOT_CLAIMED",
+      "evidence": [
+        "src/token_reconstruction/prefix_fragments.py",
+        "src/token_reconstruction/prefix_weight_metric.py",
+        "tests/test_prefix_weight_metric.py"
+      ],
+      "scope": "derived state tied to supplied prefix; genuinely recovered changing weights remain a follow-up, not a demonstrated outcome"
+    },
+    {
+      "requirement": "Plans, tests, failed alternatives, reproducible evidence, result, manifest and state",
+      "status": "PROVED",
+      "evidence": [
+        "experiments/TRR-0014/validation.json",
+        "experiments/TRR-0014/artifact_index.json",
+        "coordination/results/TRR-0014.md",
+        "experiments/TRR-0014/manifest.json",
+        "coordination/STATE.json"
+      ],
+      "scope": "7 focused tests,1688 archive members checked,91 receipts checked; current predictor hashes still equal frozen hashes"
+    },
+    {
+      "requirement": "Canonical global replacement comparison",
+      "status": "NOT_CLAIMED_NOT_COMPLETE",
+      "evidence": [
+        "experiments/TRR-0014/manifest.json",
+        "coordination/results/TRR-0014.md"
+      ],
+      "scope": "this goal requests a promising direction; no global replacement or comparison-complete claim is made"
+    },
+    {
+      "requirement": "Commit and push task branch; create draft PR",
+      "status": "LOCAL_COMMIT_DONE_PUBLICATION_BLOCKED",
+      "evidence": [
+        "experiments/TRR-0014/publication_status.json",
+        "experiments/TRR-0014/publication_audit.json",
+        "experiments/TRR-0014/DRAFT_PR.md"
+      ],
+      "scope": "remote task branch absent on current read-only check; public push not retried without explicit approval"
+    }
+  ],
+  "current_predictor_hashes_match_freeze": true,
+  "current_manifest_hash_matches_validation": true,
+  "remaining_required_action": "Explicit user approval, then public push and draft PR",
+  "same_blocker_consecutive_goal_turns": 2,
+  "goal_complete": false
+}
