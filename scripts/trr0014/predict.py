@@ -16,7 +16,7 @@ def decode(prefix,h,method,metric,lens,emb):
         ids=(F.normalize(h,dim=-1)@emb.T).topk(64,dim=-1).indices
     elif method=='a1a2':
         prop=propose_public_a1(observations=h.unsqueeze(0),attention_mask=torch.ones((1,len(h)),dtype=torch.long),lens=lens,normalized_embeddings=emb)
-        ids=prop.candidates[0,:,:256]
+        ids=prop.candidates[0,:,:256].to('cuda')
     else:raise ValueError(method)
     cache=new_context(prefix);tokens=[torch.tensor(128000,device='cuda')];scores=[];residuals=[]
     for pos in range(1,len(h)):
