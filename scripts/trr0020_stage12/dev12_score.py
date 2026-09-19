@@ -13,6 +13,7 @@ def gate(f):
     for r in json.loads((INPUT/"metadata.json").read_text()):
         key=(r["condition"],r["group"]);counts.setdefault(key,0)
         if counts[key]<2:selected.append(r);counts[key]+=1
+    positions={r["id"]:r["positions"] for r in selected}
     expected={(r["id"],name) for r in selected for name in names}
     cells=[(e["id"],e["method"]) for e in f["entries"]]
     if len(cells)!=72 or len(set(cells))!=72 or set(cells)!=expected:raise ValueError("incomplete matrix")
@@ -31,7 +32,7 @@ def gate(f):
         expected_keys={"step0","step16","step32","step64","step128","best_objective","best_position_error"}
         if set(data)!=expected_keys:raise ValueError("wrong outputs")
         for ids in data.values():
-            if ids.ndim!=1 or ids.dtype!=n.torch.int64 or int(ids[0])!=128000:
+            if tuple(ids.shape)!=(positions[e["id"]],) or ids.dtype!=n.torch.int64 or int(ids[0])!=128000:
                 raise ValueError("invalid tokens/BOS")
             if (ids<0).any() or (ids>=128256).any():raise ValueError("out of vocabulary")
         outputs[e["id"],e["method"]]=data
