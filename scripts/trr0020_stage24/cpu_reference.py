@@ -21,6 +21,18 @@ def reference():
         torch.testing.assert_close(jvp(v),exact_j,rtol=1e-11,atol=1e-11)
         torch.testing.assert_close(vjp(w),exact_t,rtol=1e-11,atol=1e-11)
         errors.append({"jvp_max":float((jvp(v)-exact_j).abs().max()),"vjp_max":float((vjp(w)-exact_t).abs().max())})
+    floor_checks=[]
+    for scale in [0.,1e-14]:
+        value=x*scale
+        _,edge_jvp,edge_vjp=equation(mv(value),target,mv,rmv)
+        edge_full=torch.autograd.functional.jacobian(lambda v:torch.nn.functional.normalize(mv(v),dim=-1),value)
+        edge_blocks=torch.stack([edge_full[i,:,i,:] for i in range(4)])
+        v=torch.randn_like(x);w=torch.randn_like(x)
+        exact_j=(edge_blocks@v[...,None])[...,0];exact_t=(edge_blocks.transpose(-1,-2)@w[...,None])[...,0]
+        actual_j=edge_jvp(v);actual_t=edge_vjp(w)
+        torch.testing.assert_close(actual_j,exact_j,rtol=1e-11,atol=1e-2)
+        torch.testing.assert_close(actual_t,exact_t,rtol=1e-11,atol=1e-2)
+        floor_checks.append({"input_scale":scale,"jvp_relative_l2_error":float((actual_j-exact_j).norm()/exact_j.norm()),"vjp_relative_l2_error":float((actual_t-exact_t).norm()/exact_t.norm())})
     rhs[0]=0;linear=[]
     for damping in [1e-4,1e-2]:
         value,stats=least_squares(jvp,vjp,rhs,steps=16,damping=damping)
@@ -29,7 +41,7 @@ def reference():
         torch.testing.assert_close(value[1:],exact,rtol=1e-7,atol=1e-8)
         assert torch.equal(value[0],torch.zeros_like(value[0]))
         linear.append({"damping":damping,"dense_direction_max_error":float((value[1:]-exact).abs().max())})
-    return {"passed":True,"seed":200056,"dtype":"float64","derivative_checks":errors,"linear_checks":linear,"zero_rhs_preserved":True,"scope":"tiny normalized linear model only; real-prefix and reconstruction unqualified"}
+    return {"passed":True,"seed":200056,"dtype":"float64","derivative_checks":errors,"floor_checks":floor_checks,"linear_checks":linear,"zero_rhs_preserved":True,"scope":"tiny normalized linear model only; real-prefix and reconstruction unqualified"}
 if __name__=="__main__":
     import json
     print(json.dumps(reference()))

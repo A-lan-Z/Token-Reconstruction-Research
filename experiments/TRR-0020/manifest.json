@@ -1,6 +1,6 @@
 {
   "task_id": "TRR-0020",
-  "status": "DEVELOPMENT23_SCORED_DEVELOPMENT24_CPU_PROTOTYPE",
+  "status": "DEVELOPMENT24_CPU_FLOOR_CHECK_PENDING",
   "goal_completed": false,
   "initial_execution_commit": "a7e7f0628e88add676e767f188df1d903a749efb",
   "dev1_execution_commit": "9724dce2f14ccea2af63c0cbd590ab189ef4b7a8",
@@ -60,7 +60,7 @@
     "dev21": 64,
     "dev23": 96
   },
-  "current_experiment": "Normalized-output least-squares CPU reference pending",
+  "current_experiment": "Normalized-output inverse: ordinary CPU algebra passed; floor-aware derivative retest pending",
   "complete_archives": [
     "dev1_archive.json",
     "dev2_archive.json",
@@ -83,7 +83,8 @@
     "dev18_archive.json",
     "dev19_archive.json",
     "dev20_archive.json",
-    "dev21_archive.json"
+    "dev21_archive.json",
+    "dev23_grid_archive.json"
   ],
   "unresolved": [
     "baseline-like reconstruction quality with no token shortlist",
@@ -220,7 +221,7 @@
     "partial_archive": "dev13_partial_archive.json",
     "guard": "dev13_guard.json"
   },
-  "updated_utc": "2026-09-19T21:18:23.987436+00:00",
+  "updated_utc": "2026-09-19T21:21:21.174792+00:00",
   "dev13_r1": {
     "status": "COMPLETE_SCORED_ARCHIVED",
     "freeze": "dev13_r1_freeze.json",
@@ -525,7 +526,7 @@
     "conclusion": "Layer-factor approximate inversion rejected on public linear diagnostic; no token-reconstruction grid or active method"
   },
   "dev23": {
-    "status": "GRID_COMPLETE_SCORED_ARCHIVE_PENDING",
+    "status": "COMPLETE_SCORED_ARCHIVED",
     "plan": "DEV23_PROSPECTIVE.md",
     "hypothesis": "Use analytic Jacobian transpose in damped CGLS to reduce actual linear residual",
     "reconstruction_runs": 96,
@@ -549,13 +550,19 @@
     "grid_summary": "dev23_grid_summary.json",
     "grid_guard": "dev23_grid_guard.json",
     "grid_truth_gate": "dev23_grid_truth_gate.json",
-    "grid_peak_reserved_GiB": 6.060546875
+    "grid_peak_reserved_GiB": 6.060546875,
+    "grid_archive": "dev23_grid_archive.json",
+    "grid_archive_bytes": 154982299,
+    "grid_archive_logical_members": 312,
+    "grid_archive_parts": 4
   },
   "dev24": {
-    "status": "CPU_PROTOTYPE_READY",
+    "status": "INITIAL_CPU_PASSED_FLOOR_RETEST_PENDING",
     "plan": "DEV24_PROSPECTIVE.md",
     "hypothesis": "Apply CGLS to normalized-output residuals matching cosine geometry",
     "reconstruction_runs": 0,
-    "gpu_runs": 0
+    "gpu_runs": 0,
+    "initial_cpu_reference": "dev24_cpu_reference.json",
+    "normalization_floor_note": "Projection derivative is disabled below the normalization denominator floor, matching F.normalize; zero/tiny input checks added"
   }
 }
