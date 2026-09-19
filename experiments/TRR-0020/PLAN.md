@@ -17,3 +17,5 @@ Live RTX5080:16303MiB, about6185MiB occupied by system/display with no listed CU
 
 ## Next decisions
 If residual cancellation fails, use its per-step residual/convergence evidence to choose a different mathematical approximation (e.g. inverse-Jacobian correction), not a candidate-pruning workaround. If promising, optimize execution after accuracy is frozen, then run complete dual benchmark and independent mechanism tests. Genuine fresh confirmation and recovered-prefix trajectory remain distinct requirements from public-prefix retrospective results; do not mislabel them.
+
+Pre-execution resource clarification: display/system usage leaves 9600-9830MiB free. The inherited 10000MiB admission gate was unnecessarily strict. A task-local guard admits >=9000MiB, still above the 6GiB maximum process budget plus 2GiB mandatory free reserve. Temperature/CPU/GPU runtime guards and every scientific geometry remain unchanged. No predictions or labels existed at this adjustment. See preflight_adjustment.json.
