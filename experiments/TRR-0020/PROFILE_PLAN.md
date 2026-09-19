@@ -1,0 +1,3 @@
+# GPU operator profile
+The complete dev5 matrix froze/scored; magnitude losses do not remove the remaining gap. Profile5training steps on a public synthetic128-position input,seed200026,using the existing full-vocabulary cosine TF32 optimizer. No evaluation observations/labels.
+Use CUDA/CPU profiler with operator shapes; no online method changes. Prefix,metric andone graph pool plus eager forward/backward temporaries estimated<6GiB, verified by guards before/after. Same>=2GiBfree guard and fresh>=9000MiBadmission. Bound120seconds. Preserve trace,environment,source hashes and peak memory. This is operator diagnosis, not an accuracy or end-to-end latency claim.
