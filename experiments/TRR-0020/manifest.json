@@ -1,6 +1,6 @@
 {
   "task_id": "TRR-0020",
-  "status": "DEVELOPMENT24_CPU_FLOOR_CHECK_PENDING",
+  "status": "DEVELOPMENT24_CPU_QUALIFIED",
   "goal_completed": false,
   "initial_execution_commit": "a7e7f0628e88add676e767f188df1d903a749efb",
   "dev1_execution_commit": "9724dce2f14ccea2af63c0cbd590ab189ef4b7a8",
@@ -60,7 +60,7 @@
     "dev21": 64,
     "dev23": 96
   },
-  "current_experiment": "Normalized-output inverse: ordinary CPU algebra passed; floor-aware derivative retest pending",
+  "current_experiment": "Normalized-output inverse passed ordinary/zero/tiny CPU checks;real-prefix qualification pending",
   "complete_archives": [
     "dev1_archive.json",
     "dev2_archive.json",
@@ -221,7 +221,7 @@
     "partial_archive": "dev13_partial_archive.json",
     "guard": "dev13_guard.json"
   },
-  "updated_utc": "2026-09-19T21:21:21.174792+00:00",
+  "updated_utc": "2026-09-19T21:22:31.418132+00:00",
   "dev13_r1": {
     "status": "COMPLETE_SCORED_ARCHIVED",
     "freeze": "dev13_r1_freeze.json",
@@ -557,12 +557,16 @@
     "grid_archive_parts": 4
   },
   "dev24": {
-    "status": "INITIAL_CPU_PASSED_FLOOR_RETEST_PENDING",
+    "status": "CPU_ALGEBRA_PASSED",
     "plan": "DEV24_PROSPECTIVE.md",
     "hypothesis": "Apply CGLS to normalized-output residuals matching cosine geometry",
     "reconstruction_runs": 0,
     "gpu_runs": 0,
     "initial_cpu_reference": "dev24_cpu_reference.json",
-    "normalization_floor_note": "Projection derivative is disabled below the normalization denominator floor, matching F.normalize; zero/tiny input checks added"
+    "normalization_floor_note": "Projection derivative is disabled below the normalization denominator floor, matching F.normalize; zero/tiny input checks added",
+    "cpu_reference": "dev24_cpu_reference_r1.json",
+    "cpu_execution_commit": "c2a6320e0b0a2534d8f1c98cb8fa2dee765c56a0",
+    "next_required": "Qualify normalized J/JT against independent supplied-prefix autograd on public40/128geometry, with resource preflight;then fix a reconstruction grid before scoring",
+    "conclusion": "Tiny normalized-equation algebra passes;no model-size or reconstruction benefit established"
   }
 }

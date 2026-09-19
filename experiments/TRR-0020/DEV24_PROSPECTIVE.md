@@ -1,4 +1,6 @@
-# Possible follow-up: match the cosine geometry directly
+# Next direction: match the cosine geometry directly
+
+Current status: CPU qualification including zero/tiny normalization-floor cases passed in dev24_cpu_reference_r1.json. No GPU qualification or reconstruction execution has run.
 
 The baseline ranks tokens by cosine similarity, while the current CGLS reconstruction grid fits raw activation values. Independently of that grid's eventual scores, an untested alternative is to normalize predicted and observed activations and solve the corresponding local least-squares equation.
 
