@@ -1,6 +1,6 @@
 {
   "task_id": "TRR-0020",
-  "status": "DEVELOPMENT21_CPU_PROTOTYPE",
+  "status": "DEVELOPMENT21_CPU_QUALIFIED",
   "goal_completed": false,
   "initial_execution_commit": "a7e7f0628e88add676e767f188df1d903a749efb",
   "dev1_execution_commit": "9724dce2f14ccea2af63c0cbd590ab189ef4b7a8",
@@ -58,7 +58,7 @@
     "dev19": 32,
     "dev20": 48
   },
-  "current_experiment": "analytic own-position Jacobian and regularized Krylov inverse;CPUvalidation pending",
+  "current_experiment": "Matrix-free own-position inverse: tiny CPU algebra passed; supplied-prefix GPU qualification pending",
   "complete_archives": [
     "dev1_archive.json",
     "dev2_archive.json",
@@ -217,7 +217,7 @@
     "partial_archive": "dev13_partial_archive.json",
     "guard": "dev13_guard.json"
   },
-  "updated_utc": "2026-09-19T20:16:47.712892+00:00",
+  "updated_utc": "2026-09-19T20:24:31.285684+00:00",
   "dev13_r1": {
     "status": "COMPLETE_SCORED_ARCHIVED",
     "freeze": "dev13_r1_freeze.json",
@@ -467,7 +467,7 @@
     "peak_reserved_GiB": 3.654296875
   },
   "dev21": {
-    "status": "CPU_PROTOTYPE_READY",
+    "status": "CPU_ALGEBRA_PASSED",
     "plan": "DEV21_PROSPECTIVE.md",
     "sources": [
       "scripts/trr0020_stage21/linearized_prefix.py",
@@ -475,6 +475,11 @@
     ],
     "gpu_runs": 0,
     "reconstruction_runs": 0,
-    "conclusion": "unqualified prototype; no efficacy claim"
+    "conclusion": "Tiny synthetic algebra passes; supplied-prefix GPU qualification and full reconstruction remain untested",
+    "cpu_reference": "dev21_cpu_reference.json",
+    "cpu_environment": "dev21_cpu_environment.json",
+    "cpu_reference_sha256": "f0c6203420932f045e5fe83b98842f10a74e038a2e424658527f0bd62003cd39",
+    "cpu_execution_commit": "cc6a97e732bdaf9398141e247a6a3639dc1e0641",
+    "next_required": "Qualify FP32 forward and own-position JVP on public 40/128-position inputs, with resource preflight; freeze finite reconstruction grid before scoring"
   }
 }
