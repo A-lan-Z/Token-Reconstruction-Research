@@ -1,0 +1,15 @@
+# Development15 prospective direction: warm-start direct full-vocabulary refinement
+
+This is a next-step plan, not an executed experiment or active canonical method.
+
+The standalone direct quadratic rule was cheap but started from a weak lookup estimate; its smaller-penalty variant improved some inputs but remained inaccurate. The full-vocabulary soft optimizer obtains much better starting sequences. Test whether combining them can retain the useful soft initialization while spending fewer costly probability-optimization steps.
+
+Use the unchanged Gini003 optimizer with original epsilon1e-12, base rate.6, scale80 initialization, decay.98 and reset32 for either64 or128 steps. Take its direct final argmax as one complete current sequence. Then perform32 direct quadratic full-vocabulary updates from that sequence, using raw or white metric and beta.01/.03/.1. This is12fixed exploratory configurations and96cells on the established8-input development panel.
+
+Each quadratic update evaluates one current whole sequence, computes each position's own A2 gradient, scores all128256 vocabulary entries through the existing quadratic formula, and directly updates the current sequence. It does not construct a shortlist or forward a list of alternatives to a separate verifier. Preserve the initial sequence, steps1/2/4/8/16/32, the minimum whole observed hard-sequence cosine loss including initialization, and the diagnostic best per-position observed error. No hidden-token correctness influences a decision.
+
+Implementation should share the same immutable prefix and deterministic metric/table between stages, preserve the original arithmetic, and support an explicit initial-token vector for the direct optimizer. Do not mutate old bound sources. Before matrix execution, check the64/128 soft-stage snapshots and trace prefixes against the existing development anchors, and compare the warm-start direct stage against an independent eager implementation at40 and128 positions. Save all qualification results before assertions. Require exact outputs/loss traces for any execution or memory reuse change. Use one isolated process per fixed configuration.
+
+Resource estimate must be updated after implementation: soft engine previously below3.8GiB on development geometry; shared prefix/metric avoids another full vocabulary table, while direct-stage buffers and graphs add limited memory. Retain6GiBcap,2GiBfree, admission9000MiBfree,hostavailable8GiB,RSS10GiB,temp80C. Qualify the largest combined cell and both native lengths before the full matrix. Include both stages, capture, synchronization and transfer in inference time; report preparation separately. All96cells freeze before current labels. If promising, register one exact selected rule and run it in both canonical benchmarks with the complete inherited matrix.
+
+The idea remains unproven. A better starting sequence may not prevent quadratic oscillation or solve target-prefix mismatch, and the extra refinement cost may erase the expected savings. Preserve negative results.
