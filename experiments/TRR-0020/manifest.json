@@ -2,9 +2,9 @@
   "task_id": "TRR-0020",
   "status": "IN_PROGRESS_NO_ACCEPTED_METHOD",
   "goal_completed": false,
-  "initial_execution_commit": "a7e7f06",
-  "dev1_execution_commit": "9724dce",
-  "dev2_initial_execution_commit": "9dad60d",
+  "initial_execution_commit": "a7e7f0628e88add676e767f188df1d903a749efb",
+  "dev1_execution_commit": "9724dce2f14ccea2af63c0cbd590ab189ef4b7a8",
+  "dev2_initial_execution_commit": "9dad60d5a517589644628c19577bcba3ad08ac87",
   "source_and_full_commit_evidence": [
     "dev1_freeze.json",
     "soft_dev2_qualification_1789828116468785853.json"
@@ -23,7 +23,7 @@
     "returncode": -15,
     "reason": "RuntimeError('resource or timeout limit exceeded')",
     "final_gpu_free_mib": 1057,
-    "completed_cells": 52,
+    "completed_cells": 64,
     "labels_opened": true,
     "resume": "dev2_r1_guard.json / same bound method source",
     "timing_scope": "exploratory only; exclude from comparative latency claims due external GPU-memory contention"
@@ -39,18 +39,21 @@
     "dev1": 64,
     "dev2": 64,
     "dev3": 96,
-    "dev4": 48
+    "dev4": 48,
+    "dev5": 80
   },
   "current_experiment": {
-    "stage": "dev5",
-    "plan": "DEV5_PLAN.md",
-    "status": "qualification/prediction active;80cells planned"
+    "stage": "dev6_r1",
+    "plan": "DEV6_R1_PLAN.md",
+    "status": "guarded qualification/prediction active;48cells planned",
+    "execution_commit": "f75ff991611ef897946872d4081f7a16e7f27213"
   },
   "complete_archives": [
     "dev1_archive.json",
     "dev2_archive.json",
     "dev3_archive.json",
-    "dev4_archive.json"
+    "dev4_archive.json",
+    "dev5_archive.json"
   ],
   "unresolved": [
     "near-baseline accuracy",
@@ -63,5 +66,26 @@
     "status": "COMPLETE_SCORED",
     "freeze": "dev4_freeze.json",
     "score": "dev4_score.json"
+  },
+  "dev5": {
+    "status": "COMPLETE_SCORED",
+    "plan": "DEV5_PLAN.md",
+    "freeze": "dev5_freeze.json",
+    "score": "dev5_score.json",
+    "archive": "dev5_archive.json",
+    "conclusion": "near-baseline development accuracy but remaining errors and insufficient speed"
+  },
+  "dev6": {
+    "status": "EXCLUDED_PARTIAL_NOT_SCORED",
+    "completed_cells": 8,
+    "guard": "dev6_guard.json",
+    "archive": "dev6_archive.json",
+    "reason": "loss trace repeatability failure"
+  },
+  "numerics_diagnostic": {
+    "default": "numerics_default.json",
+    "deterministic": "numerics_deterministic.json",
+    "interpretation": "numerics_interpretation.json",
+    "conclusion": "each isolated mode repeats; original failure not reproduced; modes differ numerically"
   }
 }
