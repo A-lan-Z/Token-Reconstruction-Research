@@ -11,7 +11,7 @@ for pos in range(1,128):
     if pos in (1,2,39,63,127):
         ids=torch.randint(0,128256,(256,),generator=g).to("cuda")
         ids[-16:]=ids[0]
-        before=[(ly.keys.clone(),ly.values.clone()) for ly in cache.backend.layers]
+        before=[(ly.keys.clone(),ly.values.clone()) for ly in cache.backend.layers[:len(p.layers)]]
         timings={"native":[],"shared":[]};out={}
         for rep in range(7):
             for name,fn in ([("native",n.candidates),("shared",shared_candidates)] if rep%2==0 else [("shared",shared_candidates),("native",n.candidates)]):
