@@ -95,9 +95,9 @@ class PrefixFragmentProposer:
         return torch.cat([first, second], dim=-1)
 
     @torch.no_grad()
-    def propose(self, observations, fragments=True):
+    def propose(self, observations, fragments=True, budget=512):
         base = self.base(observations)
         if not fragments:
             return base
-        expanded = [expand_candidates(row, self.suffix_cache) for row in base.cpu().tolist()]
+        expanded = [expand_candidates(row, self.suffix_cache, budget=budget) for row in base.cpu().tolist()]
         return torch.tensor(expanded, device=base.device, dtype=torch.long)
