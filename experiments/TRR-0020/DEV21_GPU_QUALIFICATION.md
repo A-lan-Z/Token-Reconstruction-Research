@@ -1,0 +1,13 @@
+# Real-prefix qualification for the local inverse prototype
+
+This is a public synthetic numerical qualification, not a reconstruction benchmark. Execution uses only the supplied public cut-4 prefix and seed200049 synthetic token IDs. No held-out source IDs, A1 outputs, target weights or labels are read. The largest128-position geometry runs first, then40positions.
+
+Load the supplied BF16 parameter values as FP32. Compare the custom forward to the independent installed Transformers5.3.0 eager decoder, using FP32 rotary constants, actual grouped-query attention and native unpadded length. Fixed tolerances are rtol5e-4/atol2e-5 for forward tensors and rtol5e-4/atol5e-5 for derivative tensors. This does not assert equivalence to native BF16 A2.
+
+At each length, use the public embedding sequence plus fixed Gaussian noise of scale.003, retaining exact BOS. Compare analytic own-position products at positions1, length//2 and length-1 to independent HF autograd JVPs with tangent support at only that position. The independent full-sequence JVP can affect later outputs; compare only the selected output position. Preserve outputs before applying numerical gates.
+
+Exercise the eight-step ridge1e-6 local Krylov solve on the difference from the known public fixture activation, retain true linear residuals and require finite directions and exact zero BOS direction. This is a numerical behavior measurement, not an accuracy pass threshold.
+
+The prefix has approximately1.9GiB FP32 parameters including its embedding table. The custom parameter dictionary aliases the already-FP32 tensors, rather than creating a second copy. Cache geometry is bounded by4layers x128positions x32heads x128history, plus8192-wide MLP intermediates; estimated persistent custom cache is below0.15GiB. Autograd directional checks run one direction at a time; estimated total reserved memory is below4GiB, with a hard6GiB process cap. No dense2048x2048-per-position Jacobian is built. Estimated runtime is below180seconds; guard timeout900seconds.
+
+The guard requires three exclusive-compute samples, at least9000MiB free and temperature below70C before launch, and retains at least2GiB GPU free,8GiB host available,10GiB host RSS cap and temperature below80C during execution. The process additionally requires3GiB free at final qualification. Stop and preserve any numerical or resource failure. Record exact full commit, commands, source/asset hashes, environment, preparation, raw artifacts and memory. A successful qualification permits designing a prospective reconstruction grid; it does not establish the user's goal.
