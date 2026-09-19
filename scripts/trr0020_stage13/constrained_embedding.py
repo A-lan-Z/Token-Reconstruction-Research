@@ -111,10 +111,11 @@ class ConstrainedEmbedding(SoftVocabulary):
         outputs["best_position_error"]=self.position_best_tokens[:length].cpu()
         loss=self.loss_trace.cpu()
         if not torch.isfinite(loss).all():raise RuntimeError("nonfinite constrained inverse")
+        error_trace=self.error_trace.cpu().tolist();distance_trace=self.distance_trace.cpu().tolist()
         torch.cuda.synchronize();end=time.perf_counter()
         return outputs,{"total_seconds":end-start,"capture_seconds":capture,"input_initialization_seconds":prepared-start-capture,
           "optimization_output_seconds":end-prepared,"loss_trace":loss.tolist(),
-          "observed_error_trace":self.error_trace.cpu().tolist(),"nearest_distance_trace":self.distance_trace.cpu().tolist(),
+          "observed_error_trace":error_trace,"nearest_distance_trace":distance_trace,
           "whole_sequence_prefix_forwards":129,"whole_sequence_prefix_backwards":128,
           "full_vocabulary_matrix_products":131,"vocabulary_entries_per_sweep":len(self.weight),
           "shortlist_size":None,"separate_candidate_verification_calls":0,"model_parameter_updates":0,

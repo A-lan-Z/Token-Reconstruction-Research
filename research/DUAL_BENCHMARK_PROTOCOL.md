@@ -327,3 +327,8 @@ prefix trajectory, a fresh confirmation, or a change of the default baseline.
 ## TRR-0017: candidate-free inversion and exact A2 cache reuse
 
 Two active methods (prefix_parallel_continuous96 and prefix_parallel_discrete64) add four cells to the 52-cell registry. Both were evaluated in both canonical setups and the paired original R2 panel; the complete 1,360 current output matrix was frozen before retrospective scoring. The56-cell matrix retains all prior provenance. Neither candidate-free variant establishes a replacement. The shared-context fragment256 execution preserves all candidates, scores and emitted tokens byte for byte on all 272 observations; it changes execution cost, not the decision rule. Details: coordination/results/TRR-0017.md and experiments/TRR-0017/manifest.json.
+
+
+## TRR-0020: full-vocabulary optimization without candidate proposal
+
+Two fixed rules, no_shortlist_full_vocab_gini003_128 and no_shortlist_full_vocab_halfhard256, add four completed cells to the62-cell registry. The66-cell matrix is complete at experiments/TRR-0020/canonical/canonical_matrix.json. All2,304 current replicate runs froze before retrospective scoring, with fresh native and GPU-replay A1+A2 controls. Both new rules are slower and less accurate than the controls, so no replacement is established. Full evidence and cost boundaries are in coordination/results/TRR-0020.md and experiments/TRR-0020/manifest.json.
