@@ -9,7 +9,8 @@ import random,re,types
 torch.set_num_threads(2);torch.backends.cuda.matmul.allow_tf32=False
 X=ROOT/'experiments/TRR-0016';OUT=ROOT/'outputs/TRR-0016'
 assert (X/'registry.json').exists()
-dst=OUT/'fresh_r3';dst.mkdir(exist_ok=False)
+dst=OUT/'fresh_r3';dst.mkdir(exist_ok=True)
+assert not any(dst.iterdir()), 'refuse to overwrite capture artifacts'
 rng=random.Random(1616256)
 tok=AutoTokenizer.from_pretrained(ASSETS/'backup',local_files_only=True)
 excluded=set()
@@ -22,7 +23,7 @@ for book in [11,84]:
     f=ASSETS/'backup'/('gutenberg-'+str(book)+'.txt')
     paras=[t.strip() for t in re.split(r'\n\s*\n',f.read_text(encoding='utf-8-sig')) if len(t)>300]
     eligible=[]
-    for i in range(len(paras)//4,3*len(paras)//4):
+    for i in range(len(paras)//10,9*len(paras)//10):
         if hashlib.sha256(paras[i].encode()).hexdigest() in excluded:continue
         ids=tok.encode(paras[i],add_special_tokens=False)
         if len(ids)>=127:eligible.append((i,ids[:127]))
