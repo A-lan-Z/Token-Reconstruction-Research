@@ -4,7 +4,10 @@ import sys,json,hashlib,zipfile
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/"scripts/trr0020_canonical"))
 from support import n,X,OUT,METHODS
-from score import gate
+import importlib.util
+_spec=importlib.util.spec_from_file_location("trr0020_canonical_score",ROOT/"scripts/trr0020_canonical/score.py")
+_module=importlib.util.module_from_spec(_spec);_spec.loader.exec_module(_module)
+gate=_module.gate
 
 def main():
     f=json.loads((X/"prediction_freeze.json").read_text())
