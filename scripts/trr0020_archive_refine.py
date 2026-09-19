@@ -30,7 +30,7 @@ def main():
             if n.digest(p)!=r["sha256"]:raise RuntimeError("qualification output changed")
             paths.add(p)
         paths.add(receipt)
-    required=["prediction_freeze.json","score.json","canonical_matrix.json","truth_gate.json","guard.json",
+    required=["summary.json","prediction_freeze.json","score.json","canonical_matrix.json","truth_gate.json","guard.json",
       "BENCHMARK_PLAN.md","registry.json","metadata.json","inherited_matrix.json","inherited_registry.json",
       "validation.json","validation_guard.json","validation_outputs.zip","validation_archive.json"]
     paths.update(X/name for name in required)
