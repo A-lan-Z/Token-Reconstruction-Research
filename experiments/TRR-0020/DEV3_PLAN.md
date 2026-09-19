@@ -1,0 +1,10 @@
+# Development3: non-pruning optimizer dynamics
+Prepared while dev2 continuation waits for GPU headroom, BEFORE dev2 development labels are opened. Evidence available: synthetic qualification reaches125/127 with scale80 cosine, and dev1 stalls. No variant is yet accepted.
+
+Primary source: Skapars et al., GPT, But Backwards: Exactly Inverting Language Model Outputs, ICML2025 workshop, sections4.1-4.2 and AppendixA, https://openreview.net/pdf/496ad75e6476b85951fe38da9e04553d16038eef.pdf . Their SODA optimizer uses a full-vocabulary probability relaxation, Adam moments without bias correction, decay, and moment resets. Their model/output access and evaluation differ from ours; their accuracy is not transferred to our setting.
+
+Hypothesis: torch Adam's default1e-8 stabilizer can suppress low-probability token gradients; lowering it and resetting moments may improve convergence without pruning. Test12 fixed variants: initial scale0 (uniform distribution, no input lookup initialization) or80 (full-vocabulary metric scores); learning rate0.3,0.6,1.0; decay0.98 or1.0; epsilon1e-12; beta1=.9,beta2=.995; moment reset every32updates;256input-optimization steps; same raw cosine loss. No noise resets, fluency prior, hard-token verifier, candidate shortlist or true-label stopping. Final tokens are direct argmax; checkpoints0,16,32,64,128,256 and best continuous loss are recorded.
+
+All96outputs on the existing8opened development inputs must freeze before their source labels are opened for this study. Synthetic public128-position qualification first. No comparison-complete or effective-method claim from this development matrix. Register any fixed eventual winner for both canonical setups.
+
+Resource geometry remains full vocabulary128256 x at most127unknownpositions, BF16prefix/FP32input distributions and Adam moments. Bound6GiB reserved,>=2GiBfree;same watchdog. Expected runtime<10minutes;timeout1200seconds. Do not launch until dev2's live continuation is terminal. Stable code lives in scripts/trr0020_stage3 to avoid altering the bound source set of the queued dev2. Every CPU/GPU test and source binding must be preserved.
