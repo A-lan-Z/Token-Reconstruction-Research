@@ -1,4 +1,7 @@
 """Evaluator-only source selection and paired capture; not imported by predictor."""
+from pathlib import Path
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parents[2]/"scripts/trr0014"))
 from native import *
 from transformers import AutoTokenizer
 from token_reconstruction.target_update import TargetLoRAConfig,install_target_lora,load_target_lora
