@@ -1,0 +1,5 @@
+# Independent kernel mathematics check
+
+After the timed matrix releases the GPU, compare the custom attention kernel with independently concatenated dense FP32 attention, rounded to BF16. Test 256 candidates, 32 query heads, 8 KV heads and 64 dimensions at past lengths 1, 39 and 127; seed 1919064. Check that shared history is unchanged and altering candidate zero cannot alter any other candidate. Use one BF16-relative-ULP tolerance (rtol0.0078125, atol0.0001), report actual discrepancies, and do not call this bitwise equivalence to native SDPA.
+
+No model, observation panel or evaluator truth is loaded. Largest dense reference K and V each contain256x32x128x64 FP32 values (256MiB each); temporary BF16 repetition, logits and outputs keep the expected peak below1.5GiB, with an explicit2GiB allowance plus runtime overhead. Start under fresh exclusive GPU checks, retain at least2GiB free GPU and8GiB available host memory, and use the existing resource watchdog. This independent correctness check does not alter or retune the frozen inference code.
