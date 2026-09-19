@@ -336,3 +336,7 @@ Two fixed rules, no_shortlist_full_vocab_gini003_128 and no_shortlist_full_vocab
 ## TRR-0020 refinement follow-up, registered and not yet comparison-complete
 
 The registry at experiments/TRR-0020/canonical_refine/registry.json adds no_shortlist_warm128_quadratic_white003_positionbest32. This fixed full-vocabulary rule uses the128-step Gini warm reconstruction followed by32 white-metric direct quadratic updates at beta.03 and chooses each position by its minimum observed hard activation error. The active requirement is now68cells;66prior cells remain complete and the two new cells are pending. Candidate budget is null and no separate candidate verifier is used. Exact original-output qualification is required for the owned-CUDA-stream execution adaptation.
+
+### TRR-0020 refinement follow-up completion
+
+The registered refinement completed both canonical setups and the full68-cell matrix at experiments/TRR-0020/canonical_refine/canonical_matrix.json. All1728current replicate runs froze before scoring; native and replay controls reproduced their archived arrays exactly. Refinement scored2486/2496 with55/64exact Pile inputs and13793/13990 with27/128exact Finance inputs. Runtime was3.177x and1.862x the native control, respectively. It does not establish a replacement. The68-cell active matrix is complete.

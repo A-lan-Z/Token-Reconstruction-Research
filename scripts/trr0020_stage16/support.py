@@ -15,7 +15,7 @@ X=ROOT/"experiments/TRR-0020";OUT=ROOT/"outputs/TRR-0020/dev16"
 INPUT=ROOT.parent/"TRR-0014/outputs/TRR-0014/fresh_r1"
 TRACE_KEYS=["loss_trace","observed_error_trace","mean_confidence_trace","mean_gini_trace"]
 def binding():
-    paths=list((ROOT/"scripts/trr0020_stage16").glob("*.py"))+[X/"DEV16_PLAN.md",X/"dev16_cpu_reference.json",X/"dev7_freeze.json"]
+    paths=list((ROOT/"scripts/trr0020_stage16").glob("*.py"))+[X/"DEV16_PLAN.md",X/"dev16_cpu_reference.json",X/"dev16_preflight.json",X/"dev7_freeze.json"]
     paths +=[ROOT/"scripts/trr0020_stage15/warm_refinement.py",ROOT/"scripts/trr0020_canonical_refine/reuse_stream.py"]
     paths +=[ROOT/p for p in ["scripts/trr0020_stage10r1/proximal.py","scripts/trr0017/discrete_parallel.py",
       "scripts/trr0017/joint_projection.py","scripts/trr0020_stage7/discrete_soft.py","scripts/trr0020_stage6r1/fast_soft.py",
