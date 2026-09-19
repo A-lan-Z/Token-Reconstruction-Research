@@ -1,6 +1,6 @@
 {
   "task_id": "TRR-0020",
-  "status": "DEVELOPMENT23_PUBLIC_ADJOINT_READY",
+  "status": "DEVELOPMENT23_RECONSTRUCTION_GRID_READY",
   "goal_completed": false,
   "initial_execution_commit": "a7e7f0628e88add676e767f188df1d903a749efb",
   "dev1_execution_commit": "9724dce2f14ccea2af63c0cbd590ab189ef4b7a8",
@@ -59,7 +59,7 @@
     "dev20": 48,
     "dev21": 64
   },
-  "current_experiment": "CPU adjoint/CGLS passed;actual-prefix adjoint and36public linear cases ready",
+  "current_experiment": "96cell CGLS reconstruction grid;public adjoint and linear probes passed",
   "complete_archives": [
     "dev1_archive.json",
     "dev2_archive.json",
@@ -219,7 +219,7 @@
     "partial_archive": "dev13_partial_archive.json",
     "guard": "dev13_guard.json"
   },
-  "updated_utc": "2026-09-19T21:01:00.784772+00:00",
+  "updated_utc": "2026-09-19T21:08:39.993895+00:00",
   "dev13_r1": {
     "status": "COMPLETE_SCORED_ARCHIVED",
     "freeze": "dev13_r1_freeze.json",
@@ -524,13 +524,24 @@
     "conclusion": "Layer-factor approximate inversion rejected on public linear diagnostic; no token-reconstruction grid or active method"
   },
   "dev23": {
-    "status": "CPU_ALGEBRA_PASSED_PUBLIC_PROBE_READY",
+    "status": "PUBLIC_PROBE_PASSED_GRID_READY",
     "plan": "DEV23_PROSPECTIVE.md",
     "hypothesis": "Use analytic Jacobian transpose in damped CGLS to reduce actual linear residual",
     "reconstruction_runs": 0,
     "cpu_reference": "dev23_cpu_reference.json",
     "preflight": "dev23_preflight.json",
     "planned_public_linear_cells": 36,
-    "planned_adjoint_checks": 6
+    "planned_adjoint_checks": 6,
+    "public_probe": "dev23_linear_probe.json",
+    "public_guard": "dev23_guard.json",
+    "public_archive": "dev23_linear_archive.json",
+    "adjoint_checks": 6,
+    "public_cases": 36,
+    "public_peak_reserved_GiB": 2.228515625,
+    "grid_plan": "DEV23_GRID_PLAN.md",
+    "grid_preflight": "dev23_grid_preflight.json",
+    "planned_cells": 96,
+    "configurations": 12,
+    "conclusion": "CGLS improves public linear/nonlinear mismatch; token quality untested"
   }
 }
