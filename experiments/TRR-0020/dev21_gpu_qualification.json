@@ -1,0 +1,180 @@
+{
+  "task_id": "TRR-0020",
+  "kind": "public_fixture_numerical_qualification",
+  "environment": {
+    "commit": "c2081aea0775567d61bba9c819f48b4346241fff",
+    "torch": "2.10.0+cu128",
+    "transformers": "5.3.0",
+    "python": "3.12.3",
+    "gpu": "name, memory.total [MiB], memory.free [MiB], temperature.gpu\nNVIDIA GeForce RTX 5080, 16303 MiB, 14094 MiB, 35\n",
+    "utc": "2026-09-19T20:30:06Z"
+  },
+  "code_commit": "c2081aea0775567d61bba9c819f48b4346241fff",
+  "command": [
+    "scripts/trr0020_stage21/qualify_gpu.py"
+  ],
+  "start_unix": 1789849806.5824006,
+  "sources": {
+    "scripts/trr0020_stage21/qualify_gpu.py": "fe3591c0cb820e2fa7eaf2862ea018f5cf1818550c5a1d0f49578529293dd027",
+    "scripts/trr0020_stage21/linearized_prefix.py": "7756c6143a258f9690a2ca19d8249c93f58c6ca68adb796e669648c2aa1d1926",
+    "scripts/trr0014/native.py": "05f2d76dc8c8ebb1467a060922cce481191fbb9a61f0ea7ad42253c2b270c454",
+    "scripts/agent4/common.py": "d2f1832c6153d536e90a1014dc56b9fd96b74ad73e23091f5aea9ce2859717f3",
+    "src/token_reconstruction/public_prefix.py": "b9dca1d8d56c7c07413015aea4bde79e8ceac827c32ee9bc0d1a236ea1dd35f6",
+    "experiments/TRR-0020/DEV21_GPU_QUALIFICATION.md": "2cdedb6e2ffe3901c2d020ba37b604d45b54eb3fb8296e6683eab422c3703470",
+    "experiments/TRR-0020/dev21_qualification_preflight.json": "67c096e336159414ea2707ae4adeca7ab428b286641883a8cf05395dbaa87d52"
+  },
+  "prefix_sha256": "10fd7e98719037954a51299eb9cb680544a659400ee2431e8aac333626f5e61c",
+  "config_sha256": "2febf68cea25bf4611be02b7536f2488a5ba523bb1134986e3610152abe74fdb",
+  "seed": 200049,
+  "truth_read": false,
+  "shortlist": null,
+  "raw": [
+    {
+      "path": "outputs/TRR-0020/dev21_qualification/128_forward.safetensors",
+      "sha256": "9564c106516c597925b63ef1f8e23246684712b4e0eb50b9b71fa01fbbbfdba4"
+    },
+    {
+      "path": "outputs/TRR-0020/dev21_qualification/128_jvp_1.safetensors",
+      "sha256": "9b4ef71a77d82550e8d7eccc5b58093e10a64d8999409dd32a6ad9d7536cb3ec"
+    },
+    {
+      "path": "outputs/TRR-0020/dev21_qualification/128_jvp_64.safetensors",
+      "sha256": "c8c35adf1403d6caac1bb50028f78401a7b736f25a92156a289438db3188a919"
+    },
+    {
+      "path": "outputs/TRR-0020/dev21_qualification/128_jvp_127.safetensors",
+      "sha256": "c59c2118caea493a585d157e5283d1376d4550fbfee07c22fa524ce28c8fc15e"
+    },
+    {
+      "path": "outputs/TRR-0020/dev21_qualification/128_linear.safetensors",
+      "sha256": "6f1b17ee49e01aa8d54c69168bc610ec1db4fa662a827b0624b206f3916fc8b9"
+    },
+    {
+      "path": "outputs/TRR-0020/dev21_qualification/40_forward.safetensors",
+      "sha256": "90ecd71ab3124afe22204218b2674b183a6c0bb837e5f6f38b67901ea681136b"
+    },
+    {
+      "path": "outputs/TRR-0020/dev21_qualification/40_jvp_1.safetensors",
+      "sha256": "ee123df541f8d2379eca614d0988beb9a70fc1ec9ab493e69421781ceda7397b"
+    },
+    {
+      "path": "outputs/TRR-0020/dev21_qualification/40_jvp_20.safetensors",
+      "sha256": "4e0d4b44b5b298ef0e2479ba568a607bee4d24565de072ea64bdee46926bebff"
+    },
+    {
+      "path": "outputs/TRR-0020/dev21_qualification/40_jvp_39.safetensors",
+      "sha256": "ac860f64cd40adbf03cde06f9b4175ae8921073dc870104374c783f00dda4e5f"
+    },
+    {
+      "path": "outputs/TRR-0020/dev21_qualification/40_linear.safetensors",
+      "sha256": "15badbc0f93672156d4601e1e64f804caa5ec67509647421574b77a87d66a034"
+    }
+  ],
+  "checks": [
+    {
+      "length": 128,
+      "kind": "independent_HF_FP32_forward",
+      "max_absolute_error": 0.0,
+      "relative_l2_error": 0.0,
+      "seconds_including_three_forwards": 0.1131873429985717,
+      "passed": true
+    },
+    {
+      "length": 128,
+      "position": 1,
+      "kind": "independent_HF_autograd_direction",
+      "max_absolute_error": 3.0547380447387695e-07,
+      "relative_l2_error": 8.673422371430206e-07,
+      "seconds": 0.05672448399127461,
+      "passed": true
+    },
+    {
+      "length": 128,
+      "position": 64,
+      "kind": "independent_HF_autograd_direction",
+      "max_absolute_error": 2.384185791015625e-07,
+      "relative_l2_error": 8.837729978949938e-07,
+      "seconds": 0.02989470199099742,
+      "passed": true
+    },
+    {
+      "length": 128,
+      "position": 127,
+      "kind": "independent_HF_autograd_direction",
+      "max_absolute_error": 1.341104507446289e-07,
+      "relative_l2_error": 8.6193631432252e-07,
+      "seconds": 0.016631107981083915,
+      "passed": true
+    },
+    {
+      "length": 128,
+      "kind": "actual_prefix_linear_solve",
+      "matvec_calls": 9,
+      "recompute_matvec_calls": 1,
+      "seconds": 0.0796672560099978,
+      "mean_relative_residual": 0.8537590503692627,
+      "max_relative_residual": 0.9613031148910522,
+      "passed": true
+    },
+    {
+      "length": 40,
+      "kind": "independent_HF_FP32_forward",
+      "max_absolute_error": 0.0,
+      "relative_l2_error": 0.0,
+      "seconds_including_three_forwards": 0.009811968018766493,
+      "passed": true
+    },
+    {
+      "length": 40,
+      "position": 1,
+      "kind": "independent_HF_autograd_direction",
+      "max_absolute_error": 3.8743019104003906e-07,
+      "relative_l2_error": 9.252087806999043e-07,
+      "seconds": 0.014063709997572005,
+      "passed": true
+    },
+    {
+      "length": 40,
+      "position": 20,
+      "kind": "independent_HF_autograd_direction",
+      "max_absolute_error": 3.8743019104003906e-07,
+      "relative_l2_error": 1.0016747182817198e-06,
+      "seconds": 0.013936676987214014,
+      "passed": true
+    },
+    {
+      "length": 40,
+      "position": 39,
+      "kind": "independent_HF_autograd_direction",
+      "max_absolute_error": 4.76837158203125e-07,
+      "relative_l2_error": 6.751528189852252e-07,
+      "seconds": 0.013751403981586918,
+      "passed": true
+    },
+    {
+      "length": 40,
+      "kind": "actual_prefix_linear_solve",
+      "matvec_calls": 9,
+      "recompute_matvec_calls": 1,
+      "seconds": 0.03513042500708252,
+      "mean_relative_residual": 0.8708165884017944,
+      "max_relative_residual": 0.9430474042892456,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "tolerances": {
+    "forward_rtol": 0.0005,
+    "forward_atol": 2e-05,
+    "jvp_rtol": 0.0005,
+    "jvp_atol": 5e-05
+  },
+  "prefix_and_parameter_preparation_seconds": 0.8004576669773087,
+  "parameter_bytes": 2023817216,
+  "free_bytes": 13120831488,
+  "end_unix": 1789849809.5622025,
+  "wall_seconds": 2.979802131652832,
+  "peak_reserved": 2420113408,
+  "peak_allocated": 2410899456,
+  "peak_host_rss": 2571489280
+}
