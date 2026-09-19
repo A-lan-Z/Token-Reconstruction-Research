@@ -323,3 +323,13 @@ At K256, the new method is near baseline inference time and has similar
 canonical token scores, while exact narrative-prose recovery is worse.
 This is retrospective evidence with supplied public weights, not a recovered
 prefix trajectory, a fresh confirmation, or a change of the default baseline.
+
+## TRR-0016 suffix-frequency refinement
+
+The preregistered method `prefix_native_fragment_frequency256` retains every original embedding64/intrinsic64 base proposal. It ranks tokenizer suffixes by the number of distinct base tokens suggesting them, breaking ties by the original round-robin order, and uses native direct-cosine A2 at fixed K256. It adds no fitted state. Six candidate-only developmental orderings and an unsuccessful exact-context rule are preserved separately; only the selected frequency rule is an active reconstruction method.
+
+The complete matrix contains 27 methods and 54 canonical cells: 52 inherited frozen cells and two new frequency-method cells. The current four-method evaluation covers 352 observations, with all 1,408 cells frozen before scoring and three identical repetitions per cell. All 816 unchanged control/input cells reproduce the TRR-0015 token outputs and ordered candidate arrays. The same canonical port caveats continue to apply.
+
+Frequency K256 scores 2495/2496 on canonical Pile and 13967/13990 on canonical Finance. A fresh disjoint paired prose panel improves from 4035 to 4054 correct matched tokens, and from 4039 to 4056 shifted tokens (4064 each), compared with original K256. A1+A2 still scores 4062 and 4061 respectively. This supports an improvement over the previous K256 fragment method; it does not establish baseline equivalence or a replacement. Small canonical gains over A1+A2 remain uncertain.
+
+The full result is `coordination/results/TRR-0016.md`, with evidence in `experiments/TRR-0016/manifest.json` and the complete canonical matrix in `experiments/TRR-0016/canonical_matrix.json`. An original-K256 timing stall is retained and disclosed; apparent speedup over that affected mean is not claimed. Actual changing recovered-prefix integration remains untested, and the default baseline is unchanged.

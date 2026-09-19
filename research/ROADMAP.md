@@ -69,3 +69,11 @@ This establishes a promising component direction, not a completed replacement. N
 Prioritize a budget-matched no-fragment control, integration with legitimately recovered changing prefix weights, and the required dual-benchmark matrix before method activation or an overall claim. Existing active methods/decisions remain unchanged. The current public supplied-prefix pilot does not establish recovery or cold-start tracking. Do not resume the failed iterative solvers merely by tuning their constants; their negative evidence is preserved alongside the new mechanism. This task scope is not a permanent method ban under the charter.
 
 Result: coordination/results/TRR-0014.md. Manifest: experiments/TRR-0014/manifest.json.
+
+### TRR-0016: no-fit fragment-frequency ordering at K256
+
+- Completed the four-method, 352-input comparison and fresh disjoint confirmation; full 54-cell canonical matrix is reported in `experiments/TRR-0016/canonical_matrix.json`.
+- New prefix-derived fragment voting reduces fresh prose errors from 29 to 10 (matched) and 25 to 8 (LoRA), while retaining 256 native A2 candidates. Both canonical token scores and exact-record counts improve over the original K256 method.
+- Baseline replacement remains unestablished: fresh A1+A2 makes 2 and 3 prose errors, and exact-clip recovery remains higher. All remaining new-method prose errors are shortlist omissions. Typical cached inference stays near baseline; prefix rebuilding costs about one second.
+- Open: improve rare-fragment coverage within the same budget, and validate the catalogs along an actual recovered-prefix trajectory. Preserve supplied-prefix and timing-outlier limitations. The user explicitly requested that the research goal remain unfinished.
+- Result: `coordination/results/TRR-0016.md`; manifest: `experiments/TRR-0016/manifest.json`.
