@@ -60,9 +60,10 @@
     "dev21": 64,
     "dev23": 96,
     "dev24": 96,
-    "dev26": 144
+    "dev26": 144,
+    "dev27": 64
   },
-  "current_experiment": "Qualified cheaper current-token directions; end-to-end decoder next",
+  "current_experiment": "Current-token metric preconditioning public diagnostic planned; not executed",
   "complete_archives": [
     "dev1_archive.json",
     "dev2_archive.json",
@@ -88,7 +89,8 @@
     "dev21_archive.json",
     "dev23_grid_archive.json",
     "dev24_grid_archive.json",
-    "dev26_grid_archive.json"
+    "dev26_grid_archive.json",
+    "dev27_decoder_archive.json"
   ],
   "unresolved": [
     "baseline-like reconstruction quality with no token shortlist",
@@ -225,7 +227,7 @@
     "partial_archive": "dev13_partial_archive.json",
     "guard": "dev13_guard.json"
   },
-  "updated_utc": "2026-09-19T22:41:41.708665+00:00",
+  "updated_utc": "2026-09-19T23:06:00.903155+00:00",
   "dev13_r1": {
     "status": "COMPLETE_SCORED_ARCHIVED",
     "freeze": "dev13_r1_freeze.json",
@@ -639,7 +641,7 @@
     "conclusion": "Full causal scaling yields modest warm-start improvements but remains inaccurate and expensive; no active replacement selected."
   },
   "dev27": {
-    "status": "PUBLIC_QUALIFIED_CHEAP_DIRECTIONS_READY",
+    "status": "DECODER_COMPLETE_SCORED_ARCHIVED",
     "plan": "DEV27_PROSPECTIVE.md",
     "qualification_plan": "DEV27_QUALIFICATION.md",
     "initial_failed_cpu": "dev27_cpu_reference.json",
@@ -648,8 +650,8 @@
     "cpu_max_dense_direction_error": 1.490439716089753e-13,
     "preflight": "dev27_preflight.json",
     "gpu_runs": 36,
-    "reconstruction_runs": 0,
-    "next_required": "Implement/qualify the full committed-context decoder, then freeze64cell reconstruction family before scoring",
+    "reconstruction_runs": 64,
+    "next_required": "No additional work required for rejected decoder grid; new public preconditioning diagnostic planned",
     "qualification": "dev27_gpu_qualification.json",
     "qualification_guard": "dev27_guard.json",
     "qualification_archive": "dev27_public_archive.json",
@@ -669,6 +671,28 @@
     "cheap_cg1_anchors": 18,
     "cheap_peak_reserved_GiB": 1.9609375,
     "next_decoder_plan": "DEV27_NEXT_DECODER_PLAN.md",
-    "conclusion": "Current-token calculus correct; cheaper directions cost3ms/6ms before forward/readout/commit, but no token reconstruction result yet"
+    "conclusion": "One or four inexpensive current-token updates do not yield adequate reconstruction. Warm64 four-step rules gain one shifted-prose token only, at3.93/5.42seconds per128-position input; no active method selected.",
+    "decoder_plan": "DEV27_DECODER_PLAN.md",
+    "decoder_preflight": "dev27_decoder_preflight.json",
+    "decoder_guard": "dev27_decoder_guard.json",
+    "decoder_freeze": "dev27_decoder_freeze.json",
+    "decoder_score": "dev27_decoder_score.json",
+    "decoder_summary": "dev27_decoder_summary.json",
+    "decoder_truth_gate": "dev27_decoder_truth_gate.json",
+    "decoder_archive": "dev27_decoder_archive.json",
+    "decoder_movement_diagnostic": "dev27_decoder_movement_diagnostic.json",
+    "decoder_execution_commit": "1d6a035b54d533d1c8752a59578c4c79cd320c16",
+    "decoder_peak_reserved_GiB": 5.28515625,
+    "decoder_warm_anchors": 64,
+    "decoder_mean_anchors": 64,
+    "decoder_public_executions": 48,
+    "decoder_causal_references": 16,
+    "decoder_readout_references": 16
+  },
+  "dev28": {
+    "status": "PLAN_ONLY",
+    "plan": "DEV28_PROSPECTIVE.md",
+    "reconstruction_runs": 0,
+    "gpu_runs": 0
   }
 }
