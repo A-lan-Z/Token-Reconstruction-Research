@@ -8,4 +8,4 @@ Result: coordination/results/TRR-0015.md
 Manifest: experiments/TRR-0015/manifest.json
 Local evidence: experiments/TRR-0015/artifact_index.json
 
-Public release remains subject to the prior explicit-approval block. No PR has been created.
+Published with explicit user authorization in draft PR #30: https://github.com/A-lan-Z/Token-Reconstruction-Research/pull/30. Further optimization continues separately; the research goal remains unfinished.
