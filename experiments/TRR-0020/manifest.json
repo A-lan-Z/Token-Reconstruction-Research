@@ -1,6 +1,6 @@
 {
   "task_id": "TRR-0020",
-  "status": "OBJECTIVE_DIAGNOSTIC_READY",
+  "status": "DEVELOPMENT19_READY",
   "goal_completed": false,
   "initial_execution_commit": "a7e7f0628e88add676e767f188df1d903a749efb",
   "dev1_execution_commit": "9724dce2f14ccea2af63c0cbd590ab189ef4b7a8",
@@ -56,7 +56,7 @@
     "dev17": 160,
     "dev18": 192
   },
-  "current_experiment": "Native full-sequence objective audit of768 frozen canonical outputs",
+  "current_experiment": "dev19 direct mean-embedding readout;32optimizer cells,4readouts each",
   "complete_archives": [
     "dev1_archive.json",
     "dev2_archive.json",
@@ -213,7 +213,7 @@
     "partial_archive": "dev13_partial_archive.json",
     "guard": "dev13_guard.json"
   },
-  "updated_utc": "2026-09-19T19:39:25.863297+00:00",
+  "updated_utc": "2026-09-19T19:53:52.527459+00:00",
   "dev13_r1": {
     "status": "COMPLETE_SCORED_ARCHIVED",
     "freeze": "dev13_r1_freeze.json",
@@ -397,10 +397,38 @@
     "peak_reserved_GiB": 4.90234375
   },
   "objective_audit": {
-    "status": "READY",
+    "status": "COMPLETE_SCORED_ARCHIVED",
     "kind": "diagnostic_not_new_reconstruction",
     "plan": "objective_audit/PLAN.md",
     "preflight": "objective_audit/preflight.json",
-    "cells": 768
+    "cells": 768,
+    "freeze": "objective_audit/freeze.json",
+    "score": "objective_audit/score.json",
+    "archive": "objective_audit/archive.json",
+    "causal_consistency": "objective_audit/causal_consistency.json",
+    "peak_reserved_GiB": 1.001953125,
+    "conclusion": "All qualifying first mistakes prefer the correct baseline token under native cosine error; latest refinement9Pile and98Finance cases. Optimization/readout gap, no impossibility proof."
+  },
+  "dev19": {
+    "status": "READY",
+    "plan": "DEV19_PLAN.md",
+    "cpu_reference": "dev19_cpu_reference.json",
+    "preflight": "dev19_preflight.json",
+    "planned_cells": 32,
+    "warm_steps": [
+      32,
+      64,
+      128,
+      256
+    ],
+    "readouts": [
+      "raw_l2",
+      "raw_cosine",
+      "white_l2",
+      "white_cosine"
+    ],
+    "hypothesis": "Read fitted mixture embedding directly instead of argmax probability; no added prefix calls",
+    "guard": "dev19_guard.json",
+    "log": "dev19_run.log"
   }
 }
