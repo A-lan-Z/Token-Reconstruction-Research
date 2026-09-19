@@ -2,7 +2,7 @@
   "protocol": "TRR-RELAY/1.0",
   "active_task": "TRR-0020",
   "branch": "task/TRR-0020",
-  "status": "REFINEMENT_CANONICAL_QUALIFIED_READY",
+  "status": "REFINEMENT_CANONICAL_RUNNING",
   "request_path": "coordination/requests/TRR-0020.md",
   "result_path": "coordination/results/TRR-0020.md",
   "manifest_path": "experiments/TRR-0020/manifest.json",
@@ -10,19 +10,60 @@
   "requirement": "No shortlist generator or separate candidate verifier; near-baseline reconstruction and useful speed by improving A2 or calculating its decision directly.",
   "previous_result": "TRR-0019 improves A2 but retains a proposer and does not meet this objective.",
   "publication_status": "PRIOR_AUTOMATIC_APPROVAL_REVIEW_BLOCK_PERSISTS",
-  "updated_utc": "2026-09-19T18:24:38.336928+00:00",
+  "updated_utc": "2026-09-19T18:30:26.099523+00:00",
   "previous_goal_turn_classification": "progress: completed96development cells; selected fixed full-vocabulary refinement rule for full comparison",
   "dev1_complete": true,
   "dev1_effective": false,
   "dev2_completed_cells": 64,
   "dev2_truth_opened": true,
-  "live_job": null,
+  "live_job": {
+    "session_id": 25501,
+    "verified_processes": [
+      {
+        "name": "python3",
+        "cmdline": [
+          "python3",
+          "scripts/trr0020_resource_guard.py",
+          "--receipt",
+          "experiments/TRR-0020/canonical_refine/guard.json",
+          "--timeout",
+          "3600",
+          "--",
+          "python3",
+          "scripts/trr0020_canonical_refine/run.py"
+        ],
+        "pid": 1018558
+      },
+      {
+        "name": "python3",
+        "cmdline": [
+          "python3",
+          "scripts/trr0020_canonical_refine/run.py"
+        ],
+        "pid": 1018575
+      },
+      {
+        "name": "python3",
+        "cmdline": [
+          "/usr/bin/python3",
+          "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0020/scripts/trr0020_canonical_refine/predict.py",
+          "--method",
+          "warm128white003",
+          "--rep",
+          "0"
+        ],
+        "pid": 1019749
+      }
+    ],
+    "command": "PYTHONPATH=src python3 scripts/trr0020_resource_guard.py --receipt experiments/TRR-0020/canonical_refine/guard.json --timeout 3600 -- python3 scripts/trr0020_canonical_refine/run.py",
+    "verified_utc": "2026-09-19T18:30:26.099523+00:00"
+  },
   "dev3_status": "96cells complete/scored; best reset variant near99% small-development accuracy, too slow",
   "canonical_comparison_complete": false,
   "dev4_status": "48cells complete/scored; diagonal gradient worse on prose",
   "dev5_status": "80cells complete/scored; graph execution improvement, remaining accuracy and speed gaps",
   "dev6_status": "8cells excluded after loss repeatability gate; paired diagnostic complete, original failure not reproduced",
-  "current_experiment": "Selected dev15 per-position rule: canonical execution qualification pending",
+  "current_experiment": "canonical_refine:1728replicate runs,68cell matrix; dev16 CPU-validated harness waiting for GPU",
   "dev6_r1_status": "48cells complete/scored; adaptive256 matched alltokens, shifted prose251/254; still too slow",
   "dev7_status": "64cells complete/scored; discreteness penalties/hardening do not close gap; full hardening unstable",
   "dev8_status": "104cells complete/scored; softmax gradient preconditioning does not improve enough",
@@ -40,7 +81,9 @@
   "canonical_conclusion": "Both no-shortlist rules slower and less accurate than baseline; no replacement established",
   "dev13_r1_status": "96cells complete/scored/archived; all88 previous cells and12 public configurations matched; peak4.418GiB; quality inadequate",
   "dev14_status": "96cells complete/scored/archived;8control anchors exact; no tested floor/rate setting improves across development panel",
-  "next_plan": "experiments/TRR-0020/canonical_refine/BENCHMARK_PLAN.md",
+  "next_plan": "experiments/TRR-0020/DEV16_PLAN.md",
   "dev15_status": "96cells complete/scored/archived;96warm anchors exact; selected per-position rule253/254 shifted prose",
-  "refinement_validation": "52 checks passed:6public+8development exact equality and38native geometries;peak4.0703125GiB"
+  "refinement_validation": "52 checks passed:6public+8development exact equality and38native geometries;peak4.0703125GiB",
+  "refinement_canonical_frozen_receipts": 358,
+  "dev16_status": "CPU normalized-Jacobian trace identity passed;12configuration isolated harness implemented;no GPU runs"
 }
