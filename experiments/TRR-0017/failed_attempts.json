@@ -1,0 +1,48 @@
+{
+  "attempts": [
+    {
+      "receipt": "shared_guard.json",
+      "code_commit": "c46ff26231416fd1d8774ad29d1a8b2593daadd1",
+      "command": [
+        "python3",
+        "scripts/trr0017/shared_qualify.py"
+      ],
+      "start_unix": 1789794144.75638,
+      "end_unix": 1789794150.8598256,
+      "returncode": 1,
+      "reason": "Harness inspected unpopulated downstream cache layers; no numerical result.",
+      "excluded_from_scientific_comparison": true
+    },
+    {
+      "receipt": "benchmark__guard.json",
+      "code_commit": "88478cf7878523da00c80553ebe110d32be04314",
+      "command": [
+        "python3",
+        "scripts/trr0017/benchmark_predict.py",
+        "--group",
+        ""
+      ],
+      "start_unix": 1789794490.5297084,
+      "end_unix": 1789794494.6011517,
+      "returncode": 2,
+      "reason": "Cross-shell group argument was empty; argparse stopped before model/data access.",
+      "excluded_from_scientific_comparison": true
+    },
+    {
+      "receipt": "benchmark_controls_guard_r1.json",
+      "code_commit": "147b48f0c6b4c855d0c28aa160d118b8eb62eaa3",
+      "command": [
+        "python3",
+        "scripts/trr0017/benchmark_predict.py",
+        "--group",
+        "controls"
+      ],
+      "start_unix": 1789794523.3452384,
+      "end_unix": 1789794535.6831992,
+      "returncode": -15,
+      "reason": "Fresh exclusive GPU preflight was missing; an existing peer workload reduced free memory. Guard terminated setup before outputs; no allocator or driver anomaly observed.",
+      "excluded_from_scientific_comparison": true
+    }
+  ],
+  "correction": "Require live exclusive GPU preflight and monitor competing compute processes throughout final timing."
+}

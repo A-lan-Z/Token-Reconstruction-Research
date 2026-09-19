@@ -323,3 +323,7 @@ At K256, the new method is near baseline inference time and has similar
 canonical token scores, while exact narrative-prose recovery is worse.
 This is retrospective evidence with supplied public weights, not a recovered
 prefix trajectory, a fresh confirmation, or a change of the default baseline.
+
+## TRR-0017: candidate-free inversion and exact A2 cache reuse
+
+Two active methods (prefix_parallel_continuous96 and prefix_parallel_discrete64) add four cells to the 52-cell registry. Both were evaluated in both canonical setups and the paired original R2 panel; the complete 1,360 current output matrix was frozen before retrospective scoring. The56-cell matrix retains all prior provenance. Neither candidate-free variant establishes a replacement. The shared-context fragment256 execution preserves all candidates, scores and emitted tokens byte for byte on all 272 observations; it changes execution cost, not the decision rule. Details: coordination/results/TRR-0017.md and experiments/TRR-0017/manifest.json.

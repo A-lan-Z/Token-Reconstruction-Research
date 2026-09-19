@@ -69,3 +69,7 @@ This establishes a promising component direction, not a completed replacement. N
 Prioritize a budget-matched no-fragment control, integration with legitimately recovered changing prefix weights, and the required dual-benchmark matrix before method activation or an overall claim. Existing active methods/decisions remain unchanged. The current public supplied-prefix pilot does not establish recovery or cold-start tracking. Do not resume the failed iterative solvers merely by tuning their constants; their negative evidence is preserved alongside the new mechanism. This task scope is not a permanent method ban under the charter.
 
 Result: coordination/results/TRR-0014.md. Manifest: experiments/TRR-0014/manifest.json.
+
+## TRR-0017: reduce A2 work
+
+Whole-sequence continuous and discrete reconstruction now have a complete dual-benchmark comparison. Tested candidate-free variants remain below the baseline and do not demonstrate a cheap direct inverse. Preserve their negative evidence without claiming impossibility. Shared committed-context execution removes redundant A2 cache copies with byte-identical outputs across 272 inputs; it still evaluates 256 candidates. Prioritize this qualified execution improvement separately from further discrete/causal inverse research. Actual recovered-prefix integration remains untested. Result: coordination/results/TRR-0017.md.
