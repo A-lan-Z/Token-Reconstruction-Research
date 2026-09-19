@@ -1,6 +1,6 @@
 {
   "task_id": "TRR-0020",
-  "status": "DEVELOPMENT19_READY",
+  "status": "DEVELOPMENT20_READY",
   "goal_completed": false,
   "initial_execution_commit": "a7e7f0628e88add676e767f188df1d903a749efb",
   "dev1_execution_commit": "9724dce2f14ccea2af63c0cbd590ab189ef4b7a8",
@@ -54,9 +54,10 @@
     "dev15": 96,
     "dev16": 96,
     "dev17": 160,
-    "dev18": 192
+    "dev18": 192,
+    "dev19": 32
   },
-  "current_experiment": "dev19 direct mean-embedding readout;32optimizer cells,4readouts each",
+  "current_experiment": "dev20 delayed higher-power observed-error loss;48cells",
   "complete_archives": [
     "dev1_archive.json",
     "dev2_archive.json",
@@ -76,7 +77,8 @@
     "dev15_archive.json",
     "dev16_archive.json",
     "dev17_archive.json",
-    "dev18_archive.json"
+    "dev18_archive.json",
+    "dev19_archive.json"
   ],
   "unresolved": [
     "baseline-like reconstruction quality with no token shortlist",
@@ -213,7 +215,7 @@
     "partial_archive": "dev13_partial_archive.json",
     "guard": "dev13_guard.json"
   },
-  "updated_utc": "2026-09-19T19:53:52.527459+00:00",
+  "updated_utc": "2026-09-19T20:07:18.028481+00:00",
   "dev13_r1": {
     "status": "COMPLETE_SCORED_ARCHIVED",
     "freeze": "dev13_r1_freeze.json",
@@ -410,7 +412,7 @@
     "conclusion": "All qualifying first mistakes prefer the correct baseline token under native cosine error; latest refinement9Pile and98Finance cases. Optimization/readout gap, no impossibility proof."
   },
   "dev19": {
-    "status": "READY",
+    "status": "COMPLETE_SCORED_ARCHIVED",
     "plan": "DEV19_PLAN.md",
     "cpu_reference": "dev19_cpu_reference.json",
     "preflight": "dev19_preflight.json",
@@ -429,6 +431,31 @@
     ],
     "hypothesis": "Read fitted mixture embedding directly instead of argmax probability; no added prefix calls",
     "guard": "dev19_guard.json",
-    "log": "dev19_run.log"
+    "log": "dev19_run.log",
+    "freeze": "dev19_freeze.json",
+    "score": "dev19_score.json",
+    "summary": "dev19_summary.json",
+    "archive": "dev19_archive.json",
+    "conclusion": "No readout improves aggregate accuracy in any development group. Cosine readouts can change wrong token identities while retaining the same scores. L2 loses two additional warm64shifted prose tokens. Warm128/256 remains250/254shifted prose.",
+    "peak_reserved_GiB": 4.6328125
+  },
+  "dev20": {
+    "status": "READY",
+    "plan": "DEV20_PLAN.md",
+    "cpu_reference": "dev20_cpu_reference.json",
+    "preflight": "dev20_preflight.json",
+    "cells": 48,
+    "configurations": 6,
+    "steps": [
+      64,
+      128
+    ],
+    "powers": [
+      1,
+      2,
+      4
+    ],
+    "guard": "dev20_guard.json",
+    "log": "dev20_run.log"
   }
 }
