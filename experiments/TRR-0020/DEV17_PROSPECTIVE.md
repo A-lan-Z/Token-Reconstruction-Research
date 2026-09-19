@@ -1,6 +1,6 @@
 # Prospective alternative: cache a low-rank local quadratic over the full vocabulary
 
-Status: CPU algebra validated and core GPU implementation prepared; no GPU execution or complete predictor/scorer harness yet. Canonical_refine and development16 have both completed and failed to establish a replacement. No new active method is registered.
+Status: CPU algebra validated and isolated predictor/scorer harness implemented; no GPU execution yet. Canonical_refine and development16 have both completed and failed to establish a replacement. No new active method is registered.
 
 Development16 compresses normalized-prefix sensitivity into one isotropic scalar per position. A stronger local calculation can retain directional information from the same8 vector-Jacobian probes without requiring more per-update vocabulary products. This is a hypothesis, not evidence of reconstruction improvement.
 
@@ -12,7 +12,7 @@ The cache needs127x128256FP32 values (62.14MiB), and8probe vectors need7.94MiB. 
 
 The CPU test compares streamed cached scores against explicit dense positive-definite quadratic matrices for alpha.1/.5/1 and scales.1/1. It checks identical argmax over every entry and a linear identity example including the final vocabulary token. These checks prove the algebra on the tiny test, not the quality or runtime of the Llama-prefix approximation.
 
-If development16 establishes useful sensitivity behavior, consider a separately frozen grid of warm length, metric, shrinkage and multiplier. Declare that grid before any reconstruction, preserve failed attempts, freeze every cell before labels, and require both canonical benchmarks before a replacement claim. No grid has yet been selected for this alternative.
+The fixed exploratory grid below was selected after development16; no active canonical method is added by this developmental enumeration.
 
 
 ## Fixed next exploratory grid, selected after development16
@@ -20,4 +20,4 @@ Development16 completed all96cells. Isotropic sensitivity did not close the gap:
 
 Freeze20prospective configurations: warm64/128 crossed with raw/white, each using (shrinkage,multiplier) pairs(.1,1),(.1,3),(.5,1),(.5,3),(1,1). Thus160cells on the existing8-input panel. Shrinkage1 is a new FP32 numerical control for isotropic curvature, not a byte-equivalence claim to development16's BF16 score. All prefix forwards and warm-stage arithmetic stay unchanged. The full FP32 embedding table is cached once per engine; all quadratic vocabulary costs are charged once per input. Each input performs one sensitivity forward and8VJPs, plus32direct updates and its declared warm stage.
 
-Required remaining implementation: independent eager reference using the same fixed probe tensors, isolated worker/run/scorer harness, a numeric-validity gate that saves output and diagnostic evidence before rejecting nonfinite/nonpositive curvature, and fresh live resource preflight. Initial capture uses a finite dummy curvature state only; actual input probes and quadratic caches must be rebuilt after capture and before updates. Qualify warm128/white/shrinkage.5/multiplier3 first to exercise the full cache path, not the cheaper shrinkage1control. Preserve and exclude any resource or numerical failure; require all8warm-stage anchors in every configuration. No labels until all160cells are frozen. A selected method must add both canonical cells before any replacement claim.
+The implemented harness includes an independent eager reference using the same fixed probe tensors, isolated workers and a complete-matrix scorer. Public qualification checks sampled cached quadratic values against separate CPUfloat64 calculations (rtol1e-4,atol1e-6). Repeated probes are hashed, and all output tokens, four warm traces and direct loss traces must repeat exactly. The numeric-validity gate saves output and diagnostic evidence before rejection. Live preflight is in dev17_preflight.json: estimated5.3GiB peak under6GiB, at least2GiBfree,900second upper runtime estimate and1800second guard timeout. Initial capture uses a finite dummy curvature state only; actual input probes and quadratic caches must be rebuilt after capture and before updates. Qualify warm128/white/shrinkage.5/multiplier3 first to exercise the full cache path, not the cheaper shrinkage1control. Preserve and exclude any resource or numerical failure; require all8warm-stage anchors in every configuration. No labels until all160cells are frozen. A selected method must add both canonical cells before any replacement claim.
