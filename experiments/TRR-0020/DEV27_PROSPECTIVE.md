@@ -18,3 +18,5 @@ The eventual GPU prototype would require an explicit resource preflight, indepen
 qualification, a fixed initialization/update/readout rule, and an honest cost comparison.
 Single-token matrix-vector work may be bandwidth-bound and slower; no speed claim is made.
 No GPU run or reconstruction grid is selected by this document.
+
+The original CPU qualification failed the raw empty-past dense-solve check after32iterations. The preserved diagnostic shows correct J/JT products but post-convergence recurrence drift: the direction error was1.64e-6 at32steps and grew drastically at64/128. This is not fixed by loosening the dense-reference tolerance. The new prototype uses a latched normal-residual gate: freeze a row when its gradient norm falls below32 times dtype epsilon times its initial norm. All remaining fixed-budget products still execute on zero directions, so no compute saving is claimed. This is a new numerical rule; development26 running sources remain unchanged. The original failed receipt and diagnostic are retained, and the revised CPU result will be recorded separately.

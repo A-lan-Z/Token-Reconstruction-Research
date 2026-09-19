@@ -9,7 +9,7 @@ from torch.nn import functional as F
 from linearized_prefix import forward as full_forward
 from single_position import forward,jvp,vjp,commit
 from normalized import equation
-from cgls import least_squares
+from stable_cgls import least_squares
 
 def reference():
     torch.set_num_threads(2);torch.manual_seed(200064);dt=torch.float64;length,width,dim=4,8,4
@@ -46,7 +46,7 @@ def reference():
             direction,stats=least_squares(mv,rmv,b,32,.0001)
             exact=torch.linalg.solve(dense.T@dense+stats['ridge'][0]*torch.eye(width,dtype=dt),dense.T@b.flatten())[None]
             torch.testing.assert_close(direction,exact,rtol=1e-7,atol=1e-9)
-            linear.append({'position':pos,'mode':mode,'dense_direction_max_error':float((direction-exact).abs().max())})
+            linear.append({'position':pos,'mode':mode,'dense_direction_max_error':float((direction-exact).abs().max()),'frozen_iteration':stats['frozen_iteration'].tolist(),'normal_relative_tolerance':stats['normal_relative_tolerance']})
         past=commit(past,current)
         assert all(old[0].shape[1]==pos+1 and old[1].shape[1]==pos+1 for old in past)
     return {'passed':True,'seed':200064,'dtype':'float64','forward_checks':forwards,'derivative_checks':derivatives,'linear_checks':linear,
