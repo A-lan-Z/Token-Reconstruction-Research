@@ -1,6 +1,6 @@
 {
   "task_id": "TRR-0020",
-  "status": "IN_PROGRESS_NO_ACCEPTED_METHOD",
+  "status": "DEVELOPMENT18_READY",
   "goal_completed": false,
   "initial_execution_commit": "a7e7f0628e88add676e767f188df1d903a749efb",
   "dev1_execution_commit": "9724dce2f14ccea2af63c0cbd590ab189ef4b7a8",
@@ -52,13 +52,10 @@
     "dev13_r1": 96,
     "dev14": 96,
     "dev15": 96,
-    "dev16": 96
+    "dev16": 96,
+    "dev17": 160
   },
-  "current_experiment": {
-    "stage": "dev17",
-    "status": "READY_FOR_QUALIFICATION",
-    "planned_cells": 160
-  },
+  "current_experiment": "dev18 current-error rank-one full-vocabulary quadratic;24configs192cells",
   "complete_archives": [
     "dev1_archive.json",
     "dev2_archive.json",
@@ -76,7 +73,8 @@
     "dev13_r1_archive.json",
     "dev14_archive.json",
     "dev15_archive.json",
-    "dev16_archive.json"
+    "dev16_archive.json",
+    "dev17_archive.json"
   ],
   "unresolved": [
     "baseline-like reconstruction quality with no token shortlist",
@@ -213,7 +211,7 @@
     "partial_archive": "dev13_partial_archive.json",
     "guard": "dev13_guard.json"
   },
-  "updated_utc": "2026-09-19T18:59:43.550083+00:00",
+  "updated_utc": "2026-09-19T19:25:31.128520+00:00",
   "dev13_r1": {
     "status": "COMPLETE_SCORED_ARCHIVED",
     "freeze": "dev13_r1_freeze.json",
@@ -306,7 +304,7 @@
     "peak_reserved_GiB": 3.72265625
   },
   "dev17": {
-    "status": "READY_FOR_QUALIFICATION",
+    "status": "COMPLETE_SCORED_ARCHIVED",
     "plan": "DEV17_PROSPECTIVE.md",
     "cpu_reference": "dev17_cpu_reference.json",
     "planned_reconstruction_grid": {
@@ -343,9 +341,49 @@
       "configurations": 20,
       "cells": 160
     },
-    "gpu_runs": 0,
-    "conclusion": "cached low-rank full-vocabulary quadratic agrees with explicit dense calculation on tiny CPU test; effectiveness untested",
-    "next_required": "largest full-cache qualification followed by complete160cell freeze",
-    "preflight": "dev17_preflight.json"
+    "gpu_runs": 160,
+    "conclusion": "No adequate method. Every warm128 rule remains at250/254 shifted prose after whole-objective or per-position selection; directional sketches do not improve the start.",
+    "next_required": "None for this rejected development grid",
+    "preflight": "dev17_preflight.json",
+    "guard": "dev17_guard.json",
+    "log": "dev17_run.log",
+    "execution_initial_commit": "655e59e",
+    "freeze": "dev17_freeze.json",
+    "score": "dev17_score.json",
+    "summary": "dev17_summary.json",
+    "archive": "dev17_archive.json",
+    "warm_anchors": 160,
+    "independent_eager_checks": 40,
+    "cache_formula_checks": 40,
+    "peak_reserved_GiB": 4.849609375
+  },
+  "dev18": {
+    "status": "BOUND_AWAITING_LARGEST_QUALIFICATION",
+    "plan": "DEV18_PLAN.md",
+    "cpu_reference": "dev18_cpu_reference.json",
+    "preflight": "dev18_preflight.json",
+    "planned_cells": 192,
+    "configurations": 24,
+    "warm_steps": [
+      64,
+      128
+    ],
+    "metrics": [
+      "raw",
+      "white"
+    ],
+    "beta": [
+      0.01,
+      0.03,
+      0.1
+    ],
+    "rank_strength": [
+      0.0,
+      1.0
+    ],
+    "score": "pending",
+    "conclusion": "algebra verified only; GPU effectiveness untested",
+    "guard": "dev18_guard.json",
+    "log": "dev18_run.log"
   }
 }
