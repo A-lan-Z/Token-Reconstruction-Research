@@ -1,6 +1,6 @@
 {
   "task_id": "TRR-0020",
-  "status": "DEVELOPMENT22_PUBLIC_LINEAR_READY",
+  "status": "DEVELOPMENT22_REJECTED_DEVELOPMENT23_CPU_PROTOTYPE",
   "goal_completed": false,
   "initial_execution_commit": "a7e7f0628e88add676e767f188df1d903a749efb",
   "dev1_execution_commit": "9724dce2f14ccea2af63c0cbd590ab189ef4b7a8",
@@ -56,9 +56,10 @@
     "dev17": 160,
     "dev18": 192,
     "dev19": 32,
-    "dev20": 48
+    "dev20": 48,
+    "dev21": 64
   },
-  "current_experiment": "Layer-factor inverse CPU passed;24case public linear diagnostic ready",
+  "current_experiment": "Adjoint least-squares inverse prototype; CPU validation pending",
   "complete_archives": [
     "dev1_archive.json",
     "dev2_archive.json",
@@ -80,7 +81,8 @@
     "dev17_archive.json",
     "dev18_archive.json",
     "dev19_archive.json",
-    "dev20_archive.json"
+    "dev20_archive.json",
+    "dev21_archive.json"
   ],
   "unresolved": [
     "baseline-like reconstruction quality with no token shortlist",
@@ -217,7 +219,7 @@
     "partial_archive": "dev13_partial_archive.json",
     "guard": "dev13_guard.json"
   },
-  "updated_utc": "2026-09-19T20:51:27.609200+00:00",
+  "updated_utc": "2026-09-19T20:57:05.782026+00:00",
   "dev13_r1": {
     "status": "COMPLETE_SCORED_ARCHIVED",
     "freeze": "dev13_r1_freeze.json",
@@ -507,12 +509,24 @@
     "archive_parts": 3
   },
   "dev22": {
-    "status": "CPU_ALGEBRA_PASSED_PUBLIC_DIAGNOSTIC_READY",
+    "status": "PUBLIC_LINEAR_DIAGNOSTIC_COMPLETE_REJECTED",
     "plan": "DEV22_PROSPECTIVE.md",
     "hypothesis": "Reverse-order per-layer Krylov inverse factors at the same number of layer products",
     "reconstruction_runs": 0,
     "cpu_reference": "dev22_cpu_reference.json",
     "preflight": "dev22_preflight.json",
-    "planned_public_linear_cases": 24
+    "planned_public_linear_cases": 24,
+    "probe": "dev22_linear_probe.json",
+    "guard": "dev22_guard.json",
+    "summary": "dev22_summary.json",
+    "archive": "dev22_archive.json",
+    "cases": 24,
+    "conclusion": "Layer-factor approximate inversion rejected on public linear diagnostic; no token-reconstruction grid or active method"
+  },
+  "dev23": {
+    "status": "CPU_PROTOTYPE_READY",
+    "plan": "DEV23_PROSPECTIVE.md",
+    "hypothesis": "Use analytic Jacobian transpose in damped CGLS to reduce actual linear residual",
+    "reconstruction_runs": 0
   }
 }
