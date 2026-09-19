@@ -332,3 +332,7 @@ Two active methods (prefix_parallel_continuous96 and prefix_parallel_discrete64)
 ## TRR-0020: full-vocabulary optimization without candidate proposal
 
 Two fixed rules, no_shortlist_full_vocab_gini003_128 and no_shortlist_full_vocab_halfhard256, add four completed cells to the62-cell registry. The66-cell matrix is complete at experiments/TRR-0020/canonical/canonical_matrix.json. All2,304 current replicate runs froze before retrospective scoring, with fresh native and GPU-replay A1+A2 controls. Both new rules are slower and less accurate than the controls, so no replacement is established. Full evidence and cost boundaries are in coordination/results/TRR-0020.md and experiments/TRR-0020/manifest.json.
+
+## TRR-0020 refinement follow-up, registered and not yet comparison-complete
+
+The registry at experiments/TRR-0020/canonical_refine/registry.json adds no_shortlist_warm128_quadratic_white003_positionbest32. This fixed full-vocabulary rule uses the128-step Gini warm reconstruction followed by32 white-metric direct quadratic updates at beta.03 and chooses each position by its minimum observed hard activation error. The active requirement is now68cells;66prior cells remain complete and the two new cells are pending. Candidate budget is null and no separate candidate verifier is used. Exact original-output qualification is required for the owned-CUDA-stream execution adaptation.

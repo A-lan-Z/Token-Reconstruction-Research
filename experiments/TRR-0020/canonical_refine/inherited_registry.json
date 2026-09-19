@@ -1,0 +1,467 @@
+{
+  "task_id": "TRR-0020",
+  "registered_before_execution": true,
+  "methods": [
+    {
+      "id": "direct_inverse_k16",
+      "candidate_budget": 16,
+      "can_abstain": false
+    },
+    {
+      "id": "causal_public_surrogate_k16",
+      "candidate_budget": 16,
+      "can_abstain": false
+    },
+    {
+      "id": "strict_bos_adaptive_a1_a2",
+      "candidate_budget": 512,
+      "can_abstain": true
+    },
+    {
+      "id": "a1_a2_k8",
+      "candidate_budget": 8,
+      "can_abstain": true
+    },
+    {
+      "id": "a1_a2_k16",
+      "candidate_budget": 16,
+      "can_abstain": true
+    },
+    {
+      "id": "a1_a2_k32",
+      "candidate_budget": 32,
+      "can_abstain": true
+    },
+    {
+      "id": "a1_a2_k64",
+      "candidate_budget": 64,
+      "can_abstain": true
+    },
+    {
+      "id": "a1_causal_k8",
+      "candidate_budget": 8,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_causal_k16",
+      "candidate_budget": 16,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_causal_k32",
+      "candidate_budget": 32,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_causal_k64",
+      "candidate_budget": 64,
+      "can_abstain": false
+    },
+    {
+      "id": "residual_affine_a2_k8",
+      "candidate_budget": 8,
+      "can_abstain": true
+    },
+    {
+      "id": "residual_affine_a2_k16",
+      "candidate_budget": 16,
+      "can_abstain": true
+    },
+    {
+      "id": "residual_affine_a2_k32",
+      "candidate_budget": 32,
+      "can_abstain": true
+    },
+    {
+      "id": "residual_affine_a2_k64",
+      "candidate_budget": 64,
+      "can_abstain": true
+    },
+    {
+      "id": "residual_affine_causal_k8",
+      "candidate_budget": 8,
+      "can_abstain": false
+    },
+    {
+      "id": "residual_affine_causal_k32",
+      "candidate_budget": 32,
+      "can_abstain": false
+    },
+    {
+      "id": "residual_affine_causal_k64",
+      "candidate_budget": 64,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_residual_union_causal_k8",
+      "candidate_budget": 8,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_residual_union_causal_k16",
+      "candidate_budget": 16,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_residual_union_causal_k32",
+      "candidate_budget": 32,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_residual_union_causal_k64",
+      "candidate_budget": 64,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_scale_calibrated_adaptive_causal_k32_to64",
+      "candidate_budget": 64,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_a2_exhaustive_configuration_winner",
+      "candidate_budget": 256,
+      "can_abstain": false
+    },
+    {
+      "id": "prefix_native_fragment256",
+      "candidate_budget": 256,
+      "can_abstain": false
+    },
+    {
+      "id": "prefix_native_fragment512",
+      "candidate_budget": 512,
+      "can_abstain": false
+    },
+    {
+      "id": "prefix_native_fragment_frequency256",
+      "candidate_budget": 256,
+      "can_abstain": false
+    },
+    {
+      "id": "prefix_parallel_continuous96",
+      "decision_rule": "FP32 same prefix; initial H rescaled to median public embedding RMS; whole-sequence L-BFGS96, history8 strong-Wolfe maxeval192; lowest observed MSE continuous iterate; final full-vocabulary cosine argmax; BOS only; no A1/shortlist",
+      "candidate_budget": null,
+      "can_abstain": false
+    },
+    {
+      "id": "prefix_parallel_discrete64",
+      "decision_rule": "prefix-weight-metric argmax initialization;64 whole-sequence Adam steps lr0.003; actual vocabulary embeddings each forward, straight-through proxy gradient; cosine objective; other-position KV gradients detached; eager BF16 attention; lowest observed mean-cosine-loss full sequence; BOS only; no A1/shortlist",
+      "candidate_budget": null,
+      "can_abstain": false
+    },
+    {
+      "id": "prefix_native_fragment_mixed256",
+      "candidate_budget": 256,
+      "can_abstain": false
+    },
+    {
+      "id": "prefix_mixed256_shared_attention",
+      "candidate_budget": 256,
+      "can_abstain": false,
+      "numerics": "distinct attention implementation, not an exact-execution claim"
+    },
+    {
+      "id": "no_shortlist_full_vocab_gini003_128",
+      "candidate_budget": null,
+      "can_abstain": false
+    },
+    {
+      "id": "no_shortlist_full_vocab_halfhard256",
+      "candidate_budget": null,
+      "can_abstain": false
+    }
+  ],
+  "setups": [
+    "clean-pile-lora-64x40",
+    "historical-finance-strict-bos-128x128"
+  ],
+  "required_cells": [
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "direct_inverse_k16"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "causal_public_surrogate_k16"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "strict_bos_adaptive_a1_a2"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_a2_k8"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_a2_k16"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_a2_k32"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_a2_k64"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_causal_k8"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_causal_k16"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_causal_k32"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_causal_k64"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "residual_affine_a2_k8"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "residual_affine_a2_k16"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "residual_affine_a2_k32"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "residual_affine_a2_k64"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "residual_affine_causal_k8"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "residual_affine_causal_k32"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "residual_affine_causal_k64"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_residual_union_causal_k8"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_residual_union_causal_k16"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_residual_union_causal_k32"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_residual_union_causal_k64"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_scale_calibrated_adaptive_causal_k32_to64"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_a2_exhaustive_configuration_winner"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "prefix_native_fragment256"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "prefix_native_fragment512"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "prefix_native_fragment_frequency256"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "prefix_parallel_continuous96"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "prefix_parallel_discrete64"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "prefix_native_fragment_mixed256"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "prefix_mixed256_shared_attention"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "no_shortlist_full_vocab_gini003_128"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "no_shortlist_full_vocab_halfhard256"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "direct_inverse_k16"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "causal_public_surrogate_k16"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "strict_bos_adaptive_a1_a2"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_a2_k8"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_a2_k16"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_a2_k32"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_a2_k64"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_causal_k8"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_causal_k16"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_causal_k32"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_causal_k64"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "residual_affine_a2_k8"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "residual_affine_a2_k16"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "residual_affine_a2_k32"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "residual_affine_a2_k64"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "residual_affine_causal_k8"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "residual_affine_causal_k32"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "residual_affine_causal_k64"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_residual_union_causal_k8"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_residual_union_causal_k16"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_residual_union_causal_k32"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_residual_union_causal_k64"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_scale_calibrated_adaptive_causal_k32_to64"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_a2_exhaustive_configuration_winner"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "prefix_native_fragment256"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "prefix_native_fragment512"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "prefix_native_fragment_frequency256"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "prefix_parallel_continuous96"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "prefix_parallel_discrete64"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "prefix_native_fragment_mixed256"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "prefix_mixed256_shared_attention"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "no_shortlist_full_vocab_gini003_128"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "no_shortlist_full_vocab_halfhard256"
+    }
+  ],
+  "inherited_cells": 62,
+  "new_cells": 4,
+  "total_cells": 66,
+  "current_methods": [
+    "a1_native",
+    "gini128",
+    "a1_graph",
+    "halfhard256"
+  ],
+  "decision_rules": {
+    "gini128": "dev7 gini003: full-vocabulary init80; adaptiveLR.6,decay.98,reset32; BF16mixture/FP32logits; gini.003 fromstep32; 128steps; emit finalargmax. No shortlist or extra verifier.",
+    "halfhard256": "dev7 hardhalf64: same optimizer with no gini; forward embedding hard fraction linearly0->.5 over64..96, unchanged soft backward;256steps; emit argmax at minimum whole objective afterstep96. No shortlist or extra verifier."
+  },
+  "selected_from": {
+    "gini128": "dev7 step128: all matched and identifier tokens; shifted prose250/254; faster operating point",
+    "halfhard256": "dev7 best_objective: all matched and identifier tokens; shifted prose252/254; strongest fixed whole-sequence development rule"
+  },
+  "native_geometry": "whole unpadded record, BOS128000 fixed, remaining positions optimized jointly;2..128positions",
+  "baseline_execution": "unchanged TRR0019 batch1/right-padding-trim port, native and exact graph controls; archived all-array reproduction required",
+  "new_method_environment": "CUBLAS_WORKSPACE_CONFIG=:4096:8; deterministic algorithms; TF32off",
+  "baseline_environment": "unset CUBLAS_WORKSPACE_CONFIG; deterministic algorithms disabled; TF32off",
+  "source_protocol_sha256": "c7e74be4067b1a6166c7c1fbe67e6afc24d6d4ab4a121a366acfcc3d6fae1949",
+  "source_charter_sha256": "ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d"
+}
