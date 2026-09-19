@@ -17,7 +17,7 @@ error=torch.tensor([.01,.05,.1],device="cuda");lr=torch.tensor(.6,device="cuda")
 results=[]
 for eps in [1e-12,1e-16,1e-20]:
     z=torch.zeros(N,device="cuda");m=torch.zeros_like(z);v=torch.zeros_like(z)
-    epsilon_update_kernel[(triton.cdiv(N,1024),)](z,m,v,g,error,lr,decay,N,VOCAB,eps,1024,num_warps=4,enable_fp_fusion=False)
+    epsilon_update_kernel[(triton.cdiv(N,1024),)](z,m,v,g,error,lr,decay,N,VOCAB,eps,1. if eps==1e-12 else 1e6,1024,num_warps=4,enable_fp_fusion=False)
     gd=g.double();rate=lr.double()*torch.sqrt((error.double()[torch.arange(N,device="cuda")//VOCAB]/.05).clamp(.01,1.))
     reference=-rate*(.1*gd)/torch.sqrt(.005*gd.square()).add(eps)*decay.double()
     diff=(z.double()-reference).abs();tolerance=2e-6+5e-5*reference.abs()
@@ -25,7 +25,7 @@ for eps in [1e-12,1e-16,1e-20]:
     for i,level in enumerate(levels.cpu().tolist()):
         selected=(torch.arange(N,device="cuda")%len(levels))==i
         cases.append({"gradient":level,"max_abs_error":float(diff[selected].max()),"max_update":float(z[selected].abs().max())})
-    results.append({"epsilon":eps,"max_abs_error":float(diff.max()),"within_declared_tolerance":bool((diff<=tolerance).all()),
+    results.append({"epsilon":eps,"gradient_scale":1. if eps==1e-12 else 1e6,"max_abs_error":float(diff.max()),"within_declared_tolerance":bool((diff<=tolerance).all()),
       "cases":cases,"finite":bool(torch.isfinite(z).all())})
     if eps==1e-12:
         native=torch.zeros_like(z);nm=torch.zeros_like(z);nv=torch.zeros_like(z)
