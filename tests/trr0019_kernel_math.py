@@ -7,6 +7,7 @@ import torch
 from shared_attention import shared_attention
 
 def main():
+    if not (ROOT/'experiments/TRR-0019/prediction_freeze.json').exists():raise RuntimeError('finish benchmark first')
     torch.set_num_threads(2);torch.manual_seed(1919064)
     torch.backends.cuda.matmul.allow_tf32=False;torch.backends.cudnn.allow_tf32=False
     cases=[];start=time.time()
@@ -34,10 +35,22 @@ def main():
           'past_unchanged':True,'candidate_isolation':True})
         del q,k,v,pastk,pastv,savedk,savedv,actual,keys,values,logits,reference,changed
     torch.cuda.synchronize()
+    from safetensors.torch import load_file
+    freeze=json.loads((ROOT/'experiments/TRR-0019/prediction_freeze.json').read_text())
+    byte_checks=0
+    for entry in freeze['entries']:
+        if entry['method']=='mixed_fast':continue
+        prior_method='a1a2' if entry['method'].startswith('a1') else 'mixed256'
+        oldpath=ROOT.parent/'TRR-0018/outputs/TRR-0018/predictions'/(entry['id']+'__'+prior_method+'.safetensors')
+        current=load_file(str(ROOT/entry['path']));previous=load_file(str(oldpath))
+        for key in current:
+            assert torch.equal(current[key].contiguous().view(torch.uint8),previous[key].contiguous().view(torch.uint8)),(entry['id'],entry['method'],key)
+        byte_checks+=1
+    assert byte_checks==1088
     result={'status':'PASS','seed':1919064,'cases':cases,'torch':torch.__version__,'command':sys.argv,
       'code_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
       'seconds':time.time()-start,'peak_allocated':torch.cuda.max_memory_allocated(),
-      'peak_reserved':torch.cuda.max_memory_reserved(),'truth_or_model_loaded':False}
+      'peak_reserved':torch.cuda.max_memory_reserved(),'truth_or_model_loaded':False,'preserved_control_output_byte_comparisons':byte_checks}
     path=ROOT/'experiments/TRR-0019/kernel_math_test.json'
     with path.open('x') as f:json.dump(result,f,indent=2)
     print(json.dumps(result,indent=2))
