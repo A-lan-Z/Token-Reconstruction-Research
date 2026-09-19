@@ -1,6 +1,6 @@
 {
   "task_id": "TRR-0020",
-  "status": "DEVELOPMENT21_GRID_GPU_ADMISSION",
+  "status": "DEVELOPMENT21_SCORED_DEVELOPMENT22_PUBLIC_PROTOTYPE",
   "goal_completed": false,
   "initial_execution_commit": "a7e7f0628e88add676e767f188df1d903a749efb",
   "dev1_execution_commit": "9724dce2f14ccea2af63c0cbd590ab189ef4b7a8",
@@ -58,7 +58,7 @@
     "dev19": 32,
     "dev20": 48
   },
-  "current_experiment": "64cell local inverse grid:largest public qualification before reconstruction",
+  "current_experiment": "Layer-factor inverse CPU prototype prepared; public linear diagnostic pending",
   "complete_archives": [
     "dev1_archive.json",
     "dev2_archive.json",
@@ -217,7 +217,7 @@
     "partial_archive": "dev13_partial_archive.json",
     "guard": "dev13_guard.json"
   },
-  "updated_utc": "2026-09-19T20:41:39.026122+00:00",
+  "updated_utc": "2026-09-19T20:48:42.425303+00:00",
   "dev13_r1": {
     "status": "COMPLETE_SCORED_ARCHIVED",
     "freeze": "dev13_r1_freeze.json",
@@ -467,15 +467,15 @@
     "peak_reserved_GiB": 3.654296875
   },
   "dev21": {
-    "status": "GRID_GPU_ADMISSION",
+    "status": "COMPLETE_SCORED_ARCHIVE_PENDING",
     "plan": "DEV21_PLAN.md",
     "sources": [
       "scripts/trr0020_stage21/linearized_prefix.py",
       "scripts/trr0020_stage21/cpu_reference.py"
     ],
     "gpu_runs": 0,
-    "reconstruction_runs": 0,
-    "conclusion": "Real-prefix arithmetic passes; no efficacy claim",
+    "reconstruction_runs": 64,
+    "conclusion": "Small gains over weak warm32initialization; far below baseline quality and no adequate method. No new active method selected.",
     "cpu_reference": "dev21_cpu_reference.json",
     "cpu_environment": "dev21_cpu_environment.json",
     "cpu_reference_sha256": "f0c6203420932f045e5fe83b98842f10a74e038a2e424658527f0bd62003cd39",
@@ -489,6 +489,23 @@
     "qualification_peak_reserved_GiB": 2.25390625,
     "graph_solver_cpu": "dev21_graph_solver_cpu.json",
     "guard": "dev21_guard.json",
-    "log": "dev21_run.log"
+    "log": "dev21_run.log",
+    "cells": 64,
+    "freeze": "dev21_freeze.json",
+    "score": "dev21_score.json",
+    "summary": "dev21_summary.json",
+    "truth_gate": "dev21_truth_gate.json",
+    "warm_anchors": 64,
+    "mean_anchors": 32,
+    "public_eager_checks": 16,
+    "readout_formula_checks": 16,
+    "linear_formula_checks": 16,
+    "peak_reserved_GiB": 6.080078125
+  },
+  "dev22": {
+    "status": "CPU_PROTOTYPE_READY",
+    "plan": "DEV22_PROSPECTIVE.md",
+    "hypothesis": "Reverse-order per-layer Krylov inverse factors at the same number of layer products",
+    "reconstruction_runs": 0
   }
 }
