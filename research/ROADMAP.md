@@ -58,3 +58,14 @@ experimental choices. They do not permanently restrict methods permitted by
 RESEARCH_CHARTER.md. The revision's process isolation is a temporary enforcement
 choice for this fixed confirmatory run, not a permanent ban on public auxiliary
 data.
+
+
+## TRR-0014: prefix-only proposal direction
+
+The owner requested a materially different candidate generator using the same prefix, without an additional trained token predictor. The exploratory prefix-derived geometry + intrinsic MLP table + tokenizer suffix-expansion method now has a disjoint paired confirmation: matched natural4063/4064 with31/32 exact clips; LoRA-shifted natural4064/4064 with32/32 exact; both identifier cells312/312 and8/8 exact. The fitted A1+A2 control scored4063/4064 and31/32 on each natural cell, and all identifier tokens.
+
+This establishes a promising component direction, not a completed replacement. Native reconstruction is about1.6x the baseline, and each changed prefix requires about1.07s of derived-table rebuilding. A conservative rebuild after every record raises natural-text cost to about2.95x and short-identifier cost to about5.9x. Static tokenizer metadata takes5.70s once per tokenizer. No fitted inverse or extra model checkpoint enters the selected method.
+
+Prioritize a budget-matched no-fragment control, integration with legitimately recovered changing prefix weights, and the required dual-benchmark matrix before method activation or an overall claim. Existing active methods/decisions remain unchanged. The current public supplied-prefix pilot does not establish recovery or cold-start tracking. Do not resume the failed iterative solvers merely by tuning their constants; their negative evidence is preserved alongside the new mechanism. This task scope is not a permanent method ban under the charter.
+
+Result: coordination/results/TRR-0014.md. Manifest: experiments/TRR-0014/manifest.json.
