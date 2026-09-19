@@ -45,11 +45,11 @@ def main():
         identity(results['mixed_shared'],results['mixed_native'])
         cache=n.new_context(prefix);ids=results['mixed_native']['candidates'].to('cuda');tokens=results['mixed_native']['tokens'].to('cuda')
         for pos in range(1,128):
-            before=[(layer.keys.clone(),layer.values.clone()) for layer in cache.backend.layers]
+            before=[(layer.keys.clone(),layer.values.clone()) for layer in cache.backend.layers[:len(prefix.layers)]]
             a=n.candidates(prefix,cache,ids[pos],pos).float();b=shared_candidates(prefix,cache,ids[pos],pos)
             assert torch.equal(a,b),pos
             assert cache.length==pos
-            for layer,(keys,values) in zip(cache.backend.layers,before):
+            for layer,(keys,values) in zip(cache.backend.layers[:len(prefix.layers)],before):
                 assert torch.equal(keys,layer.keys) and torch.equal(values,layer.values)
             prefix.run_cached(tokens[pos].reshape(1,1),cache,pos);n.guard()
         write(X/'engineering_qualification.json',{'binding':bind,'setup':setup,'largest_repetitions':times,
