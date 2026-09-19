@@ -1,0 +1,421 @@
+{
+  "task_id": "TRR-0018",
+  "registered_before_execution": true,
+  "methods": [
+    {
+      "id": "direct_inverse_k16",
+      "candidate_budget": 16,
+      "can_abstain": false
+    },
+    {
+      "id": "causal_public_surrogate_k16",
+      "candidate_budget": 16,
+      "can_abstain": false
+    },
+    {
+      "id": "strict_bos_adaptive_a1_a2",
+      "candidate_budget": 512,
+      "can_abstain": true
+    },
+    {
+      "id": "a1_a2_k8",
+      "candidate_budget": 8,
+      "can_abstain": true
+    },
+    {
+      "id": "a1_a2_k16",
+      "candidate_budget": 16,
+      "can_abstain": true
+    },
+    {
+      "id": "a1_a2_k32",
+      "candidate_budget": 32,
+      "can_abstain": true
+    },
+    {
+      "id": "a1_a2_k64",
+      "candidate_budget": 64,
+      "can_abstain": true
+    },
+    {
+      "id": "a1_causal_k8",
+      "candidate_budget": 8,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_causal_k16",
+      "candidate_budget": 16,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_causal_k32",
+      "candidate_budget": 32,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_causal_k64",
+      "candidate_budget": 64,
+      "can_abstain": false
+    },
+    {
+      "id": "residual_affine_a2_k8",
+      "candidate_budget": 8,
+      "can_abstain": true
+    },
+    {
+      "id": "residual_affine_a2_k16",
+      "candidate_budget": 16,
+      "can_abstain": true
+    },
+    {
+      "id": "residual_affine_a2_k32",
+      "candidate_budget": 32,
+      "can_abstain": true
+    },
+    {
+      "id": "residual_affine_a2_k64",
+      "candidate_budget": 64,
+      "can_abstain": true
+    },
+    {
+      "id": "residual_affine_causal_k8",
+      "candidate_budget": 8,
+      "can_abstain": false
+    },
+    {
+      "id": "residual_affine_causal_k32",
+      "candidate_budget": 32,
+      "can_abstain": false
+    },
+    {
+      "id": "residual_affine_causal_k64",
+      "candidate_budget": 64,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_residual_union_causal_k8",
+      "candidate_budget": 8,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_residual_union_causal_k16",
+      "candidate_budget": 16,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_residual_union_causal_k32",
+      "candidate_budget": 32,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_residual_union_causal_k64",
+      "candidate_budget": 64,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_scale_calibrated_adaptive_causal_k32_to64",
+      "candidate_budget": 64,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_a2_exhaustive_configuration_winner",
+      "candidate_budget": 256,
+      "can_abstain": false
+    },
+    {
+      "id": "prefix_native_fragment256",
+      "candidate_budget": 256,
+      "can_abstain": false
+    },
+    {
+      "id": "prefix_native_fragment512",
+      "candidate_budget": 512,
+      "can_abstain": false
+    },
+    {
+      "id": "prefix_native_fragment_frequency256",
+      "candidate_budget": 256,
+      "can_abstain": false
+    },
+    {
+      "id": "prefix_parallel_continuous96",
+      "decision_rule": "FP32 same prefix; initial H rescaled to median public embedding RMS; whole-sequence L-BFGS96, history8 strong-Wolfe maxeval192; lowest observed MSE continuous iterate; final full-vocabulary cosine argmax; BOS only; no A1/shortlist",
+      "candidate_budget": null,
+      "can_abstain": false
+    },
+    {
+      "id": "prefix_parallel_discrete64",
+      "decision_rule": "prefix-weight-metric argmax initialization;64 whole-sequence Adam steps lr0.003; actual vocabulary embeddings each forward, straight-through proxy gradient; cosine objective; other-position KV gradients detached; eager BF16 attention; lowest observed mean-cosine-loss full sequence; BOS only; no A1/shortlist",
+      "candidate_budget": null,
+      "can_abstain": false
+    },
+    {
+      "id": "prefix_native_fragment_mixed256",
+      "candidate_budget": 256,
+      "can_abstain": false
+    }
+  ],
+  "setups": [
+    "clean-pile-lora-64x40",
+    "historical-finance-strict-bos-128x128"
+  ],
+  "required_cells": [
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "direct_inverse_k16"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "causal_public_surrogate_k16"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "strict_bos_adaptive_a1_a2"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_a2_k8"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_a2_k16"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_a2_k32"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_a2_k64"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_causal_k8"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_causal_k16"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_causal_k32"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_causal_k64"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "residual_affine_a2_k8"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "residual_affine_a2_k16"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "residual_affine_a2_k32"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "residual_affine_a2_k64"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "residual_affine_causal_k8"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "residual_affine_causal_k32"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "residual_affine_causal_k64"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_residual_union_causal_k8"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_residual_union_causal_k16"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_residual_union_causal_k32"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_residual_union_causal_k64"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_scale_calibrated_adaptive_causal_k32_to64"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_a2_exhaustive_configuration_winner"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "prefix_native_fragment256"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "prefix_native_fragment512"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "prefix_native_fragment_frequency256"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "prefix_parallel_continuous96"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "prefix_parallel_discrete64"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "prefix_native_fragment_mixed256"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "direct_inverse_k16"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "causal_public_surrogate_k16"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "strict_bos_adaptive_a1_a2"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_a2_k8"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_a2_k16"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_a2_k32"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_a2_k64"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_causal_k8"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_causal_k16"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_causal_k32"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_causal_k64"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "residual_affine_a2_k8"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "residual_affine_a2_k16"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "residual_affine_a2_k32"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "residual_affine_a2_k64"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "residual_affine_causal_k8"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "residual_affine_causal_k32"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "residual_affine_causal_k64"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_residual_union_causal_k8"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_residual_union_causal_k16"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_residual_union_causal_k32"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_residual_union_causal_k64"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_scale_calibrated_adaptive_causal_k32_to64"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_a2_exhaustive_configuration_winner"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "prefix_native_fragment256"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "prefix_native_fragment512"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "prefix_native_fragment_frequency256"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "prefix_parallel_continuous96"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "prefix_parallel_discrete64"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "prefix_native_fragment_mixed256"
+    }
+  ],
+  "inherited_cells": 58,
+  "new_cells": 2,
+  "total_cells": 60,
+  "current_methods": [
+    "mixed256",
+    "frequency256",
+    "a1a2"
+  ],
+  "new_decision_rule": "BENCHMARK_PLAN.md; mixed64-vote/direct-similarity fragments from128 parents per lookup; fixed256 native direct-cosine A2",
+  "current_baseline_execution": "benchmark-compatible batch1 port; frozen K256 direct cosine",
+  "source_protocol_sha256": "86806c33cbaab2b5f23590a06cea2945013067171984c4293daedee49e37a1f4",
+  "inherited_sources": {
+    "experiments/TRR-0002/crossover/result.json": "f4673bc8491d488a988c179c8da8cab9fbed66473ce28988b63da8a52ee8151d",
+    "experiments/TRR-0002/calibrated-dual/result.json": "b4e492e9a426c36cd0ff7d14bdf227eda27c1b274e77ba0d9d5a5121d2f59702",
+    "experiments/TRR-0002/configuration-search/canonical/result.json": "271a4fa3bd4a093b6c4373ad9c704ca3ae74a8cf3712ba91a7f0fe4821f079f1"
+  },
+  "selected_from": "Ten fixed candidate-only rules on352 previously opened inputs; see development_score.json"
+}
