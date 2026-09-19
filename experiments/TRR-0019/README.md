@@ -23,3 +23,5 @@ Do not rerun the scorer against changed methods or incomplete predictions. It ch
 The exact replay engine is scripts/trr0019/replay_a2.py; its numerical attention variant is scripts/trr0019/shared_attention.py. Shared model storage is read on every replay. Graphs run sequentially, beginning with BOS, and must never be replayed concurrently. Returned GPU outputs are reusable buffers and must be consumed/copied before the next run, as the benchmark does.
 
 Preparation and inference are separate phases. Report cold Triton compilation from the first probe as well as warm graph setup in the main comparison; compiled kernels can survive weight value changes, whereas lookup tables must be rebuilt. Timings require an otherwise idle GPU and the same resident assets.
+
+For a fresh full-comparison rerun, use a new worktree at execution commit b32367c170dc19afc5880e026d537a040885713c and provide the hash-bound sibling assets/input bundle. That pre-run commit has no main prediction freeze or score files. Historical probe commands require their own recorded pre-run commits because their receipts are create-only.
