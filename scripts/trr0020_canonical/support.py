@@ -12,7 +12,7 @@ CANONICAL=("clean-pile-lora-64x40","historical-finance-strict-bos-128x128")
 METHOD_IDS={"gini128":"no_shortlist_full_vocab_gini003_128","halfhard256":"no_shortlist_full_vocab_halfhard256"}
 def utc():return time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime())
 def binding():
-    paths=list((ROOT/"scripts/trr0020_canonical").glob("*.py"))
+    paths=list((ROOT/"scripts/trr0020_canonical").glob("*.py"))+list((ROOT/"scripts/trr0019").glob("*.py"))
     paths += [X/p for p in ["BENCHMARK_PLAN.md","registry.json","metadata.json","inherited_registry.json","inherited_matrix.json"]]
     paths += [ROOT/p for p in ["scripts/trr0014/native.py","scripts/trr0014/fragment_predict.py","scripts/agent4/comparator.py","scripts/agent4/common.py",
       "scripts/trr0019/replay_a2.py","scripts/trr0017/shared_context.py","scripts/trr0020/soft_vocabulary.py","scripts/trr0020_stage3/reset_soft.py",
