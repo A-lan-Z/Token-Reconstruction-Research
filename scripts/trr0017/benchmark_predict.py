@@ -61,7 +61,11 @@ def main():
     if args.group=="controls":
         a,_=decode(obs[q["id"]],"fragment_native");b,_=decode(obs[q["id"]],"fragment_shared")
         if not all(torch.equal(a[k],b[k]) for k in a):raise RuntimeError("full-record optimization not equivalent")
-    write(X/(args.group+"_qualification.json"),{"binding":bind,"setup":setup,"rows":qualification,"environment":env,
+    qual_path=X/(args.group+"_qualification.json")
+    if qual_path.exists():
+        if json.loads(qual_path.read_text())["binding"]!=bind:raise RuntimeError("prior qualification binding changed")
+        qual_path=X/(args.group+"_resume_qualification_"+str(time.time_ns())+".json")
+    write(qual_path,{"binding":bind,"setup":setup,"rows":qualification,"environment":env,
          "peak_allocated":torch.cuda.max_memory_allocated(),"peak_reserved":torch.cuda.max_memory_reserved()})
     entries=[]
     for i,row in enumerate(rows):
