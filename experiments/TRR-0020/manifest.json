@@ -1,6 +1,6 @@
 {
   "task_id": "TRR-0020",
-  "status": "IN_PROGRESS_NOT_EFFECTIVE",
+  "status": "IN_PROGRESS_NO_ACCEPTED_METHOD",
   "goal_completed": false,
   "initial_execution_commit": "a7e7f06",
   "dev1_execution_commit": "9724dce",
@@ -19,18 +19,49 @@
   },
   "dev2": {
     "stage": "dev2",
-    "status": "INTERRUPTED_BY_RESOURCE_GUARD",
+    "status": "COMPLETE_AFTER_GUARDED_RESUME",
     "returncode": -15,
     "reason": "RuntimeError('resource or timeout limit exceeded')",
     "final_gpu_free_mib": 1057,
     "completed_cells": 52,
-    "labels_opened": false,
+    "labels_opened": true,
     "resume": "dev2_r1_guard.json / same bound method source",
     "timing_scope": "exploratory only; exclude from comparative latency claims due external GPU-memory contention"
   },
   "dev3": {
     "plan": "DEV3_PLAN.md",
-    "status": "prepared unexecuted"
+    "status": "COMPLETE_SCORED",
+    "freeze": "dev3_freeze.json",
+    "score": "dev3_score.json"
   },
-  "scope": "retrospective development; no active-method registration or complete canonical comparison yet"
+  "scope": "retrospective development; no active-method registration or complete canonical comparison yet",
+  "completed_development": {
+    "dev1": 64,
+    "dev2": 64,
+    "dev3": 96,
+    "dev4": 48
+  },
+  "current_experiment": {
+    "stage": "dev5",
+    "plan": "DEV5_PLAN.md",
+    "status": "qualification/prediction active;80cells planned"
+  },
+  "complete_archives": [
+    "dev1_archive.json",
+    "dev2_archive.json",
+    "dev3_archive.json",
+    "dev4_archive.json"
+  ],
+  "unresolved": [
+    "near-baseline accuracy",
+    "useful complete inference speed",
+    "complete dual-benchmark matrix",
+    "fresh confirmation/recovered-prefix claims if made"
+  ],
+  "dev4": {
+    "plan": "DEV4_PLAN.md",
+    "status": "COMPLETE_SCORED",
+    "freeze": "dev4_freeze.json",
+    "score": "dev4_score.json"
+  }
 }
