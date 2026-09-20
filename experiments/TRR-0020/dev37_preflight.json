@@ -1,0 +1,29 @@
+{
+  "task_id": "TRR-0020",
+  "created_utc": "2026-09-20T02:31:33.928247+00:00",
+  "live_gpu": "name, memory.total [MiB], memory.free [MiB], temperature.gpu\nNVIDIA GeForce RTX 5080, 16303 MiB, 9313 MiB, 36\n",
+  "compute_pids": "",
+  "host_memory": [
+    "MemTotal:       31651964 kB",
+    "MemFree:        29577568 kB",
+    "MemAvailable:   30657388 kB",
+    "Buffers:            9260 kB",
+    "Cached:           980240 kB"
+  ],
+  "vocabulary": 128256,
+  "width": 2048,
+  "max_past": 127,
+  "table_bytes": 1050673152,
+  "memory_calculation": "BF16 prefix approximately0.9GiB + FP32response table0.979GiB + FP32embedding conversion0.979GiB + squared-statistic temporary0.979GiB; small histories/probes/scores. Allow6GiBpeak reservation including allocator/kernel overhead; at admission>=9000MiB this retains>=2856MiB, with stricter runtime3GiBfree guard.",
+  "estimated_peak_reserved_GiB": 6,
+  "expected_seconds_upper": 180,
+  "timeout_seconds": 900,
+  "prior_evidence": [
+    "experiments/TRR-0014/lookup_dev_r1/cache.json",
+    "experiments/TRR-0020/dev36_guard.json"
+  ],
+  "safety": "No overlapping research job. Require3idle samples>=9000MiB andtemp<70. Internalfree>=3GiB/host>=8GiB/reserved<=8GiB/temp<80. Largestpast127first. Stop on anomaly; no batching workaround.",
+  "geometry": "Retain existing nativeBF16tableK256; continuous probes and targets usebatch1. No equivalence across tableandtargetgeometries claimed.",
+  "public_decisions": 512,
+  "repetitions": 3
+}
