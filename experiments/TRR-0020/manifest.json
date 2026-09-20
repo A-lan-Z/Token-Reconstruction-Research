@@ -1,6 +1,6 @@
 {
   "task_id": "TRR-0020",
-  "status": "DEVELOPMENT48_PREPARED",
+  "status": "DEVELOPMENT48_R1_COMPLETE_NO_EFFECTIVE_REPLACEMENT",
   "goal_completed": false,
   "initial_execution_commit": "a7e7f0628e88add676e767f188df1d903a749efb",
   "dev1_execution_commit": "9724dce2f14ccea2af63c0cbd590ab189ef4b7a8",
@@ -65,9 +65,14 @@
     "dev29": 48,
     "dev30": 48,
     "dev32": 56,
-    "dev33": 96
+    "dev33": 96,
+    "dev38": 48,
+    "dev43": 32,
+    "dev45": 32,
+    "dev46": 32,
+    "dev48_r1": 96
   },
-  "current_experiment": "Bounded-history full96cell retrospective comparison",
+  "current_experiment": null,
   "complete_archives": [
     "dev1_archive.json",
     "dev2_archive.json",
@@ -98,7 +103,12 @@
     "dev29_archive.json",
     "dev30_archive.json",
     "dev32_grid_archive.json",
-    "dev33_decoder_archive.json"
+    "dev33_decoder_archive.json",
+    "dev43_archive.json",
+    "dev45_archive.json",
+    "dev46_archive.json",
+    "dev48_r1_archive.json",
+    "dev38_grid_archive.json"
   ],
   "unresolved": [
     "baseline-like reconstruction quality with no token shortlist",
@@ -235,7 +245,7 @@
     "partial_archive": "dev13_partial_archive.json",
     "guard": "dev13_guard.json"
   },
-  "updated_utc": "2026-09-20T05:21:01.833437+00:00",
+  "updated_utc": "2026-09-20T05:50:23.077555+00:00",
   "dev13_r1": {
     "status": "COMPLETE_SCORED_ARCHIVED",
     "freeze": "dev13_r1_freeze.json",
@@ -1184,8 +1194,8 @@
     "execution_commit": "63f1b1d13f99aae108aa3186ea0454afef158455",
     "conclusion": "32.5%/17.4%faster at64updates for128/40positions, but bothproseconditions lose4tokens; no contender selected."
   },
-  "completed_development_matrices": 34,
-  "completed_development_cells": 2624,
+  "completed_development_matrices": 35,
+  "completed_development_cells": 2720,
   "dev44": {
     "status": "EXACT_GPU_UPDATE_QUALIFIED_AND_ARCHIVED",
     "plan": "DEV44_PLAN.md",
@@ -1530,7 +1540,18 @@
   "continuation21_audit": {
     "request": "coordination/requests/TRR-0020-CONTINUE-21.md",
     "previous_turn_classification": "progress: exact pointwise update and full32cell decoder matrix completed and archived",
-    "action": "Completed development46 exact reuse qualification and32cell full-decoder comparison; preserved reporting failure and repaired outside frozen source. Testing bounded history mixing to reduce iterations."
+    "action": "Completed probability-reuse qualification and32cell matrix, bounded-history public qualification, excluded overflowing96cell attempt, and fully qualified/scored/archived stable96cell revision. Answered256candidate clarification from source.",
+    "outcome": "Concrete progress; no effective replacement established and no live GPU job.",
+    "completion_audit": {
+      "no_proposer_scope": "Proven for the tested full-vocabulary implementations; not true of the earlier TRR-0019 speedup.",
+      "baseline_like_quality": "Current evidence does not establish it; prior canonical comparison and new exploratory results retain gaps.",
+      "useful_baseline_relative_speed": "Not established; history mixing adds cost.",
+      "dual_benchmark_comparison": "Existing34method68cell matrix complete; no newly effective contender selected.",
+      "truth_separation": "Complete freeze and three negative gates passed; initial overflowing matrix excluded before truth.",
+      "reproducible_evidence": "Local result, manifests, exact commands, code commits and roundtrip archives complete.",
+      "publication": "Prior automatic approval-review restriction persists; no new attempt.",
+      "overall": "Incomplete; goal remains active."
+    }
   },
   "dev47": {
     "status": "PUBLIC_QUALIFIED_NO_EARLIER_IDENTITY_GAIN",
@@ -1548,5 +1569,815 @@
     "peak_reserved_GiB": 5.103515625,
     "execution_commit": "33105073d0a5020d2edd52b210d20f9d6151d215",
     "conclusion": "No public-fixture iteration saving; harder96cell grid next, no benchmark or replacement claim."
-  }
+  },
+  "dev48_failed": {
+    "status": "EXCLUDED_BEFORE_TRUTH",
+    "plan": "DEV48_PLAN.md",
+    "freeze": "dev48_freeze.json",
+    "failed_scorer": "dev48_score_launch.json",
+    "numerics_audit": "dev48_numerics_audit.json",
+    "archive": "dev48_failed_archive.json",
+    "reconstruction_cells": 96,
+    "repetitions": 288,
+    "nonfinite_cells": 10,
+    "evaluation_truth_opened": false,
+    "execution_commit": "e72d83e2d66644ab1083606c63591d6540eba38b",
+    "reason": "Squared logit residual norms and denominators overflowed; inherited numeric_valid omitted added history diagnostics."
+  },
+  "dev48_r1": {
+    "status": "COMPLETE_NO_EFFECTIVE_REPLACEMENT",
+    "plan": "DEV48_R1_PLAN.md",
+    "cpu_reference": "dev48_r1_cpu_reference.json",
+    "freeze": "dev48_r1_freeze.json",
+    "truth_gate": "dev48_r1_truth_gate.json",
+    "score": "dev48_r1_score.json",
+    "summary": "dev48_r1_summary.json",
+    "archive": "dev48_r1_archive.json",
+    "reconstruction_cells": 96,
+    "repetitions": 288,
+    "cpu_cases": 41,
+    "public_repeated_decodes": 72,
+    "eager_checks": 24,
+    "independent_gradient_checks": 8,
+    "unchanged_rule_real_repetitions": 216,
+    "scaled_logit_initialization_only_real_repetitions": 72,
+    "execution_commit": "ef9272203de8557c1aee77734f6432fe92f7c440",
+    "archive_summary_commit": "b0ab1b7e80945ace2d8fb7321d6e6eff030eef9a",
+    "peak_reserved_GiB": 5.103515625,
+    "primary_groups": [
+      {
+        "condition": "matched",
+        "group": "natural",
+        "method": "aa_logit_clip1_scaled_steps64",
+        "variant": "step64",
+        "correct": 238,
+        "scored": 254,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 1.4385325294861104
+      },
+      {
+        "condition": "matched",
+        "group": "stress",
+        "method": "aa_logit_clip1_scaled_steps64",
+        "variant": "step64",
+        "correct": 77,
+        "scored": 78,
+        "exact": 1,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.5383745964936679
+      },
+      {
+        "condition": "lora256",
+        "group": "natural",
+        "method": "aa_logit_clip1_scaled_steps64",
+        "variant": "step64",
+        "correct": 230,
+        "scored": 254,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 1.408151096504298
+      },
+      {
+        "condition": "lora256",
+        "group": "stress",
+        "method": "aa_logit_clip1_scaled_steps64",
+        "variant": "step64",
+        "correct": 74,
+        "scored": 78,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.5178423795005074
+      },
+      {
+        "condition": "matched",
+        "group": "natural",
+        "method": "aa_logit_clip1_scaled_steps32",
+        "variant": "step32",
+        "correct": 226,
+        "scored": 254,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.6958563779917313
+      },
+      {
+        "condition": "matched",
+        "group": "stress",
+        "method": "aa_logit_clip1_scaled_steps32",
+        "variant": "step32",
+        "correct": 73,
+        "scored": 78,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.26240472101198975
+      },
+      {
+        "condition": "lora256",
+        "group": "natural",
+        "method": "aa_logit_clip1_scaled_steps32",
+        "variant": "step32",
+        "correct": 223,
+        "scored": 254,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.7254119630088098
+      },
+      {
+        "condition": "lora256",
+        "group": "stress",
+        "method": "aa_logit_clip1_scaled_steps32",
+        "variant": "step32",
+        "correct": 65,
+        "scored": 78,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 1,
+        "mean_seconds": 0.26799509751435835
+      },
+      {
+        "condition": "matched",
+        "group": "natural",
+        "method": "aa_logit_clip1_scaled_steps16",
+        "variant": "step16",
+        "correct": 183,
+        "scored": 254,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.3695088270033011
+      },
+      {
+        "condition": "matched",
+        "group": "stress",
+        "method": "aa_logit_clip1_scaled_steps16",
+        "variant": "step16",
+        "correct": 61,
+        "scored": 78,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 0,
+        "mean_seconds": 0.1457567879842827
+      },
+      {
+        "condition": "lora256",
+        "group": "natural",
+        "method": "aa_logit_clip1_scaled_steps16",
+        "variant": "step16",
+        "correct": 139,
+        "scored": 254,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.3707707575085806
+      },
+      {
+        "condition": "lora256",
+        "group": "stress",
+        "method": "aa_logit_clip1_scaled_steps16",
+        "variant": "step16",
+        "correct": 57,
+        "scored": 78,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 1,
+        "mean_seconds": 0.13363856650539674
+      },
+      {
+        "condition": "matched",
+        "group": "natural",
+        "method": "control_steps64",
+        "variant": "step64",
+        "correct": 253,
+        "scored": 254,
+        "exact": 1,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 1.1131943274813239
+      },
+      {
+        "condition": "matched",
+        "group": "stress",
+        "method": "control_steps64",
+        "variant": "step64",
+        "correct": 77,
+        "scored": 78,
+        "exact": 1,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.46126599198032636
+      },
+      {
+        "condition": "lora256",
+        "group": "natural",
+        "method": "control_steps64",
+        "variant": "step64",
+        "correct": 246,
+        "scored": 254,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 1.0913783529977081
+      },
+      {
+        "condition": "lora256",
+        "group": "stress",
+        "method": "control_steps64",
+        "variant": "step64",
+        "correct": 76,
+        "scored": 78,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.4625173594977241
+      },
+      {
+        "condition": "matched",
+        "group": "natural",
+        "method": "control_steps32",
+        "variant": "step32",
+        "correct": 251,
+        "scored": 254,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.5863726864772616
+      },
+      {
+        "condition": "matched",
+        "group": "stress",
+        "method": "control_steps32",
+        "variant": "step32",
+        "correct": 77,
+        "scored": 78,
+        "exact": 1,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.2477095154899871
+      },
+      {
+        "condition": "lora256",
+        "group": "natural",
+        "method": "control_steps32",
+        "variant": "step32",
+        "correct": 242,
+        "scored": 254,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.5784375259972876
+      },
+      {
+        "condition": "lora256",
+        "group": "stress",
+        "method": "control_steps32",
+        "variant": "step32",
+        "correct": 75,
+        "scored": 78,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.25587876298232004
+      },
+      {
+        "condition": "matched",
+        "group": "natural",
+        "method": "control_steps16",
+        "variant": "step16",
+        "correct": 225,
+        "scored": 254,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.28253933049563784
+      },
+      {
+        "condition": "matched",
+        "group": "stress",
+        "method": "control_steps16",
+        "variant": "step16",
+        "correct": 68,
+        "scored": 78,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 0,
+        "mean_seconds": 0.12141914750100113
+      },
+      {
+        "condition": "lora256",
+        "group": "natural",
+        "method": "control_steps16",
+        "variant": "step16",
+        "correct": 222,
+        "scored": 254,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.27673110050091054
+      },
+      {
+        "condition": "lora256",
+        "group": "stress",
+        "method": "control_steps16",
+        "variant": "step16",
+        "correct": 69,
+        "scored": 78,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 1,
+        "mean_seconds": 0.12272917450172827
+      },
+      {
+        "condition": "matched",
+        "group": "natural",
+        "method": "aa_probability_clip2_steps64",
+        "variant": "step64",
+        "correct": 246,
+        "scored": 254,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 1.332561921008164
+      },
+      {
+        "condition": "matched",
+        "group": "stress",
+        "method": "aa_probability_clip2_steps64",
+        "variant": "step64",
+        "correct": 77,
+        "scored": 78,
+        "exact": 1,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.5116014925006311
+      },
+      {
+        "condition": "lora256",
+        "group": "natural",
+        "method": "aa_probability_clip2_steps64",
+        "variant": "step64",
+        "correct": 247,
+        "scored": 254,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 1.3514877239940688
+      },
+      {
+        "condition": "lora256",
+        "group": "stress",
+        "method": "aa_probability_clip2_steps64",
+        "variant": "step64",
+        "correct": 78,
+        "scored": 78,
+        "exact": 2,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.5313678124948638
+      },
+      {
+        "condition": "matched",
+        "group": "natural",
+        "method": "aa_probability_clip2_steps32",
+        "variant": "step32",
+        "correct": 246,
+        "scored": 254,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.7105900980241131
+      },
+      {
+        "condition": "matched",
+        "group": "stress",
+        "method": "aa_probability_clip2_steps32",
+        "variant": "step32",
+        "correct": 76,
+        "scored": 78,
+        "exact": 1,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.25841430498985574
+      },
+      {
+        "condition": "lora256",
+        "group": "natural",
+        "method": "aa_probability_clip2_steps32",
+        "variant": "step32",
+        "correct": 240,
+        "scored": 254,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.6742599459830672
+      },
+      {
+        "condition": "lora256",
+        "group": "stress",
+        "method": "aa_probability_clip2_steps32",
+        "variant": "step32",
+        "correct": 74,
+        "scored": 78,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.2557701014884515
+      },
+      {
+        "condition": "matched",
+        "group": "natural",
+        "method": "aa_probability_clip2_steps16",
+        "variant": "step16",
+        "correct": 236,
+        "scored": 254,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.3404653989855433
+      },
+      {
+        "condition": "matched",
+        "group": "stress",
+        "method": "aa_probability_clip2_steps16",
+        "variant": "step16",
+        "correct": 66,
+        "scored": 78,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.13432514300802723
+      },
+      {
+        "condition": "lora256",
+        "group": "natural",
+        "method": "aa_probability_clip2_steps16",
+        "variant": "step16",
+        "correct": 232,
+        "scored": 254,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.3401261435064953
+      },
+      {
+        "condition": "lora256",
+        "group": "stress",
+        "method": "aa_probability_clip2_steps16",
+        "variant": "step16",
+        "correct": 66,
+        "scored": 78,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.13348793047771323
+      },
+      {
+        "condition": "matched",
+        "group": "natural",
+        "method": "aa_probability_clip1_steps64",
+        "variant": "step64",
+        "correct": 246,
+        "scored": 254,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 1.3263295795040904
+      },
+      {
+        "condition": "matched",
+        "group": "stress",
+        "method": "aa_probability_clip1_steps64",
+        "variant": "step64",
+        "correct": 77,
+        "scored": 78,
+        "exact": 1,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.5317068859876599
+      },
+      {
+        "condition": "lora256",
+        "group": "natural",
+        "method": "aa_probability_clip1_steps64",
+        "variant": "step64",
+        "correct": 247,
+        "scored": 254,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 1.4070858894992853
+      },
+      {
+        "condition": "lora256",
+        "group": "stress",
+        "method": "aa_probability_clip1_steps64",
+        "variant": "step64",
+        "correct": 78,
+        "scored": 78,
+        "exact": 2,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.515155543005676
+      },
+      {
+        "condition": "matched",
+        "group": "natural",
+        "method": "aa_probability_clip1_steps32",
+        "variant": "step32",
+        "correct": 246,
+        "scored": 254,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.6765315835073125
+      },
+      {
+        "condition": "matched",
+        "group": "stress",
+        "method": "aa_probability_clip1_steps32",
+        "variant": "step32",
+        "correct": 76,
+        "scored": 78,
+        "exact": 1,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.2607445985049708
+      },
+      {
+        "condition": "lora256",
+        "group": "natural",
+        "method": "aa_probability_clip1_steps32",
+        "variant": "step32",
+        "correct": 240,
+        "scored": 254,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.6665685855114134
+      },
+      {
+        "condition": "lora256",
+        "group": "stress",
+        "method": "aa_probability_clip1_steps32",
+        "variant": "step32",
+        "correct": 74,
+        "scored": 78,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.25809229600417893
+      },
+      {
+        "condition": "matched",
+        "group": "natural",
+        "method": "aa_probability_clip1_steps16",
+        "variant": "step16",
+        "correct": 236,
+        "scored": 254,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.3442163599829655
+      },
+      {
+        "condition": "matched",
+        "group": "stress",
+        "method": "aa_probability_clip1_steps16",
+        "variant": "step16",
+        "correct": 66,
+        "scored": 78,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.1461133980046725
+      },
+      {
+        "condition": "lora256",
+        "group": "natural",
+        "method": "aa_probability_clip1_steps16",
+        "variant": "step16",
+        "correct": 232,
+        "scored": 254,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.3615494614932686
+      },
+      {
+        "condition": "lora256",
+        "group": "stress",
+        "method": "aa_probability_clip1_steps16",
+        "variant": "step16",
+        "correct": 66,
+        "scored": 78,
+        "exact": 0,
+        "records": 2,
+        "first_token_correct": 2,
+        "mean_seconds": 0.139280018498539
+      }
+    ],
+    "timings": [
+      {
+        "mode": "control",
+        "steps": 16,
+        "length": 40,
+        "records": 4,
+        "mean_median_seconds": 0.1220741610013647,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "control",
+        "steps": 16,
+        "length": 128,
+        "records": 4,
+        "mean_median_seconds": 0.2796352154982742,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "control",
+        "steps": 32,
+        "length": 40,
+        "records": 4,
+        "mean_median_seconds": 0.25179413923615357,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "control",
+        "steps": 32,
+        "length": 128,
+        "records": 4,
+        "mean_median_seconds": 0.5824051062372746,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "control",
+        "steps": 64,
+        "length": 40,
+        "records": 4,
+        "mean_median_seconds": 0.46189167573902523,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "control",
+        "steps": 64,
+        "length": 128,
+        "records": 4,
+        "mean_median_seconds": 1.102286340239516,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "aa_logit_clip1_scaled",
+        "steps": 16,
+        "length": 40,
+        "records": 4,
+        "mean_median_seconds": 0.13969767724483972,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "aa_logit_clip1_scaled",
+        "steps": 16,
+        "length": 128,
+        "records": 4,
+        "mean_median_seconds": 0.37013979225594085,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "aa_logit_clip1_scaled",
+        "steps": 32,
+        "length": 40,
+        "records": 4,
+        "mean_median_seconds": 0.26519990926317405,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "aa_logit_clip1_scaled",
+        "steps": 32,
+        "length": 128,
+        "records": 4,
+        "mean_median_seconds": 0.7106341705002706,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "aa_logit_clip1_scaled",
+        "steps": 64,
+        "length": 40,
+        "records": 4,
+        "mean_median_seconds": 0.5281084879970877,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "aa_logit_clip1_scaled",
+        "steps": 64,
+        "length": 128,
+        "records": 4,
+        "mean_median_seconds": 1.4233418129952042,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "aa_probability_clip1",
+        "steps": 16,
+        "length": 40,
+        "records": 4,
+        "mean_median_seconds": 0.14269670825160574,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "aa_probability_clip1",
+        "steps": 16,
+        "length": 128,
+        "records": 4,
+        "mean_median_seconds": 0.35288291073811706,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "aa_probability_clip1",
+        "steps": 32,
+        "length": 40,
+        "records": 4,
+        "mean_median_seconds": 0.25941844725457486,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "aa_probability_clip1",
+        "steps": 32,
+        "length": 128,
+        "records": 4,
+        "mean_median_seconds": 0.6715500845093629,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "aa_probability_clip1",
+        "steps": 64,
+        "length": 40,
+        "records": 4,
+        "mean_median_seconds": 0.523431214496668,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "aa_probability_clip1",
+        "steps": 64,
+        "length": 128,
+        "records": 4,
+        "mean_median_seconds": 1.3667077345016878,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "aa_probability_clip2",
+        "steps": 16,
+        "length": 40,
+        "records": 4,
+        "mean_median_seconds": 0.13390653674287023,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "aa_probability_clip2",
+        "steps": 16,
+        "length": 128,
+        "records": 4,
+        "mean_median_seconds": 0.3402957712460193,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "aa_probability_clip2",
+        "steps": 32,
+        "length": 40,
+        "records": 4,
+        "mean_median_seconds": 0.2570922032391536,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "aa_probability_clip2",
+        "steps": 32,
+        "length": 128,
+        "records": 4,
+        "mean_median_seconds": 0.6924250220035901,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "aa_probability_clip2",
+        "steps": 64,
+        "length": 40,
+        "records": 4,
+        "mean_median_seconds": 0.5214846524977474,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "aa_probability_clip2",
+        "steps": 64,
+        "length": 128,
+        "records": 4,
+        "mean_median_seconds": 1.3420248225011164,
+        "mean_lookup_seconds": 0.0
+      }
+    ],
+    "conclusion": "Mixed quality and added time; no rule promoted. All alternative readouts retained. No impossibility claim."
+  },
+  "reproduction_dev46_48": "CONTINUATION21_REPRO.md",
+  "dev46_48_provenance": "CONTINUATION21_PROVENANCE.json"
 }

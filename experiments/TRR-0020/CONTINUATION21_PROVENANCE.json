@@ -1,0 +1,773 @@
+{
+  "task_id": "TRR-0020",
+  "created_utc": "2026-09-20T05:50:23.077555+00:00",
+  "environment": {
+    "python": "3.12.3",
+    "torch": "2.10.0+cu128",
+    "transformers": "5.3.0",
+    "triton": "3.6.0",
+    "gpu": "RTX5080 16303MiB",
+    "PYTHONPATH": "src",
+    "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "model_and_data": "Public Llama3.2-1B-Instruct prefix cut4; exact public assets, observations, seeds and implementation hashes in each frozen binding and phase receipt. Eight TRR-0014 fresh_r1 observations reused retrospectively.",
+  "commands": [
+    {
+      "receipt": "experiments/TRR-0020/dev46_cpu_reference.json",
+      "sha256": "2ac7cbde976f32da323a8e3c1a1ca846405c575a7d7e0e18d9520e815776de54",
+      "execution_commit": "5330bc497d241d8583e63b18efb1d389f53b66e4",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/trr0020_stage46/cpu_check.py"
+      ],
+      "start_unix": 1789880073.030709,
+      "end_unix": 1789880073.0974479,
+      "passed": true
+    },
+    {
+      "receipt": "experiments/TRR-0020/dev46_launch.json",
+      "sha256": "30e84fa73cd2447bcbbf724743f0ab9a436f1386e7cb1b031cac184ffbe41fe0",
+      "execution_commit": "c853866de02e2411e74872d44ea48b57f302bb44",
+      "command": [
+        "python3",
+        "scripts/trr0020_resource_guard.py",
+        "--receipt",
+        "experiments/TRR-0020/dev46_guard.json",
+        "--timeout",
+        "900",
+        "--",
+        "python3",
+        "scripts/trr0020_stage46/run.py"
+      ],
+      "start_unix": 1789880123.0506546,
+      "end_unix": 1789880342.8814816,
+      "returncode": 0
+    },
+    {
+      "receipt": "experiments/TRR-0020/dev46_score_launch.json",
+      "sha256": "1cf34632c095c7d948f509d41b50823136e588dc3b0caa1b1045d2a3b6dccd9b",
+      "execution_commit": "c853866de02e2411e74872d44ea48b57f302bb44",
+      "command": [
+        "python3",
+        "scripts/trr0020_stage46/score.py"
+      ],
+      "start_unix": 1789880454.3971763,
+      "end_unix": 1789880460.3692853,
+      "returncode": 1
+    },
+    {
+      "receipt": "experiments/TRR-0020/dev46_score_r1_launch.json",
+      "sha256": "589f55252546990b535066d538fb18663a3fd7f3693f8f96296ccace8adc838e",
+      "execution_commit": "b0b6387aee4fac4b0624c2a4702b562f724d558e",
+      "command": [
+        "python3",
+        "scripts/trr0020_stage46_score_r1.py"
+      ],
+      "start_unix": 1789880524.6668901,
+      "end_unix": 1789880530.581366,
+      "returncode": 0
+    },
+    {
+      "receipt": "experiments/TRR-0020/dev46_gpu_archive.json",
+      "sha256": "3123d44b7355185d09d2ef5d9f0c0fec48a5d3522a8a7a42c6af1d788d34671d",
+      "execution_commit": "b0b6387aee4fac4b0624c2a4702b562f724d558e",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/trr0020_stage46_gpu_archive.py"
+      ],
+      "start_unix": 1789880530.6193438,
+      "end_unix": 1789880538.8794937
+    },
+    {
+      "receipt": "experiments/TRR-0020/dev46_archive.json",
+      "sha256": "a4754ea8a7b8555bcf145c0b9c1fd0d2a67cf941bc05622c909cd67864efc216",
+      "execution_commit": "b0b6387aee4fac4b0624c2a4702b562f724d558e",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/trr0020_stage46_archive.py"
+      ],
+      "start_unix": 1789880538.9675786,
+      "end_unix": 1789880557.7053258
+    },
+    {
+      "receipt": "experiments/TRR-0020/dev46_summary.json",
+      "sha256": "2b2945ded6a85a54578eaa0b8a5b078981eb14cf735d206ef85afcf17c9802d9",
+      "execution_commit": "b0b6387aee4fac4b0624c2a4702b562f724d558e",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/trr0020_stage46_summary.py"
+      ]
+    },
+    {
+      "receipt": "experiments/TRR-0020/dev47_cpu_reference.json",
+      "sha256": "6a76160de454e656b8e0a52ffe36fd4f042524dddce75dc86a46bcc984980fcc",
+      "execution_commit": "b0352d8dbf35342976eb502286ad9989d8882014",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/trr0020_stage47/cpu_check.py"
+      ],
+      "start_unix": 1789880865.2307532,
+      "end_unix": 1789880865.2352083,
+      "passed": true
+    },
+    {
+      "receipt": "experiments/TRR-0020/dev47_launch.json",
+      "sha256": "3221c619e7e3001ecc293ba04b37ba9405031379ff9fdda2ad3c4485a0cea2ab",
+      "execution_commit": "77cf29e4ba98df8cde36599ff1a2b7bf9c4db751",
+      "command": [
+        "python3",
+        "scripts/trr0020_resource_guard.py",
+        "--receipt",
+        "experiments/TRR-0020/dev47_guard.json",
+        "--timeout",
+        "900",
+        "--",
+        "python3",
+        "scripts/trr0020_stage47/run.py"
+      ],
+      "start_unix": 1789880865.5560412,
+      "end_unix": 1789880902.8362217,
+      "returncode": 1
+    },
+    {
+      "receipt": "experiments/TRR-0020/dev47_failed_archive.json",
+      "sha256": "ffc446cb30935ce58e7a216c056b5d8a9e7321acc33bb5927b4591b922d50918",
+      "execution_commit": "449f76b51b0529cea21d872c42549aa7f6f1199d",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/trr0020_stage47_archive.py",
+        "--attempt",
+        "failed"
+      ],
+      "start_unix": 1789881300.5619655,
+      "end_unix": 1789881300.6079443
+    },
+    {
+      "receipt": "experiments/TRR-0020/dev47_r1_cpu_reference.json",
+      "sha256": "2406ed0022ef72438781ae567039b40892c3cc5844c7b8a902b763614aea2aa6",
+      "execution_commit": "e2010d6293af59c0f535d54f83d63dc96359cb21",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/trr0020_stage47_r1/cpu_check.py"
+      ],
+      "start_unix": 1789881121.8170495,
+      "end_unix": 1789881121.864231,
+      "passed": true
+    },
+    {
+      "receipt": "experiments/TRR-0020/dev47_r1_launch.json",
+      "sha256": "ad9948ca3a0bbf540579e3841e069da2e537331a19a4eaa22d8a1d153dc1f292",
+      "execution_commit": "33105073d0a5020d2edd52b210d20f9d6151d215",
+      "command": [
+        "python3",
+        "scripts/trr0020_resource_guard.py",
+        "--receipt",
+        "experiments/TRR-0020/dev47_r1_guard.json",
+        "--timeout",
+        "900",
+        "--",
+        "python3",
+        "scripts/trr0020_stage47_r1/run.py"
+      ],
+      "start_unix": 1789881122.6597333,
+      "end_unix": 1789881206.2177007,
+      "returncode": 0
+    },
+    {
+      "receipt": "experiments/TRR-0020/dev47_r1_score_launch.json",
+      "sha256": "2602eab4d9446a36852b5797f051eaad0c5829ff1836c0bc56719bb5dd757a78",
+      "execution_commit": "449f76b51b0529cea21d872c42549aa7f6f1199d",
+      "command": [
+        "python3",
+        "scripts/trr0020_stage47_r1_score.py"
+      ],
+      "start_unix": 1789881297.8166556,
+      "end_unix": 1789881300.5218155,
+      "returncode": 0
+    },
+    {
+      "receipt": "experiments/TRR-0020/dev47_r1_archive.json",
+      "sha256": "a3eca97dd61b69ef68d2229bc8f1a16cc6e39a7fdd5d7803cce33f96db00a4eb",
+      "execution_commit": "449f76b51b0529cea21d872c42549aa7f6f1199d",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/trr0020_stage47_archive.py",
+        "--attempt",
+        "r1"
+      ],
+      "start_unix": 1789881300.651135,
+      "end_unix": 1789881300.8029792
+    },
+    {
+      "receipt": "experiments/TRR-0020/dev48_launch.json",
+      "sha256": "22cc59fb8b4909b04ef7f383d16897f1b5f4bae93baf33e5a9566676937ac121",
+      "execution_commit": "e72d83e2d66644ab1083606c63591d6540eba38b",
+      "command": [
+        "python3",
+        "scripts/trr0020_resource_guard.py",
+        "--receipt",
+        "experiments/TRR-0020/dev48_guard.json",
+        "--timeout",
+        "1200",
+        "--",
+        "python3",
+        "scripts/trr0020_stage48/run.py"
+      ],
+      "start_unix": 1789881662.0900013,
+      "end_unix": 1789881939.6256423,
+      "returncode": 0
+    },
+    {
+      "receipt": "experiments/TRR-0020/dev48_score_launch.json",
+      "sha256": "1cee6c3f34913583de47018fb22b40a8a88683ffe1df55833a6b3791ed2b76fc",
+      "execution_commit": "e72d83e2d66644ab1083606c63591d6540eba38b",
+      "command": [
+        "python3",
+        "scripts/trr0020_stage48/score.py"
+      ],
+      "start_unix": 1789882036.8815079,
+      "end_unix": 1789882041.4759936,
+      "returncode": 1
+    },
+    {
+      "receipt": "experiments/TRR-0020/dev48_failed_archive.json",
+      "sha256": "a6b22e926ab697f46d3e270f114e1b8309368de85fc9c4b0f79af01bf44884b4",
+      "execution_commit": "42100af8122fbf70313aba63d23d4702070ffd45",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/trr0020_stage48_failed_archive.py"
+      ],
+      "start_unix": 1789882519.1156929,
+      "end_unix": 1789882521.3865058
+    },
+    {
+      "receipt": "experiments/TRR-0020/dev48_r1_cpu_reference.json",
+      "sha256": "a6bd69952951729cf01b686a1a2e138bfa52df164978779fa722773d97054cda",
+      "execution_commit": "061b31d2695895e8735a0faccc4812856205accb",
+      "command": [
+        "/usr/bin/python3",
+        "scripts/trr0020_stage48_r1/cpu_check.py"
+      ],
+      "start_unix": 1789882656.9840262,
+      "end_unix": 1789882656.9934828,
+      "passed": true
+    },
+    {
+      "receipt": "experiments/TRR-0020/dev48_r1_launch.json",
+      "sha256": "2e5d591e11c646cc2da2f27574135099c81500ff161f40d18a3a4b192d76c6f7",
+      "execution_commit": "ef9272203de8557c1aee77734f6432fe92f7c440",
+      "command": [
+        "python3",
+        "scripts/trr0020_resource_guard.py",
+        "--receipt",
+        "experiments/TRR-0020/dev48_r1_guard.json",
+        "--timeout",
+        "1200",
+        "--",
+        "python3",
+        "scripts/trr0020_stage48_r1/run.py"
+      ],
+      "start_unix": 1789882657.386652,
+      "end_unix": 1789882965.9144602,
+      "returncode": 0
+    },
+    {
+      "receipt": "experiments/TRR-0020/dev48_r1_score_launch.json",
+      "sha256": "67fe863f56465e7868aae69fe4d3d39018b78ccad443e589706fa5c25f78539c",
+      "execution_commit": "ef9272203de8557c1aee77734f6432fe92f7c440",
+      "command": [
+        "python3",
+        "scripts/trr0020_stage48_r1/score.py"
+      ],
+      "start_unix": 1789883039.9577947,
+      "end_unix": 1789883045.8943079,
+      "returncode": 0
+    },
+    {
+      "receipt": "experiments/TRR-0020/dev48_r1_archive_launch.json",
+      "sha256": "b373b7080ba9134088da254f3e6afdbacb9bfe88b3a34a9a9259336da95ef8d5",
+      "execution_commit": "b0ab1b7e80945ace2d8fb7321d6e6eff030eef9a",
+      "command": [
+        "python3",
+        "scripts/trr0020_stage48_r1_archive.py"
+      ],
+      "start_unix": 1789883131.266249,
+      "end_unix": 1789883133.285253,
+      "returncode": 0
+    },
+    {
+      "receipt": "experiments/TRR-0020/dev48_r1_summary_launch.json",
+      "sha256": "9097b71a07f08ef0fe6cebae3cb9e220acc43828ec9c05c6dd4755ff03a932df",
+      "execution_commit": "b0ab1b7e80945ace2d8fb7321d6e6eff030eef9a",
+      "command": [
+        "python3",
+        "scripts/trr0020_stage48_r1_summary.py"
+      ],
+      "start_unix": 1789883133.2860577,
+      "end_unix": 1789883133.413875,
+      "returncode": 0
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "experiments/TRR-0020/DEV46_PLAN.md",
+      "sha256": "aecf5ca3ada6817ce924af638ff58047f54606b689c15b1572fea1cee700cba0",
+      "bytes": 3365
+    },
+    {
+      "path": "experiments/TRR-0020/DEV46_PROSPECTIVE.md",
+      "sha256": "975fe29850649b0bd8be3389d8c251e1ef1499904576f865bdaa30e24ad0decd",
+      "bytes": 1567
+    },
+    {
+      "path": "experiments/TRR-0020/DEV47_PLAN.md",
+      "sha256": "5a8a11ef83bee337aa9b5581d7efc7ea1b9ba9812931d194378d22e0a0e745a5",
+      "bytes": 2753
+    },
+    {
+      "path": "experiments/TRR-0020/DEV47_R1_PLAN.md",
+      "sha256": "e8a178eb766f2b95e1c8b95e948b9f5d4eb59e8baf95c04402a71bffde6b1419",
+      "bytes": 3451
+    },
+    {
+      "path": "experiments/TRR-0020/DEV48_PLAN.md",
+      "sha256": "436a5a88aa2cfa8fbb866959922dc11c02ca885ba010a5f1bfc13a0299777047",
+      "bytes": 2557
+    },
+    {
+      "path": "experiments/TRR-0020/DEV48_R1_PLAN.md",
+      "sha256": "e11003d7cb6658bbf50584538872491b727d9c61eed96df10a19bc8498c6b4cc",
+      "bytes": 4463
+    },
+    {
+      "path": "experiments/TRR-0020/dev46_archive.json",
+      "sha256": "a4754ea8a7b8555bcf145c0b9c1fd0d2a67cf941bc05622c909cd67864efc216",
+      "bytes": 54662
+    },
+    {
+      "path": "experiments/TRR-0020/dev46_cpu_reference.json",
+      "sha256": "2ac7cbde976f32da323a8e3c1a1ca846405c575a7d7e0e18d9520e815776de54",
+      "bytes": 6719
+    },
+    {
+      "path": "experiments/TRR-0020/dev46_freeze.json",
+      "sha256": "cc87b6de6afa3001e64bd96e79f05ff94e3680eb26c054d2745ecba6e783c820",
+      "bytes": 2896275
+    },
+    {
+      "path": "experiments/TRR-0020/dev46_gpu_archive.json",
+      "sha256": "3123d44b7355185d09d2ef5d9f0c0fec48a5d3522a8a7a42c6af1d788d34671d",
+      "bytes": 25390
+    },
+    {
+      "path": "experiments/TRR-0020/dev46_gpu_check.json",
+      "sha256": "8334356bac5b5a49dc7a2e4b47dfc92e9683dfda5fc84e9a70e54128b65726ed",
+      "bytes": 141760
+    },
+    {
+      "path": "experiments/TRR-0020/dev46_gpu_summary.json",
+      "sha256": "eb2285de4cd92c490d25055a114fd5cb711e4a6ce9615ef50baa4d9ad369562a",
+      "bytes": 4590
+    },
+    {
+      "path": "experiments/TRR-0020/dev46_guard.json",
+      "sha256": "2645cd53075f091e8f85e66e287396c11441081ef53652e8001a0ec213f2f35d",
+      "bytes": 20955
+    },
+    {
+      "path": "experiments/TRR-0020/dev46_launch.json",
+      "sha256": "30e84fa73cd2447bcbbf724743f0ab9a436f1386e7cb1b031cac184ffbe41fe0",
+      "bytes": 695
+    },
+    {
+      "path": "experiments/TRR-0020/dev46_phase_control.json",
+      "sha256": "dabad42dffca5af4a00db7386d8dd96a9970cae219215ce507d30b7a377c624e",
+      "bytes": 1453170
+    },
+    {
+      "path": "experiments/TRR-0020/dev46_phase_reuse.json",
+      "sha256": "6f43b04eefaec6c429d65fab335a23756213d5c8a577a0a9bc5b9ea353bda2d3",
+      "bytes": 1453837
+    },
+    {
+      "path": "experiments/TRR-0020/dev46_preflight.json",
+      "sha256": "de6a6e2fd6a9176e0f6ed774b28d8e8c3654c20007f95170921da219ee7249a7",
+      "bytes": 508
+    },
+    {
+      "path": "experiments/TRR-0020/dev46_qualification_control_1789880173241373931.json",
+      "sha256": "f1da1ec0935471d83bebe89b85b24eab2cbeb179d155f15c7fe3b1ce575cfd6f",
+      "bytes": 308758
+    },
+    {
+      "path": "experiments/TRR-0020/dev46_qualification_reuse_1789880259431935066.json",
+      "sha256": "6bad51c3c402c7309b845dad346a27c3a30b38d95e178ede4a311b29a21883ac",
+      "bytes": 411488
+    },
+    {
+      "path": "experiments/TRR-0020/dev46_score_launch.json",
+      "sha256": "1cf34632c095c7d948f509d41b50823136e588dc3b0caa1b1045d2a3b6dccd9b",
+      "bytes": 383
+    },
+    {
+      "path": "experiments/TRR-0020/dev46_score_r1.json",
+      "sha256": "85deab7b4d84d273188abf038e73c4fe92cbdcf97d81c7d24dc6cee7dfd948cc",
+      "bytes": 47639
+    },
+    {
+      "path": "experiments/TRR-0020/dev46_score_r1_launch.json",
+      "sha256": "589f55252546990b535066d538fb18663a3fd7f3693f8f96296ccace8adc838e",
+      "bytes": 481
+    },
+    {
+      "path": "experiments/TRR-0020/dev46_score_repair.json",
+      "sha256": "287749a5f9b49036a322f3e7d39b7ecf75f4dab6675f096fd2c3b79315913912",
+      "bytes": 565
+    },
+    {
+      "path": "experiments/TRR-0020/dev46_summary.json",
+      "sha256": "2b2945ded6a85a54578eaa0b8a5b078981eb14cf735d206ef85afcf17c9802d9",
+      "bytes": 22985
+    },
+    {
+      "path": "experiments/TRR-0020/dev46_truth_gate.json",
+      "sha256": "c12b1952bc269e9d1b594a02e654b83d83b2f445fae1ea002a833ec226f2450d",
+      "bytes": 241
+    },
+    {
+      "path": "experiments/TRR-0020/dev46_truth_gate_r1.json",
+      "sha256": "13053c5074881c787cb180e34a780fa6664f5012167a29000d8048cf56237364",
+      "bytes": 241
+    },
+    {
+      "path": "experiments/TRR-0020/dev47_cpu_reference.json",
+      "sha256": "6a76160de454e656b8e0a52ffe36fd4f042524dddce75dc86a46bcc984980fcc",
+      "bytes": 4208
+    },
+    {
+      "path": "experiments/TRR-0020/dev47_cpu_reference_before_timing_seed_fix.json",
+      "sha256": "e9a73a3e56fa85d583cc60967c36224e58fc998d8637fc4205ce3f77d41d9515",
+      "bytes": 4207
+    },
+    {
+      "path": "experiments/TRR-0020/dev47_failed_archive.json",
+      "sha256": "ffc446cb30935ce58e7a216c056b5d8a9e7321acc33bb5927b4591b922d50918",
+      "bytes": 3622
+    },
+    {
+      "path": "experiments/TRR-0020/dev47_failure.json",
+      "sha256": "0b7313e4f1094e395b27b0b426e8d11aea6180233673c4cba9f8c82e07fe172a",
+      "bytes": 1152
+    },
+    {
+      "path": "experiments/TRR-0020/dev47_guard.json",
+      "sha256": "855633355599058cf4d1442d4a485d4e62aecc11de5e9b0453ac78a2919ef9f9",
+      "bytes": 2466
+    },
+    {
+      "path": "experiments/TRR-0020/dev47_launch.json",
+      "sha256": "3221c619e7e3001ecc293ba04b37ba9405031379ff9fdda2ad3c4485a0cea2ab",
+      "bytes": 595
+    },
+    {
+      "path": "experiments/TRR-0020/dev47_preflight.json",
+      "sha256": "5a82a6aca8e4e364b760bdaa666bb98db0a7ee997c630f7a503bc956a1c19827",
+      "bytes": 329
+    },
+    {
+      "path": "experiments/TRR-0020/dev47_public_aa_probability_clip2.json",
+      "sha256": "7fd4808fa47290c7c0f941efa098590efe7d3f9deacf2b681787a066351ef00a",
+      "bytes": 29003
+    },
+    {
+      "path": "experiments/TRR-0020/dev47_r1_archive.json",
+      "sha256": "a3eca97dd61b69ef68d2229bc8f1a16cc6e39a7fdd5d7803cce33f96db00a4eb",
+      "bytes": 10538
+    },
+    {
+      "path": "experiments/TRR-0020/dev47_r1_cpu_reference.json",
+      "sha256": "2406ed0022ef72438781ae567039b40892c3cc5844c7b8a902b763614aea2aa6",
+      "bytes": 4228
+    },
+    {
+      "path": "experiments/TRR-0020/dev47_r1_guard.json",
+      "sha256": "e7d0ba8492cb3d7d80921a5381e3690fc538b2631df70f8bbf25a0036575b4b9",
+      "bytes": 6937
+    },
+    {
+      "path": "experiments/TRR-0020/dev47_r1_launch.json",
+      "sha256": "ad9948ca3a0bbf540579e3841e069da2e537331a19a4eaa22d8a1d153dc1f292",
+      "bytes": 601
+    },
+    {
+      "path": "experiments/TRR-0020/dev47_r1_preflight.json",
+      "sha256": "8182489470356ec167f9161660282670f7082f1310d7d963af157a445cbdb9e3",
+      "bytes": 538
+    },
+    {
+      "path": "experiments/TRR-0020/dev47_r1_public_aa_logit_clip1.json",
+      "sha256": "d886f316f14388c52af403b66dd40998498d4c3e7eca0520a32e82a7e352f063",
+      "bytes": 139094
+    },
+    {
+      "path": "experiments/TRR-0020/dev47_r1_public_aa_probability_clip1.json",
+      "sha256": "22d6a5ac363a3fc618f64ff67511d11a9c57767badf6963b526b9c58c6504125",
+      "bytes": 139206
+    },
+    {
+      "path": "experiments/TRR-0020/dev47_r1_public_aa_probability_clip2.json",
+      "sha256": "eb42d65ddfbdb17a8cfc73be973936ce391620c17a8fa542e49d4ca6ebf33128",
+      "bytes": 139282
+    },
+    {
+      "path": "experiments/TRR-0020/dev47_r1_public_control.json",
+      "sha256": "c2b02aae080c233c1aa5e57352c0d0b3490fa3bc51d4a68b141d2a877cdf2491",
+      "bytes": 138533
+    },
+    {
+      "path": "experiments/TRR-0020/dev47_r1_public_freeze.json",
+      "sha256": "9f1cecdac01f37b3788ce7a05715a9a7554a81923474f37c7d230b64c5c54cc2",
+      "bytes": 11499
+    },
+    {
+      "path": "experiments/TRR-0020/dev47_r1_public_score.json",
+      "sha256": "bef794b9d2e461f34e20f681fee7da54cad57be77c2f387602eabb0c4d44c521",
+      "bytes": 17888
+    },
+    {
+      "path": "experiments/TRR-0020/dev47_r1_score_launch.json",
+      "sha256": "2602eab4d9446a36852b5797f051eaad0c5829ff1836c0bc56719bb5dd757a78",
+      "bytes": 311
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_failed_archive.json",
+      "sha256": "a6b22e926ab697f46d3e270f114e1b8309368de85fc9c4b0f79af01bf44884b4",
+      "bytes": 152675
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_freeze.json",
+      "sha256": "bfc7016d913b980fc9ca2c2e0558ebc4de9a29d8c77f2d4888ce88b3923710cd",
+      "bytes": 6483352
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_guard.json",
+      "sha256": "548e3933b969ec087f592177ad2034ccf775d312ce189500ad2caa7c39656886",
+      "bytes": 25531
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_launch.json",
+      "sha256": "22cc59fb8b4909b04ef7f383d16897f1b5f4bae93baf33e5a9566676937ac121",
+      "bytes": 596
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_numerics_audit.json",
+      "sha256": "f6db9269e21ec19a3e432d4f1a86bede12dbf20e51e1bfd4aa404d8e04c986ad",
+      "bytes": 20553
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_phase_aa_logit_clip1.json",
+      "sha256": "22b1a62da32949668654f9197d641c7691f1f272c33b0d4113b70d5f657649d1",
+      "bytes": 1629078
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_phase_aa_probability_clip1.json",
+      "sha256": "a07023a88a03838b81897fdfe705b412e7ec4d5508545b99ff6523b88d83aef1",
+      "bytes": 1632480
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_phase_aa_probability_clip2.json",
+      "sha256": "823bfff441b27c90144e10573466d35c09b2e9a8359a35f39a077972d8a2c82b",
+      "bytes": 1632430
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_phase_control.json",
+      "sha256": "8f9de67bd81c72becce86c4d2a1c7f295f23de3b0e39aca82c0b74fc1c2bcdab",
+      "bytes": 1624359
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_preflight.json",
+      "sha256": "2c23b404fb33df4f76b9d0fbac518264e2b5a477844379cfc1c9aa3991805238",
+      "bytes": 364
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_qualification_aa_logit_clip1_1789881816701600537.json",
+      "sha256": "0c04e01b8add66653f545e8bcd60a895e0aa00ae12be2a2b99681f29ee6ff67f",
+      "bytes": 325288
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_qualification_aa_probability_clip1_1789881879582525289.json",
+      "sha256": "0b8f3f5e3f197e9519e698e76f066072e8255352531d5764d945868df8496445",
+      "bytes": 325840
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_qualification_aa_probability_clip2_1789881693996879704.json",
+      "sha256": "155c550ab8ea10b05bdeaf78475a4aca152b415caa4da95cf1f807316e63ba95",
+      "bytes": 325931
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_qualification_control_1789881758981744910.json",
+      "sha256": "0f8de8cb29841cfad25ff85b7e7a5835c437bbd166e612a23b721a00a89a405f",
+      "bytes": 323906
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_r1_archive.json",
+      "sha256": "4e124e7bfa9daf472a7712f3f5c9ad52b859c0bdc8baee379d1616d252400ea6",
+      "bytes": 154904
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_r1_archive.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_r1_archive.stdout.txt",
+      "sha256": "1505bd3da5237b63b80a58f319398d124d2d6e65e7c639942d73c3f368715772",
+      "bytes": 1205
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_r1_archive_launch.json",
+      "sha256": "b373b7080ba9134088da254f3e6afdbacb9bfe88b3a34a9a9259336da95ef8d5",
+      "bytes": 630
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_r1_cpu_reference.json",
+      "sha256": "a6bd69952951729cf01b686a1a2e138bfa52df164978779fa722773d97054cda",
+      "bytes": 10935
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_r1_cpu_reference_before_order_fix.json",
+      "sha256": "a259271bd574ab7c4e519d13e1955cf827eebd68fdc8dac8dd89ba5a5cfc83cc",
+      "bytes": 10933
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_r1_freeze.json",
+      "sha256": "546510ac715598316607496a5f98154fe573978dcb18fda3c283f713a801100a",
+      "bytes": 6634519
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_r1_guard.json",
+      "sha256": "49d6d955b1dcbbf9cff6036ebeecf93e3965c44afe8391819cf6785cb1ae0f63",
+      "bytes": 28176
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_r1_launch.json",
+      "sha256": "2e5d591e11c646cc2da2f27574135099c81500ff161f40d18a3a4b192d76c6f7",
+      "bytes": 601
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_r1_phase_aa_logit_clip1_scaled.json",
+      "sha256": "40c37239c6b97f1ba2f4652fca941d2b4e4574447165236285ae992c40c94524",
+      "bytes": 1668355
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_r1_phase_aa_probability_clip1.json",
+      "sha256": "1368009375bdd762431dc0df0df58282f34cc6aab88ce40c7ed11e76c89d8236",
+      "bytes": 1670492
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_r1_phase_aa_probability_clip2.json",
+      "sha256": "2ddd142fb21893aa7d3ae5fb4c3008c3a0f0f7f9585d0b31bed279563ce727d6",
+      "bytes": 1670438
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_r1_phase_control.json",
+      "sha256": "465617f9cbcc0aadb45c0228cb9260edd5d522360d28dbf6a7083c72b1eac184",
+      "bytes": 1662058
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_r1_preflight.json",
+      "sha256": "ac318123628d1cb377b4b841c90dc80910c61b5695ddb60affadca4ec2b89efb",
+      "bytes": 541
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_r1_qualification_aa_logit_clip1_scaled_1789882689505163568.json",
+      "sha256": "abb90fc88e71aa2daefd2a3bafa5e117d3958761a84771f6280605a7b9dc12c1",
+      "bytes": 331064
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_r1_qualification_aa_probability_clip1_1789882899021237597.json",
+      "sha256": "21625b40df4d634c60bf745cd93f286c6b5248e403b3250db3ac40ba3420c9a1",
+      "bytes": 331403
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_r1_qualification_aa_probability_clip2_1789882828314093521.json",
+      "sha256": "dd9585a2d3394d6ba4b0990efdbd63692a33419af6a96f7be6e6b64b2d93c252",
+      "bytes": 331467
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_r1_qualification_control_1789882765765186792.json",
+      "sha256": "fb2bff16d458989dfa40f7ecc82bca9b3844dbfbefad16a3860a716123853f10",
+      "bytes": 329475
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_r1_score.json",
+      "sha256": "eeddc75f7287117f03177fc2f9e3d92a7f22bfab3b85068a38d19f91ccff772c",
+      "bytes": 150025
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_r1_score.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_r1_score.stdout.txt",
+      "sha256": "e5ca3716e2dafb7d995caa7eef35855e9863cfd4a4450d05c61575198d03070c",
+      "bytes": 10689
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_r1_score_launch.json",
+      "sha256": "67fe863f56465e7868aae69fe4d3d39018b78ccad443e589706fa5c25f78539c",
+      "bytes": 626
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_r1_summary.json",
+      "sha256": "a953f96268c6ee76a9bbb15dc86d6d5a887403e70f4424ffb64f495296192a7d",
+      "bytes": 67141
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_r1_summary.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_r1_summary.stdout.txt",
+      "sha256": "ad9ab97cb294c0da8e9b8abe732bc8b09911ae5be53e7bb7072a452e451318c7",
+      "bytes": 19511
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_r1_summary_launch.json",
+      "sha256": "9097b71a07f08ef0fe6cebae3cb9e220acc43828ec9c05c6dd4755ff03a932df",
+      "bytes": 631
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_r1_truth_gate.json",
+      "sha256": "c44a06239d221dd6fa96e5ece7cec2d6ef007e242e6d8438796b0de43c6b715b",
+      "bytes": 240
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_score_launch.json",
+      "sha256": "1cee6c3f34913583de47018fb22b40a8a88683ffe1df55833a6b3791ed2b76fc",
+      "bytes": 383
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_score_stderr.txt",
+      "sha256": "2a3451bd9520f82f64a97a980786e07676cf44cadf33407398736113cff38a5c",
+      "bytes": 862
+    },
+    {
+      "path": "experiments/TRR-0020/dev48_score_stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  ],
+  "archive_parts": "Part paths, sizes and SHA256 values are in each archive manifest; dev46_gpu_archive.json reuses verified dev44 archive objects.",
+  "excluded_attempts": [
+    "dev46 original scorer failed after freeze/truth gate; corrected aggregation outside frozen source, no new predictions.",
+    "dev47 attribute collision failed receipt serialization; raw outputs and partial JSON preserved.",
+    "dev48 entire initial96cell matrix excluded before truth because10cells have nonfinite history diagnostics."
+  ],
+  "preflight_correction": "Earlier complete-worker peak5.104GiB, rather than quoted single-geometry4.652GiB;7GiB conservative estimate covered current5.104GiB peak.",
+  "comparison_scope": "Retrospective exploratory development; unchanged complete34method68cell canonical matrix; no new active method.",
+  "goal_completed": false
+}
