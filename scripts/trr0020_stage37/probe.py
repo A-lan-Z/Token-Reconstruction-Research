@@ -35,9 +35,9 @@ def continuous(prefix,cache,point,independent=False):
     return hidden[0,0].float()
 
 def saved_history(cache):
-    return [(q.keys.clone(),q.values.clone()) for q in cache.backend.layers]
+    return [(q.keys.clone() if q.keys is not None else None,q.values.clone() if q.values is not None else None) for q in cache.backend.layers]
 def unchanged(cache,old):
-    return all(torch.equal(q.keys,k) and torch.equal(q.values,v) for q,(k,v) in zip(cache.backend.layers,old))
+    return all((q.keys is None and k is None and q.values is None and v is None) or (k is not None and v is not None and torch.equal(q.keys,k) and torch.equal(q.values,v)) for q,(k,v) in zip(cache.backend.layers,old))
 
 @torch.no_grad()
 def main():
