@@ -1,0 +1,23 @@
+{
+  "task_id": "TRR-0020",
+  "created_utc": "2026-09-20T02:47:18.784633+00:00",
+  "gpu": "name, memory.total [MiB], memory.free [MiB], temperature.gpu\nNVIDIA GeForce RTX 5080, 16303 MiB, 9994 MiB, 37\n",
+  "compute_pids": "",
+  "host_memory": [
+    "MemTotal:       31651964 kB",
+    "MemFree:        29972960 kB",
+    "MemAvailable:   30659004 kB",
+    "Buffers:           13632 kB",
+    "Cached:           578072 kB"
+  ],
+  "calculation": "Full response table0.979GiB + largestFP32prefix about1.8GiB + shortnative2-token forward and independent256-row reference buffers. Reserve5GiBupperbound and require3GiBfree during execution. Public score artifacts are transferred toCPU after each decision.",
+  "estimated_peak_reserved_GiB": 5,
+  "expected_seconds_upper": 120,
+  "guard_timeout_seconds": 600,
+  "geometry": "128256tokens x2048width; publictargets nativebatch1/length2; independent cosine reference blocks256 do not restrict vocabulary",
+  "resource_guard": "threeidle samples>=9000MiB, internalGPUfree>=3GiB/host>=8GiB/reserved<=8GiB/temp<80",
+  "public_cases": 288,
+  "repetitions": 3,
+  "public_prefix_forwards": 256,
+  "source_evidence": "dev37_public_probe.json peak4.064GiB"
+}
