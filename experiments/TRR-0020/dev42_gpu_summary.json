@@ -1,0 +1,66 @@
+{
+  "task_id": "TRR-0020",
+  "scope": "public numerical kernel checks and isolated update speed; no decoder accuracy claim",
+  "cells": 14,
+  "scalar_checks": 70,
+  "full_update_repetitions": 42,
+  "timed_graph_calls": 240,
+  "maximum_scalar_value_error": 9.5367431640625e-07,
+  "maximum_scalar_derivative_error": 1.7881393432617188e-07,
+  "maximum_probability_TV": 2.102512098645093e-06,
+  "maximum_logit_error": 0.01003265380859375,
+  "maximum_step_error": 0.016434669494628906,
+  "maximum_KL_minus_budget": 1.7491978849995104e-07,
+  "all_repetitions_exact": true,
+  "all_original_anchors_exact": true,
+  "timings": [
+    {
+      "label": "public_128",
+      "original_seconds": 0.01142264759982936,
+      "fused_seconds": 0.005329843499930575,
+      "ratio": 0.4666031630013865,
+      "speedup": 2.1431487810060745,
+      "setup": {
+        "original": {
+          "warm_seconds": 0.03813616599654779,
+          "capture_seconds": 0.024732894991757348
+        },
+        "fused": {
+          "warm_seconds": 0.020094694977160543,
+          "capture_seconds": 0.026849720015889034
+        }
+      }
+    },
+    {
+      "label": "public_40",
+      "original_seconds": 0.002055264898808673,
+      "fused_seconds": 0.0009031208508531563,
+      "ratio": 0.4394182235957258,
+      "speedup": 2.2757362947241386,
+      "setup": {
+        "original": {
+          "warm_seconds": 0.01596426300238818,
+          "capture_seconds": 0.015342387981945649
+        },
+        "fused": {
+          "warm_seconds": 0.010755724972113967,
+          "capture_seconds": 0.006600907014217228
+        }
+      }
+    }
+  ],
+  "peak_reserved_GiB": 1.662109375,
+  "guard_seconds": 16.978898763656616,
+  "minimum_gpu_free_mib": 9766,
+  "maximum_temperature_c": 41,
+  "archive_members": 44,
+  "archive_unique_objects": 16,
+  "archive_bytes": 295990201,
+  "limitation": "Isolated warmed scalar-update timing only; full decoder speed and accuracy remain unmeasured for this numerical variant.",
+  "execution_commit": "388d2347e4a35bcdac721731a11980a74d73fb30",
+  "command": [
+    "/usr/bin/python3",
+    "scripts/trr0020_stage42_summary.py"
+  ],
+  "created_unix": 1789876890.3951678
+}
