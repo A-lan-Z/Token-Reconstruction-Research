@@ -1,6 +1,6 @@
 {
   "task_id": "TRR-0020",
-  "status": "DEVELOPMENT39_CPU_QUALIFIED",
+  "status": "DEVELOPMENT45_RUNNING",
   "goal_completed": false,
   "initial_execution_commit": "a7e7f0628e88add676e767f188df1d903a749efb",
   "dev1_execution_commit": "9724dce2f14ccea2af63c0cbd590ab189ef4b7a8",
@@ -67,7 +67,7 @@
     "dev32": 56,
     "dev33": 96
   },
-  "current_experiment": "Residual-strength continuation: CPU algebra qualified; actual-prefix checks next",
+  "current_experiment": "Exact pointwise full-decoder byte equivalence and timing",
   "complete_archives": [
     "dev1_archive.json",
     "dev2_archive.json",
@@ -235,7 +235,7 @@
     "partial_archive": "dev13_partial_archive.json",
     "guard": "dev13_guard.json"
   },
-  "updated_utc": "2026-09-20T03:12:30.573510+00:00",
+  "updated_utc": "2026-09-20T04:44:07.838137+00:00",
   "dev13_r1": {
     "status": "COMPLETE_SCORED_ARCHIVED",
     "freeze": "dev13_r1_freeze.json",
@@ -1185,5 +1185,165 @@
     "conclusion": "32.5%/17.4%faster at64updates for128/40positions, but bothproseconditions lose4tokens; no contender selected."
   },
   "completed_development_matrices": 32,
-  "completed_development_cells": 2560
+  "completed_development_cells": 2560,
+  "dev44": {
+    "status": "EXACT_GPU_UPDATE_QUALIFIED_AND_ARCHIVED",
+    "plan": "DEV44_PLAN.md",
+    "gpu_plan": "DEV44_GPU_PLAN.md",
+    "cpu_reference": "dev44_cpu_reference.json",
+    "gpu_check": "dev44_gpu_check.json",
+    "summary": "dev44_summary.json",
+    "archive": "dev44_gpu_archive.json",
+    "cpu_cases": 24,
+    "cases": 20,
+    "primitive_checks": 264,
+    "full_update_repetitions": 60,
+    "timed_graph_calls": 960,
+    "all_primitive_bytes_equal": true,
+    "all_complete_update_bytes_equal": true,
+    "all_graph_bytes_equal": true,
+    "timings": [
+      {
+        "label": "profile_128_16",
+        "original_seconds": 0.009695712800021284,
+        "exact_fused_seconds": 0.008220976100710686,
+        "ratio": 0.8478980628110848,
+        "speedup": 1.1793870558975486,
+        "setup": {
+          "original": {
+            "warm_seconds": 0.0349011379876174,
+            "capture_seconds": 0.011266955989412963
+          },
+          "exact_fused": {
+            "warm_seconds": 0.02955828999984078,
+            "capture_seconds": 0.008966777997557074
+          }
+        }
+      },
+      {
+        "label": "profile_40_16",
+        "original_seconds": 0.0017711229491396807,
+        "exact_fused_seconds": 0.0016392585501307621,
+        "ratio": 0.925547574733323,
+        "speedup": 1.0804414892320677,
+        "setup": {
+          "original": {
+            "warm_seconds": 0.012032975006150082,
+            "capture_seconds": 0.012631701014470309
+          },
+          "exact_fused": {
+            "warm_seconds": 0.010367706010583788,
+            "capture_seconds": 0.006503104988951236
+          }
+        }
+      },
+      {
+        "label": "fresh_128_128",
+        "original_seconds": 0.009657204849645495,
+        "exact_fused_seconds": 0.008241234699380585,
+        "ratio": 0.8533768132383679,
+        "speedup": 1.171815292479334,
+        "setup": {
+          "original": {
+            "warm_seconds": 0.03516981299617328,
+            "capture_seconds": 0.015454981999937445
+          },
+          "exact_fused": {
+            "warm_seconds": 0.02996289898874238,
+            "capture_seconds": 0.010207128012552857
+          }
+        }
+      },
+      {
+        "label": "fresh_128_64",
+        "original_seconds": 0.009689060399250594,
+        "exact_fused_seconds": 0.0082060418499168,
+        "ratio": 0.8469388683500726,
+        "speedup": 1.1807227621376106,
+        "setup": {
+          "original": {
+            "warm_seconds": 0.03497546201106161,
+            "capture_seconds": 0.016118151019327343
+          },
+          "exact_fused": {
+            "warm_seconds": 0.02964712301036343,
+            "capture_seconds": 0.009154555998975411
+          }
+        }
+      },
+      {
+        "label": "fresh_128_0",
+        "original_seconds": 0.009417714099981822,
+        "exact_fused_seconds": 0.008014594050473533,
+        "ratio": 0.8510126730741383,
+        "speedup": 1.1750706324826754,
+        "setup": {
+          "original": {
+            "warm_seconds": 0.03458625799976289,
+            "capture_seconds": 0.015720849012723193
+          },
+          "exact_fused": {
+            "warm_seconds": 0.028978507994906977,
+            "capture_seconds": 0.00891070201760158
+          }
+        }
+      },
+      {
+        "label": "fresh_40_128",
+        "original_seconds": 0.0019551088000298476,
+        "exact_fused_seconds": 0.0018175852499553002,
+        "ratio": 0.9296593877167102,
+        "speedup": 1.0756627784462542,
+        "setup": {
+          "original": {
+            "warm_seconds": 0.012172739981906489,
+            "capture_seconds": 0.012119590013753623
+          },
+          "exact_fused": {
+            "warm_seconds": 0.015634852985385805,
+            "capture_seconds": 0.005825241998536512
+          }
+        }
+      },
+      {
+        "label": "fresh_40_64",
+        "original_seconds": 0.001953346400114242,
+        "exact_fused_seconds": 0.0018116500999894925,
+        "ratio": 0.9274597172746921,
+        "speedup": 1.0782139443624192,
+        "setup": {
+          "original": {
+            "warm_seconds": 0.012500290002208203,
+            "capture_seconds": 0.009072596993064508
+          },
+          "exact_fused": {
+            "warm_seconds": 0.010690474009606987,
+            "capture_seconds": 0.005644090997520834
+          }
+        }
+      },
+      {
+        "label": "fresh_40_0",
+        "original_seconds": 0.0016474244999699294,
+        "exact_fused_seconds": 0.00155917314987164,
+        "ratio": 0.9464307164911653,
+        "speedup": 1.0566013788177118,
+        "setup": {
+          "original": {
+            "warm_seconds": 0.012074320984538645,
+            "capture_seconds": 0.009954964014468715
+          },
+          "exact_fused": {
+            "warm_seconds": 0.01008646099944599,
+            "capture_seconds": 0.006603877991437912
+          }
+        }
+      }
+    ],
+    "kernel_peak_reserved_GiB": 2.634765625,
+    "preparation_peak_reserved_GiB": 4.029296875,
+    "gpu_execution_commit": "53236c795e59287132058cf290e746ab22d4172f",
+    "archive_summary_execution_commit": "d68b4f668c615c85877cf508f6678f4919f94007",
+    "conclusion": "Original reduction order preserved; byte-exact on qualified public states. Full decoder next."
+  }
 }
