@@ -29,7 +29,7 @@ If normal equations or ridge do not explain the failure, do not silently label
 this an improved inverse. Choose a different solve/path based on the evidence.
 
 The first CPU qualification (6802969) failed the independent final-direction
-comparison in a FP32 ill-conditioned system: the small SVD solve agreed, but
+comparison in the FP32 nonnormal system: the small SVD solve agreed, but
 casting its coefficients and accumulating the basis combination inFP32 lost
 up to.00319absolute accuracy. Preserve dev40_cpu_reference_failed01.json.
 The stable variants now retainFP64coefficients and accumulate the basis
