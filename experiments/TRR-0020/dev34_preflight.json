@@ -1,0 +1,25 @@
+{
+  "task_id": "TRR-0020",
+  "created_unix": 1789868148.1601372,
+  "gpu": "NVIDIA GeForce RTX 5080, 16303, 11189, 34",
+  "compute_pids": "",
+  "host_available": "MemAvailable:   30650400 kB",
+  "prior_native_public_peak_GiB": 3.107421875,
+  "estimated_peak_reserved_GiB": 3.75,
+  "guard_peak_reserved_GiB": 8,
+  "minimum_free_GiB": 3,
+  "geometry": {
+    "vocabulary": 128256,
+    "width": 2048,
+    "maximum_context": 127,
+    "steps": 32,
+    "maximum_trials_per_step": 4,
+    "saved_full_logit_state_bound_bytes": 131334144,
+    "full_embedding_bytes": 1050673152
+  },
+  "public_cells": 48,
+  "repetitions_per_cell": 3,
+  "expected_seconds": 180,
+  "timeout_seconds": 1500,
+  "justification": "Reuse qualified native FP32 one-position map; no graph captures, attention padding or numerical batching. Worst-case old/new logit clones add about125.25MiB to the previous3.107GiB public peak. Allow an additional0.52GiB allocator margin, qualify new128/127backtrack32 first, then run the complete matrix."
+}
