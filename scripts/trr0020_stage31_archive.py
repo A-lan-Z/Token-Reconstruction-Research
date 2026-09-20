@@ -1,6 +1,6 @@
 """Create a hash-deduplicated portable archive of development31 KL-step public evidence, including the excluded capture failure."""
 from pathlib import Path
-import json,hashlib,zipfile,time,subprocess
+import json,hashlib,zipfile,time,subprocess,sys
 ROOT=Path(__file__).resolve().parents[1];X=ROOT/"experiments/TRR-0020"
 def digest(path):
     with Path(path).open("rb") as f:return hashlib.file_digest(f,"sha256").hexdigest()
@@ -43,7 +43,7 @@ def main():
       "reassembly":"Concatenate parts in order; verify archive_sha256. logical_members maps original paths to ZIP objects.",
       "public_probe_sha256":digest(X/"dev31_public_probe_r1.json"),"excluded_probe_sha256":digest(X/"dev31_public_probe.json"),"archive_script_sha256":digest(Path(__file__)),
       "execution_commit":subprocess.check_output(["git","rev-parse","HEAD"],cwd=ROOT,text=True).strip(),
-      "command":["python3","scripts/trr0020_stage28_archive.py"],"start_unix":started,"end_unix":time.time()}
+      "command":[sys.executable,*sys.argv],"start_unix":started,"end_unix":time.time()}
     with (X/"dev31_public_archive.json").open("x") as f:json.dump(result,f,indent=2);f.write("\n")
     print(json.dumps({k:v for k,v in result.items() if k!="logical_members"}))
 if __name__=="__main__":main()
