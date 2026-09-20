@@ -35,3 +35,5 @@ Development43 freezes every original/fused64/128-step development cell before re
 
 Archives use exact-byte hash deduplication. Concatenate numbered parts, check archive_sha256, then map logical_members to objects. Raw external files, launch receipts, environment records, prefix/fixture hashes and phase timings remain in their manifests.
 
+
+All listed jobs are now terminal. The complete32-cell development43grid is scored and archived. No reconstruction benchmark is running. The effective-method goal remains unmet; DEV44_PROSPECTIVE.md records the next unimplemented hypothesis.

@@ -1012,7 +1012,9 @@
   "continuation19_audit": {
     "request": "coordination/requests/TRR-0020-CONTINUE-19.md",
     "previous_turn_classification": "no progress: latest turn clarified candidate generation without changing scientific state",
-    "revalidation": "Current worktree confirms dev39 terminal success; no live job. Summaries and archive inspected; solver audit is available."
+    "revalidation": "Current worktree confirms dev39 terminal success; no live job. Summaries and archive inspected; solver audit is available.",
+    "action": "Recorded dev39; completed dev40linear audit, corrected/qualified dev41profiles, dev42fused-kernel qualification and dev43full reconstruction grid with complete freeze/scoring/archive.",
+    "outcome": "Concrete progress and new evidence; effective replacement remains unproven. No live GPUjob."
   },
   "dev40": {
     "status": "COMPLETE_NO_LINEAR_SOLVER_IMPROVEMENT",
@@ -1097,5 +1099,91 @@
     ],
     "numerical_variant_not_exact": true,
     "peak_reserved_GiB": 1.662109375
-  }
+  },
+  "dev43": {
+    "status": "COMPLETE_SPEED_GAIN_WITH_ACCURACY_REGRESSION",
+    "plan": "DEV43_PLAN.md",
+    "freeze": "dev43_freeze.json",
+    "score": "dev43_score.json",
+    "summary": "dev43_summary.json",
+    "archive": "dev43_archive.json",
+    "reconstruction_cells": 32,
+    "reconstruction_repetitions": 96,
+    "public_repeated_decodes": 24,
+    "eager_checks": 8,
+    "gradient_checks": 4,
+    "all_initial_and_control_anchors_exact": true,
+    "truth_gates_passed": 3,
+    "peak_reserved_GiB": 4.201171875,
+    "timings": [
+      {
+        "mode": "control",
+        "steps": 64,
+        "length": 40,
+        "records": 4,
+        "mean_median_seconds": 0.4854430692430469,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "control",
+        "steps": 64,
+        "length": 128,
+        "records": 4,
+        "mean_median_seconds": 1.2419501460099127,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "control",
+        "steps": 128,
+        "length": 40,
+        "records": 4,
+        "mean_median_seconds": 0.9972508149949135,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "control",
+        "steps": 128,
+        "length": 128,
+        "records": 4,
+        "mean_median_seconds": 2.4814512307493715,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "fused",
+        "steps": 64,
+        "length": 40,
+        "records": 4,
+        "mean_median_seconds": 0.40118541175615974,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "fused",
+        "steps": 64,
+        "length": 128,
+        "records": 4,
+        "mean_median_seconds": 0.83847235875146,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "fused",
+        "steps": 128,
+        "length": 40,
+        "records": 4,
+        "mean_median_seconds": 0.8195854084988241,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "fused",
+        "steps": 128,
+        "length": 128,
+        "records": 4,
+        "mean_median_seconds": 1.6485473990032915,
+        "mean_lookup_seconds": 0.0
+      }
+    ],
+    "execution_commit": "63f1b1d13f99aae108aa3186ea0454afef158455",
+    "conclusion": "32.5%/17.4%faster at64updates for128/40positions, but bothproseconditions lose4tokens; no contender selected."
+  },
+  "completed_development_matrices": 32,
+  "completed_development_cells": 2560
 }
