@@ -1,7 +1,7 @@
 from grid48_support import *
 def main():
     bound=binding();entries=[];phases=[]
-    for mode in ["aa_probability_clip2","control","aa_logit_clip1_scaled","aa_probability_clip1"]:
+    for mode in ["aa_logit_clip1_scaled","control","aa_probability_clip2","aa_probability_clip1"]:
         subprocess.run([sys.executable,str(ROOT/"scripts/trr0020_stage48_r1/worker.py"),"--mode",mode],cwd=ROOT,check=True)
         p=X/f"dev48_r1_phase_{mode}.json";phase=json.loads(p.read_text())
         if phase["binding"]!=bound:raise RuntimeError("phase binding")

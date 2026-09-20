@@ -16,7 +16,7 @@ Compare every64-step public array and trace with its own frozen development47R1
 rule. Shorter budgets reproduce all corresponding token checkpoints and trace
 prefixes; unchanged control also reproduces archived real control prefixes.
 All methods reproduce warm initialization. Independent gradients must pass.
-Largest128position64step probabilityclip2 cell goes first.
+Largest128position64step scaled-logit cell goes first.
 
 Bindings include original CPU/public qualification, sources, observations and
 prior controls. Freeze the entire96cell matrix before retrospective truth
@@ -62,3 +62,5 @@ new diagnostic scale and finite columns must be1. Scaled-logit rules retain
 only initialization anchors, plus strict repeat/eager/gradient qualification.
 No old scaled-logit quality is inherited. The original source and failure
 remain unchanged. Rerun all96cells under distinct paths and freeze before truth.
+
+Execution-order correction before launch: scaled-logit goes first because its normalization introduces the largest additional temporaries. The prior41case CPU receipt is retained; final CPU qualification rebinds the same unchanged mathematical implementation to the final runner/plan.
