@@ -1,0 +1,11 @@
+{
+  "task_id": "TRR-0020",
+  "excluded": true,
+  "scope": "import failure before numerical worker initialization; no GPU calculation/output",
+  "execution_commit": "2c5e016dd6f299c94389ba635b2737e0e6d99e56",
+  "launch": "dev49_launch.json",
+  "guard": "dev49_guard.json",
+  "error": "ImportError: cannot import name 'KINDS' from 'cpu_check' (scripts/trr0020_stage44/cpu_check.py)",
+  "cause": "moment_step inserted the shared pointwise directory at the front of sys.path; the subsequent generic cpu_check import resolved to the earlier helper.",
+  "repair": "Distinct revision paths; uniquely named moment_cpu_reference helper; unchanged mathematical rule; repeat CPU and entire GPU matrix."
+}
