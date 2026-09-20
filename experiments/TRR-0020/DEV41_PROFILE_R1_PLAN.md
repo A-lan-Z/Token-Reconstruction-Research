@@ -41,3 +41,5 @@ Run the entire same matrix again in a fresh isolated process. Require all public
 decoder anchors and repeated updates exactly. No driver/allocator memory anomaly
 was observed; the cause is an explicit stream dependency during graph capture.
 Retain the original source at its execution commit and the partial archive.
+
+GPU totals are computed directly from raw kernel/memcpy/memset trace events. Summing both CPU operator attribution and kernel self-times would double count work; original partial totals are excluded. Keep the complete operator tables for attribution only.

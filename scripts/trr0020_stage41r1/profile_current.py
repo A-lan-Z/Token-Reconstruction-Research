@@ -37,8 +37,12 @@ def main():
             device=getattr(event,"self_device_time_total",0.)
             if device:rows.append({"operation":event.key,"count":event.count,"self_gpu_us":device,"input_shapes":event.input_shapes})
         rows.sort(key=lambda v:-v["self_gpu_us"])
+        raw_trace=json.loads(p.read_text())
+        gpu_events=[v for v in raw_trace["traceEvents"] if v.get("ph")=="X" and v.get("cat") in ["kernel","gpu_memcpy","gpu_memset"]]
+        kernel_us=sum(v["dur"] for v in gpu_events)
+        if kernel_us<=0:raise RuntimeError("missing GPU activity events")
         return {"name":name,"iterations":5,"profile_wall_seconds":seconds,
-          "self_gpu_microseconds_sum":sum(v["self_gpu_us"] for v in rows),"rows":rows,
+          "self_gpu_microseconds_sum":kernel_us,"gpu_activity_event_count":len(gpu_events),"gpu_time_source":"raw CUDA kernel/memcpy/memset events; excludes duplicate CPU attribution","rows":rows,
           "trace":{"path":str(p.relative_to(ROOT)),"sha256":n.digest(p)},
           "table":prof.key_averages(group_by_input_shape=True).table(sort_by="self_device_time_total",row_limit=30)}
     try:
