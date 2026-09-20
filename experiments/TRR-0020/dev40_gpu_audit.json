@@ -1,0 +1,2151 @@
+{
+  "task_id": "TRR-0020",
+  "scope": "public coupled linear audit; no reconstruction or benchmark",
+  "sources": {
+    "scripts/trr0020_stage39/homotopy.py": "1283ccd367061b55eb60b0841349cd8bb48b0326dc549c8d32a36235ecdbc792",
+    "scripts/trr0020_stage39/cpu_check.py": "3c244cafd0734b495c337ebe740d867c194a3ce45693cae0e7199ded98c05a64",
+    "scripts/trr0020_stage21/linearized_prefix.py": "7756c6143a258f9690a2ca19d8249c93f58c6ca68adb796e669648c2aa1d1926",
+    "experiments/TRR-0020/DEV39_PROSPECTIVE.md": "94525165f8b22191dd42295df1a2381af93a6ac3c7d6bd5b82a5969a92b18222",
+    "scripts/trr0020_stage39/gpu_qualification.py": "010688e420f83f340b98cad9f9f5443e853982e35ab7ea963a061e092a916831",
+    "experiments/TRR-0020/DEV39_GPU_PLAN.md": "dec015f32a6d3967bf9f9fa37c368e71ba8245910670836b44c677e66139ae38",
+    "experiments/TRR-0020/dev39_gpu_preflight.json": "1902d13ca08216d8f21d03fedb97d11bf02a98583478f2f644aa5d27921b98a7",
+    "experiments/TRR-0020/dev39_cpu_reference.json": "99c78665647e14f871811a6dd2970bb5216f4f0037b4b57c7d156fbcc6a728c9",
+    "scripts/trr0014/native.py": "05f2d76dc8c8ebb1467a060922cce481191fbb9a61f0ea7ad42253c2b270c454",
+    "scripts/agent4/common.py": "d2f1832c6153d536e90a1014dc56b9fd96b74ad73e23091f5aea9ce2859717f3",
+    "src/token_reconstruction/public_prefix.py": "b9dca1d8d56c7c07413015aea4bde79e8ceac827c32ee9bc0d1a236ea1dd35f6",
+    "scripts/trr0020_resource_guard.py": "13e9b9a4628306b758863289e77f60f8e2f89211dcd02741e5e2dc71bbad2315",
+    "scripts/trr0020_stage40/gpu_audit.py": "e013e7437c4549aa8256ca310782b92ff346bb88a8b94a666ee1a5e6be9f40d6",
+    "scripts/trr0020_stage40/krylov_audit.py": "7ba3e511e810b8b71ce47021f17175ebbd2215dbbf71b89dbded5f0ac6165b57",
+    "scripts/trr0020_stage40/cpu_check.py": "d2840715618288edb2d67abb639f8b50563e95baadd065739fda386c7d4d565a",
+    "experiments/TRR-0020/DEV40_PLAN.md": "35f2e9414b58fd68d1783e6052fde78d689709a536baeb9ae3abe9e344f30024",
+    "experiments/TRR-0020/dev40_gpu_preflight.json": "dcdb3811bc135dc2f763c3c2db20dba6deecf38ffde06bf0245b8a6ea608e8e7",
+    "experiments/TRR-0020/dev40_cpu_reference.json": "a7f0b1a6380e46a92ea0b824358aea88e785eb43b1dcde8670902ca5c64cb5d7",
+    "experiments/TRR-0020/dev39_gpu_qualification.json": "881c256a09b9c847958f1b4b1db0f04b221847c3cec234e667954669ffc1d8a0"
+  },
+  "execution_commit": "b7af7685917bf0e528e191307eb229456ab45dec",
+  "environment": {
+    "commit": "b7af7685917bf0e528e191307eb229456ab45dec",
+    "torch": "2.10.0+cu128",
+    "transformers": "5.3.0",
+    "python": "3.12.3",
+    "gpu": "name, memory.total [MiB], memory.free [MiB], temperature.gpu\nNVIDIA GeForce RTX 5080, 16303 MiB, 13133 MiB, 47\n",
+    "utc": "2026-09-20T03:35:32Z"
+  },
+  "command": [
+    "/usr/bin/python3",
+    "scripts/trr0020_stage40/gpu_audit.py"
+  ],
+  "start_unix": 1789875332.9774253,
+  "truth_read": false,
+  "shortlist": null,
+  "passed": true,
+  "points": [
+    {
+      "length": 128,
+      "point": "activation",
+      "strength": 1.0,
+      "fixture": {
+        "length": 128,
+        "seed": 39167,
+        "path": "outputs/TRR-0020/dev39_gpu/fixture_128.safetensors",
+        "sha256": "4a091a5d936fdd3d3dc6addf5c63af7640bcbcf4afe619ab1c3e38d0dbeb50fa",
+        "io_hash_seconds": 0.009352699009468779
+      },
+      "prior": {
+        "rep": 0,
+        "seconds": 0.19320627400884405,
+        "matvec_calls": 17,
+        "exact_repeat": true,
+        "relative_residual": 0.5401310324668884,
+        "direction_norm": 48.64192581176758,
+        "passed": true,
+        "path": "outputs/TRR-0020/dev39_gpu/linear_128_activation_1.0_16_0.safetensors",
+        "sha256": "793cf8a6c2090ffcd1c13a4e38d1056ade491b39f01cc6fdd430c4cbb94b5dc9",
+        "io_hash_seconds": 0.006538957997690886
+      },
+      "repetitions": [
+        {
+          "rep": 0,
+          "arnoldi_seconds": 0.5221780839783605,
+          "basis_orthogonality_maximum_error": 7.152557373046875e-07,
+          "comparisons": [
+            {
+              "steps": 16,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0007423020142596215,
+              "residual_check_seconds": 0.005002249003155157,
+              "relative_residual": 0.5401310324668884,
+              "projected_relative_residual": 0.5401310324668884,
+              "direction_norm": 48.64192581176758,
+              "reduced_rank": 16,
+              "condition": 13.296618097849741
+            },
+            {
+              "steps": 16,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.14457753399619833,
+              "residual_check_seconds": 0.005720465997001156,
+              "relative_residual": 0.5401310324668884,
+              "projected_relative_residual": 0.540131017257567,
+              "direction_norm": 48.64190673828125,
+              "reduced_rank": 16,
+              "condition": 13.296618097849741
+            },
+            {
+              "steps": 16,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0008628150098957121,
+              "residual_check_seconds": 0.005443899979582056,
+              "relative_residual": 0.5401310920715332,
+              "projected_relative_residual": 0.5401310171816908,
+              "direction_norm": 48.642704010009766,
+              "reduced_rank": 16,
+              "condition": 13.296618097849741
+            },
+            {
+              "steps": 32,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0006852959922980517,
+              "residual_check_seconds": 0.004812026978470385,
+              "relative_residual": 0.5203954577445984,
+              "projected_relative_residual": 0.5203953981399536,
+              "direction_norm": 55.337242126464844,
+              "reduced_rank": 32,
+              "condition": 20.225881630721194
+            },
+            {
+              "steps": 32,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.005394653009716421,
+              "residual_check_seconds": 0.005116601008921862,
+              "relative_residual": 0.5203954577445984,
+              "projected_relative_residual": 0.5203954326960913,
+              "direction_norm": 55.337257385253906,
+              "reduced_rank": 32,
+              "condition": 20.225881630721194
+            },
+            {
+              "steps": 32,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0022631130123045295,
+              "residual_check_seconds": 0.020576670998707414,
+              "relative_residual": 0.5203954577445984,
+              "projected_relative_residual": 0.5203954324837684,
+              "direction_norm": 55.33917236328125,
+              "reduced_rank": 32,
+              "condition": 20.225881630721194
+            }
+          ],
+          "exact_repeat": true,
+          "finite": true,
+          "path": "outputs/TRR-0020/dev40_gpu/128_activation_1.0_0.safetensors",
+          "sha256": "3fe9d3f3aa94daa194b55d38daef9f7eaa348f63f48414143f0ef3f4704ee757",
+          "io_hash_seconds": 0.10259328101528808
+        },
+        {
+          "rep": 1,
+          "arnoldi_seconds": 0.3087269230163656,
+          "basis_orthogonality_maximum_error": 7.152557373046875e-07,
+          "comparisons": [
+            {
+              "steps": 16,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0008492170018143952,
+              "residual_check_seconds": 0.005113087012432516,
+              "relative_residual": 0.5401310324668884,
+              "projected_relative_residual": 0.5401310324668884,
+              "direction_norm": 48.64192581176758,
+              "reduced_rank": 16,
+              "condition": 13.296618097849741
+            },
+            {
+              "steps": 16,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0009002590086311102,
+              "residual_check_seconds": 0.004864863003604114,
+              "relative_residual": 0.5401310324668884,
+              "projected_relative_residual": 0.540131017257567,
+              "direction_norm": 48.64190673828125,
+              "reduced_rank": 16,
+              "condition": 13.296618097849741
+            },
+            {
+              "steps": 16,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0008220540184993297,
+              "residual_check_seconds": 0.004894821991911158,
+              "relative_residual": 0.5401310920715332,
+              "projected_relative_residual": 0.5401310171816908,
+              "direction_norm": 48.642704010009766,
+              "reduced_rank": 16,
+              "condition": 13.296618097849741
+            },
+            {
+              "steps": 32,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0006108380039222538,
+              "residual_check_seconds": 0.00623415902373381,
+              "relative_residual": 0.5203954577445984,
+              "projected_relative_residual": 0.5203953981399536,
+              "direction_norm": 55.337242126464844,
+              "reduced_rank": 32,
+              "condition": 20.225881630721194
+            },
+            {
+              "steps": 32,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0033983749744948,
+              "residual_check_seconds": 0.005110132013214752,
+              "relative_residual": 0.5203954577445984,
+              "projected_relative_residual": 0.5203954326960913,
+              "direction_norm": 55.337257385253906,
+              "reduced_rank": 32,
+              "condition": 20.225881630721194
+            },
+            {
+              "steps": 32,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0012193490110803396,
+              "residual_check_seconds": 0.005019034986617044,
+              "relative_residual": 0.5203954577445984,
+              "projected_relative_residual": 0.5203954324837684,
+              "direction_norm": 55.33917236328125,
+              "reduced_rank": 32,
+              "condition": 20.225881630721194
+            }
+          ],
+          "exact_repeat": true,
+          "finite": true,
+          "path": "outputs/TRR-0020/dev40_gpu/128_activation_1.0_1.safetensors",
+          "sha256": "3fe9d3f3aa94daa194b55d38daef9f7eaa348f63f48414143f0ef3f4704ee757",
+          "io_hash_seconds": 0.09433739600353874
+        },
+        {
+          "rep": 2,
+          "arnoldi_seconds": 0.22757217899197713,
+          "basis_orthogonality_maximum_error": 7.152557373046875e-07,
+          "comparisons": [
+            {
+              "steps": 16,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0006521129980683327,
+              "residual_check_seconds": 0.00465949802310206,
+              "relative_residual": 0.5401310324668884,
+              "projected_relative_residual": 0.5401310324668884,
+              "direction_norm": 48.64192581176758,
+              "reduced_rank": 16,
+              "condition": 13.296618097849741
+            },
+            {
+              "steps": 16,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0009476950217504054,
+              "residual_check_seconds": 0.004865940980380401,
+              "relative_residual": 0.5401310324668884,
+              "projected_relative_residual": 0.540131017257567,
+              "direction_norm": 48.64190673828125,
+              "reduced_rank": 16,
+              "condition": 13.296618097849741
+            },
+            {
+              "steps": 16,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0008530610066372901,
+              "residual_check_seconds": 0.00471023001591675,
+              "relative_residual": 0.5401310920715332,
+              "projected_relative_residual": 0.5401310171816908,
+              "direction_norm": 48.642704010009766,
+              "reduced_rank": 16,
+              "condition": 13.296618097849741
+            },
+            {
+              "steps": 32,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0005776220059487969,
+              "residual_check_seconds": 0.004634453012840822,
+              "relative_residual": 0.5203954577445984,
+              "projected_relative_residual": 0.5203953981399536,
+              "direction_norm": 55.337242126464844,
+              "reduced_rank": 32,
+              "condition": 20.225881630721194
+            },
+            {
+              "steps": 32,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0012896039988845587,
+              "residual_check_seconds": 0.004651238996302709,
+              "relative_residual": 0.5203954577445984,
+              "projected_relative_residual": 0.5203954326960913,
+              "direction_norm": 55.337257385253906,
+              "reduced_rank": 32,
+              "condition": 20.225881630721194
+            },
+            {
+              "steps": 32,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0012074949918314815,
+              "residual_check_seconds": 0.005203058011829853,
+              "relative_residual": 0.5203954577445984,
+              "projected_relative_residual": 0.5203954324837684,
+              "direction_norm": 55.33917236328125,
+              "reduced_rank": 32,
+              "condition": 20.225881630721194
+            }
+          ],
+          "exact_repeat": true,
+          "finite": true,
+          "path": "outputs/TRR-0020/dev40_gpu/128_activation_1.0_2.safetensors",
+          "sha256": "3fe9d3f3aa94daa194b55d38daef9f7eaa348f63f48414143f0ef3f4704ee757",
+          "io_hash_seconds": 0.0748867449874524
+        }
+      ],
+      "original_exact": true,
+      "prefix_exact": true
+    },
+    {
+      "length": 128,
+      "point": "activation",
+      "strength": 0.5,
+      "fixture": {
+        "length": 128,
+        "seed": 39167,
+        "path": "outputs/TRR-0020/dev39_gpu/fixture_128.safetensors",
+        "sha256": "4a091a5d936fdd3d3dc6addf5c63af7640bcbcf4afe619ab1c3e38d0dbeb50fa",
+        "io_hash_seconds": 0.009352699009468779
+      },
+      "prior": {
+        "rep": 0,
+        "seconds": 0.1159140229865443,
+        "matvec_calls": 17,
+        "exact_repeat": true,
+        "relative_residual": 0.03827878460288048,
+        "direction_norm": 48.69149398803711,
+        "passed": true,
+        "path": "outputs/TRR-0020/dev39_gpu/linear_128_activation_0.5_16_0.safetensors",
+        "sha256": "b1772195c3501f5704155653db028eeaeb9b6ebf32a991fe03c3305bf3a3cf9d",
+        "io_hash_seconds": 0.0025872529949992895
+      },
+      "repetitions": [
+        {
+          "rep": 0,
+          "arnoldi_seconds": 0.2349592070095241,
+          "basis_orthogonality_maximum_error": 6.556510925292969e-07,
+          "comparisons": [
+            {
+              "steps": 16,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0006005289906170219,
+              "residual_check_seconds": 0.0050374049751553684,
+              "relative_residual": 0.03827878460288048,
+              "projected_relative_residual": 0.038278788328170776,
+              "direction_norm": 48.69149398803711,
+              "reduced_rank": 16,
+              "condition": 42.32299401192904
+            },
+            {
+              "steps": 16,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0008127070032060146,
+              "residual_check_seconds": 0.004667750996304676,
+              "relative_residual": 0.03827878087759018,
+              "projected_relative_residual": 0.03827878839342492,
+              "direction_norm": 48.691532135009766,
+              "reduced_rank": 16,
+              "condition": 42.32299401192904
+            },
+            {
+              "steps": 16,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0007787999929860234,
+              "residual_check_seconds": 0.0047860250051599,
+              "relative_residual": 0.038278788328170776,
+              "projected_relative_residual": 0.03827878069960782,
+              "direction_norm": 48.6988410949707,
+              "reduced_rank": 16,
+              "condition": 42.32299401192904
+            },
+            {
+              "steps": 32,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0007425240182783455,
+              "residual_check_seconds": 0.005604814999969676,
+              "relative_residual": 0.006566222291439772,
+              "projected_relative_residual": 0.006566214375197887,
+              "direction_norm": 54.6353645324707,
+              "reduced_rank": 32,
+              "condition": 65.3264129658341
+            },
+            {
+              "steps": 32,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0017345399828627706,
+              "residual_check_seconds": 0.004928250011289492,
+              "relative_residual": 0.006566209252923727,
+              "projected_relative_residual": 0.006566216348292195,
+              "direction_norm": 54.63526916503906,
+              "reduced_rank": 32,
+              "condition": 65.3264129658341
+            },
+            {
+              "steps": 32,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0011344910017214715,
+              "residual_check_seconds": 0.004627590999007225,
+              "relative_residual": 0.006566128693521023,
+              "projected_relative_residual": 0.006566121104322607,
+              "direction_norm": 54.64968490600586,
+              "reduced_rank": 32,
+              "condition": 65.3264129658341
+            }
+          ],
+          "exact_repeat": true,
+          "finite": true,
+          "path": "outputs/TRR-0020/dev40_gpu/128_activation_0.5_0.safetensors",
+          "sha256": "6c8a825508a1051aec88fdb0fe0964f927dc686ecac4dbbbbe857a70b6139eb4",
+          "io_hash_seconds": 0.0763109720137436
+        },
+        {
+          "rep": 1,
+          "arnoldi_seconds": 0.24209468299522996,
+          "basis_orthogonality_maximum_error": 6.556510925292969e-07,
+          "comparisons": [
+            {
+              "steps": 16,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0007007399981375784,
+              "residual_check_seconds": 0.004912298987619579,
+              "relative_residual": 0.03827878460288048,
+              "projected_relative_residual": 0.038278788328170776,
+              "direction_norm": 48.69149398803711,
+              "reduced_rank": 16,
+              "condition": 42.32299401192904
+            },
+            {
+              "steps": 16,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0008989300113171339,
+              "residual_check_seconds": 0.005874515976756811,
+              "relative_residual": 0.03827878087759018,
+              "projected_relative_residual": 0.03827878839342492,
+              "direction_norm": 48.691532135009766,
+              "reduced_rank": 16,
+              "condition": 42.32299401192904
+            },
+            {
+              "steps": 16,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0009170459816232324,
+              "residual_check_seconds": 0.004688807995989919,
+              "relative_residual": 0.038278788328170776,
+              "projected_relative_residual": 0.03827878069960782,
+              "direction_norm": 48.6988410949707,
+              "reduced_rank": 16,
+              "condition": 42.32299401192904
+            },
+            {
+              "steps": 32,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0005671519902534783,
+              "residual_check_seconds": 0.004554629005724564,
+              "relative_residual": 0.006566222291439772,
+              "projected_relative_residual": 0.006566214375197887,
+              "direction_norm": 54.6353645324707,
+              "reduced_rank": 32,
+              "condition": 65.3264129658341
+            },
+            {
+              "steps": 32,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.001319224975304678,
+              "residual_check_seconds": 0.004589359014062211,
+              "relative_residual": 0.006566209252923727,
+              "projected_relative_residual": 0.006566216348292195,
+              "direction_norm": 54.63526916503906,
+              "reduced_rank": 32,
+              "condition": 65.3264129658341
+            },
+            {
+              "steps": 32,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0011023090046364814,
+              "residual_check_seconds": 0.004542974987998605,
+              "relative_residual": 0.006566128693521023,
+              "projected_relative_residual": 0.006566121104322607,
+              "direction_norm": 54.64968490600586,
+              "reduced_rank": 32,
+              "condition": 65.3264129658341
+            }
+          ],
+          "exact_repeat": true,
+          "finite": true,
+          "path": "outputs/TRR-0020/dev40_gpu/128_activation_0.5_1.safetensors",
+          "sha256": "6c8a825508a1051aec88fdb0fe0964f927dc686ecac4dbbbbe857a70b6139eb4",
+          "io_hash_seconds": 0.06879312900127843
+        },
+        {
+          "rep": 2,
+          "arnoldi_seconds": 0.2147557260177564,
+          "basis_orthogonality_maximum_error": 6.556510925292969e-07,
+          "comparisons": [
+            {
+              "steps": 16,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0009143159841187298,
+              "residual_check_seconds": 0.005746467999415472,
+              "relative_residual": 0.03827878460288048,
+              "projected_relative_residual": 0.038278788328170776,
+              "direction_norm": 48.69149398803711,
+              "reduced_rank": 16,
+              "condition": 42.32299401192904
+            },
+            {
+              "steps": 16,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.000879132014233619,
+              "residual_check_seconds": 0.005736216000514105,
+              "relative_residual": 0.03827878087759018,
+              "projected_relative_residual": 0.03827878839342492,
+              "direction_norm": 48.691532135009766,
+              "reduced_rank": 16,
+              "condition": 42.32299401192904
+            },
+            {
+              "steps": 16,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0007696300162933767,
+              "residual_check_seconds": 0.004833653976675123,
+              "relative_residual": 0.038278788328170776,
+              "projected_relative_residual": 0.03827878069960782,
+              "direction_norm": 48.6988410949707,
+              "reduced_rank": 16,
+              "condition": 42.32299401192904
+            },
+            {
+              "steps": 32,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0005800689978059381,
+              "residual_check_seconds": 0.004823834984563291,
+              "relative_residual": 0.006566222291439772,
+              "projected_relative_residual": 0.006566214375197887,
+              "direction_norm": 54.6353645324707,
+              "reduced_rank": 32,
+              "condition": 65.3264129658341
+            },
+            {
+              "steps": 32,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0012863140145782381,
+              "residual_check_seconds": 0.0046448860084638,
+              "relative_residual": 0.006566209252923727,
+              "projected_relative_residual": 0.006566216348292195,
+              "direction_norm": 54.63526916503906,
+              "reduced_rank": 32,
+              "condition": 65.3264129658341
+            },
+            {
+              "steps": 32,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0013851319963578135,
+              "residual_check_seconds": 0.0049473649996798486,
+              "relative_residual": 0.006566128693521023,
+              "projected_relative_residual": 0.006566121104322607,
+              "direction_norm": 54.64968490600586,
+              "reduced_rank": 32,
+              "condition": 65.3264129658341
+            }
+          ],
+          "exact_repeat": true,
+          "finite": true,
+          "path": "outputs/TRR-0020/dev40_gpu/128_activation_0.5_2.safetensors",
+          "sha256": "6c8a825508a1051aec88fdb0fe0964f927dc686ecac4dbbbbe857a70b6139eb4",
+          "io_hash_seconds": 0.08415692299604416
+        }
+      ],
+      "original_exact": true,
+      "prefix_exact": true
+    },
+    {
+      "length": 128,
+      "point": "embedding",
+      "strength": 1.0,
+      "fixture": {
+        "length": 128,
+        "seed": 39167,
+        "path": "outputs/TRR-0020/dev39_gpu/fixture_128.safetensors",
+        "sha256": "4a091a5d936fdd3d3dc6addf5c63af7640bcbcf4afe619ab1c3e38d0dbeb50fa",
+        "io_hash_seconds": 0.009352699009468779
+      },
+      "prior": {
+        "rep": 0,
+        "seconds": 0.11593116898438893,
+        "matvec_calls": 17,
+        "exact_repeat": true,
+        "relative_residual": 0.9740362167358398,
+        "direction_norm": 2.683741569519043,
+        "passed": true,
+        "path": "outputs/TRR-0020/dev39_gpu/linear_128_embedding_1.0_16_0.safetensors",
+        "sha256": "a9ab8d3885e3a5afc7008e65623c7cc60f1f1f316d24c02a7c77d7d5789b6a94",
+        "io_hash_seconds": 0.002414881018921733
+      },
+      "repetitions": [
+        {
+          "rep": 0,
+          "arnoldi_seconds": 0.23121440201066434,
+          "basis_orthogonality_maximum_error": 8.940696716308594e-07,
+          "comparisons": [
+            {
+              "steps": 16,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0006430209905374795,
+              "residual_check_seconds": 0.004879330983385444,
+              "relative_residual": 0.9740362167358398,
+              "projected_relative_residual": 0.9740362167358398,
+              "direction_norm": 2.683741569519043,
+              "reduced_rank": 16,
+              "condition": 2.3949440971839984
+            },
+            {
+              "steps": 16,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0007838199962861836,
+              "residual_check_seconds": 0.004885164991719648,
+              "relative_residual": 0.9740362167358398,
+              "projected_relative_residual": 0.9740362766706966,
+              "direction_norm": 2.683742046356201,
+              "reduced_rank": 16,
+              "condition": 2.3949440971839984
+            },
+            {
+              "steps": 16,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0006558089808095247,
+              "residual_check_seconds": 0.004525383003056049,
+              "relative_residual": 0.9740363359451294,
+              "projected_relative_residual": 0.974036276670632,
+              "direction_norm": 2.683746337890625,
+              "reduced_rank": 16,
+              "condition": 2.3949440971839984
+            },
+            {
+              "steps": 32,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.00055954500567168,
+              "residual_check_seconds": 0.0045926849998068064,
+              "relative_residual": 0.9697584509849548,
+              "projected_relative_residual": 0.9697585701942444,
+              "direction_norm": 2.7896718978881836,
+              "reduced_rank": 32,
+              "condition": 2.62079394478858
+            },
+            {
+              "steps": 32,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0013115369947627187,
+              "residual_check_seconds": 0.005738081003073603,
+              "relative_residual": 0.9697584509849548,
+              "projected_relative_residual": 0.9697584873840968,
+              "direction_norm": 2.789672374725342,
+              "reduced_rank": 32,
+              "condition": 2.62079394478858
+            },
+            {
+              "steps": 32,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0011580819846130908,
+              "residual_check_seconds": 0.00478342900169082,
+              "relative_residual": 0.9697584509849548,
+              "projected_relative_residual": 0.9697584873840256,
+              "direction_norm": 2.7896769046783447,
+              "reduced_rank": 32,
+              "condition": 2.62079394478858
+            }
+          ],
+          "exact_repeat": true,
+          "finite": true,
+          "path": "outputs/TRR-0020/dev40_gpu/128_embedding_1.0_0.safetensors",
+          "sha256": "6ad5c20894ace30e9ba172787877fdca37243dd8ffe58e74359859faffd081e5",
+          "io_hash_seconds": 0.06143751399940811
+        },
+        {
+          "rep": 1,
+          "arnoldi_seconds": 0.20526007600710727,
+          "basis_orthogonality_maximum_error": 8.940696716308594e-07,
+          "comparisons": [
+            {
+              "steps": 16,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0005386130069382489,
+              "residual_check_seconds": 0.004855115985265002,
+              "relative_residual": 0.9740362167358398,
+              "projected_relative_residual": 0.9740362167358398,
+              "direction_norm": 2.683741569519043,
+              "reduced_rank": 16,
+              "condition": 2.3949440971839984
+            },
+            {
+              "steps": 16,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0008005739946383983,
+              "residual_check_seconds": 0.00462784300907515,
+              "relative_residual": 0.9740362167358398,
+              "projected_relative_residual": 0.9740362766706966,
+              "direction_norm": 2.683742046356201,
+              "reduced_rank": 16,
+              "condition": 2.3949440971839984
+            },
+            {
+              "steps": 16,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0006618059996981174,
+              "residual_check_seconds": 0.004918275983072817,
+              "relative_residual": 0.9740363359451294,
+              "projected_relative_residual": 0.974036276670632,
+              "direction_norm": 2.683746337890625,
+              "reduced_rank": 16,
+              "condition": 2.3949440971839984
+            },
+            {
+              "steps": 32,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0006241830124054104,
+              "residual_check_seconds": 0.004612989985616878,
+              "relative_residual": 0.9697584509849548,
+              "projected_relative_residual": 0.9697585701942444,
+              "direction_norm": 2.7896718978881836,
+              "reduced_rank": 32,
+              "condition": 2.62079394478858
+            },
+            {
+              "steps": 32,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.001250579982297495,
+              "residual_check_seconds": 0.0049987760139629245,
+              "relative_residual": 0.9697584509849548,
+              "projected_relative_residual": 0.9697584873840968,
+              "direction_norm": 2.789672374725342,
+              "reduced_rank": 32,
+              "condition": 2.62079394478858
+            },
+            {
+              "steps": 32,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0011949580220971256,
+              "residual_check_seconds": 0.005334458022844046,
+              "relative_residual": 0.9697584509849548,
+              "projected_relative_residual": 0.9697584873840256,
+              "direction_norm": 2.7896769046783447,
+              "reduced_rank": 32,
+              "condition": 2.62079394478858
+            }
+          ],
+          "exact_repeat": true,
+          "finite": true,
+          "path": "outputs/TRR-0020/dev40_gpu/128_embedding_1.0_1.safetensors",
+          "sha256": "6ad5c20894ace30e9ba172787877fdca37243dd8ffe58e74359859faffd081e5",
+          "io_hash_seconds": 0.06944899199879728
+        },
+        {
+          "rep": 2,
+          "arnoldi_seconds": 0.2148753660148941,
+          "basis_orthogonality_maximum_error": 8.940696716308594e-07,
+          "comparisons": [
+            {
+              "steps": 16,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0010849129757843912,
+              "residual_check_seconds": 0.005066794983576983,
+              "relative_residual": 0.9740362167358398,
+              "projected_relative_residual": 0.9740362167358398,
+              "direction_norm": 2.683741569519043,
+              "reduced_rank": 16,
+              "condition": 2.3949440971839984
+            },
+            {
+              "steps": 16,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0008449629822280258,
+              "residual_check_seconds": 0.00529474500217475,
+              "relative_residual": 0.9740362167358398,
+              "projected_relative_residual": 0.9740362766706966,
+              "direction_norm": 2.683742046356201,
+              "reduced_rank": 16,
+              "condition": 2.3949440971839984
+            },
+            {
+              "steps": 16,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0010106090048793703,
+              "residual_check_seconds": 0.005360034992918372,
+              "relative_residual": 0.9740363359451294,
+              "projected_relative_residual": 0.974036276670632,
+              "direction_norm": 2.683746337890625,
+              "reduced_rank": 16,
+              "condition": 2.3949440971839984
+            },
+            {
+              "steps": 32,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0006388550100382417,
+              "residual_check_seconds": 0.004803271003765985,
+              "relative_residual": 0.9697584509849548,
+              "projected_relative_residual": 0.9697585701942444,
+              "direction_norm": 2.7896718978881836,
+              "reduced_rank": 32,
+              "condition": 2.62079394478858
+            },
+            {
+              "steps": 32,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.001868749997811392,
+              "residual_check_seconds": 0.00553549500182271,
+              "relative_residual": 0.9697584509849548,
+              "projected_relative_residual": 0.9697584873840968,
+              "direction_norm": 2.789672374725342,
+              "reduced_rank": 32,
+              "condition": 2.62079394478858
+            },
+            {
+              "steps": 32,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0017886620189528912,
+              "residual_check_seconds": 0.005147324001882225,
+              "relative_residual": 0.9697584509849548,
+              "projected_relative_residual": 0.9697584873840256,
+              "direction_norm": 2.7896769046783447,
+              "reduced_rank": 32,
+              "condition": 2.62079394478858
+            }
+          ],
+          "exact_repeat": true,
+          "finite": true,
+          "path": "outputs/TRR-0020/dev40_gpu/128_embedding_1.0_2.safetensors",
+          "sha256": "6ad5c20894ace30e9ba172787877fdca37243dd8ffe58e74359859faffd081e5",
+          "io_hash_seconds": 0.07428854401223361
+        }
+      ],
+      "original_exact": true,
+      "prefix_exact": true
+    },
+    {
+      "length": 128,
+      "point": "embedding",
+      "strength": 0.5,
+      "fixture": {
+        "length": 128,
+        "seed": 39167,
+        "path": "outputs/TRR-0020/dev39_gpu/fixture_128.safetensors",
+        "sha256": "4a091a5d936fdd3d3dc6addf5c63af7640bcbcf4afe619ab1c3e38d0dbeb50fa",
+        "io_hash_seconds": 0.009352699009468779
+      },
+      "prior": {
+        "rep": 0,
+        "seconds": 0.10441264798282646,
+        "matvec_calls": 17,
+        "exact_repeat": true,
+        "relative_residual": 0.7658265829086304,
+        "direction_norm": 19.55510902404785,
+        "passed": true,
+        "path": "outputs/TRR-0020/dev39_gpu/linear_128_embedding_0.5_16_0.safetensors",
+        "sha256": "1256a039f46dcd8cdd19617fe68383cad4d20ce39f3af71a146e656669d042ed",
+        "io_hash_seconds": 0.0022740979911759496
+      },
+      "repetitions": [
+        {
+          "rep": 0,
+          "arnoldi_seconds": 0.23882082500495017,
+          "basis_orthogonality_maximum_error": 8.344650268554688e-07,
+          "comparisons": [
+            {
+              "steps": 16,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0005805589898955077,
+              "residual_check_seconds": 0.004914088000077754,
+              "relative_residual": 0.7658265829086304,
+              "projected_relative_residual": 0.7658265829086304,
+              "direction_norm": 19.55510902404785,
+              "reduced_rank": 16,
+              "condition": 3.969917187081124
+            },
+            {
+              "steps": 16,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.000882044987520203,
+              "residual_check_seconds": 0.005146084004081786,
+              "relative_residual": 0.7658265829086304,
+              "projected_relative_residual": 0.7658265510582718,
+              "direction_norm": 19.55510711669922,
+              "reduced_rank": 16,
+              "condition": 3.969917187081124
+            },
+            {
+              "steps": 16,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0006943519983906299,
+              "residual_check_seconds": 0.004732970002805814,
+              "relative_residual": 0.7658265829086304,
+              "projected_relative_residual": 0.765826551055799,
+              "direction_norm": 19.5551815032959,
+              "reduced_rank": 16,
+              "condition": 3.969917187081124
+            },
+            {
+              "steps": 32,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0006402969884220511,
+              "residual_check_seconds": 0.005328625004040077,
+              "relative_residual": 0.763088583946228,
+              "projected_relative_residual": 0.763088583946228,
+              "direction_norm": 19.495773315429688,
+              "reduced_rank": 32,
+              "condition": 4.113092699656308
+            },
+            {
+              "steps": 32,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0012769860040862113,
+              "residual_check_seconds": 0.005143106012837961,
+              "relative_residual": 0.763088583946228,
+              "projected_relative_residual": 0.7630885682818245,
+              "direction_norm": 19.495777130126953,
+              "reduced_rank": 32,
+              "condition": 4.113092699656308
+            },
+            {
+              "steps": 32,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0014031180180609226,
+              "residual_check_seconds": 0.0048836880014277995,
+              "relative_residual": 0.763088583946228,
+              "projected_relative_residual": 0.7630885682791063,
+              "direction_norm": 19.495853424072266,
+              "reduced_rank": 32,
+              "condition": 4.113092699656308
+            }
+          ],
+          "exact_repeat": true,
+          "finite": true,
+          "path": "outputs/TRR-0020/dev40_gpu/128_embedding_0.5_0.safetensors",
+          "sha256": "745c6d93679dc3af91fe44f92559d95cdb42e6a1438ec0504fa97168c28bd036",
+          "io_hash_seconds": 0.09106820001034066
+        },
+        {
+          "rep": 1,
+          "arnoldi_seconds": 0.22920946098747663,
+          "basis_orthogonality_maximum_error": 8.344650268554688e-07,
+          "comparisons": [
+            {
+              "steps": 16,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0007234890072140843,
+              "residual_check_seconds": 0.005041141004767269,
+              "relative_residual": 0.7658265829086304,
+              "projected_relative_residual": 0.7658265829086304,
+              "direction_norm": 19.55510902404785,
+              "reduced_rank": 16,
+              "condition": 3.969917187081124
+            },
+            {
+              "steps": 16,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0008509030158165842,
+              "residual_check_seconds": 0.004686683998443186,
+              "relative_residual": 0.7658265829086304,
+              "projected_relative_residual": 0.7658265510582718,
+              "direction_norm": 19.55510711669922,
+              "reduced_rank": 16,
+              "condition": 3.969917187081124
+            },
+            {
+              "steps": 16,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.000654008996207267,
+              "residual_check_seconds": 0.004848415992455557,
+              "relative_residual": 0.7658265829086304,
+              "projected_relative_residual": 0.765826551055799,
+              "direction_norm": 19.5551815032959,
+              "reduced_rank": 16,
+              "condition": 3.969917187081124
+            },
+            {
+              "steps": 32,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0005752870056312531,
+              "residual_check_seconds": 0.00486404201365076,
+              "relative_residual": 0.763088583946228,
+              "projected_relative_residual": 0.763088583946228,
+              "direction_norm": 19.495773315429688,
+              "reduced_rank": 32,
+              "condition": 4.113092699656308
+            },
+            {
+              "steps": 32,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0012896859843749553,
+              "residual_check_seconds": 0.004599572974257171,
+              "relative_residual": 0.763088583946228,
+              "projected_relative_residual": 0.7630885682818245,
+              "direction_norm": 19.495777130126953,
+              "reduced_rank": 32,
+              "condition": 4.113092699656308
+            },
+            {
+              "steps": 32,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0013218490057624876,
+              "residual_check_seconds": 0.004853288002777845,
+              "relative_residual": 0.763088583946228,
+              "projected_relative_residual": 0.7630885682791063,
+              "direction_norm": 19.495853424072266,
+              "reduced_rank": 32,
+              "condition": 4.113092699656308
+            }
+          ],
+          "exact_repeat": true,
+          "finite": true,
+          "path": "outputs/TRR-0020/dev40_gpu/128_embedding_0.5_1.safetensors",
+          "sha256": "745c6d93679dc3af91fe44f92559d95cdb42e6a1438ec0504fa97168c28bd036",
+          "io_hash_seconds": 0.06316700001480058
+        },
+        {
+          "rep": 2,
+          "arnoldi_seconds": 0.21628459199564531,
+          "basis_orthogonality_maximum_error": 8.344650268554688e-07,
+          "comparisons": [
+            {
+              "steps": 16,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0008533420041203499,
+              "residual_check_seconds": 0.016691658995114267,
+              "relative_residual": 0.7658265829086304,
+              "projected_relative_residual": 0.7658265829086304,
+              "direction_norm": 19.55510902404785,
+              "reduced_rank": 16,
+              "condition": 3.969917187081124
+            },
+            {
+              "steps": 16,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0009967559890355915,
+              "residual_check_seconds": 0.004656975972466171,
+              "relative_residual": 0.7658265829086304,
+              "projected_relative_residual": 0.7658265510582718,
+              "direction_norm": 19.55510711669922,
+              "reduced_rank": 16,
+              "condition": 3.969917187081124
+            },
+            {
+              "steps": 16,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0007269399939104915,
+              "residual_check_seconds": 0.004770978994201869,
+              "relative_residual": 0.7658265829086304,
+              "projected_relative_residual": 0.765826551055799,
+              "direction_norm": 19.5551815032959,
+              "reduced_rank": 16,
+              "condition": 3.969917187081124
+            },
+            {
+              "steps": 32,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0006539850146509707,
+              "residual_check_seconds": 0.004970745998434722,
+              "relative_residual": 0.763088583946228,
+              "projected_relative_residual": 0.763088583946228,
+              "direction_norm": 19.495773315429688,
+              "reduced_rank": 32,
+              "condition": 4.113092699656308
+            },
+            {
+              "steps": 32,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.001323638018220663,
+              "residual_check_seconds": 0.005102511990116909,
+              "relative_residual": 0.763088583946228,
+              "projected_relative_residual": 0.7630885682818245,
+              "direction_norm": 19.495777130126953,
+              "reduced_rank": 32,
+              "condition": 4.113092699656308
+            },
+            {
+              "steps": 32,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0010978179925587028,
+              "residual_check_seconds": 0.004742270015412942,
+              "relative_residual": 0.763088583946228,
+              "projected_relative_residual": 0.7630885682791063,
+              "direction_norm": 19.495853424072266,
+              "reduced_rank": 32,
+              "condition": 4.113092699656308
+            }
+          ],
+          "exact_repeat": true,
+          "finite": true,
+          "path": "outputs/TRR-0020/dev40_gpu/128_embedding_0.5_2.safetensors",
+          "sha256": "745c6d93679dc3af91fe44f92559d95cdb42e6a1438ec0504fa97168c28bd036",
+          "io_hash_seconds": 0.07402741399710067
+        }
+      ],
+      "original_exact": true,
+      "prefix_exact": true
+    },
+    {
+      "length": 40,
+      "point": "activation",
+      "strength": 1.0,
+      "fixture": {
+        "length": 40,
+        "seed": 39079,
+        "path": "outputs/TRR-0020/dev39_gpu/fixture_40.safetensors",
+        "sha256": "07b6321137a801e37407ea391dde67dd415235bf77391a90218b5222c511f3a3",
+        "io_hash_seconds": 0.0014246979844756424
+      },
+      "prior": {
+        "rep": 0,
+        "seconds": 0.07327520102262497,
+        "matvec_calls": 17,
+        "exact_repeat": true,
+        "relative_residual": 0.49398714303970337,
+        "direction_norm": 32.17546844482422,
+        "passed": true,
+        "path": "outputs/TRR-0020/dev39_gpu/linear_40_activation_1.0_16_0.safetensors",
+        "sha256": "0e43e342cbf914f2387b0bf1152c74a5d77d5c5eea511275c8531c7a67b73873",
+        "io_hash_seconds": 0.0013173210027161986
+      },
+      "repetitions": [
+        {
+          "rep": 0,
+          "arnoldi_seconds": 0.17018238600576296,
+          "basis_orthogonality_maximum_error": 3.5762786865234375e-07,
+          "comparisons": [
+            {
+              "steps": 16,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0005464380083139986,
+              "residual_check_seconds": 0.003625245997682214,
+              "relative_residual": 0.49398714303970337,
+              "projected_relative_residual": 0.49398714303970337,
+              "direction_norm": 32.17546844482422,
+              "reduced_rank": 16,
+              "condition": 12.841551851541416
+            },
+            {
+              "steps": 16,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0008060699910856783,
+              "residual_check_seconds": 0.0037992529978509992,
+              "relative_residual": 0.49398714303970337,
+              "projected_relative_residual": 0.493987125354153,
+              "direction_norm": 32.17545700073242,
+              "reduced_rank": 16,
+              "condition": 12.841551851541416
+            },
+            {
+              "steps": 16,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0005240149912424386,
+              "residual_check_seconds": 0.0036382069811224937,
+              "relative_residual": 0.49398714303970337,
+              "projected_relative_residual": 0.4939871250847994,
+              "direction_norm": 32.176517486572266,
+              "reduced_rank": 16,
+              "condition": 12.841551851541416
+            },
+            {
+              "steps": 32,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0004884089867118746,
+              "residual_check_seconds": 0.0037536330055445433,
+              "relative_residual": 0.4736766815185547,
+              "projected_relative_residual": 0.4736766219139099,
+              "direction_norm": 35.87913513183594,
+              "reduced_rank": 32,
+              "condition": 16.974738999187807
+            },
+            {
+              "steps": 32,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0008640580053906888,
+              "residual_check_seconds": 0.0035300779854878783,
+              "relative_residual": 0.4736767113208771,
+              "projected_relative_residual": 0.4736766866972994,
+              "direction_norm": 35.87917709350586,
+              "reduced_rank": 32,
+              "condition": 16.974738999187807
+            },
+            {
+              "steps": 32,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0007919660129118711,
+              "residual_check_seconds": 0.003491426003165543,
+              "relative_residual": 0.4736766815185547,
+              "projected_relative_residual": 0.4736766862220831,
+              "direction_norm": 35.88083267211914,
+              "reduced_rank": 32,
+              "condition": 16.974738999187807
+            }
+          ],
+          "exact_repeat": true,
+          "finite": true,
+          "path": "outputs/TRR-0020/dev40_gpu/40_activation_1.0_0.safetensors",
+          "sha256": "8894dbbaae5d2abf8691c6f9ba9c0b89f9b7964e1d824b2b3e74e0d26fd2d61b",
+          "io_hash_seconds": 0.014244573016185313
+        },
+        {
+          "rep": 1,
+          "arnoldi_seconds": 0.1781375420105178,
+          "basis_orthogonality_maximum_error": 3.5762786865234375e-07,
+          "comparisons": [
+            {
+              "steps": 16,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.000532086007297039,
+              "residual_check_seconds": 0.003716634993907064,
+              "relative_residual": 0.49398714303970337,
+              "projected_relative_residual": 0.49398714303970337,
+              "direction_norm": 32.17546844482422,
+              "reduced_rank": 16,
+              "condition": 12.841551851541416
+            },
+            {
+              "steps": 16,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0006458679854404181,
+              "residual_check_seconds": 0.0037378669949248433,
+              "relative_residual": 0.49398714303970337,
+              "projected_relative_residual": 0.493987125354153,
+              "direction_norm": 32.17545700073242,
+              "reduced_rank": 16,
+              "condition": 12.841551851541416
+            },
+            {
+              "steps": 16,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0005736290186177939,
+              "residual_check_seconds": 0.003499518003081903,
+              "relative_residual": 0.49398714303970337,
+              "projected_relative_residual": 0.4939871250847994,
+              "direction_norm": 32.176517486572266,
+              "reduced_rank": 16,
+              "condition": 12.841551851541416
+            },
+            {
+              "steps": 32,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0004909239942207932,
+              "residual_check_seconds": 0.0035910440201405436,
+              "relative_residual": 0.4736766815185547,
+              "projected_relative_residual": 0.4736766219139099,
+              "direction_norm": 35.87913513183594,
+              "reduced_rank": 32,
+              "condition": 16.974738999187807
+            },
+            {
+              "steps": 32,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0008339839987456799,
+              "residual_check_seconds": 0.0035712450044229627,
+              "relative_residual": 0.4736767113208771,
+              "projected_relative_residual": 0.4736766866972994,
+              "direction_norm": 35.87917709350586,
+              "reduced_rank": 32,
+              "condition": 16.974738999187807
+            },
+            {
+              "steps": 32,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0006048970099072903,
+              "residual_check_seconds": 0.003521422011544928,
+              "relative_residual": 0.4736766815185547,
+              "projected_relative_residual": 0.4736766862220831,
+              "direction_norm": 35.88083267211914,
+              "reduced_rank": 32,
+              "condition": 16.974738999187807
+            }
+          ],
+          "exact_repeat": true,
+          "finite": true,
+          "path": "outputs/TRR-0020/dev40_gpu/40_activation_1.0_1.safetensors",
+          "sha256": "8894dbbaae5d2abf8691c6f9ba9c0b89f9b7964e1d824b2b3e74e0d26fd2d61b",
+          "io_hash_seconds": 0.014874610002152622
+        },
+        {
+          "rep": 2,
+          "arnoldi_seconds": 0.1616430779977236,
+          "basis_orthogonality_maximum_error": 3.5762786865234375e-07,
+          "comparisons": [
+            {
+              "steps": 16,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0007225270092021674,
+              "residual_check_seconds": 0.0036524260067380965,
+              "relative_residual": 0.49398714303970337,
+              "projected_relative_residual": 0.49398714303970337,
+              "direction_norm": 32.17546844482422,
+              "reduced_rank": 16,
+              "condition": 12.841551851541416
+            },
+            {
+              "steps": 16,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0007466370007023215,
+              "residual_check_seconds": 0.0034654730116017163,
+              "relative_residual": 0.49398714303970337,
+              "projected_relative_residual": 0.493987125354153,
+              "direction_norm": 32.17545700073242,
+              "reduced_rank": 16,
+              "condition": 12.841551851541416
+            },
+            {
+              "steps": 16,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0005631739913951606,
+              "residual_check_seconds": 0.003852271009236574,
+              "relative_residual": 0.49398714303970337,
+              "projected_relative_residual": 0.4939871250847994,
+              "direction_norm": 32.176517486572266,
+              "reduced_rank": 16,
+              "condition": 12.841551851541416
+            },
+            {
+              "steps": 32,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0005792230076622218,
+              "residual_check_seconds": 0.00376553600654006,
+              "relative_residual": 0.4736766815185547,
+              "projected_relative_residual": 0.4736766219139099,
+              "direction_norm": 35.87913513183594,
+              "reduced_rank": 32,
+              "condition": 16.974738999187807
+            },
+            {
+              "steps": 32,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0010532159940339625,
+              "residual_check_seconds": 0.003745156020158902,
+              "relative_residual": 0.4736767113208771,
+              "projected_relative_residual": 0.4736766866972994,
+              "direction_norm": 35.87917709350586,
+              "reduced_rank": 32,
+              "condition": 16.974738999187807
+            },
+            {
+              "steps": 32,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0006817769899498671,
+              "residual_check_seconds": 0.003585049998946488,
+              "relative_residual": 0.4736766815185547,
+              "projected_relative_residual": 0.4736766862220831,
+              "direction_norm": 35.88083267211914,
+              "reduced_rank": 32,
+              "condition": 16.974738999187807
+            }
+          ],
+          "exact_repeat": true,
+          "finite": true,
+          "path": "outputs/TRR-0020/dev40_gpu/40_activation_1.0_2.safetensors",
+          "sha256": "8894dbbaae5d2abf8691c6f9ba9c0b89f9b7964e1d824b2b3e74e0d26fd2d61b",
+          "io_hash_seconds": 0.016496773983817548
+        }
+      ],
+      "original_exact": true,
+      "prefix_exact": true
+    },
+    {
+      "length": 40,
+      "point": "activation",
+      "strength": 0.5,
+      "fixture": {
+        "length": 40,
+        "seed": 39079,
+        "path": "outputs/TRR-0020/dev39_gpu/fixture_40.safetensors",
+        "sha256": "07b6321137a801e37407ea391dde67dd415235bf77391a90218b5222c511f3a3",
+        "io_hash_seconds": 0.0014246979844756424
+      },
+      "prior": {
+        "rep": 0,
+        "seconds": 0.07315152700175531,
+        "matvec_calls": 17,
+        "exact_repeat": true,
+        "relative_residual": 0.02582711912691593,
+        "direction_norm": 24.812030792236328,
+        "passed": true,
+        "path": "outputs/TRR-0020/dev39_gpu/linear_40_activation_0.5_16_0.safetensors",
+        "sha256": "c09073f54c7f797289322b50a7dc05d28491da0a1f9c86036106cf44507f1c7f",
+        "io_hash_seconds": 0.0012544530036393553
+      },
+      "repetitions": [
+        {
+          "rep": 0,
+          "arnoldi_seconds": 0.17911376198753715,
+          "basis_orthogonality_maximum_error": 4.76837158203125e-07,
+          "comparisons": [
+            {
+              "steps": 16,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0005512749776244164,
+              "residual_check_seconds": 0.0037292710039764643,
+              "relative_residual": 0.02582711912691593,
+              "projected_relative_residual": 0.02582712657749653,
+              "direction_norm": 24.812030792236328,
+              "reduced_rank": 16,
+              "condition": 22.47452120273834
+            },
+            {
+              "steps": 16,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0008845770207699388,
+              "residual_check_seconds": 0.0036306880065239966,
+              "relative_residual": 0.02582711912691593,
+              "projected_relative_residual": 0.02582712381424823,
+              "direction_norm": 24.81202507019043,
+              "reduced_rank": 16,
+              "condition": 22.47452120273834
+            },
+            {
+              "steps": 16,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0006636180041823536,
+              "residual_check_seconds": 0.0035061530070379376,
+              "relative_residual": 0.025827111676335335,
+              "projected_relative_residual": 0.025827122669884055,
+              "direction_norm": 24.812490463256836,
+              "reduced_rank": 16,
+              "condition": 22.47452120273834
+            },
+            {
+              "steps": 32,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0006471300148405135,
+              "residual_check_seconds": 0.0036434479989111423,
+              "relative_residual": 0.0015902182785794139,
+              "projected_relative_residual": 0.0015902150189504027,
+              "direction_norm": 25.206270217895508,
+              "reduced_rank": 32,
+              "condition": 41.194842386920094
+            },
+            {
+              "steps": 32,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0008169900102075189,
+              "residual_check_seconds": 0.0037562299985438585,
+              "relative_residual": 0.0015902051236480474,
+              "projected_relative_residual": 0.0015902117223301282,
+              "direction_norm": 25.206315994262695,
+              "reduced_rank": 32,
+              "condition": 41.194842386920094
+            },
+            {
+              "steps": 32,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0005936819943599403,
+              "residual_check_seconds": 0.003991389996372163,
+              "relative_residual": 0.0015901768347248435,
+              "projected_relative_residual": 0.001590178833194742,
+              "direction_norm": 25.207164764404297,
+              "reduced_rank": 32,
+              "condition": 41.194842386920094
+            }
+          ],
+          "exact_repeat": true,
+          "finite": true,
+          "path": "outputs/TRR-0020/dev40_gpu/40_activation_0.5_0.safetensors",
+          "sha256": "62edf1c4d1c567f4ae611999616767de53b8f160bba5732863b3018fd2e83068",
+          "io_hash_seconds": 0.013599303987575695
+        },
+        {
+          "rep": 1,
+          "arnoldi_seconds": 0.16009621598641388,
+          "basis_orthogonality_maximum_error": 4.76837158203125e-07,
+          "comparisons": [
+            {
+              "steps": 16,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0006088069931138307,
+              "residual_check_seconds": 0.0036212610139045864,
+              "relative_residual": 0.02582711912691593,
+              "projected_relative_residual": 0.02582712657749653,
+              "direction_norm": 24.812030792236328,
+              "reduced_rank": 16,
+              "condition": 22.47452120273834
+            },
+            {
+              "steps": 16,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0007904499943833798,
+              "residual_check_seconds": 0.0035515089984983206,
+              "relative_residual": 0.02582711912691593,
+              "projected_relative_residual": 0.02582712381424823,
+              "direction_norm": 24.81202507019043,
+              "reduced_rank": 16,
+              "condition": 22.47452120273834
+            },
+            {
+              "steps": 16,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0005695839936379343,
+              "residual_check_seconds": 0.003728066018084064,
+              "relative_residual": 0.025827111676335335,
+              "projected_relative_residual": 0.025827122669884055,
+              "direction_norm": 24.812490463256836,
+              "reduced_rank": 16,
+              "condition": 22.47452120273834
+            },
+            {
+              "steps": 32,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0006056590063963085,
+              "residual_check_seconds": 0.003596227994421497,
+              "relative_residual": 0.0015902182785794139,
+              "projected_relative_residual": 0.0015902150189504027,
+              "direction_norm": 25.206270217895508,
+              "reduced_rank": 32,
+              "condition": 41.194842386920094
+            },
+            {
+              "steps": 32,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0008244360215030611,
+              "residual_check_seconds": 0.003960434987675399,
+              "relative_residual": 0.0015902051236480474,
+              "projected_relative_residual": 0.0015902117223301282,
+              "direction_norm": 25.206315994262695,
+              "reduced_rank": 32,
+              "condition": 41.194842386920094
+            },
+            {
+              "steps": 32,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0006500980234704912,
+              "residual_check_seconds": 0.0035940090019721538,
+              "relative_residual": 0.0015901768347248435,
+              "projected_relative_residual": 0.001590178833194742,
+              "direction_norm": 25.207164764404297,
+              "reduced_rank": 32,
+              "condition": 41.194842386920094
+            }
+          ],
+          "exact_repeat": true,
+          "finite": true,
+          "path": "outputs/TRR-0020/dev40_gpu/40_activation_0.5_1.safetensors",
+          "sha256": "62edf1c4d1c567f4ae611999616767de53b8f160bba5732863b3018fd2e83068",
+          "io_hash_seconds": 0.013438678986858577
+        },
+        {
+          "rep": 2,
+          "arnoldi_seconds": 0.1527398039761465,
+          "basis_orthogonality_maximum_error": 4.76837158203125e-07,
+          "comparisons": [
+            {
+              "steps": 16,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0005847030261065811,
+              "residual_check_seconds": 0.0035987159935757518,
+              "relative_residual": 0.02582711912691593,
+              "projected_relative_residual": 0.02582712657749653,
+              "direction_norm": 24.812030792236328,
+              "reduced_rank": 16,
+              "condition": 22.47452120273834
+            },
+            {
+              "steps": 16,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0006599710031878203,
+              "residual_check_seconds": 0.0035237979900557548,
+              "relative_residual": 0.02582711912691593,
+              "projected_relative_residual": 0.02582712381424823,
+              "direction_norm": 24.81202507019043,
+              "reduced_rank": 16,
+              "condition": 22.47452120273834
+            },
+            {
+              "steps": 16,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0005377960042096674,
+              "residual_check_seconds": 0.003584577003493905,
+              "relative_residual": 0.025827111676335335,
+              "projected_relative_residual": 0.025827122669884055,
+              "direction_norm": 24.812490463256836,
+              "reduced_rank": 16,
+              "condition": 22.47452120273834
+            },
+            {
+              "steps": 32,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0006062779866624624,
+              "residual_check_seconds": 0.003389481018530205,
+              "relative_residual": 0.0015902182785794139,
+              "projected_relative_residual": 0.0015902150189504027,
+              "direction_norm": 25.206270217895508,
+              "reduced_rank": 32,
+              "condition": 41.194842386920094
+            },
+            {
+              "steps": 32,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0009191200078930706,
+              "residual_check_seconds": 0.013763499009655789,
+              "relative_residual": 0.0015902051236480474,
+              "projected_relative_residual": 0.0015902117223301282,
+              "direction_norm": 25.206315994262695,
+              "reduced_rank": 32,
+              "condition": 41.194842386920094
+            },
+            {
+              "steps": 32,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0010400470055174083,
+              "residual_check_seconds": 0.0035855150199495256,
+              "relative_residual": 0.0015901768347248435,
+              "projected_relative_residual": 0.001590178833194742,
+              "direction_norm": 25.207164764404297,
+              "reduced_rank": 32,
+              "condition": 41.194842386920094
+            }
+          ],
+          "exact_repeat": true,
+          "finite": true,
+          "path": "outputs/TRR-0020/dev40_gpu/40_activation_0.5_2.safetensors",
+          "sha256": "62edf1c4d1c567f4ae611999616767de53b8f160bba5732863b3018fd2e83068",
+          "io_hash_seconds": 0.01426042799721472
+        }
+      ],
+      "original_exact": true,
+      "prefix_exact": true
+    },
+    {
+      "length": 40,
+      "point": "embedding",
+      "strength": 1.0,
+      "fixture": {
+        "length": 40,
+        "seed": 39079,
+        "path": "outputs/TRR-0020/dev39_gpu/fixture_40.safetensors",
+        "sha256": "07b6321137a801e37407ea391dde67dd415235bf77391a90218b5222c511f3a3",
+        "io_hash_seconds": 0.0014246979844756424
+      },
+      "prior": {
+        "rep": 0,
+        "seconds": 0.08477956600836478,
+        "matvec_calls": 17,
+        "exact_repeat": true,
+        "relative_residual": 0.9663809537887573,
+        "direction_norm": 1.5292240381240845,
+        "passed": true,
+        "path": "outputs/TRR-0020/dev39_gpu/linear_40_embedding_1.0_16_0.safetensors",
+        "sha256": "688a8d3c80807b7d18db2bca1274b32c78bbda4493a4f1e433d8bf33bd2e6b14",
+        "io_hash_seconds": 0.0011539029947016388
+      },
+      "repetitions": [
+        {
+          "rep": 0,
+          "arnoldi_seconds": 0.1562435659870971,
+          "basis_orthogonality_maximum_error": 5.960464477539062e-07,
+          "comparisons": [
+            {
+              "steps": 16,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0005403840041253716,
+              "residual_check_seconds": 0.003631773986853659,
+              "relative_residual": 0.9663809537887573,
+              "projected_relative_residual": 0.9663810133934021,
+              "direction_norm": 1.5292240381240845,
+              "reduced_rank": 16,
+              "condition": 3.0944125783969927
+            },
+            {
+              "steps": 16,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.000809107004897669,
+              "residual_check_seconds": 0.0038824589864816517,
+              "relative_residual": 0.9663809537887573,
+              "projected_relative_residual": 0.9663809817177315,
+              "direction_norm": 1.529224157333374,
+              "reduced_rank": 16,
+              "condition": 3.0944125783969927
+            },
+            {
+              "steps": 16,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0006949660019017756,
+              "residual_check_seconds": 0.0039602039905730635,
+              "relative_residual": 0.9663809537887573,
+              "projected_relative_residual": 0.9663809817175676,
+              "direction_norm": 1.529227614402771,
+              "reduced_rank": 16,
+              "condition": 3.0944125783969927
+            },
+            {
+              "steps": 32,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0007641990086995065,
+              "residual_check_seconds": 0.0035033129970543087,
+              "relative_residual": 0.9625476002693176,
+              "projected_relative_residual": 0.9625476002693176,
+              "direction_norm": 1.6589124202728271,
+              "reduced_rank": 32,
+              "condition": 3.6517317968436256
+            },
+            {
+              "steps": 32,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0009429230121895671,
+              "residual_check_seconds": 0.00384886100073345,
+              "relative_residual": 0.9625476002693176,
+              "projected_relative_residual": 0.9625475631743547,
+              "direction_norm": 1.6589124202728271,
+              "reduced_rank": 32,
+              "condition": 3.6517317968436256
+            },
+            {
+              "steps": 32,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.000815353007055819,
+              "residual_check_seconds": 0.0038799710164312273,
+              "relative_residual": 0.9625476002693176,
+              "projected_relative_residual": 0.962547563174142,
+              "direction_norm": 1.6589165925979614,
+              "reduced_rank": 32,
+              "condition": 3.6517317968436256
+            }
+          ],
+          "exact_repeat": true,
+          "finite": true,
+          "path": "outputs/TRR-0020/dev40_gpu/40_embedding_1.0_0.safetensors",
+          "sha256": "455181442c41389590ebac2058e5667933183bca36b91ec30f3976b923ed967a",
+          "io_hash_seconds": 0.015992464002920315
+        },
+        {
+          "rep": 1,
+          "arnoldi_seconds": 0.17345273098908365,
+          "basis_orthogonality_maximum_error": 5.960464477539062e-07,
+          "comparisons": [
+            {
+              "steps": 16,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0010107179987244308,
+              "residual_check_seconds": 0.0035970839962828904,
+              "relative_residual": 0.9663809537887573,
+              "projected_relative_residual": 0.9663810133934021,
+              "direction_norm": 1.5292240381240845,
+              "reduced_rank": 16,
+              "condition": 3.0944125783969927
+            },
+            {
+              "steps": 16,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0007670810155104846,
+              "residual_check_seconds": 0.003728512005181983,
+              "relative_residual": 0.9663809537887573,
+              "projected_relative_residual": 0.9663809817177315,
+              "direction_norm": 1.529224157333374,
+              "reduced_rank": 16,
+              "condition": 3.0944125783969927
+            },
+            {
+              "steps": 16,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0009482680179644376,
+              "residual_check_seconds": 0.0041323089972138405,
+              "relative_residual": 0.9663809537887573,
+              "projected_relative_residual": 0.9663809817175676,
+              "direction_norm": 1.529227614402771,
+              "reduced_rank": 16,
+              "condition": 3.0944125783969927
+            },
+            {
+              "steps": 32,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0005221049941610545,
+              "residual_check_seconds": 0.004063083993969485,
+              "relative_residual": 0.9625476002693176,
+              "projected_relative_residual": 0.9625476002693176,
+              "direction_norm": 1.6589124202728271,
+              "reduced_rank": 32,
+              "condition": 3.6517317968436256
+            },
+            {
+              "steps": 32,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0008582040027249604,
+              "residual_check_seconds": 0.004025565984193236,
+              "relative_residual": 0.9625476002693176,
+              "projected_relative_residual": 0.9625475631743547,
+              "direction_norm": 1.6589124202728271,
+              "reduced_rank": 32,
+              "condition": 3.6517317968436256
+            },
+            {
+              "steps": 32,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0008153410162776709,
+              "residual_check_seconds": 0.003440771979512647,
+              "relative_residual": 0.9625476002693176,
+              "projected_relative_residual": 0.962547563174142,
+              "direction_norm": 1.6589165925979614,
+              "reduced_rank": 32,
+              "condition": 3.6517317968436256
+            }
+          ],
+          "exact_repeat": true,
+          "finite": true,
+          "path": "outputs/TRR-0020/dev40_gpu/40_embedding_1.0_1.safetensors",
+          "sha256": "455181442c41389590ebac2058e5667933183bca36b91ec30f3976b923ed967a",
+          "io_hash_seconds": 0.014086243987549096
+        },
+        {
+          "rep": 2,
+          "arnoldi_seconds": 0.16687961199204437,
+          "basis_orthogonality_maximum_error": 5.960464477539062e-07,
+          "comparisons": [
+            {
+              "steps": 16,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0007175320060923696,
+              "residual_check_seconds": 0.0036196300061419606,
+              "relative_residual": 0.9663809537887573,
+              "projected_relative_residual": 0.9663810133934021,
+              "direction_norm": 1.5292240381240845,
+              "reduced_rank": 16,
+              "condition": 3.0944125783969927
+            },
+            {
+              "steps": 16,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0006918279977981001,
+              "residual_check_seconds": 0.0038126290019135922,
+              "relative_residual": 0.9663809537887573,
+              "projected_relative_residual": 0.9663809817177315,
+              "direction_norm": 1.529224157333374,
+              "reduced_rank": 16,
+              "condition": 3.0944125783969927
+            },
+            {
+              "steps": 16,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0005401829839684069,
+              "residual_check_seconds": 0.0036321420047897846,
+              "relative_residual": 0.9663809537887573,
+              "projected_relative_residual": 0.9663809817175676,
+              "direction_norm": 1.529227614402771,
+              "reduced_rank": 16,
+              "condition": 3.0944125783969927
+            },
+            {
+              "steps": 32,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0004830180259887129,
+              "residual_check_seconds": 0.0036388380103744566,
+              "relative_residual": 0.9625476002693176,
+              "projected_relative_residual": 0.9625476002693176,
+              "direction_norm": 1.6589124202728271,
+              "reduced_rank": 32,
+              "condition": 3.6517317968436256
+            },
+            {
+              "steps": 32,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0010932169971056283,
+              "residual_check_seconds": 0.0036078160046599805,
+              "relative_residual": 0.9625476002693176,
+              "projected_relative_residual": 0.9625475631743547,
+              "direction_norm": 1.6589124202728271,
+              "reduced_rank": 32,
+              "condition": 3.6517317968436256
+            },
+            {
+              "steps": 32,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0007585370040033013,
+              "residual_check_seconds": 0.0036418960080482066,
+              "relative_residual": 0.9625476002693176,
+              "projected_relative_residual": 0.962547563174142,
+              "direction_norm": 1.6589165925979614,
+              "reduced_rank": 32,
+              "condition": 3.6517317968436256
+            }
+          ],
+          "exact_repeat": true,
+          "finite": true,
+          "path": "outputs/TRR-0020/dev40_gpu/40_embedding_1.0_2.safetensors",
+          "sha256": "455181442c41389590ebac2058e5667933183bca36b91ec30f3976b923ed967a",
+          "io_hash_seconds": 0.02029839498572983
+        }
+      ],
+      "original_exact": true,
+      "prefix_exact": true
+    },
+    {
+      "length": 40,
+      "point": "embedding",
+      "strength": 0.5,
+      "fixture": {
+        "length": 40,
+        "seed": 39079,
+        "path": "outputs/TRR-0020/dev39_gpu/fixture_40.safetensors",
+        "sha256": "07b6321137a801e37407ea391dde67dd415235bf77391a90218b5222c511f3a3",
+        "io_hash_seconds": 0.0014246979844756424
+      },
+      "prior": {
+        "rep": 0,
+        "seconds": 0.08584143299958669,
+        "matvec_calls": 17,
+        "exact_repeat": true,
+        "relative_residual": 0.7804118990898132,
+        "direction_norm": 8.999650955200195,
+        "passed": true,
+        "path": "outputs/TRR-0020/dev39_gpu/linear_40_embedding_0.5_16_0.safetensors",
+        "sha256": "5254cda657cdb3ecde151e95f9da683f46486a5a7fc0f340e8278fb39be8bbf9",
+        "io_hash_seconds": 0.0012780730030499399
+      },
+      "repetitions": [
+        {
+          "rep": 0,
+          "arnoldi_seconds": 0.15682207100326195,
+          "basis_orthogonality_maximum_error": 8.344650268554688e-07,
+          "comparisons": [
+            {
+              "steps": 16,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0004923520027659833,
+              "residual_check_seconds": 0.003674371022498235,
+              "relative_residual": 0.7804118990898132,
+              "projected_relative_residual": 0.7804118990898132,
+              "direction_norm": 8.999650955200195,
+              "reduced_rank": 16,
+              "condition": 4.601118086006485
+            },
+            {
+              "steps": 16,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0006995329749770463,
+              "residual_check_seconds": 0.0035813029971905053,
+              "relative_residual": 0.7804118394851685,
+              "projected_relative_residual": 0.7804118845608451,
+              "direction_norm": 8.999649047851562,
+              "reduced_rank": 16,
+              "condition": 4.601118086006485
+            },
+            {
+              "steps": 16,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.000620083010289818,
+              "residual_check_seconds": 0.003730761003680527,
+              "relative_residual": 0.7804118394851685,
+              "projected_relative_residual": 0.7804118845574954,
+              "direction_norm": 8.999688148498535,
+              "reduced_rank": 16,
+              "condition": 4.601118086006485
+            },
+            {
+              "steps": 32,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0005329769919626415,
+              "residual_check_seconds": 0.0036938229750376195,
+              "relative_residual": 0.7744091749191284,
+              "projected_relative_residual": 0.7744091749191284,
+              "direction_norm": 9.140375137329102,
+              "reduced_rank": 32,
+              "condition": 5.326886073800563
+            },
+            {
+              "steps": 32,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.000881150015629828,
+              "residual_check_seconds": 0.003472053009318188,
+              "relative_residual": 0.7744091749191284,
+              "projected_relative_residual": 0.7744091572490232,
+              "direction_norm": 9.140374183654785,
+              "reduced_rank": 32,
+              "condition": 5.326886073800563
+            },
+            {
+              "steps": 32,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0006470759981311858,
+              "residual_check_seconds": 0.01593509901431389,
+              "relative_residual": 0.7744091749191284,
+              "projected_relative_residual": 0.7744091572453631,
+              "direction_norm": 9.140416145324707,
+              "reduced_rank": 32,
+              "condition": 5.326886073800563
+            }
+          ],
+          "exact_repeat": true,
+          "finite": true,
+          "path": "outputs/TRR-0020/dev40_gpu/40_embedding_0.5_0.safetensors",
+          "sha256": "b74ad0983598bfd13cd2eb86e3ac68b61b3587db5f502c9628bea615e81c173f",
+          "io_hash_seconds": 0.013255715981358662
+        },
+        {
+          "rep": 1,
+          "arnoldi_seconds": 0.15414238898665644,
+          "basis_orthogonality_maximum_error": 8.344650268554688e-07,
+          "comparisons": [
+            {
+              "steps": 16,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0006972019909881055,
+              "residual_check_seconds": 0.003790117014432326,
+              "relative_residual": 0.7804118990898132,
+              "projected_relative_residual": 0.7804118990898132,
+              "direction_norm": 8.999650955200195,
+              "reduced_rank": 16,
+              "condition": 4.601118086006485
+            },
+            {
+              "steps": 16,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0006846879841759801,
+              "residual_check_seconds": 0.003503366984659806,
+              "relative_residual": 0.7804118394851685,
+              "projected_relative_residual": 0.7804118845608451,
+              "direction_norm": 8.999649047851562,
+              "reduced_rank": 16,
+              "condition": 4.601118086006485
+            },
+            {
+              "steps": 16,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0006137979798950255,
+              "residual_check_seconds": 0.0034356040123384446,
+              "relative_residual": 0.7804118394851685,
+              "projected_relative_residual": 0.7804118845574954,
+              "direction_norm": 8.999688148498535,
+              "reduced_rank": 16,
+              "condition": 4.601118086006485
+            },
+            {
+              "steps": 32,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0004892070137429982,
+              "residual_check_seconds": 0.003507674002321437,
+              "relative_residual": 0.7744091749191284,
+              "projected_relative_residual": 0.7744091749191284,
+              "direction_norm": 9.140375137329102,
+              "reduced_rank": 32,
+              "condition": 5.326886073800563
+            },
+            {
+              "steps": 32,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0008299679902847856,
+              "residual_check_seconds": 0.0034651979804039,
+              "relative_residual": 0.7744091749191284,
+              "projected_relative_residual": 0.7744091572490232,
+              "direction_norm": 9.140374183654785,
+              "reduced_rank": 32,
+              "condition": 5.326886073800563
+            },
+            {
+              "steps": 32,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0006219630013220012,
+              "residual_check_seconds": 0.0034143570228479803,
+              "relative_residual": 0.7744091749191284,
+              "projected_relative_residual": 0.7744091572453631,
+              "direction_norm": 9.140416145324707,
+              "reduced_rank": 32,
+              "condition": 5.326886073800563
+            }
+          ],
+          "exact_repeat": true,
+          "finite": true,
+          "path": "outputs/TRR-0020/dev40_gpu/40_embedding_0.5_1.safetensors",
+          "sha256": "b74ad0983598bfd13cd2eb86e3ac68b61b3587db5f502c9628bea615e81c173f",
+          "io_hash_seconds": 0.015368960972409695
+        },
+        {
+          "rep": 2,
+          "arnoldi_seconds": 0.15596502998960204,
+          "basis_orthogonality_maximum_error": 8.344650268554688e-07,
+          "comparisons": [
+            {
+              "steps": 16,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.0008429549925494939,
+              "residual_check_seconds": 0.0034259350213687867,
+              "relative_residual": 0.7804118990898132,
+              "projected_relative_residual": 0.7804118990898132,
+              "direction_norm": 8.999650955200195,
+              "reduced_rank": 16,
+              "condition": 4.601118086006485
+            },
+            {
+              "steps": 16,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0006715120107401162,
+              "residual_check_seconds": 0.0036956099793314934,
+              "relative_residual": 0.7804118394851685,
+              "projected_relative_residual": 0.7804118845608451,
+              "direction_norm": 8.999649047851562,
+              "reduced_rank": 16,
+              "condition": 4.601118086006485
+            },
+            {
+              "steps": 16,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0005258730088826269,
+              "residual_check_seconds": 0.003546602005371824,
+              "relative_residual": 0.7804118394851685,
+              "projected_relative_residual": 0.7804118845574954,
+              "direction_norm": 8.999688148498535,
+              "reduced_rank": 16,
+              "condition": 4.601118086006485
+            },
+            {
+              "steps": 32,
+              "mode": "normal_ridge",
+              "solve_seconds": 0.000490751990582794,
+              "residual_check_seconds": 0.0036615210119634867,
+              "relative_residual": 0.7744091749191284,
+              "projected_relative_residual": 0.7744091749191284,
+              "direction_norm": 9.140375137329102,
+              "reduced_rank": 32,
+              "condition": 5.326886073800563
+            },
+            {
+              "steps": 32,
+              "mode": "svd_ridge",
+              "solve_seconds": 0.0008394239994231611,
+              "residual_check_seconds": 0.0034651879977900535,
+              "relative_residual": 0.7744091749191284,
+              "projected_relative_residual": 0.7744091572490232,
+              "direction_norm": 9.140374183654785,
+              "reduced_rank": 32,
+              "condition": 5.326886073800563
+            },
+            {
+              "steps": 32,
+              "mode": "svd_unregularized",
+              "solve_seconds": 0.0006277560023590922,
+              "residual_check_seconds": 0.003503498010104522,
+              "relative_residual": 0.7744091749191284,
+              "projected_relative_residual": 0.7744091572453631,
+              "direction_norm": 9.140416145324707,
+              "reduced_rank": 32,
+              "condition": 5.326886073800563
+            }
+          ],
+          "exact_repeat": true,
+          "finite": true,
+          "path": "outputs/TRR-0020/dev40_gpu/40_embedding_0.5_2.safetensors",
+          "sha256": "b74ad0983598bfd13cd2eb86e3ac68b61b3587db5f502c9628bea615e81c173f",
+          "io_hash_seconds": 0.014229139022063464
+        }
+      ],
+      "original_exact": true,
+      "prefix_exact": true
+    }
+  ],
+  "prefix_sha256": "10fd7e98719037954a51299eb9cb680544a659400ee2431e8aac333626f5e61c",
+  "preparation_seconds": 1.024590733984951,
+  "largest_cell": {
+    "passed": true,
+    "steps": 32,
+    "peak_reserved": 2673868800
+  },
+  "end_unix": 1789875346.7234635,
+  "peak_reserved": 2673868800,
+  "peak_allocated": 2410883072,
+  "peak_host_rss": 2573500416
+}
