@@ -1,0 +1,33 @@
+{
+  "task_id": "TRR-0020",
+  "created_utc": "2026-09-20T02:53:39.206880+00:00",
+  "gpu": "name, memory.total [MiB], memory.free [MiB], temperature.gpu\nNVIDIA GeForce RTX 5080, 16303 MiB, 10002 MiB, 36\n",
+  "compute_pids": "",
+  "host_memory": [
+    "MemTotal:       31651964 kB",
+    "MemFree:        29462484 kB",
+    "MemAvailable:   30659872 kB",
+    "Buffers:            4488 kB",
+    "Cached:          1097748 kB"
+  ],
+  "calculation": "Prior joint64grid peak4.201GiB plus0.979GiBfull response table and smallbuffers; estimate6GiBreserved upperbound. One engine/worker; workers sequential. No slicing/padding/batching resource workaround.",
+  "estimated_peak_reserved_GiB": 6,
+  "expected_seconds_upper": 420,
+  "guard_timeout_seconds": 1800,
+  "largest_cell": {
+    "length": 128,
+    "updates": 64,
+    "vocabulary": 128256,
+    "logit_elements": 16288512
+  },
+  "cells": 48,
+  "repetitions": 144,
+  "qualification_repeats": 36,
+  "eager_checks": 12,
+  "gradient_checks": 4,
+  "guard": "threeidle samples>=9000MiB, runtimeGPUfree>=3GiB/host>=8GiB/reserved<=8GiB/temp<80; largestcellbeforematrix",
+  "prior_evidence": [
+    "dev32_grid_guard.json",
+    "dev38_public_probe.json"
+  ]
+}
