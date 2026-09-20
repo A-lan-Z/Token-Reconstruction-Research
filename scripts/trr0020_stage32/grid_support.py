@@ -11,7 +11,7 @@ from budget_optimizer import BudgetOptimizer,CONFIGS,CHECKPOINTS,AUX_KEYS,gradie
 torch=n.torch;torch.set_num_threads(2);torch.use_deterministic_algorithms(True)
 torch.backends.cuda.matmul.allow_tf32=False;torch.backends.cudnn.allow_tf32=False
 if os.environ.get("CUBLAS_WORKSPACE_CONFIG")!=":4096:8":raise RuntimeError("wrong deterministic environment")
-X=ROOT/"experiments/TRR-0020";OUT=ROOT/"outputs/TRR-0020/dev32_grid_grid"
+X=ROOT/"experiments/TRR-0020";OUT=ROOT/"outputs/TRR-0020/dev32_grid"
 INPUT=ROOT.parent/"TRR-0014/outputs/TRR-0014/fresh_r1"
 TRACE_KEYS=["loss_trace","observed_error_trace","mean_confidence_trace","mean_gini_trace"]
 def guard():
