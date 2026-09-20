@@ -1,0 +1,27 @@
+{
+  "task_id": "TRR-0020",
+  "created_unix": 1789863478.448738,
+  "gpu": "NVIDIA GeForce RTX 5080, 16303, 14077, 37",
+  "compute_pids": "",
+  "host_available": "MemAvailable:   30656220 kB",
+  "geometry": {
+    "positions": 128,
+    "vocabulary": 128256,
+    "width": 2048,
+    "layers": 4,
+    "mirror_steps": 64,
+    "scalar_iterations_max": 16,
+    "captured_lengths": 2
+  },
+  "prior_public_peak_gib": 3.876953125,
+  "prior_mirror_graph_peak_gib": 4.076171875,
+  "estimated_peak_reserved_gib": 6.5,
+  "guard_peak_reserved_gib": 8,
+  "minimum_free_gib": 3,
+  "largest_first": "factor2/iterations16 with128positions",
+  "configurations": 7,
+  "reconstruction_cells": 56,
+  "expected_seconds": 300,
+  "timeout_seconds": 1500,
+  "justification": "Graph buffers add the qualified full-vocabulary KL temporaries to the existing mirror engine. Conservative6.5GiB estimate leaves about7GiB from current idle free; qualify largest captured geometry before other cells. Eager FP64 checks run on CPU."
+}
