@@ -12,7 +12,7 @@ The optimizer then explores an input geometry the prefix does not normally see.
 This is a hypothesis, not an established cause of the failed reconstructions.
 
 Define m=sum(p_i E_i), q=sum(p_i ||E_i||^2), and x=m*sqrt(q/||m||^2), with
-both scalar denominators clamped at1e-24. This preserves expected squared norm
+both scalar quantities clamped at1e-24. This preserves expected squared norm
 away from the zero-mean clamp and equals each token embedding mathematically at
 a one-hot distribution. It does not guarantee a unique probability representation.
 Every vocabulary probability remains eligible, no token list is proposed, and
