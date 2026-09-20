@@ -1,6 +1,6 @@
 {
   "task_id": "TRR-0020",
-  "status": "DEVELOPMENT45_RUNNING",
+  "status": "DEVELOPMENT45_COMPLETE_NO_EFFECTIVE_REPLACEMENT",
   "goal_completed": false,
   "initial_execution_commit": "a7e7f0628e88add676e767f188df1d903a749efb",
   "dev1_execution_commit": "9724dce2f14ccea2af63c0cbd590ab189ef4b7a8",
@@ -67,7 +67,7 @@
     "dev32": 56,
     "dev33": 96
   },
-  "current_experiment": "Exact pointwise full-decoder byte equivalence and timing",
+  "current_experiment": "Exact full-decoder experiment terminal, scored and archived",
   "complete_archives": [
     "dev1_archive.json",
     "dev2_archive.json",
@@ -235,7 +235,7 @@
     "partial_archive": "dev13_partial_archive.json",
     "guard": "dev13_guard.json"
   },
-  "updated_utc": "2026-09-20T04:44:07.838137+00:00",
+  "updated_utc": "2026-09-20T04:47:58.142310+00:00",
   "dev13_r1": {
     "status": "COMPLETE_SCORED_ARCHIVED",
     "freeze": "dev13_r1_freeze.json",
@@ -1184,8 +1184,8 @@
     "execution_commit": "63f1b1d13f99aae108aa3186ea0454afef158455",
     "conclusion": "32.5%/17.4%faster at64updates for128/40positions, but bothproseconditions lose4tokens; no contender selected."
   },
-  "completed_development_matrices": 32,
-  "completed_development_cells": 2560,
+  "completed_development_matrices": 33,
+  "completed_development_cells": 2592,
   "dev44": {
     "status": "EXACT_GPU_UPDATE_QUALIFIED_AND_ARCHIVED",
     "plan": "DEV44_PLAN.md",
@@ -1345,5 +1345,97 @@
     "gpu_execution_commit": "53236c795e59287132058cf290e746ab22d4172f",
     "archive_summary_execution_commit": "d68b4f668c615c85877cf508f6678f4919f94007",
     "conclusion": "Original reduction order preserved; byte-exact on qualified public states. Full decoder next."
+  },
+  "dev45": {
+    "status": "COMPLETE_EXACT_OUTPUTS_MODEST_SPEED_GAIN",
+    "plan": "DEV45_PLAN.md",
+    "freeze": "dev45_freeze.json",
+    "score": "dev45_score.json",
+    "summary": "dev45_summary.json",
+    "archive": "dev45_archive.json",
+    "reconstruction_cells": 32,
+    "repetitions": 96,
+    "public_repeated_decodes": 24,
+    "eager_checks": 8,
+    "independent_gradient_checks": 4,
+    "all_complete_outputs_and_recorded_traces_exact": true,
+    "real_original_anchor_checks": 96,
+    "timings": [
+      {
+        "mode": "control",
+        "steps": 64,
+        "length": 40,
+        "records": 4,
+        "mean_median_seconds": 0.4170536977617303,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "control",
+        "steps": 64,
+        "length": 128,
+        "records": 4,
+        "mean_median_seconds": 1.0383527637532097,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "control",
+        "steps": 128,
+        "length": 40,
+        "records": 4,
+        "mean_median_seconds": 0.8251260444885702,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "control",
+        "steps": 128,
+        "length": 128,
+        "records": 4,
+        "mean_median_seconds": 2.0606813552440144,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "exact",
+        "steps": 64,
+        "length": 40,
+        "records": 4,
+        "mean_median_seconds": 0.40663582499837503,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "exact",
+        "steps": 64,
+        "length": 128,
+        "records": 4,
+        "mean_median_seconds": 0.9432862927496899,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "exact",
+        "steps": 128,
+        "length": 40,
+        "records": 4,
+        "mean_median_seconds": 0.8060923625089345,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "exact",
+        "steps": 128,
+        "length": 128,
+        "records": 4,
+        "mean_median_seconds": 1.8749777615012135,
+        "mean_lookup_seconds": 0.0
+      }
+    ],
+    "peak_reserved_GiB": 4.576171875,
+    "execution_commit": "9b0bc7f2ade7b250c077d489ad1e02c487bbec6c",
+    "archive_summary_execution_commit": "e9a394a78b050dae3f1d2ba6a0a3f1f24aa83813",
+    "conclusion": "Identical outputs on entire development matrix,9.16%/2.50% lower time at128/40positions64updates; no baseline replacement"
+  },
+  "continuation20_audit": {
+    "request": "coordination/requests/TRR-0020-CONTINUE-20.md",
+    "previous_turn_classification": "progress: development40-43 completed with scientific evidence changing next action",
+    "action": "Completed development44 byte-exact update qualification and development45 complete32cell decoder matrix; preserved/scored/archived all outputs; clarified old256candidate mechanism",
+    "outcome": "Concrete progress; full requested end state remains unproven; no live GPU job",
+    "administrative_failure": "Postprocessing generator SyntaxError from duplicate comma; caught before writing summary source, with no effect on frozen scientific run."
   }
 }
