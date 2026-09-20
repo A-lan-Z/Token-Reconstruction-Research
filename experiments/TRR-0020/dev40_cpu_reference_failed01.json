@@ -1,0 +1,41 @@
+{
+  "task_id": "TRR-0020",
+  "execution_commit": "6802969dd3c6e6f9dc8ff67a401afa4d43116c3f",
+  "command": [
+    "/usr/bin/python3",
+    "scripts/trr0020_stage40/cpu_check.py"
+  ],
+  "environment": {
+    "torch": "2.10.0+cu128",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]"
+  },
+  "sources": {
+    "scripts/trr0020_stage40/gpu_audit.py": "e013e7437c4549aa8256ca310782b92ff346bb88a8b94a666ee1a5e6be9f40d6",
+    "scripts/trr0020_stage40/krylov_audit.py": "469690e7d492691c15a292a557c21a40afbdae12d2d3eca1ece4f253b621a75d",
+    "scripts/trr0020_stage40/cpu_check.py": "d2840715618288edb2d67abb639f8b50563e95baadd065739fda386c7d4d565a",
+    "scripts/trr0020_stage39/homotopy.py": "1283ccd367061b55eb60b0841349cd8bb48b0326dc549c8d32a36235ecdbc792",
+    "experiments/TRR-0020/DEV40_PLAN.md": "46797608b8e08d18b63cf12893e962e91db0fd0962bbd1388c656f055a6fc0bc"
+  },
+  "start_unix": 1789875176.367667,
+  "passed": false,
+  "cases": [
+    {
+      "dtype": "torch.float32",
+      "kind": "well",
+      "original_exact": true,
+      "prefix_exact": true,
+      "comparisons": {
+        "svd_ridge": {
+          "coefficient_maximum_error": 1.1303809888119076e-07,
+          "actual_relative_residual": 1.1212626986889518e-06
+        },
+        "svd_unregularized": {
+          "coefficient_maximum_error": 7.535600587971203e-08,
+          "actual_relative_residual": 1.263514946003852e-07
+        }
+      }
+    }
+  ],
+  "failure": "Traceback (most recent call last):\n  File \"/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0020/scripts/trr0020_stage40/cpu_check.py\", line 49, in main\n    torch.testing.assert_close(answer.double(),reference_direction,rtol=1e-4 if dtype==torch.float32 else 2e-7,atol=3e-5 if dtype==torch.float32 else 2e-7)\n  File \"/home/alanz/.local/lib/python3.12/site-packages/torch/testing/_comparison.py\", line 1600, in assert_close\n    raise error_metas[0].to_error(msg)\nAssertionError: Tensor-likes are not close!\n\nMismatched elements: 9 / 24 (37.5%)\nGreatest absolute difference: 0.0031882479815976694 at index (1, 1) (up to 3e-05 allowed)\nGreatest relative difference: 0.020337231097107503 at index (2, 7) (up to 0.0001 allowed)\n",
+  "end_unix": 1789875176.4392416
+}

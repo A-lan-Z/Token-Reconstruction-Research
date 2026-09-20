@@ -24,12 +24,12 @@ def reduced(h,beta,mode):
             hh=torch.cat([hh,(1e-6*scale.cpu().double()).sqrt()*torch.eye(steps,dtype=torch.float64)])
             bb=torch.cat([bb,torch.zeros((steps,1),dtype=torch.float64)])
         elif mode!="svd_unregularized":raise ValueError(mode)
-        coefficient=torch.linalg.lstsq(hh,bb,driver="gelsd",rcond=1e-12).solution[:,0].to(h)
+        coefficient=torch.linalg.lstsq(hh,bb,driver="gelsd",rcond=1e-12).solution[:,0].to(device=h.device)
     return coefficient
 
 def direction(basis,h,beta,steps,mode):
     small=h[:steps+1,:steps].contiguous()
     coefficient=reduced(small,beta,mode)
-    answer=(basis[...,:steps]*coefficient).sum(-1)
+    answer=((basis[...,:steps]*coefficient).sum(-1) if mode=="normal_ridge" else (basis[...,:steps].double()*coefficient).sum(-1).to(basis.dtype))
     rhs=torch.zeros(steps+1,device=h.device,dtype=h.dtype);rhs[0]=beta
-    return answer,coefficient,small@coefficient-rhs
+    return answer,coefficient,(small@coefficient-rhs if mode=="normal_ridge" else small.double()@coefficient-rhs.double())

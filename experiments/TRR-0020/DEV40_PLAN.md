@@ -27,3 +27,11 @@ diagnostic is independently reproducible. Fixture and source hashes are bound.
 No reconstruction accuracy or baseline-speed claim is made from this diagnostic.
 If normal equations or ridge do not explain the failure, do not silently label
 this an improved inverse. Choose a different solve/path based on the evidence.
+
+The first CPU qualification (6802969) failed the independent final-direction
+comparison in a FP32 ill-conditioned system: the small SVD solve agreed, but
+casting its coefficients and accumulating the basis combination inFP32 lost
+up to.00319absolute accuracy. Preserve dev40_cpu_reference_failed01.json.
+The stable variants now retainFP64coefficients and accumulate the basis
+combination inFP64 before a single cast to input dtype. The original normal
+solver is unchanged. This is a new numerical audit variant, not an exact port.
