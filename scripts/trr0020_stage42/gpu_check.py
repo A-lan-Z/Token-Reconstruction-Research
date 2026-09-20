@@ -3,6 +3,7 @@ from pathlib import Path
 import sys,os,json,time,subprocess,resource,traceback,statistics
 ROOT=Path(__file__).resolve().parents[2]
 for part in ["scripts/trr0014","scripts/trr0020_stage32","scripts/trr0020_stage39"]:sys.path.insert(0,str(ROOT/part))
+sys.path.insert(0,str(Path(__file__).parent))
 import native as n
 from gpu_qualification import guard
 from budget_step import update as original
