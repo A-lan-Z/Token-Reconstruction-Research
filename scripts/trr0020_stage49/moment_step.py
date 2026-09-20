@@ -18,9 +18,6 @@ def bound_value(s,c,mode):
     alpha=c/(1+c);beta=1/(1+c)
     return torch.log1p(alpha*expm1_minus(s)+beta*expm1_minus(-c*s))
 
-def torch_root(variance,positive_bound,target,active):
-    raise RuntimeError("explicit bound mode required")
-
 def solve_torch(variance,positive_bound,target,active,mode):
     variance=variance.double();b=positive_bound.double();target=target.double()
     b=torch.where(active,b,torch.ones_like(b))

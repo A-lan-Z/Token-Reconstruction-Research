@@ -56,11 +56,13 @@ def main():
                     ref=reference_root(info["weighted_variance"][row],info["positive_bound"][row],info["target"][row],mode)
                     relative.append(abs(float(info["normalized_step"][row])-ref)/max(abs(ref),1e-300))
             preserved=all(torch.equal(a,b) for a,b in zip(before,[z,g,e]))
+            inactive=~info["active"]
+            inactive_error=float((lp.exp()[inactive]-lq.exp()[inactive]).abs().max()) if bool(inactive.any()) else 0.
             row={"dtype":str(dtype),"vocab":vocab,"kind":kind,"mode":mode,"finite":finite,"feasible":feasible,
-              "inputs_unchanged":preserved,"maximum_relative_root_error":max(relative,default=0),
+              "inputs_unchanged":preserved,"inactive_probability_error":inactive_error,"maximum_relative_root_error":max(relative,default=0),
               "direct_kl":actual.tolist(),"budget":info["requested_budget"].tolist(),"bound_kl":info["bound_kl"].tolist()}
             result["cases"].append(row)
-            if not finite or not feasible or not preserved or max(relative,default=0)>3e-6:raise RuntimeError("CPU qualification failed")
+            if not finite or not feasible or not preserved or inactive_error>(1e-12 if dtype==torch.float64 else 1e-6) or max(relative,default=0)>3e-6:raise RuntimeError("CPU qualification failed")
       result["passed"]=len(result["cases"])==84
     except Exception:result["failure"]=traceback.format_exc();raise
     finally:
