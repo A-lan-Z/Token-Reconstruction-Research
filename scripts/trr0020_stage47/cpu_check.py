@@ -5,7 +5,7 @@ from aa_step import mix
 ROOT=Path(__file__).resolve().parents[2];DEST=ROOT/"experiments/TRR-0020/dev47_cpu_reference.json"
 def main():
     if DEST.exists():raise RuntimeError("create-only")
-    torch.set_num_threads(2);g=torch.Generator().manual_seed(47047)
+    torch.set_num_threads(2);torch.manual_seed(47047);g=torch.Generator().manual_seed(47047)
     result={"task_id":"TRR-0020","passed":False,"cases":[],"start_unix":time.time(),
       "execution_commit":subprocess.check_output(["git","rev-parse","HEAD"],cwd=ROOT,text=True).strip(),
       "command":[sys.executable,*sys.argv],"environment":{"torch":torch.__version__,"python":sys.version},

@@ -1,5 +1,5 @@
 """Input-specific bounded history mixing; no candidate proposal or learned predictor."""
-import torch
+import time,torch
 from reused_optimizer import ReusedOptimizer
 from reused_step import update
 from aa_step import mix
@@ -32,7 +32,11 @@ class HistoryOptimizer(ReusedOptimizer):
             self.aa_trace.index_copy_(0,self.counter-1,ar[None])
     def decode(self,h,steps=64,replay=True):
         out,stats=super().decode(h,steps,replay)
+        start=time.perf_counter()
         if self.metric is not None:out["aa_trace"]=self.aa_trace[:steps].cpu()
+        extra=time.perf_counter()-start
+        stats["history_output_transfer_seconds"]=extra
+        stats["total_seconds"]+=extra
         stats.update(history_rule=self.name,history_ridge=1e-4,history_metric=self.metric,history_clip=self.clip,
           history_scope="one global scalar from current/previous full-vocabulary residuals; logits mix; no fitted predictor")
         if self.metric is not None:stats["budget_rule"]="base update uses original KL budget; subsequent bounded history mixing has no claimed KL bound"
