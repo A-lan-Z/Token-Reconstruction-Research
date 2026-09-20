@@ -3,8 +3,8 @@ from pathlib import Path
 import json,statistics,time,sys,subprocess
 ROOT=Path(__file__).resolve().parents[1];X=ROOT/"experiments/TRR-0020"
 def main():
-    q=json.loads((X/"dev41_profile_r1.json").read_text());g=json.loads((X/"dev41_profile_r1_guard.json").read_text())
-    a=json.loads((X/"dev41_profile_r1_archive.json").read_text())
+    q=json.loads((X/"dev41_profile_r2.json").read_text());g=json.loads((X/"dev41_profile_r2_guard.json").read_text())
+    a=json.loads((X/"dev41_profile_r2_archive.json").read_text())
     if not q["passed"] or g["returncode"]!=0 or not a["all_members_roundtrip_verified"]:raise RuntimeError("incomplete")
     rows=[]
     for length in [128,40]:
@@ -23,6 +23,6 @@ def main():
       "prefix_seconds":q["prefix_seconds"],"engine_seconds":q["engine_seconds"],
       "limitation":"Profiler changes scheduling/latency; isolated budget repeatedly uses a fixed step16state while full steps evolve. These timings are diagnostics, not a speedup or canonical comparison.",
       "execution_commit":subprocess.check_output(["git","rev-parse","HEAD"],cwd=ROOT,text=True).strip(),"command":[sys.executable,*sys.argv],"created_unix":time.time()}
-    with (X/"dev41_profile_r1_summary.json").open("x") as f:json.dump(result,f,indent=2);f.write("\n")
+    with (X/"dev41_profile_r2_summary.json").open("x") as f:json.dump(result,f,indent=2);f.write("\n")
     print(json.dumps(result,indent=2))
 if __name__=="__main__":main()

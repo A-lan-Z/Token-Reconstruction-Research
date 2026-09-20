@@ -1,0 +1,28 @@
+{
+  "task_id": "TRR-0020",
+  "created_utc": "2026-09-20T03:50:12.933473+00:00",
+  "gpu": "name, memory.total [MiB], memory.free [MiB], temperature.gpu\nNVIDIA GeForce RTX 5080, 16303 MiB, 13265 MiB, 38\n",
+  "compute_pids": "",
+  "host_memory": [
+    "MemTotal:       31651964 kB",
+    "MemFree:        30347780 kB",
+    "MemAvailable:   30650500 kB",
+    "Buffers:            2400 kB",
+    "Cached:           207176 kB"
+  ],
+  "geometry": "128x128256FP32logits/gradients and four-layerprefix; native128/40sequences, two existing graph pools; profiler five eager steps; two full fixture copies",
+  "prior_peak_reserved_GiB": 5.18359375,
+  "estimated_peak_reserved_GiB": 7.0,
+  "estimate": "Prior locked-first full decoder peaked5.184GiB including1GiBresponse table, absent here. Allow2.8GiBextra for eager/profile temporaries and fixtures. Require11GiBfree beforeload, leaving>=4GiBestimated.",
+  "expected_seconds_upper": 240,
+  "timeout_seconds": 600,
+  "control_repeats": 6,
+  "profiles": 4,
+  "iterations_per_profile": 5,
+  "guard": "exclusive3samples>=9000MiB, internalinitialfree>=11GiB, runtimeexisting>=3GiBfree/reserved<=8GiB/host>=8GiB/temp<80",
+  "largest_first": "128control64 and both profiles",
+  "no_resource_batching_workaround": true,
+  "prior_attempt_peak_reserved_GiB": 4.478515625,
+  "prior_failure": "Releasing loss alone did not remove all autograd references; detached fixtures and process isolation now enforced",
+  "execution": "Sequential isolated native128and40workers; each must reproduce all original outputs and traces exactly"
+}
