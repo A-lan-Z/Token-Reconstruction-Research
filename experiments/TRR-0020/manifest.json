@@ -1,6 +1,6 @@
 {
   "task_id": "TRR-0020",
-  "status": "ACTIVE_RESEARCH_GOAL_UNMET",
+  "status": "DEVELOPMENT33_COMPLETE_NO_ADEQUATE_METHOD",
   "goal_completed": false,
   "initial_execution_commit": "a7e7f0628e88add676e767f188df1d903a749efb",
   "dev1_execution_commit": "9724dce2f14ccea2af63c0cbd590ab189ef4b7a8",
@@ -64,9 +64,10 @@
     "dev27": 64,
     "dev29": 48,
     "dev30": 48,
-    "dev32": 56
+    "dev32": 56,
+    "dev33": 96
   },
-  "current_experiment": "Development33 causal full-vocabulary current-token optimization; CPU chain rule qualified, actual-prefix diagnostic next",
+  "current_experiment": "Development33 complete; next CPU post-freeze audit of first versus later causal errors",
   "complete_archives": [
     "dev1_archive.json",
     "dev2_archive.json",
@@ -96,7 +97,8 @@
     "dev27_decoder_archive.json",
     "dev29_archive.json",
     "dev30_archive.json",
-    "dev32_grid_archive.json"
+    "dev32_grid_archive.json",
+    "dev33_decoder_archive.json"
   ],
   "unresolved": [
     "baseline-like reconstruction quality with no token shortlist",
@@ -233,7 +235,7 @@
     "partial_archive": "dev13_partial_archive.json",
     "guard": "dev13_guard.json"
   },
-  "updated_utc": "2026-09-20T00:33:53.684165+00:00",
+  "updated_utc": "2026-09-20T01:20:34.314725+00:00",
   "dev13_r1": {
     "status": "COMPLETE_SCORED_ARCHIVED",
     "freeze": "dev13_r1_freeze.json",
@@ -820,20 +822,60 @@
     "conclusion": "No adequate replacement: factor2/4scalar iterations final253/254matched prose,246/254shifted prose at1.075s/128input. Earlier checkpoints inaccurate;more precise solves do not reliably help."
   },
   "dev33": {
-    "status": "CPU_QUALIFIED_PUBLIC_PREFIX_NOT_IMPLEMENTED",
-    "plan": "DEV33_PROSPECTIVE.md",
+    "status": "COMPLETE_PUBLIC_REPLAY_AND96DECODER_CELLS_NO_ADEQUATE_METHOD",
     "cpu_reference": "dev33_cpu_reference.json",
     "cpu_checks": 16,
-    "cpu_probability_gradient_max_error": 9.5367431640625e-07,
-    "gpu_runs": 0,
-    "reconstruction_runs": 0,
-    "next_required": "Qualify causal single-current-token full-vocabulary gradient/update on actual public prefix;measure work/capture costs before defining decoder."
+    "public": {
+      "probe": "dev33_public_probe.json",
+      "summary": "dev33_public_summary.json",
+      "archive": "dev33_public_archive.json",
+      "guard": "dev33_guard.json",
+      "cases": 72,
+      "repetitions": 216,
+      "independent_probability_gradients": 6,
+      "maximum_gradient_error": 4.172325134277344e-07
+    },
+    "replay": {
+      "qualification": "dev33_replay_qualification.json",
+      "summary": "dev33_replay_summary.json",
+      "archive": "dev33_replay_archive.json",
+      "guard": "dev33_replay_guard.json",
+      "native_contexts": 128,
+      "repeated_cases": 216,
+      "eager_adapter_cases": 72,
+      "peak_reserved_GiB": 5.86328125
+    },
+    "decoder": {
+      "freeze": "dev33_decoder_freeze.json",
+      "score": "dev33_decoder_score.json",
+      "summary": "dev33_decoder_summary.json",
+      "archive": "dev33_decoder_archive.json",
+      "guard": "dev33_decoder_guard.json",
+      "truth_gate": "dev33_decoder_truth_gate.json",
+      "scoring_run": "dev33_decoder_scoring_run.json",
+      "cells": 96,
+      "public_repeat_decodes": 72,
+      "public_eager_checks": 24,
+      "emitted_history_checks": 24,
+      "peak_reserved_GiB": 5.859375,
+      "exact_records_all_configurations": 0
+    },
+    "public_budget_diagnostic": "dev33_public_budget_diagnostic.json",
+    "provenance": "DEV33_PROVENANCE.json",
+    "reproduction": "DEV33_REPRO.md",
+    "next_plan": "DEV34_PROSPECTIVE.md",
+    "conclusion": "Causal full-vocabulary optimization remains inaccurate and slow; no canonical method selected."
   },
-  "reproduction": "DEV31_32_REPRO.md",
+  "reproduction": "DEV33_REPRO.md",
   "continuation15_audit": {
     "request": "coordination/requests/TRR-0020-CONTINUE-15.md",
     "previous_turn_classification": "no progress: clarification reread the old shortlist mechanism but did not advance candidate-free experiments",
     "action": "Completed60public numerical cases/180repetitions,56reconstruction cells,post-freeze diagnostic, and16CPU checks for the next causal direction. Preserved/repaired one confirmed-terminal capture failure."
   },
-  "dev31_33_provenance": "DEV31_33_PROVENANCE.json"
+  "dev31_33_provenance": "DEV31_33_PROVENANCE.json",
+  "continuation16_audit": {
+    "request": "coordination/requests/TRR-0020-CONTINUE-16.md",
+    "previous_turn_classification": "progress:56reconstruction cells,60public cases and16CPU checks completed",
+    "action": "Completed72public cases,128native-context replay qualification,96causal decoder cells,scoring,three verified archives and144-update public budget diagnostic. No effective replacement."
+  }
 }
