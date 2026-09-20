@@ -1,6 +1,6 @@
 {
   "task_id": "TRR-0020",
-  "status": "DEVELOPMENT45_COMPLETE_NO_EFFECTIVE_REPLACEMENT",
+  "status": "DEVELOPMENT47_RUNNING",
   "goal_completed": false,
   "initial_execution_commit": "a7e7f0628e88add676e767f188df1d903a749efb",
   "dev1_execution_commit": "9724dce2f14ccea2af63c0cbd590ab189ef4b7a8",
@@ -67,7 +67,7 @@
     "dev32": 56,
     "dev33": 96
   },
-  "current_experiment": "Exact full-decoder experiment terminal, scored and archived",
+  "current_experiment": "Bounded one-history mixing public qualification",
   "complete_archives": [
     "dev1_archive.json",
     "dev2_archive.json",
@@ -235,7 +235,7 @@
     "partial_archive": "dev13_partial_archive.json",
     "guard": "dev13_guard.json"
   },
-  "updated_utc": "2026-09-20T04:47:58.142310+00:00",
+  "updated_utc": "2026-09-20T05:10:14.458433+00:00",
   "dev13_r1": {
     "status": "COMPLETE_SCORED_ARCHIVED",
     "freeze": "dev13_r1_freeze.json",
@@ -1184,8 +1184,8 @@
     "execution_commit": "63f1b1d13f99aae108aa3186ea0454afef158455",
     "conclusion": "32.5%/17.4%faster at64updates for128/40positions, but bothproseconditions lose4tokens; no contender selected."
   },
-  "completed_development_matrices": 33,
-  "completed_development_cells": 2592,
+  "completed_development_matrices": 34,
+  "completed_development_cells": 2624,
   "dev44": {
     "status": "EXACT_GPU_UPDATE_QUALIFIED_AND_ARCHIVED",
     "plan": "DEV44_PLAN.md",
@@ -1437,5 +1437,99 @@
     "action": "Completed development44 byte-exact update qualification and development45 complete32cell decoder matrix; preserved/scored/archived all outputs; clarified old256candidate mechanism",
     "outcome": "Concrete progress; full requested end state remains unproven; no live GPU job",
     "administrative_failure": "Postprocessing generator SyntaxError from duplicate comma; caught before writing summary source, with no effect on frozen scientific run."
+  },
+  "dev46": {
+    "status": "COMPLETE_EXACT_OUTPUTS_SMALL_SPEED_GAIN",
+    "plan": "DEV46_PLAN.md",
+    "cpu_reference": "dev46_cpu_reference.json",
+    "gpu_check": "dev46_gpu_check.json",
+    "gpu_summary": "dev46_gpu_summary.json",
+    "gpu_archive": "dev46_gpu_archive.json",
+    "freeze": "dev46_freeze.json",
+    "score": "dev46_score_r1.json",
+    "summary": "dev46_summary.json",
+    "archive": "dev46_archive.json",
+    "score_failure": "dev46_score_launch.json",
+    "score_repair": "dev46_score_repair.json",
+    "execution_commit": "c853866de02e2411e74872d44ea48b57f302bb44",
+    "score_archive_commit": "b0b6387aee4fac4b0624c2a4702b562f724d558e",
+    "reconstruction_cells": 32,
+    "repetitions": 96,
+    "all_complete_outputs_and_recorded_traces_exact": true,
+    "real_original_anchor_checks": 96,
+    "timings": [
+      {
+        "mode": "control",
+        "steps": 64,
+        "length": 40,
+        "records": 4,
+        "mean_median_seconds": 0.4618993437543395,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "control",
+        "steps": 64,
+        "length": 128,
+        "records": 4,
+        "mean_median_seconds": 1.0789827525004512,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "control",
+        "steps": 128,
+        "length": 40,
+        "records": 4,
+        "mean_median_seconds": 0.9116348367606406,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "control",
+        "steps": 128,
+        "length": 128,
+        "records": 4,
+        "mean_median_seconds": 2.163716702008969,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "reuse",
+        "steps": 64,
+        "length": 40,
+        "records": 4,
+        "mean_median_seconds": 0.4510796515023685,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "reuse",
+        "steps": 64,
+        "length": 128,
+        "records": 4,
+        "mean_median_seconds": 1.0516069927471108,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "reuse",
+        "steps": 128,
+        "length": 40,
+        "records": 4,
+        "mean_median_seconds": 0.8885818237540661,
+        "mean_lookup_seconds": 0.0
+      },
+      {
+        "mode": "reuse",
+        "steps": 128,
+        "length": 128,
+        "records": 4,
+        "mean_median_seconds": 2.140924369748973,
+        "mean_lookup_seconds": 0.0
+      }
+    ],
+    "peak_reserved_GiB": 4.576171875,
+    "full_state_probability_gradient_checks": 8,
+    "conclusion": "No candidate-free baseline replacement. Reused forward probability matches original updates and gradients; modest timing improvement on existing retrospective panel."
+  },
+  "continuation21_audit": {
+    "request": "coordination/requests/TRR-0020-CONTINUE-21.md",
+    "previous_turn_classification": "progress: exact pointwise update and full32cell decoder matrix completed and archived",
+    "action": "Completed development46 exact reuse qualification and32cell full-decoder comparison; preserved reporting failure and repaired outside frozen source. Testing bounded history mixing to reduce iterations."
   }
 }
