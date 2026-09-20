@@ -1,0 +1,479 @@
+{
+  "task_id": "TRR-0020",
+  "registered_before_execution": true,
+  "methods": [
+    {
+      "id": "direct_inverse_k16",
+      "candidate_budget": 16,
+      "can_abstain": false
+    },
+    {
+      "id": "causal_public_surrogate_k16",
+      "candidate_budget": 16,
+      "can_abstain": false
+    },
+    {
+      "id": "strict_bos_adaptive_a1_a2",
+      "candidate_budget": 512,
+      "can_abstain": true
+    },
+    {
+      "id": "a1_a2_k8",
+      "candidate_budget": 8,
+      "can_abstain": true
+    },
+    {
+      "id": "a1_a2_k16",
+      "candidate_budget": 16,
+      "can_abstain": true
+    },
+    {
+      "id": "a1_a2_k32",
+      "candidate_budget": 32,
+      "can_abstain": true
+    },
+    {
+      "id": "a1_a2_k64",
+      "candidate_budget": 64,
+      "can_abstain": true
+    },
+    {
+      "id": "a1_causal_k8",
+      "candidate_budget": 8,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_causal_k16",
+      "candidate_budget": 16,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_causal_k32",
+      "candidate_budget": 32,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_causal_k64",
+      "candidate_budget": 64,
+      "can_abstain": false
+    },
+    {
+      "id": "residual_affine_a2_k8",
+      "candidate_budget": 8,
+      "can_abstain": true
+    },
+    {
+      "id": "residual_affine_a2_k16",
+      "candidate_budget": 16,
+      "can_abstain": true
+    },
+    {
+      "id": "residual_affine_a2_k32",
+      "candidate_budget": 32,
+      "can_abstain": true
+    },
+    {
+      "id": "residual_affine_a2_k64",
+      "candidate_budget": 64,
+      "can_abstain": true
+    },
+    {
+      "id": "residual_affine_causal_k8",
+      "candidate_budget": 8,
+      "can_abstain": false
+    },
+    {
+      "id": "residual_affine_causal_k32",
+      "candidate_budget": 32,
+      "can_abstain": false
+    },
+    {
+      "id": "residual_affine_causal_k64",
+      "candidate_budget": 64,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_residual_union_causal_k8",
+      "candidate_budget": 8,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_residual_union_causal_k16",
+      "candidate_budget": 16,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_residual_union_causal_k32",
+      "candidate_budget": 32,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_residual_union_causal_k64",
+      "candidate_budget": 64,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_scale_calibrated_adaptive_causal_k32_to64",
+      "candidate_budget": 64,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_a2_exhaustive_configuration_winner",
+      "candidate_budget": 256,
+      "can_abstain": false
+    },
+    {
+      "id": "prefix_native_fragment256",
+      "candidate_budget": 256,
+      "can_abstain": false
+    },
+    {
+      "id": "prefix_native_fragment512",
+      "candidate_budget": 512,
+      "can_abstain": false
+    },
+    {
+      "id": "prefix_native_fragment_frequency256",
+      "candidate_budget": 256,
+      "can_abstain": false
+    },
+    {
+      "id": "prefix_parallel_continuous96",
+      "decision_rule": "FP32 same prefix; initial H rescaled to median public embedding RMS; whole-sequence L-BFGS96, history8 strong-Wolfe maxeval192; lowest observed MSE continuous iterate; final full-vocabulary cosine argmax; BOS only; no A1/shortlist",
+      "candidate_budget": null,
+      "can_abstain": false
+    },
+    {
+      "id": "prefix_parallel_discrete64",
+      "decision_rule": "prefix-weight-metric argmax initialization;64 whole-sequence Adam steps lr0.003; actual vocabulary embeddings each forward, straight-through proxy gradient; cosine objective; other-position KV gradients detached; eager BF16 attention; lowest observed mean-cosine-loss full sequence; BOS only; no A1/shortlist",
+      "candidate_budget": null,
+      "can_abstain": false
+    },
+    {
+      "id": "prefix_native_fragment_mixed256",
+      "candidate_budget": 256,
+      "can_abstain": false
+    },
+    {
+      "id": "prefix_mixed256_shared_attention",
+      "candidate_budget": 256,
+      "can_abstain": false,
+      "numerics": "distinct attention implementation, not an exact-execution claim"
+    },
+    {
+      "id": "no_shortlist_full_vocab_gini003_128",
+      "candidate_budget": null,
+      "can_abstain": false
+    },
+    {
+      "id": "no_shortlist_full_vocab_halfhard256",
+      "candidate_budget": null,
+      "can_abstain": false
+    },
+    {
+      "id": "no_shortlist_warm128_quadratic_white003_positionbest32",
+      "candidate_budget": null,
+      "can_abstain": false
+    }
+  ],
+  "setups": [
+    "clean-pile-lora-64x40",
+    "historical-finance-strict-bos-128x128"
+  ],
+  "required_cells": [
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "direct_inverse_k16"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "causal_public_surrogate_k16"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "strict_bos_adaptive_a1_a2"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_a2_k8"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_a2_k16"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_a2_k32"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_a2_k64"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_causal_k8"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_causal_k16"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_causal_k32"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_causal_k64"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "residual_affine_a2_k8"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "residual_affine_a2_k16"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "residual_affine_a2_k32"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "residual_affine_a2_k64"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "residual_affine_causal_k8"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "residual_affine_causal_k32"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "residual_affine_causal_k64"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_residual_union_causal_k8"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_residual_union_causal_k16"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_residual_union_causal_k32"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_residual_union_causal_k64"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_scale_calibrated_adaptive_causal_k32_to64"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_a2_exhaustive_configuration_winner"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "prefix_native_fragment256"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "prefix_native_fragment512"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "prefix_native_fragment_frequency256"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "prefix_parallel_continuous96"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "prefix_parallel_discrete64"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "prefix_native_fragment_mixed256"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "prefix_mixed256_shared_attention"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "no_shortlist_full_vocab_gini003_128"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "no_shortlist_full_vocab_halfhard256"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "direct_inverse_k16"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "causal_public_surrogate_k16"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "strict_bos_adaptive_a1_a2"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_a2_k8"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_a2_k16"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_a2_k32"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_a2_k64"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_causal_k8"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_causal_k16"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_causal_k32"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_causal_k64"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "residual_affine_a2_k8"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "residual_affine_a2_k16"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "residual_affine_a2_k32"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "residual_affine_a2_k64"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "residual_affine_causal_k8"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "residual_affine_causal_k32"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "residual_affine_causal_k64"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_residual_union_causal_k8"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_residual_union_causal_k16"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_residual_union_causal_k32"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_residual_union_causal_k64"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_scale_calibrated_adaptive_causal_k32_to64"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_a2_exhaustive_configuration_winner"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "prefix_native_fragment256"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "prefix_native_fragment512"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "prefix_native_fragment_frequency256"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "prefix_parallel_continuous96"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "prefix_parallel_discrete64"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "prefix_native_fragment_mixed256"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "prefix_mixed256_shared_attention"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "no_shortlist_full_vocab_gini003_128"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "no_shortlist_full_vocab_halfhard256"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "no_shortlist_warm128_quadratic_white003_positionbest32"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "no_shortlist_warm128_quadratic_white003_positionbest32"
+    }
+  ],
+  "inherited_cells": 66,
+  "new_cells": 2,
+  "total_cells": 68,
+  "current_methods": [
+    "a1_native",
+    "warm128white003",
+    "a1_graph"
+  ],
+  "decision_rules": {
+    "warm128white003": "dev15 warm128_white_beta0p03; unchanged Gini003 full-vocabulary128-step warm stage followed by32 direct full-vocabulary white-metric quadratic updates beta.03, cosine own-position gradient, emit per-position minimum observed hard-cosine-error tokens including initial state; no shortlist or separate verifier."
+  },
+  "selected_from": {
+    "warm128white003": "dev15 best_position_error: matched254/254+78/78; shifted253/254+78/78; fixed exploratory winner selected before this canonical execution"
+  },
+  "native_geometry": "whole unpadded record, BOS128000 fixed, remaining positions optimized jointly;2..128positions",
+  "baseline_execution": "unchanged TRR0019 batch1/right-padding-trim port, native and exact graph controls; archived all-array reproduction required",
+  "new_method_environment": "CUBLAS_WORKSPACE_CONFIG=:4096:8; deterministic algorithms; TF32off",
+  "baseline_environment": "unset CUBLAS_WORKSPACE_CONFIG; deterministic algorithms disabled; TF32off",
+  "source_protocol_sha256": "4836304f741f8b324813e66687607c3f5b254bb833e188d2e454d7c7d590b09c",
+  "source_charter_sha256": "ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d",
+  "execution_adaptation": "one owned capture stream per optimizer stage; exact output and trace equality required on original public and8development records; all38canonical native lengths qualified",
+  "registration_utc": "2026-09-19T18:21:37.508594+00:00"
+}
