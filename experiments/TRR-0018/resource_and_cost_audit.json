@@ -1,0 +1,47 @@
+{
+  "task_id": "TRR-0018",
+  "development": {
+    "observations": 352,
+    "variants_including_two_anchors": 12,
+    "candidate_cells": 4224,
+    "all_old_anchor_arrays_identical": true,
+    "wall_seconds": 63.959174156188965,
+    "mean_all_variants_seconds_per_input": 0.12217049584065039,
+    "peak_allocated_bytes": 3670181888,
+    "peak_reserved_bytes": 3869245440,
+    "resource_failure": null
+  },
+  "full_qualification": {
+    "peak_allocated_bytes": 5258246656,
+    "peak_reserved_bytes": 5985271808,
+    "all_352_selected_arrays_identical": true,
+    "largest_input": [
+      128,
+      2048
+    ],
+    "candidate_budget": 256,
+    "three_identical_repetitions_per_method": true
+  },
+  "fixed_cost_geometry": {
+    "vocabulary": 128256,
+    "width": 2048,
+    "embedding_table_bytes": 1050673152,
+    "intrinsic_table_bytes": 1050673152,
+    "transform_bytes": 16777216,
+    "largest_two_score_matrices_bytes": 131334144,
+    "a2_simulations_per_scored_token": 256,
+    "winner_commit_forwards_per_scored_token": 1,
+    "lookup_matmuls_per_record": 2,
+    "learned_parameters_added": 0,
+    "broad_lookup_parent_slots": 256,
+    "protected_original_base_slots": 128,
+    "maximum_parent_list_before_deduplication": 384
+  },
+  "notes": [
+    "Temporary scalar-score gathers only; no positions by suffixes by embedding-width gather.",
+    "128 parents per table are cheap lookup results, not additional A2 trials.",
+    "No current accuracy or speed claim made before the full output freeze and scorer.",
+    "Original base proposals are explicitly retained even if top-k tie selection differs between k64 and k128; parent-list capacity before deduplication is384."
+  ],
+  "utc": "2026-09-19T06:43:56Z"
+}

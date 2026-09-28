@@ -77,3 +77,7 @@ Result: coordination/results/TRR-0014.md. Manifest: experiments/TRR-0014/manifes
 - Baseline replacement remains unestablished: fresh A1+A2 makes 2 and 3 prose errors, and exact-clip recovery remains higher. All remaining new-method prose errors are shortlist omissions. Typical cached inference stays near baseline; prefix rebuilding costs about one second.
 - Open: improve rare-fragment coverage within the same budget, and validate the catalogs along an actual recovered-prefix trajectory. Preserve supplied-prefix and timing-outlier limitations. The user explicitly requested that the research goal remain unfinished.
 - Result: `coordination/results/TRR-0016.md`; manifest: `experiments/TRR-0016/manifest.json`.
+
+### TRR-0018: modest further K256 accuracy gain; exact A2 cache saving
+
+Mixed vote/lookup-score fragments improve the fresh paired panel from6 to4 errors per condition, with no new fitted model or larger A2 budget. The baseline still makes3 and2 errors. Shared-context execution preserves every tested output and cuts fresh-prose inference by about8% versus the same mixed rule with native cache copying. The generic optimization can also benefit A1+A2. See coordination/results/TRR-0018.md and experiments/TRR-0018/NEXT.md. Actual evolving recovered-prefix validation and an equally cache-optimized baseline comparison remain open; do not mark the research goal completed.
