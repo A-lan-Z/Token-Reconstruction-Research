@@ -1,0 +1,52 @@
+{
+  "classification": "One failed token at position15 in stress clip was never proposed, with no prior errors. Best actually verified candidate was returned; no timeout/final-return bug. One position contributes 17.2% of its clip, not a dominant single-position total.",
+  "historical_replay": [
+    {
+      "id": "final_book11_0",
+      "tokens_identical_to_historical": true,
+      "candidate_order_identical": true,
+      "largest_position_fraction": 0.17429718107980569,
+      "failure_positions": []
+    },
+    {
+      "id": "final_stress_0",
+      "tokens_identical_to_historical": true,
+      "candidate_order_identical": true,
+      "largest_position_fraction": 0.17196328321560728,
+      "failure_positions": [
+        {
+          "position": 15,
+          "correct": false,
+          "discovered": false,
+          "reason": "budget_exhausted",
+          "checks": 128,
+          "gradient_steps": 128,
+          "vocabulary_scans": 128,
+          "seconds": 1.2687003569990338,
+          "prior_error": false
+        }
+      ]
+    }
+  ],
+  "synchronized_profile_wall_seconds": {
+    "vocabulary_setup": 0.04043331999855582,
+    "committed_prefix_setup": 0.030452790993876988,
+    "discrete_forward": 2.27559016901796,
+    "continuous_forward_backward": 5.1173709130052885,
+    "vocabulary_ranking": 1.3634618769792723,
+    "other_optimizer_scalar_reads_guard_logging_and_loop": 1.8390255450067343
+  },
+  "profile_total_seconds": 10.666334615001688,
+  "profile_overhead_caution": "Sequential phase synchronization changes timing; only uninstrumented common-input runs support speed ratios. The remainder is not a measurement of synchronization alone.",
+  "source_cost_audit": {
+    "full_table_clone_per_token": false,
+    "full_difference_matrix_per_step": false,
+    "full_prefix_recomputation": true,
+    "unused_suffix_or_head": false,
+    "token_string_decoding_in_loop": false,
+    "cuda_scalar_reads_in_loop": true,
+    "gc_or_empty_cache_in_loop": false,
+    "per_record_fp32_table_conversion_and_norms": true
+  },
+  "changes": "Cache execution control separately labeled numerical port. Discrete/inverse arms reduce rounds and retain real-token forward verification. No observation or threshold change."
+}
