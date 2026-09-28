@@ -1,0 +1,49 @@
+{
+  "schema": "token-reconstruction.trr-p12-plan-amendment.v1",
+  "task_id": "TRR-P12",
+  "status": "PRE_OUTCOME_RANGE_AMENDMENT",
+  "created_utc": "2026-09-08T14:22:16.870776+00:00",
+  "original_manifest": {
+    "path": "experiments/TRR-P12/manifest.json",
+    "sha256": "302cef73349927615e39b116e985f796a9c70b6f9c97932a119c0acb1d3f0a8d",
+    "bytes": 7797
+  },
+  "reason_receipt": {
+    "path": "experiments/TRR-P12/source-preparation-failure-r1.json",
+    "sha256": "6bf131a5cb5eb650b9eb8a9ce6e60a14ef36f818ce20d1d94b912006e01cf5bc",
+    "bytes": 2392
+  },
+  "changes": {
+    "evaluation.source_ranges_half_open.pile": {
+      "before": [
+        8000,
+        9000
+      ],
+      "after": [
+        0,
+        10000
+      ]
+    },
+    "target.validation_batch_size": {
+      "declared": 2,
+      "loss_aggregation": "sum of per-batch mean cross-entropy times scored target tokens, divided by total scored target tokens; fixed32 validation batches at every snapshot"
+    }
+  },
+  "unchanged": [
+    "128 evaluation records per domain",
+    "all prior and Agent1 exact identity exclusions",
+    "all target training and source-selection seeds",
+    "one target trajectory and all stages",
+    "fixed B1",
+    "capture batch8 padded192 retain128",
+    "predictor and truth-freeze rules"
+  ],
+  "source_selection_policy": "Filter both published TRR-0013 exact correction/evaluation reservation ledgers before selecting. No source-index or canonical identity exclusion bypass. If fullpool is insufficient, record actual availability before any further amendment.",
+  "qualification_policy": "The target validation loss path uses batch2 consistently from first execution; the unexecuted batch64 implementation was rejected during code review. Qualify actual largest batch2 target step and batch8x192 capture.",
+  "boundary": {
+    "new_panel_written": false,
+    "target_training_started": false,
+    "reconstruction_truth_opened": false,
+    "p03_holdout_accessed": false
+  }
+}

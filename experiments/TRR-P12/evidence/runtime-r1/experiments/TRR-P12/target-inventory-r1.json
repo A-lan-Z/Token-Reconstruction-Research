@@ -1,0 +1,365 @@
+{
+  "chosen_base": {
+    "files": {
+      "config": {
+        "bytes": 877,
+        "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/3e3aaf51a035cb5092d9f6827a0dc074657ba88c",
+        "readonly": true,
+        "sha256": "2febf68cea25bf4611be02b7536f2488a5ba523bb1134986e3610152abe74fdb",
+        "symlink": true
+      },
+      "generation_config": {
+        "bytes": 189,
+        "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/75ae08310d6d23df373ee2644b497192b3cce6d8",
+        "readonly": true,
+        "sha256": "88effbb63300dbbc7390143fbbdd9d9fa50587b37e8bfd16c8c90d4970a74a36",
+        "symlink": true
+      },
+      "tokenizer": {
+        "bytes": 9085657,
+        "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/5cc5f00a5b203e90a27a3bd60d1ec393b07971e8",
+        "readonly": true,
+        "sha256": "79e3e522635f3171300913bb421464a87de6222182a0570b9b2ccba2a964b2b4",
+        "symlink": true
+      },
+      "weights": {
+        "bytes": 2471645608,
+        "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f",
+        "readonly": true,
+        "sha256": "1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f",
+        "symlink": true
+      }
+    },
+    "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+    "reason": "Hash-verified public base matching the frozen P11 decoder/tokenizer contract.",
+    "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "snapshot_path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6"
+  },
+  "chosen_trajectory": {
+    "alpha": 16.0,
+    "base_model": "meta-llama/Llama-3.2-1B-Instruct",
+    "base_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "batch_size": 2,
+    "gradient_clip_norm": 1.0,
+    "layers": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "learning_rate": 0.0005,
+    "meaningfulness": "Full run records baseline/every-stage fixed validation NLL in batch2 plus effective deltaW and frozen-base checks; lower final held-out NLL plus nonzero effective update is descriptive criterion; failure terminates without extension.",
+    "modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "optimizer": "AdamW",
+    "qualification_source": "R2 repeated public fitting fixture only.",
+    "qualification_validation_label": "Repeated public fixture smoke only, not scientific held-out validation.",
+    "rank": 8,
+    "retained_stages": [
+      0,
+      64,
+      128,
+      256
+    ],
+    "seed": 6012,
+    "sequence_length": 128,
+    "stage_policy": "Retain baseline and every fixed stage; no checkpoint selection or early stopping.",
+    "train_rows": 256,
+    "training_source": "Source-worker released public Alpaca tensor bundle required before full run; trainer does not select rows.",
+    "trajectory_count": 1,
+    "validation_rows": 64,
+    "weight_decay": 0.0
+  },
+  "commands": {
+    "build_r2_fixture": "/usr/bin/python3 scripts/trr_p12/qualification_fixture.py --full128-r2 --output-root outputs/TRR-P12/qualification-fixture-r2",
+    "capture_after_qualification": "/usr/bin/python3 scripts/trr_p12/qualify_capture.py --fixture outputs/TRR-P12/qualification-fixture-r2/source-bundle.json --model-snapshot /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6 --adapter experiments/TRR-P12/target-qualification-r1/target-lora-qualification-0004.safetensors --output-root outputs/TRR-P12/qualification-capture-r1 --device cuda --min-free-gpu-bytes 8589934592 --max-reserved-gpu-bytes 8589934592 --max-rss-bytes 17179869184",
+    "full_trajectory": "/usr/bin/python3 scripts/trr_p12/target_train.py full --source-bundle <SOURCE_WORKER_RELEASED_BUNDLE> --model-snapshot /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6 --output-root experiments/TRR-P12/target-full-r1 --backup-root /mnt/c/Users/alanz/Token-Reconstruction-Backups/TRR-P12/target-r1 --seed 6012 --device cuda --cuda-min-free-bytes 8589934592 --max-rss-bytes 17179869184",
+    "qualification_smoke": "/usr/bin/python3 scripts/trr_p12/target_train.py qualify --source-bundle outputs/TRR-P12/qualification-fixture-r2/source-bundle.json --model-snapshot /home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6 --output-root experiments/TRR-P12/target-qualification-r1 --backup-root /mnt/c/Users/alanz/Token-Reconstruction-Backups/TRR-P12/target-r1 --steps 4 --seed 6012 --device cuda --cuda-min-free-bytes 8589934592 --max-rss-bytes 17179869184"
+  },
+  "control": {
+    "charter": {
+      "bytes": 3693,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/RESEARCH_CHARTER.md",
+      "readonly": true,
+      "sha256": "ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d",
+      "symlink": false
+    },
+    "exclusion_union_r2": {
+      "bytes": 6338870,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/experiments/TRR-P12/exclusions/identity_union_extension_r2.json",
+      "readonly": true,
+      "sha256": "bd2e641f5f10d249595b89f48aeeba2d97a2b71688190177f4ebe4f4ac022a0b",
+      "symlink": false
+    },
+    "p11_manifest": {
+      "bytes": 32973,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/experiments/TRR-P11/manifest.json",
+      "readonly": true,
+      "sha256": "22e3b51e4835e85ccaf84c52248bb53c02e702c586f6d36116422e0fd5670f3a",
+      "symlink": false
+    },
+    "p11_published_base_commit": "81299e07d4213cd75f455496d623a8371516688f",
+    "p12_manifest": {
+      "bytes": 7797,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/experiments/TRR-P12/manifest.json",
+      "readonly": true,
+      "sha256": "302cef73349927615e39b116e985f796a9c70b6f9c97932a119c0acb1d3f0a8d",
+      "symlink": false
+    },
+    "request": {
+      "bytes": 2397,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/coordination/requests/TRR-P12.md",
+      "readonly": true,
+      "sha256": "a395049b2130a68d36a5b5b7af77047683dd70752bdbc4d2bde944824c4b6c9a",
+      "symlink": false
+    }
+  },
+  "created_utc": "2026-09-08T14:51:06Z",
+  "evaluation_capture": {
+    "capture_guards": {
+      "max_host_rss_bytes": 17179869184,
+      "max_reserved_gpu_bytes": 8589934592,
+      "min_free_gpu_bytes": 8589934592,
+      "timeout_seconds": 600
+    },
+    "conditions": [
+      "baseline",
+      "qualification adapter when supplied"
+    ],
+    "forward": "P11 capture_public_prefix -> ContiguousPublicPrefix.forward_full",
+    "geometry": {
+      "batch_records": 8,
+      "cut_depth": 4,
+      "dtype": "bfloat16",
+      "full_sequence_tokens": 192,
+      "hidden_size": 2048,
+      "stored_sequence_tokens": 128
+    },
+    "path": "scripts/trr_p12/qualify_capture.py",
+    "sanitized_keys": [
+      "activations",
+      "attention_mask",
+      "position_ids"
+    ],
+    "target_weights_written": false,
+    "token_ids_written": false
+  },
+  "existing_target_resources": {
+    "cached_vikhr_full_sft": {
+      "documented_all_weight_relative_l2": 0.040147,
+      "documented_changed_fraction": 0.782258,
+      "documented_changed_parameter_bytes": 966726183,
+      "documented_changed_parameter_count": 114,
+      "documented_embedding_layers0_3_relative_l2": 0.021564,
+      "documented_total_parameter_bytes": 1235814400,
+      "files": {
+        "config": {
+          "bytes": 926,
+          "path": "/home/alanz/.cache/huggingface/hub/models--Vikhrmodels--Vikhr-Llama-3.2-1B-Instruct/blobs/6a18994c0cfea41e1d0d3be20a9d756e24b78823",
+          "readonly": true,
+          "sha256": "7510055506497971937a3b247c853e664fdc1b1bbeece4cafc03107fa5e6fae7",
+          "symlink": true
+        },
+        "tokenizer": {
+          "bytes": 9085657,
+          "path": "/home/alanz/.cache/huggingface/hub/models--Vikhrmodels--Vikhr-Llama-3.2-1B-Instruct/blobs/5cc5f00a5b203e90a27a3bd60d1ec393b07971e8",
+          "readonly": true,
+          "sha256": "79e3e522635f3171300913bb421464a87de6222182a0570b9b2ccba2a964b2b4",
+          "symlink": true
+        },
+        "tokenizer_config": {
+          "bytes": 54573,
+          "path": "/home/alanz/.cache/huggingface/hub/models--Vikhrmodels--Vikhr-Llama-3.2-1B-Instruct/blobs/a241625b580abb36b7ac4aacc6d8b7bcb6f2a905",
+          "readonly": true,
+          "sha256": "cb0ba7a62825d3621cc1bd87430e17744ed32dd31b1b43143e3dc7aa4ba3b9ce",
+          "symlink": true
+        },
+        "weights": {
+          "bytes": 2471645464,
+          "path": "/home/alanz/.cache/huggingface/hub/models--Vikhrmodels--Vikhr-Llama-3.2-1B-Instruct/blobs/389c73748a00a8a006a4a4a26fa473319676c25672aa188f8337981cd0cc8850",
+          "readonly": true,
+          "sha256": "389c73748a00a8a006a4a4a26fa473319676c25672aa188f8337981cd0cc8850",
+          "symlink": true
+        }
+      },
+      "model_id": "Vikhrmodels/Vikhr-Llama-3.2-1B-Instruct",
+      "revision": "7fa9d06a59246629244cdd3b6b92e4fc756baa0f",
+      "snapshot_path": "/home/alanz/.cache/huggingface/hub/models--Vikhrmodels--Vikhr-Llama-3.2-1B-Instruct/snapshots/7fa9d06a59246629244cdd3b6b92e4fc756baa0f",
+      "status": "ALTERNATIVE_ENDPOINT_ONLY_NOT_PRIMARY",
+      "suitability_gap": "Full-SFT endpoint has compatible tokenizer/provenance but no intermediate stages or fitting-source disjointness ledger; alternative only."
+    },
+    "historical_trr0002_public_calibration": {
+      "files": {
+        "generation": {
+          "bytes": 18824,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/public-calibration/generation.json",
+          "readonly": true,
+          "sha256": "6bed8aca6668bd749bbad03c0c85bbace306085dac3141895dad7685f03d0682",
+          "symlink": false
+        },
+        "public_lora_2601": {
+          "bytes": 427632,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/public-calibration/updates/public_lora_2601.safetensors",
+          "readonly": true,
+          "sha256": "eea7bb49f801b61df2e26a8f59af7c3096f6f3a2604404e16e589443bcfba595",
+          "symlink": false
+        },
+        "public_lora_2602": {
+          "bytes": 853624,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/public-calibration/updates/public_lora_2602.safetensors",
+          "readonly": true,
+          "sha256": "7f6f2ff310c58c68f69cd8e829124b82170454d611ee47b941cb66689553d729",
+          "symlink": false
+        },
+        "public_lora_2603": {
+          "bytes": 427632,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/public-calibration/updates/public_lora_2603.safetensors",
+          "readonly": true,
+          "sha256": "50b894310f794a123b80f5a7648b1b872a36aa0683bbfee9a60048d003ed46eb",
+          "symlink": false
+        },
+        "records": {
+          "bytes": 73510,
+          "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/outputs/TRR-0002/public-calibration/records.json",
+          "readonly": true,
+          "sha256": "37be9bb6d621873047a05544e4e2d8ed7c07f1160ab878093ad912306ae1dd7f",
+          "symlink": false
+        }
+      },
+      "status": "ALTERNATIVE_ENDPOINT_ONLY_NOT_PRIMARY",
+      "suitability_gap": "Different historical rank/alpha/seed/source and no source-disjoint intermediate checkpoint ledger; comparator/diagnostic only.",
+      "trajectory_observation": "Historical public_lora_2601/2602/2603 are endpoint/update files from the old 30-step public calibration, not one fixed P12 trajectory."
+    }
+  },
+  "implementation": {
+    "code_bindings": {
+      "qualification_fixture.py": {
+        "bytes": 20467,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/scripts/trr_p12/qualification_fixture.py",
+        "readonly": true,
+        "sha256": "d5213cb3ac94f2ad6c9807d325fd79241ab17cdcb581f135003c45b2f3dadb9a",
+        "symlink": false
+      },
+      "qualify_capture.py": {
+        "bytes": 31105,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/scripts/trr_p12/qualify_capture.py",
+        "readonly": true,
+        "sha256": "e6e1edadee9b43b60aba6b3a27d6dbe2423f2a92317efbb8cd4cfd978042ed18",
+        "symlink": false
+      },
+      "target_train.py": {
+        "bytes": 41837,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/scripts/trr_p12/target_train.py",
+        "readonly": true,
+        "sha256": "735ce98529bdfdd27030ae904a6925ac1df5c98606aa6c811ace808c02c71550",
+        "symlink": false
+      }
+    },
+    "cpu_validation_receipt": {
+      "bytes": 17461,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/experiments/TRR-P12/target-cpu-validation-r1.json",
+      "readonly": true,
+      "sha256": "5f57ef9eaddb25f7805f5f649cb5a6cf7a8f946c9da4e3cbb8c1c8f0052ba8f8",
+      "symlink": false
+    }
+  },
+  "limitations": [
+    "No GPU run in CPU receipt; target training/capture timings unavailable until launch.",
+    "Endpoint alternatives are not the chosen trajectory.",
+    "Full source-worker bundle path/hash must be bound before full trajectory launch."
+  ],
+  "qualification_fixture": {
+    "manifest": {
+      "bytes": 5382,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/outputs/TRR-P12/qualification-fixture-r2/manifest.json",
+      "readonly": true,
+      "sha256": "214616c28a8c11a71dd4ad58c010cbb2bbba1fb4adede21f2c8263a26042e2c6",
+      "symlink": false
+    },
+    "scientific_role": "Qualification smoke only; repeated fixture loss is not held-out scientific evidence.",
+    "selection": "First eight already-opened P04 public-fitting rows with source mask sum >=128, chosen solely for full128 smoke geometry; repeat to train256 and validation64.",
+    "source": {
+      "status": {
+        "bytes": 58312,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/status.json",
+        "readonly": true,
+        "sha256": "4ef53953eb88b94e3359c06b0f208412245f0e6140ef6e36e2127b488194963d",
+        "symlink": false
+      },
+      "train_artifact": {
+        "bytes": 947176648,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_cut4.safetensors",
+        "readonly": true,
+        "sha256": "d1c78fcf1acc91b57d51355ee11f267bf4c12f1bc7d5160164b3b6ea11b45344",
+        "symlink": false
+      },
+      "train_records": {
+        "bytes": 726532,
+        "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_records.json",
+        "readonly": true,
+        "sha256": "34e10ddc7c502b30822730b84c6f3a48b6285888b8ef92fc9e1aef65ecca29df",
+        "symlink": false
+      }
+    },
+    "source_bundle": {
+      "bytes": 4723,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/outputs/TRR-P12/qualification-fixture-r2/source-bundle.json",
+      "readonly": true,
+      "sha256": "302c7a65a6030af480ca526e6bb67741b52978a6052872c2bc3d6acf1c6e0f97",
+      "symlink": false
+    },
+    "status": "R2_READY_CPU_VALIDATED",
+    "train_tensor": {
+      "bytes": 164168,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/outputs/TRR-P12/qualification-fixture-r2/train.safetensors",
+      "readonly": true,
+      "sha256": "9a37cc70d6620f346662983e52ad04a851e04a1fbf061f4eb7c956c82eaab7f8",
+      "symlink": false
+    },
+    "validation_tensor": {
+      "bytes": 41296,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/outputs/TRR-P12/qualification-fixture-r2/validation.safetensors",
+      "readonly": true,
+      "sha256": "d2a5edc56479fe3d8cd16a76328991e14c9def5287bd1805e17d70742d4c5748",
+      "symlink": false
+    }
+  },
+  "resource_and_backup": {
+    "backup_policy": {
+      "create_only_and_independent_hash_before_next_stage": true,
+      "minimum_free_bytes": 10737418240,
+      "root": "/mnt/c/Users/alanz/Token-Reconstruction-Backups/TRR-P12/target-r1"
+    },
+    "capture_guards": {
+      "max_host_rss_bytes": 17179869184,
+      "max_reserved_gpu_bytes": 8589934592,
+      "min_free_gpu_bytes": 8589934592,
+      "timeout_seconds": 600
+    },
+    "gpu_launched": false,
+    "gpu_peak_memory_bytes": null,
+    "gpu_timing_seconds": null,
+    "prior_p04_representative_capture": {
+      "cuda_peak_allocated_bytes": 2472678400,
+      "cuda_peak_reserved_bytes": 2480930816,
+      "geometry": "B8 x 192, cut4, BF16",
+      "host_max_rss_bytes": 6173032448,
+      "wall_seconds": 9.764313294999738
+    },
+    "target_training_estimate": {
+      "adapter_tensor_bytes_bf16_equivalent": 425984,
+      "adapter_tensor_bytes_fp32": 851968,
+      "lora_trainable_parameters": 212992,
+      "peak_cuda_estimate_bytes": 3600000000
+    },
+    "unrecorded": [
+      "P12 target training and capture timings/peaks unavailable until root GPU release and run"
+    ]
+  },
+  "schema": "token-reconstruction.trr-p12-target-inventory.v1",
+  "status": "TARGET_BOUND_ONE_TRAJECTORY_CPU_VALIDATED_GPU_NOT_RUN",
+  "task_id": "TRR-P12",
+  "working_tree_head": "11785285995c8b2888e9e09bf92091a7e72cdc44"
+}

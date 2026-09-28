@@ -1,0 +1,395 @@
+{
+  "base_model_binding": {
+    "files": {
+      "config": {
+        "bytes": 877,
+        "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/3e3aaf51a035cb5092d9f6827a0dc074657ba88c",
+        "readonly": true,
+        "sha256": "2febf68cea25bf4611be02b7536f2488a5ba523bb1134986e3610152abe74fdb",
+        "symlink": true
+      },
+      "generation_config": {
+        "bytes": 189,
+        "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/75ae08310d6d23df373ee2644b497192b3cce6d8",
+        "readonly": true,
+        "sha256": "88effbb63300dbbc7390143fbbdd9d9fa50587b37e8bfd16c8c90d4970a74a36",
+        "symlink": true
+      },
+      "tokenizer": {
+        "bytes": 9085657,
+        "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/5cc5f00a5b203e90a27a3bd60d1ec393b07971e8",
+        "readonly": true,
+        "sha256": "79e3e522635f3171300913bb421464a87de6222182a0570b9b2ccba2a964b2b4",
+        "symlink": true
+      },
+      "weights": {
+        "bytes": 2471645608,
+        "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f",
+        "readonly": true,
+        "sha256": "1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f",
+        "symlink": true
+      }
+    },
+    "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+    "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "snapshot_path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6"
+  },
+  "code_bindings": {
+    "qualification_fixture.py": {
+      "bytes": 20467,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/scripts/trr_p12/qualification_fixture.py",
+      "readonly": true,
+      "sha256": "d5213cb3ac94f2ad6c9807d325fd79241ab17cdcb581f135003c45b2f3dadb9a",
+      "symlink": false
+    },
+    "qualify_capture.py": {
+      "bytes": 31105,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/scripts/trr_p12/qualify_capture.py",
+      "readonly": true,
+      "sha256": "e6e1edadee9b43b60aba6b3a27d6dbe2423f2a92317efbb8cd4cfd978042ed18",
+      "symlink": false
+    },
+    "target_train.py": {
+      "bytes": 41837,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/scripts/trr_p12/target_train.py",
+      "readonly": true,
+      "sha256": "735ce98529bdfdd27030ae904a6925ac1df5c98606aa6c811ace808c02c71550",
+      "symlink": false
+    }
+  },
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-m",
+        "py_compile",
+        "scripts/trr_p12/target_train.py",
+        "scripts/trr_p12/qualification_fixture.py",
+        "scripts/trr_p12/qualify_capture.py"
+      ],
+      "ended_utc": "2026-09-08T14:50:53Z",
+      "name": "py_compile_owned_target_scripts",
+      "returncode": 0,
+      "started_utc": "2026-09-08T14:50:53Z",
+      "status": "PASS",
+      "wall_seconds": 0.04795063700294122
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "scripts/trr_p12/target_train.py",
+        "full",
+        "--dry-run",
+        "--device",
+        "cpu"
+      ],
+      "ended_utc": "2026-09-08T14:50:54Z",
+      "name": "target_train_full_dry_run",
+      "observed": {
+        "resource_estimate": {
+          "adapter_tensor_bytes_bf16_equivalent": 425984,
+          "adapter_tensor_bytes_fp32": 851968,
+          "base_weight_bytes": 2471645608,
+          "expected_stage_artifact_bytes": "approximately 0.86 MB (safetensors metadata plus fp32 A/B tensors)",
+          "lora_modules": 8,
+          "lora_trainable_parameters": 212992,
+          "peak_cuda_estimate_basis": "P11 public calibration 2.673 GB allocated / 2.691 GB reserved at seq40,batch8, scaled conservatively to seq128,batch2; preflight expects approximately 12 GiB free on the 16.3 GiB desktop and retains a 2 GiB runtime guard",
+          "peak_cuda_estimate_bytes": 3600000000,
+          "q_proj_shape": [
+            2048,
+            2048
+          ],
+          "qualification": "2-4 updates, same adapter geometry, throwaway output; repeated fixture loss is smoke-only and not scientific held-out validation",
+          "v_proj_shape": [
+            512,
+            2048
+          ]
+        },
+        "status": "DRY_RUN_NO_MODEL_NO_TRAINING",
+        "trajectory": {
+          "alpha": 16.0,
+          "batch_size": 2,
+          "gradient_clip_norm": 1.0,
+          "layers": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "learning_rate": 0.0005,
+          "modules": [
+            "q_proj",
+            "v_proj"
+          ],
+          "optimizer": "AdamW",
+          "rank": 8,
+          "seed": 6012,
+          "sequence_length": 128,
+          "stage_policy": "retain baseline and every fixed update checkpoint; no checkpoint selection or early stopping",
+          "stages": [
+            64,
+            128,
+            256
+          ],
+          "target_scope": "layers 0-3 q_proj/v_proj LoRA; evaluator-only target prefix",
+          "train_rows": 256,
+          "validation_policy": "post-run meaningfulness assessment only; never used for checkpoint selection",
+          "validation_rows": 64,
+          "weight_decay": 0.0
+        }
+      },
+      "returncode": 0,
+      "started_utc": "2026-09-08T14:50:53Z",
+      "status": "PASS",
+      "wall_seconds": 1.0742141869995976
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "scripts/trr_p12/qualify_capture.py",
+        "--fixture",
+        "outputs/TRR-P12/qualification-fixture-r2/source-bundle.json",
+        "--model-snapshot",
+        "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+        "--output-root",
+        "outputs/TRR-P12/qualification-capture-r2",
+        "--device",
+        "cuda",
+        "--dry-run"
+      ],
+      "ended_utc": "2026-09-08T14:50:58Z",
+      "name": "qualify_capture_r2_dry_run",
+      "observed": {
+        "active_lengths": [
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128,
+          128
+        ],
+        "base_weight_sha256": "1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f",
+        "fixture_sha256": "302c7a65a6030af480ca526e6bb67741b52978a6052872c2bc3d6acf1c6e0f97",
+        "padded_shape": [
+          8,
+          192
+        ],
+        "status": "READY_NO_MODEL_LOAD",
+        "stored_shape": [
+          8,
+          128,
+          2048
+        ]
+      },
+      "returncode": 0,
+      "started_utc": "2026-09-08T14:50:54Z",
+      "status": "PASS",
+      "wall_seconds": 4.460515225000563
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import json\nfrom pathlib import Path\nfrom scripts.trr_p12.target_train import load_source_bundle\ns=load_source_bundle(Path('outputs/TRR-P12/qualification-fixture-r2/source-bundle.json').resolve())\nprint(json.dumps({'schema':s['manifest']['schema'],'bundle_sha256':s['manifest_sha256'],'train_shape':list(s['train_input_ids'].shape),'validation_shape':list(s['validation_input_ids'].shape),'train_all_masks_one':bool(s['train_attention_mask'].all().item()),'validation_all_masks_one':bool(s['validation_attention_mask'].all().item()),'mask_values':sorted(int(x) for x in s['validation_attention_mask'].unique().tolist()),'selection_mode':s['manifest']['selection']['mode']},sort_keys=True))"
+      ],
+      "ended_utc": "2026-09-08T14:50:59Z",
+      "name": "target_train_load_source_bundle_r2",
+      "observed": {
+        "bundle_sha256": "302c7a65a6030af480ca526e6bb67741b52978a6052872c2bc3d6acf1c6e0f97",
+        "mask_values": [
+          1
+        ],
+        "schema": "token-reconstruction.trr-p12-target-source-bundle.v1",
+        "selection_mode": "qualification_full128_r2",
+        "train_all_masks_one": true,
+        "train_shape": [
+          256,
+          128
+        ],
+        "validation_all_masks_one": true,
+        "validation_shape": [
+          64,
+          128
+        ]
+      },
+      "returncode": 0,
+      "started_utc": "2026-09-08T14:50:58Z",
+      "status": "PASS",
+      "wall_seconds": 0.9315242840020801
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import json,tempfile,time\nfrom pathlib import Path\nimport torch\nfrom transformers import LlamaConfig,LlamaForCausalLM\nfrom token_reconstruction.target_update import TargetLoRAConfig,install_target_lora,save_target_lora,target_lora_parameters\nfrom scripts.trr_p12 import target_train as tt\nt0=time.monotonic(); torch.manual_seed(6012)\nc=LlamaConfig(vocab_size=128,hidden_size=32,intermediate_size=64,num_hidden_layers=4,num_attention_heads=4,num_key_value_heads=4,max_position_embeddings=32,bos_token_id=1,eos_token_id=2,pad_token_id=0)\nm=LlamaForCausalLM(c).float(); m.eval(); m.requires_grad_(False); frozen=tt._frozen_parameter_snapshot(m)\ni=install_target_lora(m,TargetLoRAConfig(layers=(0,1,2,3),modules=('q_proj','v_proj'),rank=2,alpha=4.0,seed=6012)); params=target_lora_parameters(i.values()); opt=torch.optim.AdamW(params,lr=5e-4,weight_decay=0.0)\nids=torch.randint(0,128,(2,8),dtype=torch.long); ids[:,0]=1; mask=torch.ones_like(ids,dtype=torch.bool); m.train(); st=time.monotonic(); opt.zero_grad(set_to_none=True); loss=tt._masked_loss(m,ids,mask); loss.backward(); bd=time.monotonic(); ss=tt._step_stats(device=torch.device('cpu'),loss=loss,parameters=params,elapsed_seconds=0.0,step=1,cuda_min_free_bytes=0,max_rss_bytes=12*1024**3); opt.step(); tt._finish_step_stats(ss,device=torch.device('cpu'),step=1,started=st,backward_done=bd,cuda_min_free_bytes=0,max_rss_bytes=12*1024**3); d=tt._effective_delta_metrics(i); f=tt._frozen_parameter_checks(frozen,i); assert bool(torch.isfinite(loss).item()) and d['aggregate']['nonzero_effective_delta'] and f['frozen_base_all_unchanged'] and f['frozen_base_all_gradients_none'] and f['optimizer_scope_check']\nwith tempfile.TemporaryDirectory(prefix='trr_p12_target_cpu_') as td:\n p=Path(td); a=p/'adapter.safetensors'; save_target_lora(i,a); b=tt.backup_and_verify(a,p/'backup',stage=1); assert b['source_sha256']==b['backup_sha256']\nprint(json.dumps({'status':'PASS_SYNTHETIC_CPU_TARGET_API','loss_finite':True,'gradient_finite':True,'effective_delta_nonzero':True,'frozen_base_unchanged':True,'backup_hash_verified':True,'wall_seconds':time.monotonic()-t0},sort_keys=True))"
+      ],
+      "ended_utc": "2026-09-08T14:51:03Z",
+      "name": "synthetic_cpu_target_update_api_smoke",
+      "observed": {
+        "backup_hash_verified": true,
+        "effective_delta_nonzero": true,
+        "frozen_base_unchanged": true,
+        "gradient_finite": true,
+        "loss_finite": true,
+        "status": "PASS_SYNTHETIC_CPU_TARGET_API",
+        "wall_seconds": 0.017177772999275476
+      },
+      "returncode": 0,
+      "started_utc": "2026-09-08T14:50:59Z",
+      "status": "PASS",
+      "test_code_sha256": "f9def8c117680435ccfca7b5d4e5646d03526e7f6aa5214b08ca59608811bdb4",
+      "wall_seconds": 3.899689302998013
+    }
+  ],
+  "control_bindings": {
+    "charter": {
+      "bytes": 3693,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/RESEARCH_CHARTER.md",
+      "readonly": true,
+      "sha256": "ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d",
+      "symlink": false
+    },
+    "exclusion_union_r2": {
+      "bytes": 6338870,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/experiments/TRR-P12/exclusions/identity_union_extension_r2.json",
+      "readonly": true,
+      "sha256": "bd2e641f5f10d249595b89f48aeeba2d97a2b71688190177f4ebe4f4ac022a0b",
+      "symlink": false
+    },
+    "p11_manifest": {
+      "bytes": 32973,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/experiments/TRR-P11/manifest.json",
+      "readonly": true,
+      "sha256": "22e3b51e4835e85ccaf84c52248bb53c02e702c586f6d36116422e0fd5670f3a",
+      "symlink": false
+    },
+    "p12_manifest": {
+      "bytes": 7797,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/experiments/TRR-P12/manifest.json",
+      "readonly": true,
+      "sha256": "302cef73349927615e39b116e985f796a9c70b6f9c97932a119c0acb1d3f0a8d",
+      "symlink": false
+    },
+    "request": {
+      "bytes": 2397,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/coordination/requests/TRR-P12.md",
+      "readonly": true,
+      "sha256": "a395049b2130a68d36a5b5b7af77047683dd70752bdbc4d2bde944824c4b6c9a",
+      "symlink": false
+    }
+  },
+  "created_utc": "2026-09-08T14:51:06Z",
+  "fixture_bindings": {
+    "manifest": {
+      "bytes": 5382,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/outputs/TRR-P12/qualification-fixture-r2/manifest.json",
+      "readonly": true,
+      "sha256": "214616c28a8c11a71dd4ad58c010cbb2bbba1fb4adede21f2c8263a26042e2c6",
+      "symlink": false
+    },
+    "source_bundle": {
+      "bytes": 4723,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/outputs/TRR-P12/qualification-fixture-r2/source-bundle.json",
+      "readonly": true,
+      "sha256": "302c7a65a6030af480ca526e6bb67741b52978a6052872c2bc3d6acf1c6e0f97",
+      "symlink": false
+    },
+    "train_tensor": {
+      "bytes": 164168,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/outputs/TRR-P12/qualification-fixture-r2/train.safetensors",
+      "readonly": true,
+      "sha256": "9a37cc70d6620f346662983e52ad04a851e04a1fbf061f4eb7c956c82eaab7f8",
+      "symlink": false
+    },
+    "validation_tensor": {
+      "bytes": 41296,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/outputs/TRR-P12/qualification-fixture-r2/validation.safetensors",
+      "readonly": true,
+      "sha256": "d2a5edc56479fe3d8cd16a76328991e14c9def5287bd1805e17d70742d4c5748",
+      "symlink": false
+    }
+  },
+  "limitations": [
+    "No GPU run launched; GPU timing/peaks unavailable.",
+    "Qualification validation is repeated public fitting fixture smoke only, not scientific held-out evidence.",
+    "Full source-worker bundle remains pending and is intentionally unbound."
+  ],
+  "observed_contracts": {
+    "full_run_validation_is_separate_64_row_source_worker_bundle": true,
+    "no_batch64_validation": true,
+    "qualification_loss_is_smoke_only": true,
+    "r2_all_masks_one": true,
+    "r2_train_shape": [
+      256,
+      128
+    ],
+    "r2_validation_rows_repeated_fixture": true,
+    "r2_validation_shape": [
+      64,
+      128
+    ],
+    "validation_batch_size": 2
+  },
+  "resource_preflight": {
+    "backup_policy": {
+      "create_only_and_independent_hash_before_next_stage": true,
+      "minimum_free_bytes": 10737418240,
+      "root": "/mnt/c/Users/alanz/Token-Reconstruction-Backups/TRR-P12/target-r1"
+    },
+    "capture_guards": {
+      "max_host_rss_bytes": 17179869184,
+      "max_reserved_gpu_bytes": 8589934592,
+      "min_free_gpu_bytes": 8589934592,
+      "timeout_seconds": 600
+    },
+    "gpu_launched": false,
+    "gpu_peak_memory_bytes": null,
+    "gpu_timing_seconds": null,
+    "prior_p04_representative_capture": {
+      "cuda_peak_allocated_bytes": 2472678400,
+      "cuda_peak_reserved_bytes": 2480930816,
+      "geometry": "B8 x 192, cut4, BF16",
+      "host_max_rss_bytes": 6173032448,
+      "wall_seconds": 9.764313294999738
+    },
+    "target_training_estimate": {
+      "adapter_tensor_bytes_bf16_equivalent": 425984,
+      "adapter_tensor_bytes_fp32": 851968,
+      "lora_trainable_parameters": 212992,
+      "peak_cuda_estimate_bytes": 3600000000
+    },
+    "unrecorded": [
+      "P12 target training and capture timings/peaks unavailable until root GPU release and run"
+    ]
+  },
+  "schema": "token-reconstruction.trr-p12-target-cpu-validation-receipt.v1",
+  "scope": "CPU validation and metadata/resource preflight only; no target model load, target training, GPU capture, or decoder training",
+  "source_bindings": {
+    "status": {
+      "bytes": 58312,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/experiments/TRR-0004/status.json",
+      "readonly": true,
+      "sha256": "4ef53953eb88b94e3359c06b0f208412245f0e6140ef6e36e2127b488194963d",
+      "symlink": false
+    },
+    "train_artifact": {
+      "bytes": 947176648,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_cut4.safetensors",
+      "readonly": true,
+      "sha256": "d1c78fcf1acc91b57d51355ee11f267bf4c12f1bc7d5160164b3b6ea11b45344",
+      "symlink": false
+    },
+    "train_records": {
+      "bytes": 726532,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0004/outputs/TRR-0004/public_activation_v2/train_large_records.json",
+      "readonly": true,
+      "sha256": "34e10ddc7c502b30822730b84c6f3a48b6285888b8ef92fc9e1aef65ecca29df",
+      "symlink": false
+    }
+  },
+  "status": "PASS_CPU_AND_PREFLIGHT_NO_GPU",
+  "task_id": "TRR-P12",
+  "working_tree_head": "11785285995c8b2888e9e09bf92091a7e72cdc44"
+}

@@ -1,0 +1,219 @@
+{
+  "adapter": {
+    "bytes": 853576,
+    "label": "qualification adapter",
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/experiments/TRR-P12/target-qualification-r1/target-lora-qualification-0004.safetensors",
+    "sha256": "12310074073e6b0e5679551d05ca8e82ed7ea34f3d18b8ac116b43306f68130d"
+  },
+  "capture_receipt": {
+    "bytes": 10155,
+    "label": "inner capture receipt",
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/outputs/TRR-P12/qualification-capture-r1/capture-receipt.json",
+    "sha256": "a6d841c75d707db34cd8ad95b65a57f42fa174a0c495210c3cda86e3b0a96516"
+  },
+  "code_binding": {
+    "bytes": 31105,
+    "label": "capture harness",
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/scripts/trr_p12/qualify_capture.py",
+    "sha256": "e6e1edadee9b43b60aba6b3a27d6dbe2423f2a92317efbb8cd4cfd978042ed18"
+  },
+  "code_commit": "cc1d92e67df41089fba0c61a57781bd3f0a04ff9",
+  "conditions": [
+    {
+      "adapter_present": false,
+      "after_capture_resource": {
+        "cuda_allocated_bytes": 1021477888,
+        "cuda_free_bytes": 13127122944,
+        "cuda_peak_allocated_bytes": 2472678400,
+        "cuda_peak_reserved_bytes": 2474639360,
+        "cuda_reserved_bytes": 2474639360,
+        "cuda_total_bytes": 17066033152,
+        "host_rss_bytes": 3457146880,
+        "phase": "after_baseline_capture"
+      },
+      "after_model_load_resource": {
+        "cuda_allocated_bytes": 1012958208,
+        "cuda_free_bytes": 13204717568,
+        "cuda_peak_allocated_bytes": 2472678400,
+        "cuda_peak_reserved_bytes": 2474639360,
+        "cuda_reserved_bytes": 2474639360,
+        "cuda_total_bytes": 17066033152,
+        "host_rss_bytes": 3457146880,
+        "phase": "after_baseline_model_load"
+      },
+      "capture_seconds": 0.45183780600200407,
+      "condition": "baseline",
+      "model_load_seconds": 0.554306110003381
+    },
+    {
+      "adapter_present": true,
+      "after_capture_resource": {
+        "cuda_allocated_bytes": 1022329856,
+        "cuda_free_bytes": 13104054272,
+        "cuda_peak_allocated_bytes": 2482115584,
+        "cuda_peak_reserved_bytes": 2497708032,
+        "cuda_reserved_bytes": 2497708032,
+        "cuda_total_bytes": 17066033152,
+        "host_rss_bytes": 4098113536,
+        "phase": "after_qualification_capture"
+      },
+      "after_model_load_resource": {
+        "cuda_allocated_bytes": 1022329856,
+        "cuda_free_bytes": 13106151424,
+        "cuda_peak_allocated_bytes": 2482115584,
+        "cuda_peak_reserved_bytes": 2495610880,
+        "cuda_reserved_bytes": 2495610880,
+        "cuda_total_bytes": 17066033152,
+        "host_rss_bytes": 4098113536,
+        "phase": "after_qualification_model_load"
+      },
+      "capture_seconds": 0.036675609000667464,
+      "condition": "qualification",
+      "model_load_seconds": 0.5110879540006863
+    }
+  ],
+  "contract": {
+    "activation_dtype": "bfloat16",
+    "bos_token_id": 128000,
+    "capture_batch_records": 8,
+    "cut_depth": 4,
+    "forward_path": "token_reconstruction.public_activation.capture_public_prefix -> ContiguousPublicPrefix.forward_full",
+    "full_activation_shape": [
+      8,
+      192,
+      2048
+    ],
+    "no_microbatch_substitution": true,
+    "pad_token_id": 128001,
+    "padded_shape": [
+      8,
+      192
+    ],
+    "same_fixture_records_for_all_conditions": true,
+    "stored_activation_shape": [
+      8,
+      128,
+      2048
+    ],
+    "stored_sequence_tokens": 128
+  },
+  "created_utc": "2026-09-08T14:57:16Z",
+  "external_watchdog": {
+    "configured": true,
+    "maximum_host_rss_bytes": 17179869184,
+    "maximum_seconds": 600,
+    "minimum_free_gpu_bytes": 8589934592,
+    "note": "The one-second watchdog was terminated by the wrapper immediately after the approximately two-second capture completed; internal fail-closed guard samples are retained in capture-receipt.json.",
+    "receipt_exists": false,
+    "receipt_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/experiments/TRR-P12/qualification-capture-watchdog-r1.json",
+    "script": "scripts/trr_p11/live_watchdog.py",
+    "status": "NO_RECEIPT_CAPTURE_FINISHED_BEFORE_FIRST_POLL"
+  },
+  "fixture": {
+    "bytes": 4723,
+    "label": "r2 source bundle",
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/outputs/TRR-P12/qualification-fixture-r2/source-bundle.json",
+    "sha256": "302c7a65a6030af480ca526e6bb67741b52978a6052872c2bc3d6acf1c6e0f97"
+  },
+  "launch": {
+    "inner_command": [
+      "/usr/bin/python3",
+      "scripts/trr_p12/qualify_capture.py",
+      "--fixture",
+      "outputs/TRR-P12/qualification-fixture-r2/source-bundle.json",
+      "--model-snapshot",
+      "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+      "--adapter",
+      "experiments/TRR-P12/target-qualification-r1/target-lora-qualification-0004.safetensors",
+      "--output-root",
+      "outputs/TRR-P12/qualification-capture-r1",
+      "--device",
+      "cuda",
+      "--min-free-gpu-bytes",
+      "8589934592",
+      "--max-reserved-gpu-bytes",
+      "8589934592",
+      "--max-rss-bytes",
+      "17179869184",
+      "--timeout-seconds",
+      "600"
+    ],
+    "inner_ended_utc": "2026-09-08T14:55:06Z",
+    "inner_started_utc": "2026-09-08T14:55:04Z",
+    "inner_wall_seconds": 1.9982069760008017,
+    "outer_kill_after_seconds": 30,
+    "outer_timeout_seconds": 660,
+    "outer_timestamps": "inner receipt timestamps are the authoritative measured run bounds; shell wrapper did not emit independent timestamps",
+    "outer_wall_seconds": "UNRECORDED_BY_WRAPPER",
+    "watchdog_command": [
+      "/usr/bin/python3",
+      "scripts/trr_p11/live_watchdog.py",
+      "--parent-pid",
+      "<capture-pid>",
+      "--output",
+      "experiments/TRR-P12/qualification-capture-watchdog-r1.json",
+      "--minimum-free-gib",
+      "8",
+      "--maximum-rss-gib",
+      "16",
+      "--poll-seconds",
+      "1",
+      "--maximum-seconds",
+      "600"
+    ]
+  },
+  "outputs": [
+    {
+      "bytes": 4204168,
+      "label": "baseline sanitized observation",
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/outputs/TRR-P12/qualification-capture-r1/baseline.safetensors",
+      "sha256": "aba20f4cabb5269b75930a0bfa3b98dc63234bf9d174636a05fac2b237623e07"
+    },
+    {
+      "bytes": 4204176,
+      "label": "qualification sanitized observation",
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/outputs/TRR-P12/qualification-capture-r1/qualification.safetensors",
+      "sha256": "375be9e462ae1d4401a3a607bf0ca743e4f827b26f83cd3d1101568de629c352"
+    }
+  ],
+  "preflight": {
+    "gpu_model": "NVIDIA GeForce RTX 5080",
+    "gpu_total_bytes": 17066033152,
+    "initial_free_bytes": 15679356928,
+    "initial_host_rss_bytes": 847941632,
+    "no_competing_compute_processes_observed_before_launch": true
+  },
+  "resource_guards": {
+    "initial_resource": {
+      "cuda_allocated_bytes": 0,
+      "cuda_free_bytes": 15679356928,
+      "cuda_peak_allocated_bytes": 0,
+      "cuda_peak_reserved_bytes": 0,
+      "cuda_reserved_bytes": 0,
+      "cuda_total_bytes": 17066033152,
+      "host_rss_bytes": 847941632,
+      "phase": "pre_model_load"
+    },
+    "max_reserved_gpu_bytes": 8589934592,
+    "max_rss_bytes": 17179869184,
+    "min_free_gpu_bytes": 8589934592,
+    "timeout_seconds": 600.0
+  },
+  "runtime": {
+    "cuda_available": true,
+    "cuda_runtime": "12.8",
+    "device": "cuda",
+    "pid": 933028,
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "torch_version": "2.10.0+cu128"
+  },
+  "sanitization": {
+    "evaluator_only": true,
+    "source_text_written": false,
+    "target_weights_written": false,
+    "token_ids_written": false
+  },
+  "schema": "token-reconstruction.trr-p12-qualification-capture-execution.v1",
+  "status": "CAPTURE_EXECUTION_COMPLETE_INTERNAL_GUARD_PASS",
+  "task_id": "TRR-P12"
+}

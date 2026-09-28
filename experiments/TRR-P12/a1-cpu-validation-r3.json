@@ -1,0 +1,101 @@
+{
+  "checks": [
+    {
+      "command": [
+        "python3",
+        "-m",
+        "py_compile",
+        "scripts/trr_p12/a1_runner.py"
+      ],
+      "elapsed_seconds": 0.05902689800132066,
+      "returncode": 0,
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "scripts.trr_p12.a1_runner",
+        "--input-manifest",
+        "/tmp/trr-p12-a1-input.json",
+        "--binding",
+        "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P11/outputs/TRR-P11/private-evaluation/a1_a2-r1/runtime-binding.json",
+        "--check-only",
+        "--device",
+        "cpu",
+        "--minimum-free-gib",
+        "8",
+        "--runtime-minimum-free-gib",
+        "2",
+        "--maximum-reserved-gib",
+        "8",
+        "--maximum-rss-gib",
+        "16",
+        "--max-seconds",
+        "1800"
+      ],
+      "elapsed_seconds": 3.521047438000096,
+      "returncode": 0,
+      "status": "PASS"
+    },
+    {
+      "command": "a1_runner._load_qualification_resume synthetic create-only artifact check",
+      "elapsed_seconds": null,
+      "returncode": 0,
+      "status": "PASS"
+    }
+  ],
+  "created_utc": "2026-09-08T15:20:45Z",
+  "exact_recommended_commands": {
+    "qualification": "timeout --signal=TERM --kill-after=20s 2100s python3 -m scripts.trr_p12.a1_runner --input-manifest outputs/TRR-P12/a1-stage-input-r1.json --binding /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P11/outputs/TRR-P11/private-evaluation/a1_a2-r1/runtime-binding.json --output-root outputs/TRR-P12/a1-a2-r1 --qualification-only --qualification-cell finance_stage0000 --device cuda:0 --minimum-free-gib 8 --runtime-minimum-free-gib 2 --maximum-reserved-gib 8 --maximum-rss-gib 16 --max-seconds 1800",
+    "resume": "timeout --signal=TERM --kill-after=20s 4200s python3 -m scripts.trr_p12.a1_runner --input-manifest outputs/TRR-P12/a1-stage-input-r1.json --binding /home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P11/outputs/TRR-P12/a1-stage-input-r1.json --output-root outputs/TRR-P12/a1-a2-r1 --resume-qualification outputs/TRR-P12/a1-a2-r1/run.receipt.json --qualification-cell finance_stage0000 --device cuda:0 --minimum-free-gib 8 --runtime-minimum-free-gib 2 --maximum-reserved-gib 8 --maximum-rss-gib 16 --max-seconds 3600"
+  },
+  "input_manifest": {
+    "bytes": 2684,
+    "path": "/tmp/trr-p12-a1-input.json",
+    "sha256": "9f45b8638169765669eb8bffaa3bd5bb7be6bcbd47692151131afc683da58269"
+  },
+  "observed": {
+    "check_only_status": "CHECK_ONLY_PASS_NO_MODEL_OR_GPU",
+    "gpu_run_launched": false,
+    "guard_split": {
+      "initial_minimum_free_gpu_gib": 8.0,
+      "maximum_host_rss_gib": 16.0,
+      "maximum_reserved_gpu_gib": 8.0,
+      "runtime_minimum_free_gpu_gib": 2.0
+    },
+    "input_cells": [
+      "finance/0",
+      "finance/256",
+      "pile/0",
+      "pile/256"
+    ],
+    "model_loaded": false,
+    "qualification_resume_validator_passed": true,
+    "source_text_loaded": false,
+    "target_weights_loaded": false,
+    "token_ids_loaded": false,
+    "truth_opened": false,
+    "unrecorded": [
+      "CUDA A1 qualification timing and peak memory until root releases the GPU run."
+    ]
+  },
+  "p03_holdout_accessed": false,
+  "p11_binding": {
+    "bytes": 50649,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P11/outputs/TRR-P11/private-evaluation/a1_a2-r1/runtime-binding.json",
+    "sha256": "3dd7114671de1ac3388c2e99286d597ca2fd04e09c16780a726f9bf1ee5d45b3"
+  },
+  "runner_code": {
+    "bytes": 35876,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/scripts/trr_p12/a1_runner.py",
+    "sha256": "d43e221785344efb66517cc1b87e32e0401c0cf6dd68e2615ee8e75d71f3b81c"
+  },
+  "schema": "token-reconstruction.trr-p12-a1-cpu-validation-receipt.v3",
+  "source_text_loaded": false,
+  "status": "PASS_CPU_PREFLIGHT_NO_GPU",
+  "target_weights_loaded": false,
+  "task_id": "TRR-P12",
+  "token_ids_loaded": false,
+  "truth_opened": false
+}

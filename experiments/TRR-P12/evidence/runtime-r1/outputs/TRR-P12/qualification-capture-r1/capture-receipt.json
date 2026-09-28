@@ -1,0 +1,281 @@
+{
+  "adapter": {
+    "binding": {
+      "bytes": 853576,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/experiments/TRR-P12/target-qualification-r1/target-lora-qualification-0004.safetensors",
+      "readonly": true,
+      "resolved_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/experiments/TRR-P12/target-qualification-r1/target-lora-qualification-0004.safetensors",
+      "sha256": "12310074073e6b0e5679551d05ca8e82ed7ea34f3d18b8ac116b43306f68130d",
+      "symlink": false
+    },
+    "config": {
+      "alpha": 16.0,
+      "layers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "modules": [
+        "q_proj",
+        "v_proj"
+      ],
+      "rank": 8,
+      "seed": 6012
+    },
+    "present": true,
+    "target_weights": "evaluator-only; adapter is read for capture and never written to output"
+  },
+  "capture_contract": {
+    "activation_dtype": "bfloat16",
+    "bos_token_id": 128000,
+    "capture_batch_records": 8,
+    "cut_depth": 4,
+    "forward_path": "token_reconstruction.public_activation.capture_public_prefix -> ContiguousPublicPrefix.forward_full",
+    "full_activation_shape": [
+      8,
+      192,
+      2048
+    ],
+    "no_microbatch_substitution": true,
+    "pad_token_id": 128001,
+    "padded_shape": [
+      8,
+      192
+    ],
+    "same_fixture_records_for_all_conditions": true,
+    "stored_activation_shape": [
+      8,
+      128,
+      2048
+    ],
+    "stored_sequence_tokens": 128
+  },
+  "conditions": [
+    {
+      "adapter_present": false,
+      "after_capture_resource": {
+        "cuda_allocated_bytes": 1021477888,
+        "cuda_free_bytes": 13127122944,
+        "cuda_peak_allocated_bytes": 2472678400,
+        "cuda_peak_reserved_bytes": 2474639360,
+        "cuda_reserved_bytes": 2474639360,
+        "cuda_total_bytes": 17066033152,
+        "host_rss_bytes": 3457146880,
+        "phase": "after_baseline_capture"
+      },
+      "after_model_load_resource": {
+        "cuda_allocated_bytes": 1012958208,
+        "cuda_free_bytes": 13204717568,
+        "cuda_peak_allocated_bytes": 2472678400,
+        "cuda_peak_reserved_bytes": 2474639360,
+        "cuda_reserved_bytes": 2474639360,
+        "cuda_total_bytes": 17066033152,
+        "host_rss_bytes": 3457146880,
+        "phase": "after_baseline_model_load"
+      },
+      "capture_seconds": 0.45183780600200407,
+      "condition": "baseline",
+      "model_load_seconds": 0.554306110003381
+    },
+    {
+      "adapter_present": true,
+      "after_capture_resource": {
+        "cuda_allocated_bytes": 1022329856,
+        "cuda_free_bytes": 13104054272,
+        "cuda_peak_allocated_bytes": 2482115584,
+        "cuda_peak_reserved_bytes": 2497708032,
+        "cuda_reserved_bytes": 2497708032,
+        "cuda_total_bytes": 17066033152,
+        "host_rss_bytes": 4098113536,
+        "phase": "after_qualification_capture"
+      },
+      "after_model_load_resource": {
+        "cuda_allocated_bytes": 1022329856,
+        "cuda_free_bytes": 13106151424,
+        "cuda_peak_allocated_bytes": 2482115584,
+        "cuda_peak_reserved_bytes": 2495610880,
+        "cuda_reserved_bytes": 2495610880,
+        "cuda_total_bytes": 17066033152,
+        "host_rss_bytes": 4098113536,
+        "phase": "after_qualification_model_load"
+      },
+      "capture_seconds": 0.036675609000667464,
+      "condition": "qualification",
+      "model_load_seconds": 0.5110879540006863
+    }
+  ],
+  "created_utc": "2026-09-08T14:55:06Z",
+  "ended_utc": "2026-09-08T14:55:06Z",
+  "fixture": {
+    "active_lengths": [
+      128,
+      128,
+      128,
+      128,
+      128,
+      128,
+      128,
+      128
+    ],
+    "record_rule": "first 8 rows of the already-built qualification validation tensor",
+    "records_used": 8,
+    "source_bundle": {
+      "bytes": 4723,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/outputs/TRR-P12/qualification-fixture-r2/source-bundle.json",
+      "readonly": true,
+      "resolved_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/outputs/TRR-P12/qualification-fixture-r2/source-bundle.json",
+      "sha256": "302c7a65a6030af480ca526e6bb67741b52978a6052872c2bc3d6acf1c6e0f97",
+      "symlink": false
+    },
+    "source_payload_written": false,
+    "source_text_written": false,
+    "token_ids_written": false,
+    "validation_tensor": {
+      "bytes": 41296,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/outputs/TRR-P12/qualification-fixture-r2/validation.safetensors",
+      "readonly": true,
+      "resolved_path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/outputs/TRR-P12/qualification-fixture-r2/validation.safetensors",
+      "sha256": "d2a5edc56479fe3d8cd16a76328991e14c9def5287bd1805e17d70742d4c5748",
+      "symlink": false
+    }
+  },
+  "model": {
+    "files": {
+      "config": {
+        "bytes": 877,
+        "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6/config.json",
+        "readonly": true,
+        "resolved_path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/3e3aaf51a035cb5092d9f6827a0dc074657ba88c",
+        "sha256": "2febf68cea25bf4611be02b7536f2488a5ba523bb1134986e3610152abe74fdb",
+        "symlink": true
+      },
+      "generation_config": {
+        "bytes": 189,
+        "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6/generation_config.json",
+        "readonly": true,
+        "resolved_path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/75ae08310d6d23df373ee2644b497192b3cce6d8",
+        "sha256": "88effbb63300dbbc7390143fbbdd9d9fa50587b37e8bfd16c8c90d4970a74a36",
+        "symlink": true
+      },
+      "tokenizer": {
+        "bytes": 9085657,
+        "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6/tokenizer.json",
+        "readonly": true,
+        "resolved_path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/5cc5f00a5b203e90a27a3bd60d1ec393b07971e8",
+        "sha256": "79e3e522635f3171300913bb421464a87de6222182a0570b9b2ccba2a964b2b4",
+        "symlink": true
+      },
+      "weights": {
+        "bytes": 2471645608,
+        "path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6/model.safetensors",
+        "readonly": true,
+        "resolved_path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/blobs/1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f",
+        "sha256": "1ff795ff6a07e6a68085d206fb84417da2f083f68391c2843cd2b8ac6df8538f",
+        "symlink": true
+      }
+    },
+    "hash_scope": "full model.safetensors sequential read",
+    "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+    "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "snapshot_path": "/home/alanz/.cache/huggingface/hub/models--meta-llama--Llama-3.2-1B-Instruct/snapshots/9213176726f574b556790deb65791e0c5aa438b6",
+    "weights_hash_verified_before_model_load": true
+  },
+  "outputs": [
+    {
+      "activation_dtype": "bfloat16",
+      "activation_shape": [
+        8,
+        128,
+        2048
+      ],
+      "attention_mask_dtype": "uint8",
+      "attention_mask_shape": [
+        8,
+        128
+      ],
+      "bytes": 4204168,
+      "condition": "baseline",
+      "keys": [
+        "activations",
+        "attention_mask",
+        "position_ids"
+      ],
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/outputs/TRR-P12/qualification-capture-r1/baseline.safetensors",
+      "position_ids_dtype": "int64",
+      "position_ids_shape": [
+        8,
+        128
+      ],
+      "sha256": "aba20f4cabb5269b75930a0bfa3b98dc63234bf9d174636a05fac2b237623e07",
+      "source_text_written": false,
+      "target_weights_written": false,
+      "token_ids_written": false
+    },
+    {
+      "activation_dtype": "bfloat16",
+      "activation_shape": [
+        8,
+        128,
+        2048
+      ],
+      "attention_mask_dtype": "uint8",
+      "attention_mask_shape": [
+        8,
+        128
+      ],
+      "bytes": 4204176,
+      "condition": "qualification",
+      "keys": [
+        "activations",
+        "attention_mask",
+        "position_ids"
+      ],
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/outputs/TRR-P12/qualification-capture-r1/qualification.safetensors",
+      "position_ids_dtype": "int64",
+      "position_ids_shape": [
+        8,
+        128
+      ],
+      "sha256": "375be9e462ae1d4401a3a607bf0ca743e4f827b26f83cd3d1101568de629c352",
+      "source_text_written": false,
+      "target_weights_written": false,
+      "token_ids_written": false
+    }
+  ],
+  "resource_guards": {
+    "initial_resource": {
+      "cuda_allocated_bytes": 0,
+      "cuda_free_bytes": 15679356928,
+      "cuda_peak_allocated_bytes": 0,
+      "cuda_peak_reserved_bytes": 0,
+      "cuda_reserved_bytes": 0,
+      "cuda_total_bytes": 17066033152,
+      "host_rss_bytes": 847941632,
+      "phase": "pre_model_load"
+    },
+    "max_reserved_gpu_bytes": 8589934592,
+    "max_rss_bytes": 17179869184,
+    "min_free_gpu_bytes": 8589934592,
+    "timeout_seconds": 600.0
+  },
+  "runtime": {
+    "cuda_available": true,
+    "cuda_runtime": "12.8",
+    "device": "cuda",
+    "pid": 933028,
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "torch_version": "2.10.0+cu128"
+  },
+  "sanitization": {
+    "evaluator_only": true,
+    "source_text_written": false,
+    "target_weights_written": false,
+    "token_ids_written": false
+  },
+  "schema": "token-reconstruction.trr-p12-qualification-capture.v1",
+  "started_utc": "2026-09-08T14:55:04Z",
+  "status": "QUALIFICATION_CAPTURE_COMPLETE",
+  "task_id": "TRR-P12",
+  "wall_seconds": 1.9982069760008017
+}

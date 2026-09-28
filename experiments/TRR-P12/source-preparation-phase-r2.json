@@ -1,0 +1,118 @@
+{
+  "amendment": {
+    "bytes": 1977,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/experiments/TRR-P12/plan-amendment-r1.json",
+    "readonly": true,
+    "sha256": "e960951e52922bd65dfeb48d14780f68c3e3c3a79e041f7234af378a3b2fad42"
+  },
+  "boundary": {
+    "gpu_used": false,
+    "model_loaded": false,
+    "p03_holdout_accessed": false,
+    "selection_payload_written": false,
+    "source_text_written": false,
+    "truth_opened": false
+  },
+  "code": {
+    "p10_identity_helper": {
+      "bytes": 44422,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/scripts/trr_p10/build_exclusion_audit.py",
+      "readonly": true,
+      "sha256": "1f516eebc1734ee0848cbb7c1c102912507b8e4b09c3794108d1bd08efe93727"
+    },
+    "p11_renderer": {
+      "bytes": 83875,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/scripts/trr0005_produce_confirmation.py",
+      "readonly": true,
+      "sha256": "7289ee5db30bc0b2d3c1b50b1d5b6ca1ac235001371f61b92adf10e2dd979e2b"
+    },
+    "p11_selector": {
+      "bytes": 52211,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/scripts/trr_p11/source_selector.py",
+      "readonly": true,
+      "sha256": "0397c42b35e4962d1c443808714e8b0b86ad1e52a4dbe9eca82174039f70b700"
+    },
+    "select_panel": {
+      "bytes": 28555,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/scripts/trr_p12/select_panel.py",
+      "readonly": true,
+      "sha256": "a30a2af057270c68be8bcf04a7edb46cbdec1fc3b02aaae341288f7f96345607"
+    },
+    "target_sources": {
+      "bytes": 24974,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/scripts/trr_p12/target_sources.py",
+      "readonly": true,
+      "sha256": "46da19783559b579361b12fb877ad881dcd7f8df639c91a69f048c8a1f7751ca"
+    }
+  },
+  "commands": {
+    "compile": "python3 -m py_compile scripts/trr_p12/select_panel.py scripts/trr_p12/target_sources.py",
+    "panel_binding_dry_run": "python3 scripts/trr_p12/select_panel.py --dry-run --root . --amendment experiments/TRR-P12/plan-amendment-r1.json --output /tmp/TRR-P12-panel-r2-dry.json",
+    "panel_execute": "python3 scripts/trr_p12/select_panel.py --execute --root . --amendment experiments/TRR-P12/plan-amendment-r1.json --output outputs/TRR-P12/sources-r2/panel.json",
+    "target_binding_dry_run": "python3 scripts/trr_p12/target_sources.py --dry-run --root . --panel outputs/TRR-P12/sources-r2/panel.json --output /tmp/TRR-P12-target-r1-dry.json",
+    "target_execute": "python3 scripts/trr_p12/target_sources.py --execute --root . --panel outputs/TRR-P12/sources-r2/panel.json --output outputs/TRR-P12/target-sources-r1/bundle.json"
+  },
+  "constants": {
+    "panel_ranges_half_open": {
+      "finance": [
+        50000,
+        52000
+      ],
+      "pile": [
+        0,
+        10000
+      ]
+    },
+    "panel_records_per_domain": 128,
+    "panel_seed": 5012,
+    "panel_stages": [
+      0,
+      64,
+      128,
+      256
+    ],
+    "target_range_half_open": [
+      20000,
+      30000
+    ],
+    "target_seed": 6012,
+    "target_train_records": 256,
+    "target_validation_records": 64
+  },
+  "created_utc": "2026-09-08T14:37:39Z",
+  "opaque_reservations": [
+    {
+      "bytes": 852177,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0013/outputs/TRR-0013/correction_selection_r1/opaque_reservations.json",
+      "readonly": true,
+      "sha256": "dee8b7e1d70342c154a4217c982d47d3917d4e11c9cad33b6ebdc87c79a6cf33"
+    },
+    {
+      "bytes": 318198,
+      "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0013/outputs/TRR-0013/evaluation_selection_r1/opaque_reservations.json",
+      "readonly": true,
+      "sha256": "a6a47eb11731fca900b5a5f91e5512b1193ffcbe812a6e42ec678a10cec8c6a1"
+    }
+  ],
+  "original_manifest": {
+    "bytes": 7797,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/experiments/TRR-P12/manifest.json",
+    "readonly": true,
+    "sha256": "302cef73349927615e39b116e985f796a9c70b6f9c97932a119c0acb1d3f0a8d"
+  },
+  "prior_failure_receipt": {
+    "bytes": 2392,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/experiments/TRR-P12/source-preparation-failure-r1.json",
+    "readonly": true,
+    "sha256": "6bf131a5cb5eb650b9eb8a9ce6e60a14ef36f818ce20d1d94b912006e01cf5bc"
+  },
+  "schema": "token-reconstruction.trr-p12-source-preparation-phase.v2",
+  "status": "PHASE_CODE_BOUND_BEFORE_AMENDED_SOURCE_SELECTION",
+  "task_id": "TRR-P12",
+  "union": {
+    "bytes": 6338870,
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12/experiments/TRR-P12/exclusions/identity_union_extension_r2.json",
+    "readonly": true,
+    "sha256": "bd2e641f5f10d249595b89f48aeeba2d97a2b71688190177f4ebe4f4ac022a0b"
+  }
+}

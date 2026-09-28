@@ -1,0 +1,75 @@
+{
+  "schema": "token-reconstruction.trr-p12-postfreeze-breakage-execution.v1",
+  "task_id": "TRR-P12",
+  "status": "POSTFREEZE_DESCRIPTIVE_COMPLETE",
+  "analysis_script": {
+    "path": "scripts/trr_p12/postfreeze_breakage.py",
+    "sha256": "6070b5b14ab5b8a854406a596b3a7b8498c29de97f04ac6e317538b34f91d8c5",
+    "git_commit": "baa70c4a82070e70606265cb916db897228b9073"
+  },
+  "command": [
+    "/usr/bin/python3",
+    "scripts/trr_p12/postfreeze_breakage.py",
+    "--release-marker",
+    "experiments/TRR-P12/root-truth-release-r1.json",
+    "--freeze-receipt",
+    "experiments/TRR-P12/evaluation-freeze-r1.json",
+    "--truth-descriptor",
+    "outputs/TRR-P12/private-evaluation/truth-r1/truth.json",
+    "--output",
+    "outputs/TRR-P12/report-preparation/postfreeze-breakage-r1.json"
+  ],
+  "working_directory": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-P12",
+  "inputs": {
+    "release_marker": {
+      "path": "experiments/TRR-P12/root-truth-release-r1.json",
+      "sha256": "b8af63510d19daa7ef189d0f8e110f82bd11f7601c44d7d3f887d989f4336f28"
+    },
+    "freeze_receipt": {
+      "path": "experiments/TRR-P12/evaluation-freeze-r1.json",
+      "sha256": "3436de3394c0113d91303a0271d637371362cbe95aafa8638c0746e5920edf7a"
+    },
+    "truth_descriptor": {
+      "path": "outputs/TRR-P12/private-evaluation/truth-r1/truth.json",
+      "sha256": "d3ebba74e58bf4fa31fd7897bae6266c6d5b3227ad6ad2e088564cee9c5a4ca6"
+    }
+  },
+  "outputs": {
+    "generated_report": {
+      "path": "outputs/TRR-P12/report-preparation/postfreeze-breakage-r1.json",
+      "sha256": "5bdbaba1d3604b2f426eda81b4f3a8cb7f99bb642b66d8b81e8e1c618612b8a2"
+    },
+    "published_exact_copy": {
+      "path": "experiments/TRR-P12/postfreeze-breakage-r1.json",
+      "bytes": 289445,
+      "sha256": "5bdbaba1d3604b2f426eda81b4f3a8cb7f99bb642b66d8b81e8e1c618612b8a2"
+    }
+  },
+  "timing": {
+    "reported_elapsed_seconds": 2.7415097070042975,
+    "started_utc": null,
+    "ended_utc": null,
+    "timestamp_note": "The one-shot command reported elapsed_seconds only; no start or end timestamps were captured by its wrapper."
+  },
+  "resources_and_cost": {
+    "device": "cpu",
+    "gpu_used": false,
+    "gpu_cost_usd": 0.0,
+    "cpu_cost_usd": null,
+    "cost_note": "No GPU was requested or used; no CPU price estimate was available."
+  },
+  "access_boundary": {
+    "source_text_loaded": false,
+    "source_identifiers_written": false,
+    "token_values_written": false,
+    "target_weights_loaded": false,
+    "predictor_fitted": false,
+    "threshold_or_selection_fit": false,
+    "truth_opened_only_after_release": true
+  },
+  "report_contract": {
+    "position_bins_inclusive": [[1, 32], [33, 64], [65, 96], [97, 127]],
+    "record_vectors": "frozen order with source identifiers omitted",
+    "analysis_label": "post hoc descriptive reporting selected before truth opening"
+  }
+}

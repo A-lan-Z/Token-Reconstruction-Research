@@ -1,0 +1,162 @@
+{
+  "schema": "token-reconstruction.trr-p12-plan.v1",
+  "task_id": "TRR-P12",
+  "status": "DESIGN_FIXED_BEFORE_SOURCE_SELECTION; EXECUTION_REQUIRES_PHASE_QUALIFICATION",
+  "registered_utc": "2026-09-08T14:02:25.257417+00:00",
+  "base_commit": "81299e07d4213cd75f455496d623a8371516688f",
+  "request": {
+    "path": "coordination/requests/TRR-P12.md",
+    "sha256": "a395049b2130a68d36a5b5b7af77047683dd70752bdbc4d2bde944824c4b6c9a",
+    "bytes": 2397
+  },
+  "charter": {
+    "path": "RESEARCH_CHARTER.md",
+    "sha256": "ab0fbe9dfad39eddee48c14f4cb8201f8c3f02d1c58668d8a8e59be5a250700d",
+    "bytes": 3693
+  },
+  "exclusions": {
+    "path": "experiments/TRR-P12/exclusions/identity_union_extension_r2.json",
+    "sha256": "bd2e641f5f10d249595b89f48aeeba2d97a2b71688190177f4ebe4f4ac022a0b",
+    "bytes": 6338870
+  },
+  "exclusion_review": {
+    "path": "experiments/TRR-P12/exclusions/root-review-r2.json",
+    "sha256": "bc0b8fe4c28e49d17ae639ee3cdcda5efb2332a9446582e85b9fe2ca9d32dd3d",
+    "bytes": 723
+  },
+  "question": "Does frozen restored B1 transfer along one actual compatible target fine-tuning trajectory?",
+  "decoder": {
+    "method": "expanded_fixed_replication_1",
+    "selected_step": 13000,
+    "state_sha256": "088be6a6b2842d526f3dab39789728d9cfc23f2fb1fb892d107d46ade2382706",
+    "tensor_state_sha256": "209155048df936359870a1419803800d7bad4ab72a46e09bf3287648079964da",
+    "readout_sha256": "ad4201381ec062f0ece1ed007f6a003503e57ef4384271361059f0cc781fdcf1",
+    "package_root_read_only": "../TRR-P11/restore-runtime/actual-r2",
+    "adaptation_permitted": false
+  },
+  "target": {
+    "base_model": "meta-llama/Llama-3.2-1B-Instruct",
+    "base_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "trajectory_count": 1,
+    "update_type": "actual public next-token cross-entropy fitting of q_proj/v_proj LoRA in layers0-3",
+    "rank": 8,
+    "alpha": 16,
+    "layers": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "modules": [
+      "q_proj",
+      "v_proj"
+    ],
+    "optimizer": "AdamW",
+    "learning_rate": 0.0005,
+    "weight_decay": 0,
+    "gradient_clip_norm": 1,
+    "batch_size": 2,
+    "sequence_length": 128,
+    "seed": 6012,
+    "updates": 256,
+    "retained_stages": [
+      0,
+      64,
+      128,
+      256
+    ],
+    "source": "cached pinned tatsu-lab/alpaca; exact data hashes bound by source-preparation receipt before training",
+    "train_records": 256,
+    "validation_records": 64,
+    "candidate_range_half_open": [
+      20000,
+      30000
+    ],
+    "selection": "seeded deterministic ordering; filter all known excluded identities and within-study duplicates; retain first eligible256 then64validation",
+    "stage_selection": "none; every fixed stage retained; no early stopping from loss or reconstruction metrics",
+    "meaningfulness": "report effective prefix weight changes and fixed held-out next-token NLL for baseline and each stage; final lower held-out NLL plus nonzero effective update establishes meaningful adaptation under this narrow criterion; if absent report limitation, do not extend trajectory",
+    "model_backup": "create-only stage adapter files copied immediately to /mnt/c/Users/alanz/Token-Reconstruction-Backups/TRR-P12 before advancing; independently hash-verify and retain10GiB volume headroom"
+  },
+  "evaluation": {
+    "domains": [
+      "pile",
+      "finance"
+    ],
+    "records_per_domain": 128,
+    "source_ranges_half_open": {
+      "pile": [
+        8000,
+        9000
+      ],
+      "finance": [
+        50000,
+        52000
+      ]
+    },
+    "source_seed": 5012,
+    "same_records_all_snapshots": true,
+    "capture": "validated P11 full-target forward batch8 length192 padded; retain first128 BF16 activations atcut4 with fixed mask/positions; same numerical settings across all snapshots",
+    "reconstruction": "frozen B1 one record FP32; package inference equivalence required before any production outputs",
+    "scored_positions": "valid post-BOS positions1..127",
+    "target_access": "capture evaluator only; reconstruction accepts H/mask/positions and frozen public decoder/readout; no target model, adapter, source text, true IDs or prefix oracle",
+    "truth_opening": "freeze all registered B1/A1 predictions, costs, actual boundary geometry and early-only forecasts with exact source-order, code and input hashes before evaluator materializes truth"
+  },
+  "analysis": {
+    "absolute": [
+      "token correct/error/accuracy",
+      "exact clips"
+    ],
+    "paired": [
+      "baseline errors",
+      "newly broken baseline-correct tokens",
+      "improved baseline errors",
+      "retained correct and retained errors",
+      "exact clips broken/improved",
+      "stage-minus-baseline token accuracy"
+    ],
+    "uncertainty": {
+      "resampling_unit": "paired source record",
+      "bootstrap_seed": 9012,
+      "draws": 10000,
+      "central_interval": 0.95,
+      "exact_interval": "paired_exact_cp alpha0.025",
+      "conditional_zero_denominator": "UNKNOWN, no dropped bootstrap draws"
+    },
+    "reporting": "separate domains and stages; no pooling; no automatic noninferiority or success threshold",
+    "actual_geometry": "full-vocabulary argmax with package tie rule, baseline winner vs actual later winner; signed score-margin reversal and readout-normalized signed hyperplane displacement; tie transitions separate; runner-up gap is not nearest Euclidean boundary",
+    "failure_predictor": {
+      "inputs": "only baseline and64-update decoder scores/projected features; never128/256observations or truths",
+      "rule": "linearly extrapolate score direction by t/64 for t128and256; for each t compute baseline-winner score minus maximum other vocabulary score; stage-specific risk is negative margin; predict strict change atmargin<0; ties separate",
+      "fit": "none; zero threshold fixed before selection",
+      "primary_validation": "stages128and256 on source-order second64/domain; prospective predictions frozen before truth",
+      "secondary_validation": "all128/domain descriptive; union across later stages only if paired with union failure label",
+      "interpretation": "future-update failure association within this trajectory, not causal proof or general fine-tuning robustness"
+    }
+  },
+  "a1_a2": {
+    "enabled": true,
+    "method": "frozen native direct-cosine K256 winner; A1 proposal512, executefirst256, public reference prefix only",
+    "stages": [
+      0,
+      256
+    ],
+    "records_per_domain": 32,
+    "source_subset": "first32 of each frozen128-domainorder",
+    "timing": "reuse validated P11 runtime; one warmup plus three measured calls, exact repeated predictions required",
+    "comparison": "B1 same32 subset; describe as limited auxiliary benchmark-compatible port"
+  },
+  "execution": {
+    "phase_code_binding": "commit and hash exact phase implementation before its scientific run; implementation fixes logged without changing scientific choices after outcomes",
+    "early_smoke": "target training2-4steps on alreadyopened public fixture, immediately back up qualification adapter, capture common observations, run B1, freeze and score known smoke; full run resets base/seed",
+    "resource_gate": "measure largest representative batch/record, compare live GPU/RAM with margin; bounded create-only guarded jobs; stop numerical/allocator/driver/thermal/memory anomalies",
+    "compute": "coordinate GPU lease with Agent1; no paid compute",
+    "source_coordination": "Agent1 acknowledged temporary P12 ranges excluded throughout its study; share opaque actual reservations, no hidden outcomes",
+    "broader_sweep": false,
+    "p03_holdout_access": false,
+    "pr_merge": false,
+    "final_paths": {
+      "result": "coordination/results/TRR-P12.md",
+      "manifest": "experiments/TRR-P12/manifest.json"
+    }
+  }
+}
