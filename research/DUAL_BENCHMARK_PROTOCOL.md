@@ -291,3 +291,39 @@ recall, conditional selector accuracy, candidate simulations, synchronized
 runtime, peak memory, and all failed or excluded runs. Across-target differences
 are paired robustness results; they are not pooled with either canonical
 benchmark and do not by themselves establish a replacement method.
+
+## TRR-0015 equal-budget prefix-fragment comparison
+
+The registry at `experiments/TRR-0015/registry.json` adds two fixed methods:
+`prefix_native_fragment256` and `prefix_native_fragment512`. Both use the
+supplied prefix's weight-derived metric, embedding top-64 and intrinsic MLP
+top-64 lookup, then the original round-robin tokenizer-suffix expansion and
+native direct-cosine A2. The only difference is the final candidate cap.
+Neither method fits additional parameters.
+
+The reported matrix contains 26 methods and 52 canonical cells: the 48 existing
+completed cells retain their original source hashes, and both new methods have
+been evaluated in both setups. Current equal-budget controls were also rerun.
+All 816 current method/input outputs across the original auxiliary panel and
+both canonical setups were frozen before the retrospective scorer read labels.
+Results are in `coordination/results/TRR-0015.md`; the full matrix is
+`experiments/TRR-0015/canonical_matrix.json`.
+
+The canonical reruns process one record at a time and remove only right
+padding. They are disclosed benchmark-compatible ports, not exact native
+historical executions. Every returned baseline token reproduces the historical
+reference. Proposal arrays are not byte-identical under the changed numerical
+geometry: candidate sets differ at 3 Pile positions and 208 Finance positions,
+with additional rank-only changes. These differences are quantified in
+`experiments/TRR-0015/canonical_candidate_geometry_audit.json`; no output was
+revised. Current timing comparisons refer to the shared one-record execution,
+not the historical batch-of-eight runtime.
+
+At K256, the new method is near baseline inference time and has similar
+canonical token scores, while exact narrative-prose recovery is worse.
+This is retrospective evidence with supplied public weights, not a recovered
+prefix trajectory, a fresh confirmation, or a change of the default baseline.
+
+## TRR-0017: candidate-free inversion and exact A2 cache reuse
+
+Two active methods (prefix_parallel_continuous96 and prefix_parallel_discrete64) add four cells to the 52-cell registry. Both were evaluated in both canonical setups and the paired original R2 panel; the complete 1,360 current output matrix was frozen before retrospective scoring. The56-cell matrix retains all prior provenance. Neither candidate-free variant establishes a replacement. The shared-context fragment256 execution preserves all candidates, scores and emitted tokens byte for byte on all 272 observations; it changes execution cost, not the decision rule. Details: coordination/results/TRR-0017.md and experiments/TRR-0017/manifest.json.
