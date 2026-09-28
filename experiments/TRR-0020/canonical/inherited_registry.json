@@ -1,0 +1,438 @@
+{
+  "task_id": "TRR-0019",
+  "registered_before_execution": true,
+  "methods": [
+    {
+      "id": "direct_inverse_k16",
+      "candidate_budget": 16,
+      "can_abstain": false
+    },
+    {
+      "id": "causal_public_surrogate_k16",
+      "candidate_budget": 16,
+      "can_abstain": false
+    },
+    {
+      "id": "strict_bos_adaptive_a1_a2",
+      "candidate_budget": 512,
+      "can_abstain": true
+    },
+    {
+      "id": "a1_a2_k8",
+      "candidate_budget": 8,
+      "can_abstain": true
+    },
+    {
+      "id": "a1_a2_k16",
+      "candidate_budget": 16,
+      "can_abstain": true
+    },
+    {
+      "id": "a1_a2_k32",
+      "candidate_budget": 32,
+      "can_abstain": true
+    },
+    {
+      "id": "a1_a2_k64",
+      "candidate_budget": 64,
+      "can_abstain": true
+    },
+    {
+      "id": "a1_causal_k8",
+      "candidate_budget": 8,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_causal_k16",
+      "candidate_budget": 16,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_causal_k32",
+      "candidate_budget": 32,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_causal_k64",
+      "candidate_budget": 64,
+      "can_abstain": false
+    },
+    {
+      "id": "residual_affine_a2_k8",
+      "candidate_budget": 8,
+      "can_abstain": true
+    },
+    {
+      "id": "residual_affine_a2_k16",
+      "candidate_budget": 16,
+      "can_abstain": true
+    },
+    {
+      "id": "residual_affine_a2_k32",
+      "candidate_budget": 32,
+      "can_abstain": true
+    },
+    {
+      "id": "residual_affine_a2_k64",
+      "candidate_budget": 64,
+      "can_abstain": true
+    },
+    {
+      "id": "residual_affine_causal_k8",
+      "candidate_budget": 8,
+      "can_abstain": false
+    },
+    {
+      "id": "residual_affine_causal_k32",
+      "candidate_budget": 32,
+      "can_abstain": false
+    },
+    {
+      "id": "residual_affine_causal_k64",
+      "candidate_budget": 64,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_residual_union_causal_k8",
+      "candidate_budget": 8,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_residual_union_causal_k16",
+      "candidate_budget": 16,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_residual_union_causal_k32",
+      "candidate_budget": 32,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_residual_union_causal_k64",
+      "candidate_budget": 64,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_scale_calibrated_adaptive_causal_k32_to64",
+      "candidate_budget": 64,
+      "can_abstain": false
+    },
+    {
+      "id": "a1_a2_exhaustive_configuration_winner",
+      "candidate_budget": 256,
+      "can_abstain": false
+    },
+    {
+      "id": "prefix_native_fragment256",
+      "candidate_budget": 256,
+      "can_abstain": false
+    },
+    {
+      "id": "prefix_native_fragment512",
+      "candidate_budget": 512,
+      "can_abstain": false
+    },
+    {
+      "id": "prefix_native_fragment_frequency256",
+      "candidate_budget": 256,
+      "can_abstain": false
+    },
+    {
+      "id": "prefix_parallel_continuous96",
+      "decision_rule": "FP32 same prefix; initial H rescaled to median public embedding RMS; whole-sequence L-BFGS96, history8 strong-Wolfe maxeval192; lowest observed MSE continuous iterate; final full-vocabulary cosine argmax; BOS only; no A1/shortlist",
+      "candidate_budget": null,
+      "can_abstain": false
+    },
+    {
+      "id": "prefix_parallel_discrete64",
+      "decision_rule": "prefix-weight-metric argmax initialization;64 whole-sequence Adam steps lr0.003; actual vocabulary embeddings each forward, straight-through proxy gradient; cosine objective; other-position KV gradients detached; eager BF16 attention; lowest observed mean-cosine-loss full sequence; BOS only; no A1/shortlist",
+      "candidate_budget": null,
+      "can_abstain": false
+    },
+    {
+      "id": "prefix_native_fragment_mixed256",
+      "candidate_budget": 256,
+      "can_abstain": false
+    },
+    {
+      "id": "prefix_mixed256_shared_attention",
+      "candidate_budget": 256,
+      "can_abstain": false,
+      "numerics": "distinct attention implementation, not an exact-execution claim"
+    }
+  ],
+  "setups": [
+    "clean-pile-lora-64x40",
+    "historical-finance-strict-bos-128x128"
+  ],
+  "required_cells": [
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "direct_inverse_k16"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "causal_public_surrogate_k16"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "strict_bos_adaptive_a1_a2"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_a2_k8"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_a2_k16"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_a2_k32"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_a2_k64"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_causal_k8"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_causal_k16"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_causal_k32"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_causal_k64"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "residual_affine_a2_k8"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "residual_affine_a2_k16"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "residual_affine_a2_k32"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "residual_affine_a2_k64"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "residual_affine_causal_k8"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "residual_affine_causal_k32"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "residual_affine_causal_k64"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_residual_union_causal_k8"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_residual_union_causal_k16"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_residual_union_causal_k32"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_residual_union_causal_k64"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_scale_calibrated_adaptive_causal_k32_to64"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "a1_a2_exhaustive_configuration_winner"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "prefix_native_fragment256"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "prefix_native_fragment512"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "prefix_native_fragment_frequency256"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "prefix_parallel_continuous96"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "prefix_parallel_discrete64"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "prefix_native_fragment_mixed256"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "direct_inverse_k16"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "causal_public_surrogate_k16"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "strict_bos_adaptive_a1_a2"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_a2_k8"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_a2_k16"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_a2_k32"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_a2_k64"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_causal_k8"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_causal_k16"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_causal_k32"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_causal_k64"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "residual_affine_a2_k8"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "residual_affine_a2_k16"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "residual_affine_a2_k32"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "residual_affine_a2_k64"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "residual_affine_causal_k8"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "residual_affine_causal_k32"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "residual_affine_causal_k64"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_residual_union_causal_k8"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_residual_union_causal_k16"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_residual_union_causal_k32"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_residual_union_causal_k64"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_scale_calibrated_adaptive_causal_k32_to64"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "a1_a2_exhaustive_configuration_winner"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "prefix_native_fragment256"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "prefix_native_fragment512"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "prefix_native_fragment_frequency256"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "prefix_parallel_continuous96"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "prefix_parallel_discrete64"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "prefix_native_fragment_mixed256"
+    },
+    {
+      "setup_id": "clean-pile-lora-64x40",
+      "method_id": "prefix_mixed256_shared_attention"
+    },
+    {
+      "setup_id": "historical-finance-strict-bos-128x128",
+      "method_id": "prefix_mixed256_shared_attention"
+    }
+  ],
+  "inherited_cells": 60,
+  "new_cells": 2,
+  "total_cells": 62,
+  "current_methods": [
+    "a1_native",
+    "a1_graph",
+    "mixed_native",
+    "mixed_graph",
+    "mixed_fast"
+  ],
+  "new_decision_rule": "frozen TRR0018 mixed256 proposals; K256 shared-context Triton attention with FP32 softmax/weighted-value accumulation; native batch1 winner commit; direct cosine argmax; graphs alter only scheduling",
+  "current_baseline_execution": "unchanged batch1 K256 baseline port; exact native A2 and byte-equivalent graph execution",
+  "source_protocol_sha256": "86806c33cbaab2b5f23590a06cea2945013067171984c4293daedee49e37a1f4",
+  "inherited_sources": {
+    "TRR0018_commit": "7a65a0a",
+    "registry_sha256": "522991d7b323a042578303792055b8fcc83998abe7ba73f2025217e5fc60add9",
+    "matrix_sha256": "1440ac784463b54982acbb84384adb5768666485051e69c7410a5d004bf8a915",
+    "score_sha256": "ba5bd367ac293d805512cd7dee8ee3e7433c84e5c7732bf0db8e7dab54faa0a4"
+  },
+  "selected_from": "truthless execution qualification; no label-derived variant selection"
+}

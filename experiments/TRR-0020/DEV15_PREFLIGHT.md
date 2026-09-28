@@ -1,0 +1,11 @@
+# Development15 resource and numerical preflight
+
+Previous goal turn: no scientific progress; it answered the user's candidate-source question. The continuation remains unblocked and proceeds with DEV15_PLAN.
+
+Live read before implementation: RTX5080,16303MiB total,14094MiB free,36C; host30.19GiB total and29.24GiB available. Process inspection found no live TRR0020 Python job. The launcher repeats admission checks immediately before execution.
+
+Largest cell has127 unknown positions,128256 vocabulary entries and2048 embedding dimensions. Each FP32 vocabulary-sized state is62.14MiB; logits,gradient,moment,variance require248.55MiB. Each BF16 vocabulary embedding table is501MiB; the FP32 derived lookup is1002MiB. The soft and direct engines share the prefix, lookup, transform and weight tensor. The direct stage adds127x2048 FP32 vectors, vocabulary norms, two2048x2048 metric matrices, one127x128256 score surface, and native-length prefix forward/backward intermediates and replay workspaces.
+
+Development14's isolated soft engine stayed below3.75GiB reserved. Budget up to2.25GiB additional for direct graphs/workspaces under the existing6GiB cap; this is an estimate, not a measured qualification. Require at least2GiB device free,8GiB host available,RSS below10GiB and temperature below80C. Actual largest warm128/white case runs first with three repeats at128 and40 positions, an independent eager direct-stage control at each length, and saved memory/output/trace evidence before admission assertions. If it fails, stop and preserve the attempt; do not silently reduce geometry.
+
+Twelve configurations run in isolated restart-safe processes. The anticipated matrix plus public qualification is under10minutes (prior128-step soft cells about1second and32-step direct refinement about.15seconds, plus Python/setup/eager controls). Global fail-closed timeout1200seconds. Each real warm stage must exactly reproduce all applicable prior Gini003 snapshots and all four trace prefixes. Both stages and CPU output transfers are included in inference. No source-label files are opened by predictor workers. Complete96-cell freeze and source/output/hash validation precede the retrospective scorer.

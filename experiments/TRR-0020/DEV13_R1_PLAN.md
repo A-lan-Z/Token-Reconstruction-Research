@@ -1,0 +1,11 @@
+# Development13 revision: isolate each fixed configuration
+
+The first attempt saved88 of96 cells before its largest-case memory check stopped the twelfth configuration. No labels were opened and no incomplete matrix was scored. Saved peak reserved memory increased from4.422GiB for the first configuration to5.980GiB for the eleventh; the exact failing peak was not written before the assertion. The outer guard retained at least8265MiBfree and temperatures below60C. Accumulating process-local GPU state is the leading explanation, not a proven allocator fault.
+
+Preserve the partial outputs and run the full96-cell matrix again with one fresh process per configuration. Do not shrink the scientific matrix or change ConstrainedEmbedding, any constant, input geometry, table construction, dtype, optimizer, output rule or data. The previously failing configuration runs first. For each configuration, save three largest128-position runs before checking exact equality of every token variant and all loss, observed-error and nearest-distance traces against the original public qualification. This numerical-equivalence gate precedes its real inputs.
+
+Each of the88 previously completed real-input cells must also match its original output and all three traces exactly. Preserve any mismatch and stop; do not score it. The complete new96-cell freeze must contain all88 equality anchors. Original partial evidence remains separate and unscored.
+
+Resource estimate: fresh-process public geometry previously peaked4.422GiB; allow up to6GiB reserved, at least2GiBfree, hostavailable8GiB,RSS10GiB,temp80C. Check both the largest qualification and every cell. FreeGPU observed after original exit was14087MiB. Qualify the previously failing rule first, then run allremaining rules sequentially. Expected under5min, timeout1200. Public fixture seed200033 and CPU reference seed200034; deterministic CUBLAS4096:8,TF32off. Each worker records full code commit, commands, environment, prefix/table preparation, inference, timestamps and memory. Full matrix freezes before current retrospective labels.
+
+This revision is an execution isolation fix, not a new scientific decision rule or an active canonical method. It changes preparation amortization and must disclose per-configuration process setup. Any eventual selected-method benchmark needs its own proper timing comparison.

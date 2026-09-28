@@ -1,0 +1,456 @@
+{
+  "task_id": "TRR-0020",
+  "scope": "public execution profile; isolated native geometries; no new benchmark method",
+  "rows": [
+    {
+      "length": 128,
+      "median_public_64step_seconds": 1.2421595480118413,
+      "profiled_full_update_gpu_ms": 17.4482164,
+      "profiled_budget_update_gpu_ms": 11.1338814,
+      "isolated_budget_to_full_work_ratio": 0.6381100018910816,
+      "full_top10": [
+        {
+          "operation": "void at::native::vectorized_elementwise_kernel<4, at::native::BinaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, std::array<char*, 3ul> >(int, at::native::BinaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, std::array<char*, 3ul>)",
+          "count": 205,
+          "self_gpu_us": 13943.964000000005,
+          "input_shapes": []
+        },
+        {
+          "operation": "aten::mul",
+          "count": 50,
+          "self_gpu_us": 13706.568000000054,
+          "input_shapes": [
+            [
+              127,
+              128256
+            ],
+            [
+              127,
+              128256
+            ]
+          ]
+        },
+        {
+          "operation": "void at::native::vectorized_elementwise_kernel<4, at::native::CUDAFunctor_add<float>, std::array<char*, 3ul> >(int, at::native::CUDAFunctor_add<float>, std::array<char*, 3ul>)",
+          "count": 270,
+          "self_gpu_us": 8917.827000000036,
+          "input_shapes": []
+        },
+        {
+          "operation": "aten::_softmax",
+          "count": 35,
+          "self_gpu_us": 8662.16200000005,
+          "input_shapes": [
+            [
+              127,
+              128256
+            ],
+            [],
+            []
+          ]
+        },
+        {
+          "operation": "void at::native::(anonymous namespace)::cunn_SoftMaxForward<4, float, float, float, at::native::(anonymous namespace)::SoftMaxForwardEpilogue>(float*, float const*, int)",
+          "count": 35,
+          "self_gpu_us": 8662.16200000005,
+          "input_shapes": []
+        },
+        {
+          "operation": "aten::sub",
+          "count": 55,
+          "self_gpu_us": 7526.068000000014,
+          "input_shapes": [
+            [
+              127,
+              128256
+            ],
+            [
+              127,
+              1
+            ],
+            []
+          ]
+        },
+        {
+          "operation": "void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1})",
+          "count": 55,
+          "self_gpu_us": 7526.068000000014,
+          "input_shapes": []
+        },
+        {
+          "operation": "aten::sub",
+          "count": 30,
+          "self_gpu_us": 7192.988000000005,
+          "input_shapes": [
+            [
+              127,
+              128256
+            ],
+            [
+              127,
+              128256
+            ],
+            []
+          ]
+        },
+        {
+          "operation": "aten::exp_",
+          "count": 30,
+          "self_gpu_us": 5065.5669999999955,
+          "input_shapes": [
+            [
+              127,
+              128256
+            ]
+          ]
+        },
+        {
+          "operation": "void at::native::vectorized_elementwise_kernel<4, at::native::exp_kernel_cuda(at::TensorIteratorBase&)::{lambda()#2}::operator()() const::{lambda()#2}::operator()() const::{lambda(float)#1}, std::array<char*, 2ul> >(int, at::native::exp_kernel_cuda(at::TensorIteratorBase&)::{lambda()#2}::operator()() const::{lambda()#2}::operator()() const::{lambda(float)#1}, std::array<char*, 2ul>)",
+          "count": 30,
+          "self_gpu_us": 5065.5669999999955,
+          "input_shapes": []
+        }
+      ],
+      "budget_top10": [
+        {
+          "operation": "void at::native::vectorized_elementwise_kernel<4, at::native::BinaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, std::array<char*, 3ul> >(int, at::native::BinaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, std::array<char*, 3ul>)",
+          "count": 65,
+          "self_gpu_us": 10130.709999999955,
+          "input_shapes": []
+        },
+        {
+          "operation": "aten::mul",
+          "count": 40,
+          "self_gpu_us": 10100.074999999979,
+          "input_shapes": [
+            [
+              127,
+              128256
+            ],
+            [
+              127,
+              128256
+            ]
+          ]
+        },
+        {
+          "operation": "aten::_softmax",
+          "count": 30,
+          "self_gpu_us": 8512.381000000001,
+          "input_shapes": [
+            [
+              127,
+              128256
+            ],
+            [],
+            []
+          ]
+        },
+        {
+          "operation": "void at::native::(anonymous namespace)::cunn_SoftMaxForward<4, float, float, float, at::native::(anonymous namespace)::SoftMaxForwardEpilogue>(float*, float const*, int)",
+          "count": 30,
+          "self_gpu_us": 8512.381000000001,
+          "input_shapes": []
+        },
+        {
+          "operation": "void at::native::vectorized_elementwise_kernel<4, at::native::CUDAFunctor_add<float>, std::array<char*, 3ul> >(int, at::native::CUDAFunctor_add<float>, std::array<char*, 3ul>)",
+          "count": 220,
+          "self_gpu_us": 7445.284000000056,
+          "input_shapes": []
+        },
+        {
+          "operation": "aten::sub",
+          "count": 30,
+          "self_gpu_us": 7228.578999999991,
+          "input_shapes": [
+            [
+              127,
+              128256
+            ],
+            [
+              127,
+              128256
+            ],
+            []
+          ]
+        },
+        {
+          "operation": "aten::sub",
+          "count": 50,
+          "self_gpu_us": 6503.733000000008,
+          "input_shapes": [
+            [
+              127,
+              128256
+            ],
+            [
+              127,
+              1
+            ],
+            []
+          ]
+        },
+        {
+          "operation": "void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1})",
+          "count": 50,
+          "self_gpu_us": 6503.733000000008,
+          "input_shapes": []
+        },
+        {
+          "operation": "aten::exp_",
+          "count": 30,
+          "self_gpu_us": 5359.554999999996,
+          "input_shapes": [
+            [
+              127,
+              128256
+            ]
+          ]
+        },
+        {
+          "operation": "void at::native::vectorized_elementwise_kernel<4, at::native::exp_kernel_cuda(at::TensorIteratorBase&)::{lambda()#2}::operator()() const::{lambda()#2}::operator()() const::{lambda(float)#1}, std::array<char*, 2ul> >(int, at::native::exp_kernel_cuda(at::TensorIteratorBase&)::{lambda()#2}::operator()() const::{lambda()#2}::operator()() const::{lambda(float)#1}, std::array<char*, 2ul>)",
+          "count": 30,
+          "self_gpu_us": 5359.554999999996,
+          "input_shapes": []
+        }
+      ]
+    },
+    {
+      "length": 40,
+      "median_public_64step_seconds": 0.48290432899375446,
+      "profiled_full_update_gpu_ms": 6.4115178,
+      "profiled_budget_update_gpu_ms": 1.7719264,
+      "isolated_budget_to_full_work_ratio": 0.2763661359561382,
+      "full_top10": [
+        {
+          "operation": "aten::mm",
+          "count": 5,
+          "self_gpu_us": 3309.537999999993,
+          "input_shapes": [
+            [
+              39,
+              2048
+            ],
+            [
+              2048,
+              128256
+            ],
+            []
+          ]
+        },
+        {
+          "operation": "void cutlass::Kernel2<cutlass_80_tensorop_s16816gemm_bf16_256x128_32x3_tn_align8>(cutlass_80_tensorop_s16816gemm_bf16_256x128_32x3_tn_align8::Params)",
+          "count": 5,
+          "self_gpu_us": 3309.537999999993,
+          "input_shapes": []
+        },
+        {
+          "operation": "aten::mm",
+          "count": 60,
+          "self_gpu_us": 3158.2920000000167,
+          "input_shapes": [
+            [
+              40,
+              2048
+            ],
+            [
+              2048,
+              8192
+            ]
+          ]
+        },
+        {
+          "operation": "aten::mm",
+          "count": 5,
+          "self_gpu_us": 3124.640000000017,
+          "input_shapes": [
+            [
+              39,
+              128256
+            ],
+            [
+              128256,
+              2048
+            ],
+            []
+          ]
+        },
+        {
+          "operation": "void cutlass::Kernel2<cutlass_80_tensorop_s16816gemm_bf16_128x64_64x4_nn_align8>(cutlass_80_tensorop_s16816gemm_bf16_128x64_64x4_nn_align8::Params)",
+          "count": 5,
+          "self_gpu_us": 3113.3070000000125,
+          "input_shapes": []
+        },
+        {
+          "operation": "aten::mm",
+          "count": 60,
+          "self_gpu_us": 3083.74600000004,
+          "input_shapes": [
+            [
+              40,
+              8192
+            ],
+            [
+              8192,
+              2048
+            ]
+          ]
+        },
+        {
+          "operation": "void at::native::vectorized_elementwise_kernel<4, at::native::CUDAFunctor_add<float>, std::array<char*, 3ul> >(int, at::native::CUDAFunctor_add<float>, std::array<char*, 3ul>)",
+          "count": 270,
+          "self_gpu_us": 2647.3080000001755,
+          "input_shapes": []
+        },
+        {
+          "operation": "void cutlass::Kernel2<cutlass_80_tensorop_bf16_s16816gemm_relu_bf16_128x128_32x4_tn_align8>(cutlass_80_tensorop_bf16_s16816gemm_relu_bf16_128x128_32x4_tn_align8::Params)",
+          "count": 40,
+          "self_gpu_us": 2116.925000000013,
+          "input_shapes": []
+        },
+        {
+          "operation": "aten::_softmax",
+          "count": 35,
+          "self_gpu_us": 1954.2230000000095,
+          "input_shapes": [
+            [
+              39,
+              128256
+            ],
+            [],
+            []
+          ]
+        },
+        {
+          "operation": "void at::native::(anonymous namespace)::cunn_SoftMaxForward<4, float, float, float, at::native::(anonymous namespace)::SoftMaxForwardEpilogue>(float*, float const*, int)",
+          "count": 35,
+          "self_gpu_us": 1954.2230000000095,
+          "input_shapes": []
+        }
+      ],
+      "budget_top10": [
+        {
+          "operation": "aten::_softmax",
+          "count": 30,
+          "self_gpu_us": 1522.8540000000062,
+          "input_shapes": [
+            [
+              39,
+              128256
+            ],
+            [],
+            []
+          ]
+        },
+        {
+          "operation": "void at::native::(anonymous namespace)::cunn_SoftMaxForward<4, float, float, float, at::native::(anonymous namespace)::SoftMaxForwardEpilogue>(float*, float const*, int)",
+          "count": 30,
+          "self_gpu_us": 1522.8540000000062,
+          "input_shapes": []
+        },
+        {
+          "operation": "void at::native::vectorized_elementwise_kernel<4, at::native::BinaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, std::array<char*, 3ul> >(int, at::native::BinaryFunctor<float, float, float, at::native::binary_internal::MulFunctor<float> >, std::array<char*, 3ul>)",
+          "count": 65,
+          "self_gpu_us": 1201.7289999999975,
+          "input_shapes": []
+        },
+        {
+          "operation": "aten::mul",
+          "count": 40,
+          "self_gpu_us": 1172.4010000000048,
+          "input_shapes": [
+            [
+              39,
+              128256
+            ],
+            [
+              39,
+              128256
+            ]
+          ]
+        },
+        {
+          "operation": "void at::native::vectorized_elementwise_kernel<4, at::native::CUDAFunctor_add<float>, std::array<char*, 3ul> >(int, at::native::CUDAFunctor_add<float>, std::array<char*, 3ul>)",
+          "count": 220,
+          "self_gpu_us": 1121.4690000000057,
+          "input_shapes": []
+        },
+        {
+          "operation": "aten::sub",
+          "count": 30,
+          "self_gpu_us": 921.5320000000038,
+          "input_shapes": [
+            [
+              39,
+              128256
+            ],
+            [
+              39,
+              128256
+            ],
+            []
+          ]
+        },
+        {
+          "operation": "void at::native::reduce_kernel<512, 1, at::native::ReduceOp<float, at::native::func_wrapper_t<float, at::native::sum_functor<float, float, float>::operator()(at::TensorIterator&)::{lambda(float, float)#1}>, unsigned int, float, 4, 4> >(at::native::ReduceOp<float, at::native::func_wrapper_t<float, at::native::sum_functor<float, float, float>::operator()(at::TensorIterator&)::{lambda(float, float)#1}>, unsigned int, float, 4, 4>)",
+          "count": 70,
+          "self_gpu_us": 808.5749999999975,
+          "input_shapes": []
+        },
+        {
+          "operation": "aten::sub",
+          "count": 50,
+          "self_gpu_us": 742.2700000000107,
+          "input_shapes": [
+            [
+              39,
+              128256
+            ],
+            [
+              39,
+              1
+            ],
+            []
+          ]
+        },
+        {
+          "operation": "void at::native::elementwise_kernel<128, 2, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1}>(int, at::native::gpu_kernel_impl_nocast<at::native::CUDAFunctor_add<float> >(at::TensorIteratorBase&, at::native::CUDAFunctor_add<float> const&)::{lambda(int)#1})",
+          "count": 50,
+          "self_gpu_us": 742.2700000000107,
+          "input_shapes": []
+        },
+        {
+          "operation": "aten::amax",
+          "count": 45,
+          "self_gpu_us": 669.8330000000038,
+          "input_shapes": [
+            [
+              39,
+              128256
+            ],
+            [],
+            []
+          ]
+        }
+      ]
+    }
+  ],
+  "anchors_and_repetitions_exact": true,
+  "update_fixtures_exact_and_unchanged": true,
+  "peak_reserved_GiB": 4.341796875,
+  "guard_seconds": 31.517879247665405,
+  "minimum_gpu_free_mib": 8283,
+  "maximum_temperature_c": 46,
+  "archive_members": 12,
+  "archive_unique_objects": 8,
+  "archive_bytes": 226174518,
+  "prefix_seconds": 0.5983189119724557,
+  "engine_seconds": 1.0897173199919052,
+  "limitation": "Profiler changes scheduling/latency; isolated budget repeatedly uses a fixed step16state while full steps evolve. These timings are diagnostics, not a speedup or canonical comparison.",
+  "execution_commit": "f1899e7048ef19826d376087416bcdf6d3f268b3",
+  "command": [
+    "/usr/bin/python3",
+    "scripts/trr0020_stage41_summary.py"
+  ],
+  "created_unix": 1789876346.4837832
+}

@@ -327,3 +327,16 @@ prefix trajectory, a fresh confirmation, or a change of the default baseline.
 ## TRR-0017: candidate-free inversion and exact A2 cache reuse
 
 Two active methods (prefix_parallel_continuous96 and prefix_parallel_discrete64) add four cells to the 52-cell registry. Both were evaluated in both canonical setups and the paired original R2 panel; the complete 1,360 current output matrix was frozen before retrospective scoring. The56-cell matrix retains all prior provenance. Neither candidate-free variant establishes a replacement. The shared-context fragment256 execution preserves all candidates, scores and emitted tokens byte for byte on all 272 observations; it changes execution cost, not the decision rule. Details: coordination/results/TRR-0017.md and experiments/TRR-0017/manifest.json.
+
+
+## TRR-0020: full-vocabulary optimization without candidate proposal
+
+Two fixed rules, no_shortlist_full_vocab_gini003_128 and no_shortlist_full_vocab_halfhard256, add four completed cells to the62-cell registry. The66-cell matrix is complete at experiments/TRR-0020/canonical/canonical_matrix.json. All2,304 current replicate runs froze before retrospective scoring, with fresh native and GPU-replay A1+A2 controls. Both new rules are slower and less accurate than the controls, so no replacement is established. Full evidence and cost boundaries are in coordination/results/TRR-0020.md and experiments/TRR-0020/manifest.json.
+
+## TRR-0020 refinement follow-up, registered and not yet comparison-complete
+
+The registry at experiments/TRR-0020/canonical_refine/registry.json adds no_shortlist_warm128_quadratic_white003_positionbest32. This fixed full-vocabulary rule uses the128-step Gini warm reconstruction followed by32 white-metric direct quadratic updates at beta.03 and chooses each position by its minimum observed hard activation error. The active requirement is now68cells;66prior cells remain complete and the two new cells are pending. Candidate budget is null and no separate candidate verifier is used. Exact original-output qualification is required for the owned-CUDA-stream execution adaptation.
+
+### TRR-0020 refinement follow-up completion
+
+The registered refinement completed both canonical setups and the full68-cell matrix at experiments/TRR-0020/canonical_refine/canonical_matrix.json. All1728current replicate runs froze before scoring; native and replay controls reproduced their archived arrays exactly. Refinement scored2486/2496 with55/64exact Pile inputs and13793/13990 with27/128exact Finance inputs. Runtime was3.177x and1.862x the native control, respectively. It does not establish a replacement. The68-cell active matrix is complete.

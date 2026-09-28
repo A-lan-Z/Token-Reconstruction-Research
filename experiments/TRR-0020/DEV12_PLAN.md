@@ -1,0 +1,12 @@
+# Development12: prepare an embedding-sized query parameterization
+This prospective development matrix is independent of the ongoing canonical comparison. Do not run its GPU work concurrently with that comparison. The canonical method sources and rules remain untouched.
+
+Hypothesis: use2048online input variables perposition instead of128256independent logits, preserving the ability to choose everytoken. A unit query q scores every normalized prefix-metric embedding T by temperature*q.T. Softmax over ALL128256entries supplies a mixture of native token embeddings, passed through the differentiable prefix. Optimize onlyq against observed cosine error; prefixweights and lookup tables are fixed. There is no top-K/candidate pool or separate verifier. This may improve conditioning but needsfourvocabulary matrix products pertrainingstep, so a speed benefit requires convergence in fewersteps. No claimed win in advance.
+
+Ninefixedconfigurations:temperature40/80/160 crossed withqueryAdam-rate.001/.003/.01.128steps, beta(.9,.995),epsilon1e-12,no biascorrection,no weightdecay,renormalizeq aftereachstep,momentreset32. Query initialized by normalized observed activation in the prefix-derived metric. BF16matrixoperands,FP32outputs; normalized metric table storedBF16 inadditionto originalFP32cache. Preserve directstep16/32/64/128, bestwhole objective andperpositionbest diagnostic.
+
+Before GPUqualification, independentCPUfloat64 tests compare the complete query-to-mixture gradient with an analytical chain rule and finite directional differences. Confirm every vocabulary entry including thelast canbe the cosine-score argmax in a random nonduplicate dictionary. CPUtest is only a mathcontract.
+
+Future GPUstage: qualify largest128positions3repetitions with outputs/loss traces saved beforegate;72cells (9configs*same8developmentinputs), wholematrix freeze beforecurrentlabels. Native geometry and deterministicflags unchanged. CPUprototype andplans alone do not count as a completed reconstruction experiment.
+
+Estimated memory:prefix~1GiB,metricFP32table~1GiB,extraBF16table~.5GiB,query/moments~4MiB,probability/score/gradient arrays~.25GiB pergraph plusprefix activations;two graphlengths estimated<5.5GiB. Retain6GiBcap,free>=2GiB,admission>=9000MiB,hostavailable>=8GiB,RSS<=10GiB,temp<80C. Check actuallargest beforematrix. Estimated<5min once GPUfree;timeout1200. Not registered as active canonical method.

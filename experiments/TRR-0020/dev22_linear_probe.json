@@ -1,0 +1,978 @@
+{
+  "task_id": "TRR-0020",
+  "kind": "public_linear_diagnostic_only",
+  "environment": {
+    "commit": "87e3976c38646e32b9161724940f714519120f1f",
+    "torch": "2.10.0+cu128",
+    "transformers": "5.3.0",
+    "python": "3.12.3",
+    "gpu": "name, memory.total [MiB], memory.free [MiB], temperature.gpu\nNVIDIA GeForce RTX 5080, 16303 MiB, 14094 MiB, 36\n",
+    "utc": "2026-09-19T20:52:28Z"
+  },
+  "execution_commit": "87e3976c38646e32b9161724940f714519120f1f",
+  "sources": {
+    "scripts/trr0020_stage22/linear_probe.py": "807f9abe4599537dc34c47915576d50cb62c3f306db6ec4920b19ad4fee1d548",
+    "scripts/trr0020_stage22/factorized.py": "ef7ce005c634cec237815547e27ea6b8a6f53c1b33e712bf51d66d2244e43a2d",
+    "scripts/trr0020_stage21/krylov_graph.py": "41f3c775e845a60dd24598eb73e56e4b07d7765801d36b3f4282a36177a2545c",
+    "scripts/trr0020_stage21/linearized_prefix.py": "7756c6143a258f9690a2ca19d8249c93f58c6ca68adb796e669648c2aa1d1926",
+    "scripts/trr0014/native.py": "05f2d76dc8c8ebb1467a060922cce481191fbb9a61f0ea7ad42253c2b270c454",
+    "scripts/agent4/common.py": "d2f1832c6153d536e90a1014dc56b9fd96b74ad73e23091f5aea9ce2859717f3",
+    "src/token_reconstruction/public_prefix.py": "b9dca1d8d56c7c07413015aea4bde79e8ceac827c32ee9bc0d1a236ea1dd35f6",
+    "experiments/TRR-0020/DEV22_PROSPECTIVE.md": "7c08a771dddca46ade1f4a0e1d48e7f55b6397326d8e3db8639f0f4c877ff9cb",
+    "experiments/TRR-0020/dev22_preflight.json": "d9032e16f9db40c15297ae5d1668a49031979da3442d11c5ae3860fa67a85058",
+    "experiments/TRR-0020/dev22_cpu_reference.json": "3208abfec26e0bfad3091d85c95caf0ef89791b8ab1f34510fd0cdc2faea8fee",
+    "experiments/TRR-0020/dev21_gpu_qualification.json": "3d0d32bd533c65f2f8421bd3affabd8209cb0a0c4f5cadcf739fb576d876bb1e"
+  },
+  "command": [
+    "scripts/trr0020_stage22/linear_probe.py"
+  ],
+  "start_unix": 1789851148.620342,
+  "prefix_sha256": "10fd7e98719037954a51299eb9cb680544a659400ee2431e8aac333626f5e61c",
+  "config_sha256": "2febf68cea25bf4611be02b7536f2488a5ba523bb1134986e3610152abe74fdb",
+  "truth_read": false,
+  "shortlist": null,
+  "cases": [
+    {
+      "length": 128,
+      "rhs": "observed_difference",
+      "basis_vectors": 16,
+      "method": "full_product",
+      "repetitions": [
+        {
+          "seconds_direction_only": 0.1806998329993803,
+          "tensor_sha256": "8b1a8f6fa0134df1984acc3915373095eef3e81fc0f969fbc811efdaf29d4984",
+          "mean_relative_residual": 0.8285024762153625,
+          "max_relative_residual": 0.943555474281311,
+          "mean_direction_norm": 0.09470517933368683,
+          "mean_direction_error_to_public_perturbation": null
+        },
+        {
+          "seconds_direction_only": 0.07971566799096763,
+          "tensor_sha256": "8b1a8f6fa0134df1984acc3915373095eef3e81fc0f969fbc811efdaf29d4984",
+          "mean_relative_residual": 0.8285024762153625,
+          "max_relative_residual": 0.943555474281311,
+          "mean_direction_norm": 0.09470517933368683,
+          "mean_direction_error_to_public_perturbation": null
+        },
+        {
+          "seconds_direction_only": 0.07940974901430309,
+          "tensor_sha256": "8b1a8f6fa0134df1984acc3915373095eef3e81fc0f969fbc811efdaf29d4984",
+          "mean_relative_residual": 0.8285024762153625,
+          "max_relative_residual": 0.943555474281311,
+          "mean_direction_norm": 0.09470517933368683,
+          "mean_direction_error_to_public_perturbation": null
+        }
+      ],
+      "path": "outputs/TRR-0020/dev22_linear/128_observed_difference_k16_full_product.safetensors",
+      "sha256": "20a8b875511dd5742eb3d83662758e005c97a8ba4ada88f64a01f553c9f8ddc8",
+      "single_layer_products_per_direction": 64,
+      "small_linear_solves_per_direction": 1,
+      "additional_full_prefix_products_per_repetition_for_residual_validation": 1,
+      "repeat_identical": true
+    },
+    {
+      "length": 128,
+      "rhs": "observed_difference",
+      "basis_vectors": 16,
+      "method": "layer_factors",
+      "repetitions": [
+        {
+          "seconds_direction_only": 0.11638105902238749,
+          "tensor_sha256": "58f1e98f5ae982c650bdb679bef8ccbb039702b6a83f39f713ade081ee22714e",
+          "mean_relative_residual": 1.3115178346633911,
+          "max_relative_residual": 2.4611904621124268,
+          "mean_direction_norm": 0.20929484069347382,
+          "mean_direction_error_to_public_perturbation": null
+        },
+        {
+          "seconds_direction_only": 0.12340659901383333,
+          "tensor_sha256": "58f1e98f5ae982c650bdb679bef8ccbb039702b6a83f39f713ade081ee22714e",
+          "mean_relative_residual": 1.3115178346633911,
+          "max_relative_residual": 2.4611904621124268,
+          "mean_direction_norm": 0.20929484069347382,
+          "mean_direction_error_to_public_perturbation": null
+        },
+        {
+          "seconds_direction_only": 0.12215945601928979,
+          "tensor_sha256": "58f1e98f5ae982c650bdb679bef8ccbb039702b6a83f39f713ade081ee22714e",
+          "mean_relative_residual": 1.3115178346633911,
+          "max_relative_residual": 2.4611904621124268,
+          "mean_direction_norm": 0.20929484069347382,
+          "mean_direction_error_to_public_perturbation": null
+        }
+      ],
+      "path": "outputs/TRR-0020/dev22_linear/128_observed_difference_k16_layer_factors.safetensors",
+      "sha256": "677e1a1cd56bab54f5b5090be0d1f931a47a3617499d0e6f75f883f34679e9fa",
+      "single_layer_products_per_direction": 64,
+      "small_linear_solves_per_direction": 4,
+      "additional_full_prefix_products_per_repetition_for_residual_validation": 1,
+      "repeat_identical": true
+    },
+    {
+      "length": 128,
+      "rhs": "observed_difference",
+      "basis_vectors": 4,
+      "method": "full_product",
+      "repetitions": [
+        {
+          "seconds_direction_only": 0.018890678009483963,
+          "tensor_sha256": "555cbd43e5ee59ecad84b89e7999bd34e55955e8bcd7cf724c7c5b7c3973384d",
+          "mean_relative_residual": 0.8689764142036438,
+          "max_relative_residual": 0.9724143147468567,
+          "mean_direction_norm": 0.08124019205570221,
+          "mean_direction_error_to_public_perturbation": null
+        },
+        {
+          "seconds_direction_only": 0.027152849012054503,
+          "tensor_sha256": "555cbd43e5ee59ecad84b89e7999bd34e55955e8bcd7cf724c7c5b7c3973384d",
+          "mean_relative_residual": 0.8689764142036438,
+          "max_relative_residual": 0.9724143147468567,
+          "mean_direction_norm": 0.08124019205570221,
+          "mean_direction_error_to_public_perturbation": null
+        },
+        {
+          "seconds_direction_only": 0.026979061018209904,
+          "tensor_sha256": "555cbd43e5ee59ecad84b89e7999bd34e55955e8bcd7cf724c7c5b7c3973384d",
+          "mean_relative_residual": 0.8689764142036438,
+          "max_relative_residual": 0.9724143147468567,
+          "mean_direction_norm": 0.08124019205570221,
+          "mean_direction_error_to_public_perturbation": null
+        }
+      ],
+      "path": "outputs/TRR-0020/dev22_linear/128_observed_difference_k4_full_product.safetensors",
+      "sha256": "9016da93647c5a0acff083d6e22d88ede491482a2b8c74343d41d0f3703764ae",
+      "single_layer_products_per_direction": 16,
+      "small_linear_solves_per_direction": 1,
+      "additional_full_prefix_products_per_repetition_for_residual_validation": 1,
+      "repeat_identical": true
+    },
+    {
+      "length": 128,
+      "rhs": "observed_difference",
+      "basis_vectors": 4,
+      "method": "layer_factors",
+      "repetitions": [
+        {
+          "seconds_direction_only": 0.022245333006139845,
+          "tensor_sha256": "21213ca4a763be02c059ae0eaaad785baf0d74e90647368037559f26b761392a",
+          "mean_relative_residual": 1.0094504356384277,
+          "max_relative_residual": 1.2318668365478516,
+          "mean_direction_norm": 0.1079104021191597,
+          "mean_direction_error_to_public_perturbation": null
+        },
+        {
+          "seconds_direction_only": 0.022400185000151396,
+          "tensor_sha256": "21213ca4a763be02c059ae0eaaad785baf0d74e90647368037559f26b761392a",
+          "mean_relative_residual": 1.0094504356384277,
+          "max_relative_residual": 1.2318668365478516,
+          "mean_direction_norm": 0.1079104021191597,
+          "mean_direction_error_to_public_perturbation": null
+        },
+        {
+          "seconds_direction_only": 0.022363437979947776,
+          "tensor_sha256": "21213ca4a763be02c059ae0eaaad785baf0d74e90647368037559f26b761392a",
+          "mean_relative_residual": 1.0094504356384277,
+          "max_relative_residual": 1.2318668365478516,
+          "mean_direction_norm": 0.1079104021191597,
+          "mean_direction_error_to_public_perturbation": null
+        }
+      ],
+      "path": "outputs/TRR-0020/dev22_linear/128_observed_difference_k4_layer_factors.safetensors",
+      "sha256": "d1caaf5dcf4b86315ab367df01120a0e2ebcc725b657ec1071604960ec6869d5",
+      "single_layer_products_per_direction": 16,
+      "small_linear_solves_per_direction": 4,
+      "additional_full_prefix_products_per_repetition_for_residual_validation": 1,
+      "repeat_identical": true
+    },
+    {
+      "length": 128,
+      "rhs": "observed_difference",
+      "basis_vectors": 8,
+      "method": "full_product",
+      "repetitions": [
+        {
+          "seconds_direction_only": 0.03904271198553033,
+          "tensor_sha256": "d04e5d0e61041944ae329ecebb05b895358e4b902233300fc8c190e432daa9a5",
+          "mean_relative_residual": 0.8537590503692627,
+          "max_relative_residual": 0.9613031148910522,
+          "mean_direction_norm": 0.08689228445291519,
+          "mean_direction_error_to_public_perturbation": null
+        },
+        {
+          "seconds_direction_only": 0.03734246498788707,
+          "tensor_sha256": "d04e5d0e61041944ae329ecebb05b895358e4b902233300fc8c190e432daa9a5",
+          "mean_relative_residual": 0.8537590503692627,
+          "max_relative_residual": 0.9613031148910522,
+          "mean_direction_norm": 0.08689228445291519,
+          "mean_direction_error_to_public_perturbation": null
+        },
+        {
+          "seconds_direction_only": 0.0371950680273585,
+          "tensor_sha256": "d04e5d0e61041944ae329ecebb05b895358e4b902233300fc8c190e432daa9a5",
+          "mean_relative_residual": 0.8537590503692627,
+          "max_relative_residual": 0.9613031148910522,
+          "mean_direction_norm": 0.08689228445291519,
+          "mean_direction_error_to_public_perturbation": null
+        }
+      ],
+      "path": "outputs/TRR-0020/dev22_linear/128_observed_difference_k8_full_product.safetensors",
+      "sha256": "d7bb0570a4e12a9d68a047c22cbe3274939fde1cc76c33ff0bbff72f3a0cec8d",
+      "single_layer_products_per_direction": 32,
+      "small_linear_solves_per_direction": 1,
+      "additional_full_prefix_products_per_repetition_for_residual_validation": 1,
+      "repeat_identical": true
+    },
+    {
+      "length": 128,
+      "rhs": "observed_difference",
+      "basis_vectors": 8,
+      "method": "layer_factors",
+      "repetitions": [
+        {
+          "seconds_direction_only": 0.06138358099269681,
+          "tensor_sha256": "0df680256f8f704ce8f838b80ce307bf84dfc04c1c7c93ed579ca96b67ae809f",
+          "mean_relative_residual": 1.1372777223587036,
+          "max_relative_residual": 1.7784783840179443,
+          "mean_direction_norm": 0.1558447778224945,
+          "mean_direction_error_to_public_perturbation": null
+        },
+        {
+          "seconds_direction_only": 0.046018521999940276,
+          "tensor_sha256": "0df680256f8f704ce8f838b80ce307bf84dfc04c1c7c93ed579ca96b67ae809f",
+          "mean_relative_residual": 1.1372777223587036,
+          "max_relative_residual": 1.7784783840179443,
+          "mean_direction_norm": 0.1558447778224945,
+          "mean_direction_error_to_public_perturbation": null
+        },
+        {
+          "seconds_direction_only": 0.04733205400407314,
+          "tensor_sha256": "0df680256f8f704ce8f838b80ce307bf84dfc04c1c7c93ed579ca96b67ae809f",
+          "mean_relative_residual": 1.1372777223587036,
+          "max_relative_residual": 1.7784783840179443,
+          "mean_direction_norm": 0.1558447778224945,
+          "mean_direction_error_to_public_perturbation": null
+        }
+      ],
+      "path": "outputs/TRR-0020/dev22_linear/128_observed_difference_k8_layer_factors.safetensors",
+      "sha256": "7b792ef15118e0260670c22be5603e22435d5b0f4468d062e9064bec08a31957",
+      "single_layer_products_per_direction": 32,
+      "small_linear_solves_per_direction": 4,
+      "additional_full_prefix_products_per_repetition_for_residual_validation": 1,
+      "repeat_identical": true
+    },
+    {
+      "length": 128,
+      "rhs": "consistent_linear",
+      "basis_vectors": 16,
+      "method": "full_product",
+      "repetitions": [
+        {
+          "seconds_direction_only": 0.08727134802029468,
+          "tensor_sha256": "c8f31a175551f4dee50c43f418e86b914ff8444fe63fd5b852fc0c74ee0c2880",
+          "mean_relative_residual": 0.7908191680908203,
+          "max_relative_residual": 0.916915237903595,
+          "mean_direction_norm": 0.08869049698114395,
+          "mean_direction_error_to_public_perturbation": 0.15256668627262115
+        },
+        {
+          "seconds_direction_only": 0.0791583739919588,
+          "tensor_sha256": "c8f31a175551f4dee50c43f418e86b914ff8444fe63fd5b852fc0c74ee0c2880",
+          "mean_relative_residual": 0.7908191680908203,
+          "max_relative_residual": 0.916915237903595,
+          "mean_direction_norm": 0.08869049698114395,
+          "mean_direction_error_to_public_perturbation": 0.15256668627262115
+        },
+        {
+          "seconds_direction_only": 0.07841265900060534,
+          "tensor_sha256": "c8f31a175551f4dee50c43f418e86b914ff8444fe63fd5b852fc0c74ee0c2880",
+          "mean_relative_residual": 0.7908191680908203,
+          "max_relative_residual": 0.916915237903595,
+          "mean_direction_norm": 0.08869049698114395,
+          "mean_direction_error_to_public_perturbation": 0.15256668627262115
+        }
+      ],
+      "path": "outputs/TRR-0020/dev22_linear/128_consistent_linear_k16_full_product.safetensors",
+      "sha256": "e154c523aebc6b237acde63103517a6a38fc357b5d8991b8e4090585b4ea33e9",
+      "single_layer_products_per_direction": 64,
+      "small_linear_solves_per_direction": 1,
+      "additional_full_prefix_products_per_repetition_for_residual_validation": 1,
+      "repeat_identical": true
+    },
+    {
+      "length": 128,
+      "rhs": "consistent_linear",
+      "basis_vectors": 16,
+      "method": "layer_factors",
+      "repetitions": [
+        {
+          "seconds_direction_only": 0.1265803889837116,
+          "tensor_sha256": "8f15edda056d7b465e42e9e3be0401d9602228735f6c5922ce90b437f3b65f6e",
+          "mean_relative_residual": 1.226544976234436,
+          "max_relative_residual": 2.4092776775360107,
+          "mean_direction_norm": 0.1677199900150299,
+          "mean_direction_error_to_public_perturbation": 0.21295543015003204
+        },
+        {
+          "seconds_direction_only": 0.12419941101688892,
+          "tensor_sha256": "8f15edda056d7b465e42e9e3be0401d9602228735f6c5922ce90b437f3b65f6e",
+          "mean_relative_residual": 1.226544976234436,
+          "max_relative_residual": 2.4092776775360107,
+          "mean_direction_norm": 0.1677199900150299,
+          "mean_direction_error_to_public_perturbation": 0.21295543015003204
+        },
+        {
+          "seconds_direction_only": 0.1201977460004855,
+          "tensor_sha256": "8f15edda056d7b465e42e9e3be0401d9602228735f6c5922ce90b437f3b65f6e",
+          "mean_relative_residual": 1.226544976234436,
+          "max_relative_residual": 2.4092776775360107,
+          "mean_direction_norm": 0.1677199900150299,
+          "mean_direction_error_to_public_perturbation": 0.21295543015003204
+        }
+      ],
+      "path": "outputs/TRR-0020/dev22_linear/128_consistent_linear_k16_layer_factors.safetensors",
+      "sha256": "26514d1c76bbee0d2b7d8281630b3be2c54815fffcda03d16ad6f022a750561a",
+      "single_layer_products_per_direction": 64,
+      "small_linear_solves_per_direction": 4,
+      "additional_full_prefix_products_per_repetition_for_residual_validation": 1,
+      "repeat_identical": true
+    },
+    {
+      "length": 128,
+      "rhs": "consistent_linear",
+      "basis_vectors": 4,
+      "method": "full_product",
+      "repetitions": [
+        {
+          "seconds_direction_only": 0.01842204201966524,
+          "tensor_sha256": "37f67311acad6297c8ae1b98b70344ef1d19a6842010ee5c6986c25fbf3fc277",
+          "mean_relative_residual": 0.8359681367874146,
+          "max_relative_residual": 0.9622713923454285,
+          "mean_direction_norm": 0.07732348144054413,
+          "mean_direction_error_to_public_perturbation": 0.14801877737045288
+        },
+        {
+          "seconds_direction_only": 0.019235523010138422,
+          "tensor_sha256": "37f67311acad6297c8ae1b98b70344ef1d19a6842010ee5c6986c25fbf3fc277",
+          "mean_relative_residual": 0.8359681367874146,
+          "max_relative_residual": 0.9622713923454285,
+          "mean_direction_norm": 0.07732348144054413,
+          "mean_direction_error_to_public_perturbation": 0.14801877737045288
+        },
+        {
+          "seconds_direction_only": 0.018878380011301488,
+          "tensor_sha256": "37f67311acad6297c8ae1b98b70344ef1d19a6842010ee5c6986c25fbf3fc277",
+          "mean_relative_residual": 0.8359681367874146,
+          "max_relative_residual": 0.9622713923454285,
+          "mean_direction_norm": 0.07732348144054413,
+          "mean_direction_error_to_public_perturbation": 0.14801877737045288
+        }
+      ],
+      "path": "outputs/TRR-0020/dev22_linear/128_consistent_linear_k4_full_product.safetensors",
+      "sha256": "b49f1fa9a8061c2eb93c80fb4ec18ecea50837524dc9b02717955299918c7019",
+      "single_layer_products_per_direction": 16,
+      "small_linear_solves_per_direction": 1,
+      "additional_full_prefix_products_per_repetition_for_residual_validation": 1,
+      "repeat_identical": true
+    },
+    {
+      "length": 128,
+      "rhs": "consistent_linear",
+      "basis_vectors": 4,
+      "method": "layer_factors",
+      "repetitions": [
+        {
+          "seconds_direction_only": 0.022519451013067737,
+          "tensor_sha256": "428566a07771315917a237192c46bfbe5e5273049096f1afdcf7816d4764c90a",
+          "mean_relative_residual": 0.9792360067367554,
+          "max_relative_residual": 1.1495453119277954,
+          "mean_direction_norm": 0.09195149689912796,
+          "mean_direction_error_to_public_perturbation": 0.15738093852996826
+        },
+        {
+          "seconds_direction_only": 0.022169717005454004,
+          "tensor_sha256": "428566a07771315917a237192c46bfbe5e5273049096f1afdcf7816d4764c90a",
+          "mean_relative_residual": 0.9792360067367554,
+          "max_relative_residual": 1.1495453119277954,
+          "mean_direction_norm": 0.09195149689912796,
+          "mean_direction_error_to_public_perturbation": 0.15738093852996826
+        },
+        {
+          "seconds_direction_only": 0.022304478974547237,
+          "tensor_sha256": "428566a07771315917a237192c46bfbe5e5273049096f1afdcf7816d4764c90a",
+          "mean_relative_residual": 0.9792360067367554,
+          "max_relative_residual": 1.1495453119277954,
+          "mean_direction_norm": 0.09195149689912796,
+          "mean_direction_error_to_public_perturbation": 0.15738093852996826
+        }
+      ],
+      "path": "outputs/TRR-0020/dev22_linear/128_consistent_linear_k4_layer_factors.safetensors",
+      "sha256": "5e764257af11038672b46b46b32b3ad8d925ca3b0c3471e477f66f701168aa08",
+      "single_layer_products_per_direction": 16,
+      "small_linear_solves_per_direction": 4,
+      "additional_full_prefix_products_per_repetition_for_residual_validation": 1,
+      "repeat_identical": true
+    },
+    {
+      "length": 128,
+      "rhs": "consistent_linear",
+      "basis_vectors": 8,
+      "method": "full_product",
+      "repetitions": [
+        {
+          "seconds_direction_only": 0.0376941800059285,
+          "tensor_sha256": "f9e23cae0da2888766486ca48b20bf76a7264f3d86d45ae448cdfc15b520eb10",
+          "mean_relative_residual": 0.8158406019210815,
+          "max_relative_residual": 0.9451116919517517,
+          "mean_direction_norm": 0.08336210250854492,
+          "mean_direction_error_to_public_perturbation": 0.1504727452993393
+        },
+        {
+          "seconds_direction_only": 0.03688867500750348,
+          "tensor_sha256": "f9e23cae0da2888766486ca48b20bf76a7264f3d86d45ae448cdfc15b520eb10",
+          "mean_relative_residual": 0.8158406019210815,
+          "max_relative_residual": 0.9451116919517517,
+          "mean_direction_norm": 0.08336210250854492,
+          "mean_direction_error_to_public_perturbation": 0.1504727452993393
+        },
+        {
+          "seconds_direction_only": 0.03811204800149426,
+          "tensor_sha256": "f9e23cae0da2888766486ca48b20bf76a7264f3d86d45ae448cdfc15b520eb10",
+          "mean_relative_residual": 0.8158406019210815,
+          "max_relative_residual": 0.9451116919517517,
+          "mean_direction_norm": 0.08336210250854492,
+          "mean_direction_error_to_public_perturbation": 0.1504727452993393
+        }
+      ],
+      "path": "outputs/TRR-0020/dev22_linear/128_consistent_linear_k8_full_product.safetensors",
+      "sha256": "019ed0729a0ed5b9f30cd6a172b59f22ec16bb2a70ea4eef137d793de3a088f9",
+      "single_layer_products_per_direction": 32,
+      "small_linear_solves_per_direction": 1,
+      "additional_full_prefix_products_per_repetition_for_residual_validation": 1,
+      "repeat_identical": true
+    },
+    {
+      "length": 128,
+      "rhs": "consistent_linear",
+      "basis_vectors": 8,
+      "method": "layer_factors",
+      "repetitions": [
+        {
+          "seconds_direction_only": 0.04738572801579721,
+          "tensor_sha256": "5ec4211471882ee96b1aafbaf9c83b1259b19735cfa4ca74861499bf28db0d5a",
+          "mean_relative_residual": 1.081011176109314,
+          "max_relative_residual": 1.621034026145935,
+          "mean_direction_norm": 0.12627093493938446,
+          "mean_direction_error_to_public_perturbation": 0.18006043136119843
+        },
+        {
+          "seconds_direction_only": 0.045148120989324525,
+          "tensor_sha256": "5ec4211471882ee96b1aafbaf9c83b1259b19735cfa4ca74861499bf28db0d5a",
+          "mean_relative_residual": 1.081011176109314,
+          "max_relative_residual": 1.621034026145935,
+          "mean_direction_norm": 0.12627093493938446,
+          "mean_direction_error_to_public_perturbation": 0.18006043136119843
+        },
+        {
+          "seconds_direction_only": 0.04693543599569239,
+          "tensor_sha256": "5ec4211471882ee96b1aafbaf9c83b1259b19735cfa4ca74861499bf28db0d5a",
+          "mean_relative_residual": 1.081011176109314,
+          "max_relative_residual": 1.621034026145935,
+          "mean_direction_norm": 0.12627093493938446,
+          "mean_direction_error_to_public_perturbation": 0.18006043136119843
+        }
+      ],
+      "path": "outputs/TRR-0020/dev22_linear/128_consistent_linear_k8_layer_factors.safetensors",
+      "sha256": "38e4da45c5d0cb2aa142d4600f04ce45173bbf406f3bb4d81aa894b910c3903b",
+      "single_layer_products_per_direction": 32,
+      "small_linear_solves_per_direction": 4,
+      "additional_full_prefix_products_per_repetition_for_residual_validation": 1,
+      "repeat_identical": true
+    },
+    {
+      "length": 40,
+      "rhs": "observed_difference",
+      "basis_vectors": 16,
+      "method": "full_product",
+      "repetitions": [
+        {
+          "seconds_direction_only": 0.05941424597403966,
+          "tensor_sha256": "e64d17daf09f84941fc07d677a9ec1ffe4c9ac7e44b0adc56690b6229ead7477",
+          "mean_relative_residual": 0.8423362374305725,
+          "max_relative_residual": 0.9329182505607605,
+          "mean_direction_norm": 0.09403062611818314,
+          "mean_direction_error_to_public_perturbation": null
+        },
+        {
+          "seconds_direction_only": 0.05942241399316117,
+          "tensor_sha256": "e64d17daf09f84941fc07d677a9ec1ffe4c9ac7e44b0adc56690b6229ead7477",
+          "mean_relative_residual": 0.8423362374305725,
+          "max_relative_residual": 0.9329182505607605,
+          "mean_direction_norm": 0.09403062611818314,
+          "mean_direction_error_to_public_perturbation": null
+        },
+        {
+          "seconds_direction_only": 0.06004970401409082,
+          "tensor_sha256": "e64d17daf09f84941fc07d677a9ec1ffe4c9ac7e44b0adc56690b6229ead7477",
+          "mean_relative_residual": 0.8423362374305725,
+          "max_relative_residual": 0.9329182505607605,
+          "mean_direction_norm": 0.09403062611818314,
+          "mean_direction_error_to_public_perturbation": null
+        }
+      ],
+      "path": "outputs/TRR-0020/dev22_linear/40_observed_difference_k16_full_product.safetensors",
+      "sha256": "67cb774d86a9508b4a73bd9700922d03ae46321222e2cec603f352a23d4d78c8",
+      "single_layer_products_per_direction": 64,
+      "small_linear_solves_per_direction": 1,
+      "additional_full_prefix_products_per_repetition_for_residual_validation": 1,
+      "repeat_identical": true
+    },
+    {
+      "length": 40,
+      "rhs": "observed_difference",
+      "basis_vectors": 16,
+      "method": "layer_factors",
+      "repetitions": [
+        {
+          "seconds_direction_only": 0.10131255199667066,
+          "tensor_sha256": "0fbe6714079a4d43d6df7119f51f4e8407a6f0f7cf580c9e1a16b6de92b76ff1",
+          "mean_relative_residual": 1.250511884689331,
+          "max_relative_residual": 2.0045251846313477,
+          "mean_direction_norm": 0.2050565481185913,
+          "mean_direction_error_to_public_perturbation": null
+        },
+        {
+          "seconds_direction_only": 0.09954913399997167,
+          "tensor_sha256": "0fbe6714079a4d43d6df7119f51f4e8407a6f0f7cf580c9e1a16b6de92b76ff1",
+          "mean_relative_residual": 1.250511884689331,
+          "max_relative_residual": 2.0045251846313477,
+          "mean_direction_norm": 0.2050565481185913,
+          "mean_direction_error_to_public_perturbation": null
+        },
+        {
+          "seconds_direction_only": 0.10119181900518015,
+          "tensor_sha256": "0fbe6714079a4d43d6df7119f51f4e8407a6f0f7cf580c9e1a16b6de92b76ff1",
+          "mean_relative_residual": 1.250511884689331,
+          "max_relative_residual": 2.0045251846313477,
+          "mean_direction_norm": 0.2050565481185913,
+          "mean_direction_error_to_public_perturbation": null
+        }
+      ],
+      "path": "outputs/TRR-0020/dev22_linear/40_observed_difference_k16_layer_factors.safetensors",
+      "sha256": "c1b64466fee7cccb627b3b869dc77150585a1ad3ac901485ea20a110d12eb5fa",
+      "single_layer_products_per_direction": 64,
+      "small_linear_solves_per_direction": 4,
+      "additional_full_prefix_products_per_repetition_for_residual_validation": 1,
+      "repeat_identical": true
+    },
+    {
+      "length": 40,
+      "rhs": "observed_difference",
+      "basis_vectors": 4,
+      "method": "full_product",
+      "repetitions": [
+        {
+          "seconds_direction_only": 0.013849030015990138,
+          "tensor_sha256": "6ed8ae6ab80af868e7408278e1644e91880871efaaff78ea49e1c655eb0ddede",
+          "mean_relative_residual": 0.8847947120666504,
+          "max_relative_residual": 0.950300395488739,
+          "mean_direction_norm": 0.07829122245311737,
+          "mean_direction_error_to_public_perturbation": null
+        },
+        {
+          "seconds_direction_only": 0.014478131983196363,
+          "tensor_sha256": "6ed8ae6ab80af868e7408278e1644e91880871efaaff78ea49e1c655eb0ddede",
+          "mean_relative_residual": 0.8847947120666504,
+          "max_relative_residual": 0.950300395488739,
+          "mean_direction_norm": 0.07829122245311737,
+          "mean_direction_error_to_public_perturbation": null
+        },
+        {
+          "seconds_direction_only": 0.02579079201677814,
+          "tensor_sha256": "6ed8ae6ab80af868e7408278e1644e91880871efaaff78ea49e1c655eb0ddede",
+          "mean_relative_residual": 0.8847947120666504,
+          "max_relative_residual": 0.950300395488739,
+          "mean_direction_norm": 0.07829122245311737,
+          "mean_direction_error_to_public_perturbation": null
+        }
+      ],
+      "path": "outputs/TRR-0020/dev22_linear/40_observed_difference_k4_full_product.safetensors",
+      "sha256": "83b5543b6563c3d2f576306602fb4f0ddbb04fac4eca0f1c05efa48ac39285a9",
+      "single_layer_products_per_direction": 16,
+      "small_linear_solves_per_direction": 1,
+      "additional_full_prefix_products_per_repetition_for_residual_validation": 1,
+      "repeat_identical": true
+    },
+    {
+      "length": 40,
+      "rhs": "observed_difference",
+      "basis_vectors": 4,
+      "method": "layer_factors",
+      "repetitions": [
+        {
+          "seconds_direction_only": 0.01844104699557647,
+          "tensor_sha256": "1703d37947ffe380446c3fc80de751ade3f191a941ae95b50238f73be107b522",
+          "mean_relative_residual": 1.0060290098190308,
+          "max_relative_residual": 1.1838839054107666,
+          "mean_direction_norm": 0.10914747416973114,
+          "mean_direction_error_to_public_perturbation": null
+        },
+        {
+          "seconds_direction_only": 0.017221605026861653,
+          "tensor_sha256": "1703d37947ffe380446c3fc80de751ade3f191a941ae95b50238f73be107b522",
+          "mean_relative_residual": 1.0060290098190308,
+          "max_relative_residual": 1.1838839054107666,
+          "mean_direction_norm": 0.10914747416973114,
+          "mean_direction_error_to_public_perturbation": null
+        },
+        {
+          "seconds_direction_only": 0.0174478389963042,
+          "tensor_sha256": "1703d37947ffe380446c3fc80de751ade3f191a941ae95b50238f73be107b522",
+          "mean_relative_residual": 1.0060290098190308,
+          "max_relative_residual": 1.1838839054107666,
+          "mean_direction_norm": 0.10914747416973114,
+          "mean_direction_error_to_public_perturbation": null
+        }
+      ],
+      "path": "outputs/TRR-0020/dev22_linear/40_observed_difference_k4_layer_factors.safetensors",
+      "sha256": "3666edaa93f704c4468b27dd4f27db2472461e3d6c9eb066dc3de1f2cdc5a36a",
+      "single_layer_products_per_direction": 16,
+      "small_linear_solves_per_direction": 4,
+      "additional_full_prefix_products_per_repetition_for_residual_validation": 1,
+      "repeat_identical": true
+    },
+    {
+      "length": 40,
+      "rhs": "observed_difference",
+      "basis_vectors": 8,
+      "method": "full_product",
+      "repetitions": [
+        {
+          "seconds_direction_only": 0.028196036000736058,
+          "tensor_sha256": "43fd9c87b8d33217d08b024548ad63fda75ac8bc78f09a553e06e1f3dd61ccfb",
+          "mean_relative_residual": 0.8708165884017944,
+          "max_relative_residual": 0.9430474042892456,
+          "mean_direction_norm": 0.08461309969425201,
+          "mean_direction_error_to_public_perturbation": null
+        },
+        {
+          "seconds_direction_only": 0.02763095498085022,
+          "tensor_sha256": "43fd9c87b8d33217d08b024548ad63fda75ac8bc78f09a553e06e1f3dd61ccfb",
+          "mean_relative_residual": 0.8708165884017944,
+          "max_relative_residual": 0.9430474042892456,
+          "mean_direction_norm": 0.08461309969425201,
+          "mean_direction_error_to_public_perturbation": null
+        },
+        {
+          "seconds_direction_only": 0.028628700994886458,
+          "tensor_sha256": "43fd9c87b8d33217d08b024548ad63fda75ac8bc78f09a553e06e1f3dd61ccfb",
+          "mean_relative_residual": 0.8708165884017944,
+          "max_relative_residual": 0.9430474042892456,
+          "mean_direction_norm": 0.08461309969425201,
+          "mean_direction_error_to_public_perturbation": null
+        }
+      ],
+      "path": "outputs/TRR-0020/dev22_linear/40_observed_difference_k8_full_product.safetensors",
+      "sha256": "1c6ffab32753dee853cb1d1b6dde9d9d2164a077dfa079dd15a92dd2c4c0c31f",
+      "single_layer_products_per_direction": 32,
+      "small_linear_solves_per_direction": 1,
+      "additional_full_prefix_products_per_repetition_for_residual_validation": 1,
+      "repeat_identical": true
+    },
+    {
+      "length": 40,
+      "rhs": "observed_difference",
+      "basis_vectors": 8,
+      "method": "layer_factors",
+      "repetitions": [
+        {
+          "seconds_direction_only": 0.037627290992531925,
+          "tensor_sha256": "71a7ae64574836f4734e6ba5598ff2e37e4988ca830bc08a121f2a778309a9e5",
+          "mean_relative_residual": 1.1217228174209595,
+          "max_relative_residual": 1.6392076015472412,
+          "mean_direction_norm": 0.1616983413696289,
+          "mean_direction_error_to_public_perturbation": null
+        },
+        {
+          "seconds_direction_only": 0.03806846699444577,
+          "tensor_sha256": "71a7ae64574836f4734e6ba5598ff2e37e4988ca830bc08a121f2a778309a9e5",
+          "mean_relative_residual": 1.1217228174209595,
+          "max_relative_residual": 1.6392076015472412,
+          "mean_direction_norm": 0.1616983413696289,
+          "mean_direction_error_to_public_perturbation": null
+        },
+        {
+          "seconds_direction_only": 0.03760943401721306,
+          "tensor_sha256": "71a7ae64574836f4734e6ba5598ff2e37e4988ca830bc08a121f2a778309a9e5",
+          "mean_relative_residual": 1.1217228174209595,
+          "max_relative_residual": 1.6392076015472412,
+          "mean_direction_norm": 0.1616983413696289,
+          "mean_direction_error_to_public_perturbation": null
+        }
+      ],
+      "path": "outputs/TRR-0020/dev22_linear/40_observed_difference_k8_layer_factors.safetensors",
+      "sha256": "2af0bac56d0ce8645b5bae59a0d381e414a6dbe578c7db5e75e3e9e7948e7e59",
+      "single_layer_products_per_direction": 32,
+      "small_linear_solves_per_direction": 4,
+      "additional_full_prefix_products_per_repetition_for_residual_validation": 1,
+      "repeat_identical": true
+    },
+    {
+      "length": 40,
+      "rhs": "consistent_linear",
+      "basis_vectors": 16,
+      "method": "full_product",
+      "repetitions": [
+        {
+          "seconds_direction_only": 0.06054420201689936,
+          "tensor_sha256": "8f1b50057123cca2a22f9f860729ed6849520dc6feb6e30e3a96a9f442c51dd5",
+          "mean_relative_residual": 0.799081563949585,
+          "max_relative_residual": 0.8957108855247498,
+          "mean_direction_norm": 0.0883193090558052,
+          "mean_direction_error_to_public_perturbation": 0.1528441309928894
+        },
+        {
+          "seconds_direction_only": 0.06832043701433577,
+          "tensor_sha256": "8f1b50057123cca2a22f9f860729ed6849520dc6feb6e30e3a96a9f442c51dd5",
+          "mean_relative_residual": 0.799081563949585,
+          "max_relative_residual": 0.8957108855247498,
+          "mean_direction_norm": 0.0883193090558052,
+          "mean_direction_error_to_public_perturbation": 0.1528441309928894
+        },
+        {
+          "seconds_direction_only": 0.060851476999232545,
+          "tensor_sha256": "8f1b50057123cca2a22f9f860729ed6849520dc6feb6e30e3a96a9f442c51dd5",
+          "mean_relative_residual": 0.799081563949585,
+          "max_relative_residual": 0.8957108855247498,
+          "mean_direction_norm": 0.0883193090558052,
+          "mean_direction_error_to_public_perturbation": 0.1528441309928894
+        }
+      ],
+      "path": "outputs/TRR-0020/dev22_linear/40_consistent_linear_k16_full_product.safetensors",
+      "sha256": "6de97dc5bde46031daf8ac27eebfe38461ccd45e5050a6c3e39b096de10c25b9",
+      "single_layer_products_per_direction": 64,
+      "small_linear_solves_per_direction": 1,
+      "additional_full_prefix_products_per_repetition_for_residual_validation": 1,
+      "repeat_identical": true
+    },
+    {
+      "length": 40,
+      "rhs": "consistent_linear",
+      "basis_vectors": 16,
+      "method": "layer_factors",
+      "repetitions": [
+        {
+          "seconds_direction_only": 0.10314305097563192,
+          "tensor_sha256": "7e2efb2d14571ebdf22f0120a8af6c28bce910af54aa449eebde4e5c02873549",
+          "mean_relative_residual": 1.172339677810669,
+          "max_relative_residual": 1.74691903591156,
+          "mean_direction_norm": 0.16270321607589722,
+          "mean_direction_error_to_public_perturbation": 0.2080572545528412
+        },
+        {
+          "seconds_direction_only": 0.09904555499088019,
+          "tensor_sha256": "7e2efb2d14571ebdf22f0120a8af6c28bce910af54aa449eebde4e5c02873549",
+          "mean_relative_residual": 1.172339677810669,
+          "max_relative_residual": 1.74691903591156,
+          "mean_direction_norm": 0.16270321607589722,
+          "mean_direction_error_to_public_perturbation": 0.2080572545528412
+        },
+        {
+          "seconds_direction_only": 0.09843704599188641,
+          "tensor_sha256": "7e2efb2d14571ebdf22f0120a8af6c28bce910af54aa449eebde4e5c02873549",
+          "mean_relative_residual": 1.172339677810669,
+          "max_relative_residual": 1.74691903591156,
+          "mean_direction_norm": 0.16270321607589722,
+          "mean_direction_error_to_public_perturbation": 0.2080572545528412
+        }
+      ],
+      "path": "outputs/TRR-0020/dev22_linear/40_consistent_linear_k16_layer_factors.safetensors",
+      "sha256": "d33cd59d5d26f3a9b9db3a3a40caf088e85745c822eefa86a2cd4281f0d32270",
+      "single_layer_products_per_direction": 64,
+      "small_linear_solves_per_direction": 4,
+      "additional_full_prefix_products_per_repetition_for_residual_validation": 1,
+      "repeat_identical": true
+    },
+    {
+      "length": 40,
+      "rhs": "consistent_linear",
+      "basis_vectors": 4,
+      "method": "full_product",
+      "repetitions": [
+        {
+          "seconds_direction_only": 0.01377457901253365,
+          "tensor_sha256": "331f19fcc90217aaaafc42406734195f57ebefd29bf8dddc0f75fb7ddb0287b9",
+          "mean_relative_residual": 0.8511350750923157,
+          "max_relative_residual": 0.9924391508102417,
+          "mean_direction_norm": 0.07147278636693954,
+          "mean_direction_error_to_public_perturbation": 0.1459513008594513
+        },
+        {
+          "seconds_direction_only": 0.014021384995430708,
+          "tensor_sha256": "331f19fcc90217aaaafc42406734195f57ebefd29bf8dddc0f75fb7ddb0287b9",
+          "mean_relative_residual": 0.8511350750923157,
+          "max_relative_residual": 0.9924391508102417,
+          "mean_direction_norm": 0.07147278636693954,
+          "mean_direction_error_to_public_perturbation": 0.1459513008594513
+        },
+        {
+          "seconds_direction_only": 0.014562803000444546,
+          "tensor_sha256": "331f19fcc90217aaaafc42406734195f57ebefd29bf8dddc0f75fb7ddb0287b9",
+          "mean_relative_residual": 0.8511350750923157,
+          "max_relative_residual": 0.9924391508102417,
+          "mean_direction_norm": 0.07147278636693954,
+          "mean_direction_error_to_public_perturbation": 0.1459513008594513
+        }
+      ],
+      "path": "outputs/TRR-0020/dev22_linear/40_consistent_linear_k4_full_product.safetensors",
+      "sha256": "e71999aa0413020f5a9ab2094a767bd5ec321aa1b1bb5ee2f5fae1d63070308a",
+      "single_layer_products_per_direction": 16,
+      "small_linear_solves_per_direction": 1,
+      "additional_full_prefix_products_per_repetition_for_residual_validation": 1,
+      "repeat_identical": true
+    },
+    {
+      "length": 40,
+      "rhs": "consistent_linear",
+      "basis_vectors": 4,
+      "method": "layer_factors",
+      "repetitions": [
+        {
+          "seconds_direction_only": 0.02666525900713168,
+          "tensor_sha256": "ff075a3d5164335f4a2e43bb95e7c8da91b163fb0535f48d147f13abea51e1d0",
+          "mean_relative_residual": 0.974002480506897,
+          "max_relative_residual": 1.158558964729309,
+          "mean_direction_norm": 0.09053023904561996,
+          "mean_direction_error_to_public_perturbation": 0.15690620243549347
+        },
+        {
+          "seconds_direction_only": 0.01793709199409932,
+          "tensor_sha256": "ff075a3d5164335f4a2e43bb95e7c8da91b163fb0535f48d147f13abea51e1d0",
+          "mean_relative_residual": 0.974002480506897,
+          "max_relative_residual": 1.158558964729309,
+          "mean_direction_norm": 0.09053023904561996,
+          "mean_direction_error_to_public_perturbation": 0.15690620243549347
+        },
+        {
+          "seconds_direction_only": 0.018351606995565817,
+          "tensor_sha256": "ff075a3d5164335f4a2e43bb95e7c8da91b163fb0535f48d147f13abea51e1d0",
+          "mean_relative_residual": 0.974002480506897,
+          "max_relative_residual": 1.158558964729309,
+          "mean_direction_norm": 0.09053023904561996,
+          "mean_direction_error_to_public_perturbation": 0.15690620243549347
+        }
+      ],
+      "path": "outputs/TRR-0020/dev22_linear/40_consistent_linear_k4_layer_factors.safetensors",
+      "sha256": "7fabfd5f23dc42973ee627f613b181d1a31c16ab4a1719a9dc4729cbb408ac4b",
+      "single_layer_products_per_direction": 16,
+      "small_linear_solves_per_direction": 4,
+      "additional_full_prefix_products_per_repetition_for_residual_validation": 1,
+      "repeat_identical": true
+    },
+    {
+      "length": 40,
+      "rhs": "consistent_linear",
+      "basis_vectors": 8,
+      "method": "full_product",
+      "repetitions": [
+        {
+          "seconds_direction_only": 0.027990558999590576,
+          "tensor_sha256": "d8f1f9bbe5f3a4bfaddbf95fe1155ba9c584f0a8925feb3aab922e2782bf536b",
+          "mean_relative_residual": 0.8336909413337708,
+          "max_relative_residual": 0.948752224445343,
+          "mean_direction_norm": 0.07910186797380447,
+          "mean_direction_error_to_public_perturbation": 0.14901867508888245
+        },
+        {
+          "seconds_direction_only": 0.02832633600337431,
+          "tensor_sha256": "d8f1f9bbe5f3a4bfaddbf95fe1155ba9c584f0a8925feb3aab922e2782bf536b",
+          "mean_relative_residual": 0.8336909413337708,
+          "max_relative_residual": 0.948752224445343,
+          "mean_direction_norm": 0.07910186797380447,
+          "mean_direction_error_to_public_perturbation": 0.14901867508888245
+        },
+        {
+          "seconds_direction_only": 0.027903508977033198,
+          "tensor_sha256": "d8f1f9bbe5f3a4bfaddbf95fe1155ba9c584f0a8925feb3aab922e2782bf536b",
+          "mean_relative_residual": 0.8336909413337708,
+          "max_relative_residual": 0.948752224445343,
+          "mean_direction_norm": 0.07910186797380447,
+          "mean_direction_error_to_public_perturbation": 0.14901867508888245
+        }
+      ],
+      "path": "outputs/TRR-0020/dev22_linear/40_consistent_linear_k8_full_product.safetensors",
+      "sha256": "7442adff81866f8b2ddc5c745412a4d72e4a91fbef6ebccdf537d4bc644a426b",
+      "single_layer_products_per_direction": 32,
+      "small_linear_solves_per_direction": 1,
+      "additional_full_prefix_products_per_repetition_for_residual_validation": 1,
+      "repeat_identical": true
+    },
+    {
+      "length": 40,
+      "rhs": "consistent_linear",
+      "basis_vectors": 8,
+      "method": "layer_factors",
+      "repetitions": [
+        {
+          "seconds_direction_only": 0.03777745901606977,
+          "tensor_sha256": "4ca7481896e1a4d537e6495868d7a866f6a199e2986adc0a41325d3517c03e51",
+          "mean_relative_residual": 1.0677493810653687,
+          "max_relative_residual": 1.5366876125335693,
+          "mean_direction_norm": 0.12760944664478302,
+          "mean_direction_error_to_public_perturbation": 0.18172413110733032
+        },
+        {
+          "seconds_direction_only": 0.037229374021990225,
+          "tensor_sha256": "4ca7481896e1a4d537e6495868d7a866f6a199e2986adc0a41325d3517c03e51",
+          "mean_relative_residual": 1.0677493810653687,
+          "max_relative_residual": 1.5366876125335693,
+          "mean_direction_norm": 0.12760944664478302,
+          "mean_direction_error_to_public_perturbation": 0.18172413110733032
+        },
+        {
+          "seconds_direction_only": 0.04712599501363002,
+          "tensor_sha256": "4ca7481896e1a4d537e6495868d7a866f6a199e2986adc0a41325d3517c03e51",
+          "mean_relative_residual": 1.0677493810653687,
+          "max_relative_residual": 1.5366876125335693,
+          "mean_direction_norm": 0.12760944664478302,
+          "mean_direction_error_to_public_perturbation": 0.18172413110733032
+        }
+      ],
+      "path": "outputs/TRR-0020/dev22_linear/40_consistent_linear_k8_layer_factors.safetensors",
+      "sha256": "81c83c6ac1c1e033391fb3540f4be5fb4fe4a7c4e1b43c1664d001be355e9808",
+      "single_layer_products_per_direction": 32,
+      "small_linear_solves_per_direction": 4,
+      "additional_full_prefix_products_per_repetition_for_residual_validation": 1,
+      "repeat_identical": true
+    }
+  ],
+  "context": [
+    {
+      "length": 128,
+      "public_source": {
+        "path": "outputs/TRR-0020/dev21_qualification/128_forward.safetensors",
+        "sha256": "9564c106516c597925b63ef1f8e23246684712b4e0eb50b9b71fa01fbbbfdba4"
+      },
+      "forward_anchor_equal": true,
+      "factor_composition_equal": true,
+      "path": "outputs/TRR-0020/dev22_linear/context_128.safetensors",
+      "sha256": "2b81633c12e564dc7b871681d1969f5beb9b36d11e27fb4b13656e9420af011b"
+    },
+    {
+      "length": 40,
+      "public_source": {
+        "path": "outputs/TRR-0020/dev21_qualification/40_forward.safetensors",
+        "sha256": "90ecd71ab3124afe22204218b2674b183a6c0bb837e5f6f38b67901ea681136b"
+      },
+      "forward_anchor_equal": true,
+      "factor_composition_equal": true,
+      "path": "outputs/TRR-0020/dev22_linear/context_40.safetensors",
+      "sha256": "0f4ee8dfafc1b4767822f475966b59a7039999e493474e0a943b7e391c981453"
+    }
+  ],
+  "passed": true,
+  "prefix_preparation_seconds": 0.7285680939967278,
+  "end_unix": 1789851157.7137108,
+  "peak_reserved": 2233466880,
+  "peak_allocated": 2206488576,
+  "peak_host_rss": 2577780736
+}

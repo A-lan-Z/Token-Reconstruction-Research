@@ -1,0 +1,10 @@
+# Development11: cheaper continuous full-vocabulary updates
+Dev10_r1 completed80cells with exact eager/replay equality. The smaller quadratic penalty changes answers but cannot approach baseline quality; hard jumps oscillate or stall. Keep continuous movement while eliminating per-iteration full-vocabulary mixture and logit backpropagation.
+
+Maintain full-vocabulary convex weights p and embedding z. Initialize p=softmax(80*the existing full-vocabulary prefix-metric score); z=BF16(p)*BF16(E) withFP32output. At eachstep, evaluate the native prefix on z and compute its global cosine-error gradient g. Calculate g.E for EVERY vocabulary token in one matrix multiplication. The minimum identifies a descent direction; interpolate z toward that embedding and apply the same convex update to p. Emit argmax(p) directly, tracking best observed-objective states. All vocabulary entries remain eligible every iteration. No shortlist, token-verification pool, separately fitted inverse, or model-weight update.
+
+128steps;12fixedconfigs:base interpolationrate.03/.1/.3 crossed with adaptiveoff/on and annealoff/on. Adaptive multiplies eachposition'srate byclamp(currentcoserror/.05,0,1). Anneal dividesrate by1+iteration/32. This is a new approximate full-vocabulary optimization rule, not an exact derivative optimizer or equivalence claim to former logit updates. Only initial embedding mixing uses the fullp.E product; eachiteration needs one full-vocabulary gradient product.
+
+Independent CPU reference: linear minimizer equals explicit directional-derivative minimizer;128convexupdates preserve p>=0,row sums1,z=p.E withinfloat64 tolerance. Largest128publicqualification repeats3times and saves beforegate.96cells on same8developmentinputs, fullfreeze beforecurrentlabels.
+
+Memory:retainp127x128256~62MiB, nosoftmaxgrad/logitmoments; one scorematrix~62MiB. Priorproximal~2-3GiBreserved; allowtwo graphpools and6GiBcap,free>=2GiB,9000MiBadmission,host>=8GiB,RSS<=10GiB,temp<80C. Expected<5min,timeout1200. No canonicalclaim or active registration.

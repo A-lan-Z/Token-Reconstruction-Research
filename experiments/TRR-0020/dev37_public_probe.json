@@ -1,0 +1,2081 @@
+{
+  "task_id": "TRR-0020",
+  "scope": "known-public fixed-history numerical diagnostic; not reconstruction accuracy",
+  "sources": {
+    "scripts/trr0014/native.py": "05f2d76dc8c8ebb1467a060922cce481191fbb9a61f0ea7ad42253c2b270c454",
+    "scripts/agent4/common.py": "d2f1832c6153d536e90a1014dc56b9fd96b74ad73e23091f5aea9ce2859717f3",
+    "scripts/trr0017/shared_context.py": "e7b1ef785ca2ea393d84a8ea7e0e5a2c7fa88c90689aef070841c7eb6a6b1ca6",
+    "src/token_reconstruction/public_prefix.py": "b9dca1d8d56c7c07413015aea4bde79e8ceac827c32ee9bc0d1a236ea1dd35f6",
+    "src/token_reconstruction/a1a2_configuration_search.py": "608bead6291353cacaa700a85f3dd619fb3261375e6fd5ba19cbc43fd738315b",
+    "scripts/trr0020_resource_guard.py": "13e9b9a4628306b758863289e77f60f8e2f89211dcd02741e5e2dc71bbad2315",
+    "scripts/trr0020_stage37/cpu_check.py": "9bbc2b3b004daab815a7776a6d5a458fa0219489634ea509f419d5af0e5fb759",
+    "scripts/trr0020_stage37/direct_scores.py": "a7e3a49bfa704801220977d6ad3fcf8d51aeba67ed9f457d97f6c549d5dc714e",
+    "scripts/trr0020_stage37/probe.py": "6da82e6f3214747e1db1f45ee49bee5fa0fbe7426aaf51187a65783ae99b9b85",
+    "experiments/TRR-0020/DEV37_PLAN.md": "8c75582766c80c53077c2dbd3afd731dd296156abbfa6cf9009323d1b4f3cf7c",
+    "experiments/TRR-0020/dev37_cpu_reference.json": "ef2b14589a25ad38496ed135893b2593720bfe01e1a9b52a398d0b41342a36e5",
+    "experiments/TRR-0020/dev37_preflight.json": "e644f24eb52cd4f6c48195e5ffcc0c1ab9f91d4220c6c31e6113f5858df12814",
+    "experiments/TRR-0020/dev34_stress_probe.json": "7fd68044c9ea609303b6fe7967fdd622fe6893fceed04832309484bc65535cd2",
+    "experiments/TRR-0014/lookup_dev_r1/cache.json": "3fbee17169a104ebe9f613770269c93be4d4f01ed73e21a3a10f77ad46fbcaf9"
+  },
+  "execution_commit": "b419d570a936ed65134770a94633385ce9b2d379",
+  "command": [
+    "scripts/trr0020_stage37/probe.py"
+  ],
+  "environment": {
+    "commit": "b419d570a936ed65134770a94633385ce9b2d379",
+    "torch": "2.10.0+cu128",
+    "transformers": "5.3.0",
+    "python": "3.12.3",
+    "gpu": "name, memory.total [MiB], memory.free [MiB], temperature.gpu\nNVIDIA GeForce RTX 5080, 16303 MiB, 9247 MiB, 36\n",
+    "utc": "2026-09-20T02:33:05Z"
+  },
+  "start_unix": 1789871585.9054067,
+  "passed": true,
+  "truth_read": false,
+  "shortlist": null,
+  "model_weight_updates": 0,
+  "modes": [
+    "raw",
+    "mean",
+    "scaled_mean",
+    "four_probe"
+  ],
+  "metrics": [
+    "cosine",
+    "negative_squared_distance"
+  ],
+  "contexts": [
+    {
+      "past": 127,
+      "history_seed": 37164,
+      "history_seconds": 0.06139111201628111,
+      "path": "outputs/TRR-0020/dev37_public/fixture_127.safetensors",
+      "sha256": "47bf2fd66ca6286ba4b12bb214df0cf3079770cba798bf3eeb866b196eb5f985",
+      "io_hash_seconds": 0.0008975350065156817
+    },
+    {
+      "past": 63,
+      "history_seed": 37100,
+      "history_seconds": 0.003644488984718919,
+      "path": "outputs/TRR-0020/dev37_public/fixture_63.safetensors",
+      "sha256": "90d0b453386821576eb860e8147f4fc917a6e3d2550cb6eb314942b0f44a66e2",
+      "io_hash_seconds": 0.0010203819838352501
+    },
+    {
+      "past": 15,
+      "history_seed": 37052,
+      "history_seconds": 0.004616357997292653,
+      "path": "outputs/TRR-0020/dev37_public/fixture_15.safetensors",
+      "sha256": "d6abac50d537e3f0e92d164f3887e9416451a2ebad9177076b6098a0618bdd35",
+      "io_hash_seconds": 0.000841464992845431
+    },
+    {
+      "past": 1,
+      "history_seed": 37038,
+      "history_seconds": 0.005507588997716084,
+      "path": "outputs/TRR-0020/dev37_public/fixture_1.safetensors",
+      "sha256": "54bda352fd445f52193920dbe735ad979196e1fcdccdd430e1560fba37a44c8c",
+      "io_hash_seconds": 0.0012242639786563814,
+      "batch256_vs_batch1_max_error": 0.0625,
+      "batch256_vs_batch1_mean_cosine_error": 9.029358625411987e-05
+    }
+  ],
+  "cells": [
+    {
+      "past": 127,
+      "mode": "raw",
+      "repetitions": [
+        {
+          "rep": 0,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 0,
+          "correction_seconds": 0.00040323601569980383,
+          "norm_adjustment_seconds": 0.02500515998690389,
+          "per_observation_scoring_seconds": [
+            0.019684453000081703,
+            0.0022646180004812777,
+            0.001551043998915702,
+            0.0018382580019533634,
+            0.0017862569948192686,
+            0.0015011260111350566,
+            0.002030820003710687,
+            0.0014751619892194867,
+            0.0017580300045665354,
+            0.0016845490026753396,
+            0.0014760879857931286,
+            0.0020518010132946074,
+            0.0017112219939008355,
+            0.0018168380192946643,
+            0.0020036890055052936,
+            0.001575025002239272
+          ],
+          "diagnostic_score_transfer_seconds": 0.011781614070059732,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate.",
+          "path": "outputs/TRR-0020/dev37_public/127_raw.safetensors",
+          "sha256": "c2137f70264a88fce43589eb5014d1d8b1566eb953be80977e36e48567c43126",
+          "io_hash_seconds": 0.026409779995447025
+        },
+        {
+          "rep": 1,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 0,
+          "correction_seconds": 0.00032718401052989066,
+          "norm_adjustment_seconds": 0.0017416320042684674,
+          "per_observation_scoring_seconds": [
+            0.0022360309958457947,
+            0.0015078540018294007,
+            0.0018876169924624264,
+            0.0014309650287032127,
+            0.0020834380120504647,
+            0.0014461659884545952,
+            0.0018580839969217777,
+            0.0014747229870408773,
+            0.002153361012460664,
+            0.0014029069861862808,
+            0.001731815020320937,
+            0.001435126003343612,
+            0.0016601620009168983,
+            0.0019162259995937347,
+            0.0018289469880983233,
+            0.0014742269995622337
+          ],
+          "diagnostic_score_transfer_seconds": 0.004571266996208578,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        },
+        {
+          "rep": 2,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 0,
+          "correction_seconds": 0.00021826798911206424,
+          "norm_adjustment_seconds": 0.0018152779957745224,
+          "per_observation_scoring_seconds": [
+            0.0016700910055078566,
+            0.0014340259949676692,
+            0.0018579509924165905,
+            0.0014438870130106807,
+            0.002044074994046241,
+            0.001433219003956765,
+            0.0017849690048024058,
+            0.0014317239983938634,
+            0.0016755360120441765,
+            0.00141614000312984,
+            0.0015382849960587919,
+            0.001816036005038768,
+            0.0018512810056563467,
+            0.0016486859822180122,
+            0.001382958987960592,
+            0.0014750640257261693
+          ],
+          "diagnostic_score_transfer_seconds": 0.004280443012248725,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        }
+      ]
+    },
+    {
+      "past": 127,
+      "mode": "mean",
+      "repetitions": [
+        {
+          "rep": 0,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 1,
+          "correction_seconds": 0.0049238039937336,
+          "norm_adjustment_seconds": 0.00170416000764817,
+          "per_observation_scoring_seconds": [
+            0.0013803170004393905,
+            0.0014718640013597906,
+            0.001387635013088584,
+            0.0013903969957027584,
+            0.0016794030088931322,
+            0.0013953419984318316,
+            0.0015468600031454116,
+            0.0017848089919425547,
+            0.001758078986313194,
+            0.0017884779954329133,
+            0.0015697219932917506,
+            0.0013955809990875423,
+            0.001427910989150405,
+            0.0016045219963416457,
+            0.0014381000073626637,
+            0.0016649070021230727
+          ],
+          "diagnostic_score_transfer_seconds": 0.004273077007383108,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate.",
+          "path": "outputs/TRR-0020/dev37_public/127_mean.safetensors",
+          "sha256": "b4cf7d28ad806ad74c613f491a601ef0b3f32bd2f55857900567e42e02d1a07a",
+          "io_hash_seconds": 0.014593589992728084
+        },
+        {
+          "rep": 1,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 1,
+          "correction_seconds": 0.004336557001806796,
+          "norm_adjustment_seconds": 0.0017053769843187183,
+          "per_observation_scoring_seconds": [
+            0.0020923000120092183,
+            0.0017013230244629085,
+            0.0016736609977670014,
+            0.0014550339838024229,
+            0.0016759239952079952,
+            0.0014143550070002675,
+            0.0014849449798930436,
+            0.0014035070198588073,
+            0.0013997389760334045,
+            0.0018174819997511804,
+            0.0014138070109765977,
+            0.0015970900130923837,
+            0.0014239860174711794,
+            0.0016440890030935407,
+            0.001394096005242318,
+            0.0014152329822536558
+          ],
+          "diagnostic_score_transfer_seconds": 0.0047316459531430155,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        },
+        {
+          "rep": 2,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 1,
+          "correction_seconds": 0.0036453219945542514,
+          "norm_adjustment_seconds": 0.0016961740038823336,
+          "per_observation_scoring_seconds": [
+            0.0013910359994042665,
+            0.0013808950025122613,
+            0.0014434979821089655,
+            0.0014198689896147698,
+            0.001835467992350459,
+            0.001425452996045351,
+            0.001550250017317012,
+            0.001409938995493576,
+            0.0016721859865356237,
+            0.0016838209994602948,
+            0.001514296978712082,
+            0.0017549929907545447,
+            0.0014687440125271678,
+            0.0014522119890898466,
+            0.0014099889958743006,
+            0.001674090017331764
+          ],
+          "diagnostic_score_transfer_seconds": 0.0049508709635119885,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        }
+      ]
+    },
+    {
+      "past": 127,
+      "mode": "scaled_mean",
+      "repetitions": [
+        {
+          "rep": 0,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 1,
+          "correction_seconds": 0.004119685007026419,
+          "norm_adjustment_seconds": 0.001469212002120912,
+          "per_observation_scoring_seconds": [
+            0.0018036330002360046,
+            0.0014039470115676522,
+            0.0015379460237454623,
+            0.001435019978089258,
+            0.0016967910050880164,
+            0.0014558419934473932,
+            0.001649503014050424,
+            0.0014229200023692101,
+            0.0014404979883693159,
+            0.0014889829908497632,
+            0.0014085909933783114,
+            0.0017240880115423352,
+            0.001421154011040926,
+            0.001491988979978487,
+            0.0014205059851519763,
+            0.001592129992786795
+          ],
+          "diagnostic_score_transfer_seconds": 0.0051571740477811545,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate.",
+          "path": "outputs/TRR-0020/dev37_public/127_scaled_mean.safetensors",
+          "sha256": "136211575b2a1604bdf8ce2d0b27f7f07a1646646311ceba4b823cbd8e107300",
+          "io_hash_seconds": 0.01651086998754181
+        },
+        {
+          "rep": 1,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 1,
+          "correction_seconds": 0.004206694982713088,
+          "norm_adjustment_seconds": 0.0017177069967146963,
+          "per_observation_scoring_seconds": [
+            0.001454448007280007,
+            0.0014062559930607677,
+            0.0016627760196570307,
+            0.00140172999817878,
+            0.0016541310178581625,
+            0.0013834320125170052,
+            0.0015157109883148223,
+            0.001408031996106729,
+            0.0018386880110483617,
+            0.001463480992242694,
+            0.00140045300940983,
+            0.0018266419938299805,
+            0.0014516650117002428,
+            0.0016281059943139553,
+            0.001414133992511779,
+            0.00151752500096336
+          ],
+          "diagnostic_score_transfer_seconds": 0.004658938996726647,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        },
+        {
+          "rep": 2,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 1,
+          "correction_seconds": 0.003358954010764137,
+          "norm_adjustment_seconds": 0.0017702049808576703,
+          "per_observation_scoring_seconds": [
+            0.0013905120140407234,
+            0.0015046280168462545,
+            0.0014130269992165267,
+            0.0013953179877717048,
+            0.0015122400072868913,
+            0.0014207949861884117,
+            0.0018718710052780807,
+            0.001586375990882516,
+            0.0022296079841908067,
+            0.0014461620012298226,
+            0.0016905459924601018,
+            0.0013989080034662038,
+            0.0015183330106083304,
+            0.001451456977520138,
+            0.0014158390113152564,
+            0.0014906029973644763
+          ],
+          "diagnostic_score_transfer_seconds": 0.004591093893395737,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        }
+      ]
+    },
+    {
+      "past": 127,
+      "mode": "four_probe",
+      "repetitions": [
+        {
+          "rep": 0,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 4,
+          "correction_seconds": 0.01233332502306439,
+          "norm_adjustment_seconds": 0.0015682780067436397,
+          "per_observation_scoring_seconds": [
+            0.0018730979936663061,
+            0.0014201870071701705,
+            0.0015851999924052507,
+            0.015928387001622468,
+            0.0015241070068441331,
+            0.0017479700036346912,
+            0.0014401889930013567,
+            0.0017906859866343439,
+            0.0014434990007430315,
+            0.0014129180053714663,
+            0.0016552769811823964,
+            0.0017660970042925328,
+            0.0017928950255736709,
+            0.0014028960140421987,
+            0.0018443010048940778,
+            0.0014127469912637025
+          ],
+          "diagnostic_score_transfer_seconds": 0.005108139012008905,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate.",
+          "path": "outputs/TRR-0020/dev37_public/127_four_probe.safetensors",
+          "sha256": "a3adfd8ece27742d2286d08b9b03bbf3d045fda6b3474227520e22c89e0e0d61",
+          "io_hash_seconds": 0.014045547985006124
+        },
+        {
+          "rep": 1,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 4,
+          "correction_seconds": 0.02884079798241146,
+          "norm_adjustment_seconds": 0.0016689170151948929,
+          "per_observation_scoring_seconds": [
+            0.0014251130050979555,
+            0.0017073070048354566,
+            0.001430306991096586,
+            0.001401281013386324,
+            0.0015759069938212633,
+            0.001403146015945822,
+            0.0017662369937170297,
+            0.0013980410003568977,
+            0.0015162790077738464,
+            0.0014012609899509698,
+            0.0018408900068607181,
+            0.0013967039994895458,
+            0.0013909910048823804,
+            0.0016230600012931973,
+            0.0014463709958363324,
+            0.0014933150087017566
+          ],
+          "diagnostic_score_transfer_seconds": 0.004498172900639474,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        },
+        {
+          "rep": 2,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 4,
+          "correction_seconds": 0.010574126994470134,
+          "norm_adjustment_seconds": 0.001572415989357978,
+          "per_observation_scoring_seconds": [
+            0.0013839610037393868,
+            0.0014052790065761656,
+            0.0017071469919756055,
+            0.001423088979208842,
+            0.0017779830086510628,
+            0.0013937830226495862,
+            0.0016337090055458248,
+            0.0018693390011321753,
+            0.0017456950154155493,
+            0.001576634997036308,
+            0.0015626649837940931,
+            0.0017070979811251163,
+            0.0014418039936572313,
+            0.0014808319974690676,
+            0.0014012719911988825,
+            0.0016904859803617
+          ],
+          "diagnostic_score_transfer_seconds": 0.004376077005872503,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        }
+      ]
+    },
+    {
+      "past": 63,
+      "mode": "raw",
+      "repetitions": [
+        {
+          "rep": 0,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 0,
+          "correction_seconds": 6.852200021967292e-05,
+          "norm_adjustment_seconds": 0.001543491001939401,
+          "per_observation_scoring_seconds": [
+            0.0017358949990011752,
+            0.001826722000259906,
+            0.0020194940152578056,
+            0.0017468029982410371,
+            0.0019140100048389286,
+            0.002173952991142869,
+            0.0017625070177018642,
+            0.001524285995401442,
+            0.0017661669990047812,
+            0.0015721179952379316,
+            0.0016036269953474402,
+            0.0014998859842307866,
+            0.0016953010053839535,
+            0.0015021489816717803,
+            0.0017925110005307943,
+            0.0016020210168790072
+          ],
+          "diagnostic_score_transfer_seconds": 0.0077116970787756145,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate.",
+          "path": "outputs/TRR-0020/dev37_public/63_raw.safetensors",
+          "sha256": "a3ad30db97d86e0ae4d2437630f298942aa0a71c4eb38cb3ce4e29cfaf9fabc4",
+          "io_hash_seconds": 0.01662848799605854
+        },
+        {
+          "rep": 1,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 0,
+          "correction_seconds": 0.000255541002843529,
+          "norm_adjustment_seconds": 0.001740890002110973,
+          "per_observation_scoring_seconds": [
+            0.0017538819811306894,
+            0.0014973240031395108,
+            0.001580522977747023,
+            0.0015034759999252856,
+            0.0017784319934435189,
+            0.001459872000850737,
+            0.0018021670111920685,
+            0.0014577879919670522,
+            0.0017033980111591518,
+            0.001406994997523725,
+            0.0014294289867393672,
+            0.0015530529781244695,
+            0.0017964989820029587,
+            0.002031287003774196,
+            0.0015414249792229384,
+            0.0015182339993771166
+          ],
+          "diagnostic_score_transfer_seconds": 0.007159529050113633,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        },
+        {
+          "rep": 2,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 0,
+          "correction_seconds": 0.00048065700684674084,
+          "norm_adjustment_seconds": 0.002060471015283838,
+          "per_observation_scoring_seconds": [
+            0.001473362004617229,
+            0.0017402560042683035,
+            0.0018582369957584888,
+            0.0014811000146437436,
+            0.0019794369873125106,
+            0.0017972860077861696,
+            0.0015052229864522815,
+            0.0017229740042239428,
+            0.001928918994963169,
+            0.0015306419809348881,
+            0.0014665809867437929,
+            0.001981003995751962,
+            0.0020648890058510005,
+            0.0015408930194098502,
+            0.001959273999091238,
+            0.0014821179793216288
+          ],
+          "diagnostic_score_transfer_seconds": 0.0073286889819428325,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        }
+      ]
+    },
+    {
+      "past": 63,
+      "mode": "mean",
+      "repetitions": [
+        {
+          "rep": 0,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 1,
+          "correction_seconds": 0.006349712988594547,
+          "norm_adjustment_seconds": 0.001996979000978172,
+          "per_observation_scoring_seconds": [
+            0.001719038002192974,
+            0.0015366150182671845,
+            0.001809719018638134,
+            0.0015900059952400625,
+            0.0020107599848415703,
+            0.001983427006052807,
+            0.001447943999664858,
+            0.001968954980839044,
+            0.00150448500062339,
+            0.0019241429981775582,
+            0.0015491899976041168,
+            0.0015990609826985747,
+            0.0018699030042625964,
+            0.0015081650053616613,
+            0.0016392980178352445,
+            0.0015921290032565594
+          ],
+          "diagnostic_score_transfer_seconds": 0.007946548983454704,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate.",
+          "path": "outputs/TRR-0020/dev37_public/63_mean.safetensors",
+          "sha256": "df14f6754a3155d1ebcabfb27eeb479323d7a8e2b2681a5f2488d96cde516eb7",
+          "io_hash_seconds": 0.01604704902274534
+        },
+        {
+          "rep": 1,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 1,
+          "correction_seconds": 0.00424679002026096,
+          "norm_adjustment_seconds": 0.001993397978367284,
+          "per_observation_scoring_seconds": [
+            0.0014552529901266098,
+            0.0017072279879357666,
+            0.0013859460013918579,
+            0.0016937059990596026,
+            0.001399029977619648,
+            0.001678867993177846,
+            0.0014341319911181927,
+            0.0014146659814286977,
+            0.001462103013182059,
+            0.0014047930017113686,
+            0.0016748290217947215,
+            0.0018508869979996234,
+            0.0017562519933562726,
+            0.0015170930128078908,
+            0.0017660130106378347,
+            0.0014348209952004254
+          ],
+          "diagnostic_score_transfer_seconds": 0.00516976899234578,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        },
+        {
+          "rep": 2,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 1,
+          "correction_seconds": 0.004147936007939279,
+          "norm_adjustment_seconds": 0.0018276720074936748,
+          "per_observation_scoring_seconds": [
+            0.0014992700016591698,
+            0.0019408150110393763,
+            0.0014342909853439778,
+            0.001422723988071084,
+            0.0014082140114624053,
+            0.0014111659838818014,
+            0.0013845899957232177,
+            0.0013822559849359095,
+            0.0013999470102135092,
+            0.0014050230092834681,
+            0.0017046360007952899,
+            0.0014324759831652045,
+            0.0014058999950066209,
+            0.001411256002029404,
+            0.0014242200122680515,
+            0.0013976529880892485
+          ],
+          "diagnostic_score_transfer_seconds": 0.004839735076529905,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        }
+      ]
+    },
+    {
+      "past": 63,
+      "mode": "scaled_mean",
+      "repetitions": [
+        {
+          "rep": 0,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 1,
+          "correction_seconds": 0.003384929004823789,
+          "norm_adjustment_seconds": 0.0015353490016423166,
+          "per_observation_scoring_seconds": [
+            0.0013722750009037554,
+            0.00140886299777776,
+            0.0013846500078216195,
+            0.0014139080012682825,
+            0.0015294449985958636,
+            0.0016707399918232113,
+            0.0014098700194153935,
+            0.0013760240108240396,
+            0.001688210992142558,
+            0.001428467978257686,
+            0.0022308249899651855,
+            0.0014411820156965405,
+            0.0017960699915420264,
+            0.0014000860101077706,
+            0.0017832560115493834,
+            0.00141634201281704
+          ],
+          "diagnostic_score_transfer_seconds": 0.0044763999176211655,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate.",
+          "path": "outputs/TRR-0020/dev37_public/63_scaled_mean.safetensors",
+          "sha256": "aefad6bf0038cd67f0168f6123864a0b05e2fae9d9937f09a98aa54779bd76e7",
+          "io_hash_seconds": 0.012344926013611257
+        },
+        {
+          "rep": 1,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 1,
+          "correction_seconds": 0.0037551739951595664,
+          "norm_adjustment_seconds": 0.0014890480088070035,
+          "per_observation_scoring_seconds": [
+            0.0017453909968025982,
+            0.001412301993696019,
+            0.0013503259979188442,
+            0.0016474550066050142,
+            0.0014009440201334655,
+            0.0016293259977828711,
+            0.001386285002809018,
+            0.001353526982711628,
+            0.0014103779976721853,
+            0.001378596993163228,
+            0.0013944430102128536,
+            0.0016116650076583028,
+            0.0019158360082656145,
+            0.0014532780041918159,
+            0.0013825949863530695,
+            0.0019242119742557406
+          ],
+          "diagnostic_score_transfer_seconds": 0.00407848198665306,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        },
+        {
+          "rep": 2,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 1,
+          "correction_seconds": 0.003206606983439997,
+          "norm_adjustment_seconds": 0.0016793569957371801,
+          "per_observation_scoring_seconds": [
+            0.0013669900072272867,
+            0.0013819870073348284,
+            0.001652551000006497,
+            0.0014085530128795654,
+            0.0016462690255139023,
+            0.0014083440182730556,
+            0.0013573460164479911,
+            0.001416181999957189,
+            0.0013708389888051897,
+            0.0016502680082339793,
+            0.0014023009862285107,
+            0.001744699984556064,
+            0.0015207339893095195,
+            0.0013990199950058013,
+            0.0018097319989465177,
+            0.0013900650083087385
+          ],
+          "diagnostic_score_transfer_seconds": 0.004426319908816367,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        }
+      ]
+    },
+    {
+      "past": 63,
+      "mode": "four_probe",
+      "repetitions": [
+        {
+          "rep": 0,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 4,
+          "correction_seconds": 0.012424213986378163,
+          "norm_adjustment_seconds": 0.0017568100010976195,
+          "per_observation_scoring_seconds": [
+            0.0013917399919591844,
+            0.0016616959765087813,
+            0.0014140779967419803,
+            0.0013700499839615077,
+            0.0016584139957558364,
+            0.016408588009653613,
+            0.0016829060041345656,
+            0.001682856003753841,
+            0.0013915709860157222,
+            0.0016647079901304096,
+            0.0013984209799673408,
+            0.001706659997580573,
+            0.0014538770192302763,
+            0.0016372340032830834,
+            0.0019346929911989719,
+            0.0015871030045673251
+          ],
+          "diagnostic_score_transfer_seconds": 0.004676781099988148,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate.",
+          "path": "outputs/TRR-0020/dev37_public/63_four_probe.safetensors",
+          "sha256": "3b5fc8fc68eb19ecc2b23fb274d091bfd5e704952d47c1dc922d9fdbdf5111cc",
+          "io_hash_seconds": 0.01596034099929966
+        },
+        {
+          "rep": 1,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 4,
+          "correction_seconds": 0.010957663995213807,
+          "norm_adjustment_seconds": 0.0014489400200545788,
+          "per_observation_scoring_seconds": [
+            0.0013708480109926313,
+            0.001355730986688286,
+            0.0013874319847673178,
+            0.0014341720088850707,
+            0.0013996080087963492,
+            0.0014062499976716936,
+            0.0013705790042877197,
+            0.0013886080123484135,
+            0.0014039560046512634,
+            0.0019952730217482895,
+            0.0015793560014571995,
+            0.0015474659739993513,
+            0.0017525310104247183,
+            0.0016728869813960046,
+            0.001415403006831184,
+            0.0013954580063000321
+          ],
+          "diagnostic_score_transfer_seconds": 0.004524485993897542,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        },
+        {
+          "rep": 2,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 4,
+          "correction_seconds": 0.011395761015592143,
+          "norm_adjustment_seconds": 0.0014992260257713497,
+          "per_observation_scoring_seconds": [
+            0.0016477160097565502,
+            0.001399038010276854,
+            0.0013760300062131137,
+            0.0017064670100808144,
+            0.0018089189834427088,
+            0.0017047710134647787,
+            0.0014255360001698136,
+            0.0017975210212171078,
+            0.0014288670208770782,
+            0.001796493015717715,
+            0.0014296149893198162,
+            0.0019459590257611126,
+            0.001467273017624393,
+            0.0016809350054245442,
+            0.0013928739936091006,
+            0.0013526229886338115
+          ],
+          "diagnostic_score_transfer_seconds": 0.004279364075046033,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        }
+      ]
+    },
+    {
+      "past": 15,
+      "mode": "raw",
+      "repetitions": [
+        {
+          "rep": 0,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 0,
+          "correction_seconds": 6.698901415802538e-05,
+          "norm_adjustment_seconds": 0.0017375719908159226,
+          "per_observation_scoring_seconds": [
+            0.00139391198172234,
+            0.002119470009347424,
+            0.0016650680045131594,
+            0.0013924459926784039,
+            0.0017572000215295702,
+            0.0013836690050084144,
+            0.0017722179763950408,
+            0.0014518950192723423,
+            0.0017764069780241698,
+            0.0014183550083544105,
+            0.0016827400249894708,
+            0.0014228429936338216,
+            0.00143135100370273,
+            0.0017411920125596225,
+            0.0013932930014561862,
+            0.001885044010123238
+          ],
+          "diagnostic_score_transfer_seconds": 0.0046551138802897185,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate.",
+          "path": "outputs/TRR-0020/dev37_public/15_raw.safetensors",
+          "sha256": "4dc54c4f643c32e9d93e1914e2576716d77253dea6f8bbd3e65e2c23599ec2c2",
+          "io_hash_seconds": 0.021075033000670373
+        },
+        {
+          "rep": 1,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 0,
+          "correction_seconds": 0.0003283419937361032,
+          "norm_adjustment_seconds": 0.0016682590066920966,
+          "per_observation_scoring_seconds": [
+            0.0014351989957503974,
+            0.0014220160082913935,
+            0.0013935330207459629,
+            0.0014122120046522468,
+            0.0014368160045705736,
+            0.0018465380126144737,
+            0.0016228830209001899,
+            0.0015862519794609398,
+            0.0018470459908712655,
+            0.0014233620022423565,
+            0.0013959660136606544,
+            0.0013643210113514215,
+            0.0013801379827782512,
+            0.0013918770127929747,
+            0.0014132889918982983,
+            0.0014064779970794916
+          ],
+          "diagnostic_score_transfer_seconds": 0.004276419116649777,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        },
+        {
+          "rep": 2,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 0,
+          "correction_seconds": 0.00022414402337744832,
+          "norm_adjustment_seconds": 0.0018194809963461012,
+          "per_observation_scoring_seconds": [
+            0.0014218559954315424,
+            0.001402777008479461,
+            0.0016425989742856473,
+            0.001385204988764599,
+            0.0017052399925887585,
+            0.0014082219859119505,
+            0.0017618669953662902,
+            0.0014139569830149412,
+            0.0013709729828406125,
+            0.0014140569837763906,
+            0.0017760280170477927,
+            0.0017313799762632698,
+            0.001388565986417234,
+            0.00177051400532946,
+            0.00142007099930197,
+            0.0017579669947735965
+          ],
+          "diagnostic_score_transfer_seconds": 0.0045156510605011135,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        }
+      ]
+    },
+    {
+      "past": 15,
+      "mode": "mean",
+      "repetitions": [
+        {
+          "rep": 0,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 1,
+          "correction_seconds": 0.003812473005382344,
+          "norm_adjustment_seconds": 0.0016790510271675885,
+          "per_observation_scoring_seconds": [
+            0.0014137580001261085,
+            0.0013784629991278052,
+            0.0017013410106301308,
+            0.0017586550093255937,
+            0.001426833012374118,
+            0.001436965016182512,
+            0.0017155770037788898,
+            0.0015867059992160648,
+            0.0017118410032708198,
+            0.0018844650185201317,
+            0.0016582469979766756,
+            0.0015398969990201294,
+            0.0014489919994957745,
+            0.0018505770131014287,
+            0.0018061469891108572,
+            0.0014480150130111724
+          ],
+          "diagnostic_score_transfer_seconds": 0.0056864880316425115,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate.",
+          "path": "outputs/TRR-0020/dev37_public/15_mean.safetensors",
+          "sha256": "dfb36facde8f12bf8dfee4d1d6741325ae4cc2f8c6456c0acdc6c9c379b828c6",
+          "io_hash_seconds": 0.018563810997875407
+        },
+        {
+          "rep": 1,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 1,
+          "correction_seconds": 0.007584752980619669,
+          "norm_adjustment_seconds": 0.002264478011056781,
+          "per_observation_scoring_seconds": [
+            0.0016788500070106238,
+            0.001609219005331397,
+            0.0015129000239539891,
+            0.00174977898132056,
+            0.0017853929894044995,
+            0.022633553977357224,
+            0.002428973006317392,
+            0.0016518539923708886,
+            0.0014113140059635043,
+            0.0019031839910894632,
+            0.001468718983232975,
+            0.0017927479930222034,
+            0.0015152639825828373,
+            0.0016329549835063517,
+            0.0015348710003308952,
+            0.001590899017173797
+          ],
+          "diagnostic_score_transfer_seconds": 0.008148738881573081,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        },
+        {
+          "rep": 2,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 1,
+          "correction_seconds": 0.00429110397817567,
+          "norm_adjustment_seconds": 0.001785465981811285,
+          "per_observation_scoring_seconds": [
+            0.0015131430118344724,
+            0.0015256860060617328,
+            0.0014911509933881462,
+            0.001984999020351097,
+            0.001565534999826923,
+            0.001629399019293487,
+            0.0015262390079442412,
+            0.0017027069989126176,
+            0.0019501310016494244,
+            0.001566693012136966,
+            0.0019463810021989048,
+            0.0016192460025195032,
+            0.001885041012428701,
+            0.001985907001653686,
+            0.0016964139940682799,
+            0.001799339021090418
+          ],
+          "diagnostic_score_transfer_seconds": 0.008452241017948836,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        }
+      ]
+    },
+    {
+      "past": 15,
+      "mode": "scaled_mean",
+      "repetitions": [
+        {
+          "rep": 0,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 1,
+          "correction_seconds": 0.0054829980072099715,
+          "norm_adjustment_seconds": 0.0016052330029197037,
+          "per_observation_scoring_seconds": [
+            0.001603837008588016,
+            0.001495997013989836,
+            0.0016985679976642132,
+            0.0014989899937063456,
+            0.0017057000077329576,
+            0.0015327909786719829,
+            0.0017980080156121403,
+            0.0015828899922780693,
+            0.0020510120084509254,
+            0.0016471930139232427,
+            0.0018932190141640604,
+            0.001877132017398253,
+            0.0014703850029036403,
+            0.0017967309977393597,
+            0.0014536380185745656,
+            0.001718316983897239
+          ],
+          "diagnostic_score_transfer_seconds": 0.007886444014729932,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate.",
+          "path": "outputs/TRR-0020/dev37_public/15_scaled_mean.safetensors",
+          "sha256": "f90eee928bae05119b06e567448b16de749a5337b6b0ac33e6a6aba0f9ba6e0c",
+          "io_hash_seconds": 0.01522784898406826
+        },
+        {
+          "rep": 1,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 1,
+          "correction_seconds": 0.0034175629843957722,
+          "norm_adjustment_seconds": 0.0019517360196914524,
+          "per_observation_scoring_seconds": [
+            0.0014551850035786629,
+            0.0014570100174751133,
+            0.0015217610052786767,
+            0.0014505870058201253,
+            0.0019123299862258136,
+            0.0014213230169843882,
+            0.0016726460016798228,
+            0.0014199069992173463,
+            0.0016512419970240444,
+            0.00140463697607629,
+            0.001451714022550732,
+            0.0020329639955889434,
+            0.0017052710172720253,
+            0.0014110199990682304,
+            0.0014668339863419533,
+            0.0017102279816754162
+          ],
+          "diagnostic_score_transfer_seconds": 0.005313762056175619,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        },
+        {
+          "rep": 2,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 1,
+          "correction_seconds": 0.0035001569776795805,
+          "norm_adjustment_seconds": 0.0018387709860689938,
+          "per_observation_scoring_seconds": [
+            0.0013848590024281293,
+            0.0014340699999593198,
+            0.001520095014711842,
+            0.001546664978377521,
+            0.0017089610046241432,
+            0.0014215930132195354,
+            0.0013871919945813715,
+            0.0013718529953621328,
+            0.0013988720020279288,
+            0.0014068309974391013,
+            0.001360102993203327,
+            0.0013617200020235032,
+            0.0013731489889323711,
+            0.0013830940006300807,
+            0.0013777570275124162,
+            0.0013367949868552387
+          ],
+          "diagnostic_score_transfer_seconds": 0.004131496942136437,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        }
+      ]
+    },
+    {
+      "past": 15,
+      "mode": "four_probe",
+      "repetitions": [
+        {
+          "rep": 0,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 4,
+          "correction_seconds": 0.01163469601306133,
+          "norm_adjustment_seconds": 0.0015287419955711812,
+          "per_observation_scoring_seconds": [
+            0.0017672880203463137,
+            0.0014191189839038998,
+            0.0016381760069634765,
+            0.0014034699997864664,
+            0.0013656340015586466,
+            0.0014058930100873113,
+            0.0013781560119241476,
+            0.0019905549997929484,
+            0.0013934460002928972,
+            0.015975335001712665,
+            0.002130808017682284,
+            0.001447276008548215,
+            0.0014253130066208541,
+            0.0018006409809459,
+            0.0014195870026014745,
+            0.0017881340172607452
+          ],
+          "diagnostic_score_transfer_seconds": 0.004203795950161293,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate.",
+          "path": "outputs/TRR-0020/dev37_public/15_four_probe.safetensors",
+          "sha256": "43cf862add9c052d39f1b5ac83e046ad70a8a441472b97e7958523fb4de851d4",
+          "io_hash_seconds": 0.013090497988741845
+        },
+        {
+          "rep": 1,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 4,
+          "correction_seconds": 0.014386110997293144,
+          "norm_adjustment_seconds": 0.0014860639930702746,
+          "per_observation_scoring_seconds": [
+            0.001985757000511512,
+            0.001439316984033212,
+            0.0016618039808236063,
+            0.0014946620212867856,
+            0.0017302650085184723,
+            0.0014527309976983815,
+            0.001711968012386933,
+            0.001551602006657049,
+            0.0017014799814205617,
+            0.0014535789960063994,
+            0.0014168850029818714,
+            0.0016661229892633855,
+            0.001818753982661292,
+            0.0019589479779824615,
+            0.0015117570001166314,
+            0.0015576859877910465
+          ],
+          "diagnostic_score_transfer_seconds": 0.005828050023410469,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        },
+        {
+          "rep": 2,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 4,
+          "correction_seconds": 0.019045645982259884,
+          "norm_adjustment_seconds": 0.0020101529953535646,
+          "per_observation_scoring_seconds": [
+            0.0019238390086684376,
+            0.0017799359920900315,
+            0.0015856039826758206,
+            0.0019063350046053529,
+            0.0020750639960169792,
+            0.001591428997926414,
+            0.0021339690138120204,
+            0.00166515598539263,
+            0.001687078009126708,
+            0.0018299650109838694,
+            0.0015336399956140667,
+            0.002153110021026805,
+            0.0014777550240978599,
+            0.001785611006198451,
+            0.0015688769926782697,
+            0.0018135179998353124
+          ],
+          "diagnostic_score_transfer_seconds": 0.008597242034738883,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        }
+      ]
+    },
+    {
+      "past": 1,
+      "mode": "raw",
+      "repetitions": [
+        {
+          "rep": 0,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 0,
+          "correction_seconds": 6.278097862377763e-05,
+          "norm_adjustment_seconds": 0.0016017089947126806,
+          "per_observation_scoring_seconds": [
+            0.0014056150102987885,
+            0.001672429993050173,
+            0.0013945230166427791,
+            0.00176106599974446,
+            0.0015123649791348726,
+            0.0016741750005166978,
+            0.0015091329987626523,
+            0.0016884399810805917,
+            0.001835208007832989,
+            0.0017502829723525792,
+            0.0015180210175458342,
+            0.0014543120050802827,
+            0.001870070002041757,
+            0.0018568029918242246,
+            0.0014310709957499057,
+            0.0020154469821136445
+          ],
+          "diagnostic_score_transfer_seconds": 0.005375666078180075,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate.",
+          "path": "outputs/TRR-0020/dev37_public/1_raw.safetensors",
+          "sha256": "6c6790f40dc01760aca34926330daa564ebea4acc61efd434e7a9ea7a05d222f",
+          "io_hash_seconds": 0.03252630401402712
+        },
+        {
+          "rep": 1,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 0,
+          "correction_seconds": 0.0003184340021107346,
+          "norm_adjustment_seconds": 0.0018478510028216988,
+          "per_observation_scoring_seconds": [
+            0.0016713619988877326,
+            0.00157165399286896,
+            0.0014228009968064725,
+            0.0016884900105651468,
+            0.0014065129798837006,
+            0.0016828440129756927,
+            0.0014473200135398656,
+            0.001441403990611434,
+            0.0015100299788173288,
+            0.0014978819817770272,
+            0.0014152209914755076,
+            0.0015341590042226017,
+            0.001619234011741355,
+            0.00139903201488778,
+            0.001462101994547993,
+            0.0013983729877509177
+          ],
+          "diagnostic_score_transfer_seconds": 0.00531429096008651,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        },
+        {
+          "rep": 2,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 0,
+          "correction_seconds": 0.00022915101726539433,
+          "norm_adjustment_seconds": 0.0023818449990358204,
+          "per_observation_scoring_seconds": [
+            0.0014505810104310513,
+            0.001815477997297421,
+            0.0014259240124374628,
+            0.0018143719935324043,
+            0.0014445959823206067,
+            0.0019891489937435836,
+            0.0014598279958590865,
+            0.0016815470007713884,
+            0.0014123879955150187,
+            0.0016513139999005944,
+            0.015497503016376868,
+            0.0023166100145317614,
+            0.001366304000839591,
+            0.0018015039968304336,
+            0.0014098300016485155,
+            0.001860524993389845
+          ],
+          "diagnostic_score_transfer_seconds": 0.00468573096441105,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        }
+      ]
+    },
+    {
+      "past": 1,
+      "mode": "mean",
+      "repetitions": [
+        {
+          "rep": 0,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 1,
+          "correction_seconds": 0.003532667993567884,
+          "norm_adjustment_seconds": 0.0015011200157459825,
+          "per_observation_scoring_seconds": [
+            0.0016460980114061385,
+            0.0013949839922133833,
+            0.0016496290045324713,
+            0.0013998810027260333,
+            0.0013512360164895654,
+            0.0014111520140431821,
+            0.0013799130101688206,
+            0.0016431949916295707,
+            0.001405944989528507,
+            0.0013539990177378058,
+            0.0014078610111027956,
+            0.0013770100194960833,
+            0.0018572250264696777,
+            0.0014138440019451082,
+            0.0016406819922849536,
+            0.001859787997091189
+          ],
+          "diagnostic_score_transfer_seconds": 0.004144922946579754,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate.",
+          "path": "outputs/TRR-0020/dev37_public/1_mean.safetensors",
+          "sha256": "6c6790f40dc01760aca34926330daa564ebea4acc61efd434e7a9ea7a05d222f",
+          "io_hash_seconds": 0.013395121990470216
+        },
+        {
+          "rep": 1,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 1,
+          "correction_seconds": 0.0038821889902465045,
+          "norm_adjustment_seconds": 0.0014990759955253452,
+          "per_observation_scoring_seconds": [
+            0.0018056679982692003,
+            0.0016759610152803361,
+            0.0017124479927588254,
+            0.0014058059896342456,
+            0.0016298499831464142,
+            0.0013917619944550097,
+            0.001341301976935938,
+            0.0016242249985225499,
+            0.0013924899976700544,
+            0.0016803699836600572,
+            0.0014096960076130927,
+            0.0016459590115118772,
+            0.0013948840205557644,
+            0.0013568309950642288,
+            0.0015699829964432865,
+            0.0013965990219730884
+          ],
+          "diagnostic_score_transfer_seconds": 0.004433520894963294,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        },
+        {
+          "rep": 2,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 1,
+          "correction_seconds": 0.0033561409800313413,
+          "norm_adjustment_seconds": 0.0014598770067095757,
+          "per_observation_scoring_seconds": [
+            0.001651065016631037,
+            0.0014133270015008748,
+            0.0014190709916874766,
+            0.0015964059857651591,
+            0.0016637819935567677,
+            0.0014560010167770088,
+            0.0013758529967162758,
+            0.0014507400046568364,
+            0.0013769110082648695,
+            0.0017178540001623333,
+            0.0014194899995345622,
+            0.001376689993776381,
+            0.0016564810066483915,
+            0.0013687610044144094,
+            0.0016510949935764074,
+            0.00139678901177831
+          ],
+          "diagnostic_score_transfer_seconds": 0.004533811879809946,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        }
+      ]
+    },
+    {
+      "past": 1,
+      "mode": "scaled_mean",
+      "repetitions": [
+        {
+          "rep": 0,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 1,
+          "correction_seconds": 0.005786485999124125,
+          "norm_adjustment_seconds": 0.0014982919965405017,
+          "per_observation_scoring_seconds": [
+            0.0014171039802022278,
+            0.0013891250127926469,
+            0.001463908003643155,
+            0.001373183011310175,
+            0.0014022710092831403,
+            0.0013663909921888262,
+            0.001391926984069869,
+            0.0014126249880064279,
+            0.0013679669937118888,
+            0.001418920001015067,
+            0.001397832005750388,
+            0.0018373090133536607,
+            0.0014250540116336197,
+            0.001619710004888475,
+            0.0014145410095807165,
+            0.001388316013617441
+          ],
+          "diagnostic_score_transfer_seconds": 0.004449670988833532,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate.",
+          "path": "outputs/TRR-0020/dev37_public/1_scaled_mean.safetensors",
+          "sha256": "6c6790f40dc01760aca34926330daa564ebea4acc61efd434e7a9ea7a05d222f",
+          "io_hash_seconds": 0.014732172014191747
+        },
+        {
+          "rep": 1,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 1,
+          "correction_seconds": 0.0036534700193442404,
+          "norm_adjustment_seconds": 0.0014615939871873707,
+          "per_observation_scoring_seconds": [
+            0.001656487991567701,
+            0.0014035780041012913,
+            0.0014008150028530508,
+            0.0018041820148937404,
+            0.0016623350093141198,
+            0.0014100019761826843,
+            0.0013506289978977293,
+            0.0015243180096149445,
+            0.0013790790108032525,
+            0.0016804300248622894,
+            0.0017998620169237256,
+            0.0020291619875933975,
+            0.0015502379974350333,
+            0.0019487820100039244,
+            0.0014355979801621288,
+            0.0018194830045104027
+          ],
+          "diagnostic_score_transfer_seconds": 0.004451568005606532,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        },
+        {
+          "rep": 2,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 1,
+          "correction_seconds": 0.004443743993761018,
+          "norm_adjustment_seconds": 0.0018725410045590252,
+          "per_observation_scoring_seconds": [
+            0.0014518680109176785,
+            0.0014628810167778283,
+            0.0015844970184843987,
+            0.0015259740175679326,
+            0.0015901529986876994,
+            0.023389159992802888,
+            0.0019610409799497575,
+            0.0014975939993746579,
+            0.001512248010840267,
+            0.0016554009926039726,
+            0.0021779520029667765,
+            0.0014811150031164289,
+            0.001681964989984408,
+            0.0015579039754811674,
+            0.0015418730035889894,
+            0.0014393290039151907
+          ],
+          "diagnostic_score_transfer_seconds": 0.008201777003705502,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        }
+      ]
+    },
+    {
+      "past": 1,
+      "mode": "four_probe",
+      "repetitions": [
+        {
+          "rep": 0,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 4,
+          "correction_seconds": 0.016128377988934517,
+          "norm_adjustment_seconds": 0.002212816005339846,
+          "per_observation_scoring_seconds": [
+            0.0015081290039233863,
+            0.001539010991109535,
+            0.0015693750174250454,
+            0.0019650610047392547,
+            0.001589974999660626,
+            0.0015731760067865252,
+            0.0015504029870498925,
+            0.001754933997290209,
+            0.001724080997519195,
+            0.001489724003477022,
+            0.002064803004032001,
+            0.0014456429926212877,
+            0.001731702999677509,
+            0.0014283869822975248,
+            0.001761557999998331,
+            0.001465064997319132
+          ],
+          "diagnostic_score_transfer_seconds": 0.007839035999495536,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate.",
+          "path": "outputs/TRR-0020/dev37_public/1_four_probe.safetensors",
+          "sha256": "6c6790f40dc01760aca34926330daa564ebea4acc61efd434e7a9ea7a05d222f",
+          "io_hash_seconds": 0.02218408798216842
+        },
+        {
+          "rep": 1,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 4,
+          "correction_seconds": 0.0146737789909821,
+          "norm_adjustment_seconds": 0.001733117998810485,
+          "per_observation_scoring_seconds": [
+            0.001528910011984408,
+            0.0017526500159874558,
+            0.0014898929803166538,
+            0.0018131590040866286,
+            0.001476088014896959,
+            0.0022365559998434037,
+            0.0016366979980375618,
+            0.0019268859759904444,
+            0.02091621301951818,
+            0.002059007005300373,
+            0.0018930899968836457,
+            0.001895394001621753,
+            0.0015401490090880543,
+            0.0017755530134309083,
+            0.001477874000556767,
+            0.0018255979812238365
+          ],
+          "diagnostic_score_transfer_seconds": 0.0070970020606182516,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        },
+        {
+          "rep": 2,
+          "exact_repeat": true,
+          "correction_prefix_forwards": 4,
+          "correction_seconds": 0.012801177013898268,
+          "norm_adjustment_seconds": 0.0016685389855410904,
+          "per_observation_scoring_seconds": [
+            0.0018977530125994235,
+            0.0016933569859247655,
+            0.0014229689841158688,
+            0.0018687710107769817,
+            0.0014433689939323813,
+            0.0015277049969881773,
+            0.0015209960110951215,
+            0.0019631859904620796,
+            0.0015276890189852566,
+            0.021001739980420098,
+            0.002107226988300681,
+            0.001931045000674203,
+            0.0015731659950688481,
+            0.001900372008094564,
+            0.001591811014804989,
+            0.00239021799643524
+          ],
+          "diagnostic_score_transfer_seconds": 0.007740175031358376,
+          "numerical_norm_fallback_rows": 0,
+          "cost_scope": "Each future token needs correction+norm adjustment+one observation score. History construction, emitted commit and diagnostic full-score transfers are separate."
+        }
+      ]
+    }
+  ],
+  "cache_anchors": [
+    {
+      "first_id": 0,
+      "rows": 256,
+      "exact_equal": true
+    },
+    {
+      "first_id": 128000,
+      "rows": 256,
+      "exact_equal": true
+    }
+  ],
+  "adapter_checks": [
+    {
+      "past": 127,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 127,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 127,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 127,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 127,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 127,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 127,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 127,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 127,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 127,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 127,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 127,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 127,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 127,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 127,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 127,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 127,
+      "kind": "continuous_point",
+      "exact_equal": true
+    },
+    {
+      "past": 127,
+      "kind": "continuous_point",
+      "exact_equal": true
+    },
+    {
+      "past": 127,
+      "kind": "continuous_point",
+      "exact_equal": true
+    },
+    {
+      "past": 127,
+      "kind": "continuous_point",
+      "exact_equal": true
+    },
+    {
+      "past": 127,
+      "kind": "continuous_point",
+      "exact_equal": true
+    },
+    {
+      "past": 127,
+      "kind": "continuous_point",
+      "exact_equal": true
+    },
+    {
+      "past": 63,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 63,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 63,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 63,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 63,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 63,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 63,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 63,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 63,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 63,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 63,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 63,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 63,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 63,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 63,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 63,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 63,
+      "kind": "continuous_point",
+      "exact_equal": true
+    },
+    {
+      "past": 63,
+      "kind": "continuous_point",
+      "exact_equal": true
+    },
+    {
+      "past": 63,
+      "kind": "continuous_point",
+      "exact_equal": true
+    },
+    {
+      "past": 63,
+      "kind": "continuous_point",
+      "exact_equal": true
+    },
+    {
+      "past": 63,
+      "kind": "continuous_point",
+      "exact_equal": true
+    },
+    {
+      "past": 63,
+      "kind": "continuous_point",
+      "exact_equal": true
+    },
+    {
+      "past": 15,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 15,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 15,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 15,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 15,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 15,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 15,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 15,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 15,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 15,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 15,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 15,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 15,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 15,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 15,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 15,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 15,
+      "kind": "continuous_point",
+      "exact_equal": true
+    },
+    {
+      "past": 15,
+      "kind": "continuous_point",
+      "exact_equal": true
+    },
+    {
+      "past": 15,
+      "kind": "continuous_point",
+      "exact_equal": true
+    },
+    {
+      "past": 15,
+      "kind": "continuous_point",
+      "exact_equal": true
+    },
+    {
+      "past": 15,
+      "kind": "continuous_point",
+      "exact_equal": true
+    },
+    {
+      "past": 15,
+      "kind": "continuous_point",
+      "exact_equal": true
+    },
+    {
+      "past": 1,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 1,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 1,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 1,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 1,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 1,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 1,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 1,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 1,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 1,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 1,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 1,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 1,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 1,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 1,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 1,
+      "kind": "actual_token",
+      "exact_equal": true
+    },
+    {
+      "past": 1,
+      "kind": "continuous_point",
+      "exact_equal": true
+    },
+    {
+      "past": 1,
+      "kind": "continuous_point",
+      "exact_equal": true
+    },
+    {
+      "past": 1,
+      "kind": "continuous_point",
+      "exact_equal": true
+    },
+    {
+      "past": 1,
+      "kind": "continuous_point",
+      "exact_equal": true
+    },
+    {
+      "past": 1,
+      "kind": "continuous_point",
+      "exact_equal": true
+    },
+    {
+      "past": 1,
+      "kind": "continuous_point",
+      "exact_equal": true
+    }
+  ],
+  "preparation": {
+    "prefix_load_seconds": 0.47563970799092203,
+    "table_load_seconds": 0.2500914830015972,
+    "statistics_and_reference_probes_seconds": 0.15603564900811762,
+    "reference_probe_prefix_forwards": 6
+  },
+  "prefix_sha256": "10fd7e98719037954a51299eb9cb680544a659400ee2431e8aac333626f5e61c",
+  "config_sha256": "2febf68cea25bf4611be02b7536f2488a5ba523bb1134986e3610152abe74fdb",
+  "table_source": {
+    "path": "/home/alanz/spartan/punim2939/Token-Reconstruction-Research/.worktrees/TRR-0014/outputs/TRR-0014/lookup_dev_r1_responses.safetensors",
+    "sha256": "87d1a6f4759c0ca7ee5c96207a75353948c5c2508f3ae568fb7358f721de1409",
+    "preparation_receipt": "experiments/TRR-0014/lookup_dev_r1/cache.json",
+    "historical_build_seconds": 2.5556752389966277,
+    "required_rebuild_on_weight_change": true
+  },
+  "fixture_source": {
+    "path": "outputs/TRR-0020/dev34_stress/public_fixture.safetensors",
+    "sha256": "4b971f56bc8ab1dca73cd41419da729af6b5e9b840b0e8c6ae92e2565c720f36",
+    "io_hash_seconds": 0.000941195001360029
+  },
+  "public_texts": [
+    "a",
+    "the",
+    "The",
+    "Hello",
+    "def",
+    "import",
+    "return",
+    "class",
+    "0",
+    "1",
+    "\n",
+    " ",
+    "{",
+    "}",
+    "(",
+    "```"
+  ],
+  "probe_assets": {
+    "path": "outputs/TRR-0020/dev37_public/probe_assets.safetensors",
+    "sha256": "12ef0c90f7883fede2f1fa1c3bfec424d2d4cc0a3007e6616caf7e916f393278",
+    "io_hash_seconds": 0.001360953989205882
+  },
+  "largest_cell_qualification": {
+    "passed": true,
+    "past": 127,
+    "vocabulary": 128256,
+    "all_modes_repeated": true,
+    "peak_reserved": 4364173312
+  },
+  "end_unix": 1789871596.8131328,
+  "peak_reserved": 4364173312,
+  "peak_allocated": 4332783616,
+  "peak_host_rss": 2303127552
+}

@@ -1,0 +1,24 @@
+{
+  "task_id": "TRR-0020",
+  "created_utc": "2026-09-20T03:15:39.822561+00:00",
+  "gpu": "name, memory.total [MiB], memory.free [MiB], temperature.gpu\nNVIDIA GeForce RTX 5080, 16303 MiB, 9895 MiB, 36\n",
+  "compute_pids": "",
+  "host_memory": [
+    "MemTotal:       31651964 kB",
+    "MemFree:        29634612 kB",
+    "MemAvailable:   30653996 kB",
+    "Buffers:            5948 kB",
+    "Cached:           921088 kB"
+  ],
+  "tensor_geometry": "128positions x2048width; fourFP32layers, fullcausalattention; at most17Krylovvectors (~17MiB) and small17x16system. No full-vocabulary logits or materialized full Jacobian.",
+  "estimate": "FP32prefix approximately1.8GiB; manualcache and native reverse-over-reverse reference activations below1GiB; allow5.5GiBreserved. Public artifacts transferred after each cell. Prior FP32prefix diagnostics below3GiB; extra reference graph margin retained.",
+  "estimated_peak_reserved_GiB": 5.5,
+  "expected_seconds_upper": 300,
+  "timeout_seconds": 900,
+  "derivative_cells": 20,
+  "linear_cells": 60,
+  "linear_repetitions": 180,
+  "guard": "threeidle samples>=9000MiB, runtimeGPUfree>=3GiB/host>=8GiB/reserved<=8GiB/temp<80",
+  "no_resource_batching_workaround": true,
+  "largest_first": "128activation,strength1,16GMRESiterations"
+}

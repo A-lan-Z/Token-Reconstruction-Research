@@ -1,0 +1,22 @@
+{
+  "task_id": "TRR-0020",
+  "created_unix": 1789865312.5637841,
+  "gpu": "NVIDIA GeForce RTX 5080, 16303, 14085, 37",
+  "compute_pids": "",
+  "host_available": "MemAvailable:   30660416 kB",
+  "prior_public_peak_GiB": 3.107421875,
+  "native_contexts": 128,
+  "graphs_per_context": 3,
+  "extra_common_initialization_graphs": 1,
+  "estimated_additional_graph_storage_GiB": 3.0,
+  "estimated_peak_reserved_GiB": 6.5,
+  "guard_peak_reserved_GiB": 8,
+  "minimum_free_GiB": 3,
+  "expected_seconds": 120,
+  "timeout_seconds": 1500,
+  "largest_first": "native position127, then allpositions0..126 before full public matrix",
+  "cases": 72,
+  "repeated_replay_per_case": 3,
+  "eager_adapter_per_case": 1,
+  "justification": "FP32 shared embeddings/lookup dominate3.11GiB prior peak; each graph adds only current-token and native-length attention temporaries, with independent pools. Reserve3GiB for385graphs and stop on8GiBpeak. No padded attention or reduced matrix."
+}

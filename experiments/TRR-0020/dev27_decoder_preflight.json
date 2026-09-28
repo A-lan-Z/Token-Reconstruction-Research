@@ -1,0 +1,38 @@
+{
+  "task_id": "TRR-0020",
+  "created_unix": 1789858538.600092,
+  "gpu": "NVIDIA GeForce RTX 5080, 16303, 14080, 35",
+  "compute_pids": "",
+  "mem_available_line": "MemAvailable:   30632148 kB",
+  "geometry": {
+    "max_positions": 128,
+    "vocabulary": 128256,
+    "width": 2048,
+    "layers": 4,
+    "attention_heads": 32,
+    "kv_heads": 8,
+    "head_dim": 64,
+    "mlp_width": 8192,
+    "current_batch": 1,
+    "max_updates": 4
+  },
+  "estimates": {
+    "persistent_token_fp32_bytes": 1050673152,
+    "max_committed_kv_bytes": 2080768,
+    "current_repeated_attention_kv_bytes": 8388608,
+    "worst_peak_reserved_gib": 7.25,
+    "guard_peak_reserved_gib": 8,
+    "prior_dev26_measured_peak_gib": 6.072265625,
+    "expected_idle_free_gib": 13.75,
+    "margin_gib_at_estimated_peak": 6.5,
+    "worst_current_stage_seconds_per_128": 6.477,
+    "estimated_full_matrix_and_qualification_seconds": 900,
+    "timeout_seconds": 1800
+  },
+  "justification": "Same warm optimizer as dev26, no local CUDA graphs or T-by-T derivative workspaces; variable current cache is under16MiB. Conservatively allow7.25GiB and require largest warm64/cg1/4 public case before any other configuration. Prior direction-only measured3ms/6ms; bound12ms per update plus3ms per commit; first qualify measured total with all readout/synchronization.",
+  "execution": "one process per configuration under fail-closed exclusive GPU guard; no concurrent GPU work",
+  "largest_configuration": "warm64_cg1_updates4",
+  "public_executions": 48,
+  "reconstruction_cells": 64,
+  "truth_read": false
+}

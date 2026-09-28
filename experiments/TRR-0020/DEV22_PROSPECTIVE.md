@@ -1,0 +1,11 @@
+# Next public diagnostic: factor the local prefix inverse by layer
+
+The development21 public numerical qualification found that8Krylov products leave about85%of the linear residual. This motivates a structural question independently of reconstruction labels: can the same number of layer-matrix products give a better direction by solving the individual layer factors in reverse order?
+
+For a causal prefix, the own-position Jacobian of the complete prefix is the ordered product of each layer's own-position Jacobian. An approximate solve of that product can differ substantially from composing approximate inverse solves of its factors. The prototype therefore solves J_last y approximately equals b, then the preceding factor, back to the embedding. WithKproducts per solve and four layers, this uses4Ksingle-layer products; the development21 whole-prefix Krylov usesKfour-layer products. Factorization additionally incurs four small solves and four Arnoldi recurrences. No claim of equal wall time or guaranteed improvement is implied.
+
+CPUfloat64 qualification uses four random8x8near-identity factors at four independent positions, eight basis vectors and ridge1e-10, compares the composed direction to an independent dense solve, and verifies zero RHS and reverse order.
+
+A subsequent fixed public-only GPU diagnostic will compareK4/8/16and the original full-prefix solve versus layer-factor solves at40and128positions. Use exactly the archived public input tensors from development21's forward qualification. Test both the archived public target-minus-output residual and a consistent linear RHS made by applying the full own-position Jacobian to the known public input perturbation. Record three repeat timings, true full-system residual, direction norm, complete matrix-vector counts, finite status and solver info. Preserve all methods before interpreting results; do not impose a success gate on residual improvement.
+
+No reconstruction rule or hidden-label grid is yet selected. These are public numerical diagnostics, not24new reconstruction-method evaluations or an active canonical method. No source truth, A1 outputs, candidate proposals or target-prefix access are used. The full64-cell development21matrix remains unchanged and must complete before any development22GPU job starts. GPU preflight and exact commands are required before execution.

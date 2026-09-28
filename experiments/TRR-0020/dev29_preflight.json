@@ -1,0 +1,31 @@
+{
+  "task_id": "TRR-0020",
+  "created_unix": 1789860447.6287856,
+  "gpu": "NVIDIA GeForce RTX 5080, 16303, 14100, 36",
+  "compute_pids": "",
+  "host_available": "MemAvailable:   30652228 kB",
+  "geometry": {
+    "positions": 128,
+    "vocabulary": 128256,
+    "width": 2048,
+    "layers": 4,
+    "logit_bytes": 65154048,
+    "cached_native_lengths": 2,
+    "warm_and_mirror_graph_pairs_per_length": 2,
+    "mirror_steps": 64,
+    "maximum_warm_steps": 64
+  },
+  "prior_warm_optimizer_peak_gib": 3.845703125,
+  "extra_mirror_vocab_buffers_estimate_gib": 0.7281532287597656,
+  "estimated_peak_reserved_gib": 7.5,
+  "guard_peak_reserved_gib": 8,
+  "minimum_idle_free_gib": 13.7,
+  "estimated_margin_gib": 6.2,
+  "estimated_matrix_seconds": 240,
+  "timeout_seconds": 1200,
+  "public_replay_decodes": 36,
+  "public_eager_decodes": 12,
+  "reconstruction_cells": 48,
+  "largest_first": "warm64_tau1.0 /128positions",
+  "justification": "One shared prefix and lookup; extra mirror graph pools and vocabulary-sized buffers may add up to3GiB to prior warm peak. Largest case must qualify with measured margin before matrix release. Preserve native geometry and deterministic BF16 mixture,FP32 update; no microbatch workaround."
+}
