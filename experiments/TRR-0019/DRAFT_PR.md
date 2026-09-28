@@ -1,0 +1,3 @@
+A2 repeats launch and context-copying work for every token. This change records its native GPU execution and adds a separately evaluated shared-context attention implementation, retaining all 256 candidates and the original separate winner commit. No new predictor is trained.
+
+Validation: full 1,360-cell retrospective comparison, three repetitions per cell, both canonical setups, frozen outputs, exact replay equality, weight-refresh checks, guarded resources, and the complete 62-cell active-method matrix. See coordination/results/TRR-0019.md and experiments/TRR-0019/manifest.json. Candidate-free reconstruction and actual recovered-prefix trajectory integration remain unsolved.

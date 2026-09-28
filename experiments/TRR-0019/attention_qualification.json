@@ -1,0 +1,72 @@
+{
+  "task_id": "TRR-0019",
+  "commit": "bc55d00cb6553b9b6edd10a5b4d28a0c3aa63375",
+  "source_hashes": {
+    "scripts/trr0019/attention_probe.py": "e41fabe6b93d7f0410305f962a3dbfcfa9d3357456a30f6f94169c960afba7ac",
+    "scripts/trr0019/shared_attention.py": "f3a91c80b7eee2059b2d2210d3b56712a08e5e1bedc4f2b7474f5722bf9cfd72",
+    "scripts/trr0019/graph_probe.py": "eaed4b0907d88d5e2abe48971224ee390f6fcdf740926bdc0f2c25d5cd2dbfd0"
+  },
+  "command": [
+    "scripts/trr0019/attention_probe.py"
+  ],
+  "environment": {
+    "commit": "bc55d00cb6553b9b6edd10a5b4d28a0c3aa63375",
+    "torch": "2.10.0+cu128",
+    "transformers": "5.3.0",
+    "python": "3.12.3",
+    "gpu": "name, memory.total [MiB], memory.free [MiB], temperature.gpu\nNVIDIA GeForce RTX 5080, 16303 MiB, 8755 MiB, 48\n",
+    "utc": "2026-09-19T10:27:42Z"
+  },
+  "input_id": "r2__matched__book11_00",
+  "truth_read": false,
+  "compile_and_first_run_seconds": 12.456958576003672,
+  "capture_seconds": 0.7796819100040011,
+  "measurements": {
+    "native": [
+      0.8148554340004921,
+      0.7871245940041263,
+      0.7836144679895369,
+      0.7925215910072438,
+      0.7919516679976368
+    ],
+    "direct_shared_attention": [
+      0.6261112920037704,
+      0.6227145070006372,
+      0.6323411589983152,
+      0.631634352990659,
+      0.6360886949987616
+    ],
+    "graph_shared_attention": [
+      0.44761786599701736,
+      0.3833369100029813,
+      0.4194719570077723,
+      0.42250016500474885,
+      0.422048279986484
+    ]
+  },
+  "differences": {
+    "tokens": {
+      "equal": true,
+      "differing": 0,
+      "max_abs": 0.0
+    },
+    "candidates": {
+      "equal": true,
+      "differing": 0,
+      "max_abs": 0.0
+    },
+    "scores": {
+      "equal": false,
+      "differing": 32512,
+      "max_abs": 0.005881071090698242
+    },
+    "mse": {
+      "equal": false,
+      "differing": 32512,
+      "max_abs": 0.0010581240057945251
+    }
+  },
+  "peak_allocated": 1341541376,
+  "peak_reserved": 3149922304,
+  "peak_host_rss": 2790547456
+}
