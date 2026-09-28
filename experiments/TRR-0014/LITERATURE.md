@@ -1,0 +1,13 @@
+# Literature and interpretation
+
+Consulted primary sources during TRR-0014; URLs accessed2026-09-18 UTC. These motivate mechanisms, not local performance claims.
+
+- [Nikolaou et al., Language Models are Injective and Hence Invertible, ICLR2026](https://arxiv.org/html/2510.15511v4): injectivity and a vocabulary-verification inversion construction do not imply a cheap bounded candidate generator. This does not establish an impossibility result for our prefix-only objective.
+- [Słowikowski and Majewski, Recovering Input Text from Hidden States](https://arxiv.org/html/2607.00852v1): continuous input optimization and candidate expansion are relevant inversion approaches, but remain in the iterative cost family the owner asked us to deprioritize.
+- [Elhage et al., A Mathematical Framework for Transformer Circuits](https://transformer-circuits.pub/2021/framework/index.html): the residual stream is an additive sum of embeddings and attention/MLP writes. Our output-Gram geometry is a new local heuristic based on this structure, not a theorem that write directions contain no token information.
+- [Oskin, Through the Looking Glass: Directly Reading and Writing Transformers](https://arxiv.org/html/2609.10210): model-native token tables are obtained from forward responses rather than a fitted explaining model. Its broad interpretability claims are not treated as proof of reconstruction accuracy here.
+- [Kaplan et al., From Tokens to Words: On the Inner Lexicon of LLMs](https://arxiv.org/html/2410.05864v4): reports that multi-token words develop whole-word representations at their final subword position. This is consistent with our opened-panel omission pattern; it does not imply that token identity is irrecoverable.
+- [Kamoda et al., Weight-based Analysis of Detokenization in Language Models, NAACL2025 Findings](https://aclanthology.org/2025.findings-naacl.355/): analyzes early GPT-2 attention from weights alone. It supports considering model structure rather than adding another fitted probe, but is not an implementation or validation of our Llama proposer.
+- [Busigin and Pinter, Inside the LLM Word Factory](https://arxiv.org/html/2606.08562v1): identifies an attention/MLP composition mechanism and early detokenization across several model families. Our own failure diagnosis preceded reading this paper; the literature check supports the interpretation retrospectively. We do not use the paper's fitted success probe.
+
+The local contribution is an exploratory combination: a prefix-derived geometric lookup, an intrinsic response table computed using the same prefix, tokenizer suffix decomposition, and native causal verification. We make no claim of priority, universal invertibility, or superiority across the canonical benchmarks.

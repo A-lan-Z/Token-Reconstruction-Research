@@ -1,0 +1,7 @@
+# Context-free prefix response table probe
+
+Whole-observation inverse residual steps were cheap (<0.08s per128-token clip), but failed proposal recall and are excluded. Best damped6/metric recalled1837/2032 matched natural and258/312 stress; Anderson was worse. No A2 run is warranted.
+
+The BOS-context response table has severe natural-text bias yet complements embeddings. Test whether removing that artificial preceding context exposes token-specific nonlinear encoding. Two deterministic tables: MLP-only (each block's actual RMSNorm+MLP additive update, suppress attention); and exact standalone-token prefix with self-attention. Both are generated directly from supplied weights, not fitted to examples. Compare both tables using the frozen total residual-write metric. Record top256, reportK64 andK256 recall plus union with prior embedding-metric proposals; these are development diagnostics, not final reconstruction claims.
+
+Resource contract: dictionary batch256 x1token is smaller than prior qualified256 candidates x128context; transformed table buffer reused. Prefix+table~2.2GB, qualified4.4GB reserve and6GB guard unchanged. Watchdog120s. Input row batching256 declared (no claim equal to singleton). No target calls or truth are available to this script; all96 outputs frozen before scorer reads opened R1 truth. The two structural variants are registered before running, with no parameter sweep.
